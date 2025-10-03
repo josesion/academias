@@ -1,0 +1,108 @@
+/* --- CONTENEDOR PRINCIPAL --- */
+.paginacion_contenedor {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    background: transparent; /* el contenedor principal transparente */
+}
+
+/* --- CONTENEDOR INTERIOR --- */
+.paginacion_componente {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #1c1c28; /* fondo oscuro solo para el bloque */
+    padding: 8px 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* --- BOTONES DE NAVEGACIÓN (flechas) --- */
+.btn_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 8px;
+    background: #2a2a3b;
+    border: none;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn_nav:hover:not(:disabled) {
+    background: #3a3a4f;
+    transform: scale(1.1);
+}
+
+.btn_nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- CENTRO DE PAGINACIÓN --- */
+.paginacion_centro {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Botones numéricos */
+.btn_generico {
+    background: #2a2a3b;
+    color: #ddd;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn_generico:hover {
+    background: #3a3a4f;
+    transform: translateY(-2px);
+}
+
+/* Botón de página seleccionada */
+.btn_seleccionado {
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: default;
+    animation: pulse 1s infinite alternate;
+}
+
+/* --- Estilo para los puntos suspensivos --- */
+.puntos_suspensivos {
+    color: #888;
+    font-size: 1rem;
+    padding: 0 6px;
+    user-select: none;
+    animation: fadeIn 0.5s ease;
+}
+
+/* --- Animaciones --- */
+@keyframes pulse {
+    from {
+        box-shadow: 0 0 8px rgba(21, 101, 192, 0.4);
+        transform: scale(1);
+    }
+    to {
+        box-shadow: 0 0 14px rgba(21, 101, 192, 0.7);
+        transform: scale(1.07);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to   { opacity: 1; transform: scale(1); }
+}

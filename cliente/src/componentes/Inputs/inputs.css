@@ -1,0 +1,73 @@
+.inputs_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+    width: 100%;
+    margin: 5px 5px;
+    
+}
+
+.inputs_contenedor label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #ddd;
+}
+
+.inputs {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #222;
+    font-size: 1rem;
+    color: white;
+    outline: none;
+    transition: all 0.2s ease;
+    border-color: #555;
+}
+
+.inputs::placeholder {
+    color: #6d6a6a;
+}
+
+.inputs:focus {
+    border-color: #7f5be4;
+    box-shadow: 0 0 10px rgba(95, 70, 187, 0.6);
+    background: var(--color-gradiente-claro);
+    color: #757373;
+}
+
+.inputs:hover {
+    border-color: #797676;
+}
+
+
+.error_espacio {
+    min-height: 20px; /* reserva espacio aunque no haya error */
+     display: flex;
+    align-items: center;
+}
+
+/* Mensaje de error con animación suave */
+.mensaje_error {
+    color: #d32f2f; /* rojo sobrio */
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: rgba(211, 47, 47, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+
+    opacity: 0;
+    transform: translateY(-4px);
+    animation: mostrarError 0.3s ease forwards;
+}
+
+/* Animación */
+@keyframes mostrarError {
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+

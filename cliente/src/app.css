@@ -1,0 +1,57 @@
+:root {
+    --color-primario: #638db9;
+    --color-secundario : #2c2b2b63;
+    --color-fondo-negro: #141313;
+    --color-fondo-secundario :#bb4c4c;
+
+    --color-letra : #f4f2fa;
+    --color-fondo--azul : #4f46e5;
+    --color-fodo--blanco : #f9fafb;
+    --fuente-principal:  "Segoe UI", Arial, sans-serif;
+    --color-gradiente-multicolor : radial-gradient(ellipse 120% 80% at 70% 20%, rgba(255, 20, 147, 0.15), transparent 50%),
+            radial-gradient(ellipse 100% 60% at 30% 10%, rgba(0, 255, 255, 0.12), transparent 60%),
+            radial-gradient(ellipse 90% 70% at 50% 0%, rgba(138, 43, 226, 0.18), transparent 65%),
+            radial-gradient(ellipse 110% 50% at 80% 30%, rgba(255, 215, 0, 0.08), transparent 40%),
+            #000000;
+    --color-gradiente-azul :radial-gradient(ellipse 80% 60% at 50% 0%, rgba(99, 102, 241, 0.25), transparent 70%), #000000;
+    --color-gradiente-claro: radial-gradient(
+                                circle at top center,
+                                rgba(70, 130, 180, 0.5),
+                                transparent 70%
+                            );      
+        background: var(--color-gradiente-multicolor);   
+}
+
+
+
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100dvh; 
+    box-sizing: border-box;
+    font-family: var(--fuente-principal);
+    overflow-x: hidden;
+    min-height: 100dvh;
+    background: var(--color-gradiente-multicolor);   
+
+}
+.app {
+    width: 100%;
+    min-height: 100dvh;
+    background:var(--color-gradiente-azul);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    color: rgb(192, 191, 191);
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+
+h1,
+p {
+    margin: 0;
+    padding: 0;
+}

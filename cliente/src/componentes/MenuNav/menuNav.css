@@ -1,0 +1,193 @@
+/* ------------------- NAVBAR PRINCIPAL ------------------- */
+.menu_nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 14px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    /* Glassmorphism elegante */
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ------------------- NOMBRE DE LA APP ------------------- */
+.app-name-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    padding: 0 6px;
+}
+
+.app-name {
+    color: var(--color-letra, #fff);
+    font-family: var(--fuente-principal, "Segoe UI", sans-serif);
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+
+    background: linear-gradient(90deg, #42a5f5, #90caf9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ------------------- LISTA DE MENÚ ------------------- */
+.menu_nav_lista {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+    gap: 14px;
+}
+
+.menu_nav_lista li {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 15px;
+    border-radius: 8px;
+    color: var(--color-letra);
+    font-size: 15px;
+    position: relative; 
+    transition: all 0.25s ease-in-out;
+}
+
+/* Subrayado dinámico animado */
+.menu_nav_lista li::after {
+    content: "";
+    position: absolute;
+    bottom: -3px; /* justo debajo del texto */
+    left: 50%;
+    width: 0%;
+    height: 2px;
+    background-color: var(--color-letra);
+    transition: width 0.3s ease, left 0.3s ease;
+}
+
+.menu_nav_lista li:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.menu_nav_lista li:hover::after {
+    width: 100%;
+    left: 0;
+}
+
+/* ------------------- EFECTO DESLIZAR ------------------- */
+.menu {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.35s ease-in-out;
+}
+
+.abierto {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 0.35s ease-in-out;
+}
+
+/* ------------------- BOTÓN HAMBURGUESA ------------------- */
+.btn_menu {
+    display: none;
+    background: transparent;
+    border: none;
+    color: var(--color-letra, #fff);
+    font-size: 1.8rem;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 150;
+    margin-right: 15px;
+
+    transition: all 0.3s ease-in-out;
+}
+
+.btn_menu:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.1);
+}
+
+/* ------------------- RESPONSIVE ------------------- */
+
+/* 📱 Móviles */
+@media (max-width: 576px) {
+    .menu_nav {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .menu_nav_lista {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .menu_nav_lista li {
+        width: 100%;
+        padding: 10px 15px;
+    }
+
+    .btn_menu {
+        display: flex;
+        position: absolute;
+        top: 14px;
+        right: 16px;
+    }
+}
+
+/* 📊 Tablets */
+@media (min-width: 577px) and (max-width: 1069px) {
+    .menu_nav {
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .app-name-container {
+        -webkit-mask-image: none;
+        mask-image: none;
+    }
+
+    .menu {
+        display: flex !important;
+        flex-direction: row;
+        max-height: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+/* 🖥️ Escritorio */
+@media (min-width: 1070px) {
+    .menu_nav {
+        justify-content: space-between;
+    }
+
+    .menu {
+        display: flex !important;
+        flex-direction: row;
+        max-height: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+    }
+
+    .menu_nav_lista li:last-child {
+        margin-right: 25px;
+    }
+}

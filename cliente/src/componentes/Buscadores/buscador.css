@@ -1,0 +1,129 @@
+
+.buscador_contenedor{
+    display: flex;
+    flex-direction: column;
+    max-height: 155px;
+}
+
+.buscador_buscadores{
+    display: flex;
+    max-height: 80px;
+    width: 80%;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.buscador_boton{
+    display: flex;
+    align-items: center;
+    width: 50%;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* --- Estilos para el select dentro del contenedor --- */
+.buscador_boton .buscador_estado {
+    background-color: #424549; /* Color de fondo oscuro */
+    color: #e4e7ea; /* Color de texto claro */
+    border: 1px solid #6c7075; /* Borde sutil */
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 0.75rem 1rem; /* Espaciado interno */
+    font-size: 1rem;
+    cursor: pointer;
+    -webkit-appearance: none; /* Elimina los estilos por defecto del navegador */
+    -moz-appearance: none;
+    appearance: none;
+    transition: all 0.3s ease-in-out; /* Transición suave para los cambios */
+}
+
+/* Estilo para el select cuando el cursor está encima o está en foco */
+.buscador_boton .buscador_estado:hover,
+.buscador_boton .buscador_estado:focus {
+    border-color: #7289da; /* Borde azul al pasar el mouse */
+    box-shadow: 0 0 0 3px rgba(114, 137, 218, 0.3); /* Sombra suave para destacar */
+    outline: none; /* Elimina el contorno de foco por defecto */
+}
+
+/* --- Animaciones sutiles para el contenedor y sus elementos --- */
+.buscador_contenedor {
+    /* La animación se aplicará al cargar el componente */
+    animation: fadeInUp 0.5s ease-in-out;
+}
+
+
+.buscador_titulo {
+    font-size: 1em; /* Tamaño de letra más grande para que destaque */
+    font-weight: 600; /* Lo hace un poco más audaz */
+    color: #e4e7ea; /* Un color blanco apagado para el texto */
+    text-align: center; /* Lo centra horizontalmente */
+    margin-bottom: 1.5rem; /* Espacio debajo del título */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra de texto sutil para profundidad */
+    transition: color 0.3s ease-in-out;
+}
+
+.buscador_contenedor:hover .buscador_titulo {
+    color: #7289da; /* El color cambia cuando pasas el mouse por el contenedor principal */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@media (min-width: 1070px) {
+    .buscador_contenedor {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    .buscador_buscadores{
+        flex-direction: row;
+
+        justify-content: space-around;
+        align-items: center;
+    }
+
+}
+
+
+
+@media (min-width: 800px) and (max-width: 1069px){
+    .buscador_buscadores{
+        flex-direction: row;
+
+        width: 100%;
+        justify-content: space-around;
+    }
+}
+
+
+/* --- Media Query para pantallas hasta 576px --- */
+/* (Esta sobreescribe la anterior si el ancho es menor a 576px) */
+@media screen and (max-width: 650px) {
+    .buscador_contenedor {
+        flex-direction: column;
+        max-height: 290px;  
+        width: 100%;
+        padding: 2px;
+    }
+    .buscador_buscadores{
+        flex-direction: column;
+        max-height: 250px;
+        width: 90%;
+    }
+    .buscador_buscadores, .buscador_estado, .buscador_boton {
+        width: 50%;
+        justify-content: center;
+    }
+}
+
+

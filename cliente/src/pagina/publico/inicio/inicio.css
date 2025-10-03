@@ -1,0 +1,320 @@
+/* Importa la fuente Inter de Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Estilos generales del cuerpo */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    color: #eef1f5; /* Color del texto gris oscuro */
+    line-height: 1.6;
+}
+
+/* Contenedor principal de la aplicación */
+.app-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Estilos de la sección Hero */
+.hero-section {
+    width: 100%;
+    max-width: 1280px; /* max-w-6xl */
+    padding: 80px 16px; /* py-20 px-4 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3rem; /* text-4xl */
+    font-weight: 700; /* font-bold */
+    letter-spacing: -0.025em; /* tracking-tight */
+    color: #d1d5dd; /* text-gray-900 */
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+.hero-subtitle {
+    font-size: 1.125rem; /* text-lg */
+    color: #4b5563; /* text-gray-600 */
+    margin-bottom: 2rem; /* mb-8 */
+    max-width: 640px; /* max-w-2xl */
+}
+
+.hero-button {
+    background-color: #4f46e5; /* bg-indigo-600 */
+    color: #ffffff;
+    font-weight: 500; /* font-medium */
+    padding: 12px 32px; /* py-3 px-8 */
+    border-radius: 9999px; /* rounded-full */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+    transition: background-color 0.3s ease;
+}
+
+.hero-button:hover {
+    background-color: #4338ca; /* hover:bg-indigo-700 */
+}
+
+/* Estilos de la sección de características */
+.features-section {
+    width: 100%;
+    max-width: 1280px;
+    padding: 64px 16px; /* py-16 px-4 */
+    background-color: #ffffff;
+    border-radius: 24px; /* rounded-3xl */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    margin-bottom: 4rem; /* mb-16 */
+}
+
+.features-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem; /* mb-12 */
+    color: #111827;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem; /* gap-8 */
+}
+
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem; /* p-6 */
+    background-color: #f9fafb; /* bg-gray-50 */
+    border-radius: 1rem; /* rounded-2xl */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+    transition: box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-lg */
+}
+
+.feature-icon {
+    width: 3rem; /* w-12 */
+    height: 3rem; /* h-12 */
+    color: #6366f1; /* text-indigo-500 */
+    margin-bottom: 1rem; /* mb-4 */
+}
+
+.feature-heading {
+    font-size: 1.25rem; /* text-xl */
+    font-weight: 600; /* font-semibold */
+    color: #111827;
+    margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.feature-description {
+    color: #4b5563; /* text-gray-600 */
+}
+
+/* Estilos de la sección de precios */
+.pricing-section {
+    width: 100%;
+    max-width: 1280px;
+    padding: 64px 16px; /* py-16 px-4 */
+    margin-bottom: 4rem; /* mb-16 */
+}
+
+.pricing-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 3rem;
+    color: #d7d9df;
+}
+
+.pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.plan-card {
+    background-color: #ffffff;
+    padding: 2rem; /* p-8 */
+    border-radius: 24px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb; /* border-gray-200 */
+}
+
+.plan-card.plan-special {
+    border: 2px solid #6366f1; /* border-indigo-400 */
+}
+
+.plan-card.plan-premium {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: 1px solid #4338ca;
+    transform: scale(1.05);
+}
+
+.plan-card.plan-premium:hover {
+    transform: scale(1.08); /* Aumenta el tamaño en el hover */
+}
+
+
+.plan-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.plan-card.plan-premium .plan-heading {
+    color: #ffffff;
+}
+
+.plan-description {
+    color: #4b5563;
+    margin-bottom: 1rem;
+}
+
+.plan-card.plan-premium .plan-description {
+    color: #e0e7ff;
+}
+
+.plan-price {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 1.5rem;
+}
+
+.plan-card.plan-premium .plan-price {
+    color: #ffffff;
+}
+
+.plan-frequency {
+    font-size: 1rem;
+    color: #6b7280;
+}
+
+.plan-card.plan-premium .plan-frequency {
+    color: #e0e7ff;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* space-y-3 */
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    color: #374151;
+}
+
+.plan-card.plan-premium .plan-features li {
+    color: #ffffff;
+}
+
+.feature-check {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    color: #10b981; /* text-green-500 */
+}
+
+.feature-check-white {
+    display: inline-block;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    color: #ffffff; /* Icono blanco para el plan premium */
+}
+
+
+.plan-button {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #e5e7eb;
+    color: #1f2937;
+    font-weight: 500;
+    padding: 12px 0;
+    border-radius: 9999px;
+    transition: background-color 0.3s ease;
+}
+
+.plan-button:hover {
+    background-color: #d1d5db;
+}
+
+.plan-button-premium {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: #ffffff;
+    color: #4f46e5;
+    font-weight: 700;
+    padding: 12px 0;
+    border-radius: 9999px;
+    transition: background-color 0.3s ease;
+}
+
+.plan-button-premium:hover {
+    background-color: #f3f4f6;
+}
+
+/* Estilos del pie de página */
+.footer-section {
+    width: 100%;
+    text-align: center;
+    padding: 2rem 0; /* py-8 */
+    color: #6b7280;
+    font-size: 0.875rem; /* text-sm */
+}
+
+/* Media Queries para adaptabilidad */
+@media (min-width: 768px) {
+    .hero-section {
+        padding-top: 128px; /* py-32 */
+        padding-bottom: 128px;
+    }
+
+    .hero-title {
+        font-size: 3.75rem; /* text-5xl */
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem; /* text-xl */
+    }
+
+    .features-section, .pricing-section {
+        padding-top: 96px; /* py-24 */
+        padding-bottom: 96px;
+    }
+
+    .features-title, .pricing-title {
+        font-size: 2.25rem; /* text-4xl */
+    }
+    
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+

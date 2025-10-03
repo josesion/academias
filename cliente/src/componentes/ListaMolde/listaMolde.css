@@ -1,0 +1,66 @@
+/* Contenedor general del listado */
+.listado_molde {
+    display: grid;
+    gap: 16px;
+    padding: 16px;
+    background-color:var(--color-secundario);
+    animation: slideFade 0.4s ease;
+    border-radius: 8px;
+}
+
+/* Tarjetas (los .item_generico que contiene) */
+.listado_molde > .item_generico {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.listado_molde > .item_generico:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes slideFade {
+0% {
+    opacity: 0;
+    transform: translateY(15px);
+}
+100% {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+
+@media (max-width: 576px) {
+
+.listado_molde {
+    grid-template-columns: 1fr;
+    padding: 8px;
+    animation: slideFade 0.4s ease;
+}
+
+}
+
+
+@media (min-width: 701px) and (max-width: 1069px) {
+
+.listado_molde {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 12px;
+    animation: slideFade 0.4s ease;
+}
+
+
+
+
+}
+
+
+@media (min-width: 1070px) {
+
+.listado_molde {
+    grid-template-columns: repeat(3, 1fr); 
+    padding: 5px ;
+    margin: 10px 30px; 
+}
+
+}

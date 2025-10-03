@@ -1,0 +1,142 @@
+/* ---------- ITEM GENÉRICO (estilo pulido) ---------- */
+.item_generico {
+    --morado: #a855f7;           /* acento morado */
+    --morado-oscuro: #7c3aed;
+    --borde-morado: rgba(168,85,247,0.25);
+    --bg1: #1b1b1b;
+    --bg2: #232323;
+
+    background: linear-gradient(180deg, var(--bg1), var(--bg2));
+    border: 1px solid var(--borde-morado);
+    border-radius: 12px;
+    padding: 14px;
+    margin: 10px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 400px;
+
+    /* animación de entrada + suavidad general */
+    opacity: 0;
+    transform: translateY(6px);
+    animation: cardFadeUp .45s ease forwards;
+
+    transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease;
+    will-change: transform, box-shadow;
+}
+
+.item_generico:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(168,85,247,0.18), 0 2px 6px rgba(0,0,0,0.35);
+    border-color: rgba(168,85,247,0.45);
+}
+
+/* resalta cuando hay foco en botones/inputs internos */
+.item_generico:focus-within {
+    box-shadow: 0 0 0 2px rgba(168,85,247,0.25), 0 8px 22px rgba(168,85,247,0.16);
+}
+
+/* ---------- FILAS (clave arriba izq / valor abajo der) ---------- */
+.item_generico_contenedor {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee; /* mantiene la línea */
+    margin: 0 8px;
+    position: relative;
+
+    /* animación por fila */
+    opacity: 0;
+    transform: translateY(4px);
+    animation: rowFadeSlide .35s ease forwards;
+    transition: background .2s ease;
+}
+
+.item_generico_contenedor:hover {
+    background: rgba(255,255,255,0.03);
+}
+
+/* última fila sin borde */
+.item_generico_contenedor:last-of-type {
+    border-bottom: none;
+}
+
+/* clave (arriba, izquierda) */
+.item_generico_key {
+    font-weight: 600;
+    color: #9f9f9f;
+    text-align: left;
+    margin-bottom: 2px;
+    letter-spacing: .2px;
+}
+
+/* valor (abajo, derecha) */
+.item_generico_value {
+    color: #f7f0f0;
+    text-align: right;
+    font-variant-numeric: tabular-nums; /* alineación numérica limpia */
+    transition: color .2s ease, transform .2s ease;
+}
+
+/* micro feedback al pasar por la fila */
+.item_generico_contenedor:hover .item_generico_value {
+    color: #ffffff;
+    transform: translateX(-1px);
+}
+
+/* ---------- BOTONERA ---------- */
+.botonera_item_generico{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+
+    /* suave aparición */
+    opacity: 0;
+    transform: translateY(4px);
+    animation: rowFadeSlide .35s ease .06s forwards;
+}
+
+/* ---------- ANIMACIONES ---------- */
+@keyframes cardFadeUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rowFadeSlide {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* retrasos escalonados para las primeras filas (stagger) */
+.item_generico_contenedor:nth-of-type(1) { animation-delay: .02s; }
+.item_generico_contenedor:nth-of-type(2) { animation-delay: .05s; }
+.item_generico_contenedor:nth-of-type(3) { animation-delay: .08s; }
+.item_generico_contenedor:nth-of-type(4) { animation-delay: .11s; }
+.item_generico_contenedor:nth-of-type(5) { animation-delay: .14s; }
+.item_generico_contenedor:nth-of-type(6) { animation-delay: .17s; }
+
+/* ---------- RESPONSIVE (opcional, por si el contenedor no limita ancho) ---------- */
+@media (max-width: 576px) {
+    .item_generico { max-width: 100%; }
+    .item_generico_contenedor { margin: 0 4px; padding: 8px; }
+}
+
+@media (min-width: 577px) and (max-width: 999px) {
+    .item_generico { max-width: 520px; }
+}
+
+@media (min-width: 1000px) {
+    .item_generico { max-width: 560px; }
+}
+
+/* Respeto a usuarios con “reducir movimiento” */
+@media (prefers-reduced-motion: reduce) {
+    .item_generico,
+    .item_generico_contenedor,
+    .botonera_item_generico {
+        animation: none !important;
+        transition: none !important;
+    }
+}

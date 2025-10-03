@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2016",                       // Compila a JavaScript de esta versión
+    "module": "commonjs",                     // Usa el sistema de módulos de Node.js
+    "rootDir": "./src",                       // <-- IMPORTANTE: Carpeta donde están tus archivos .ts (ej. app.ts, index.ts, rutas/, etc.)
+    "outDir": "./build",                      // <-- IMPORTANTE: Carpeta donde se guardarán los .js compilados
+    "esModuleInterop": true,                  // Facilita la importación de módulos CommonJS
+    "forceConsistentCasingInFileNames": true, // Previene problemas con mayúsculas/minúsculas en nombres de archivos
+    "strict": true,                           // Habilita las opciones estrictas de TypeScript (muy recomendado)
+    "skipLibCheck": true,                     // Salta la verificación de tipos de librerías
+    "noUnusedLocals": true,                   // Advierte sobre variables locales no usadas
+    "noUnusedParameters": true,               // Advierte sobre parámetros de función no usados
+    "noImplicitReturns": true,                // Asegura que todas las rutas de código de una función devuelvan algo
+    "sourceMap": true,                        // Genera archivos .map para facilitar la depuración
+    "allowJs": true,                          // Permite que TypeScript procese archivos .js (si tuvieras)
+    "resolveJsonModule": true                 // Permite importar archivos .json
+  },
+  "include": [
+    "src/**/*.ts"                           // <-- IMPORTANTE: Incluye todos los archivos .ts dentro de la carpeta 'src'
+  ],
+  "exclude": [
+    "node_modules",                           // Excluye la carpeta de dependencias
+    "build"                                   // Excluye la carpeta de salida de la compilación
+  ]
+}

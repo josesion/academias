@@ -1,0 +1,103 @@
+.boton_personalizado {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+
+    height: 40px;
+    max-height: 80px;
+    max-width: 150px;
+    min-height: 40px;
+    width: 100%;
+
+    margin: 10px;
+    padding: 0 12px;
+
+    font-weight: 500;
+    line-height: 1; /* evita que el texto desplace el icono */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+/* Asegurar que los iconos tengan el mismo tamaño y estén centrados */
+.boton_personalizado svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0; /* evita que se compriman */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- COLORES SOBRIOS --- */
+.aceptar { background-color: var(--color-fondo--azul); }         /* verde moderno */
+.aceptar:hover { background-color:#443bf1; }
+
+.cancelar { background-color: #E53935; }        /* rojo elegante */
+.cancelar:hover { background-color: #d32f2f; }
+
+.agregar { background-color: #1E88E5; }         /* azul vivo */
+.agregar:hover { background-color: #1976D2; }
+
+.eliminar { background-color: #8f2d2d; }        /* violeta sobrio */
+.eliminar:hover { background-color: #c42d2d; }
+
+.listar { background-color: #039BE5; }          /* celeste brillante */
+.listar:hover { background-color: #0288D1; }
+
+.flechas { background-color: #757575; }         /* gris neutro */
+.flechas:hover { background-color: #616161; }
+
+.editar { background-color: #1c2a6b; }          /* naranja moderno */
+.editar:hover { background-color: #253991; }
+/* --- Efectos comunes --- */
+.boton_personalizado:hover {
+    transform: scale(1.05);
+}
+
+/* --- Animaciones de iconos --- */
+@keyframes bounce-icon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+}
+
+@keyframes rotate-icon {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(15deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes shake-icon {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+@keyframes editarBounce {
+    0%   { transform: translateY(0) rotate(0deg) scale(1); }
+    30%  { transform: translateY(-3px) rotate(5deg) scale(1.1); }
+    60%  { transform: translateY(0) rotate(10deg) scale(1.05); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+.aceptar:hover svg,
+.agregar:hover svg {
+    animation: bounce-icon 0.4s ease;
+}
+
+.flechas:hover svg {
+    animation: rotate-icon 0.4s ease;
+}
+
+.cancelar:hover svg,
+.eliminar:hover svg {
+    animation: shake-icon 0.3s ease;
+}
+
+.editar:hover svg {
+    animation: editarBounce 0.4s ease;
+}
