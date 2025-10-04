@@ -29,14 +29,16 @@ const inputsLogin: InputsPropsFormulario[] = [
         label: "Usuario",
         type: "text",
         placeholder: "Ingrese su usuario",
-        value: ""
+        value: "",
+        readonly : false
     },
     {
         name: "contrasena",
         label: "Contraseña",
         type: "password",
         placeholder: "Ingrese su contraseña",
-        value: ""
+        value: "",
+        readonly : false
     }
 ];
 

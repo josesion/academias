@@ -16,6 +16,8 @@ CREATE TABLE usuarios (
     FOREIGN KEY (id_escuela) REFERENCES escuelas(id_escuela)
 );
 
+
+
 -- Insercion de un usuario de ejemplo --
 INSERT INTO usuarios (usuario, contrasena, nombre, apellido, celular, rol, correo, estado)
 VALUES (

@@ -82,7 +82,7 @@ const estados = ["activos" , "inactivos"];
 
 // useStates--------------------------------------------
     const [ modal , setModal]  = useState<boolean>(false);
-    const [ modalEliminar , setModalEliminar] = useState<boolean>(true);
+    const [ modalEliminar , setModalEliminar] = useState<boolean>(false);// para el modal de eliminar 
     const [ tipoFormulario , setTipoFormulario] = useState<"alta" | "modificar">("alta");
     const [ errorsZod, setErrorsZod] = useState<Record<string, string | null>>({ }); 
     const [ errorGenerico, setErrorGenerico] = useState<string | null>(null);

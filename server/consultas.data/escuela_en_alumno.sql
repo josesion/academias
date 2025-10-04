@@ -26,11 +26,11 @@ CREATE TABLE alumnos_en_escuela (
 
 INSERT INTO alumnos_en_escuela (dni_alumno, id_escuela, fecha_alta_escuela, estado) VALUES
 -- Registros en la escuela 'Academia Ritmo Latino' (ID 1)
-(20111220, 1, '2024-05-10', 'activo'),
-(21222333, 1, '2024-03-22', 'activo'),
-(24555666, 1, '2023-11-15', 'inactivo'),
-(28999000, 1, '2024-01-08', 'activo'),
-(33762570, 1, '2024-04-01', 'activo'),
+(20111220, 1, '2024-05-10', 'activos'),
+(21222333, 1, '2024-03-22', 'activos'),
+(24555666, 1, '2023-11-15', 'inactivos'),
+(28999000, 1, '2024-01-08', 'activos'),
+(33762570, 1, '2024-04-01', 'activos'),
 
 -- Registros en la escuela 'Dance Fusion Studio' (ID 2)
 (20111220, 2, '2024-06-15', 'activo'),
