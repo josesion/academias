@@ -15,6 +15,7 @@ import './boton.css'
  * @property {number} [size] - El tamaño del icono en píxeles. Por defecto es 20.
  * @property {"aceptar" | "cancelar" | "agregar" | "eliminar" | "listar" | "flechas" | "editar"} [clase] - La clase CSS para aplicar un estilo específico al botón.
  * @property {true | false } [focus] -indica el focus al renderizar el componente 
+ * @property {boolean} [focus] - Indica si el botón debe recibir el foco automáticamente al renderizar el componente (`autoFocus`).
 * @property {(event: React.MouseEvent<HTMLButtonElement>) => void} [onClick] - La función de callback que se ejecuta cuando el botón es clickeado.
  */
 interface BotonProps {

@@ -11,6 +11,7 @@ import "../Inputs/inputs.css";
  * @property {string} [placeholder] - El texto de marcador de posición dentro del campo.
  * @property {string | number} [value] - El valor actual del campo de entrada.
  * @property {string} [name] - El nombre del campo.
+ * @property {boolean} readonly - **Indica si el campo debe ser de solo lectura**. (Agregado)
  * @property {(event: React.ChangeEvent<HTMLInputElement>) => void} [onChange] - La función que se ejecuta cada vez que el valor del campo cambia.
  * @property {string | null} [error] - El mensaje de error a mostrar debajo del campo. Si no hay error, debe ser `null` o una cadena vacía.
  */
@@ -27,9 +28,11 @@ interface InputsProps {
 
 /**
  * Componente `Inputs` para crear un campo de entrada reutilizable.
- * Incluye una etiqueta y un espacio para mensajes de error.
+ * **Utiliza `forwardRef`** para permitir que los componentes padre accedan al elemento 
+ * DOM subyacente del input. Incluye una etiqueta y un espacio para mensajes de error.
  *
  * @param {InputsProps} parametros - Las propiedades del componente.
+ * @param {React.Ref<HTMLInputElement>} ref - La referencia pasada por el componente padre.
  * @returns {JSX.Element} El elemento JSX del componente.
  */
 export const Inputs = forwardRef<HTMLInputElement, InputsProps>((parametros, ref) => {

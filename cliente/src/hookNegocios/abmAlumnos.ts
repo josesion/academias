@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import {  useContext} from "react";
 
 //Seccion de contexto---------------------------------------
 import { RutasProtegidasContext } from "../contexto/protectRutas";
@@ -7,30 +7,12 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
 import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
 import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
 import type { AlumnosResponse } from "../tipadosTs/alumnos";
-import type { PaginacionProps } from "../tipadosTs/genericos";
-import type { ErrorBackend } from "../hooks/erroresZod";
 
 //Seccion de servicios--------------------------------------
 import { registroAlumno , listadoAlumnos, modAlumno , eliminarAlumno} from "../servicio/alumnos.fetch";
 
-//Seccion de hooks------------------------------------------
-import { transformErrores } from "../hooks/erroresZod";
-import { peticiones } from "../hooks/peticiones";
+import { useAbmGenerico } from "../hooks/useAbmGenerico";
 
-
-
-
-// Inicio del hook para logia abm alumnos
-export const useAbmAlumnos = () =>{ 
-const config = {
-    servicios : {
-        registro : registroAlumno,
-        modificar : modAlumno,
-        eliminar : eliminarAlumno
-    }    
-}
-// contexto
-const { rol } = useContext( RutasProtegidasContext );
 //  Datos para el filtro de buscaqueda
 const inputsFiltro  : InputsPropsBuscador[] =[
     {
@@ -85,248 +67,66 @@ const inputsAlumnos : InputsPropsFormulario[] = [
     }
 ];
 
+const mapAlumnoForm =( dataM : any) =>({
+    dni: dataM.Dni,
+    apellido: dataM.Apellido,
+    nombre: dataM.Nombre,
+    celular: dataM.Celular,
+});
 
-//Arrego para determinar los estados del alumno
-const estados = ["activos" , "inactivos"];
+const mapAlumnoEliminar =( data : any) =>({
+    dni: data.Dni
+});
 
-// useStates--------------------------------------------
-    const [ modal , setModal]  = useState<boolean>(false);
-    const [ modalEliminar , setModalEliminar] = useState<boolean>(false);
-    const [ accionEliminar , setAccionEliminar] = useState<string >("") ;
-    const [ estadoUrl , setEstadoUrl ] = useState<"activos" | "inactivos">("inactivos");
-    const [ textoboton , setTextoBoton] = useState<"Eliminar" | "Restaurar" >("Eliminar")
-    const [ tipoFormulario , setTipoFormulario] = useState<"alta" | "modificar">("alta");
-    const [ errorsZod, setErrorsZod] = useState<Record<string, string | null>>({ }); 
-    const [ errorGenerico, setErrorGenerico] = useState<string | null>(null);
-    const [ carga , setCarga] = useState<boolean>(true);
+const mapTextoEliminar = (dataE: any) => 
+    ` El estado Alumno : ${dataE.Dni} cambiara`;
 
-    const [ estadoListado , setEstadoListado] = useState({ error : false , statuscode : 0});
-    const [ actualizarListado , setActualizarListado] = useState<number>(0);
-    // formData es la info q se captura para pasar al bakend
-    const [ formData, setFormData] = useState<any>({
+
+
+// Inicio del hook para logia abm alumnos
+export const useAbmAlumnos = () =>{ 
+// contexto
+const { rol } = useContext( RutasProtegidasContext );
+
+
+const config = {
+    recursoSingular : "Alumno",
+
+    idEscuela : rol?.escuela || 1 ,
+
+    servicios : {
+        registro : registroAlumno,
+        modificar : modAlumno,
+        eliminar : eliminarAlumno,
+        listado : listadoAlumnos
+    },
+    inputsFormulario : inputsAlumnos,
+    inputsFiltro : inputsFiltro,
+    
+    inicialFormData :{
         dni: '',
         apellido: '',
         nombre: '',
-        celular: "",
-        id_escuela : rol?.escuela
-        });
-    // dataAlumnosListado es para el listado de alumnos    
-    const [ dataAlumnosListado , setDataAlumnosListado ] = useState<AlumnosResponse[]>([]);
-    // barraPaginacion es para los datos de la paginacion
-    const [ barraPaginacion , setBarraPaginacion ] = useState<PaginacionProps>({
+        celular: ""
+    },
+
+    estados: ["activos", "inactivos"],
+
+    paginacion : { 
         pagina : 1,
         limite : 6,
         contadorPagina : 0
-    });  
-    // filtroData es para los datos del filtro de busqueda
-    const [filtroData , setFiltroData] =  useState<any>({
+    },
+
+    inicialFiltros : { 
         dni : "", 
-        apellido : "" , 
-        nombre : "",
-        estado : "activos",
-        id_escuela : rol?.escuela || 1,
-        pagina : barraPaginacion.pagina,
-        limite : barraPaginacion.limite
-    });
+        apellido : "" 
+    },
 
-// Manejadores de eventos------------------------------
+    mapDeFormulario : mapAlumnoForm, 
+    mapDataEliminar : mapAlumnoEliminar, 
+    mapTextoEliminar: mapTextoEliminar 
+}
 
-    const handleChangeBuscador = (e: React.ChangeEvent<HTMLInputElement>) =>{
-        setFiltroData({
-            ...filtroData,
-            pagina: 1,
-            [e.target.name] : e.target.value,
-        })
-    };
-
-    const handleChangeFormulario = (e: React.ChangeEvent<HTMLInputElement>) => { 
-        setFormData({
-            ...formData,
-            [e.target.name] : e.target.value,
-        })
-
-    };
-
-    const handleEstado = (e: React.ChangeEvent<HTMLSelectElement>) =>{
-            if ( e.target.value === "activos" ){ 
-                setEstadoUrl("inactivos");
-                setTextoBoton("Eliminar")
-            }else { 
-                setEstadoUrl("activos");
-                setTextoBoton("Restaurar");
-            }
-            setFiltroData({
-                ...filtroData,
-                pagina: 1,
-                estado : e.target.value
-            });
-            console.log(textoboton)
-    }        
-
-    const handleSubmit   = async(e : React.FormEvent<HTMLFormElement>) =>{ 
-        e.preventDefault();
-
-        const servicioApiFetch = tipoFormulario === "alta"
-            ? config.servicios.registro
-            : config.servicios.modificar
-
-        const resultado = await servicioApiFetch( formData );
-        if ( resultado.error === true && resultado.code === "VALIDATION_ERROR" && resultado.errorsDetails) {
-            const erroresTransformados = transformErrores( resultado.errorsDetails  as ErrorBackend[]);
-            setErrorsZod(erroresTransformados);
-            setErrorGenerico(resultado.message);
-            return ;
-        }
-
-        if ( resultado.error === true) {
-            setErrorGenerico(resultado.message);
-            setErrorsZod({null : null });
-            return;
-        }
-        setActualizarListado( actualizarListado + 1 );
-        setFormData({
-            dni: '',
-            apellido: '',
-            nombre: '',
-            celular: "",
-            id_escuela : rol?.escuela
-        });
-
-        return setModal(false)
-    }; 
-    
-
-    
-    const handleSubmitEliminar = async( ) =>{
-        const resultado = await eliminarAlumno(formData);
-        if ( resultado.error === false && resultado.code === "ALUMNO_DELETE"){
-            setActualizarListado( actualizarListado + 1 );
-            setModalEliminar(false);
-            return;
-        }
-
-        if ( resultado.error === true) {
-            setErrorGenerico( resultado.message);
-                setTimeout(() => {
-                    setModalEliminar(false);
-                    return    
-                }, 1500);
-        }
-    }
-
-    const handlePaginaCambiada = (pagina: number) => {
-        setFiltroData({
-            ...filtroData,
-            pagina: pagina
-        });
-    };
-
-    const handleCancelar = () =>{ 
-        setModal(false) ;
-        setTipoFormulario("alta");
-        setErrorsZod({});
-        setErrorGenerico(null);
-    };
-
-    const handleCancelarEliminar = () =>{
-        setModalEliminar(false);
-        console.log(modalEliminar)
-    }
-
-    const handleAgragar = ( ) =>{
-        setFormData({            
-            dni: '',
-            apellido: '',
-            nombre: '',
-            celular: "",
-            id_escuela : rol?.escuela
-        });
-        setModal( true );
-        setTipoFormulario("alta");
-
-    };
-
-    const handleModificar = ( dataM : any ) =>{
-        //console.log("Modificar", dataM);
-        setFormData({
-            dni: dataM.Dni,
-            apellido: dataM.Apellido,
-            nombre: dataM.Nombre,
-            celular: dataM.Celular,
-            id_escuela: rol?.escuela || 1
-        })
-
-        setTipoFormulario("modificar");
-        setModal( true );
-        
-    };
-
-    const handleEliminar = ( dataE : any ) =>{
-        //console.log("Eliminar", dataE);       
-        setAccionEliminar(`Eliminar el Alumno ${dataE.Dni}`);
-        setFormData({   dni : dataE.Dni,
-                        id_escuela : rol?.escuela,
-                        estado : estadoUrl });
-        setModalEliminar(true);
-    }
-
-// Efects-----------------------------------------------
-    useEffect(() => {
-    // 1. Configura el controlador de aborto y la lógica del temporizador.
-    const { signal, timeoutId, controlador } = peticiones({
-        tiempo: 5,
-        setErrorGenerico,
-        setCarga
-    });
-
-    const listado = async () => {
-        try {
-            setCarga(true);
-        
-            const listado_alumnos = await listadoAlumnos(filtroData, signal);
-            console.log( listado_alumnos);
-            //NOT_AUTHENTICATED y error true
-            // crear un modal q diga q no esta autorizado y mande al login 
-            if (!listado_alumnos.error && listado_alumnos.data && listado_alumnos.paginacion) {
-                setDataAlumnosListado(listado_alumnos.data);
-                setBarraPaginacion(listado_alumnos.paginacion);
-                setEstadoListado({ error: listado_alumnos.error, statuscode: listado_alumnos.statusCode })
-            }else{  
-                setEstadoListado({ error: listado_alumnos.error, statuscode: listado_alumnos.statusCode }); 
-                setDataAlumnosListado([]); // Limpia la lista
-                setBarraPaginacion({ ...barraPaginacion, contadorPagina: 1 }); // Resetea la paginación     
-            }
-        } catch (error) {
-            //console.error('Error inesperado:', error);
-            setErrorGenerico('Ocurrió un error inesperado al cargar los datos.');
-        } finally {
-
-            clearTimeout(timeoutId);
-            setCarga(false);
-        }
-    };
-    
-
-    listado();
-    return () => {
-        controlador.abort(); 
-        clearTimeout(timeoutId);
-    };
-
-}, [filtroData, actualizarListado ]);
-
-    return{
-        inputsFiltro, inputsAlumnos,estados,
-        modal, modalEliminar ,errorsZod, errorGenerico, dataAlumnosListado, 
-        formData, barraPaginacion,carga ,estadoListado ,filtroData ,
-        tipoFormulario, accionEliminar, textoboton,
-
-        handleChangeBuscador, handleCancelar,
-        handleSubmit, handleChangeFormulario,
-        handleSubmitEliminar, 
-        handleAgragar, handleEstado, handleCancelarEliminar,
-        handlePaginaCambiada,
-        handleModificar, handleEliminar 
-    }
-
+    return useAbmGenerico<AlumnosResponse>(config);
 }

@@ -8,7 +8,7 @@ import { ComponenteCargando } from "./componentes/Cargando/Cargando";
 
 
 export const RutasPrivadas = () => {
-    const { autenticado , setAutenticado, setUsuarioInfo ,usuarioInfo} = useContext(RutasProtegidasContext);
+    const { autenticado , setAutenticado, setUsuarioInfo } = useContext(RutasProtegidasContext);
     const [cargando, setCargando] = useState(true);
 
 
