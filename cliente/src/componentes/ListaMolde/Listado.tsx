@@ -20,6 +20,7 @@ type ListadoMoldeProps<T extends object> = {
     carga : boolean;
     statusCode : number ;
     error : boolean
+    botonEstado : string;
     onEditar?: (data: T) => void;
     onEliminar?: (data: T) => void;
 };
@@ -31,6 +32,7 @@ export function ListadoMolde<T extends object>({
     statusCode,
     onEditar,
     onEliminar,
+    botonEstado
 }: ListadoMoldeProps<T>) {
     return (
         <div className="listado_molde">
@@ -49,6 +51,7 @@ export function ListadoMolde<T extends object>({
                         <ItemGenerico
                             key={key}
                             data={item}
+                            textoBoton={botonEstado}
                             onEditarButton={onEditar}
                             onEliminarButton={onEliminar}
                         />

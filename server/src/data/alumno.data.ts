@@ -6,10 +6,11 @@ import { fechaHoy } from "../hooks/fecha";
 
 
 import { TipadoData } from "../tipados/tipado.data";
-import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs } from "../squemas/alumno";
-import {  RetornoRegistroAlumno, DataAlumnosListado , RetornoModAlumno,
+import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs, EliminarAlumnoInputs } from "../squemas/alumno";
+import {  RetornoRegistroAlumno, DataAlumnosListado , RetornoModAlumno, RetornoEliminaciom,
         RetornodAlumno, RetornoIncripcionAlumnoEscuela
 } from "../tipados/alumno.data";
+import { _promise } from "zod/v4/core/api.cjs";
 
 // verifico si el alumno esta ya en base de datos
 const verAlumnoExistente = async( dni : string) : Promise<TipadoData<RetornodAlumno | undefined > >  =>{
@@ -20,12 +21,12 @@ const verAlumnoExistente = async( dni : string) : Promise<TipadoData<RetornodAlu
 
     if (resultado.length <= 0) {
         return {
-            error: true,
-            message: "Este alumno no está registrado en el sistema",
-            data: undefined,
-            code: "ALUMNO_NOT_FOUND",
-            errorsDetails: undefined,
-        };
+             error: true,
+                message: "Este alumno no está registrado en el sistema",
+                data: undefined,
+                code: "ALUMNO_NOT_FOUND",
+                errorsDetails: undefined,
+        };
     }
 
     return {
@@ -100,11 +101,35 @@ const modAlumno = async( parametros : AlumnosInputs)  : Promise<TipadoData<Retor
             errorsDetails : undefined
         };
     }else{
-        throw new ClientError("No se realizó ninguna modificación, los datos son idénticos.", 409, "NO_CHANGE_MADE");
+        throw new ClientError("No se lorgro eliminar al alumno .", 409, "NO_CHANGE_MADE");
     }
 
 
-}   
+};
+
+const eliminarAlumno = async( parametros : EliminarAlumnoInputs)  : Promise<TipadoData<RetornoEliminaciom>>=>{
+    const {dni , id_escuela, estado} = parametros;   
+    const sql =`update alumnos_en_escuela
+                set 
+	                estado = ?
+                where 
+	            dni_alumno = ? and id_escuela = ?;`;
+    const valores = [estado, dni , id_escuela];
+    const resultado = await iud(sql, valores);
+    if ( resultado.affectedRows > 0) {
+        return {
+            error : false,
+            message : "Cambio de estado Correcto",
+            data : { dni },
+            code :"ALUMNO_DELETE",
+            errorsDetails : undefined
+        }; 
+    }else{
+        throw new ClientError("No se realizó ninguna eliminacion , el esatado es idénticos.", 409, "NO_CHANGE_MADE");
+    }
+
+};
+
 
 const listaAlumnos = async( 
     params : ListaAlumnoInputs,
@@ -165,5 +190,6 @@ export const  method = {
     registarAlumno :    tryCatchDatos( registarAlumno , "Alumno" ),
     registroAlumnoEscuela : tryCatchDatos ( registroAlumnoEscuela, "Inscripcion" , "femenino"),
     modAlumno      :    tryCatchDatos( modAlumno ),
+    eliminarAlumno :    tryCatchDatos ( eliminarAlumno),
     listaAlumnos   :    tryCatchDatos( listaAlumnos )
 };

@@ -15,6 +15,7 @@ import "./itemGenerico.css";
  * @property {(data: T) => void} [onEliminarButton] - La función que se llama cuando se hace clic en el botón 'Eliminar'. Se pasa el objeto de datos completo.
  */
 type ItemGenericoProps<T extends object> = {
+    textoBoton : string;
     data: T;
     onEditarButton?: (data: T) => void;
     onEliminarButton?: (data: T) => void;
@@ -61,6 +62,7 @@ export function ItemGenerico<T extends object>({
     data,
     onEditarButton,
     onEliminarButton,
+    textoBoton
 }: ItemGenericoProps<T>)  {
 
     return (
@@ -101,7 +103,7 @@ export function ItemGenerico<T extends object>({
                 />
                 {/* Botón para eliminar. Solo se renderiza si la función `onEliminarButton` se pasa como prop. */}
                 <Boton
-                    texto="Eliminar"
+                    texto={textoBoton}
                     logo="Delete"
                     size={20}
                     clase="eliminar"

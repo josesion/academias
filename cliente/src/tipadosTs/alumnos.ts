@@ -35,4 +35,10 @@ export interface AlumnosResponse {
     Celular: string | number
 }
 
+export interface bajaAlumno {
+    dni : string,
+    id_escuela : number,
+    estado : string
+}
+
 

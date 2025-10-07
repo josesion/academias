@@ -14,13 +14,15 @@ import './boton.css'
  * @property {"Cancel" | "Check" | "List" | "Add" | "Delete" | "Go" | "Back" | "Edit"} [logo] - El nombre del icono a mostrar. Se utiliza para mapear a un componente de icono.
  * @property {number} [size] - El tamaño del icono en píxeles. Por defecto es 20.
  * @property {"aceptar" | "cancelar" | "agregar" | "eliminar" | "listar" | "flechas" | "editar"} [clase] - La clase CSS para aplicar un estilo específico al botón.
- * @property {(event: React.MouseEvent<HTMLButtonElement>) => void} [onClick] - La función de callback que se ejecuta cuando el botón es clickeado.
+ * @property {true | false } [focus] -indica el focus al renderizar el componente 
+* @property {(event: React.MouseEvent<HTMLButtonElement>) => void} [onClick] - La función de callback que se ejecuta cuando el botón es clickeado.
  */
 interface BotonProps {
     texto?: string;
     logo?: "Cancel" | "Check" | "List" | "Add" | "Delete" | "Go" | "Back" | "Edit";
     size?: number | 20;
     clase?: "aceptar" | "cancelar" | "agregar" | "eliminar" | "listar" | "flechas" | "editar";
+    focus? : true | false ;
     onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -53,10 +55,13 @@ export const Boton = (parametros: BotonProps) => {
     // si parametros.logo es Cancel este traera solo el icono MdCancel
     return (
         <button className={`boton_personalizado ${parametros.clase}`}
-            onClick={parametros.onClick} >
+            onClick={parametros.onClick} 
+            autoFocus= {parametros.focus}
+            >
             {/* Si existe el componente, renderízalo */}
             {IconComponent && <IconComponent size={parametros.size} />}
             {parametros.texto}
+            
         </button>
     );
 };

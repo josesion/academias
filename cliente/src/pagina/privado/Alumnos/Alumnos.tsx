@@ -12,14 +12,15 @@ const {
         inputsFiltro, inputsAlumnos,estados,
         modal, modalEliminar ,errorsZod, errorGenerico, dataAlumnosListado, 
         formData, barraPaginacion,carga ,estadoListado ,filtroData ,
-        tipoFormulario,
+        tipoFormulario, accionEliminar, textoboton,// aca agrege el boton de texto 
         handleChangeBuscador, handleCancelar,
-        handleSubmit, handleSubmitModificar,handleChangeFormulario, 
+        handleSubmit,handleChangeFormulario, 
         handleAgragar, handleEstado, handlePaginaCambiada,
-        handleModificar, handleEliminar  
+        handleModificar, handleEliminar ,  handleCancelarEliminar ,
+        handleSubmitEliminar
 } = useAbmAlumnos();
 
-
+    //console.log(errorGenerico)
     const inputsModificar = inputsAlumnos.map( (input) => {
         if ( tipoFormulario === "modificar" && input.name === "dni" ) {
             return { ...input, readonly: true };
@@ -32,6 +33,7 @@ const {
             modalEliminar = {modalEliminar}
 
             tipoFormulario={tipoFormulario}
+
             inputsEntidad={
                 tipoFormulario === 'alta' ? inputsAlumnos
                 : inputsModificar
@@ -41,10 +43,7 @@ const {
             errorGenerico={errorGenerico}
             onHandleCancelar={handleCancelar}
             onHandleChangeFormulario={handleChangeFormulario}
-            onHandleSubmit={
-                tipoFormulario === "alta" ?  handleSubmit
-                : handleSubmitModificar
-            }
+            onHandleSubmit={handleSubmit}
 
             inputsFiltro={inputsFiltro}
             filtroData={filtroData}
@@ -58,6 +57,12 @@ const {
             onEliminar={handleEliminar}
             onModificar={handleModificar}
 
+            onHandleCancelarEliminar={handleCancelarEliminar}
+            onHandleSubmitEliminar = {handleSubmitEliminar}
+            accionEliminar = {accionEliminar}
+            
+
+            botonTexto={textoboton}
             statuscode={estadoListado.statuscode}
             barraPaginacion={barraPaginacion}
             dataAlumnosListado={dataAlumnosListado}

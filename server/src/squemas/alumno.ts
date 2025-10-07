@@ -28,13 +28,32 @@ id_escuela :    z.number({message : "id Escuela debe ser numerico"})
 });
 
 export const CrearAlumnoEscuelaSchema = z.object({
-        dni :       z.string({message : "El dni es requerido"}),
+        dni :    z.string({message : "El dni es requerido"})
+                .nonempty({message : "Dni no debe estar vacio"})
+                .min(8,{message : "EL dni esta incompleto"}),
 
         id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
                         .min(0 , {message : "El id debe ser mayor de 0"})
                         .positive({ message: 'El limite debe ser un número positivo.' }),
 
-});             
+});        
+
+export const EliminarAlumnoEscuelaSchema = z.object({
+        dni :    z.string({message : "El dni es requerido"})
+                .nonempty({message : "Dni no debe estar vacio"})
+                .min(8,{message : "EL dni esta incompleto"}),
+
+        id_escuela: z.coerce.number({ message: "id_escuela no es un formato válido." }) 
+                        .min(1, { message: "El id_escuela debe ser mayor o igual a 1." }) 
+                        .positive({ message: 'El id_escuela debe ser un número positivo.' }),
+                        
+        estado: z.string()
+                .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
+                .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),  
+
+});
+
+
 export const listaAlumnosSchema = z.object({
 dni :       z.string({message : "El dni es requerido"}),
 
@@ -60,6 +79,8 @@ escuela : z.number({message:"Limit debe ser de tipo numerico"})
 
 });
 
+
 export type AlumnosInputs = z.infer<typeof CrearAlumnoSchema>;
 export type AlumnoEscuelaInputs = z.infer<typeof CrearAlumnoEscuelaSchema>;
+export type EliminarAlumnoInputs = z.infer<typeof EliminarAlumnoEscuelaSchema>; 
 export type ListaAlumnoInputs = z.infer<typeof listaAlumnosSchema>; 

@@ -11,7 +11,7 @@ interface AmbViewProps {
     modal: boolean;
     modalEliminar : boolean;
     errorsZod: Record<string, string | null>;
-    errorGenerico: string | null;
+    errorGenerico: string | null ;
     dataAlumnosListado: any[];
     formData: any;
     barraPaginacion: any;
@@ -20,11 +20,14 @@ interface AmbViewProps {
     inputsEntidad: any[];
     estados: string[];
 
+
     carga: boolean;
     error: boolean;
     statuscode: number;
 
+    accionEliminar : string;
     tipoFormulario: "alta" | "modificar";
+    botonTexto : string;
 
     onHandleChangeBuscador: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onHandleCancelar: () => void;
@@ -36,6 +39,9 @@ interface AmbViewProps {
 
     onModificar?: (data: any) => void;
     onEliminar?: (data: any) => void;
+
+    onHandleCancelarEliminar?: () => void;
+    onHandleSubmitEliminar:() => Promise<void>;
 }
 
 
@@ -44,11 +50,12 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
     const { 
         modal, modalEliminar ,errorsZod, errorGenerico, dataAlumnosListado, formData, barraPaginacion,
         filtroData, inputsFiltro, inputsEntidad, estados,carga , error, statuscode,
-        tipoFormulario, 
+        tipoFormulario,accionEliminar, botonTexto,
         onHandleChangeBuscador,
         onHandleCancelar, onHandleSubmit, onHandleChangeFormulario, onHandleAgregar,
-        onHandleEstado, onHandlePaginaCambiada,
-        onModificar, onEliminar
+        onHandleEstado, onHandlePaginaCambiada,onHandleCancelarEliminar,
+        onHandleSubmitEliminar,
+        onModificar, onEliminar, 
     } = props;
     
     return (
@@ -75,7 +82,13 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             {
                 modalEliminar && 
                 <div className="modal_eliminar">
-                    <EliminarVentana></EliminarVentana>
+                    <EliminarVentana
+                        onCancelar={onHandleCancelarEliminar}
+                        onSi={onHandleSubmitEliminar}
+                        accion={accionEliminar}
+                        data={formData}
+                        mensaje={errorGenerico}
+                    />
                 </div>
             }
 
@@ -103,6 +116,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
                         carga= {carga}
                         error = {error}
                         statusCode={statuscode}
+                        botonEstado={botonTexto}
                     />
                 </div>
                 <div className="paginacion_contenedor">

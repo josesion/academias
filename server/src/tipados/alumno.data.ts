@@ -31,3 +31,7 @@ export interface RetornoIncripcionAlumnoEscuela {
     dni : string,
     id_escuela : number
 }
+
+export interface RetornoEliminaciom {
+    dni : string;
+}

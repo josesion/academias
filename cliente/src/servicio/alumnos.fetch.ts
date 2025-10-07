@@ -46,6 +46,15 @@ export const modAlumno = async(parametros : TipadoAlumnos.RegistroResquest )
     } );
 }
 
+export const eliminarAlumno = async( parametro : TipadoAlumnos.bajaAlumno ) 
+: Promise<ApiResponse<TipadoAlumnos.bajaAlumno>> =>{
+    const { dni, id_escuela  , estado} = parametro;
+    const ruta = `${PAGINA}api/borrar_alumno/${dni}/${id_escuela}/${estado}`;
+    return await apiFetch( ruta , {
+        method : "DELETE"
+    });
+}
+
 export const listadoAlumnos = async( parametrosQuery : TipadoAlumnos.DataAlumnosListado & TipadoAlumnos.Paginacion,
     signal? : AbortSignal ) 
     : Promise<ApiResponse<TipadoAlumnos.AlumnosResponse[]>> =>{

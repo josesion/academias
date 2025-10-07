@@ -1,20 +1,28 @@
 import { Boton } from "../Boton/Boton";
+import { CompoError } from "../Error/Error";
 
 import "./eliminarModal.css";
 
 type ComponenteEliminar<T extends object> = {
     data : T
     onSi ? : ( data : T) => void; 
+    onCancelar ? : ( ) => void;
+    accion : string,
+    mensaje?: string | null
 }
 
 export function EliminarVentana<T extends object> ( {
     data,
-    onSi    
+    onSi,
+    onCancelar,
+    accion , 
+    mensaje  
 } : ComponenteEliminar<T> ) { 
     return(
         <div className="componente_eliminar">
             <div className="datos_eliminar">
-                    <p> Estas seguro de  </p>
+                    <p> Estas seguro de </p>
+                    <p> {accion} </p>
             </div>
             <div className="botonera_eliminar">
                 <Boton
@@ -23,6 +31,7 @@ export function EliminarVentana<T extends object> ( {
                     size={20}
                     clase="eliminar"
                     onClick={() => onSi && data && onSi(data)}
+                    focus ={true}
                 />
 
                 <Boton
@@ -30,10 +39,13 @@ export function EliminarVentana<T extends object> ( {
                     logo="Cancel"
                     size={20}
                     clase="editar"
-                    onClick={() => onSi && data && onSi(data)}
+                    onClick={ onCancelar }
                 />
 
             </div>
+
+            { mensaje &&  <CompoError mensaje={mensaje}/> }
+
         </div>
     )
 }

@@ -7,6 +7,8 @@ import { enviarResponse } from "../utils/response";
 
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
+        EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs
+
 } from "../squemas/alumno";
 
 
@@ -48,6 +50,16 @@ const modAlumno = async( req : Request, res : Response) =>{
     return  enviarResponse(res , 200, resultado.message, resultado.data , undefined , resultado.code);    
 }
 
+const borrarAlumno = async( req : Request , res : Response) =>{
+    const { dni , id_escuela, estado  } = req.params;
+    const alumnoData : EliminarAlumnoInputs = EliminarAlumnoEscuelaSchema.parse({dni, id_escuela: Number(id_escuela), estado});
+    const respuesta  = await dataAlumno.eliminarAlumno(alumnoData);
+    console.log(respuesta)
+    if ( respuesta.error === false && respuesta.code === "ALUMNO_DELETE")
+        return enviarResponse( res , 200 , respuesta.message , respuesta.data ,undefined , respuesta.code );
+};
+
+
 const listarAlumno = async( req: Request  , res : Response) =>{
     const { estado , dni , apellido , limit , pagina, escuela } = req.query;
     const offset = ( Number(pagina) -1 ) * Number(limit) ;
@@ -57,8 +69,10 @@ const listarAlumno = async( req: Request  , res : Response) =>{
     return enviarResponse( res , 200 , listado.message , listado.data , listado.paginacion , listado.code );
 }
 
+
 export const  method ={
     altaAlumno   : tryCatch( altaAlumno ),
     modAlumno    : tryCatch( modAlumno ),
+    borrarAlumno : tryCatch( borrarAlumno),
     listarAlumno : tryCatch( listarAlumno )
 }
