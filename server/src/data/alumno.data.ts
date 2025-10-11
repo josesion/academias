@@ -3,6 +3,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iud, select } from "../utils/baseDatos";
 import { ClientError } from "../utils/error";
 import { fechaHoy } from "../hooks/fecha";
+import { listarEntidad } from "../hooks/funcionListar";
 
 
 import { TipadoData } from "../tipados/tipado.data";
@@ -33,7 +34,7 @@ const verAlumnoExistente = async( dni : string) : Promise<TipadoData<RetornodAlu
         error  : false,
         message : "Alumno encontrado en la base de datos.",
         data : resultado[0],
-        code :"ALUMNO_",
+        code :"ALUMNO_FOUND",
         errorsDetails : undefined
     }
 }
@@ -145,7 +146,7 @@ const listaAlumnos = async(
                             alumnos.apellido as Apellido,
                             alumnos.nombre as Nombre,
                             alumnos.numero_celular as Celular,
-                            count(*) over() as total_alumnos
+                            count(*) over() as total_registros
                                 from alumnos
                                 join alumnos_en_escuela on alumnos.dni_alumno = alumnos_en_escuela.dni_alumno
                             where
@@ -157,31 +158,18 @@ const listaAlumnos = async(
                                     limit ${limit}
                                     offset ${offset};`;
     
-    const valores = [ estado ,likeDni , likeApellido , escuela];
-    const resultado = await select<DataAlumnosListado>(sqlLista, valores);
+    const valores: unknown[] = [ estado ,likeDni , likeApellido , escuela];
 
-    if ( resultado.length <= 0) {
-        throw new ClientError(`No hay Alumnos ${estado}` , 200 ,  "NO_ACTIVE_ALUMN");
-    }
-    const totalPagina = Math.ceil( Number(resultado[0].total_alumnos) / limit);
-
-    const dataAlumnos = resultado.map(alumno => {
-        const { total_alumnos, ...alumnoData } = alumno as any; 
-        return alumnoData;
-    });
-
-    return {
-        error: false,
-        message: `Alumnos listados ${estado}`,
-        data: dataAlumnos,
-        paginacion: {
-            pagina: Number(pagina),
-            limite: Number(limit),
-            contadorPagina: totalPagina
-        },
-        code: "ALUMNOS_LISTED",
-        errorsDetails: undefined
-    };
+     return await listarEntidad<DataAlumnosListado>(
+        {
+            slqListado: sqlLista , 
+            valores, 
+            limit, 
+            pagina ,
+            entidad : "Alumno",
+            estado  : estado 
+        })
+   
 
 }
 
