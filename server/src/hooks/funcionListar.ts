@@ -32,7 +32,6 @@ export const listarEntidad = async <TRespuesta>(
     const { estado ,entidad, valores ,slqListado, limit, pagina } = parametros;
     const entidadM = entidad.toUpperCase();
     
-   
     type RowConTotal = TRespuesta & PaginacionDBRow;
 
     const listado = await select<RowConTotal>(slqListado , valores);
@@ -46,6 +45,7 @@ export const listarEntidad = async <TRespuesta>(
     const totalRegistro  =listado[0].total_registros;
     const totalPagina = Math.ceil( totalRegistro / limit);
     // extraigo el total de registros para la renderizacion 
+
     const dataEntidad = listado.map( entidad => {
         const { total_registros, ...alumnoData } = entidad as any; 
         return alumnoData;
@@ -54,14 +54,14 @@ export const listarEntidad = async <TRespuesta>(
 
       return {
         error: false,
-        message: `Alumnos listados ${estado}`,
+        message: ` ${entidadM} listados ${estado}`,
         data: dataEntidad,
         paginacion: {
             pagina: Number(pagina),
             limite: Number(limit),
             contadorPagina: totalPagina
         },
-        code: "ALUMNOS_LISTED",
+        code:  `${entidadM}_LISTED`,
         errorsDetails: undefined
     };
 
