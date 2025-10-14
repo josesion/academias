@@ -17,13 +17,11 @@ interface PaginacionDBRow {
 }
 
 interface ParametrosListaGenerica extends PaginacionBase {
-    slqListado  : string,
-    valores     :unknown[],// por q podria recibir cual tipo de dato
-    entidad     : string,
-    estado?      : string
+    slqListado  :   string,
+    valores     :   unknown[],// por q podria recibir cual tipo de dato
+    entidad     :   string,
+    estado      :   string
 }
-
-
 
 export const listarEntidad = async <TRespuesta>(
     parametros: ParametrosListaGenerica 
