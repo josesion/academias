@@ -16,7 +16,7 @@ interface IudResultMetadata {
 }
 
 
-type Accion = "CREAR" | "MODIFICAR" | "ELIMINAR"; 
+type Accion = "CREAR" | "MODIFICAR" | "ELIMINAR" | "ALTA"; 
 
 interface ParametrosEntidad<TDatosRetorno> {
     slqEntidad: string,
@@ -37,7 +37,7 @@ export const iudEntidad = async <TDatosRetorno extends object>(
 
     const entidadIud = await iud(slqEntidad, valores) as IudResultMetadata; 
     
-
+    console.log(entidadIud);
     if (entidadIud.affectedRows <= 0) {
     // Construcción del código de error basado en la acción
         const code = metodo === "MODIFICAR" || metodo === "ELIMINAR" ? 
@@ -47,8 +47,8 @@ export const iudEntidad = async <TDatosRetorno extends object>(
         const accionTexto = metodo === "CREAR" ? 'crear' : (metodo === "MODIFICAR" ? 'modificar' : 'eliminar');
     // Lanzamiento del error con mensaje detallado
         throw new ClientError(`No se logró ${accionTexto} la entidad ${entidadM}. Filas afectadas: 0`,
-            CodigoEstadoHTTP.NO_ENCONTRADO, 
-            code);
+                                CodigoEstadoHTTP.NO_ENCONTRADO, 
+                                code);
     }
 
     // creación de datos finales a devolver con su tipado 

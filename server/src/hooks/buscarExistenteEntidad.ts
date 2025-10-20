@@ -29,7 +29,7 @@ export const buscarExistenteEntidad = async <TRespuesta>  (
         return {
             // Indicamos error: true para que el flujo de control se detenga.
             error : true,
-            message : `Validación fallida: La entidad ${entidadM} ya existe en la base de datos.`,
+            message : `${entidadM} ya existe en la base de datos.`,
             // Devolvemos el registro existente (primer elemento) en 'data'.
             data : busqueda[0], 
             code : `${entidadM}_EXISTE`,

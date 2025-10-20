@@ -4,7 +4,7 @@ CREATE TABLE alumnos_en_escuela (
     
     -- ID de la escuela, que es la clave foránea a la tabla 'escuelas'
     id_escuela INT NOT NULL,
-    
+ 
     -- Fecha de alta en la escuela: registra cuándo se registró el alumno en esa academia
     fecha_alta_escuela DATE,
     
@@ -24,7 +24,8 @@ CREATE TABLE alumnos_en_escuela (
 );
 
 
-INSERT INTO alumnos_en_escuela (dni_alumno, id_escuela, fecha_alta_escuela, estado) VALUES
+
+INSERT INTO alumnos_en_escuela (dni_alumno, id_escuela, fecha_alta_escuela, estado) VALUE
 -- Registros en la escuela 'Academia Ritmo Latino' (ID 1)
 (20111220, 1, '2024-05-10', 'activos'),
 (21222333, 1, '2024-03-22', 'activos'),
@@ -42,3 +43,4 @@ INSERT INTO alumnos_en_escuela (dni_alumno, id_escuela, fecha_alta_escuela, esta
 
 -- Registros en la escuela 'Tango Salón y Milonga' (ID 4)
 (23444555, 4, '2024-03-11', 'activo');
+
