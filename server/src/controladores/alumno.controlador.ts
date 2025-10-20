@@ -11,6 +11,8 @@ import { method as dataAlumno } from "../data/alumno.data";
 import { enviarResponse } from "../utils/response";
 
 
+import { CodigoEstadoHTTP } from "../tipados/generico";
+import { AlumnoServioCode,RetornoVerAlumnoExistente,RetornoRegistroAlumno } from "../tipados/alumno.data"; 
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
         EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs
@@ -18,49 +20,62 @@ import {CrearAlumnoSchema, AlumnosInputs,
 } from "../squemas/alumno";
 
 
-/**
- * @function altaAlumno
- * @description Manejador para el registro de un nuevo alumno y su inscripción en una escuela.
- * Realiza un proceso de dos pasos: 1) Verifica si el alumno ya existe por DNI. 
- * 2) Si existe, lo inscribe. Si no existe, lo registra y luego lo inscribe.
- * @async
- * @param {Request} req - Objeto de la solicitud Express (body contiene datos del alumno).
- * @param {Response} res - Objeto de la respuesta Express.
- * @returns {Promise<void>} Envía una respuesta HTTP 200 con el estado de la inscripción.
- */
 const altaAlumno = async( req :  Request , res : Response) =>{
+    let dniCapturado: number = 0 ;
+    const { id_escuela} =req.body;
     // 1. Validación de entrada
     const alumnoData : AlumnosInputs = CrearAlumnoSchema.parse(req.body); 
     
     // 2. Verifica si el alumno ya existe en el sistema global
     const existeAlumno = await dataAlumno.verAlumnoExistente(alumnoData.dni);
-    
-    if ( existeAlumno.error === false ){ 
-        // Caso 1: El alumno ya existe (solo se inscribe a la escuela)
-        const inscripcion = await dataAlumno.registroAlumnoEscuela({ dni : alumnoData.dni  , id_escuela : alumnoData.id_escuela});
-        if ( inscripcion.error === false && inscripcion.code === "STUDENT_ENROLLED") 
-        return enviarResponse( res, 200 ,  inscripcion.message , inscripcion.data , undefined , inscripcion.code);
-    }else{
-        // Caso 2: El alumno no existe (se registra y luego se inscribe)
-        const registar = await dataAlumno.registarAlumno(alumnoData);
-        if (registar.error === false && registar.code === "ALUMNO_CREATED" ){
-            // una vez creada se inscribe a la escuela el alumno 
-            const inscripcion = await dataAlumno.registroAlumnoEscuela({ dni : alumnoData.dni  , id_escuela : alumnoData.id_escuela});
-            if ( inscripcion.error === false && inscripcion.code === "STUDENT_ENROLLED") 
-            return enviarResponse( res, 200 ,  inscripcion.message , inscripcion.data , undefined , inscripcion.code);
-        }
-    }
+
+    if (existeAlumno.error === true && existeAlumno.data && existeAlumno.code === AlumnoServioCode.ALUMNO_ALREADY_EXISTS) {
+       const alumnoExistente = existeAlumno.data  as RetornoVerAlumnoExistente ;
+        dniCapturado = alumnoExistente.dni_alumno ;
+    } else{
+           // 3. Si no existe, crea el alumno en el sistema global  
+       const nuevoAlumno = await dataAlumno.registarAlumno(alumnoData);
+       console.log(nuevoAlumno);
+       if (nuevoAlumno.error === false && nuevoAlumno.data && nuevoAlumno.code === AlumnoServioCode.ALUMNO_CREATED) {
+            const dniAlumnoCreado = nuevoAlumno.data as RetornoRegistroAlumno  ;
+            dniCapturado = Number(dniAlumnoCreado.dni) ;
+          } else {
+            return enviarResponse(res ,
+                                  CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                                  nuevoAlumno.message, 
+                                  undefined , 
+                                  undefined , 
+                                  AlumnoServioCode.CREATION_FAILED
+                                );    
+          }
+
+    } ;
+    
+   // 4. Verifica si el alumno ya está inscrito en la escuela específica    
+    const existeAlumnoEscuela = await dataAlumno.verAlumnoEscuelaExistente(String(dniCapturado) , Number(id_escuela) );
+    if (existeAlumnoEscuela.error === true && existeAlumnoEscuela.data && existeAlumnoEscuela.code === AlumnoServioCode.ALUMNO_ESCHOOL_ALREADY_EXISTS) {
+        return enviarResponse(res ,
+                              CodigoEstadoHTTP.CONFLICTO,
+                              'El alumno ya está inscrito en esta escuela.', 
+                              undefined , 
+                              undefined , 
+                              AlumnoServioCode.ALUMNO_ESCHOOL_ALREADY_EXISTS
+                            );          
+    }
+    // 5. Si no está inscrito, procede a inscribir al alumno en la escuela
+    const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(dniCapturado) , id_escuela : Number(id_escuela) });
+    if (inscripcionAlumno.error === false && inscripcionAlumno.data ) {
+         return enviarResponse(res ,
+                              CodigoEstadoHTTP.CREADO,
+                              inscripcionAlumno.message, 
+                              inscripcionAlumno.data , 
+                              undefined , 
+                              AlumnoServioCode.ALUMNO_CREATED
+                            );           
+    }    
 };
 
-/**
- * @function modAlumno
- * @description Manejador para la modificación de los datos de un alumno.
- * La modificación se realiza a nivel de los datos principales del alumno y su relación con la escuela.
- * @async
- * @param {Request} req - Objeto de la solicitud Express (params: dni, id_escuela; body: nombre, apellido, celular).
- * @param {Response} res - Objeto de la respuesta Express.
- * @returns {Promise<void>} Envía una respuesta HTTP 200 si la modificación es exitosa.
- */
+
 const modAlumno = async( req : Request, res : Response) =>{
 
     const { dni , id_escuela} = req.params;
@@ -80,20 +95,12 @@ const modAlumno = async( req : Request, res : Response) =>{
     
     // 3. Ejecución de la lógica de modificación
     const resultado  = await dataAlumno.modAlumno( alumnoData );
-    
-    if ( resultado.error === false &&  resultado.code === "ALUMNO_MODIFICATION")
+
+    if ( resultado.error === false &&  resultado.code === AlumnoServioCode.USER_ALUMNO_UPDATE )
     return  enviarResponse(res , 200, resultado.message, resultado.data , undefined , resultado.code);    
 }
 
-/**
- * @function borrarAlumno
- * @description Manejador para la baja lógica de un alumno en una escuela específica.
- * La baja se realiza actualizando el estado del alumno en la relación escuela-alumno.
- * @async
- * @param {Request} req - Objeto de la solicitud Express (params: dni, id_escuela, estado).
- * @param {Response} res - Objeto de la respuesta Express.
- * @returns {Promise<void>} Envía una respuesta HTTP 200 si la baja es exitosa.
- */
+
 const borrarAlumno = async( req : Request , res : Response) =>{
     const { dni , id_escuela, estado  } = req.params;
     
@@ -102,27 +109,19 @@ const borrarAlumno = async( req : Request , res : Response) =>{
     
     // 2. Ejecución de la lógica de eliminación
     const respuesta  = await dataAlumno.eliminarAlumno(alumnoData);
-    
-    if ( respuesta.error === false && respuesta.code === "ALUMNO_DELETE")
+    console.log(respuesta);
+    if ( respuesta.error === false && respuesta.code === AlumnoServioCode.ALUMNO_DELETE )
         return enviarResponse( res , 200 , respuesta.message , respuesta.data ,undefined , respuesta.code );
 };
 
 
-/**
- * @function listarAlumno
- * @description Manejador para la obtención de un listado paginado y filtrado de alumnos.
- * Permite filtrar por estado, DNI, apellido y escuela.
- * @async
- * @param {Request} req - Objeto de la solicitud Express (query: estado, dni, apellido, limit, pagina, escuela).
- * @param {Response} res - Objeto de la respuesta Express.
- * @returns {Promise<void>} Envía una respuesta HTTP 200 con la lista de alumnos y datos de paginación.
- */
+
 const listarAlumno = async( req: Request  , res : Response) =>{
     const { estado , dni , apellido , limit , pagina, escuela } = req.query;
     
     // 1. Cálculo del offset para la paginación (0-based index)
     const offset = ( Number(pagina) -1 ) * Number(limit) ;
-    
+    
     // 2. Validación de los parámetros de listado
     const listadoVerificado : ListaAlumnoInputs = listaAlumnosSchema.parse({
             estado , dni , apellido , escuela : Number(escuela) ,limit : Number(limit) , offset : Number(offset)});
@@ -131,14 +130,9 @@ const listarAlumno = async( req: Request  , res : Response) =>{
     const listado = await dataAlumno.listaAlumnos(listadoVerificado , Number(pagina));  
     
     // 4. Envío de la respuesta con datos y paginación
-    return enviarResponse( res , 200 , listado.message , listado.data , listado.paginacion , listado.code );
-}
+    return enviarResponse( res , CodigoEstadoHTTP.OK , listado.message , listado.data , listado.paginacion , listado.code );
+};
 
-
-/**
- * @constant {Object} method
- * @description Exporta las funciones controladoras envueltas en la función de manejo de errores `tryCatch`.
- */
 export const  method ={
     altaAlumno   : tryCatch( altaAlumno ),
     modAlumno    : tryCatch( modAlumno ),
