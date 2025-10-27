@@ -87,10 +87,12 @@ const mapTextoEliminar = (dataE: any) =>
 export const useAbmAlumnos = () =>{ 
 // contexto
 const { rol } = useContext( RutasProtegidasContext );
-
+  
 
 const config = {
     recursoSingular : "Alumno",
+
+    
 
     idEscuela : rol?.escuela || 1 ,
 

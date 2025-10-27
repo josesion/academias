@@ -5,12 +5,13 @@ import cors from "cors";
 
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
-
+import planesUsuariosRuta from "./rutas/planes.usuarios";
 import adminRutas from "./rutas/admin.ruta";
 import usuarioRutas from "./rutas/usuario.ruta";
 import planesRutas from "./rutas/plan.ruta";
 import loginRutas from "./rutas/login.rutas";
 import alumnoRutas from "./rutas/alumno.ruta";
+
 
 import protectRutas from "./rutas/protegida.rutas";
 
@@ -25,13 +26,14 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(alumnoRutas);
-app.use(protectRutas)
+
 app.use(adminRutas);
 app.use(planesRutas);
 app.use(usuarioRutas);
 app.use(loginRutas);
+app.use(planesUsuariosRuta);
 
-
+app.use(protectRutas);
 
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{

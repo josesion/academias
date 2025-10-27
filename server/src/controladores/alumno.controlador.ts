@@ -109,7 +109,7 @@ const borrarAlumno = async( req : Request , res : Response) =>{
     
     // 2. Ejecución de la lógica de eliminación
     const respuesta  = await dataAlumno.eliminarAlumno(alumnoData);
-    console.log(respuesta);
+
     if ( respuesta.error === false && respuesta.code === AlumnoServioCode.ALUMNO_DELETE )
         return enviarResponse( res , 200 , respuesta.message , respuesta.data ,undefined , respuesta.code );
 };

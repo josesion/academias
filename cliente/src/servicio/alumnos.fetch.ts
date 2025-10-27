@@ -13,7 +13,7 @@ export const registroAlumno = async( parametro : TipadoAlumnos.RegistroResquest 
         return {
             error: true,
             message: "Usuario no autenticado",
-            statusCode: 401,
+            statusCode: 401, 
             code: "NOT_AUTHENTICATED",
             errorsDetails: undefined
         };

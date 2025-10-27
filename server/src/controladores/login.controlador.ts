@@ -23,6 +23,8 @@ const login = async( req: Request, res: Response ) =>{
     return enviarResponse(res, 200, resultado.message, resultado.data, undefined, resultado.code);
 }
 
+
+
 export const method ={
-    login : tryCatch( login )
+    login : tryCatch( login ),
 };

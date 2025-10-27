@@ -6,4 +6,5 @@ const ruta = Router();
 
 ruta.post("/api/login", controladorLogin.login);
 
+
 export default ruta;

@@ -82,7 +82,7 @@ const altaPlanes_usuariosData = async( planes : PlanesPagoInputs)
 
 const altaPlanesEscuelas = async( planesEscuelas : PlanesEscuelasInputs) 
 : Promise<TipadoData<CrearPlanesEscuelasUsuarios>>=>{
-    const { id_escuela , id_plan , estado , fecha_creacion, monto , cantidad_clases, cantidad_meses , nombre_personalizado} = planesEscuelas;
+    const { id_escuela , id_plan , estado , fecha_creacion, monto , cantidad_clases, cantidad_meses , descripcion} = planesEscuelas;
     const sql : string = `INSERT INTO planes_en_escuela ( id_escuela,
                                                  id_plan, 
                                                  estado, 
@@ -93,9 +93,9 @@ const altaPlanesEscuelas = async( planesEscuelas : PlanesEscuelasInputs)
                                                  meses_asignados) 
                 VALUES
                 ( ? , ? , ? , ? , ? , ? , ? , ? )` ;
-    const valores = [id_escuela , id_plan , estado , fecha_creacion,nombre_personalizado ,monto , cantidad_clases, cantidad_meses];
+    const valores = [id_escuela , id_plan , estado , fecha_creacion,descripcion ,monto , cantidad_clases, cantidad_meses];
 
-    const datosADevolver    = { id_escuela , id_plan , fecha_creacion, nombre_personalizado ,cantidad_clases, cantidad_meses, monto }; 
+    const datosADevolver    = { id_escuela , id_plan , fecha_creacion, descripcion ,cantidad_clases, cantidad_meses, monto }; 
 
     return  await iudEntidad<CrearPlanesEscuelasUsuarios>({
         slqEntidad : sql ,
@@ -110,7 +110,7 @@ const altaPlanesEscuelas = async( planesEscuelas : PlanesEscuelasInputs)
 
 const modPlanesUsuarios = async( parametros :  ModPlanesUsuariosInputs )
  : Promise<TipadoData<ModPlanesUsuariosResult>> =>{
-    const { id_escuela, id_plan , nombre_personalizado, monto , cantidad_clases, cantidad_meses , fecha_creacion, estado } = parametros ;
+    const { id_escuela, id_plan , nombre_personalizado, monto , cantidad_clases, cantidad_meses , fecha_creacion } = parametros ;
 
     const sql  : string = ` UPDATE planes_en_escuela
                             SET
@@ -118,13 +118,12 @@ const modPlanesUsuarios = async( parametros :  ModPlanesUsuariosInputs )
 	                            monto_asignado      = ? ,      
 	                            clases_asignadas    = ? ,      
 	                            meses_asignados     = ? ,       
-	                            estado              =  ? ,
                                 fecha_creacion      = ?      
                             WHERE
 	                            planes_en_escuela.id_escuela  =   ?    
                                 and
 	                            planes_en_escuela.id_plan     =  ? ;  `;
-    const valores : unknown[] = [ nombre_personalizado , monto ,cantidad_clases , cantidad_meses, estado , fecha_creacion, id_escuela, id_plan ];
+    const valores : unknown[] = [ nombre_personalizado , monto ,cantidad_clases , cantidad_meses , fecha_creacion, id_escuela, id_plan ];
 
     const datosADevolver    = { id_escuela , id_plan , fecha_creacion, nombre_personalizado }; 
 

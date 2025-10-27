@@ -58,7 +58,7 @@ interface AmbViewProps {
     inputsFiltro: any[];
     inputsEntidad: any[];
     estados: string[];
-
+    entidad : string;
 
     carga: boolean;
     error: boolean;
@@ -98,7 +98,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
     const { 
         modal, modalEliminar ,errorsZod, errorGenerico, dataAlumnosListado, formData, barraPaginacion,
         filtroData, inputsFiltro, inputsEntidad, estados,carga , error, statuscode,
-        tipoFormulario,accionEliminar, botonTexto,
+        tipoFormulario,accionEliminar, botonTexto, entidad,
         onHandleChangeBuscador,
         onHandleCancelar, onHandleSubmit, onHandleChangeFormulario, onHandleAgregar,
         onHandleEstado, onHandlePaginaCambiada,onHandleCancelarEliminar,
@@ -115,8 +115,8 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
                             formData={formData}
                             textoSubmit="Registrar"
                             tituloFormulario={
-                                tipoFormulario === "alta" ? "Registro Alumno"
-                                : "Modificar Alumno"
+                                tipoFormulario === "alta" ? `Alta ${entidad}`
+                                : `Mofidicar ${entidad}`
                             }
                             onCancelar={onHandleCancelar}
                             onChange={onHandleChangeFormulario}

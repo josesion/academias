@@ -9,6 +9,7 @@ import { AlumnoPage } from "./pagina/publico/alumno/Alumno";
 
 //Paginas AMB
 import { AmbAlumnos } from "./pagina/privado/Alumnos/Alumnos";
+import { AmbPlanesUsuarios } from "./pagina/privado/planes.usuario";
 
 // seccion de componentes
 import { MenuNav } from "./componentes/MenuNav/MenuNav";
@@ -38,6 +39,7 @@ function App() {
 
               <Route path="/user_manager_priv" element={ <UsuarioPage/> }/> 
               <Route path="/user_alumno" element={ < AmbAlumnos /> }/> 
+              <Route path="/user_planes" element={ < AmbPlanesUsuarios /> }/> 
           </Route>
       </Routes>
         

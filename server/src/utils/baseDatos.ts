@@ -1,5 +1,13 @@
 // src/database/utils.ts
 
+export interface MetadataResultadoIUD {
+    affectedRows: number;
+    insertId: number; // El ID autoincremental
+    warningCount: number;
+    // ... otros metadatos
+}
+
+
 import { PoolConnection , ResultSetHeader, RowDataPacket} from 'mysql2/promise'; // Necesitas el tipo PoolConnection
 import pool from '../bd'; // <-- Importa tu pool de conexiones definido en src/database/pool.ts
 

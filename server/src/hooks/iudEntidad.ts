@@ -37,7 +37,7 @@ export const iudEntidad = async <TDatosRetorno extends object>(
 
     const entidadIud = await iud(slqEntidad, valores) as IudResultMetadata; 
     
-    console.log(entidadIud);
+
     if (entidadIud.affectedRows <= 0) {
     // Construcción del código de error basado en la acción
         const code = metodo === "MODIFICAR" || metodo === "ELIMINAR" ? 

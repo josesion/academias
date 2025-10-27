@@ -43,15 +43,25 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
  */
 const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 	
-	const { id_escuela , fecha_creacion , estado, cantidad_clases , cantidad_meses , monto , descripcion} = req.body;
+	const { id_escuela ,  cantidad_clases , cantidad_meses , monto , descripcion} = req.body;
 	let idPlan : number = 0 ;
 
-	// Validar los inputs necesarios para verificar si el plan maestro existe
-	const verificarPlan : ExistenciaPlanesInputs = ExistenciaPlanSchema.parse(req.body);
+	const datosEntrada = {
+		descripcion  	: descripcion as string,
+		cantidad_clases : Number(cantidad_clases),
+		cantidad_meses :  Number(cantidad_meses),
+		monto          : parseFloat( monto),
+		estado         : "activos", // como es alta siempre sera activos
+		fecha_creacion : "2025-09-10", // colocar funcion q diga la fecha aactual
+		id_escuela     : Number(id_escuela)
+	}
 	
+	
+	// Validar los inputs necesarios para verificar si el plan maestro existe
+	const verificarPlan : ExistenciaPlanesInputs = ExistenciaPlanSchema.parse(datosEntrada);
+
 	// 1. Verificación y Creación del Plan Maestro Global (Tabla planes_pago)
 	const planGlobal = await planesUsuarios.existenciaPlan( verificarPlan.descripcion );
-	
     /*
      * Lógica para reutilizar o crear el plan maestro:
      * El plan maestro se verifica por su 'descripcion'. Si existe, se reutiliza su ID;
@@ -61,11 +71,12 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 		// El plan maestro existe, se extrae el ID
 		const planExistente = planGlobal.data as ResultBusquedaPlanes ;
 		idPlan = planExistente.id_plan ;
-	}else{
+
+	}else if (planGlobal.error === false){
 		// Si no existe, se crea el plan maestro
-		const planNuevo : PlanesPagoInputs = CrearPlanesPagoSchema.parse(req.body);
+		const planNuevo : PlanesPagoInputs = CrearPlanesPagoSchema.parse(datosEntrada);
 		const altaPlan = await planesUsuarios.altaPlanes_usuariosData( planNuevo );
-		
+
 		if ( altaPlan.error === false && altaPlan.data && altaPlan.code === PlanServioCode.PLAN_CREATED ) {
 			const planCreado = altaPlan.data as CrearPlanesUsuarios ;
 			idPlan 	= planCreado.id as number ;
@@ -85,7 +96,7 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 	// 2. Verificación de la relación Plan-Escuela (Tabla planes_en_escuela)
 	// A esta altura, 'idPlan' ya está disponible. Se verifica si la asignación ya existe.
 	const planEscuelaExistente = await planesUsuarios.existenciaPlanEscuela( id_escuela , idPlan );
-	
+
 	if ( planEscuelaExistente.error === true && planEscuelaExistente.code === PlanServioCode.PLAN_ESCHOOL_ALREADY_EXISTS ) {
         // La relación ya existe, retornar conflicto (409) para evitar duplicados.
 		return enviarResponse(
@@ -100,17 +111,13 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
     
 	// 3. Creación de la relación Plan-Escuela (Si no existe)
     // Se mapean los inputs para la creación de la asignación con el idPlan obtenido.
-	const planEscuela : PlanesEscuelasInputs = CrearPlanesEscuelasSchema.parse({
-		id_escuela,
-		id_plan : idPlan,
-		fecha_creacion,
-		nombre_personalizado :descripcion,
-		estado,
-		monto,
-		cantidad_clases,
-		cantidad_meses
-	});
 
+	const  datosPlanEscuela = {
+		...datosEntrada,
+		id_plan : idPlan
+	}
+
+	const planEscuela : PlanesEscuelasInputs = CrearPlanesEscuelasSchema.parse( datosPlanEscuela );
 	const altaPlanEscuela = await planesUsuarios.altaPlanesEscuelas( planEscuela );
 
     // 4. Retorno de éxito
@@ -135,13 +142,21 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
  */
 const modPlanes_usuarios = async( req : Request , res : Response ) =>{
 	const { id_plan , id_escuela } = req.params;
+	const { descripcion , cantidad_clases, cantidad_meses,  monto } = req.body;
+
+	const dataPlan = {
+		id_plan : Number(id_plan),
+		id_escuela : Number(id_escuela),
+		nombre_personalizado : descripcion,
+		fecha_creacion : "2025-05-10",
+		cantidad_clases :Number(cantidad_clases),
+		cantidad_meses  : Number(cantidad_meses),
+		monto  : monto 
+	}
+
 
 	// Se parsean los parámetros de la URL y el body, convirtiendo IDs de string a number
-	const modInputs : ModPlanesUsuariosInputs = ModPlanesUsuarios.parse({
-		...req.body,
-		id_plan : Number(id_plan),
-		id_escuela : Number(id_escuela)
-	});
+	const modInputs : ModPlanesUsuariosInputs = ModPlanesUsuarios.parse( dataPlan );
 
 	const resultado = await planesUsuarios.modPlanesUsuarios( modInputs );
     
@@ -163,7 +178,6 @@ const modPlanes_usuarios = async( req : Request , res : Response ) =>{
  * @param res Response de Express.
  */
 const estadoPlanes_usuarios = async( req : Request , res : Response ) =>{
-	console.log(req.params)
 	const { id_plan , id_escuela , estado} = req.params;
 
 	// Validar y tipar los inputs

@@ -25,10 +25,12 @@ export const MenuNav = () =>{
 
     const irInicio = () =>{navegar("/")};
     const irLogin = () =>{navegar("/login")};
+
     //administrador
 
     //Usuario
     const irAlumno = () =>{ navegar("/user_alumno")};
+    const irPlanes = () =>{ navegar("/user_planes")};
 
     return(
 
@@ -73,6 +75,11 @@ export const MenuNav = () =>{
                             <li  className="alinear" onClick={ irAlumno } >
                                 <MdAppRegistration size={20} className="alinear" />Alumnos
                             </li>
+
+                            <li  className="alinear" onClick={ irPlanes } >
+                                <MdAppRegistration size={20} className="alinear" />Planes
+                            </li>
+
                         </>
                     )
                 }

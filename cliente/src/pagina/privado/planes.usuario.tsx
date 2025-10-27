@@ -2,22 +2,21 @@
 //  SECCIÓN : IMPORTACIONES
 // (Componentes de UI y Hooks de Lógica)
 // ===================================
-import { AmbVistas } from "../../../componentes/AbmVista/AbmVista";
-import { useAbmAlumnos } from "../../../hookNegocios/abmAlumnos";
-
+import { AmbVistas } from "../../componentes/AbmVista/AbmVista";
+import { useAbmPlanesUsuarios } from "../../hookNegocios/abmPlanesUsuarios"; 
 
 // ===================================
 // COMPONENTE PRINCIPAL
 // ===================================
-export const AmbAlumnos = () => {
 
-    //  Desestructuración del Custom Hook (Lógica de Negocio)
+export const AmbPlanesUsuarios  = () => {
+
     const { 
-        //  Estados y Datos
+            //  Estados y Datos
         inputsFiltro, inputsFormulario, estados, dataListado,
         modal, modalEliminar, formData, barraPaginacion,
         carga, estadoListado, filtroData, tipoFormulario,
-        accionEliminar, textoboton, entidad,
+        accionEliminar, textoboton, entidad ,
         
         //  Errores y Validaciones
         errorsZod, errorGenerico,
@@ -26,27 +25,28 @@ export const AmbAlumnos = () => {
         handleChangeBuscador, handleCancelar, handleSubmit,
         handleChangeFormulario, handleAgragar, handleEstado,
         handlePaginaCambiada, handleModificar, handleEliminar,
-        handleCancelarEliminar, handleSubmitEliminar
-    } = useAbmAlumnos();
+        handleCancelarEliminar, handleSubmitEliminar 
+     } = useAbmPlanesUsuarios();
 
-    //  Lógica específica del componente (Manipulación del input 'dni')
+
+         //  Lógica específica del componente (Manipulación del input 'dni')
     // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
     const inputsModificar = inputsFormulario.map( (input) => {
-        if ( tipoFormulario === "modificar" && input.name === "dni" ) {
+        if ( tipoFormulario === "modificar" && input.name === "id" ) {
             return { ...input, readonly: true };
         }
         return input;
     });
 
-    //  Renderizado (Paso de props al componente de Vista)
-    return(
+
+  
+   return(
         <AmbVistas
             // PROPS DE FORMULARIO Y MODAL ===
             modal={modal}
             modalEliminar={modalEliminar}
             tipoFormulario={tipoFormulario}
-            entidad= {entidad}
-            
+            entidad={entidad}
             // Lógica para elegir qué inputs mostrar
             inputsEntidad={
                 tipoFormulario === 'alta' ? inputsFormulario : inputsModificar
@@ -90,5 +90,6 @@ export const AmbAlumnos = () => {
             dataAlumnosListado={dataListado}
             onHandlePaginaCambiada={handlePaginaCambiada}
         />
-    )
+   );  
+
 };

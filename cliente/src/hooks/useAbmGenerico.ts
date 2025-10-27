@@ -7,6 +7,7 @@ import type { ErrorBackend } from "./erroresZod";
 import { transformErrores } from "./erroresZod";
 import { peticiones } from "./peticiones";
 
+
 /**
  * @typedef {function(data: any, signal?: AbortSignal): Promise<any>} ServicioCrud
  * Define el contrato para las funciones de servicio CRUD (asíncronas).
@@ -83,7 +84,8 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         pagina : config.paginacion.pagina,
         limite : config.paginacion.limite
         } );
-
+    
+  
 // -------------------------------- Manejadores de Modales y Acciones Principales ---------------------------------- 
 
 /** Manejador para abrir el modal de Alta. Resetea formData y setea el tipo de formulario. */
@@ -94,6 +96,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             });
             setModal( true );
             setTipoFormulario("alta");
+
     };  
 
 /** Manejador para abrir el modal de Modificación. Mapea los datos del listado al formulario. */
@@ -105,6 +108,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         })
         setTipoFormulario("modificar");
         setModal( true );
+
     };
 
 /** Manejador para abrir el modal de Eliminación/Restauración. Mapea y setea el texto de confirmación. */
@@ -128,7 +132,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
      const handleCancelar = () =>{ 
         setModal(false) ;
         setTipoFormulario("alta");
-        setErrorsZod({});
+        setErrorsZod({ null : null });
         setErrorGenerico(null);
     };   
 
@@ -185,8 +189,8 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             : config.servicios.modificar
 
         const resultado = await servicioApiFetch( formData );
-        
-        // Manejo de errores de validación de campos (Zod/Backend)
+            
+        // Manejo de errores de vole.log(resultado)alidación de campos (Zod/Backend)
         if ( resultado.error === true && resultado.code === "VALIDATION_ERROR" && resultado.errorsDetails) {
             const erroresTransformados = transformErrores( resultado.errorsDetails  as ErrorBackend[]);
             setErrorsZod(erroresTransformados);
@@ -202,12 +206,14 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         }
         
         // Éxito: Actualiza la lista, resetea el formulario y cierra el modal.
+        setErrorGenerico(null);
+        setErrorsZod({null : null });
         setActualizarListado( actualizarListado + 1 );
         setFormData({
             ... config.inicialFormData,
             id_escuela : config.idEscuela
         });
-
+        
         return setModal(false)
     };
 
@@ -216,9 +222,9 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         const servicioApiFetch = config.servicios.eliminar;
 
         const resultado = await servicioApiFetch(formData);
-        
+
         // Éxito: Actualiza la lista y cierra el modal.
-        if ( resultado.error === false && resultado.code === "ALUMNO_DELETE"){ // 'ALUMNO_DELETE' puede ser un código genérico si lo defines así.
+        if ( resultado.error === false  ){ 
             setActualizarListado( actualizarListado + 1 );
             setModalEliminar(false);
             return;
@@ -232,6 +238,8 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
                     return    
                 }, 1500);
         }
+
+        setModalEliminar(false);
     };
 
 
@@ -252,7 +260,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             setCarga(true);
         
             const listado_alumnos = await servicioApiFetch(filtroData, signal);
-            
+          
             // NOTA: Aquí podrías añadir una lógica para redirigir al login si el statusCode es de No Autorizado.
             
             // Éxito: Verifica que los datos y la paginación existan.
@@ -274,7 +282,6 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             setCarga(false);
         }
     };
-    
 
     listado();
     return () => {
@@ -287,12 +294,13 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
 
 // ---------------------------------- Retorno de la API del Hook ----------------------------------
-
+     
     return{
         // Configuración Estática (para la UI: inputs, estados)
         inputsFormulario: config.inputsFormulario,
         inputsFiltro: config.inputsFiltro,
         estados: config.estados,
+        entidad : config.recursoSingular,
 
         // Estados Reactivos (datos a renderizar y control de UI)
         modal, modalEliminar,
