@@ -13,13 +13,16 @@
     "noImplicitReturns": true,                // Asegura que todas las rutas de código de una función devuelvan algo
     "sourceMap": true,                        // Genera archivos .map para facilitar la depuración
     "allowJs": true,                          // Permite que TypeScript procese archivos .js (si tuvieras)
-    "resolveJsonModule": true                 // Permite importar archivos .json
+    "resolveJsonModule": true,
+    "types": ["node", "jest"]  
+                   // Permite importar archivos .json
   },
   "include": [
-    "src/**/*.ts"                           // <-- IMPORTANTE: Incluye todos los archivos .ts dentro de la carpeta 'src'
+    "src/**/*.ts", 
   ],
   "exclude": [
     "node_modules",                           // Excluye la carpeta de dependencias
-    "build"                                   // Excluye la carpeta de salida de la compilación
+    "build",
+    "tests"                                   // Excluye la carpeta de salida de la compilación
   ]
 }

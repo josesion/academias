@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon build/index.js",
     "tsc": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "set NODE_ENV=test && jest --detectOpenHandles",
     "start": "node build/index.js"
   },
   "keywords": [],
@@ -18,7 +18,6 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.1.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -28,9 +27,18 @@
     "zod": "^4.0.13"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^24.9.2",
+    "@types/supertest": "^6.0.3",
     "dotenv": "^17.2.3",
+    "jest": "^30.2.0",
     "nodemon": "^3.1.10",
+    "pg": "^8.16.3",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
+    "typeorm": "^0.3.27",
     "typescript": "^5.9.3"
   }
 }
