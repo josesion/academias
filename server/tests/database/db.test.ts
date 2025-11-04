@@ -31,7 +31,8 @@ describe('Pruebas de Conexión a la Base de Datos (MySQL)', () => {
         // ESTO EVITA LA CONTAMINACIÓN DE DATOS ENTRE PRUEBAS
  // 1. Tablas de unión (Hijo)
     await connection.query("DELETE FROM alumnos_en_escuela"); 
-    await connection.query("DELETE FROM planes_en_escuela"); 
+    await connection.query("DELETE FROM planes_en_escuela");
+    await connection.query("DELETE FROM usuarios");
     
     // 2. Tablas Padre
     await connection.query('DELETE FROM alumnos'); 

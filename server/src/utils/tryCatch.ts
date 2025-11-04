@@ -11,11 +11,11 @@ export const tryCatch = (fn : AsyncRequestHandler ) => {
     return (req : Request, res : Response, next : NextFunction) => {
     try {
         // Ejecuta la función y asegura que el resultado sea una Promesa
-        Promise.resolve(fn(req, res, next)).catch((err) => next(err));
+      return  Promise.resolve(fn(req, res, next)).catch((err) => next(err));
     } catch (error) {
         // Captura cualquier error síncrono que ocurra al ejecutar fn
-
-        next(error);
+       // Retornar una Promise rechazada para mantener la firma y cubrir todos los caminos
+        return Promise.reject(error);
         
     }
     };

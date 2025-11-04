@@ -30,6 +30,7 @@ import { ResultBusquedaPlanes } from "../tipados/planes.usuarios";
 import { CrearPlanesUsuarios } from "../tipados/planes.usuarios";
 import { PlanServioCode } from "../tipados/planes.usuarios";
 import { CodigoEstadoHTTP } from "../tipados/generico";
+import { enviarResponseError } from "../utils/responseError";
 
 
 /**
@@ -77,17 +78,15 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 		const planNuevo : PlanesPagoInputs = CrearPlanesPagoSchema.parse(datosEntrada);
 		const altaPlan = await planesUsuarios.altaPlanes_usuariosData( planNuevo );
 
-		if ( altaPlan.error === false && altaPlan.data && altaPlan.code === PlanServioCode.PLAN_CREATED ) {
+		if ( altaPlan.error === false && altaPlan.data  ) {
 			const planCreado = altaPlan.data as CrearPlanesUsuarios ;
 			idPlan 	= planCreado.id as number ;
 		} else {
             // Manejo de error si el plan maestro no pudo ser creado
-            return enviarResponse(
+            return enviarResponseError(
                 res,
                 CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
                 altaPlan.message || 'Error al crear el plan maestro.',
-                null,
-                undefined, 
                 PlanServioCode.CREATION_FAILED
             );
         }
@@ -97,14 +96,12 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 	// A esta altura, 'idPlan' ya está disponible. Se verifica si la asignación ya existe.
 	const planEscuelaExistente = await planesUsuarios.existenciaPlanEscuela( id_escuela , idPlan );
 
-	if ( planEscuelaExistente.error === true && planEscuelaExistente.code === PlanServioCode.PLAN_ESCHOOL_ALREADY_EXISTS ) {
+	if ( planEscuelaExistente.error === true  ) {
         // La relación ya existe, retornar conflicto (409) para evitar duplicados.
-		return enviarResponse(
+		return enviarResponseError(
 			res,
 			CodigoEstadoHTTP.CONFLICTO,
 			planEscuelaExistente.message,
-			planEscuelaExistente.data,
-			undefined,
 			planEscuelaExistente.code,
 		)
 	}
@@ -121,7 +118,7 @@ const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 	const altaPlanEscuela = await planesUsuarios.altaPlanesEscuelas( planEscuela );
 
     // 4. Retorno de éxito
-	if ( altaPlanEscuela.error === false && altaPlanEscuela.data && altaPlanEscuela.code === PlanServioCode.PLAN_ESCHOOL_CREATED ) {
+	if ( altaPlanEscuela.error === false && altaPlanEscuela.data ) {
 
 		return enviarResponse(
 			res,
@@ -148,11 +145,12 @@ const modPlanes_usuarios = async( req : Request , res : Response ) =>{
 		id_plan : Number(id_plan),
 		id_escuela : Number(id_escuela),
 		nombre_personalizado : descripcion,
-		fecha_creacion : "2025-05-10",
+		fecha_creacion : "2025-05-10", // colocar funcion fecha hoy
 		cantidad_clases :Number(cantidad_clases),
 		cantidad_meses  : Number(cantidad_meses),
-		monto  : monto 
+		monto  : Number(monto)
 	}
+
 
 
 	// Se parsean los parámetros de la URL y el body, convirtiendo IDs de string a number
@@ -160,7 +158,9 @@ const modPlanes_usuarios = async( req : Request , res : Response ) =>{
 
 	const resultado = await planesUsuarios.modPlanesUsuarios( modInputs );
     
-	if ( resultado.error === false && resultado.data && resultado.code === PlanServioCode.USER_PLAN_UPDATE) {
+
+
+	if ( resultado.error === false && resultado.data ) {
 		return enviarResponse(
 			res,
 			CodigoEstadoHTTP.OK, // 200 OK
