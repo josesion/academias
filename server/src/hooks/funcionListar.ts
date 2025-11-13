@@ -1,9 +1,9 @@
 // utills
-import { ClientError } from "../utils/error";
+//import { ClientError } from "../utils/error";
 // hook 
 import { select } from "../utils/baseDatos";
 // Typado
-import { CodigoEstadoHTTP } from "../tipados/generico";
+//import { CodigoEstadoHTTP } from "../tipados/generico";
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -35,9 +35,17 @@ export const listarEntidad = async <TRespuesta>(
     const listado = await select<RowConTotal>(slqListado , valores);
 
     if ( listado.length <= 0) {
-        throw new ClientError(`No hay ${entidadM} ${estado}` ,
-                               CodigoEstadoHTTP.SIN_CONTENIDO,  
-                              `NO_ACTIVE_${entidadM}`);
+        // Cuando no hay resultados devolvemos un TipadoData consistente
+        // en lugar de lanzar una excepción. Esto mantiene la misma
+        // forma de retorno que usan otros hooks (error:true + code)
+        return {
+            error: true,
+            message: `No hay ${entidadM} ${estado}`,
+            data: [],
+            paginacion: undefined,
+            code: `NO_ACTIVE_${entidadM}`,
+            errorsDetails: undefined
+        } as unknown as TipadoData<TRespuesta[]>;
     }
  
     const totalRegistro  =listado[0].total_registros;

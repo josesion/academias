@@ -6,7 +6,7 @@ import { iud } from "../utils/baseDatos" ;
 //Type
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { TipadoData } from "../tipados/tipado.data";
-import { PlanServioCode } from "../tipados/planes.usuarios"; 
+
 
 // Definición local del tipo de resultado de la función iud (metadata de la BD)
 interface IudResultMetadata {
@@ -40,11 +40,23 @@ export const iudEntidad = async <TDatosRetorno extends object>(
 
     if (entidadIud.affectedRows <= 0) {
     // Construcción del código de error basado en la acción
-        const code = metodo === "MODIFICAR" || metodo === "ELIMINAR" ? 
-            `${metodo}_NOT_FOUND` : PlanServioCode.CREATION_FAILED;
+      
+        const code = metodo === "MODIFICAR"
+                            ? "MODIFICAR_NOT_FOUND"
+                            : metodo === "ELIMINAR"
+                            ? "ELIMINAR_NOT_FOUND"
+                            : metodo === "ALTA"
+                            ? "ALTA_FAILED"
+                            : "CREACION_FAILED";
 
      // Determinación del texto de la acción para el mensaje 
-        const accionTexto = metodo === "CREAR" ? 'crear' : (metodo === "MODIFICAR" ? 'modificar' : 'eliminar');
+        const accionTexto = metodo === "CREAR"  ? 'crear' 
+                                                : metodo === "MODIFICAR" 
+                                                ? 'modificar' 
+                                                : metodo === "ELIMINAR"
+                                                ? "eliminar"
+                                                : "dar de alta" ;
+
     // Lanzamiento del error con mensaje detallado
         throw new ClientError(`No se logró ${accionTexto} la entidad ${entidadM}. Filas afectadas: 0`,
                                 CodigoEstadoHTTP.NO_ENCONTRADO, 
@@ -68,10 +80,21 @@ export const iudEntidad = async <TDatosRetorno extends object>(
         datosFinales = datosRetorno as TDatosRetorno & { id?: number };
     }
     // Construcción del mensaje y código de respuesta
-    const message = `${entidadM} ${metodo === "CREAR" 
-                    ? 'creada' 
-                    : (metodo === "MODIFICAR" ? 'modificada' 
-                    : 'eliminada')} exitosamente.`;
+    const accionTexto =
+        metodo === "CREAR"
+            ? "creada"
+            : metodo === "MODIFICAR"
+            ? "modificada"
+            : metodo === "ELIMINAR"
+            ? "eliminada"
+            : metodo === "ALTA"
+            ? "dada de alta"
+            : "procesada";
+
+    const message = `${entidadM} ${accionTexto} exitosamente.`;
+
+
+                    
     const code = `${entidadM}_${metodo}`;
 
     return {
