@@ -19,7 +19,17 @@ import { CrearPlanesUsuarios, CrearPlanesEscuelasUsuarios,
         } from "../tipados/planes.usuarios"  ;
 
 
-
+/**
+ * Verifica si existe un plan por su descripción.
+ *
+ * Ejecuta una consulta para comprobar si un plan con la descripción proporcionada
+ * ya existe en la tabla `planes_pago`.
+ *
+ * @async
+ * @function existenciaPlan
+ * @param {string} descripcion - Descripción del plan a verificar.
+ * @returns {Promise<TipadoData<ResultBusquedaPlanes>>} Resultado de la búsqueda del plan.
+ */
 
 
 
@@ -39,6 +49,19 @@ const existenciaPlan = async( descripcion : string ) =>{
     });
    
 }
+
+/**
+ * Verifica si un plan ya está asignado a una escuela específica.
+ *
+ * Consulta la tabla `planes_en_escuela` para validar si la relación entre
+ * un plan y una escuela ya existe.
+ *
+ * @async
+ * @function existenciaPlanEscuela
+ * @param {number} id_escuela - ID de la escuela.
+ * @param {number} id_plan - ID del plan.
+ * @returns {Promise<TipadoData<ResultBusquedaPlanes>>} Resultado de la búsqueda.
+ */
 
 const existenciaPlanEscuela = async( id_escuela : number , id_plan : number ) 
  : Promise<TipadoData<ResultBusquedaPlanes>>=>{
@@ -62,6 +85,18 @@ const existenciaPlanEscuela = async( id_escuela : number , id_plan : number )
 }
 
 
+/**
+ * Crea un nuevo plan general en el sistema.
+ *
+ * Inserta un registro en la tabla `planes_pago` con la información
+ * proporcionada (descripción, clases, meses, monto, estado).
+ *
+ * @async
+ * @function altaPlanes_usuariosData
+ * @param {PlanesPagoInputs} planes - Datos del nuevo plan.
+ * @returns {Promise<TipadoData<CrearPlanesUsuarios>>} Resultado de la creación.
+ */
+
 const altaPlanes_usuariosData = async( planes : PlanesPagoInputs) 
  : Promise<TipadoData<CrearPlanesUsuarios>> =>{
     const {descripcion , cantidad_clases ,cantidad_meses , estado , monto} = planes ;
@@ -79,6 +114,18 @@ const altaPlanes_usuariosData = async( planes : PlanesPagoInputs)
         datosRetorno : datosADevolver
     })
 };
+
+/**
+ * Asigna un plan existente a una escuela.
+ *
+ * Inserta un nuevo registro en la tabla `planes_en_escuela`
+ * con la relación entre escuela y plan, junto con la información personalizada.
+ *
+ * @async
+ * @function altaPlanesEscuelas
+ * @param {PlanesEscuelasInputs} planesEscuelas - Datos de la relación plan-escuela.
+ * @returns {Promise<TipadoData<CrearPlanesEscuelasUsuarios>>} Resultado de la asignación.
+ */
 
 const altaPlanesEscuelas = async( planesEscuelas : PlanesEscuelasInputs) 
 : Promise<TipadoData<CrearPlanesEscuelasUsuarios>>=>{
@@ -107,6 +154,17 @@ const altaPlanesEscuelas = async( planesEscuelas : PlanesEscuelasInputs)
 
 };
 
+/**
+ * Modifica los datos de un plan asignado a una escuela.
+ *
+ * Actualiza los valores de un plan en la tabla `planes_en_escuela`,
+ * incluyendo nombre personalizado, monto, clases, meses y fecha de creación.
+ *
+ * @async
+ * @function modPlanesUsuarios
+ * @param {ModPlanesUsuariosInputs} parametros - Datos del plan a modificar.
+ * @returns {Promise<TipadoData<ModPlanesUsuariosResult>>} Resultado de la modificación.
+ */
 
 const modPlanesUsuarios = async( parametros :  ModPlanesUsuariosInputs )
  : Promise<TipadoData<ModPlanesUsuariosResult>> =>{
@@ -137,6 +195,17 @@ const modPlanesUsuarios = async( parametros :  ModPlanesUsuariosInputs )
     
 };
 
+/**
+ * Cambia el estado (activo/inactivo) de un plan asignado a una escuela.
+ *
+ * Si el plan está activo, lo desactiva; si está inactivo, lo activa.
+ *
+ * @async
+ * @function estadoPlanes_usuarios
+ * @param {estadoPlanesUsuarios} parametros - Estado y IDs del plan y escuela.
+ * @returns {Promise<TipadoData<estadoPlanesUsuarios>>} Resultado de la actualización.
+ */
+
 const estadoPlanes_usuarios = async( parametros : estadoPlanesUsuarios )
 : Promise<TipadoData<estadoPlanesUsuarios>> =>{
     const { estado , id_escuela, id_plan } = parametros ;
@@ -160,6 +229,17 @@ const estadoPlanes_usuarios = async( parametros : estadoPlanesUsuarios )
     });
 };
 
+/**
+ * Lista los planes asignados a una escuela, aplicando filtros y paginación.
+ *
+ * Devuelve los planes que coincidan con la descripción, estado e ID de escuela.
+ *
+ * @async
+ * @function listadoPlanesUsuarios
+ * @param {ListaPlanesUsuariosInputs} parametros - Filtros de búsqueda y paginación.
+ * @param {string} pagina - Número de página actual.
+ * @returns {Promise<TipadoData<ResulListadoPlanesUsuarios[]>>} Listado paginado de planes.
+ */
 
 const listadoPlanesUsuarios = async( parametros : ListaPlanesUsuariosInputs,pagina : string ) 
 : Promise<TipadoData<ResulListadoPlanesUsuarios[]>> =>{

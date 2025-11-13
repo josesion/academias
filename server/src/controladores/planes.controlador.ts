@@ -5,17 +5,21 @@ import { enviarResponse } from "../utils/response";
 
 import { method as planesData } from "../data/planes.data";
 import { CrearInputsPlanes, crearPlanesSchema, ModInputsPlanes, modPlanesSchema, ListaInputsPlanes , listaPlanesSchema } from "../squemas/planes";
+import { enviarResponseError } from "../utils/responseError";
+import { CodigoEstadoHTTP } from "../tipados/generico";
+
 /**
  * Controlador para crear un nuevo plan.
  *
  * Valida los datos del cuerpo de la solicitud usando `crearPlanesSchema`,
- * luego delega la creación al servicio `planesData.crearPlan` y envía una
- * respuesta estándar con `enviarResponse`.
+ * luego delega la creación al método `planesData.crearPlan` y envía una
+ * respuesta estándar mediante `enviarResponse`.
  *
+ * @async
+ * @function crearPlane
  * @param {Request} req - Objeto de solicitud HTTP de Express.
  * @param {Response} res - Objeto de respuesta HTTP de Express.
- *
- * @returns {Promise<Response>} Respuesta HTTP con el resultado de la operación.
+ * @returns {Promise<Response>} Respuesta HTTP con el resultado de la creación del plan.
  *
  * @example
  * POST /api/planes
@@ -36,13 +40,15 @@ const crearPlane = async (req: Request, res: Response) => {
 /**
  * Controlador para modificar un plan existente.
  *
- * Valida el cuerpo de la solicitud con `modPlanesSchema`, llama a `planesData.modPlanes`
- * y responde con el resultado utilizando `enviarResponse`.
+ * Valida el cuerpo de la solicitud con `modPlanesSchema`, 
+ * llama al método `planesData.modPlanes` para actualizar los datos 
+ * y devuelve el resultado mediante `enviarResponse`.
  *
- * @param {Request} req - Objeto de solicitud HTTP.
- * @param {Response} res - Objeto de respuesta HTTP.
- *
- * @returns {Promise<Response>} Respuesta con los datos del plan modificado.
+ * @async
+ * @function modPlanes
+ * @param {Request} req - Objeto de solicitud HTTP que contiene los parámetros y el cuerpo con los nuevos datos.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<Response>} Respuesta con el plan modificado o el error correspondiente.
  *
  * @example
  * PUT /api/planes/3
@@ -87,7 +93,18 @@ const listarPlanes = async( req : Request, res : Response) =>{
         estado, orden, descripcion ,limit :Number(limit) , offset: Number(offset)
     }); 
     const listado =  await planesData.listarPlanes( dataResult , Number(pagina));
-    return enviarResponse(res , 200 , listado.message , listado.data, listado.paginacion ,listado.code);
+    if ( listado.error === false ) {
+        return enviarResponse(res , 200 , listado.message , listado.data, listado.paginacion ,listado.code);
+    }else{
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            listado.message,
+            listado.code
+        )
+    }
+
+   
 }
 
 

@@ -226,14 +226,23 @@ const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 	const resultado = await planesUsuarios.listadoPlanesUsuarios( listaInputs , Number(pagina) );
     
     // Retornar la respuesta con el listado y la información de paginación
-	enviarResponse(
-		res,
-		CodigoEstadoHTTP.OK, // 200 OK
-		resultado.message, 	
-		resultado.data,
-		resultado.paginacion, // Incluye metadatos de paginación
-		resultado.code,
-	);
+	if ( resultado.error === false  ) {
+		enviarResponse(
+			res,
+			CodigoEstadoHTTP.OK, // 200 OK
+			resultado.message, 	
+			resultado.data,
+			resultado.paginacion, // Incluye metadatos de paginación
+			resultado.code,
+		);
+	}else{
+		return enviarResponseError(
+			res,
+			CodigoEstadoHTTP.NO_ENCONTRADO,
+			resultado.message || 'Error al obtener el listado de planes.',
+			resultado.code
+		);
+	}
 
 };
 

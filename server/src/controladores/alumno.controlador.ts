@@ -18,6 +18,7 @@ import {CrearAlumnoSchema, AlumnosInputs,
         EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs
 
 } from "../squemas/alumno";
+import { enviarResponseError } from "../utils/responseError";
 
 
 const altaAlumno = async( req :  Request , res : Response) =>{
@@ -130,7 +131,25 @@ const listarAlumno = async( req: Request  , res : Response) =>{
     const listado = await dataAlumno.listaAlumnos(listadoVerificado , Number(pagina));  
     
     // 4. Envío de la respuesta con datos y paginación
-    return enviarResponse( res , CodigoEstadoHTTP.OK , listado.message , listado.data , listado.paginacion , listado.code );
+    if ( listado.error === false  ) {
+        return enviarResponse( 
+            res , 
+            CodigoEstadoHTTP.OK , 
+            listado.message , 
+            listado.data , 
+            listado.paginacion , 
+            listado.code );
+    }else {
+        //5 . emvio de error si no se pudo obtener el listado
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            listado.message  || 'Error al obtener el listado de alumnos.' ,
+            listado.code        
+        );
+    }
+    
+
 };
 
 export const  method ={
