@@ -11,6 +11,7 @@ import usuarioRutas from "./rutas/usuario.ruta";
 import planesRutas from "./rutas/plan.ruta";
 import loginRutas from "./rutas/login.rutas";
 import alumnoRutas from "./rutas/alumno.ruta";
+import profesorRutas from "./rutas/profesores.ruta";
 
 
 import protectRutas from "./rutas/protegida.rutas";
@@ -26,7 +27,7 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 app.use(alumnoRutas);
-
+app.use(profesorRutas)
 app.use(adminRutas);
 app.use(planesRutas);
 app.use(usuarioRutas);
