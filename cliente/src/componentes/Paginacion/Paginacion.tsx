@@ -22,7 +22,7 @@ export const Paginacion = ({ paginaActual, contadorPagina, onPaginaCambiada }: P
     // Lógica para generar los números de página visibles
     const generarPaginasVisibles = () => {
         const paginas = new Set();
-        const maxBotones = 5; // Número máximo de botones de página visibles
+//        const maxBotones = 5; // Número máximo de botones de página visibles
 
         // Siempre incluimos la primera y la última página
         paginas.add(1);

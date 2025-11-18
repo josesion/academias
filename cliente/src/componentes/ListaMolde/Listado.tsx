@@ -28,18 +28,19 @@ type ListadoMoldeProps<T extends object> = {
 export function ListadoMolde<T extends object>({
     items,
     carga,
-    error,
+    //error,
     statusCode,
     onEditar,
     onEliminar,
     botonEstado
 }: ListadoMoldeProps<T>) {
+
     return (
         <div className="listado_molde">
             {
                 carga === true ? <ComponenteCargando /> 
 
-                : statusCode === 200 && error === true ?  <SinResultado />
+                : statusCode === 404  ?  <SinResultado />
                 
                 :items.map((item, idx) => {
                     // Usa id si existe, si no usa el índice
@@ -57,12 +58,7 @@ export function ListadoMolde<T extends object>({
                         />
                     )
                 })
-
-
-
-
             }
-
 
         </div>
     );

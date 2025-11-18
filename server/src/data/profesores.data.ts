@@ -195,10 +195,10 @@ const bajaProfesor = async (
  * @returns {Promise<TipadoData<ResulListadoProfesoresUsuarios[]>>} Resultado con datos y metadatos de paginación.
  */
 const listadoProfesores = async (datos: ListadoProfeInputs, pagina: string) => {
-  const { dni, apellido, estado, id_escuela, limite, offset } = datos;
+  const { dni, apellido, estado, id_escuela, limit, offset } = datos;
   const dniFiltro = `%${dni}%`;
   const apellidoFiltro = `%${apellido}%`;
-
+  console.log(dniFiltro, apellidoFiltro);
   const sql = `
     SELECT 
       p.dni,
@@ -216,7 +216,7 @@ const listadoProfesores = async (datos: ListadoProfeInputs, pagina: string) => {
       AND pe.estado = ? 
       AND pe.id_escuela = ?
     ORDER BY p.apellido
-    LIMIT ${limite}
+    LIMIT ${limit}
     OFFSET ${offset};
   `;
 
@@ -224,7 +224,7 @@ const listadoProfesores = async (datos: ListadoProfeInputs, pagina: string) => {
 
   return await listarEntidad<ResulListadoProfesoresUsuarios>({
     slqListado: sql,
-    limit: limite,
+    limit: limit,
     pagina,
     valores,
     entidad: "ProfesorEscuela",

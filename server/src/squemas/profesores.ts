@@ -167,7 +167,7 @@ export const ListaProfeUsuariosSchema = z.object({
                     .int({message : "Ident. Escuela debe ser entero"})
                     .positive({ message : "Ident. Escuela debe ser positivo"}),
 
-        limite: z.coerce.number().int().min(1).default(10), 
+        limit: z.coerce.number().int().min(1).default(10), 
         offset: z.coerce.number().int().min(0).default(0),     
 });
 

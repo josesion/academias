@@ -12,4 +12,4 @@ ruta.delete("/api/borrar_alumno/:dni/:id_escuela/:estado" ,permisos.validarPermi
 
 
 
-export default ruta;
+export default ruta ;

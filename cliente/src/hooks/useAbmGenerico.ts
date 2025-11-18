@@ -84,8 +84,9 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         pagina : config.paginacion.pagina,
         limite : config.paginacion.limite
         } );
-    
-  
+
+       
+
 // -------------------------------- Manejadores de Modales y Acciones Principales ---------------------------------- 
 
 /** Manejador para abrir el modal de Alta. Resetea formData y setea el tipo de formulario. */
@@ -155,6 +156,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
 /** Maneja el cambio del estado de listado (Activos/Inactivos), ajustando el botón de acción. */
     const handleEstado = (e: React.ChangeEvent<HTMLSelectElement>) =>{
+     
             if ( e.target.value === "activos" ){ 
                 setEstadoUrl("inactivos");  // La acción será "inactivar" si se muestran "activos"
                 setTextoBoton("Eliminar")  // El botón dirá Eliminar (o Inactivar)
@@ -258,11 +260,10 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         const servicioApiFetch = config.servicios.listado;
         try {
             setCarga(true);
-        
+  
             const listado_alumnos = await servicioApiFetch(filtroData, signal);
-          
             // NOTA: Aquí podrías añadir una lógica para redirigir al login si el statusCode es de No Autorizado.
-            
+            
             // Éxito: Verifica que los datos y la paginación existan.
             if (!listado_alumnos.error && listado_alumnos.data && listado_alumnos.paginacion) {
                 setDataListado(listado_alumnos.data);
@@ -270,9 +271,9 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
                 setEstadoListado({ error: listado_alumnos.error, statuscode: listado_alumnos.statusCode })
             }else{  
                 // Error o lista vacía: Limpia los datos y resetea la paginación a 1.
-                setEstadoListado({ error: listado_alumnos.error, statuscode: listado_alumnos.statusCode }); 
+                setEstadoListado({ error: listado_alumnos.error , statuscode: 404 }); 
                 setDataListado([]); 
-                setBarraPaginacion({ ...config.paginacion, contadorPagina: 1 });     
+                setBarraPaginacion({ ...config.paginacion, contadorPagina: 1 }); 
             }
         } catch (error) {
             // Manejo de errores de conexión/aborto.
@@ -282,7 +283,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             setCarga(false);
         }
     };
-
+        
     listado();
     return () => {
         // Cleanup: Aborta la petición y limpia el timer si el componente se desmonta o el efecto se re-ejecuta.

@@ -38,6 +38,7 @@ describe('Pruebas de Conexión a la Base de Datos (MySQL)', () => {
     await connection.query('DELETE FROM alumnos'); 
     await connection.query('DELETE FROM escuelas');
     await connection.query('DELETE FROM planes_pago');
+    await connection.query('DELETE FROM profesores');
 
     });
 

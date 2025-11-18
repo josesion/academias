@@ -31,6 +31,7 @@ const capitalize = (s: string): string => {
     return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
+
 /**
  * Componente `ItemGenerico` para renderizar de manera dinámica los pares clave-valor de un objeto
  * y proporciona botones de "Editar" y "Eliminar".
@@ -70,6 +71,7 @@ export function ItemGenerico<T extends object>({
             {
                 // Mapea las entradas del objeto `data` (pares clave-valor).
                 // La key del div es la clave del objeto para garantizar que cada elemento sea único en la lista.
+                // basicamente sirve para q no explote si algun valor es nulo o indefinido o un objeto 
                 data && Object.entries(data).map(([key, value]) => {
                     let displayValue: string | number = "";
 

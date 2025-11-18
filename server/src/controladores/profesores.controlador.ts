@@ -115,6 +115,7 @@ const modProfesores = async ( req : Request , res : Response )  => {
     const datosProfesor : ModProfesorInputs = ModProfesoresSchema.parse( dataMod );
     const modProfesor  = await dataProfesores.modProfesores( datosProfesor );
     console.log(modProfesor)
+    console.log("llego hasta aca")
     if ( modProfesor.code === "PROFESORESCUELA_MODIFICAR"){
         return enviarResponse(
             res,
@@ -137,15 +138,16 @@ const modProfesores = async ( req : Request , res : Response )  => {
  */
 
 const estadoProfesor = async ( req : Request , res : Response ) => {
- //console.log( req.params );
+ 
     const {dni , id_escuela , estado} = req.params ;
     const data = {dni : dni , id_escuela : Number(id_escuela) , estado : estado };
 
+
     const estadoProfesorData : EstadoProfesorInputs = EstadoProfesorSchema.parse(data);
-   // console.log(estadoProfesor)
+   
     const estadoProfe = await dataProfesores.estadoProfesor(estadoProfesorData);
 
-    //console.log(estadoProfe)
+    console.log(estadoProfe)
     if ( estadoProfe.error === false) {
         switch (estadoProfe.code) {
             case "PROFESORESCUELA_ELIMINAR":
@@ -168,32 +170,34 @@ const estadoProfesor = async ( req : Request , res : Response ) => {
 
 
 const listadoProfesores = async( req : Request , res : Response ) => {
-  const { dni , apellido , estado , escuela , limit , pagina} = req.query ;  
 
-  const offset = ( Number(pagina) -1 ) * Number(limit) ;
+    const { dni , apellido , estado , escuela , limit , pagina} = req.query;  
 
-  const listadoParams : ListadoProfeInputs = ListaProfeUsuariosSchema.parse({
+    const offset = ( Number(pagina) -1 ) * Number(limit) ;
+
+    const listadoParams : ListadoProfeInputs = ListaProfeUsuariosSchema.parse({
         dni : String(dni),
         apellido : String(apellido),
         estado : String(estado) as 'activos' | 'inactivos',
         id_escuela : Number(escuela),
-        limite  : Number(limit),
+        limit  : Number(limit),
         offset : Number(offset)
-  });
- // console.log(listadoParams)
+    });
 
-  const listado = await dataProfesores.listadoProfesores( listadoParams , Number(pagina) );
-  console.log(listado)
+
+    console.log( listadoParams);
+    const listado = await dataProfesores.listadoProfesores( listadoParams , Number(pagina) );
+
     if ( listado.error === false ) {
         return enviarResponse(
             res,
             CodigoEstadoHTTP.OK,
             listado.message,
             listado.data,
-            undefined,
+            listado.paginacion,
             listado.code
         );
-    }else{
+    } else {
         return enviarResponseError(
             res,
             CodigoEstadoHTTP.NO_ENCONTRADO,
@@ -201,13 +205,13 @@ const listadoProfesores = async( req : Request , res : Response ) => {
             listado.code
         );
     }
-
 };
+
 
 
 export const method = {
     alta    : tryCatch( altaProfesores ),
     mod     : tryCatch( modProfesores ),
-    estado  : tryCatch ( estadoProfesor ), 
-    listado : tryCatch ( listadoProfesores)
+    estado  : tryCatch( estadoProfesor ), 
+    listado : tryCatch( listadoProfesores)
 }
