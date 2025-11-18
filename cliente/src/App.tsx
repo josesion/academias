@@ -10,6 +10,7 @@ import { AlumnoPage } from "./pagina/publico/alumno/Alumno";
 //Paginas AMB
 import { AmbAlumnos } from "./pagina/privado/Alumnos/Alumnos";
 import { AmbPlanesUsuarios } from "./pagina/privado/planes.usuario";
+import { AmbProfesorUsuarios } from "./pagina/privado/profesor.usuario";
 
 // seccion de componentes
 import { MenuNav } from "./componentes/MenuNav/MenuNav";
@@ -25,26 +26,27 @@ import "./app.css";
 function App() {
   return (
 <div className="app">
-<ProtectRutasProv>
-    <BrowserRouter>
-          <MenuNav></MenuNav>
-      <Routes>
-          <Route path="/" element={ <Inicio/> } />
-          <Route path="/assistant_login" element={ <Login/> } />
-          <Route path="/login" element={ <Login/> } />
-          <Route path="/alum_manager_priv" element={ <AlumnoPage/> }/> 
+  <ProtectRutasProv>
+      <BrowserRouter>
+            <MenuNav></MenuNav>
+        <Routes>
+            <Route path="/" element={ <Inicio/> } />
+            <Route path="/assistant_login" element={ <Login/> } />
+            <Route path="/login" element={ <Login/> } />
+            <Route path="/alum_manager_priv" element={ <AlumnoPage/> }/> 
 
-          <Route  element={ <RutasPrivadas/> }>
-              <Route path="/assistant_manager_priv" element={ <Admin/> } />
+            <Route  element={ <RutasPrivadas/> }>
+                <Route path="/assistant_manager_priv" element={ <Admin/> } />
 
-              <Route path="/user_manager_priv" element={ <UsuarioPage/> }/> 
-              <Route path="/user_alumno" element={ < AmbAlumnos /> }/> 
-              <Route path="/user_planes" element={ < AmbPlanesUsuarios /> }/> 
-          </Route>
-      </Routes>
-        
-    </BrowserRouter>
-</ProtectRutasProv>
+                <Route path="/user_manager_priv" element={ <UsuarioPage/> }/> 
+                <Route path="/user_alumno" element={ < AmbAlumnos /> }/> 
+                <Route path="/user_planes" element={ < AmbPlanesUsuarios /> }/> 
+                <Route path="/user_profesores" element={ < AmbProfesorUsuarios /> }/> 
+            </Route>
+        </Routes>
+          
+      </BrowserRouter>
+  </ProtectRutasProv>
 </div>
   )
 }

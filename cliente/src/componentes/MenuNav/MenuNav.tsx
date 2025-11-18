@@ -31,6 +31,7 @@ export const MenuNav = () =>{
     //Usuario
     const irAlumno = () =>{ navegar("/user_alumno")};
     const irPlanes = () =>{ navegar("/user_planes")};
+    const irProfesores = () =>{ navegar("/user_profesores")};
 
     return(
 
@@ -62,9 +63,11 @@ export const MenuNav = () =>{
                             <li className="alinear" onClick={irLogin}>
                                 <VscAccount size={20} className="alinear" />Registrar
                             </li>
+
                             <li className="alinear">
                                 <FaDoorClosed size={20} className="alinear" />Cerrar
                             </li>
+                            
                         </>
                     )
                 }
@@ -78,6 +81,11 @@ export const MenuNav = () =>{
 
                             <li  className="alinear" onClick={ irPlanes } >
                                 <MdAppRegistration size={20} className="alinear" />Planes
+                            </li>
+
+                            
+                            <li  className="alinear" onClick={ irProfesores } >
+                                <MdAppRegistration size={20} className="alinear" />Profesor
                             </li>
 
                         </>
