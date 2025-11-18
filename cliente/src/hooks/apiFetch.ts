@@ -2,6 +2,11 @@
  * Interfaz para la respuesta de éxito de la API.
  * @template T El tipo de los datos que devuelve la API en caso de éxito.
  */
+
+
+/**
+ * Interfaz para la respuesta exitosa
+ */
 export interface ApiSuccessResponse<T> {
     error: false;
     message: string;
@@ -13,10 +18,16 @@ export interface ApiSuccessResponse<T> {
         contadorPagina: number;
     };
     code?: string;
+    meta?: {
+        clientTimestamp: string;
+        serverTimestamp?: string | null;
+        durationMs?: number;
+        responseSize: number;
+    };
 }
 
 /**
- * Interfaz para la respuesta de error (para cualquier fallo).
+ * Interfaz para la respuesta de error
  */
 export interface ApiErrorResponse {
     error: true;
@@ -24,17 +35,18 @@ export interface ApiErrorResponse {
     statusCode: number;
     code?: string;
     errorsDetails?: object;
+    meta?: {
+        clientTimestamp: string;
+        serverTimestamp?: string | null;
+        durationMs?: number;
+        responseSize: number;
+    };
 }
 
-/**
- * Tipo de unión para la respuesta general de la API.
- * @template T El tipo de datos esperado en el campo 'data' en una respuesta de éxito.
- */
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 /**
- * Interfaz base para el cuerpo JSON crudo que devuelve el backend.
- * Ajustamos los tipos de 'paginacion' y 'errorsDetails' a un objeto, no a un array.
+ * Estructura base que devuelve el backend
  */
 export interface BackendRawResponse {
     error: boolean;
@@ -47,11 +59,12 @@ export interface BackendRawResponse {
     };
     code?: string;
     errorsDetails?: object;
+    meta?: {
+        serverTimestamp?: string | null;
+        durationMs?: number;
+    };
 }
 
-/**
- * Define las opciones para tu fetch genérico.
- */
 interface FetchOptions {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
     body?: object;
@@ -61,100 +74,140 @@ interface FetchOptions {
 }
 
 /**
- * Función genérica para manejar peticiones a la API.
- * @template T El tipo de datos que esperas en 'data' cuando la petición es exitosa.
- * @param {string} url La URL a la que se realiza la petición.
- * @param {FetchOptions} [options] Opciones opcionales para la petición.
- * @returns {Promise<ApiResponse<T>>} Una promesa que se resuelve con la respuesta tipada.
+ * apiFetch PRO – totalmente optimizado
  */
-export async function apiFetch<T>(url: string, options?: FetchOptions ): Promise<ApiResponse<T>> {
+export async function apiFetch<T>(
+    url: string,
+    options?: FetchOptions
+): Promise<ApiResponse<T>> {
+
+    const clientTimestamp = new Date().toISOString();
+    const start = performance.now();
+    const calcDuration = () => Number((performance.now() - start).toFixed(2));
 
     const defaultHeaders = {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
     };
 
     try {
-        const response: Response = await fetch(url, {
+
+        const response = await fetch(url, {
             method: options?.method || 'GET',
             headers: {
                 ...defaultHeaders,
-                ...(options?.headers || {}),
+                ...(options?.headers || {})
             },
             body: options?.body ? JSON.stringify(options.body) : undefined,
             credentials: options?.credentials || 'include',
-            signal: options?.signal,
+            signal: options?.signal
         });
 
-        // 1. Manejo de respuestas HTTP no exitosas (4xx, 5xx)
+       
+           //  AQUI — leer la respuesta cruda
+           // se consume el cuerpo de la respuesta como texto
+        const rawText = await response.text();
+        const responseSize = new TextEncoder().encode(rawText).length;
+
+
+
+        // ----------------------------
+        //  MANEJO DE RESPUESTAS HTTP ERROR (4xx / 5xx)
+        // ----------------------------
         if (!response.ok) {
-            let errorDetails: any;
-            let errorMessage = `Error HTTP ${response.status}: ${response.statusText || 'Error desconocido'}`;
-            let errorCode: string | undefined;
+            let raw: BackendRawResponse | null = null;
 
             try {
-                // Intenta leer el cuerpo del error como JSON
-                const rawErrorData: BackendRawResponse = await response.json();
-                if (rawErrorData && typeof rawErrorData.message === 'string') {
-                    errorMessage = rawErrorData.message;
-                }
-                // Los campos están en el nivel principal del objeto, no anidados
-                errorDetails = rawErrorData.errorsDetails;
-                errorCode = rawErrorData.code;
-            } catch (jsonError) {
-                console.warn(`No se pudo parsear la respuesta de error JSON para ${url}. Status: ${response.status}`);
+                raw = rawText ? JSON.parse(rawText) : null;
+            } catch (_) {
+                // Si no pudo parsear JSON, raw queda en null
             }
 
             return {
                 error: true,
-                message: errorMessage,
+                message: raw?.message || `Error HTTP ${response.status}`,
                 statusCode: response.status,
-                errorsDetails: errorDetails,
-                code: errorCode,
-            } as ApiErrorResponse;
+                errorsDetails: raw?.errorsDetails,
+                code: raw?.code,
+                meta: {
+                    clientTimestamp,
+                    serverTimestamp: raw?.meta?.serverTimestamp ?? null ,
+                    durationMs: calcDuration(),
+                    responseSize : responseSize
+                }
+            };
         }
 
-        // 2. Manejo de respuestas HTTP exitosas (2xx)
-        const rawData: BackendRawResponse = await response.json();
+        // ----------------------------
+        //  RESPUESTA EXITOSA -> PARSEAR JSON
+        // ----------------------------
+        const rawData: BackendRawResponse = rawText ? JSON.parse(rawText) : { error: false, message: "", data: null };
 
-        if (rawData.error === true) {
-            // Si el backend indica un error lógico
+        // Si el backend indica error lógico
+        if (rawData.error) {
             return {
                 error: true,
-                message: rawData.message || 'Operación fallida por lógica de negocio',
+                message: rawData.message,
                 statusCode: response.status,
-                errorsDetails: rawData.errorsDetails, // Acceso directo, sin anidar en 'data'
-                code: rawData.code, // Acceso directo, sin anidar en 'data'
-            } as ApiErrorResponse;
+                errorsDetails: rawData.errorsDetails,
+                code: rawData.code,
+                meta: {
+                    clientTimestamp,
+                    serverTimestamp: rawData.meta?.serverTimestamp ?? null,
+                    durationMs: calcDuration(),
+                    responseSize : responseSize
+                }
+            };
         }
 
-        // 3. Respuesta de éxito final
+        // ----------------------------
+        //  RESPUESTA EXITOSA REAL
+        // ----------------------------
         return {
             error: false,
-            message: rawData.message || 'Operación exitosa',
+            message: rawData.message || "Operación exitosa",
             data: rawData.data as T,
-            paginacion: rawData.paginacion,
             statusCode: response.status,
+            paginacion: rawData.paginacion,
             code: rawData.code,
-        } as ApiSuccessResponse<T>;
+            meta: {
+                clientTimestamp,
+                serverTimestamp: rawData.meta?.serverTimestamp  ?? null ,
+                durationMs: calcDuration(),
+                responseSize : responseSize
+            }
+        };
 
     } catch (err: any) {
-        // Manejar el AbortError y otros errores de red/cliente
+
+        // ----------------------------
+        //  ERROR POR ABORTAR MANUALMENTE
+        // ----------------------------
         if (err.name === 'AbortError') {
-            console.warn(`Petición abortada intencionalmente para ${url}`);
             return {
                 error: true,
-                message: "Petición cancelada por el usuario.",
+                message: "Petición cancelada",
                 statusCode: 0,
-                errorsDetails: { name: 'AbortError' },
-                code: 'REQUEST_ABORTED',
-            } as ApiErrorResponse;
+                code: "REQUEST_ABORTED",
+                meta: { 
+                    clientTimestamp ,
+                    durationMs: calcDuration(),
+                    responseSize: 0
+                }
+            };
         }
 
-        // Manejo de errores de red o errores de JavaScript inesperados
+        // ----------------------------
+        //  ERROR DE RED / DESCONEXIÓN
+        // ----------------------------
         return {
             error: true,
-            message: `Error de conexión o problema inesperado: ${err.message || 'Verifica tu conexión a internet.'}`,
+            message: "Error de conexión o inesperado: " + (err.message || ""),
             statusCode: 0,
-        } as ApiErrorResponse;
+            meta: { 
+                    clientTimestamp  , 
+                    durationMs: calcDuration(), 
+                    responseSize: 0
+                    }
+            };
     }
 }
