@@ -55,6 +55,7 @@ interface AbmConfig {
  * Este hook es independiente de la entidad (Alumno, Curso, etc.).
  */
 export const useAbmGenerico = <TData>( config : AbmConfig) =>{
+
 // --- Estados de Control de UI (Modales, Carga, Mensajes) ---
     const [ modal , setModal]  = useState<boolean>(false);         // Controla la visibilidad del modal de Alta/Modificar.
     const [ modalEliminar , setModalEliminar] = useState<boolean>(false); // Controla la visibilidad del modal de confirmación de Eliminar.
@@ -85,7 +86,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         limite : config.paginacion.limite
         } );
 
-       
+     
 
 // -------------------------------- Manejadores de Modales y Acciones Principales ---------------------------------- 
 
@@ -257,13 +258,15 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     });
 
     const listado = async () => {
+
+
         const servicioApiFetch = config.servicios.listado;
         try {
             setCarga(true);
-  
+        
             const listado_alumnos = await servicioApiFetch(filtroData, signal);
             // NOTA: Aquí podrías añadir una lógica para redirigir al login si el statusCode es de No Autorizado.
-            
+            //console.log(listado_alumnos)
             // Éxito: Verifica que los datos y la paginación existan.
             if (!listado_alumnos.error && listado_alumnos.data && listado_alumnos.paginacion) {
                 setDataListado(listado_alumnos.data);
@@ -277,6 +280,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             }
         } catch (error) {
             // Manejo de errores de conexión/aborto.
+        console.log("paso algo")
             setErrorGenerico('Ocurrió un error inesperado al cargar los datos.');
         } finally {
             clearTimeout(timeoutId);
@@ -292,7 +296,6 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     };
 
 }, [filtroData, actualizarListado ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
-
 
 // ---------------------------------- Retorno de la API del Hook ----------------------------------
      

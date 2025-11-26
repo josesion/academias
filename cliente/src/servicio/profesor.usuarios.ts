@@ -3,7 +3,7 @@ import { apiFetch ,type ApiResponse  } from "../hooks/apiFetch";
 import { verificarAutenticacion } from "../hooks/verificacionUsuario";
 
 import type * as TipadoProfesores from "../tipadosTs/profesores";
-import { da } from "zod/locales";
+
 
 export const altaProfesor = async( data : TipadoProfesores.RegistroProfesores ) 
    :Promise<ApiResponse<TipadoProfesores.RegistroProfesores>> =>{
@@ -75,12 +75,11 @@ export const bajaProfesor = async( data : TipadoProfesores.BajaProfesores ) => {
             errorsDetails: undefined
         };
     }
-   // console.log(data)
+   
     const { dni , id_escuela , estado } = data;
 
     const ruta  = `${PAGINA}api/usu_estado_profesor/${dni}/${id_escuela}/${estado}`;
-    console.log(ruta)
-
+   
 
     return await apiFetch( ruta , {
         method : "PUT",

@@ -12,6 +12,7 @@ import planesRutas from "./rutas/plan.ruta";
 import loginRutas from "./rutas/login.rutas";
 import alumnoRutas from "./rutas/alumno.ruta";
 import profesorRutas from "./rutas/profesores.ruta";
+import nivelRutas from "./rutas/nivel.ruta";
 
 
 import protectRutas from "./rutas/protegida.rutas";
@@ -33,6 +34,7 @@ app.use(planesRutas);
 app.use(usuarioRutas);
 app.use(loginRutas);
 app.use(planesUsuariosRuta);
+app.use(nivelRutas);
 
 app.use(protectRutas);
 

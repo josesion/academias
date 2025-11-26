@@ -4,6 +4,8 @@
  */
 
 
+
+
 /**
  * Interfaz para la respuesta exitosa
  */
@@ -80,7 +82,7 @@ export async function apiFetch<T>(
     url: string,
     options?: FetchOptions
 ): Promise<ApiResponse<T>> {
-
+   
     const clientTimestamp = new Date().toISOString();
     const start = performance.now();
     const calcDuration = () => Number((performance.now() - start).toFixed(2));

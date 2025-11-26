@@ -198,7 +198,7 @@ const listadoProfesores = async (datos: ListadoProfeInputs, pagina: string) => {
   const { dni, apellido, estado, id_escuela, limit, offset } = datos;
   const dniFiltro = `%${dni}%`;
   const apellidoFiltro = `%${apellido}%`;
-  console.log(dniFiltro, apellidoFiltro);
+  
   const sql = `
     SELECT 
       p.dni,

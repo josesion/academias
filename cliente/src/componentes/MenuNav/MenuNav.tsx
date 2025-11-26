@@ -8,6 +8,13 @@ import { VscAccount } from "react-icons/vsc";
 import { MdAppRegistration } from "react-icons/md";
 import { GiBlackBook } from "react-icons/gi";
 import { HiChevronDown , HiChevronUp} from "react-icons/hi";
+
+import { PiStudentBold } from "react-icons/pi";
+import { BsPersonRolodex } from "react-icons/bs";
+import { AiOutlineCustomerService } from "react-icons/ai";
+import { SiLevelsdotfyi } from "react-icons/si";
+import { ImExit } from "react-icons/im";
+
 //Seccion importComponentes
 
 //Seccion Contextos
@@ -21,6 +28,8 @@ export const MenuNav = () =>{
     const navegar =  useNavigate();
     const {rol} = useContext(RutasProtegidasContext);
 
+    console.log(rol , "rol desde menu nav");
+
     const [menu , setMenu] = useState<boolean>(true);
 
     const irInicio = () =>{navegar("/")};
@@ -32,13 +41,15 @@ export const MenuNav = () =>{
     const irAlumno = () =>{ navegar("/user_alumno")};
     const irPlanes = () =>{ navegar("/user_planes")};
     const irProfesores = () =>{ navegar("/user_profesores")};
+    const irNiveles = () =>{ navegar("/user_nivel")};
+
 
     return(
 
         <nav className="menu_nav  ">
 
             <div className="app-name-container">
-                <p className="app-name">DanzaStudio Pro</p>
+                <p className="app-name">StudioPro</p>
             </div>
             
             <ul className={`menu_nav_lista   ${menu ? 'abierto' : 'menu'}`}>
@@ -76,7 +87,7 @@ export const MenuNav = () =>{
                     rol?.rol === "usuario" && (
                         <>
                             <li  className="alinear" onClick={ irAlumno } >
-                                <MdAppRegistration size={20} className="alinear" />Alumnos
+                                <PiStudentBold  size={20} className="alinear" />Alumnos
                             </li>
 
                             <li  className="alinear" onClick={ irPlanes } >
@@ -85,7 +96,19 @@ export const MenuNav = () =>{
 
                             
                             <li  className="alinear" onClick={ irProfesores } >
-                                <MdAppRegistration size={20} className="alinear" />Profesor
+                                <BsPersonRolodex size={20} className="alinear" />Profesor
+                            </li>
+
+                            <li  className="alinear" onClick={ irNiveles } >
+                                <SiLevelsdotfyi size={20} className="alinear" />Niveles
+                            </li>
+
+                            <li  className="alinear"  >
+                                <AiOutlineCustomerService size={20} className="alinear" />Generos
+                            </li>
+
+                            <li  className="alinear"  >
+                                <ImExit size={20} className="alinear" />Salir
                             </li>
 
                         </>

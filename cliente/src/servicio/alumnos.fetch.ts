@@ -95,6 +95,8 @@ export const listadoAlumnos = async( parametrosQuery : TipadoAlumnos.DataAlumnos
     };
 
 const rutaCompleta = `${PAGINA}api/listar_alumno?${new URLSearchParams(parametrosConvertidos).toString()}`;
+
+
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
         return {
