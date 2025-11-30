@@ -263,10 +263,10 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         const servicioApiFetch = config.servicios.listado;
         try {
             setCarga(true);
-        
+                  //console.log(filtroData)
             const listado_alumnos = await servicioApiFetch(filtroData, signal);
             // NOTA: Aquí podrías añadir una lógica para redirigir al login si el statusCode es de No Autorizado.
-            //console.log(listado_alumnos)
+                  //console.log(listado_alumnos)
             // Éxito: Verifica que los datos y la paginación existan.
             if (!listado_alumnos.error && listado_alumnos.data && listado_alumnos.paginacion) {
                 setDataListado(listado_alumnos.data);

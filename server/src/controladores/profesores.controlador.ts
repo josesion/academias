@@ -114,8 +114,7 @@ const modProfesores = async ( req : Request , res : Response )  => {
     
     const datosProfesor : ModProfesorInputs = ModProfesoresSchema.parse( dataMod );
     const modProfesor  = await dataProfesores.modProfesores( datosProfesor );
-    console.log(modProfesor)
-    console.log("llego hasta aca")
+
     if ( modProfesor.code === "PROFESORESCUELA_MODIFICAR"){
         return enviarResponse(
             res,
@@ -147,7 +146,6 @@ const estadoProfesor = async ( req : Request , res : Response ) => {
    
     const estadoProfe = await dataProfesores.estadoProfesor(estadoProfesorData);
 
-    console.log(estadoProfe)
     if ( estadoProfe.error === false) {
         switch (estadoProfe.code) {
             case "PROFESORESCUELA_ELIMINAR":
@@ -185,7 +183,7 @@ const listadoProfesores = async( req : Request , res : Response ) => {
     });
 
 
-    console.log( listadoParams);
+ 
     const listado = await dataProfesores.listadoProfesores( listadoParams , Number(pagina) );
 
     if ( listado.error === false ) {

@@ -178,7 +178,7 @@ const bajaProfesor = async (
   const valores: unknown[] = [estado, id_escuela, dni];
   const datosADevolver = { dni, id_escuela, estado };
 
-  return iudEntidad<FiltroProfeEscuelaBaja>({
+  return await iudEntidad<FiltroProfeEscuelaBaja>({
     slqEntidad: sql,
     valores,
     entidad: "ProfesorEscuela",

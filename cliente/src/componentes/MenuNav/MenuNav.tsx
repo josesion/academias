@@ -28,8 +28,6 @@ export const MenuNav = () =>{
     const navegar =  useNavigate();
     const {rol} = useContext(RutasProtegidasContext);
 
-    console.log(rol , "rol desde menu nav");
-
     const [menu , setMenu] = useState<boolean>(true);
 
     const irInicio = () =>{navegar("/")};
@@ -42,7 +40,7 @@ export const MenuNav = () =>{
     const irPlanes = () =>{ navegar("/user_planes")};
     const irProfesores = () =>{ navegar("/user_profesores")};
     const irNiveles = () =>{ navegar("/user_nivel")};
-
+    const irTipos = () =>{ navegar("/user_tipo")};
 
     return(
 
@@ -103,7 +101,7 @@ export const MenuNav = () =>{
                                 <SiLevelsdotfyi size={20} className="alinear" />Niveles
                             </li>
 
-                            <li  className="alinear"  >
+                            <li  className="alinear" onClick={ irTipos } >
                                 <AiOutlineCustomerService size={20} className="alinear" />Generos
                             </li>
 

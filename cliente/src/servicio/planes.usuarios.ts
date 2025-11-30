@@ -1,11 +1,24 @@
 import { PAGINA } from "./variables.globales";
 import { apiFetch, type ApiResponse } from "../hooks/apiFetch";
+import { verificarAutenticacion } from "../hooks/verificacionUsuario";
 
 import * as TipadoPlanesUsuarios from "../tipadosTs/planes.usuarios";
 
 
 export const registroPlanesUsuario = async ( parametros : TipadoPlanesUsuarios.CrearPlanesUsuarios) 
  : Promise<ApiResponse<TipadoPlanesUsuarios.PlanesUsuarioResponse>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+            return {
+                error: true,
+                message: "Usuario no autenticado",
+                statusCode: 401,
+                code: "NOT_AUTHENTICATED",
+                errorsDetails: undefined
+            };
+        }
+
 
    const rutaCompleta = `${PAGINA}api/usu_planes`;  
    return await apiFetch( rutaCompleta , {
@@ -28,6 +41,17 @@ export const registroPlanesUsuario = async ( parametros : TipadoPlanesUsuarios.C
 export const eliminarPlanUsuario = async ( parametros : TipadoPlanesUsuarios.EliminarPlanUsuario) 
  : Promise<ApiResponse<TipadoPlanesUsuarios.EliminarPlanUsuariosResponse>> =>{
 
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+            return {
+                error: true,
+                message: "Usuario no autenticado",
+                statusCode: 401,
+                code: "NOT_AUTHENTICATED",
+                errorsDetails: undefined
+            };
+    }
+
     const rutaCompleta = `${PAGINA}api/usu_estado_planes/${parametros.id}/${parametros.id_escuela}/${parametros.estado}`;
 
     return await apiFetch( rutaCompleta , { 
@@ -39,7 +63,16 @@ export const eliminarPlanUsuario = async ( parametros : TipadoPlanesUsuarios.Eli
 export const  modPlanUsuario= async ( parametros : TipadoPlanesUsuarios.ModPlanesUsuarios)
  : Promise<ApiResponse<TipadoPlanesUsuarios.ModPlanesUsuariosResult>> =>{
    
- 
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+            return {
+                error: true,
+                message: "Usuario no autenticado",
+                statusCode: 401,
+                code: "NOT_AUTHENTICATED",
+                errorsDetails: undefined
+            };
+    }
     const rutaCompleta = `${PAGINA}api/usu_mod_planes/${parametros.id}/${parametros.id_escuela}`;
 
     return await apiFetch( rutaCompleta , {
@@ -58,6 +91,17 @@ export const  modPlanUsuario= async ( parametros : TipadoPlanesUsuarios.ModPlane
 export const listadoPlanesUsuarios = async( parametros : TipadoPlanesUsuarios.listadoPlanUsuario & TipadoPlanesUsuarios.Paginacion,
     signal? : AbortSignal 
  ) : Promise<ApiResponse<TipadoPlanesUsuarios.PlanesUsuarioResponse[]>> => {
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+            return {
+                error: true,
+                message: "Usuario no autenticado",
+                statusCode: 401,
+                code: "NOT_AUTHENTICATED",
+                errorsDetails: undefined
+            };
+        }    
        
         const parametrosConvertidos = {
             descripcion : parametros.descripcion,

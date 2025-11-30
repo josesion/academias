@@ -11,7 +11,8 @@ import { AlumnoPage } from "./pagina/publico/alumno/Alumno";
 import { AmbAlumnos } from "./pagina/privado/Alumnos/Alumnos";
 import { AmbPlanesUsuarios } from "./pagina/privado/planes.usuario";
 import { AmbProfesorUsuarios } from "./pagina/privado/profesor.usuario";
-import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario"
+import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario";
+import { AbmTipoUsuarios } from "./pagina/privado/tipo.usuario";
 
 // seccion de componentes
 import { MenuNav } from "./componentes/MenuNav/MenuNav";
@@ -44,6 +45,7 @@ function App() {
                 <Route path="/user_planes" element={ < AmbPlanesUsuarios /> }/> 
                 <Route path="/user_profesores" element={ < AmbProfesorUsuarios /> }/> 
                 <Route path="/user_nivel" element={ < AbmNivelUsuarios /> }/> 
+                <Route path="/user_tipo" element={ < AbmTipoUsuarios /> }/> 
 
             </Route>
         </Routes>

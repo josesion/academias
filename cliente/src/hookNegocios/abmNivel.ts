@@ -20,7 +20,7 @@ const inputsFiltro : InputsPropsBuscador[] = [
 
     {
         name        : "nivel",
-        label       : "Nivel descipcion",
+        label       : "Nivel descripcion",
         type        : "text",
         placeholder : "Ingrese el nivel",
         value       : "",

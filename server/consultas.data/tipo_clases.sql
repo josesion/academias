@@ -1,17 +1,17 @@
--- creacion de la tabla --
-CREATE TABLE tipo_clases (
-    id_tipo_clases INT PRIMARY KEY AUTO_INCREMENT,
-    descripcion VARCHAR(100),
-    baja VARCHAR(20) DEFAULT 'activos'
+
+CREATE TABLE tipo_clase (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tipo VARCHAR(50) NOT NULL,
+    fecha_creacion DATE,
+    estado VARCHAR(10) NOT NULL DEFAULT 'activos',
+    id_escuela INT NOT NULL,
+    CONSTRAINT fk_tipo_clase_escuela -- ⬅️ ¡Nombre Único Aquí!
+        FOREIGN KEY (id_escuela)
+        REFERENCES escuelas(id_escuela)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- inserccion de la tabla --
-INSERT INTO tipo_clases (descripcion, baja) VALUES
-('Salsa', 'activos'),
-('Bachata', 'activos'),
-('Hip Hop', 'activos'),
-('Tango', 'activos'),
-('Ballet', 'activos'),
-('Reggaeton', 'activos'),
-('K-Pop', 'activos'),
-('Folklore', 'activos');
+INSERT INTO tipo_clase (tipo, fecha_creacion, estado, id_escuela)
+VALUES ('Teórica', CURDATE(), 'activos', 107);
