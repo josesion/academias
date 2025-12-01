@@ -15,6 +15,7 @@ import profesorRutas from "./rutas/profesores.ruta";
 import nivelRutas from "./rutas/nivel.ruta";
 import tipoRutas from  "./rutas/tipo.ruta";
 
+import inscripciones from "./rutas/inscripciones";
 
 import protectRutas from "./rutas/protegida.rutas";
 
@@ -38,6 +39,7 @@ app.use(planesUsuariosRuta);
 app.use(nivelRutas);
 app.use(tipoRutas);
 
+app.use(inscripciones)
 
 app.use(protectRutas);
 
@@ -49,11 +51,13 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
     let code = "INTERNAL_SERVER_ERROR";
     let errorsDetails: any[] | undefined = undefined;
 
+    
         if (err instanceof ClientError) {
             statusCode = err.statusCode;
             message = err.message;
             code = err.code;
-        }else if (err instanceof z.ZodError) {
+        }
+        else if (err instanceof z.ZodError) {
             statusCode = 400;
             message = "Error de validación de datos";
             code = "VALIDATION_ERROR";
@@ -62,8 +66,13 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
             campo: zodIssue.path.join('.'),
             message: zodIssue.message,
             code: zodIssue.code
-        }));
-        //console.error("Zod Validation Error:", errorsDetails);
+        }))
+        //  intercepta errores de parseo JSON. del body (ej: `{ "id_plan" : , }`)
+        }
+        else if (err instanceof SyntaxError && (err as any).status === 400 && 'body' in err) {
+             statusCode = 400 ,
+             message    =  "Error de sintaxis JSON: El cuerpo de la solicitud no es un JSON válido.", 
+             code = "INVALID_JSON_SYNTAX"          
         }else{
             console.error("Server Error no manejado:", err);
         }
@@ -71,9 +80,5 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
     enviarResponseError(res, statusCode, message, code, errorsDetails );
 
 });
-
-
-
-
 
 export default app;
