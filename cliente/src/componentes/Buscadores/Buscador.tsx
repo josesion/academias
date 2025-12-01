@@ -64,7 +64,7 @@ interface BuscadorProps {
 
 export const Buscadores = ( parametros : BuscadorProps) =>{
 return(
-    <div className="buscador_contenedor">
+    <div className="buscador_contenedor_comp">
             <p className="buscador_titulo"> {parametros.tituloBuscador} </p>
             <div className="buscador_buscadores">
                 {
@@ -91,7 +91,7 @@ return(
                 <Boton
                     texto={parametros.captionBoton}
                     logo="Add"
-                    clase="agregar"
+                    clase="aceptar"
                     onClick={parametros.onAgregar}
                 />
 

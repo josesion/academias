@@ -1,8 +1,10 @@
 
-.buscador_contenedor{
+.buscador_contenedor_comp{
     display: flex;
-    flex-direction: column;
+    align-items: center;
     max-height: 155px;
+    width: 80%;
+    margin: 8px;
 }
 
 .buscador_buscadores{
@@ -10,7 +12,7 @@
     max-height: 80px;
     width: 80%;
     justify-content: space-around;
-    gap: 10px;
+    
 }
 
 .buscador_boton{
@@ -78,7 +80,7 @@
 
 
 @media (min-width: 1070px) {
-    .buscador_contenedor {
+    .buscador_contenedor_comp {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -87,7 +89,6 @@
 
     .buscador_buscadores{
         flex-direction: row;
-
         justify-content: space-around;
         align-items: center;
     }
@@ -97,29 +98,43 @@
 
 
 @media (min-width: 800px) and (max-width: 1069px){
-    .buscador_buscadores{
-        flex-direction: row;
 
-        width: 100%;
-        justify-content: space-around;
+    .buscador_boton{
+        flex-direction: column;
     }
 }
 
 
 /* --- Media Query para pantallas hasta 576px --- */
 /* (Esta sobreescribe la anterior si el ancho es menor a 576px) */
-@media screen and (max-width: 650px) {
-    .buscador_contenedor {
-        flex-direction: column;
-        max-height: 290px;  
+@media screen and (min-width: 0px) and (max-width: 799px) {
+    .buscador_contenedor_comp {
+        flex-direction: row;
+        max-height: 179px;  
         width: 100%;
-        padding: 2px;
+
+        gap: 2px;
     }
+
+
     .buscador_buscadores{
         flex-direction: column;
         max-height: 250px;
         width: 90%;
+       
     }
+
+
+    .buscador_buscadores{
+      width: 100%;
+    }
+    .buscador_boton{
+        display: flex;
+        flex-direction: column;
+        min-height: 200px;
+        gap: 55px; 
+    }
+
     .buscador_buscadores, .buscador_estado, .buscador_boton {
         width: 50%;
         justify-content: center;

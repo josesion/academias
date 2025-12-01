@@ -27,18 +27,23 @@
 
 html,
 body {
+    
     margin: 0;
     padding: 0;
     height: 100dvh; 
+    width: 100%;
     box-sizing: border-box;
     font-family: var(--fuente-principal);
     overflow-x: hidden;
     min-height: 100dvh;
-    background: var(--color-gradiente-multicolor);   
-
+    background: var(--color-gradiente-multicolor); 
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
 }
 .app {
-    width: 100%;
+    width: 100dvw;
     min-height: 100dvh;
     background:var(--color-gradiente-azul);
     margin: 0;
@@ -46,7 +51,7 @@ body {
     display: flex;
     color: rgb(192, 191, 191);
     flex-direction: column;
-    justify-content: space-between;
+  
 }
 
 

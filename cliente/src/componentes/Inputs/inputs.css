@@ -71,3 +71,8 @@ to {
 }
 
 
+@media (max-width: 576px){
+    .inputs_contenedor{
+       max-width: 280px;
+    }
+}

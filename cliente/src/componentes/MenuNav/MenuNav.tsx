@@ -28,7 +28,7 @@ export const MenuNav = () =>{
     const navegar =  useNavigate();
     const {rol} = useContext(RutasProtegidasContext);
 
-    const [menu , setMenu] = useState<boolean>(true);
+    const [menu , setMenu] = useState<boolean>(false);
 
     const irInicio = () =>{navegar("/")};
     const irLogin = () =>{navegar("/login")};
@@ -36,11 +36,11 @@ export const MenuNav = () =>{
     //administrador
 
     //Usuario
-    const irAlumno = () =>{ navegar("/user_alumno")};
-    const irPlanes = () =>{ navegar("/user_planes")};
-    const irProfesores = () =>{ navegar("/user_profesores")};
-    const irNiveles = () =>{ navegar("/user_nivel")};
-    const irTipos = () =>{ navegar("/user_tipo")};
+    const irAlumno = () =>{ navegar("/user_alumno"), setMenu(false)};
+    const irPlanes = () =>{ navegar("/user_planes"), setMenu(false)};
+    const irProfesores = () =>{ navegar("/user_profesores"), setMenu(false)};
+    const irNiveles = () =>{ navegar("/user_nivel"), setMenu(false)};
+    const irTipos = () =>{ navegar("/user_tipo"), setMenu(false)};
 
     return(
 

@@ -24,6 +24,9 @@
 
     transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease;
     will-change: transform, box-shadow;
+
+    background-color: #dbcece
+    ;
 }
 
 .item_generico:hover {
@@ -120,15 +123,17 @@
 /* ---------- RESPONSIVE (opcional, por si el contenedor no limita ancho) ---------- */
 @media (max-width: 576px) {
     .item_generico { max-width: 100%; }
-    .item_generico_contenedor { margin: 0 4px; padding: 8px; }
+    .item_generico_contenedor { margin: 0 4px; padding: 8px;}
+    .botonera_item_generico { flex-direction: column;}
 }
 
-@media (min-width: 577px) and (max-width: 999px) {
-    .item_generico { max-width: 520px; }
+@media  (min-width: 701px) and (max-width: 1069px)  {
+   .botonera_item_generico { flex-direction: column;}
+
 }
 
-@media (min-width: 1000px) {
-    .item_generico { max-width: 560px; }
+@media (max-width: 1000px) {
+    .item_generico { max-width: 560px; background-color: #7c3aed;}
 }
 
 /* Respeto a usuarios con “reducir movimiento” */

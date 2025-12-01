@@ -6,7 +6,10 @@
     background-color:var(--color-secundario);
     animation: slideFade 0.4s ease;
     border-radius: 8px;
+    width: 97%;
 }
+
+
 
 /* Tarjetas (los .item_generico que contiene) */
 .listado_molde > .item_generico {
@@ -30,10 +33,14 @@
 }
 
 
+
 @media (max-width: 576px) {
 
 .listado_molde {
     grid-template-columns: 1fr;
+    
+    align-items: center;
+    justify-items: auto;
     padding: 8px;
     animation: slideFade 0.4s ease;
 }
@@ -44,7 +51,7 @@
 @media (min-width: 701px) and (max-width: 1069px) {
 
 .listado_molde {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     padding: 12px;
     animation: slideFade 0.4s ease;
 }

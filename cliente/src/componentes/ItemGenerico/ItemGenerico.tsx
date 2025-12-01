@@ -100,7 +100,7 @@ export function ItemGenerico<T extends object>({
                     texto="Editar"
                     logo="Edit"
                     size={20}
-                    clase="editar"
+                    clase="aceptar"
                     onClick={() => onEditarButton && data && onEditarButton(data)}
                 />
                 {/* Botón para eliminar. Solo se renderiza si la función `onEliminarButton` se pasa como prop. */}

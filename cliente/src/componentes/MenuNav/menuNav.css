@@ -42,6 +42,7 @@
 /* ------------------- LISTA DE MENÚ ------------------- */
 .menu_nav_lista {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     margin: 0;
     padding: 0;
@@ -157,6 +158,7 @@
     .menu_nav {
         justify-content: center;
         gap: 20px;
+      
     }
 
     .app-name-container {

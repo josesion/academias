@@ -6,9 +6,9 @@
 
     height: 40px;
     max-height: 80px;
-    max-width: 150px;
+    min-width: 150px;
     min-height: 40px;
-    width: 100%;
+
 
     margin: 10px;
     padding: 0 12px;
@@ -43,7 +43,7 @@
 .agregar { background-color: #1E88E5; }         /* azul vivo */
 .agregar:hover { background-color: #1976D2; }
 
-.eliminar { background-color: #8f2d2d; }        /* violeta sobrio */
+.eliminar { background-color: #882f2f; }        /* violeta sobrio */
 .eliminar:hover { background-color: #c42d2d; }
 
 .listar { background-color: #039BE5; }          /* celeste brillante */

@@ -3,10 +3,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    padding: 10px; /* más padding a la derecha */
-    width: 100%;
-    height: 89dvh;
+    
+     /* más padding a la derecha */
+    width: 100dvw;
+    height: 90dvh;
     background-color: transparent; /* transparente */
 
 }
@@ -62,20 +62,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 5px;
     background: transparent;
     border-radius: 14px;
     padding: 10px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
     animation: fadeInUp 0.7s ease-in-out;
-    margin-right: 30px;
     width: 95%;
-
+    min-height : 90dvh;
     overflow: hidden; /* importante para que el scroll quede interno */
 }
 
 .buscador_contenedor{
     display: flex;
+    
     justify-content: center;
     align-items: center;
    
@@ -87,12 +88,15 @@
     width: 99%;
     border-radius: 12px;
 
+    background-color: transparent;
+    background: linear-gradient(135deg, transparent, #030308);;
 }
 
 
 
 /* --- LISTADO --- */
 .Listado_contenedor {
+    flex-grow: 1;
     border: 1px solid #333;
     border-radius: 12px;
     background: #1f1f831e;
