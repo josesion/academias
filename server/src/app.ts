@@ -5,6 +5,7 @@ import cors from "cors";
 
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
+
 import planesUsuariosRuta from "./rutas/planes.usuarios";
 import adminRutas from "./rutas/admin.ruta";
 import usuarioRutas from "./rutas/usuario.ruta";
