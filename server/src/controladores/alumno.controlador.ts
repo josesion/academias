@@ -15,7 +15,8 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 import { AlumnoServioCode,RetornoVerAlumnoExistente,RetornoRegistroAlumno } from "../tipados/alumno.data"; 
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
-        EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs
+        EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs,
+        ListaAlumnoSinPaginacionInputs, listaAlumnoSinPaginacionSchema
 
 } from "../squemas/alumno";
 import { enviarResponseError } from "../utils/responseError";
@@ -152,9 +153,39 @@ const listarAlumno = async( req: Request  , res : Response) =>{
 
 };
 
+const listaAlumnoSinPag = async ( req : Request , res : Response) =>{
+    const { dni , estado , id_escuela} = req.query ;
+    const data : ListaAlumnoSinPaginacionInputs = listaAlumnoSinPaginacionSchema.parse({
+        dni , estado , escuela : Number(id_escuela)
+    });
+    const listado = await dataAlumno.listadoSinPaginacion(data);
+    console.log(listado)
+
+    if ( listado.code === 'ALUMNO_LISTED' ){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            `Listado Alumnos`,
+            listado.data,
+            undefined,
+            listado.code
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            listado.message  || 'Error al obtener el listado de alumnos.' ,
+            listado.code        
+        );
+
+    };
+
+};
+
 export const  method ={
     altaAlumno   : tryCatch( altaAlumno ),
     modAlumno    : tryCatch( modAlumno ),
     borrarAlumno : tryCatch( borrarAlumno),
-    listarAlumno : tryCatch( listarAlumno )
+    listarAlumno : tryCatch( listarAlumno ),
+    listaAlumnoSinPag : tryCatch( listaAlumnoSinPag )
 }

@@ -80,7 +80,23 @@ escuela : z.number({message:"Limit debe ser de tipo numerico"})
 });
 
 
+export const listaAlumnoSinPaginacionSchema = z.object({
+dni :       z.string({message : "El dni es requerido"}),
+
+
+escuela : z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El offset debe ser un número entero.' })
+                .min(0, { message: 'El offset debe ser un número  mayor a 0.' }),                
+
+estado: z.string()
+                .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
+                .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),
+
+});
+
+
 export type AlumnosInputs = z.infer<typeof CrearAlumnoSchema>;
 export type AlumnoEscuelaInputs = z.infer<typeof CrearAlumnoEscuelaSchema>;
 export type EliminarAlumnoInputs = z.infer<typeof EliminarAlumnoEscuelaSchema>; 
 export type ListaAlumnoInputs = z.infer<typeof listaAlumnosSchema>; 
+export type ListaAlumnoSinPaginacionInputs = z.infer<typeof listaAlumnoSinPaginacionSchema>; 

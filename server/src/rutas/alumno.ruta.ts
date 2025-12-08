@@ -8,7 +8,9 @@ const ruta = Router();
 ruta.post("/api/registro_alumno",permisos.validarPermiso ,controladorAlumnos.altaAlumno);
 ruta.get("/api/listar_alumno"  ,permisos.validarPermiso ,controladorAlumnos.listarAlumno);
 ruta.put("/api/mod_alumno/:dni/:id_escuela" ,permisos.validarPermiso , controladorAlumnos.modAlumno);
+ruta.get("/api/listar_alumno_sin_pag" , controladorAlumnos.listaAlumnoSinPag);
 ruta.delete("/api/borrar_alumno/:dni/:id_escuela/:estado" ,permisos.validarPermiso , controladorAlumnos.borrarAlumno);
+
 
 
 

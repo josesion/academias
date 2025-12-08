@@ -38,6 +38,13 @@ export interface DataAlumnosListado {
     total_registros: number
 }
 
+export interface DataAlumnosListadoSinPag {
+    Dni: number,
+    Nombre: string,
+    Apellido: string,
+    Celular: number,
+}
+
 export interface RetornoModAlumno extends RetornoRegistroAlumno {
    
 }

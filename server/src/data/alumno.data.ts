@@ -6,12 +6,13 @@ import { fechaHoy } from "../hooks/fecha";
 import { listarEntidad } from "../hooks/funcionListar";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 
 import { TipadoData } from "../tipados/tipado.data";
-import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs, EliminarAlumnoInputs ,} from "../squemas/alumno";
-import {  RetornoRegistroAlumno, DataAlumnosListado , RetornoModAlumno, RetornoEliminaciom,
-        RetornoVerAlumnoExistente, RetornoIncripcionAlumnoEscuela 
+import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs, EliminarAlumnoInputs , ListaAlumnoSinPaginacionInputs} from "../squemas/alumno";
+import { RetornoRegistroAlumno, DataAlumnosListado , RetornoModAlumno, RetornoEliminaciom,
+         RetornoVerAlumnoExistente, RetornoIncripcionAlumnoEscuela , DataAlumnosListadoSinPag
 } from "../tipados/alumno.data";
 
 
@@ -196,7 +197,35 @@ const listaAlumnos = async(
         })
    
 
-}
+};
+
+const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs) 
+:Promise<TipadoData<DataAlumnosListadoSinPag[]>> => {
+    const {dni ,escuela ,estado} = parametros ;
+
+    const sql : string = `select
+                                alumnos.dni_alumno as Dni,
+                                alumnos.apellido as Apellido,
+                                alumnos.nombre as Nombre,
+                                alumnos.numero_celular as Celular
+                            from alumnos
+                                join alumnos_en_escuela on alumnos.dni_alumno = alumnos_en_escuela.dni_alumno
+                            where
+                                alumnos_en_escuela.estado = ?
+                                and alumnos.dni_alumno like ?
+                                and alumnos_en_escuela.id_escuela = ?`;
+
+    const valores : unknown[] = [estado , dni , escuela];
+
+    return await listarEntidadSinPaginacion<DataAlumnosListadoSinPag>({
+            slqListado: sql , 
+            valores, 
+            entidad : "Alumno",
+            estado  : estado 
+    });
+
+};
+
 
 export const  method = {
     verAlumnoExistente : tryCatchDatos( verAlumnoExistente ),
@@ -205,5 +234,6 @@ export const  method = {
     registroAlumnoEscuela : tryCatchDatos ( registroAlumnoEscuela, "Inscripcion" , "femenino"),
     modAlumno      :    tryCatchDatos( modAlumno ),
     eliminarAlumno :    tryCatchDatos ( eliminarAlumno),
-    listaAlumnos   :    tryCatchDatos( listaAlumnos )
+    listaAlumnos   :    tryCatchDatos( listaAlumnos ),
+    listadoSinPaginacion : tryCatchDatos( listadoSinPaginacion)
 };
