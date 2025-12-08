@@ -1,0 +1,76 @@
+/* Contenedor general de la tarjeta */
+.tarjeta_inscripcion_contenedor {
+    width: 100%;
+    max-width: 600px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    padding: 22px;
+    border-radius: 18px;
+
+    /* Glassmorphism */
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+
+    /* Neon border */
+    border: 1.5px solid rgba(94, 98, 100, 0.5);
+
+
+    animation: fadeIn 0.7s ease-out;
+}
+
+/* Título */
+.tarjeta_inscripcion_contenedor > p {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #e9f8ff;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+/* Contenedor de filtros (plan/alumno) */
+.tarjeta_inscripcion_filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 14px;
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    color: #dfefff;
+    font-size: 0.95rem;
+}
+
+/* Información detallada */
+.tarjeta_inscripcion_info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 14px;
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    color: #e6faff;
+    font-size: 0.95rem;
+}
+
+.tarjeta_inscripcion_info p,
+.tarjeta_inscripcion_filtros p {
+    margin: 0;
+    letter-spacing: 0.4px;
+}
+
+/* Animación suave */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

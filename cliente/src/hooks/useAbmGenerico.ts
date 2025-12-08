@@ -280,7 +280,6 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             }
         } catch (error) {
             // Manejo de errores de conexión/aborto.
-        console.log("paso algo")
             setErrorGenerico('Ocurrió un error inesperado al cargar los datos.');
         } finally {
             clearTimeout(timeoutId);
