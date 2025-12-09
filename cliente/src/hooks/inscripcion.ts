@@ -32,11 +32,11 @@ interface InscripcionConfig {
     idEscuela : number,
 
     servicios :{
-    //  listaPlanes : any[];
-     //   listaAlumnos : any[];
-
         listaAlumnosPaginado : ServicioCrud,
-        listaPlanPaginado    : ServicioCrud
+        listaPlanPaginado    : ServicioCrud,
+
+        listadoAlumnosBusqueda : ServicioCrud,
+
     },
     paginacion : PaginacionProps,
 
@@ -117,7 +117,6 @@ export const useInscipcion =( config : InscripcionConfig) =>{
          console.log("Cancelacion -- cerrar el modal")
    };
 
- //  console.log(listadoAlumno)  
 // ──────────────────────────────────────────────────────────────
 // Listado de alumnos  con paginacion y sin paginacion 
 // ──────────────────────────────────────────────────────────────
@@ -128,34 +127,38 @@ useEffect(()=>{
             setCarga
         });
 
-    if (filtroBusquedaAlumno.dni === ""){ 
-
-
     const listadoAlumnoPaginacion = async() => {
+
         const servicioApiFetch = config.servicios.listaAlumnosPaginado;
+        const servicioApiFetchSinPag = config.servicios.listaAlumnosPaginado;
             try{
-                const listado = await servicioApiFetch(filtroBusquedaAlumno, signal);
-                if( listado.error === false) {
-                    setListadoAlumno(listado.data)
-                };
+                if (filtroBusquedaAlumno.dni === ""){    
+                    const listado = await servicioApiFetch(filtroBusquedaAlumno, signal);
+                    if( listado.error === false) {
+                        setListadoAlumno(listado.data)
+                    };
+                }else{
+                    const listadoFiltro = await servicioApiFetchSinPag(filtroBusquedaAlumno, signal);
+                    if (listadoFiltro.error === false){
+                        setListadoAlumno(listadoFiltro.data)
+                    }
+                }
+
             }catch( error ){
                 // Manejo de errores de conexión/aborto.
-                setErrorGenerico('Ocurrió un error inesperado al cargar los datos Alumnmos.');
+                setErrorGenerico('Ocurrió un error inesperado  donde esal cargar los datos Alumnmos.');
             }finally{
                 clearTimeout(timeoutId);
                 setCarga(false);
             }
         };
 
-     listadoAlumnoPaginacion();    
+        listadoAlumnoPaginacion();    
 
-    }else{
-        console.log("listado alumnos con filtros")
-    }
-    return () =>{
-        controlador.abort();
-        clearTimeout(timeoutId);
-    };
+        return () =>{
+            controlador.abort();
+            clearTimeout(timeoutId);
+        };
 
 },[filtroBusquedaAlumno]);
 

@@ -84,7 +84,6 @@ export const listadoAlumnos = async( parametrosQuery : TipadoAlumnos.DataAlumnos
     signal? : AbortSignal ) 
     : Promise<ApiResponse<TipadoAlumnos.AlumnosResponse[]>> =>{
 
-   
     const parametrosConvertidos = {
         estado : parametrosQuery.estado,
         dni : parametrosQuery.dni.toString(),
@@ -95,7 +94,6 @@ export const listadoAlumnos = async( parametrosQuery : TipadoAlumnos.DataAlumnos
     };
 
 const rutaCompleta = `${PAGINA}api/listar_alumno?${new URLSearchParams(parametrosConvertidos).toString()}`;
-
 
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
@@ -113,3 +111,18 @@ const rutaCompleta = `${PAGINA}api/listar_alumno?${new URLSearchParams(parametro
         signal: signal
     });
 }
+
+export const listadoAlumnoSinPag = async ( parametros : TipadoAlumnos.DataAlumnosListado, signal? : AbortSignal)
+: Promise<ApiResponse<TipadoAlumnos.AlumnosResponse[]>> =>{
+     const parametrosFormateado = {
+        estado      : parametros.estado,
+        dni         : parametros.dni.toString(),
+        id_escuela  : parametros.id_escuela.toString()
+     };
+     const rutaCompleta = `${PAGINA}api/listar_alumno_sin_pag?${ new URLSearchParams(parametrosFormateado).toString() }`; 
+
+     return await apiFetch( rutaCompleta , {
+        method : "GET",
+        signal : signal
+     });
+};
