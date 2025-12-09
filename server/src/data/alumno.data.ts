@@ -202,7 +202,7 @@ const listaAlumnos = async(
 const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs) 
 :Promise<TipadoData<DataAlumnosListadoSinPag[]>> => {
     const {dni ,escuela ,estado} = parametros ;
-
+    const likeDni = dni + "%";
     const sql : string = `select
                                 alumnos.dni_alumno as Dni,
                                 alumnos.apellido as Apellido,
@@ -213,9 +213,12 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
                             where
                                 alumnos_en_escuela.estado = ?
                                 and alumnos.dni_alumno like ?
-                                and alumnos_en_escuela.id_escuela = ?`;
+                                and alumnos_en_escuela.id_escuela = ?
+                                order by 
+                                      alumnos.apellido
+                                limit 15`;
 
-    const valores : unknown[] = [estado , dni , escuela];
+    const valores : unknown[] = [estado , likeDni , escuela];
 
     return await listarEntidadSinPaginacion<DataAlumnosListadoSinPag>({
             slqListado: sql , 

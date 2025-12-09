@@ -305,8 +305,10 @@ const listadoPlanesSinPag = async( req : Request , res : Response ) =>{
 		descripcion , estado , id_escuela : Number(id_escuela)
 	};
 
+	console.log(parametrosUrl)
+
 	const data : ListaPlanesUsuarioSinPagInputs = ListaPlanesUsuarioSinPagSchema.parse(parametrosUrl);
-	
+
 	const listado = await planesUsuarios.listadoPlanesSinPag(data);
 	console.log(listado)
 	if ( listado.code === 'PLANUSUARIO_LISTED') {

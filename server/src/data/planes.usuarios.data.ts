@@ -321,6 +321,7 @@ const listadoPlanesSinPag = async ( parametros : ListaPlanesUsuarioSinPagInputs)
 : Promise<TipadoData<ResulListadoPlanesUsuarios[]>> =>{
 
     const {descripcion , estado , id_escuela} = parametros;
+        const nombreFiltro = `%${descripcion}%`;
     const sql : string =`SELECT 
                            	        id_plan as id,
                                     nombre_personalizado as descripcion,
@@ -336,8 +337,9 @@ const listadoPlanesSinPag = async ( parametros : ListaPlanesUsuarioSinPagInputs)
                             and 
 		                            id_escuela = ?        
                             order by 
-	                                nombre_personalizado`;
-    const valores : unknown[] = [descripcion , estado , id_escuela ];
+	                                nombre_personalizado
+                            limit 15`;
+    const valores : unknown[] = [nombreFiltro , estado , id_escuela ];
 
     return await listarEntidadSinPaginacion<ResulListadoPlanesUsuarios>({
         slqListado : sql,
