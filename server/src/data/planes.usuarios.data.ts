@@ -4,13 +4,14 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidad } from "../hooks/funcionListar";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 //Seccion Typados
 import { TipadoData } from "../tipados/tipado.data";
 import { PlanesPagoInputs , 
          PlanesEscuelasInputs, 
          ModPlanesUsuariosInputs,
-         ListaPlanesUsuariosInputs
+         ListaPlanesUsuariosInputs, ListaPlanesUsuarioSinPagInputs
         } from "../squemas/planes.usuarios";
 
 import { CrearPlanesUsuarios, CrearPlanesEscuelasUsuarios,
@@ -278,6 +279,75 @@ const listadoPlanesUsuarios = async( parametros : ListaPlanesUsuariosInputs,pagi
                           
 };
 
+
+/**
+ * Obtiene un listado de planes sin paginación según los filtros enviados.
+ *
+ * @async
+ * @function listadoPlanesSinPag
+ * 
+ * @param {ListaPlanesUsuarioSinPagInputs} parametros
+ *  Objeto que contiene los parámetros de filtrado:
+ *  - descripcion {string} Texto para filtrar por nombre_personalizado (usado con LIKE).
+ *  - estado {string} Estado del plan (ej: 'activos').
+ *  - id_escuela {number} Identificador de la escuela.
+ *
+ * @returns {Promise<TipadoData<ResulListadoPlanesUsuarios[]>>}
+ *  Retorna una promesa que resuelve un objeto TipadoData con un arreglo de resultados
+ *  que representan los planes encontrados.
+ *
+ * @description
+ * La función ejecuta un SELECT contra la tabla `planes_en_escuela`, aplicando los filtros de:
+ * - nombre_personalizado (LIKE ?)
+ * - estado
+ * - id_escuela
+ * 
+ * Luego ordena los resultados por `nombre_personalizado`.  
+ * La ejecución final del SQL se delega a `listarEntidadSinPaginacion`.
+ *
+ * @example
+ * const resultado = await listadoPlanesSinPag({
+ *   descripcion: 'Plan%',
+ *   estado: 'activos',
+ *   id_escuela: 107
+ * });
+ * 
+ * if (!resultado.error) {
+ *   console.log(resultado.data); // Array de planes
+ * }
+ */
+
+const listadoPlanesSinPag = async ( parametros : ListaPlanesUsuarioSinPagInputs)
+: Promise<TipadoData<ResulListadoPlanesUsuarios[]>> =>{
+
+    const {descripcion , estado , id_escuela} = parametros;
+    const sql : string =`SELECT 
+                           	        id_plan as id,
+                                    nombre_personalizado as descripcion,
+                                    clases_asignadas as clases,
+                                    meses_asignados as meses ,
+                                    monto_asignado as monto 
+                            FROM
+                                    planes_en_escuela
+                            WHERE
+                                    nombre_personalizado LIKE ?
+                            and 
+                                    estado = ? 
+                            and 
+		                            id_escuela = ?        
+                            order by 
+	                                nombre_personalizado`;
+    const valores : unknown[] = [descripcion , estado , id_escuela ];
+
+    return await listarEntidadSinPaginacion<ResulListadoPlanesUsuarios>({
+        slqListado : sql,
+        valores ,
+        entidad : "PlanUsuario",
+        estado  : estado
+    });
+
+};
+
 export const method = {
     existenciaPlan          : tryCatchDatos( existenciaPlan ),
     existenciaPlanEscuela   : tryCatchDatos( existenciaPlanEscuela ),
@@ -285,6 +355,7 @@ export const method = {
     altaPlanesEscuelas      : tryCatchDatos( altaPlanesEscuelas, "Plan", "masculino" ),
     modPlanesUsuarios       : tryCatchDatos( modPlanesUsuarios ),
     estadoPlanes_usuarios   : tryCatchDatos( estadoPlanes_usuarios ),
-    listadoPlanesUsuarios   : tryCatchDatos( listadoPlanesUsuarios )
+    listadoPlanesUsuarios   : tryCatchDatos( listadoPlanesUsuarios ),
+    listadoPlanesSinPag     : tryCatchDatos( listadoPlanesSinPag )
 } 
 

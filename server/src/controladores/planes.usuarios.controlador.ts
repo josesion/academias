@@ -22,7 +22,9 @@ import {CrearPlanesPagoSchema, PlanesPagoInputs,
 		ExistenciaPlanSchema , ExistenciaPlanesInputs,
 		ModPlanesUsuarios , ModPlanesUsuariosInputs,
 		estadoPlanesUsuariosInputs, EstadoPlanesUsuariosSchema,
-		ListaPlanesUsuariosSchema, ListaPlanesUsuariosInputs
+		ListaPlanesUsuariosSchema, ListaPlanesUsuariosInputs,
+		ListaPlanesUsuarioSinPagInputs , ListaPlanesUsuarioSinPagSchema
+	
 	} from "../squemas/planes.usuarios";
 
 // Seccion de Typados de Resultados y Códigos
@@ -246,10 +248,93 @@ const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 
 };
 
+/**
+ * Controlador para obtener un listado de planes sin paginación.
+ *
+ * @async
+ * @function listadoPlanesSinPag
+ *
+ * @param {Request} req  
+ *  Objeto Request de Express.  
+ *  Utiliza los siguientes parámetros en `req.query`:
+ *  - descripcion {string} Texto utilizado para filtrar por nombre_personalizado (LIKE).
+ *  - estado {string} Estado del plan (ej: 'activos').
+ *  - id_escuela {string|number} ID de la escuela (se convierte a número).
+ *
+ * @param {Response} res  
+ *  Objeto Response de Express utilizado para enviar la respuesta HTTP.
+ *
+ * @returns {Promise<Response>}
+ *  Devuelve una respuesta HTTP con estado OK (200) si el listado fue exitoso,
+ *  o una respuesta con error (404) si no se encontraron resultados o hubo un código de error.
+ *
+ * @description
+ * El controlador:
+ *  1. Extrae parámetros desde `req.query`.
+ *  2. Normaliza `id_escuela` y valida los datos usando `ListaPlanesUsuarioSinPagSchema`.
+ *  3. Llama al servicio `planesUsuarios.listadoPlanesSinPag(data)`.
+ *  4. Si el servicio retorna el código `'PLANUSUARIO_LISTED'`, envía una respuesta exitosa.
+ *  5. Caso contrario, retorna una respuesta de error con código 404.
+ *
+ * @example
+ * // GET /api/planes/listado-sin-pag?descripcion=Plan&estado=activos&id_escuela=107
+ * 
+ * {
+ *   "error": false,
+ *   "message": "listado de planes.",
+ *   "data": [
+ *     { "id": 1, "descripcion": "Plan Básico", "clases": 8, "meses": 1, "monto": 12000 },
+ *     ...
+ *   ],
+ *   "code": "PLANUSUARIO_LISTED"
+ * }
+ *
+ * @example
+ * // Si no se encuentran resultados:
+ * {
+ *   "error": true,
+ *   "message": "No se encontraron planes.",
+ *   "code": "PLANUSUARIO_NOT_FOUND"
+ * }
+ */
+
+const listadoPlanesSinPag = async( req : Request , res : Response ) =>{
+	const { descripcion , estado , id_escuela} = req.query;
+
+	const parametrosUrl = {
+		descripcion , estado , id_escuela : Number(id_escuela)
+	};
+
+	const data : ListaPlanesUsuarioSinPagInputs = ListaPlanesUsuarioSinPagSchema.parse(parametrosUrl);
+	
+	const listado = await planesUsuarios.listadoPlanesSinPag(data);
+	console.log(listado)
+	if ( listado.code === 'PLANUSUARIO_LISTED') {
+		return  enviarResponse(
+			res,
+			CodigoEstadoHTTP.OK,
+			 'listado de planes.',
+			listado.data,
+			undefined,
+			listado.code 
+		);
+
+	}else{
+		return enviarResponseError(
+			res,
+			CodigoEstadoHTTP.NO_ENCONTRADO,
+			listado.message,
+			listado.code
+		);
+	}
+
+};
+
 // Objeto que exporta los métodos del controlador envueltos en la utilidad tryCatch
 export const method = {
 	altaPlanes_usuarios 	 : tryCatch(altaPlanes_usuarios),
 	modPlanes_usuarios 	 	 : tryCatch(modPlanes_usuarios),
 	estadoPlanes_usuarios 	 : tryCatch(estadoPlanes_usuarios),
-	listadoPlanesUsuarios 	 : tryCatch(listadoPlanesUsuarios)
+	listadoPlanesUsuarios 	 : tryCatch(listadoPlanesUsuarios),
+	listadoSinPag            : tryCatch( listadoPlanesSinPag)
 }

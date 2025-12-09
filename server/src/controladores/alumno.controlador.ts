@@ -185,6 +185,8 @@ const listaAlumnoSinPag = async ( req : Request , res : Response) =>{
 export const  method ={
     altaAlumno   : tryCatch( altaAlumno ),
     modAlumno    : tryCatch( modAlumno ),
+
+
     borrarAlumno : tryCatch( borrarAlumno),
     listarAlumno : tryCatch( listarAlumno ),
     listaAlumnoSinPag : tryCatch( listaAlumnoSinPag )

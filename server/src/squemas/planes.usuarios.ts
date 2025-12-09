@@ -160,6 +160,16 @@ export const ListaPlanesUsuariosSchema = z.object({
         offset: z.coerce.number().int().min(0).default(0),     
 });
 
+export const ListaPlanesUsuarioSinPagSchema = z.object({
+        descripcion   : z.string().optional().default(''), 
+
+        estado        : EstadoPlanEnum,  
+
+        id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
+                    .int({message : "Ident. Escuela debe ser entero"})
+                    .positive({ message : "Ident. Escuela debe ser positivo"}),
+});
+
 // Tipos de TypeScript
 export type ExistenciaPlanesInputs      = z.infer<typeof ExistenciaPlanSchema>;
 export type PlanesPagoInputs            = z.infer<typeof CrearPlanesPagoSchema>;
@@ -167,3 +177,4 @@ export type PlanesEscuelasInputs        =  z.infer<typeof CrearPlanesEscuelasSch
 export type ModPlanesUsuariosInputs     = z.infer<typeof ModPlanesUsuarios>;
 export type estadoPlanesUsuariosInputs  = z.infer<typeof EstadoPlanesUsuariosSchema>;
 export type ListaPlanesUsuariosInputs   = z.infer<typeof ListaPlanesUsuariosSchema>;
+export type ListaPlanesUsuarioSinPagInputs   = z.infer<typeof ListaPlanesUsuarioSinPagSchema>;
