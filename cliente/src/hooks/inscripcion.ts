@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 
 //hooks
 import { peticiones } from "./peticiones";
+import { fechaHoy, fechaVencimiento } from "./fecha";
 // Typados 
 import {type PaginacionProps } from "../tipadosTs/genericos";
+import type * as TipadoInscripcion from "../tipadosTs/inscripciones";
 
 
 /**
@@ -12,19 +14,7 @@ import {type PaginacionProps } from "../tipadosTs/genericos";
  */
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
-export  interface DataPlan {
-    id: number;
-    descripcion : string;
-    monto: number;
-    clases: number;
-    meses: number;
-};
 
- export interface DataAlumno {
-    Dni : string ,
-    Nombre : string , 
-    Apellido : string
-}
 
 
 
@@ -36,7 +26,9 @@ interface InscripcionConfig {
         listaPlanPaginado    : ServicioCrud,
 
         listadoAlumnosBusqueda : ServicioCrud,
-
+        listadoPlanesBusqueda  : ServicioCrud,
+        
+        metodoInscripcion   : ServicioCrud,
     },
     paginacion : PaginacionProps,
 
@@ -48,12 +40,15 @@ interface InscripcionConfig {
 export const useInscipcion =( config : InscripcionConfig) =>{
 
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
+    const [ modalInsc , setModalInsc] = useState<boolean>(true);
+
     const [carga , setCarga] = useState<boolean>(true);
 
-    const [plan , setPlan] = useState< DataPlan | null >( null );
-    const [alumno , setAlumno] = useState< DataAlumno | null>(null);
+    const [plan , setPlan] = useState< TipadoInscripcion.DataPlan | null >( null );
+    const [alumno , setAlumno] = useState< TipadoInscripcion.DataAlumno | null>(null);
 
-    const [filtroBusquedaAlumno , setFiltroBusquedaAlumno] = useState<any>({
+
+    const [filtroBusquedaAlumno , setFiltroBusquedaAlumno] = useState<TipadoInscripcion.FiltroAlumno>({
         ... config.inicialFiltroAlumno ,
         estado : "activos" ,
         id_escuela : config.idEscuela,
@@ -61,16 +56,16 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         limite : config.paginacion.limite        
     });
 
-    const [filtroBusquedaPlan , setFiltroBusquedaPlan] = useState({
+    const [filtroBusquedaPlan , setFiltroBusquedaPlan] = useState<TipadoInscripcion.FiltroPlan>({
         ...config.inicialFiltroPlan,
         estado : "activos",
         id_escuela : config.idEscuela,
         pagina : config.paginacion.pagina,
         limite : config.paginacion.limite 
     });
-     
-    const [listadoPlan , setListadoPlan] = useState<DataPlan[]>([]);
-    const [listadoAlumno , setListadoAlumno] = useState<DataAlumno[]>([]);
+
+    const [listadoPlan , setListadoPlan] = useState<TipadoInscripcion.DataPlan[]>([]);
+    const [listadoAlumno , setListadoAlumno] = useState<TipadoInscripcion.DataAlumno[]>([]);
 
     const handleCachearPlan = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -81,11 +76,12 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         });
         const descripcionPlan = e.target.value;
         const planSeleccionado = listadoPlan.find( planes => planes.descripcion === descripcionPlan );
-
+      //  console.log(listadoPlan)
         if ( planSeleccionado) {
             setPlan(planSeleccionado)
         }else{
-            setPlan(null)
+            setPlan(null);
+            setErrorGenerico(null);
         }
     };
 
@@ -103,18 +99,56 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         if (alumnoSeleccionado){
             setAlumno(alumnoSeleccionado)
         }else{
-            setAlumno(null)
+            setAlumno(null);
+            setErrorGenerico(null);
         };
     };
 
-    const handleInscribir = (e : React.FormEvent<HTMLFormElement>) =>{
+    const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
-        console.log("Subcripcion a inscripcion")
+
+        
+        if ( alumno === null || plan === null ){
+           
+
+            if ( plan   === null && alumno === null ){ setErrorGenerico("Seleccionar Plan y Alumno") ; return}; 
+            if ( alumno === null){ setErrorGenerico("Seleccionar alumno") ; return};
+            if ( plan   === null){ setErrorGenerico("Seleccionar Plan") ; return}; 
+    
+            return;
+        };
+
+        const servicioApiFetch = config.servicios.metodoInscripcion;
+        const datos = {
+            id_escuela : config.idEscuela,
+            id_plan    : plan.id,
+            dni_alumno : Number(alumno.Dni),
+            fecha_inicio :fechaHoy(),
+            fecha_fin    : fechaVencimiento(plan.meses),
+            monto  : plan.monto,
+            meses_asignados_inscritos : plan.meses,
+            clases_asignadas_inscritas : plan.clases
+        };
+        
+
+        const subcripcionInsc = await servicioApiFetch( datos );
+   
+        if ( subcripcionInsc.code === "INSCRIPCIONES_CREAR" ){
+            console.log("sub correctamente y cerrar el modal ")
+            setModalInsc(false);
+            return
+        }else{
+            console.log("mostrar el error al cliente")
+            setErrorGenerico( subcripcionInsc.message  );
+        };
+
+      
     };
 
     const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
         e.preventDefault();
          console.log("Cancelacion -- cerrar el modal")
+        setModalInsc(false) 
    };
 
 // ──────────────────────────────────────────────────────────────
@@ -126,11 +160,10 @@ useEffect(()=>{
             setErrorGenerico,
             setCarga
         });
-
     const listadoAlumnoPaginacion = async() => {
 
         const servicioApiFetch = config.servicios.listaAlumnosPaginado;
-        const servicioApiFetchSinPag = config.servicios.listaAlumnosPaginado;
+        const servicioApiFetchSinPag = config.servicios.listadoAlumnosBusqueda;
             try{
                 if (filtroBusquedaAlumno.dni === ""){    
                     const listado = await servicioApiFetch(filtroBusquedaAlumno, signal);
@@ -139,6 +172,7 @@ useEffect(()=>{
                     };
                 }else{
                     const listadoFiltro = await servicioApiFetchSinPag(filtroBusquedaAlumno, signal);
+                
                     if (listadoFiltro.error === false){
                         setListadoAlumno(listadoFiltro.data)
                     }
@@ -171,28 +205,35 @@ useEffect( () =>{
         setErrorGenerico,
         setCarga
     });
-
+    
     const listadoPlanesPaginado = async () => {
         const servicioApiFetch = config.servicios.listaPlanPaginado;
-    
-        if ( filtroBusquedaPlan.descripcion === ""){
+        const servicioApiFetchSinPag = config.servicios.listadoPlanesBusqueda;
+        
             try{    
-                const listadoP  = await servicioApiFetch( filtroBusquedaPlan , signal);
-            // console.log(listadoP)
-                if ( listadoP.error === false) {
-                    setListadoPlan(listadoP.data)
-                }
+
+                if ( filtroBusquedaPlan.descripcion === ""){
+                    const listadoP  = await servicioApiFetch( filtroBusquedaPlan , signal);
+
+                    if ( listadoP.error === false) {
+                        setListadoPlan(listadoP.data)
+                    };
+                }else{
+                    const listadoFiltrado = await servicioApiFetchSinPag( filtroBusquedaPlan , signal);
+                   
+                    if ( listadoFiltrado.error === false) {
+                        setListadoPlan(listadoFiltrado.data) 
+                    }; 
+                };
 
             }catch( error ){
                 // Manejo de errores de conexión/aborto.
                 setErrorGenerico('Ocurrió un error inesperado al cargar los datos Planes.');  
             }finally{
-                controlador.abort();
-                clearInterval(timeoutId);
+                clearTimeout(timeoutId);
+                setCarga(false);
             };
-        }else{
-                console.log("listado planes con filtros")
-        };
+
     };
 
     listadoPlanesPaginado();
@@ -205,13 +246,13 @@ useEffect( () =>{
 },[filtroBusquedaPlan]);
 
 
-useEffect(()=>{
- //   console.log(filtroBusquedaPlan)
-},[filtroBusquedaPlan]);
+
 
     return{
         plan,
         alumno,
+        errorGenerico,
+        modalInsc,
 
         listadoPlan,
         listadoAlumno,

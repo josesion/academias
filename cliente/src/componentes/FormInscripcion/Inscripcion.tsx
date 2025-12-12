@@ -5,21 +5,21 @@ import { TarjetaInscripcion } from "../TarjetaInscripcion/TarjetaInscripcion";
 import { Boton } from "../Boton/Boton";
 
 //Typado
-import { type DataAlumno ,type DataPlan} from "../../hooks/inscripcion";
+import { type DataAlumno ,type DataPlan} from "../../tipadosTs/inscripciones";
 
 
 import './formInscripcion.css'
 
 
-
-
-
 interface InscripcionProps {
+
+    errorGenerico : string | null ,
+
     plan : DataPlan | null ,
     alumno : DataAlumno | null ,
 
-    listadoPlan : any[],
-    listadoAlumno : any[],
+    listadoPlan : DataPlan[],
+    listadoAlumno : DataAlumno[],
 
     handleCachearPlan: (e: React.ChangeEvent<HTMLInputElement>) => void ;
     handleCachearAlumno: (e: React.ChangeEvent<HTMLInputElement>) => void ;
@@ -31,13 +31,12 @@ interface InscripcionProps {
 
 export const InscripcionForm : React.FC<InscripcionProps> = ( props ) =>{
 
-    const { plan , alumno,
+    const { plan , alumno, errorGenerico,
             listadoPlan, listadoAlumno,
             handleCachearPlan , handleCachearAlumno,
             inscribir , cancelar
         } = props;
  
-
    
     return(
        <form className="formulario_inscripcion_contenedor"
@@ -46,7 +45,7 @@ export const InscripcionForm : React.FC<InscripcionProps> = ( props ) =>{
             <p className="formulario_inscripcion_titulo">Contratación e Pago Inicial del Plan</p>
             <div className="formulario_inscripcion_filtros">
 
-                    <SelectorPlegable 
+                    <SelectorPlegable<DataPlan> 
                             titulo="Planes activos"
                             objetoListado={listadoPlan} 
                             onChange={ handleCachearPlan}
@@ -56,7 +55,7 @@ export const InscripcionForm : React.FC<InscripcionProps> = ( props ) =>{
                             name="descripcion"
                     />
 
-                    <SelectorPlegable 
+                    <SelectorPlegable<DataAlumno> 
                             titulo="Alumnos activos "
                             objetoListado={listadoAlumno} 
                             onChange={handleCachearAlumno}
@@ -74,6 +73,11 @@ export const InscripcionForm : React.FC<InscripcionProps> = ( props ) =>{
                     alumno={alumno}
                 />
             </div>
+
+            <div className="formulario_inscripcion_mensaje_error">
+                <p className="mensaje_error"> { errorGenerico }</p>
+            </div>
+
 
             <div className="formulario_inscripcion_botones">
                 <Boton

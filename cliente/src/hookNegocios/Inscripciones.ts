@@ -8,7 +8,8 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
 //Seccion de servicios--------------------------------------
 import { useInscipcion } from "../hooks/inscripcion";
 import { listadoAlumnos , listadoAlumnoSinPag } from "../servicio/alumnos.fetch";
-import { listadoPlanesUsuarios } from "../servicio/planes.usuarios";
+import { listadoPlanesUsuarios , listadoPlaneSinPag} from "../servicio/planes.usuarios";
+import { incripcion } from "../servicio/inscripciones.fetch";
 
 
 export const useIncripcionesUsuarios = () =>{
@@ -20,7 +21,10 @@ export const useIncripcionesUsuarios = () =>{
         servicios : {
             listaAlumnosPaginado : listadoAlumnos,
             listaPlanPaginado    : listadoPlanesUsuarios,
-            listadoAlumnosBusqueda : listadoAlumnoSinPag
+            listadoAlumnosBusqueda : listadoAlumnoSinPag,
+            listadoPlanesBusqueda  : listadoPlaneSinPag,
+
+            metodoInscripcion     : incripcion
         },
 
         paginacion : { 

@@ -120,3 +120,20 @@ const rutaCompleta = `${PAGINA}api/usu_listado_planes?${new URLSearchParams(para
     });
  
 };
+
+
+export const listadoPlaneSinPag = async ( parametros : TipadoPlanesUsuarios.listadoPlanUsuario, signal? : AbortSignal) 
+ : Promise<ApiResponse<TipadoPlanesUsuarios.PlanesUsuarioResponse[]>> =>{
+
+       const parametrosConvertidos = {
+            descripcion : parametros.descripcion,
+            estado      : parametros.estado,
+            id_escuela : parametros.id_escuela.toString()
+       };
+       const rutaCompleta = `${PAGINA}api/listado_planes_sinpag?${new URLSearchParams(parametrosConvertidos).toString()}`;
+
+       return await apiFetch( rutaCompleta , {
+            method : "GET",
+            signal : signal
+       });
+};
