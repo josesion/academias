@@ -159,7 +159,6 @@ const listaAlumnoSinPag = async ( req : Request , res : Response) =>{
         dni , estado , escuela : Number(id_escuela)
     });
     const listado = await dataAlumno.listadoSinPaginacion(data);
-    console.log(listado)
 
     if ( listado.code === 'ALUMNO_LISTED' ){
         return enviarResponse(
