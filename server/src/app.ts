@@ -17,6 +17,7 @@ import nivelRutas from "./rutas/nivel.ruta";
 import tipoRutas from  "./rutas/tipo.ruta";
 
 import inscripciones from "./rutas/inscripciones";
+import horarios from "./rutas/horarios.ruta"
 
 import protectRutas from "./rutas/protegida.rutas";
 
@@ -40,7 +41,8 @@ app.use(planesUsuariosRuta);
 app.use(nivelRutas);
 app.use(tipoRutas);
 
-app.use(inscripciones)
+app.use(inscripciones);
+app.use(horarios);
 
 app.use(protectRutas);
 
