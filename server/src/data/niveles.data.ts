@@ -5,12 +5,15 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidad } from "../hooks/funcionListar";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data"; 
-import { NivelData,ModificarNivelData, estadoNivel as estado , ResulListadoNivelUsuarios} from "../tipados/nivel.data"; 
+import { NivelData,ModificarNivelData, estadoNivel as estado , ResulListadoNivelUsuarios,
+    ResulListSinPagNivelUsuarios
+} from "../tipados/nivel.data"; 
 import { ListadoNivelInput } from "../squemas/nivel";
 
 /**
@@ -210,11 +213,75 @@ const listadoNivel = async(  parametros : ListadoNivelInput , pagina : string)
    });
 };
 
+/**
+ * Obtiene un listado de niveles sin paginación, filtrado por nombre, estado y escuela.
+ *
+ * Se utiliza principalmente para selects, autocompletados o búsquedas rápidas
+ * donde no se requiere paginación completa.
+ *
+ * - Filtra por coincidencia parcial del nombre del nivel (`LIKE %nivel%`)
+ * - Limita el resultado a un máximo de 10 registros
+ * - Solo devuelve niveles pertenecientes a una escuela específica
+ *
+ * @async
+ * @function listadoNivelSinPag
+ *
+ * @param {ListadoNivelInput} parametros
+ * Objeto con los filtros de búsqueda.
+ *
+ * @param {string} parametros.nivel
+ * Texto a buscar dentro del nombre del nivel.
+ *
+ * @param {"activos" | "inactivos" | "todos"} parametros.estado
+ * Estado del nivel a filtrar.
+ *
+ * @param {number} parametros.id_escuela
+ * Identificador de la escuela a la que pertenecen los niveles.
+ *
+ * @returns {Promise<TipadoData<ResulListSinPagNivelUsuarios[]>>}
+ * Retorna una promesa con:
+ * - `data`: listado de niveles (id y descripción)
+ * - `code`: código de estado de la operación
+ *
+ * @example
+ * listadoNivelSinPag({
+ *   nivel: "inter",
+ *   estado: "activos",
+ *   id_escuela: 107
+ * });
+ */
+
+const listadoNivelSinPag = async(  parametros : ListadoNivelInput ) 
+: Promise<TipadoData<ResulListSinPagNivelUsuarios[]>>=>{
+    const { nivel, estado , id_escuela } = parametros ;
+
+    const nivelFiltro = `%${nivel}%`;     
+    
+    const sql : string = `select 
+                            id,
+                            nivel  
+                        from 
+                            niveles
+                        where 
+                            nivel like ? and id_escuela = ? and estado = ?
+                        order by 
+                            nivel
+                        limit 10 ;`;
+    const valores : unknown[] = [nivelFiltro , id_escuela , estado];
+
+    return  listarEntidadSinPaginacion<ResulListSinPagNivelUsuarios>({
+        slqListado : sql,
+        valores,
+        entidad : "Nivel",
+        estado : estado
+    });
+};
 
 export const method = {
     nivelExiste : tryCatchDatos( nivelExiste ),
     altaNivelGlobal : tryCatchDatos( altaNivelGlobal ),
     modificarNivel : tryCatchDatos( modificarNivel ),
     cambioEstado  : tryCatchDatos( estadoNivel) ,
-    listado       : tryCatchDatos( listadoNivel )
+    listado       : tryCatchDatos( listadoNivel ),
+    listadoNivelSinPag : tryCatchDatos( listadoNivelSinPag )
 }

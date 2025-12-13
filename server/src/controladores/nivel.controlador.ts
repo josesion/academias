@@ -17,6 +17,7 @@ import { fechaHoy } from "../hooks/fecha";
 // ──────────────────────────────────────────────────────────────
 import { CrearNivelSchema , ModificarNivelSchema, EstadoNivelSchema, ListaNivelesUsuariosSchema,
          CrearNivelInput ,  ModificarNivelInput, EstadoNivelInput, ListadoNivelInput,
+         ListadoNivelSinPagInput, ListaNivelesUsuarioSinPagSchema
         } from "../squemas/nivel";
 import {  CodigoEstadoHTTP } from "../tipados/generico";
 
@@ -244,9 +245,65 @@ const listadoNivel = async( req : Request , res : Response ) =>{
 
 };
 
+/**
+ * Controlador: listadoNivelSinPag
+ * --------------------------------
+ * Maneja la petición HTTP para obtener un listado de niveles
+ * sin paginación, filtrado por nombre de nivel, estado e escuela.
+ *
+ * Flujo:
+ * 1. Obtiene los parámetros desde `req.query`.
+ * 2. Valida y transforma los datos usando `ListaNivelesUsuarioSinPagSchema`.
+ * 3. Llama al servicio de datos `listadoNivelSinPag`.
+ * 4. Devuelve:
+ *    - Error si no existen niveles activos según los filtros.
+ *    - Listado de niveles si la consulta fue exitosa.
+ *
+ * @param {Request} req - Objeto Request de Express.
+ * @param {string} req.query.nivel - Texto parcial o completo del nivel a buscar.
+ * @param {string} req.query.estado - Estado del nivel (activos | inactivos | todos).
+ * @param {string | number} req.query.id_escuela - Identificador de la escuela.
+ *
+ * @param {Response} res - Objeto Response de Express.
+ *
+ * @returns {Promise<void>} Respuesta HTTP con:
+ * - 200 OK: listado de niveles encontrados.
+ * - 200 OK (mensaje informativo): cuando no hay niveles activos.
+ *
+ * @throws {ZodError} Si los parámetros no cumplen con el esquema de validación.
+ */
+
+const listadoNivelSinPag = async( req : Request , res : Response ) =>{
+    const { nivel , estado, id_escuela } = req.query;
+    const paramListado: ListadoNivelSinPagInput = ListaNivelesUsuarioSinPagSchema.parse({
+        nivel : nivel,
+        estado : estado,
+        id_escuela : Number( id_escuela )     
+    });
+    const dataListado = await dataNiveles.listadoNivelSinPag( paramListado );
+    console.log(dataListado)
+    if ( dataListado.code === "NO_ACTIVE_NIVEL") {
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.OK,
+            "No hay niveles activos",
+        );
+    };
+    return enviarResponse(
+        res,
+        CodigoEstadoHTTP.OK,    
+        `NIVEL listados activos`,
+        dataListado.data,
+        undefined,
+        dataListado.code
+    );
+
+};
+
 export const method = {
     altaNivel : tryCatch( altaNivel ),
     modNivel  : tryCatch( modNivel ),
     estadoNivel : tryCatch( estadoNivel),
-    listadoNivel : tryCatch( listadoNivel)
+    listadoNivel : tryCatch( listadoNivel),
+    listadoNivelSinPag : tryCatch( listadoNivelSinPag )
 };  

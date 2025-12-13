@@ -22,3 +22,8 @@ export interface ResulListadoNivelUsuarios {
     nivel : string, 
     total_registros : number // Para la paginación
 }
+
+export interface ResulListSinPagNivelUsuarios {
+    id : number, 
+    nivel : string
+};

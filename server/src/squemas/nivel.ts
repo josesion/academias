@@ -65,7 +65,19 @@ export const ListaNivelesUsuariosSchema = z.object({
                      .min(0, { message: "El offset debe ser 0 o positivo." }),    
 });
 
+export const ListaNivelesUsuarioSinPagSchema = z.object({
+        nivel   : z.string().optional().default(''), 
+
+        estado        : EstadoPlanEnum,  
+
+        id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
+                    .int({message : "Ident. Escuela debe ser entero"})
+                    .positive({ message : "Ident. Escuela debe ser positivo"}),
+
+});
+
 export type CrearNivelInput = z.infer<typeof CrearNivelSchema>;
 export type ModificarNivelInput = z.infer<typeof ModificarNivelSchema>;
 export type EstadoNivelInput   = z.infer<typeof EstadoNivelSchema>;
 export type ListadoNivelInput  =  z.infer<typeof ListaNivelesUsuariosSchema>;
+export type ListadoNivelSinPagInput  =  z.infer<typeof ListaNivelesUsuarioSinPagSchema>;
