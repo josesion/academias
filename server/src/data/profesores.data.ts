@@ -5,6 +5,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { listarEntidad } from "../hooks/funcionListar";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
@@ -20,7 +21,8 @@ import {
   ProfesoresGlobales, 
   FiltroProfeEscuela, 
   FiltroProfeEscuelaBaja, 
-  ResulListadoProfesoresUsuarios 
+  ResulListadoProfesoresUsuarios,
+  ListadoProfeResults 
 } from "../tipados/profesores.data";
 
 // ──────────────────────────────────────────────────────────────
@@ -232,6 +234,78 @@ const listadoProfesores = async (datos: ListadoProfeInputs, pagina: string) => {
   });
 };
 
+/**
+ * listaProfesoresSinPaginacion
+ * ----------------------------
+ * Obtiene un listado de profesores asociados a una escuela específica,
+ * sin paginación, aplicando filtros por DNI y estado.
+ *
+ * La búsqueda:
+ *  - Permite filtrar por coincidencia parcial de DNI
+ *  - Filtra por el estado del profesor dentro de la escuela
+ *  - Limita los resultados a 10 registros
+ *
+ * Se realiza un JOIN entre:
+ *  - profesores
+ *  - profesores_en_escuela
+ *
+ * @async
+ *
+ * @param {ListadoProfeInputs} datos
+ * Objeto de entrada con los criterios de búsqueda.
+ *
+ * @param {string} datos.dni
+ * DNI (o parte del DNI) del profesor a buscar.  
+ * Si viene vacío, devuelve todos los profesores.
+ *
+ * @param {'activos' | 'inactivos' | 'todos'} datos.estado
+ * Estado del profesor dentro de la escuela.
+ *
+ * @param {number} datos.id_escuela
+ * Identificador de la escuela sobre la cual se realiza la búsqueda.
+ *
+ * @returns {Promise<TipadoData<ListadoProfeResults[]>>}
+ * Retorna una promesa con:
+ *  - `error`: boolean
+ *  - `code`: código de operación
+ *  - `data`: array de profesores encontrados
+ *
+ * @throws {Error}
+ * Puede lanzar errores relacionados a la base de datos o validaciones.
+ */
+
+export const listaProfesoresSinPaginacion = async ( datos: ListadoProfeInputs ) 
+: Promise<TipadoData<ListadoProfeResults[]>> => {
+
+  const { dni, estado, id_escuela } = datos;
+  const dniFiltro = `%${dni}%`;
+  const sql : string = `SELECT 
+                          p.dni AS Dni,
+                          p.nombre as Nombre,
+                          p.apellido as Apellido
+                        FROM 
+                          profesores p
+                        JOIN 
+                          profesores_en_escuela pe ON p.dni = pe.dni_profesor
+                        WHERE 
+                          p.dni LIKE ?  
+                          AND pe.estado = ? 
+                          AND pe.id_escuela = ?
+                        ORDER BY p.apellido
+                        LIMIT 10;`;
+  const valores : unknown[] = [dniFiltro, estado, id_escuela ];
+
+  return await listarEntidadSinPaginacion<ListadoProfeResults>({
+    slqListado : sql,
+    valores,
+    entidad : "ProfesorEscuela",
+    estado
+  });
+
+};
+
+
+
 // ──────────────────────────────────────────────────────────────
 // Export de métodos con tryCatchDatos
 // ──────────────────────────────────────────────────────────────
@@ -243,4 +317,5 @@ export const method = {
   modProfesores: tryCatchDatos(modProfesores),
   estadoProfesor: tryCatchDatos(bajaProfesor),
   listadoProfesores: tryCatchDatos(listadoProfesores),
+  listaProfesoresSinPaginacion: tryCatchDatos( listaProfesoresSinPaginacion )
 };

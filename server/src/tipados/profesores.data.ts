@@ -42,5 +42,12 @@ export interface ResulListadoProfesoresUsuarios {
     apellido : string, 
     celular : string, 
     total_registros : number // Para la paginación
-}
+};
+
+export interface ListadoProfeResults{
+    Dni : string ;
+    Nombre : string ;
+    Apellido : string ;
+};
+
 

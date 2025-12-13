@@ -171,8 +171,19 @@ export const ListaProfeUsuariosSchema = z.object({
         offset: z.coerce.number().int().min(0).default(0),     
 });
 
+export const ListaProfeUsuarioSinPagSchema = z.object({
+        dni   : z.string().optional().default(''), 
+
+        estado        : EstadoPlanEnum,  
+
+        id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
+                    .int({message : "Ident. Escuela debe ser entero"})
+                    .positive({ message : "Ident. Escuela debe ser positivo"}),     
+});
+
 export type ProfesorEscuelaInputs = z.infer<typeof CrearProfesorEscuelaSchema>;
 export type ProfesorInputs = z.infer< typeof CrearProfesorSchema >;
 export type ModProfesorInputs = z.infer< typeof ModProfesoresSchema >;
 export type EstadoProfesorInputs = z.infer< typeof EstadoProfesorSchema >;
 export type ListadoProfeInputs = z.infer< typeof ListaProfeUsuariosSchema >;
+export type ListadoProfeSinPagInputs = z.infer< typeof ListaProfeUsuarioSinPagSchema >;

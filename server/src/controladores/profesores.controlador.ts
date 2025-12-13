@@ -12,7 +12,7 @@ import { ProfesorServicioCode } from "../tipados/profesores.data";
 import { ProfesoresGlobales } from "../tipados/profesores.data";
 import { CrearProfesorSchema , CrearProfesorEscuelaSchema, ModProfesoresSchema, EstadoProfesorSchema, ListaProfeUsuariosSchema,
          ProfesorInputs , ProfesorEscuelaInputs , ModProfesorInputs , EstadoProfesorInputs,
-         ListadoProfeInputs
+         ListadoProfeInputs , ListaProfeUsuarioSinPagSchema, ListadoProfeSinPagInputs
 } from "../squemas/profesores"; 
 
 
@@ -205,11 +205,68 @@ const listadoProfesores = async( req : Request , res : Response ) => {
     }
 };
 
+/**
+ * ListadoSinPaginacion
+ * --------------------
+ * Controlador HTTP que obtiene el listado de profesores de una escuela
+ * sin paginación, aplicando filtros por DNI y estado.
+ *
+ * Flujo:
+ * 1. Obtiene los parámetros de consulta desde `req.query`.
+ * 2. Valida y normaliza los datos mediante `ListaProfeUsuarioSinPagSchema`.
+ * 3. Ejecuta la consulta a la capa de datos.
+ * 4. Retorna el listado o un mensaje de error según el resultado.
+ *
+ * @param {Request} req
+ *        Objeto Request de Express.
+ *        Query params esperados:
+ *        - dni: string (opcional)
+ *        - estado: 'activos' | 'inactivos' | 'todos'
+ *        - id_escuela: number
+ *
+ * @param {Response} res
+ *        Objeto Response de Express.
+ *
+ * @returns {Promise<void>}
+ *        Respuesta HTTP con:
+ *        - 200 OK: listado de profesores obtenido.
+ *        - 404 NOT FOUND: no se encontraron profesores con los filtros indicados.
+ *        - 400 BAD REQUEST: error de validación de datos.
+ */
 
+const ListadoSinPaginacion = async( req : Request , res : Response ) => {
+    const { dni , estado , id_escuela } = req.query;
+    
+    const dataListado : ListadoProfeSinPagInputs = ListaProfeUsuarioSinPagSchema.parse({
+        dni : String(dni),
+        estado : estado ,
+        id_escuela : Number(id_escuela)
+    });
+
+    const listado = await dataProfesores.listaProfesoresSinPaginacion( dataListado );
+  
+    if ( listado.code === "NO_ACTIVE_PROFESORESCUELA" ){
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            "No se encontraron profesores con los filtros indicados.",
+            listado.code
+        );
+    }
+    return enviarResponse(
+        res,
+        CodigoEstadoHTTP.OK,
+        "Listado de profesores obtenido.",
+        listado.data,        
+        undefined,
+        listado.code
+    );
+};
 
 export const method = {
     alta    : tryCatch( altaProfesores ),
     mod     : tryCatch( modProfesores ),
     estado  : tryCatch( estadoProfesor ), 
-    listado : tryCatch( listadoProfesores)
+    listado : tryCatch( listadoProfesores),
+    listadoSinPaginacion : tryCatch( ListadoSinPaginacion )
 }
