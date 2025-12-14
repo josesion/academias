@@ -17,4 +17,10 @@ export interface estadoTipo extends TipoData {
 export interface Paginacion {
     pagina : number,
     limite  : number,
-}
+};
+
+export interface listadoTipoSinPaginacion{
+    tipo : string,
+    id_escuela : number
+    estado : string
+};

@@ -106,3 +106,29 @@ export const listadoNivel = async( dataQuery : TipadoNivel.ListadoNivel & Tipado
     signal : signal
   });
 };
+
+export const listadoNivelSinPaginacion = async( dataQuery : TipadoNivel.ListadoNivel , signal? : AbortSignal ) 
+: Promise<ApiResponse<TipadoNivel.ResultRegistroNivel>>=> {
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+
+    const parametrosConvertidos = {
+        nivel : dataQuery.nivel || "%" , 
+        estado : dataQuery.estado || "activos",
+        id_escuela : dataQuery.id_escuela.toString()
+    };
+
+    const rutaCompleta = `${PAGINA}api/listaNivel_usu_sin_pag?${new URLSearchParams(parametrosConvertidos).toString()}`;
+    return await apiFetch( rutaCompleta , {
+        method : "GET",
+        signal : signal
+    });
+};

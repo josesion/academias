@@ -102,3 +102,29 @@ export const listado =async( dataQuery : tipadoTipoUsuarios.estadoTipo & tipadoT
  })
 
 };
+
+
+export const listadoTipoSinPaginacion =async( dataQuery : tipadoTipoUsuarios.listadoTipoSinPaginacion ,  signal? : AbortSignal)
+: Promise<ApiResponse<{ id : number , tipo :string}>> =>{
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+            return {
+                error: true,
+                message: "Usuario no autenticado",
+                statusCode: 401,
+                code: "NOT_AUTHENTICATED",
+                errorsDetails: undefined
+            };
+        }
+    const parametrosConvertidos = {
+        id_escuela : dataQuery.id_escuela.toString(),
+        nivel : dataQuery.tipo || "%", 
+        estado : dataQuery.estado  || "activos"
+    };    
+
+    const rutaCompleta = `${PAGINA}api/listaNivel_usu_sin_pag?${new URLSearchParams(parametrosConvertidos as Record<string, string>).toString()}`;
+    return await apiFetch( rutaCompleta , {
+        method : "GET",
+        signal : signal
+     });
+}

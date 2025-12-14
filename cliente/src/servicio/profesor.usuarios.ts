@@ -120,3 +120,31 @@ export const listadoProfesores = async(
         signal
     });
 };
+
+
+export const listadoProfesoresSinPag = async( data : TipadoProfesores.ListadoProfeSinPag ,signal?: AbortSignal)
+: Promise<ApiResponse<TipadoProfesores.ProfesoresDataResponse>> => {
+    const verificarUser = await verificarAutenticacion();
+    if (!verificarUser.autenticado) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }
+    const dataConvertida = {
+        estado: data.estado || "activos",
+        escuela: data.id_escuela.toString(),
+        dni: data.dni || "%",
+    }
+
+    const rutaCompleta = `${PAGINA}api/usu_listado_profesores_sin_paginacion?${new URLSearchParams(dataConvertida as Record<string, string>).toString()}`;
+    return await apiFetch( rutaCompleta , {
+        method : "GET",
+        signal : signal
+    });
+
+
+};

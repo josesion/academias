@@ -33,3 +33,15 @@ export interface ListadoProfesores  extends Paginacion {
     estado: estadoProfesor,
     id_escuela: id_escuela
 }
+
+export interface ListadoProfeSinPag {
+    dni: string | number,
+    estado: estadoProfesor,
+    id_escuela: id_escuela
+};
+
+export interface ProfesoresDataResponse { 
+    dni: string,
+    nombre: string,
+    apellido: string,
+}
