@@ -15,7 +15,8 @@ import { fechaHoy } from "../hooks/fecha";
 // Sección de Typado
 // ──────────────────────────────────────────────────────────────
 import { CrearTipoSchema , CrearTipoInput , ModTipoInput , ModTipoSchema ,
-         EstadoTipoInput , EstadoTipoSchema, ListaTipoUsuariosSchema, ListadoTipoInput
+         EstadoTipoInput , EstadoTipoSchema, ListaTipoUsuariosSchema, ListadoTipoInput,
+         ListaTipoUsuarioSinPagSchema, ListadoTipoSinPagInput
         } from "../squemas/tipo.usuarios";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 
@@ -208,10 +209,72 @@ const listadoTipo = async( req : Request, res : Response ) =>{
     };
 };
 
+/**
+ * listadoTipoSinPaginacion
+ * ------------------------
+ * Controlador que obtiene un listado de tipos de clase sin paginación,
+ * filtrando por nombre, estado e institución (escuela).
+ *
+ * Este endpoint está pensado para:
+ *  - Selectores / autocompletados
+ *  - Formularios de alta o edición
+ *  - Búsquedas rápidas sin paginación
+ *
+ * Flujo:
+ *  1. Lee los parámetros desde `req.query`
+ *  2. Valida y normaliza los datos con Zod
+ *  3. Ejecuta la consulta al servicio de datos
+ *  4. Devuelve el listado o un mensaje de error controlado
+ *
+ * @param {Request} req
+ *        Objeto de petición HTTP.
+ *        Espera en `query`:
+ *        - tipo {string} Texto de búsqueda parcial
+ *        - estado {string} Estado del tipo ('activos' | 'inactivos' | 'todos')
+ *        - id_escuela {number} Identificador de la escuela
+ *
+ * @param {Response} res
+ *        Objeto de respuesta HTTP.
+ *
+ * @returns {Promise<Response>}
+ *          Respuesta JSON con:
+ *          - Código 200 y listado de tipos si existen
+ *          - Código 200 con mensaje informativo si no hay tipos activos
+ */
+
+const listadoTipoSinPaginacion = async( req : Request , res : Response)=>{
+
+    const { tipo , estado , id_escuela } = req.query;
+    const data = {
+        tipo : tipo,
+        estado : estado,
+        id_escuela : Number(id_escuela)
+    };
+    const dataParseada : ListadoTipoSinPagInput = ListaTipoUsuarioSinPagSchema.parse(data);
+    const listado = await dataTipo.listadoSinPaginacion(dataParseada);
+
+    if (listado.code === "NO_ACTIVE_TIPO"){
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.OK,
+            listado.message
+        );
+    }
+
+    return enviarResponse(
+        res,
+        CodigoEstadoHTTP.OK,
+        "TIPO listados activos",
+        listado.data,
+        undefined,
+        listado.code
+    );
+};
 
 export const method = {
     registro : tryCatch( altaTipo ),
     modTipo  : tryCatch( modTipo ),
     estado   : tryCatch( estadoTipo),
-    listado  : tryCatch( listadoTipo)
+    listado  : tryCatch( listadoTipo),
+    listadoSinPaginacion : tryCatch( listadoTipoSinPaginacion)
 };

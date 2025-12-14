@@ -68,8 +68,19 @@ export const ListaTipoUsuariosSchema = z.object({
                      .min(0, { message: "El offset debe ser 0 o positivo." }),    
 });
 
+export const ListaTipoUsuarioSinPagSchema = z.object({
+        tipo   : z.string().optional().default(''), 
+
+        estado        : EstadoEnum,  
+
+        id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
+                    .int({message : "Ident. Escuela debe ser entero"})
+                    .positive({ message : "Ident. Escuela debe ser positivo"}),
+});
+
 
 export type CrearTipoInput = z.infer<typeof CrearTipoSchema>;
 export type ModTipoInput = z.infer<typeof ModTipoSchema>;
 export type EstadoTipoInput = z.infer<typeof EstadoTipoSchema>;
 export type ListadoTipoInput = z.infer<typeof ListaTipoUsuariosSchema>;
+export type ListadoTipoSinPagInput = z.infer<typeof ListaTipoUsuarioSinPagSchema>;

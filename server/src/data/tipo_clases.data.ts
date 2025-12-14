@@ -6,7 +6,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidad } from "../hooks/funcionListar";
 import { tryCatchDatos } from "../utils/tryCatchBD";
-//import { listarEntidad } from "../hooks/funcionListar";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
@@ -205,6 +205,68 @@ const listadoTipo = async( data : ListadoTipoInput, pagina : string)
     });
 };
 
+/**
+ * listadoTipoSinPaginacion
+ * ------------------------
+ * Obtiene un listado reducido de tipos de clase sin paginación,
+ * filtrando por texto parcial, estado y escuela.
+ *
+ * Se utiliza principalmente para selects / autocompletados
+ * donde no se requiere paginación completa.
+ *
+ * @async
+ * @function listadoTipoSinPaginacion
+ *
+ * @param {ListadoTipoInput} data
+ *        Objeto de filtros para la búsqueda.
+ *
+ * @param {string} data.tipo
+ *        Texto parcial para filtrar el nombre del tipo de clase.
+ *
+ * @param {"activos" | "inactivos" | "todos"} data.estado
+ *        Estado del tipo de clase a filtrar.
+ *
+ * @param {number} data.id_escuela
+ *        Identificador de la escuela.
+ *
+ * @returns {Promise<TipadoData<Array<{ id: number, tipo: string }>>>}
+ *          Promesa que retorna un objeto tipado con:
+ *          - `id`: Identificador del tipo de clase.
+ *          - `tipo`: Descripción del tipo de clase.
+ *
+ * @example
+ * const resultado = await listadoTipoSinPaginacion({
+ *   tipo: "salsa",
+ *   estado: "activos",
+ *   id_escuela: 107
+ * });
+ */
+
+
+const listadoTipoSinPaginacion = async(data : ListadoTipoInput)
+: Promise<TipadoData<{ id : number, tipo : string}[]>> =>{
+    const {tipo ,estado , id_escuela } = data ;
+    const tipoFiltro : string = `%${tipo}%`;
+    const sql : string = `select 
+                                id, tipo
+                            from 
+                                tipo_clase
+                            where
+                                tipo like ? and
+                                estado = ?  and
+                                id_escuela = ?
+                            order by tipo 
+                                LIMIT 10`;    
+    const valores : unknown[] = [ tipoFiltro, estado , id_escuela ];
+    return listarEntidadSinPaginacion<{ id : number, tipo : string}>({
+        slqListado : sql,
+        valores,
+        entidad : "Tipo",
+        estado
+    });
+};
+
+
 // ──────────────────────────────────────────────────────────────
 // Export de métodos con tryCatchDatos
 // ──────────────────────────────────────────────────────────────
@@ -213,5 +275,6 @@ export const method = {
     altaTipo  : tryCatchDatos( altaTipo ),
     modficarTipo  : tryCatchDatos( modTipo ),
     estadoTipo    : tryCatchDatos( estadoTipo ),
-    listado       : tryCatchDatos( listadoTipo )
+    listado       : tryCatchDatos( listadoTipo ),
+    listadoSinPaginacion : tryCatchDatos( listadoTipoSinPaginacion )
 };
