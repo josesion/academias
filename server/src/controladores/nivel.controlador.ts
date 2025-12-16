@@ -281,7 +281,7 @@ const listadoNivelSinPag = async( req : Request , res : Response ) =>{
         id_escuela : Number( id_escuela )     
     });
     const dataListado = await dataNiveles.listadoNivelSinPag( paramListado );
-    console.log(dataListado)
+  
     if ( dataListado.code === "NO_ACTIVE_NIVEL") {
         return enviarResponseError(
             res,

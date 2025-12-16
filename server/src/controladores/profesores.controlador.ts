@@ -242,7 +242,6 @@ const ListadoSinPaginacion = async( req : Request , res : Response ) => {
         estado : estado ,
         id_escuela : Number(id_escuela)
     });
-
     const listado = await dataProfesores.listaProfesoresSinPaginacion( dataListado );
   
     if ( listado.code === "NO_ACTIVE_PROFESORESCUELA" ){

@@ -251,6 +251,7 @@ const listadoTipoSinPaginacion = async( req : Request , res : Response)=>{
         id_escuela : Number(id_escuela)
     };
     const dataParseada : ListadoTipoSinPagInput = ListaTipoUsuarioSinPagSchema.parse(data);
+    
     const listado = await dataTipo.listadoSinPaginacion(dataParseada);
 
     if (listado.code === "NO_ACTIVE_TIPO"){
