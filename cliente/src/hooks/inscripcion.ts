@@ -40,7 +40,7 @@ interface InscripcionConfig {
 export const useInscipcion =( config : InscripcionConfig) =>{
 
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
-    const [ modalInsc , setModalInsc] = useState<boolean>(true);
+    const [ modalInsc , setModalInsc] = useState<boolean>(false);
 
     const [carga , setCarga] = useState<boolean>(true);
 

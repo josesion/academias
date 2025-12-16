@@ -1,8 +1,10 @@
-import { useState } from "react";
 
 import { InscripcionForm } from "../../../componentes/FormInscripcion/Inscripcion";
+import { FormHorario } from "../../../componentes/FormularioHorario/FormHorario";
+
 
 import { useIncripcionesUsuarios } from "../../../hookNegocios/Inscripciones";
+import { useHorariosUsuarios } from "../../../hookNegocios/horarios";
 
 
 import "./usuario.css";
@@ -10,13 +12,16 @@ import "./usuario.css";
 
 export const UsuarioPage = () =>{
 
- const   {  plan , alumno, errorGenerico,modalInsc,
+ const  {  plan , alumno, errorGenerico,modalInsc,
             listadoPlan,  listadoAlumno,  
             handleCachearPlan, handleCachearAlumno,
             handleInscribir , handleCancelar
         } = useIncripcionesUsuarios();
 
-console.log( modalInsc)
+ const { profesores, niveles, tipo,
+        listaProfe, listaNiveles, listaTipo,
+        handleCachearProfesores, handleCachearNiveles , handleCachearTipos
+       } = useHorariosUsuarios();
 
     return(
         <div className="usuario_contenedor">
@@ -39,6 +44,22 @@ console.log( modalInsc)
                     />
                 </div>
             }
+
+            <div>
+                <FormHorario
+                    listaProfe={listaProfe}
+                    handleCachearProfesores={handleCachearProfesores}
+                    profesores={profesores}
+
+                    listaNiveles={listaNiveles}
+                    handleCachearNiveles={handleCachearNiveles}
+                    nilveles={niveles}
+
+                    listaTipo={listaTipo}
+                    handleCachearTipos={handleCachearTipos}
+                    tipo={tipo}
+                />
+            </div>
 
 
         </div>

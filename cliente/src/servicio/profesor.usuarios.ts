@@ -135,12 +135,13 @@ export const listadoProfesoresSinPag = async( data : TipadoProfesores.ListadoPro
         };
     }
     const dataConvertida = {
+        dni: data.dni ,
         estado: data.estado || "activos",
-        escuela: data.id_escuela.toString(),
-        dni: data.dni || "%",
+        id_escuela: data.id_escuela.toString(),
     }
 
     const rutaCompleta = `${PAGINA}api/usu_listado_profesores_sin_paginacion?${new URLSearchParams(dataConvertida as Record<string, string>).toString()}`;
+
     return await apiFetch( rutaCompleta , {
         method : "GET",
         signal : signal

@@ -118,11 +118,12 @@ export const listadoTipoSinPaginacion =async( dataQuery : tipadoTipoUsuarios.lis
         }
     const parametrosConvertidos = {
         id_escuela : dataQuery.id_escuela.toString(),
-        nivel : dataQuery.tipo || "%", 
+        nivel : dataQuery.tipo || "", 
         estado : dataQuery.estado  || "activos"
     };    
 
-    const rutaCompleta = `${PAGINA}api/listaNivel_usu_sin_pag?${new URLSearchParams(parametrosConvertidos as Record<string, string>).toString()}`;
+    const rutaCompleta = `${PAGINA}api/lista_tipo_usu_sin_pag?${new URLSearchParams(parametrosConvertidos as Record<string, string>).toString()}`;
+
     return await apiFetch( rutaCompleta , {
         method : "GET",
         signal : signal
