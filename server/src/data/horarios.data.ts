@@ -1,11 +1,13 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // typados
-import { HorarioClaseInput } from "../squemas/horarios_clases";
-
+import { HorarioClaseInput , HorarioCalendarioInput} from "../squemas/horarios_clases";
+import { ResultadoAltaHorario , ResultCalendarioHorario } from "../tipados/horarios";
 import { TipadoData } from "../tipados/tipado.data"; 
+
 
 
 /**
@@ -151,12 +153,6 @@ const verificarProfesor = async( data : HorarioClaseInput)
 };
 
 
-interface ResultadoAltaHorario {
-    id_escuela: number;
-    dni_profesor: string;
-    id_nivel: number;
-    id_tipo_clase: number; 
-}
 
 /**
  * Crea un nuevo horario de clase en la base de datos.
@@ -234,10 +230,92 @@ const altaHorario = async( datos : HorarioClaseInput )
     });                            
 };
 
+/**
+ * Obtiene el calendario de horarios de una escuela.
+ *
+ * Recupera el listado de clases asociadas a una escuela determinada,
+ * incluyendo información de:
+ * - escuela
+ * - profesor
+ * - nivel
+ * - tipo de clase
+ * - día y horario
+ * - estado y fecha de creación
+ *
+ * El resultado está pensado para alimentar el calendario semanal
+ * del frontend.
+ *
+ * @async
+ * @function calendarioEscuela
+ *
+ * @param {HorarioCalendarioInput} datos
+ * Objeto de entrada con los filtros del calendario.
+ * @param {number} datos.id_escuela - Identificador de la escuela.
+ * @param {string} [datos.estado] - Estado opcional del horario (ej: activos, suspendido).
+ *
+ * @returns {Promise<TipadoData<ResultCalendarioHorario[]>>}
+ * Promesa que resuelve con un listado de horarios de la escuela
+ * sin paginación.
+ *
+ * @throws {Error}
+ * Puede lanzar errores relacionados con la ejecución de la consulta
+ * o la capa de acceso a datos.
+ */
 
+const calendarioEscuela = async( datos : HorarioCalendarioInput)
+: Promise<TipadoData<ResultCalendarioHorario[]>> =>{
+    const { id_escuela, estado } = datos;
+    const sql : string = `SELECT 
+                            hc.id AS id_horario,
+
+                            e.nombre_propietario AS escuela_nombre,   
+                            hc.id_escuela,
+
+                            p.nombre AS profesor_nombre,
+                            p.apellido AS profesor_apellido,
+
+                            n.nivel AS nivel_descripcion,
+                            tc.tipo AS tipo_clase_descripcion,
+
+                            hc.dia_semana,
+                            hc.hora_inicio,
+                            hc.hora_fin,
+                            hc.estado,
+                            hc.fecha_creacion
+
+                        FROM horarios_clases hc
+
+                        JOIN profesores_en_escuela pe
+                            ON pe.dni_profesor = hc.dni_profesor
+                        AND pe.id_escuela = hc.id_escuela
+
+                        JOIN profesores p
+                            ON p.dni = hc.dni_profesor
+
+                        JOIN niveles n
+                            ON n.id = hc.id_nivel
+
+                        JOIN tipo_clase tc
+                            ON tc.id = hc.id_tipo_clase
+
+                        JOIN escuelas e
+                            ON e.id_escuela = hc.id_escuela
+
+                        WHERE hc.id_escuela = ? 
+                        AND hc.estado IN ('activos', 'suspendido');`;
+    const valores : unknown[] = [id_escuela];
+
+    return await listarEntidadSinPaginacion<ResultCalendarioHorario>({
+        slqListado : sql,
+        valores ,
+        entidad : "horarios_clases" ,
+        estado : estado
+    });
+};
 
 export const method = {
     altaHorario : tryCatchDatos( altaHorario ),
     verificarHorario : tryCatchDatos( verificarHorario ),
     verificarProfesor : tryCatchDatos( verificarProfesor ),
+    listaCalendario   : tryCatchDatos( calendarioEscuela)
 };

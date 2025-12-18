@@ -8,8 +8,9 @@ import { enviarResponseError } from "../utils/responseError";
 import { method as horariosData } from "../data/horarios.data";
 
 // Typados
-import { HorarioClaseInput , HorarioClaseSchema } from "../squemas/horarios_clases";
+import { HorarioClaseInput , HorarioClaseSchema , HorarioCalendarioInput ,CalendarioHorarioSchema } from "../squemas/horarios_clases";
 import { CodigoEstadoHTTP } from "../tipados/generico"; 
+
 
 
 /**
@@ -91,7 +92,39 @@ const altaHorario = async( req : Request , res : Response) =>{
 
 }; 
 
+const listadoHorarioEscuela = async( req : Request , res : Response ) =>{
+   
+    const {id_escuela , estado} = req.query;
+
+    const data : HorarioCalendarioInput = CalendarioHorarioSchema.parse({
+        id_escuela : Number(id_escuela),
+        estado
+    });
+
+    const listado = await horariosData.listaCalendario(data);
+ 
+    if ( listado.code === "NO_ACTIVE_HORARIOS_CLASES"){
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            "No existen Clases asignadas",
+            listado.code  
+        );
+    }; 
+
+    return enviarResponse(
+        res,
+        CodigoEstadoHTTP.OK,
+        "Calendiario Escuala ",
+        listado.data,
+        undefined,
+        listado.code
+    );   
+};
+
+
 
 export const method = {
     alta  : tryCatch( altaHorario),
+    listadoHorarioEscuela : tryCatch(listadoHorarioEscuela )
 };

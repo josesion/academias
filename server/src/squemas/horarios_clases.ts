@@ -47,8 +47,13 @@ export const HorarioClaseSchema = z
     estado: EstadoEnum.default("activos"),
   })
 
+export const CalendarioHorarioSchema = z.object({
+  id_escuela: z.number().int().positive(),
+  estado: EstadoEnum.default("activos"),
+}); 
 
 
 
 export type HorarioClaseInput = z.infer<typeof HorarioClaseSchema>;
+export type HorarioCalendarioInput = z.infer<typeof CalendarioHorarioSchema>;
 
