@@ -1,0 +1,47 @@
+/* CONTENEDOR GENERAL */
+.contenedor_formulario_horario {
+    display: flex;
+    flex-direction: column;
+
+    background: transparent; /* azul oscuro */
+    border-radius: 12px;
+    width: 95dvw;
+  
+    min-height: 80dvh;
+}
+
+/* ───────────────────────────── */
+/* FILTRO PRIMARIO */
+/* ───────────────────────────── */
+.formulario_horario_filtro_primario {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    padding: 1rem;
+    background: #020617;
+    border-radius: 10px;
+}
+
+/* Cada selector que no empuje */
+.formulario_horario_filtro_primario > div {
+    flex: 1;
+    min-width: 220px;
+}
+
+/* ───────────────────────────── */
+/* FILTRO SECUNDARIO (CALENDARIO) */
+/* ───────────────────────────── */
+.formulario_horario_filtro_secundario {
+                      /* 🔥 CLAVE */
+    overflow-y: auto;           /* 🔥 SCROLL INTERNO */
+        
+
+    background: linear-gradient(180deg,transparent, #2c2e35cc);
+    border-radius: 12px;
+    border: 1px solid #1e293b;
+    
+}
+
+

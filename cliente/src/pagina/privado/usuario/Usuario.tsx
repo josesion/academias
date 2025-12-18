@@ -18,9 +18,11 @@ export const UsuarioPage = () =>{
             handleInscribir , handleCancelar
         } = useIncripcionesUsuarios();
 
- const { profesores, niveles, tipo,
-        listaProfe, listaNiveles, listaTipo,
-        handleCachearProfesores, handleCachearNiveles , handleCachearTipos
+ const { profesores, niveles, tipo, modalInterno,
+         listaProfe, listaNiveles, listaTipo,
+         handleCachearProfesores, handleCachearNiveles , handleCachearTipos,
+         handleModHorariosData , hanldeAltaHorariosData,
+         horarios, diasSemana,  
        } = useHorariosUsuarios();
 
     return(
@@ -47,6 +49,11 @@ export const UsuarioPage = () =>{
 
             <div>
                 <FormHorario
+                    diasSemana={diasSemana}
+                    horarios={horarios}
+                    
+                    modalInterno={modalInterno}
+
                     listaProfe={listaProfe}
                     handleCachearProfesores={handleCachearProfesores}
                     profesores={profesores}
@@ -58,6 +65,10 @@ export const UsuarioPage = () =>{
                     listaTipo={listaTipo}
                     handleCachearTipos={handleCachearTipos}
                     tipo={tipo}
+
+
+                    handleMod={handleModHorariosData}
+                    handleAlta={hanldeAltaHorariosData}
                 />
             </div>
 

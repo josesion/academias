@@ -9,6 +9,8 @@ import { peticiones } from "./peticiones";
  */
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 import type * as TipadoHorario from "../tipadosTs/horario";
+import { type ClaseHorario  } from "../componentes/ClasesAsignadas/ClasesAsiganadas";
+import { type MensajeCelda } from "../componentes/CeldaVacia/CeldaVacia";
 
 
 
@@ -18,17 +20,21 @@ interface HorarioConfig {
     servicios : {
         listadoProfesores : ServicioCrud,
         listadoNivel : ServicioCrud,
-        listadoTipo : ServicioCrud
+        listadoTipo : ServicioCrud,
+        HORARIOS  :  TipadoHorario.Horas[], 
+        DIAS_SEMANA : TipadoHorario.DiaSemana[],
     },
     inicialFiltroProfesor : { dni : string },
     inicialFiltroNivel : { nivel : string },
-    inicialFiltroTipo : { tipo : string }
+    inicialFiltroTipo : { tipo : string },
+
 };
 
 
 export const useHorarioHook = ( config : HorarioConfig ) =>{
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
     const [carga , setCarga] = useState<boolean>(true);
+    const [ modalInterno , setModalInterno ] = useState<boolean>(false);
 
     const [profesores , setProfesores] = useState<TipadoHorario.DataProfesor | null>(null);
     const [listaProfe , setListaProfe ] = useState<TipadoHorario.DataProfesor[]>([]);
@@ -39,7 +45,11 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
     const [tipo , setTipo ] = useState<TipadoHorario.DataTipo | null>( null);
     const [listaTipo , setListaTipo ] = useState<TipadoHorario.DataTipo[]>([]);
 
-    console.log( listaTipo );
+    const horarios : TipadoHorario.Horas[] = config.servicios.HORARIOS;
+    const diasSemana : TipadoHorario.DiaSemana[] = config.servicios.DIAS_SEMANA;
+ 
+
+
     const [filtroBusquedaProfesor , setFiltroBusquedaProfesor] = useState<TipadoHorario.FiltroProfesor>({
         ...config.inicialFiltroProfesor ,
         estado : "activos" ,
@@ -56,8 +66,8 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         id_escuela : config.idEscuela,
     });
 
-    
-    console.log(  filtroBusquedaTipo );
+    const [dataForm , setDataForm] = useState<TipadoHorario.DataHorario | null>( null )
+
     const handleCachearProfesores = ( e: React.ChangeEvent<HTMLInputElement> ) =>{
 
        setFiltroBusquedaProfesor({
@@ -99,6 +109,15 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
          } else {
               setTipo( null );
          };      
+   };
+
+   const handleModHorariosData = ( clase : ClaseHorario ) =>{
+        console.log(clase)
+    // obtengo la info cn un useState (dataForm) de alta horario y abro el modal (modalInterno) con el formulario de ala
+   };
+
+   const hanldeAltaHorariosData = ( mensaje : MensajeCelda) =>{
+        console.log( mensaje )
    };
 
 // ──────────────────────────────────────────────────────────────
@@ -216,10 +235,18 @@ return {
     listaProfe,
     listaNiveles,
     listaTipo,
+    
+    horarios, diasSemana,
+
 
     handleCachearProfesores,
     handleCachearNiveles,
     handleCachearTipos,
+
+    handleModHorariosData,
+    hanldeAltaHorariosData,
+
+    modalInterno,
 };
 
 };

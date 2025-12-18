@@ -1,0 +1,165 @@
+
+.contenedor_calendario {
+    width: 100%;
+    max-height: 80dvh;       
+    overflow-y: auto;            
+    overflow-x: auto;
+    background: linear-gradient(135deg, #0f2027, transparent);
+    border-radius: 12px;
+}
+
+/* Tabla */
+.tabla_calendario {
+    width: 100%;
+    background-color: #08151b;
+    color: #ffffff;
+    border-collapse: separate; 
+    border-spacing: 0;
+}
+
+
+.cabecera_calendario th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    background-color: #08151b; 
+    color: #e6f1f5;
+    font-weight: 600;
+    padding: 12px;
+    text-align: center;
+    border-bottom: 2px solid #1e4a5f;
+
+    box-shadow: 0 4px 6px rgba(41, 39, 39, 0.45);
+}
+
+
+/* Columna hora */
+.cuerpo_calendario td:first-child {
+    background-color: #01090e;
+    font-weight: bold;
+    text-align: center;
+    width: 80px;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+}
+
+/* Filas */
+.cuerpo_calendario tr {
+    height: 48px;
+}
+
+/* Celdas */
+.cuerpo_calendario td {
+    border: 1px solid #333435;
+    padding: 6px;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover */
+.cuerpo_calendario td:hover {
+    background-color: rgba(24, 25, 26, 0.15);
+    cursor: pointer;
+}
+
+/* Celda vacía */
+.celda_vacia {
+    color: #6b8b99;
+    font-size: 12px;
+}
+
+/* Clase asignada */
+.clase_asignada {
+    background-color: #474881;
+    color: #c9cdcf;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+
+/* ───────────── Celda vacía ───────────── */
+.celda_vacia {
+    position: relative;
+    color: #6b8b99;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+
+    padding: 4px 2px;
+    border-radius: 6px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
+}
+
+/* Área clickeable visual expandida */
+.celda_vacia::before {
+    content: "";
+    position: absolute;
+    inset: -6px 0; /* 👈 agranda arriba y abajo */
+    border-radius: 8px;
+    background-color: transparent;
+    z-index: -1;
+
+    transition: background-color 0.15s ease;
+}
+
+.celda_vacia:hover {
+    transform: scaleY(1.15); /* 👈 sensación de más alto */
+    background-color: rgba(71, 72, 129, 0.1);
+    box-shadow: 0 0 0 1px rgba(71, 72, 129, 0.2);
+}
+
+.celda_vacia:hover::before {
+    background-color: rgba(71, 72, 129, 0.06);
+}
+
+.celda_vacia:active {
+    transform: scaleY(1.05);
+}
+
+/* ───────────── Clase asignada ───────────── */
+.clase_asignada {
+    background-color: #474881;
+    color: #c9cdcf;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 4px;
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+}
+
+.clase_asignada:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 14px rgba(71, 72, 129, 0.45);
+    filter: brightness(1.08);
+}
+
+.clase_asignada:active {
+    transform: translateY(0) scale(0.98);
+}
+
+
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cabecera_calendario th {
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .cuerpo_calendario td {
+        font-size: 11px;
+    }
+}
