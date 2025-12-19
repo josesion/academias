@@ -19,7 +19,7 @@ export const UsuarioPage = () =>{
         } = useIncripcionesUsuarios();
 
  const { profesores, niveles, tipo, modalInterno,
-         listaProfe, listaNiveles, listaTipo,
+         listaProfe, listaNiveles, listaTipo, calendario,
          handleCachearProfesores, handleCachearNiveles , handleCachearTipos,
          handleModHorariosData , hanldeAltaHorariosData,
          horarios, diasSemana,  
@@ -51,6 +51,7 @@ export const UsuarioPage = () =>{
                 <FormHorario
                     diasSemana={diasSemana}
                     horarios={horarios}
+                    calendario={calendario}
                     
                     modalInterno={modalInterno}
 

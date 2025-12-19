@@ -7,7 +7,6 @@ export interface ClaseHorario {
   hora_inicio: Horas;
   tipo_clase: string;
   profesor: string;
-  escuela: string;
   nivel: string;
   hora_fin: string;
   estado: string;
@@ -18,7 +17,7 @@ export interface ClaseHorario {
 interface ClaseAsignadaProps {
   dia: DiaSemana;
   hora: Horas;
-  Horarios_Clases: ClaseHorario[];
+  Horarios_Clases?: ClaseHorario[];
   onSelect?: (clase: ClaseHorario) => void;
 }
 
@@ -29,7 +28,7 @@ export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
   onSelect
 }) => {
 
-  const clase = Horarios_Clases.find(
+  const clase = Horarios_Clases?.find(
     horario => horario.dia === dia && horario.hora_inicio === hora
   );
 

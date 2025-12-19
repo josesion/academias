@@ -13,185 +13,13 @@ interface CalendarioProps {
   handleAlaData: ( mensaje : MensajeCelda) => void;
   horarios : Horas[],
   diasSemana : DiaSemana[],
+  calendario? : ClaseHorarioData[]
 };
 
 
-
-
-
-export const HORARIOS_CLASES_MOCK  : ClaseHorarioData[]  = [
-  {
-    escuela: "Academia Central",
-    profesor: "Juan Pérez",
-    nivel: "Principiante",
-    tipo_clase: "Bachata",
-    dia: "lunes",
-    hora_inicio: "08:00",
-    hora_fin: "09:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "María López",
-    nivel: "Intermedio",
-    tipo_clase: "Salsa",
-    dia: "lunes",
-    hora_inicio: "09:00",
-    hora_fin: "10:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Carlos Gómez",
-    nivel: "Avanzado",
-    tipo_clase: "Hip Hop",
-    dia: "lunes",
-    hora_inicio: "18:00",
-    hora_fin: "19:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Lucía Fernández",
-    nivel: "Principiante",
-    tipo_clase: "Ritmos Latinos",
-    dia: "martes",
-    hora_inicio: "10:00",
-    hora_fin: "11:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Diego Martínez",
-    nivel: "Intermedio",
-    tipo_clase: "Kizomba",
-    dia: "martes",
-    hora_inicio: "19:00",
-    hora_fin: "20:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Juan Pérez",
-    nivel: "Principiante",
-    tipo_clase: "Bachata",
-    dia: "miercoles",
-    hora_inicio: "08:00",
-    hora_fin: "09:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "María López",
-    nivel: "Intermedio",
-    tipo_clase: "Salsa",
-    dia: "miercoles",
-    hora_inicio: "09:00",
-    hora_fin: "10:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Sofía Ramírez",
-    nivel: "Avanzado",
-    tipo_clase: "Reggaetón",
-    dia: "miercoles",
-    hora_inicio: "20:00",
-    hora_fin: "21:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Carlos Gómez",
-    nivel: "Avanzado",
-    tipo_clase: "Hip Hop",
-    dia: "jueves",
-    hora_inicio: "18:00",
-    hora_fin: "19:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Ana Torres",
-    nivel: "Desde cero",
-    tipo_clase: "Clase de prueba",
-    dia: "jueves",
-    hora_inicio: "19:00",
-    hora_fin: "20:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Lucía Fernández",
-    nivel: "Principiante",
-    tipo_clase: "Bachata Lady Style",
-    dia: "viernes",
-    hora_inicio: "17:00",
-    hora_fin: "18:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Diego Martínez",
-    nivel: "Intermedio",
-    tipo_clase: "Salsa Cubana",
-    dia: "viernes",
-    hora_inicio: "18:00",
-    hora_fin: "19:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "Ana Torres",
-    nivel: "Desde cero",
-    tipo_clase: "Clase de prueba",
-    dia: "viernes",
-    hora_inicio: "20:00",
-    hora_fin: "21:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Juan Pérez",
-    nivel: "Principiante",
-    tipo_clase: "Bachata",
-    dia: "sabado",
-    hora_inicio: "10:00",
-    hora_fin: "11:00",
-    estado: "activos",
-  },
-  {
-    escuela: "Academia Central",
-    profesor: "María López",
-    nivel: "Intermedio",
-    tipo_clase: "Salsa",
-    dia: "sabado",
-    hora_inicio: "11:00",
-    hora_fin: "12:00",
-    estado: "activos",
-  },
-
-  {
-    escuela: "Academia Central",
-    profesor: "Carlos Gómez",
-    nivel: "Avanzado",
-    tipo_clase: "Hip Hop",
-    dia: "domingo",
-    hora_inicio: "18:00",
-    hora_fin: "19:00",
-    estado: "activos",
-  }
-];
-
-
 export const Calendario = ( data : CalendarioProps) => {
-    const { horarios , diasSemana} = data;
-
+    const { horarios , diasSemana, calendario} = data;
+  
     return (
         <div className="contenedor_calendario" >
             <table className="tabla_calendario" >
@@ -221,7 +49,7 @@ export const Calendario = ( data : CalendarioProps) => {
                                         diasSemana.map( dia => (
                                             <td key={dia} className="tr_cuerpo_calendario">
                                                  {
-                                                    HORARIOS_CLASES_MOCK.find( clase => 
+                                                    calendario?.find( clase => 
                                                         clase.dia === dia && 
                                                         clase.hora_inicio === hora
                                                     )   
@@ -232,7 +60,7 @@ export const Calendario = ( data : CalendarioProps) => {
                                                                     <ClaseAsignada
                                                                         dia={dia}
                                                                         hora={hora}
-                                                                        Horarios_Clases={HORARIOS_CLASES_MOCK}
+                                                                        Horarios_Clases={calendario}
                                                                         onSelect={data.handleModData}
                                                                     />                       
                                                                 }

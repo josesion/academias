@@ -13,6 +13,7 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
 import { listadoTipoSinPaginacion } from "../servicio/tipo.fetch";
 import { listadoNivelSinPaginacion } from "../servicio/nivel.fetch";
 import { listadoProfesoresSinPag } from "../servicio/profesor.usuarios";
+import { calendarioEscuela } from "../servicio/horario.fetch";
 
 import {type Horas , type DiaSemana } from "../tipadosTs/horario";
 
@@ -46,8 +47,6 @@ const DIAS_SEMANA : DiaSemana[] = [
 ];
 
 
-
-
 export const useHorariosUsuarios = () => {
     const { rol } = useContext( RutasProtegidasContext );
 
@@ -60,6 +59,7 @@ export const useHorariosUsuarios = () => {
             listadoProfesores : listadoProfesoresSinPag,
             HORARIOS , 
             DIAS_SEMANA,
+            horarioEscuela : calendarioEscuela
         },
 
         inicialFiltroProfesor : {
@@ -77,6 +77,7 @@ export const useHorariosUsuarios = () => {
         dataAltaHorario : {
 
         },
+        
 
     };
 

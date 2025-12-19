@@ -21,8 +21,10 @@ interface HorarioConfig {
         listadoProfesores : ServicioCrud,
         listadoNivel : ServicioCrud,
         listadoTipo : ServicioCrud,
+        horarioEscuela : ServicioCrud,
         HORARIOS  :  TipadoHorario.Horas[], 
         DIAS_SEMANA : TipadoHorario.DiaSemana[],
+
     },
     inicialFiltroProfesor : { dni : string },
     inicialFiltroNivel : { nivel : string },
@@ -48,7 +50,15 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
     const horarios : TipadoHorario.Horas[] = config.servicios.HORARIOS;
     const diasSemana : TipadoHorario.DiaSemana[] = config.servicios.DIAS_SEMANA;
  
+    const [calendario , setCalendario] = useState<TipadoHorario.ClaseHorarioData[]>();
 
+
+    const [filtroCalendario , setFiltroCalendario] = useState<TipadoHorario.Calendario >({
+        estado : "activos",
+        id_escuela : config.idEscuela
+    });
+
+    console.log(calendario)
 
     const [filtroBusquedaProfesor , setFiltroBusquedaProfesor] = useState<TipadoHorario.FiltroProfesor>({
         ...config.inicialFiltroProfesor ,
@@ -206,7 +216,7 @@ useEffect(()=>{
         const servicioApiFetch = config.servicios.listadoTipo;
         try {
             const respuesta = await servicioApiFetch( filtroBusquedaTipo , signal );
-            console.log( respuesta );
+        
             if ( respuesta.error === false ) {
                 setListaTipo( respuesta.data );
             };
@@ -227,6 +237,40 @@ useEffect(()=>{
     };
 }, [filtroBusquedaTipo] );
 
+// ──────────────────────────────────────────────────────────────
+// Listado de Calendario sin paginacion
+// ──────────────────────────────────────────────────────────────  
+useEffect( ()=>{
+    const {controlador , signal , timeoutId} = peticiones({
+        tiempo : 5,
+        setErrorGenerico,
+        setCarga
+    });
+    const calendario = async() =>{
+        try{
+            const servicioApiFetch = config.servicios.horarioEscuela;
+            const listadoCalendario = await servicioApiFetch( filtroCalendario, signal )
+            
+            if (listadoCalendario.error === false) {
+                setCalendario(listadoCalendario.data);
+            };
+        }catch(error){
+            console.error('Ocurrió un error inesperado al cargar los datos del Calendario.')
+        }finally{
+            clearTimeout( timeoutId );
+            setCarga( false );
+        }
+    };
+  
+    calendario();
+
+    return () => {
+        clearTimeout( timeoutId );
+        controlador.abort();
+    };
+
+},[]);
+
 return {
     profesores,
     niveles,
@@ -235,6 +279,7 @@ return {
     listaProfe,
     listaNiveles,
     listaTipo,
+    calendario,
     
     horarios, diasSemana,
 

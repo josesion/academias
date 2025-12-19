@@ -5,7 +5,7 @@ import { Calendario } from "../Calendario/Calendario";
 import type * as TipadoHorario from"../../tipadosTs/horario";
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../CeldaVacia/CeldaVacia";
-import {type Horas , type DiaSemana } from "../../tipadosTs/horario";
+import {type Horas , type DiaSemana , type ClaseHorarioData } from "../../tipadosTs/horario";
 
 import "./formHorario.css";
 
@@ -23,6 +23,7 @@ interface FormHorarioProps {
 
     horarios : Horas[] ,
     diasSemana : DiaSemana[],
+    calendario? : ClaseHorarioData[],
 
     handleCachearProfesores: ( e: React.ChangeEvent<HTMLInputElement> ) => void ;
     handleCachearNiveles: ( e: React.ChangeEvent<HTMLInputElement> ) => void ;
@@ -35,7 +36,7 @@ interface FormHorarioProps {
 export const FormHorario: React.FC<FormHorarioProps> = ( props ) => {
 
   const {  modalInterno,
-           listaProfe, listaNiveles, listaTipo,
+           listaProfe, listaNiveles, listaTipo, calendario ,
            handleCachearProfesores ,  handleCachearNiveles, handleCachearTipos,
            handleMod,handleAlta,
            diasSemana , horarios
@@ -87,7 +88,8 @@ export const FormHorario: React.FC<FormHorarioProps> = ( props ) => {
         <div className="formulario_horario_filtro_secundario">
                 <Calendario 
                     diasSemana={diasSemana}
-                    horarios={horarios}    
+                    horarios={horarios}  
+                    calendario={calendario}  
                     handleModData={handleMod}
                     handleAlaData={handleAlta}  
                 />
