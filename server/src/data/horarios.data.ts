@@ -9,59 +9,52 @@ import { ResultadoAltaHorario , ResultCalendarioHorario } from "../tipados/horar
 import { TipadoData } from "../tipados/tipado.data"; 
 
 
-
 /**
- * verificarHorario
- * ----------------
- * Verifica si ya existe un horario activo en una escuela
- * que se superponga con el rango horario recibido.
+ * verificarHorarioEscuela
+ * -----------------------
+ * Verifica si existe un horario vigente y activo ocupado dentro de una escuela
+ * para un día y rango horario determinados.
  *
- * Regla de negocio:
- * - Una escuela solo puede tener una clase activa a la vez
- *   (no se permiten solapamientos de horarios).
- * - La validación se hace por:
- *   • id_escuela
- *   • día de la semana
- *   • rango horario (hora_inicio / hora_fin)
+ * La validación se utiliza para evitar superposición de horarios
+ * dentro de la misma escuela.
  *
- * Se considera conflicto cuando:
- *   hora_inicio_existente < hora_fin_nueva
- *   AND
- *   hora_fin_existente > hora_inicio_nueva
+ * Reglas aplicadas:
+ *  - Filtra por escuela (`id_escuela`)
+ *  - Filtra por día de la semana (`dia_semana`)
+ *  - Solo considera horarios con estado `activos`
+ *  - Solo considera horarios `vigente = true`
+ *  - Detecta solapamiento horario:
+ *      (hora_inicio < hora_fin_nuevo AND hora_fin > hora_inicio_nuevo)
  *
  * @async
- * @function verificarHorario
  *
  * @param {HorarioClaseInput} data
  * Objeto con los datos del horario a validar.
  *
  * @param {number} data.id_escuela
- * Identificador de la escuela donde se intenta crear el horario.
+ * Identificador de la escuela donde se quiere asignar el horario.
  *
  * @param {string} data.dia_semana
- * Día de la semana (lunes a domingo).
+ * Día de la semana en el que se intenta asignar el horario.
  *
  * @param {string} data.hora_inicio
- * Hora de inicio del horario (formato HH:mm).
+ * Hora de inicio del nuevo horario.
  *
  * @param {string} data.hora_fin
- * Hora de fin del horario (formato HH:mm).
+ * Hora de fin del nuevo horario.
  *
  * @returns {Promise<TipadoData<{ id: number }>>}
- * Retorna un objeto TipadoData:
- * - Si existe un horario en conflicto → code: 'HORARIOS_CLASES_EXISTE'
- * - Si no existe conflicto → resultado vacío / sin error
+ * Retorna un objeto TipadoData con:
+ *  - `error: true` y `code: 'HORARIOS_CLASES_EXISTE'` si el horario ya está ocupado
+ *  - `error: false` y `code: 'HORARIOS_CLASES_NO_EXISTE'` si el horario está disponible
  *
- * @example
- * await verificarHorario({
- *   id_escuela: 107,
- *   dia_semana: 'miercoles',
- *   hora_inicio: '08:00',
- *   hora_fin: '09:00'
- * });
+ * @throws {Error}
+ * Puede lanzar errores relacionados a la base de datos.
  */
 
-const verificarHorario = async( data : HorarioClaseInput)
+
+
+const verificarHorarioEscuela = async( data : HorarioClaseInput)
 : Promise<TipadoData<{ id : number}>> =>{
     const {id_escuela, dia_semana, hora_inicio, hora_fin} = data;
 
@@ -73,7 +66,8 @@ const verificarHorario = async( data : HorarioClaseInput)
                             AND estado = 'activos'
                             AND (
                                 (hora_inicio < ? AND hora_fin > ?)
-                            );`;
+                            )
+                            AND vigente = true;`;
     const valores : unknown[] = [ id_escuela, dia_semana, hora_fin, hora_inicio ];  
     
     return await buscarExistenteEntidad<{ id : number}>({
@@ -85,50 +79,47 @@ const verificarHorario = async( data : HorarioClaseInput)
 
 /**
  * verificarProfesor
- * ------------------
- * Valida si un profesor ya tiene asignada una clase en el mismo día y
- * en un rango horario que se superpone, sin importar la escuela.
+ * -----------------
+ * Verifica si un profesor ya tiene asignado un horario vigente y activo
+ * en un día y rango horario determinados, independientemente de la escuela.
  *
- * Esta verificación es **global**, y se usa para cumplir la regla de negocio:
- * un profesor no puede dictar dos clases al mismo tiempo, aunque sean
- * en academias distintas.
+ * Esta validación se utiliza para evitar que un profesor tenga
+ * superposición de clases en el mismo día y horario.
  *
- * La validación se considera positiva si existe al menos un horario:
- *  - Con el mismo dni_profesor
- *  - En el mismo día de la semana
- *  - En estado "activos"
- *  - Con superposición de horario:
- *      (hora_inicio < nueva_hora_fin AND hora_fin > nueva_hora_inicio)
+ * Reglas aplicadas:
+ *  - Filtra por profesor (`dni_profesor`)
+ *  - Filtra por día de la semana (`dia_semana`)
+ *  - Solo considera horarios con estado `activos`
+ *  - Solo considera horarios `vigente = true`
+ *  - Detecta solapamiento horario:
+ *      (hora_inicio < hora_fin_nuevo AND hora_fin > hora_inicio_nuevo)
  *
  * @async
- * @function verificarProfesor
  *
  * @param {HorarioClaseInput} data
- *        Objeto con los datos del horario que se intenta crear.
- *        Se utilizan las propiedades:
- *        - dni_profesor
- *        - dia_semana
- *        - hora_inicio
- *        - hora_fin
+ * Objeto con los datos del horario a validar.
+ *
+ * @param {string} data.dni_profesor
+ * Documento del profesor al que se le quiere asignar el horario.
+ *
+ * @param {string} data.dia_semana
+ * Día de la semana en el que se intenta asignar el horario.
+ *
+ * @param {string} data.hora_inicio
+ * Hora de inicio del nuevo horario.
+ *
+ * @param {string} data.hora_fin
+ * Hora de fin del nuevo horario.
  *
  * @returns {Promise<TipadoData<{ id: number }>>}
- *          Retorna un objeto TipadoData indicando:
- *          - Si existe un horario que genera conflicto (`HORARIOS_PROFESOR_EXISTE`)
- *          - O si el profesor está disponible en ese horario
+ * Retorna un objeto TipadoData con:
+ *  - `error: true` y `code: 'HORARIOS_PROFESOR_EXISTE'` si el profesor ya está ocupado
+ *  - `error: false` y `code: 'HORARIOS_PROFESOR_NO_EXISTE'` si el profesor está disponible
  *
- * @example
- * const resultado = await verificarProfesor({
- *   dni_profesor: "33762578",
- *   dia_semana: "miercoles",
- *   hora_inicio: "08:00",
- *   hora_fin: "09:00",
- *   id_escuela: 107,
- *   id_nivel: 2,
- *   id_tipo_clase: 1,
- *   fecha_creacion: "2025-12-13",
- *   estado: "activos"
- * });
+ * @throws {Error}
+ * Puede lanzar errores relacionados a la base de datos.
  */
+
 
 const verificarProfesor = async( data : HorarioClaseInput)
 : Promise<TipadoData<{ id : number}>> =>{
@@ -142,7 +133,8 @@ const verificarProfesor = async( data : HorarioClaseInput)
                             AND estado = 'activos'
                             AND (
                                 (hora_inicio < ? AND hora_fin > ?)
-                            );`;
+                            )
+                             AND vigente = true ;`;
     const valores : unknown[] = [ dni_profesor, dia_semana, hora_fin, hora_inicio ];  
     
     return await buscarExistenteEntidad<{ id : number}>({
@@ -231,36 +223,50 @@ const altaHorario = async( datos : HorarioClaseInput )
 };
 
 /**
- * Obtiene el calendario de horarios de una escuela.
+ * calendarioEscuela
+ * -----------------
+ * Obtiene el calendario de horarios de una escuela determinada.
  *
- * Recupera el listado de clases asociadas a una escuela determinada,
- * incluyendo información de:
- * - escuela
- * - profesor
- * - nivel
- * - tipo de clase
- * - día y horario
- * - estado y fecha de creación
+ * Reglas de negocio aplicadas:
+ *  - Solo se devuelven horarios **vigentes** (`vigente = true`)
+ *  - Solo se incluyen horarios con estado:
+ *      - 'activos'
+ *      - 'suspendido'
+ *  - No incluye horarios inactivos ni no vigentes
  *
- * El resultado está pensado para alimentar el calendario semanal
- * del frontend.
+ * La información retornada está pensada para:
+ *  - Visualización de calendario
+ *  - Asignación de clases
+ *  - Consulta operativa
  *
  * @async
- * @function calendarioEscuela
  *
  * @param {HorarioCalendarioInput} datos
- * Objeto de entrada con los filtros del calendario.
- * @param {number} datos.id_escuela - Identificador de la escuela.
- * @param {string} [datos.estado] - Estado opcional del horario (ej: activos, suspendido).
+ * Objeto de entrada con:
+ *  - id_escuela: number → Escuela sobre la cual se consulta el calendario
+ *  - estado: string → Usado únicamente para mensajes de respuesta (TipadoData)
  *
  * @returns {Promise<TipadoData<ResultCalendarioHorario[]>>}
- * Promesa que resuelve con un listado de horarios de la escuela
- * sin paginación.
+ * Retorna una promesa con:
+ *  - error: boolean
+ *  - message: string
+ *  - data: Array de horarios con:
+ *      - id_horario
+ *      - profesor (apellido)
+ *      - nivel
+ *      - tipo_clase
+ *      - dia
+ *      - hora_inicio
+ *      - hora_fin
+ *      - estado
+ *  - code: string
  *
  * @throws {Error}
- * Puede lanzar errores relacionados con la ejecución de la consulta
- * o la capa de acceso a datos.
+ * Puede lanzar errores relacionados a:
+ *  - Acceso a base de datos
+ *  - Fallas internas del servicio
  */
+
 
 const calendarioEscuela = async( datos : HorarioCalendarioInput)
 : Promise<TipadoData<ResultCalendarioHorario[]>> =>{
@@ -268,20 +274,15 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
     const sql : string = `SELECT 
                             hc.id AS id_horario,
 
-                            e.nombre_propietario AS escuela_nombre,   
-                            hc.id_escuela,
+                            p.apellido AS profesor,
 
-                            p.nombre AS profesor_nombre,
-                            p.apellido AS profesor_apellido,
+                            n.nivel AS nivel,
+                            tc.tipo AS tipo_clase,
 
-                            n.nivel AS nivel_descripcion,
-                            tc.tipo AS tipo_clase_descripcion,
-
-                            hc.dia_semana,
+                            hc.dia_semana as dia,
                             hc.hora_inicio,
                             hc.hora_fin,
-                            hc.estado,
-                            hc.fecha_creacion
+                            hc.estado
 
                         FROM horarios_clases hc
 
@@ -302,7 +303,9 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
                             ON e.id_escuela = hc.id_escuela
 
                         WHERE hc.id_escuela = ? 
-                        AND hc.estado IN ('activos', 'suspendido');`;
+                        AND hc.estado IN ('activos', 'suspendido')
+                        And hc.vigente = true ;`;
+
     const valores : unknown[] = [id_escuela];
 
     return await listarEntidadSinPaginacion<ResultCalendarioHorario>({
@@ -315,7 +318,7 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
 
 export const method = {
     altaHorario : tryCatchDatos( altaHorario ),
-    verificarHorario : tryCatchDatos( verificarHorario ),
+    verificarHorarioEscuela : tryCatchDatos( verificarHorarioEscuela ),
     verificarProfesor : tryCatchDatos( verificarProfesor ),
     listaCalendario   : tryCatchDatos( calendarioEscuela)
 };

@@ -1,3 +1,4 @@
+-- Estructura de la tabla horarios_clases con tipos de hora como String (VARCHAR)
 CREATE TABLE horarios_clases (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
@@ -8,13 +9,16 @@ CREATE TABLE horarios_clases (
     id_nivel INT NOT NULL,
     id_tipo_clase INT NOT NULL,
 
+    -- Día de la semana como ENUM
     dia_semana ENUM('lunes','martes','miercoles','jueves','viernes','sabado','domingo') NOT NULL,
-    hora_inicio TIME NOT NULL,
-    hora_fin TIME NOT NULL,
+    
+    -- Horas modificadas a VARCHAR para manejo flexible como strings
+    hora_inicio VARCHAR(10) NOT NULL,
+    hora_fin VARCHAR(10) NOT NULL,
 
     fecha_creacion DATE NOT NULL,
     estado ENUM('activos', 'inactivos', 'suspendido') NOT NULL DEFAULT 'activos',
-
+    vigente BOOLEAN NOT NULL DEFAULT TRUE,
 
     -- FK a profesores_en_escuela (relación compuesta profesor + escuela)
     FOREIGN KEY (dni_profesor, id_escuela)

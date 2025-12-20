@@ -5,121 +5,154 @@ import { enviarResponse } from "../utils/response";
 import { enviarResponseError } from "../utils/responseError";
 
 //Servicios Data
-import { method as horariosData } from "../data/horarios.data";
+import { method as horarioServicio} from "../Servicio/horarios.servicios"
 
 // Typados
-import { HorarioClaseInput , HorarioClaseSchema , HorarioCalendarioInput ,CalendarioHorarioSchema } from "../squemas/horarios_clases";
 import { CodigoEstadoHTTP } from "../tipados/generico"; 
+import { console } from "inspector";
+
 
 
 
 /**
- * Controlador: altaHorario
- * -----------------------
- * Maneja la creación de un nuevo horario de clases en la academia.
+ * altaHorario
+ * -----------
+ * Controlador encargado de manejar el alta de un horario de clase.
  *
- * Flujo de validación:
- * 1. Valida y tipa la data recibida desde el request usando Zod.
- * 2. Verifica que no exista un horario activo en la misma escuela
- *    para el mismo día y rango horario (regla: una sola clase a la vez).
- * 3. Verifica que el profesor no tenga otra clase asignada en el mismo
- *    día y rango horario, incluso en otra escuela (regla global).
- * 4. Si pasa todas las validaciones, crea el horario en la base de datos.
+ * Recibe los datos desde el body del request, delega la lógica de negocio
+ * al servicio de horarios y traduce el resultado a una respuesta HTTP adecuada.
  *
- * Respuestas posibles:
- * - 201 CREATED: Horario creado correctamente.
- * - 409 CONFLICT: 
- *      • El horario ya está ocupado en la escuela.
- *      • El profesor ya tiene una clase en ese horario.
- * - 400 / 500: Errores de validación o errores inesperados (manejados por tryCatch).
+ * Responsabilidades:
+ *  - No contiene reglas de negocio
+ *  - Interpreta los códigos devueltos por el service
+ *  - Devuelve el status HTTP correspondiente según el resultado
+ *
+ * Códigos manejados:
+ *  - HORARIO_OCUPADO → 409 CONFLICT
+ *  - PROFESOR_OCUPADO → 409 CONFLICT
+ *  - HORARIO_CREADO_EXITOSAMENTE → 201 CREATED
+ *  - Cualquier otro → 500 INTERNAL SERVER ERROR
+ *
+ * @async
  *
  * @param {Request} req
- * Request de Express que contiene en el body los datos del horario:
- * id_escuela, dni_profesor, id_nivel, id_tipo_clase, día, horario, etc.
+ * Request de Express. Se espera que el body contenga
+ * los datos necesarios para crear un horario de clase.
  *
  * @param {Response} res
- * Response de Express usada para devolver el resultado de la operación.
+ * Response de Express utilizada para devolver la respuesta HTTP.
  *
- * @returns {Promise<void>}
- * Retorna una respuesta HTTP con el resultado de la operación.
+ * @returns {Promise<Response>}
+ * Retorna la respuesta HTTP correspondiente al resultado
+ * de la operación de alta del horario.
  */
 
 const altaHorario = async( req : Request , res : Response) =>{
     const dataRecivida = req.body;
 
-    const data : HorarioClaseInput = HorarioClaseSchema.parse( dataRecivida );
+    const dataHorario  = await horarioServicio.alta( dataRecivida );
+    console.log(dataHorario)
+    switch (dataHorario.code) {
+        case "HORARIO_OCUPADO":
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.CONFLICTO,
+                dataHorario.message,
+                dataHorario.code
+            );
 
-    const existeHorarioEnEscuela = await horariosData.verificarHorario( data );
+        case "PROFESOR_OCUPADO":
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.CONFLICTO,
+                dataHorario.message,
+                dataHorario.code
+            );
 
-    if ( existeHorarioEnEscuela.code === 'HORARIOS_CLASES_EXISTE' ) {
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.CONFLICTO,
-            `El dia : ${data.dia_semana} con el horario de ${data.hora_inicio} a ${data.hora_fin} ya está asignado.`,
-            existeHorarioEnEscuela.code    
-        );
-    };
+        case "HORARIO_CREADO_EXITOSAMENTE":
+            return enviarResponse(
+                res,
+                CodigoEstadoHTTP.CREADO,
+                dataHorario.message,
+                dataHorario.data,
+                undefined,
+                dataHorario.code
+            );
 
-    const  profesorOcupadoGlobalmente = await horariosData.verificarProfesor( data ); 
-
-    if ( profesorOcupadoGlobalmente.code === 'HORARIOS_PROFESOR_EXISTE' ) {
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.CONFLICTO,
-            `El profesor con DNI: ${data.dni_profesor} ya tiene una clase asignada .`,
-            profesorOcupadoGlobalmente.code    
-        );
+        default:
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                "Ocurrió un error inesperado en el alta del horario",
+                dataHorario.code
+            );
     }
-
-    const resultado = await horariosData.altaHorario( data );
-    if ( resultado.code === 'HORARIOS_CLASES_CREAR' ) {
-        return enviarResponse(
-            res,
-            CodigoEstadoHTTP.CREADO,
-            "Horario de clase creado con éxito",
-            resultado.data,
-            undefined,
-            resultado.code
-        );
-    }else{
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.CONFLICTO,
-            "No se pudo crear el horario de clase",
-            resultado.code    
-        );
-    };
 
 }; 
 
+
+/**
+ * listadoHorarioEscuela
+ * ---------------------
+ * Controlador encargado de obtener el calendario de horarios de una escuela.
+ *
+ * Construye el objeto de entrada a partir de los parámetros de query,
+ * delega la lógica al servicio de horarios y traduce el resultado
+ * a una respuesta HTTP.
+ *
+ * Responsabilidades:
+ *  - Adaptar los parámetros del request (query) al formato esperado por el service
+ *  - Interpretar los códigos de negocio devueltos
+ *  - Enviar la respuesta HTTP correspondiente
+ *
+ * Query params esperados:
+ *  - id_escuela {number} (obligatorio)
+ *  - estado {string} (opcional)
+ *
+ * Códigos manejados:
+ *  - CALENDARIO_VACIO → 404 NOT FOUND
+ *  - CALENDARIO_ESCUELA_LISTADO → 200 OK
+ *
+ * @async
+ *
+ * @param {Request} req
+ * Request de Express. Se utilizan los parámetros de query
+ * para obtener el calendario de la escuela.
+ *
+ * @param {Response} res
+ * Response de Express utilizada para devolver la respuesta HTTP.
+ *
+ * @returns {Promise<Response>}
+ * Retorna la respuesta HTTP con el calendario de horarios
+ * o un error si no existen clases asignadas.
+ */
+
 const listadoHorarioEscuela = async( req : Request , res : Response ) =>{
    
-    const {id_escuela , estado} = req.query;
+    const data = {
+        id_escuela: Number(req.query.id_escuela),
+        estado: req.query.estado as string | undefined
+    };
 
-    const data : HorarioCalendarioInput = CalendarioHorarioSchema.parse({
-        id_escuela : Number(id_escuela),
-        estado
-    });
-
-    const listado = await horariosData.listaCalendario(data);
- 
-    if ( listado.code === "NO_ACTIVE_HORARIOS_CLASES"){
+    const resultadoCalendario = await horarioServicio.calendario( data );
+    if ( resultadoCalendario.code === "CALENDARIO_VACIO"){
         return enviarResponseError(
             res,
             CodigoEstadoHTTP.NO_ENCONTRADO,
-            "No existen Clases asignadas",
-            listado.code  
-        );
-    }; 
+            resultadoCalendario.message,
+            resultadoCalendario.code
+        )    
+    };
 
     return enviarResponse(
         res,
         CodigoEstadoHTTP.OK,
-        "Calendiario Escuala ",
-        listado.data,
+        resultadoCalendario.message,
+        resultadoCalendario.data,
         undefined,
-        listado.code
-    );   
+        resultadoCalendario.code
+    );
+  
 };
 
 

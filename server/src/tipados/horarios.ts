@@ -1,3 +1,5 @@
+
+
 export interface ResultadoAltaHorario {
     id_escuela: number;
     dni_profesor: string;
@@ -39,3 +41,5 @@ export interface ResultCalendarioHorario {
         /** Fecha de creación en formato ISO string */
         fecha_creacion: string | Date;
 };
+
+

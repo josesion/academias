@@ -3,7 +3,7 @@
 export type TipadoData<T> ={
     error : boolean;
     message : string;
-    data : T | [];
+    data ?: T ;
     paginacion ? : {
                     pagina : number , 
                     limite : number,
