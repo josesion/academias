@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 // ──────────────────────────────────────────────────────────────
 // Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
-import { method as inscripcionesData } from "../data/inscripciones.data";
+import { method as inscripcionServicios } from "../Servicio/inscripciones.servicios";
 // ──────────────────────────────────────────────────────────────
 // Sección de Hooks
 // ──────────────────────────────────────────────────────────────
@@ -14,47 +14,85 @@ import { enviarResponse } from "../utils/response";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { InscripcionInputs, InscripcionSchema } from "../squemas/inscripciones";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 
 
+/**
+ * Controlador para gestionar la inscripción de un alumno.
+ * 
+ * Valida la inscripción recibida desde el cliente, llama al servicio
+ * correspondiente para verificar si ya existe, crearla o retornar un error
+ * de negocio, y luego envía la respuesta HTTP adecuada al cliente.
+ * 
+ * @param {Request} req - Objeto de solicitud Express. Se espera que en `req.body` 
+ *                        venga la información de la inscripción.
+ * @param {Response} res - Objeto de respuesta Express para enviar el resultado.
+ * 
+ * @returns {Promise<Response>} - Retorna una respuesta HTTP usando `enviarResponse` 
+ *                                o `enviarResponseError`, dependiendo del resultado
+ *                                de la operación de inscripción.
+ * 
+ * @example
+ * // Ejemplo de uso en rutas Express
+ * router.post('/inscripcion', inscripcion);
+ */
+
 const inscripcion = async( req : Request , res : Response ) =>{
-    const estado : string = 'activos';
-    const { id_escuela , id_plan , dni_alumno ,
-            fecha_inicio, fecha_fin,
-            monto , clases_asignadas_inscritas , meses_asignados_inscritos
-          } = req.body;
 
-        
-    const validacionInscripcion : InscripcionInputs = InscripcionSchema.parse({
-        id_plan , id_escuela , dni_alumno , fecha_inicio , fecha_fin,
-        monto , clases_asignadas_inscritas , meses_asignados_inscritos, estado
-    }); 
-   
-    const inscVigente = await inscripcionesData.verificacion({dni_alumno, id_escuela , estado});
+const dataInscripcion = await inscripcionServicios.inscripcionServicios(req.body);
 
-    if ( inscVigente.code === "INSCRIPCION_NO_EXISTE") {
-      const resultInscripcion = await inscripcionesData.alta(validacionInscripcion);
-
-        if ( resultInscripcion.code === "INSCRIPCIONES_CREAR"){
-            return await enviarResponse(
+switch(dataInscripcion.code){
+    // Casos en el cual devueve un error de negocio
+    case "INSCRIPCION_EXISTE" : {
+            return enviarResponseError(
                 res,
-                CodigoEstadoHTTP.OK,
-                `EL alumno ${ dni_alumno }, registro existoso`,
-                resultInscripcion.data,
-                undefined,
-                resultInscripcion.code
+                CodigoEstadoHTTP.CONFLICTO,
+                dataInscripcion.message,
+                dataInscripcion.code
             );
-        }
+        };
 
-    }else{
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.CONFLICTO,
-            `El alumno : ${ dni_alumno }, ya esta inscripto`
-        );
+    case "INSCRIPCION_CREACION_FALLIDA" : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
+                "Ocurrió un error inesperado en el alta del horario",
+                dataInscripcion.code
+            );
     };
 
+    case "NO_SE_LOGRO_VERIFICAR" : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
+                "Ocurrió un error inesperado al verificar el horario",
+                dataInscripcion.code
+            );        
+    };
+
+    // Casos en lo que va todo bien
+ 
+    case "INSCRIPCION_EXITOSA" : {
+        return enviarResponse(
+            res, 
+            CodigoEstadoHTTP.OK,
+            dataInscripcion.message,
+            dataInscripcion.data,
+            undefined,
+            dataInscripcion.code
+        );
+    };
+    
+    default : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                "Ocurrió un error inesperado en la inscripcion",
+                dataInscripcion.code
+            );
+    }
+};
+    
 };
 
 

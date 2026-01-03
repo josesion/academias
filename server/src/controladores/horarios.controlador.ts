@@ -9,7 +9,7 @@ import { method as horarioServicio} from "../Servicio/horarios.servicios"
 
 // Typados
 import { CodigoEstadoHTTP } from "../tipados/generico"; 
-import { console } from "inspector";
+
 
 
 
@@ -51,7 +51,7 @@ const altaHorario = async( req : Request , res : Response) =>{
     const dataRecivida = req.body;
 
     const dataHorario  = await horarioServicio.alta( dataRecivida );
-    console.log(dataHorario)
+    
     switch (dataHorario.code) {
         case "HORARIO_OCUPADO":
             return enviarResponseError(
@@ -156,8 +156,138 @@ const listadoHorarioEscuela = async( req : Request , res : Response ) =>{
 };
 
 
+/**
+ * Controlador para modificar un horario de clase.
+ *
+ * Recibe los datos desde el cuerpo de la petición HTTP,
+ * los normaliza al tipo correspondiente y delega la
+ * modificación del horario al servicio de horarios.
+ * Retorna una respuesta HTTP estándar según el resultado.
+ *
+ * @async
+ * @function modHorario
+ *
+ * @param {Request} req
+ * Objeto Request de Express que contiene los datos del horario
+ * a modificar en el cuerpo de la petición.
+ *
+ * @param {Response} res
+ * Objeto Response de Express utilizado para enviar la respuesta
+ * al cliente.
+ *
+ * @returns {Promise<Response | void>}
+ * Retorna una respuesta HTTP con estado OK cuando la modificación
+ * es exitosa, o un error interno del servidor en caso contrario.
+ *
+ * @example
+ * ```ts
+ * // PUT /horarios/modificar
+ * app.put('/horarios/modificar', modHorario);
+ * ```
+ */
+
+const modHorario = async( req : Request, res : Response) => {
+  
+    const data = {
+        id : Number(req.body.id),
+        id_escuela: Number(req.body.id_escuela),
+        id_nivel : Number(req.body.id_nivel),
+        id_tipo_clase :  Number(req.body.id_tipo_clase),
+        dni_profesor  : req.body.dni_profesor as string
+    };
+
+    const resultado = await horarioServicio.mod(data);
+ 
+    if (resultado.code === "HORARIO_MODIFICADO_EXITOSAMENTE"){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            resultado.message,
+            resultado.data,
+            undefined,
+            resultado.code
+        );
+    };
+
+
+    return enviarResponseError(
+        res,
+        CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        resultado.message,
+        resultado.code
+    );
+    
+};
+
+/**
+ * Controlador para eliminar lógicamente un horario de clase.
+ *
+ * Recibe los datos desde el cuerpo de la petición HTTP,
+ * construye el objeto de eliminación respetando el contrato
+ * de negocio (estado como string) y delega la operación
+ * al servicio de horarios.
+ *
+ * @async
+ * @function elimnarHorario
+ *
+ * @param {Request} req
+ * Objeto Request de Express que contiene en el body los datos
+ * necesarios para la eliminación lógica del horario.
+ *
+ * @param {Response} res
+ * Objeto Response de Express utilizado para enviar la respuesta
+ * al cliente.
+ *
+ * @returns {Promise<Response | void>}
+ * Retorna una respuesta HTTP OK cuando la eliminación es exitosa
+ * o un error interno del servidor en caso de falla.
+ *
+ * @remarks
+ * El campo `estado` se maneja como string según el contrato
+ * de negocio (por ejemplo: `"ACTIVO"`, `"INACTIVO"`, `"ELIMINADO"`).
+ *
+ * @example
+ * ```ts
+ * // DELETE /horarios/eliminar
+ * app.delete('/horarios/eliminar', elimnarHorario);
+ * ```
+ */
+
+const elimnarHorario = async ( req : Request , res: Response) => {
+    console.log(req.body)
+    const  data = {
+        id_escuela : Number(req.body.id_escuela),
+        id         : Number(req.body.id),
+        estado     : req.body.estado as string,
+        vigente    : req.body.vigente as boolean
+    };
+
+    const resultadoEliminar = await horarioServicio.eliminar(data);
+
+    if (resultadoEliminar.code === "HORARIO_ELIMINADO"){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            resultadoEliminar.message,
+            resultadoEliminar.data,
+            undefined,
+            resultadoEliminar.code
+        );
+    };
+
+    return enviarResponseError(
+        res,
+        CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        resultadoEliminar.message,
+        resultadoEliminar.code
+    );   
+
+};
+
 
 export const method = {
     alta  : tryCatch( altaHorario),
+    mod   : tryCatch(modHorario),
+    eliminar : tryCatch(elimnarHorario),
     listadoHorarioEscuela : tryCatch(listadoHorarioEscuela )
 };

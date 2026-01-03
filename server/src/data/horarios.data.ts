@@ -4,8 +4,8 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // typados
-import { HorarioClaseInput , HorarioCalendarioInput} from "../squemas/horarios_clases";
-import { ResultadoAltaHorario , ResultCalendarioHorario } from "../tipados/horarios";
+import { HorarioClaseInput , HorarioCalendarioInput , ModHorarioInput , EliminarHorarioInput} from "../squemas/horarios_clases";
+import { ResultadoAltaHorario , ResultCalendarioHorario , ResultModHorario , ResultEliminarHorario} from "../tipados/horarios";
 import { TipadoData } from "../tipados/tipado.data"; 
 
 
@@ -275,10 +275,14 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
                             hc.id AS id_horario,
 
                             p.apellido AS profesor,
-
+							p.dni      as dni_profe,
+                            p.nombre as nombre,
+                            
                             n.nivel AS nivel,
+                            n.id    as id_nivel,
+                            
                             tc.tipo AS tipo_clase,
-
+							tc.id   as id_clase , 
                             hc.dia_semana as dia,
                             hc.hora_inicio,
                             hc.hora_fin,
@@ -316,8 +320,132 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
     });
 };
 
+/**
+ * Modifica un horario de clase existente.
+ *
+ * Actualiza los datos del profesor, tipo de clase y nivel
+ * asociados a un horario dentro de una escuela específica.
+ *
+ * @async
+ * @function modHorario
+ *
+ * @param {ModHorarioInput} datos - Datos necesarios para modificar el horario.
+ * @param {number} datos.dni_profesor - DNI del profesor asignado al horario.
+ * @param {number} datos.id_tipo_clase - Identificador del tipo de clase.
+ * @param {number} datos.id_nivel - Identificador del nivel educativo.
+ * @param {number} datos.id_escuela - Identificador de la escuela.
+ * @param {number} datos.id - Identificador único del horario a modificar.
+ *
+ * @returns {Promise<TipadoData<ResultModHorario>>}
+ * Promesa que retorna un objeto tipado con el resultado de la modificación
+ * del horario en la entidad `horarios_clases`.
+ *
+ * @throws {Error}
+ * Lanza un error si ocurre un problema durante la actualización
+ * en la base de datos.
+ *
+ * @example
+ * ```ts
+ * const resultado = await modHorario({
+ *   id: 10,
+ *   id_escuela: 3,
+ *   dni_profesor: 30123456,
+ *   id_tipo_clase: 2,
+ *   id_nivel: 1
+ * });
+ * ```
+ */
+
+
+const modHorario = async ( datos : ModHorarioInput ) 
+: Promise<TipadoData<ResultModHorario>> => {
+    const {dni_profesor , id_tipo_clase , id_nivel, id_escuela , id } = datos ;
+
+    const sql : string = `UPDATE horarios_clases
+                        SET
+                            dni_profesor   =  ?,
+                            id_tipo_clase  =  ?,
+                            id_nivel       =  ?
+                        WHERE id = ?
+                        AND id_escuela =  ?;`;
+
+    const valores : unknown[] = [ dni_profesor , id_tipo_clase , id_nivel, id, id_escuela  ];
+
+    const datosRetorno = { dni_profesor , id_nivel , id_tipo_clase , id, id_escuela };
+
+    return await iudEntidad<ResultModHorario>({
+        slqEntidad : sql ,
+        valores,
+        datosRetorno, 
+        entidad : "horarios_clases",
+        metodo : "MODIFICAR"
+    }); 
+
+};
+
+/**
+ * Elimina lógicamente un horario de clase.
+ *
+ * Actualiza los campos `estado` y `vigente` de un horario existente,
+ * permitiendo desactivarlo sin eliminar el registro físicamente
+ * de la base de datos.
+ *
+ * @async
+ * @function eliminarHorario
+ *
+ * @param {EliminarHorarioInput} data - Datos necesarios para eliminar el horario.
+ * @param {number} data.id - Identificador único del horario.
+ * @param {number} data.id_escuela - Identificador de la escuela.
+ * @param {number | boolean} data.estado - Estado del horario (activo/inactivo).
+ * @param {number | boolean} data.vigente - Indica si el horario se encuentra vigente.
+ *
+ * @returns {Promise<TipadoData<ResultEliminarHorario>>}
+ * Promesa que retorna un objeto tipado con el resultado de la eliminación lógica
+ * del horario en la entidad `horarios_clases`.
+ *
+ * @throws {Error}
+ * Lanza un error si ocurre un problema durante la actualización
+ * en la base de datos.
+ *
+ * @example
+ * ```ts
+ * const resultado = await eliminarHorario({
+ *   id: 12,
+ *   id_escuela: 3,
+ *   estado: inactivos,
+ *   vigente: 0
+ * });
+ * ```
+ */
+
+
+const eliminarHorario = async ( data : EliminarHorarioInput)
+: Promise<TipadoData<ResultEliminarHorario>> =>{
+    const  { estado , vigente, id_escuela , id } = data ;
+    const sql : string = `UPDATE horarios_clases
+                            SET
+                                estado         =  ?,
+                                vigente        =  ?
+                            WHERE id = ?
+                            AND id_escuela = ?;` ;
+
+    const datosRetorno = {id , id_escuela, estado , vigente };
+    const valores : unknown[] = [ estado , vigente , id , id_escuela];
+
+    return await iudEntidad<ResultEliminarHorario>({
+        slqEntidad : sql,
+        valores ,
+        datosRetorno ,
+        entidad : "horarios_clases",
+        metodo : "ELIMINAR"
+    });
+
+};
+
 export const method = {
     altaHorario : tryCatchDatos( altaHorario ),
+    modHorario  : tryCatchDatos ( modHorario ),
+    eliminarHorario : tryCatchDatos( eliminarHorario ),
     verificarHorarioEscuela : tryCatchDatos( verificarHorarioEscuela ),
     verificarProfesor : tryCatchDatos( verificarProfesor ),
     listaCalendario   : tryCatchDatos( calendarioEscuela)

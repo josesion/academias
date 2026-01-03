@@ -52,8 +52,23 @@ export const CalendarioHorarioSchema = z.object({
   estado: EstadoEnum.default("activos"),
 }); 
 
+export const modHorariosSchema = z.object({
+   dni_profesor: z.string().min(1),
+   id_tipo_clase: z.number().int().positive(),
+   id_nivel: z.number().int().positive(),
+   id : z.number().int().positive(),
+   id_escuela: z.number().int().positive(),
+});
 
+export const EliminarHorarioSchema = z.object({
+     estado: EstadoEnum.default("activos"),
+     vigente : z.boolean(),
+     id : z.number().int().positive(),
+     id_escuela: z.number().int().positive(),
+});
 
 export type HorarioClaseInput = z.infer<typeof HorarioClaseSchema>;
 export type HorarioCalendarioInput = z.infer<typeof CalendarioHorarioSchema>;
+export type ModHorarioInput = z.infer<typeof modHorariosSchema>;
+export type EliminarHorarioInput = z.infer<typeof EliminarHorarioSchema>;
 

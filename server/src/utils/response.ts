@@ -41,7 +41,7 @@ export const enviarResponse = (
     statusCode: number,
     message: string,
     data?: any,
-    paginacion?: Paginacion,
+    paginacion?: Paginacion | undefined ,
     code: string = "SUCCESS"
 ): void => {
     res.status(statusCode).json({

@@ -81,7 +81,7 @@ const registroInscripcion = async( data : InscripcionInputs)
     const valores : unknown[] = [id_plan,id_escuela, dni_alumno , fecha_inicio ,fecha_fin ,monto , clases_asignadas_inscritas , meses_asignados_inscritos];
     const datosRetorno  = { id_plan , dni_alumno }
 
-    return iudEntidad<{ id_plan : number , dni_alumno : number }>({
+    return await iudEntidad<{ id_plan : number , dni_alumno : number }>({
         slqEntidad : sql,
         valores ,
         entidad : "Inscripciones",

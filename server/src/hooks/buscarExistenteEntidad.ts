@@ -20,7 +20,7 @@ export const buscarExistenteEntidad = async <TRespuesta>  (
     const entidadM = entidad.toUpperCase();
 
     // Ejecución de la consulta SELECT.
-    const busqueda = await select<TRespuesta | [] >(slqEntidad, valores);
+    const busqueda = await select<TRespuesta>(slqEntidad, valores);
 
     // --- LÓGICA DE VALIDACIÓN ---
 
@@ -43,7 +43,6 @@ export const buscarExistenteEntidad = async <TRespuesta>  (
         error : false,
         message : `Validación exitosa: La entidad ${entidadM} no existe.`, 
         // Devolvemos los datosRetorno limpios para pasarlos a la siguiente operación.
-        data : [] ,
         code : `${entidadM}_NO_EXISTE`,
         errorsDetails : undefined
     }

@@ -112,3 +112,15 @@ JOIN escuelas e
     ON e.id_escuela = hc.id_escuela
 
 WHERE hc.id_escuela = 107;
+
+
+
+UPDATE horarios_clases
+SET
+    dni_profesor   = '33762578',
+    id_tipo_clase  = 5,
+    id_nivel       = 2,
+    estado         = 'inactivos',
+    vigente        = FALSE
+WHERE id = 13
+  AND id_escuela = 107;

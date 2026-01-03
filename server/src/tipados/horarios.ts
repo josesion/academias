@@ -7,6 +7,18 @@ export interface ResultadoAltaHorario {
     id_tipo_clase: number; 
 };
 
+export interface ResultModHorario extends ResultadoAltaHorario {
+    id : number;
+};
+
+export interface ResultEliminarHorario {
+    id : number,
+    id_escuela: number,
+    estado : "activos" | "inactivos" |"suspendido",
+    vigente : boolean
+};
+
+
 export interface ResultCalendarioHorario {
    // Identificadores
         id_horario: number;

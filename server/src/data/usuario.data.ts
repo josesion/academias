@@ -19,7 +19,6 @@ const buscarUsuario= async (usuario : string) : Promise<TipadoData<DataUsuarioNu
         return {
             error: false,
             message: "Usuario disponible",
-            data: [], //no retorno nada para cuidar la privacidad
             paginacion : undefined,
             code: "USER_AVAILABLE",
             errorsDetails: undefined
