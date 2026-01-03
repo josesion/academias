@@ -1,4 +1,4 @@
-import './selector.css'
+import "./selector.css";
 
 /**
  * SelectorPlegable
@@ -47,16 +47,15 @@ import './selector.css'
  */
 
 interface PropSelector<T> {
-     onChange ?  : ( event : React.ChangeEvent<HTMLInputElement>) => void, 
-     objetoListado : T[],
-     titulo : string,
-     name : string,
-     input_list : string,
-     valueKey: string,
-     displayKey?: string, // este sirve para separar entre entidaddes q tengan id y personas q tengan nombre apellido
-     tipo : "text" | "number" 
-}; 
-
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  objetoListado: T[];
+  titulo: string;
+  name: string;
+  input_list: string;
+  valueKey: string;
+  displayKey?: string; // este sirve para separar entre entidaddes q tengan id y personas q tengan nombre apellido
+  tipo: "text" | "number";
+}
 
 /**
  * SelectorPlegable
@@ -97,7 +96,7 @@ interface PropSelector<T> {
  *        Nombre de la propiedad dentro del objeto `T` que se usará como valor (`value`) del option.
  *
  * @param {string} [parametros.displayKey]
- *        Clave especial para mostrar etiquetas personalizadas.  
+ *        Clave especial para mostrar etiquetas personalizadas.
  *        Si es `"persona"`, mostrará `Nombre Apellido`.
  *
  * @param {"text" | "number"} parametros.tipo
@@ -107,47 +106,45 @@ interface PropSelector<T> {
  *        Devuelve un selector completo (input + datalist).
  */
 
-
 export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
-    return (
-        <div className="caja_contenedor">  
-            <p>{parametros.titulo}</p>
+  return (
+    <div className="caja_contenedor">
+      <p>{parametros.titulo}</p>
 
-            <input 
-                list={parametros.input_list}
-                id={parametros.input_list + "-input"}
-                name={parametros.name}
-                placeholder={`Empieza a escribir el ${parametros.valueKey}...`}
-                onChange={parametros.onChange}
-                type={parametros.tipo}
-            />
+      <input
+        list={parametros.input_list}
+        id={parametros.input_list + "-input"}
+        name={parametros.name}
+        placeholder={`Empieza a escribir el ${parametros.valueKey}...`}
+        onChange={parametros.onChange}
+        type={parametros.tipo}
+      />
 
-            <datalist id={parametros.input_list} className="selector_contenedor">
-                {parametros.objetoListado.map((item: T, index) => {
-                    
-                    let valueToReturn: any = (item as any)[parametros.valueKey];
-                    let displayLabel: any = valueToReturn;
+      <datalist id={parametros.input_list} className="selector_contenedor">
+        {parametros.objetoListado.map((item: T, index) => {
+          let valueToReturn: any = (item as any)[parametros.valueKey];
+          let displayLabel: any = valueToReturn;
 
-                    if (
-                        parametros.displayKey === "persona" &&
-                        (item as any).Nombre &&
-                        (item as any).Apellido
-                    ) {
-                        valueToReturn = (item as any).Dni;
-                        displayLabel = `${(item as any).Nombre} ${(item as any).Apellido}`;
-                    }
+          if (
+            parametros.displayKey === "persona" &&
+            (item as any).Nombre &&
+            (item as any).Apellido
+          ) {
+            valueToReturn = (item as any).Dni;
+            displayLabel = `${(item as any).Nombre} ${(item as any).Apellido}`;
+          }
 
-                    return (
-                        <option
-                            className="selector_item"
-                            key={(item as any).id || index}
-                            value={valueToReturn}
-                        >
-                            {displayLabel}
-                        </option>
-                    );
-                })}
-            </datalist>
-        </div>
-    );
+          return (
+            <option
+              className="selector_item"
+              key={(item as any).id || index}
+              value={valueToReturn}
+            >
+              {displayLabel}
+            </option>
+          );
+        })}
+      </datalist>
+    </div>
+  );
 };

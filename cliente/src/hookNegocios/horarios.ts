@@ -13,7 +13,8 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
 import { listadoTipoSinPaginacion } from "../servicio/tipo.fetch";
 import { listadoNivelSinPaginacion } from "../servicio/nivel.fetch";
 import { listadoProfesoresSinPag } from "../servicio/profesor.usuarios";
-import { calendarioEscuela } from "../servicio/horario.fetch";
+import { calendarioEscuela, altaHorario , modHorario ,eliminarHorario} from "../servicio/horario.fetch";
+
 
 import {type Horas , type DiaSemana } from "../tipadosTs/horario";
 
@@ -57,6 +58,9 @@ export const useHorariosUsuarios = () => {
             listadoTipo : listadoTipoSinPaginacion,
             listadoNivel : listadoNivelSinPaginacion,
             listadoProfesores : listadoProfesoresSinPag,
+            altaHorario    : altaHorario,
+            modHorario     : modHorario,
+            eliminarHorario : eliminarHorario,
             HORARIOS , 
             DIAS_SEMANA,
             horarioEscuela : calendarioEscuela

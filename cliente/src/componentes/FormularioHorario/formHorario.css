@@ -45,3 +45,120 @@
 }
 
 
+
+
+/* ───────────────────────────── */
+/* PANEL INFORMACIÓN DEL HORARIO */
+/* ───────────────────────────── */
+
+.info_horario {
+    background: #020617;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+
+    padding: 1rem 1.2rem;
+    margin-top: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    color: #e5e7eb;
+}
+
+/* Título del panel */
+.info_horario_titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #38bdf8;
+
+    margin: 0 0 0.25rem 0;
+}
+
+/* Bloques internos */
+.info_horario_bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+/* Item individual */
+.info_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 0.9rem;
+}
+
+/* Etiqueta */
+.info_label {
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Valor */
+.info_valor {
+    color: #e5e7eb;
+    font-weight: 500;
+}
+
+/* Divisor */
+.info_divisor {
+    border: none;
+    border-top: 1px solid #1e293b;
+    margin: 0.4rem 0;
+}
+.profe_linea {
+  display: block;
+}
+
+/* ───────────────────────────── */
+/* ESTADO */
+/* ───────────────────────────── */
+
+.info_estado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 0.85rem;
+}
+
+.info_estado_label {
+    color: #94a3b8;
+}
+
+/* Estado listo */
+.info_estado_valor {
+    font-weight: 600;
+}
+
+.info_estado_valor.listo {
+    color: #22c55e;
+}
+
+/* Estado incompleto (por si lo usás después) */
+.info_estado_valor.incompleto {
+    color: #f59e0b;
+}
+
+/* Estado error (opcional futuro) */
+.info_estado_valor.error {
+    color: #ef4444;
+}
+
+@keyframes infoFadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.info_horario {
+    animation: infoFadeSlide 0.25s ease-out;
+}

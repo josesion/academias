@@ -18,7 +18,7 @@ export interface FiltroTipo {
 
 
 export interface DataProfesor {
-    Dni : string ,
+    Dni : string  ,
     Nombre : string , 
     Apellido : string
 };
@@ -50,15 +50,16 @@ export type DiaSemana =
   | "sabado"
   | "domingo";
 
+export type metodo = "ALTA" | "MOD";
 
 export interface DataHorario {
-    id_escuela : number,
-    dni_profesor : string,
-    id_nivel : number,
-    id_tipo  : number,
-    hora_inicio : Horas,
-    hora_fin   : Horas,
-    dia_semana : DiaSemana,
+    id_escuela : number | null,
+    dni_profesor : string | null,
+    id_nivel : number | null,
+    id_tipo_clase  : number | null,
+    hora_inicio : Horas | null ,
+    hora_fin   : Horas | null ,
+    dia_semana : DiaSemana | null,
     fecha_creacion : string,
     estado : string
 };
@@ -72,11 +73,34 @@ export interface ClaseHorarioData {
   hora_inicio: Horas;
   hora_fin: Horas;
   estado: "activos" | "inactivos";
+  id_clase: number;
+  nombre: string;
+  Dni: string;
+  dni_profe: string;
+  id_nivel: number;
+  id_horario: number
 }
 
+ type estadoHorario = "activos" | "inactivos" | "suspendido";
 
+export interface ModHorario{
+    id_escuela : number,
+    dni_profesor : string | null,
+    id_nivel : number | null,
+    id_tipo_clase : number | null,
+    id : number | null
+};
 
-type estadoHorario = "activos" | "inactivos" | "suspendido";
+export interface EliminarHorario{
+    id_escuela : number,
+    id         : number | null,
+    estado     : estadoHorario,
+    vigente    : boolean
+};
+
+export interface DataHorarioSet {
+    metodo : metodo,
+};
 
 export interface Calendario{
    id_escuela : number,
@@ -116,4 +140,11 @@ export interface ResultCalendarioHorario {
 
         /** Fecha de creación en formato ISO string */
         fecha_creacion: string | Date;
+};
+
+export interface ConjuntoIDHorario {
+    dni_profe : string  | null,
+    id_tipo_clase  : number  | null,
+    id_nivel  : number  | null,
+    id_horario? : number| null
 };

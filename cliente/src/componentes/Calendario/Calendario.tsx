@@ -1,91 +1,105 @@
-import  "./Calendario.css";
+import "./Calendario.css";
 import { ClaseAsignada } from "../ClasesAsignadas/ClasesAsiganadas";
 import { CeldaVacia } from "../CeldaVacia/CeldaVacia";
-
 
 //---- typados ----//
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../CeldaVacia/CeldaVacia";
-import {type Horas , type DiaSemana, type ClaseHorarioData } from "../../tipadosTs/horario";
+import {
+  type Horas,
+  type DiaSemana,
+  type ClaseHorarioData,
+} from "../../tipadosTs/horario";
+
+/**
+ * Componente Calendario semanal.
+ *
+ * Renderiza una grilla de horarios (horas × días de la semana) y determina
+ * dinámicamente si cada celda contiene una clase asignada o está disponible.
+ *
+ * Funcionalidades:
+ * - Muestra clases asignadas según día y hora de inicio.
+ * - Permite seleccionar una clase existente para su modificación.
+ * - Permite seleccionar una celda vacía para crear un nuevo horario.
+ *
+ * Lógica clave:
+ * - Una celda se considera ocupada si existe una clase con el mismo
+ *   `dia` y `hora_inicio`.
+ * - Si no hay coincidencia, la celda se marca como disponible.
+ *
+ * Suposiciones de diseño:
+ * - No existen clases superpuestas.
+ * - Para una combinación (día + hora) solo puede existir una clase.
+ * - Las clases se identifican por su hora de inicio.
+ *
+ * @param data.handleModData Callback ejecutado al seleccionar una clase existente.
+ * @param data.handleAbrirModal Callback ejecutado al seleccionar una celda vacía.
+ * @param data.horarios Lista de horas que conforman las filas del calendario.
+ * @param data.diasSemana Lista de días que conforman las columnas del calendario.
+ * @param data.calendario Listado de clases asignadas a renderizar.
+ */
 
 interface CalendarioProps {
-  handleModData: ( clase : ClaseHorario) => void;
-  handleAlaData: ( mensaje : MensajeCelda) => void;
-  horarios : Horas[],
-  diasSemana : DiaSemana[],
-  calendario? : ClaseHorarioData[]
-};
+  handleModData: (clase: ClaseHorario) => void;
+  handleAbrirModal: (mensaje: MensajeCelda) => void;
+  horarios: Horas[];
+  diasSemana: DiaSemana[];
+  calendario?: ClaseHorarioData[];
+}
 
+export const Calendario = (data: CalendarioProps) => {
+  const { horarios, diasSemana, calendario } = data;
 
-export const Calendario = ( data : CalendarioProps) => {
-    const { horarios , diasSemana, calendario} = data;
-  
-    return (
-        <div className="contenedor_calendario" >
-            <table className="tabla_calendario" >
-                <thead className="cabecera_calendario">
-                    <tr className="tr_cabecera_calendario">
-                        <th>Hora</th>
-                        <th>Lunes</th>
-                        <th>Martes</th>
-                        <th>Miércoles</th>
-                        <th>Jueves</th>
-                        <th>Viernes</th>
-                        <th>Sábado</th>
-                        <th>Domingo</th>
-                    </tr>
-                </thead>
+  return (
+    <div className="contenedor_calendario">
+      <table className="tabla_calendario">
+        <thead className="cabecera_calendario">
+          <tr className="tr_cabecera_calendario">
+            <th>Hora</th>
+            <th>Lunes</th>
+            <th>Martes</th>
+            <th>Miércoles</th>
+            <th>Jueves</th>
+            <th>Viernes</th>
+            <th>Sábado</th>
+            <th>Domingo</th>
+          </tr>
+        </thead>
 
-                <tbody className="cuerpo_calendario">
+        <tbody className="cuerpo_calendario">
+          {horarios.map((hora) => (
+            <tr key={hora}>
+              <td className="tr_cuerpo_calendario">{hora}</td>
 
-                    {
-                        horarios.map( hora => (
-                            <tr key={hora}>
-
-                                <td className="tr_cuerpo_calendario">{hora}
-                                </td> 
-
-                                    {
-                                        diasSemana.map( dia => (
-                                            <td key={dia} className="tr_cuerpo_calendario">
-                                                 {
-                                                    calendario?.find( clase => 
-                                                        clase.dia === dia && 
-                                                        clase.hora_inicio === hora
-                                                    )   
-                                                        ? 
-                                                          (
-                                                            <div className="clase_asignada">
-                                                                {
-                                                                    <ClaseAsignada
-                                                                        dia={dia}
-                                                                        hora={hora}
-                                                                        Horarios_Clases={calendario}
-                                                                        onSelect={data.handleModData}
-                                                                    />                       
-                                                                }
-                                                            </div>
-                                                          )
-                                                      
-                                                        : 
-                                                          (
-                                                            <CeldaVacia
-                                                                dia={dia}
-                                                                hora={hora}
-                                                                mensaje="Disponible"
-                                                                onSelect={data.handleAlaData}
-                                                            />
-                                                          )
-                                                 }
-                                            </td>
-                                        ))
-                                    } 
-
-                            </tr>
-                        ))     
-                    }
-                </tbody>
-            </table>
-        </div>
-    );
+              {diasSemana.map((dia) => (
+                <td key={dia} className="tr_cuerpo_calendario">
+                  {calendario?.find(
+                    (clase) => clase.dia === dia && clase.hora_inicio === hora
+                  ) ? (
+                    <div className="clase_asignada">
+                      {
+                        <ClaseAsignada
+                          dia={dia}
+                          hora={hora}
+                          Horarios_Clases={calendario}
+                          onSelect={data.handleModData}
+                        />
+                      }
+                    </div>
+                  ) : (
+                    <CeldaVacia
+                      dia={dia}
+                      hora={hora}
+                      mensaje="Disponible"
+                      onSelect={data.handleAbrirModal}
+                    />
+                  )}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 };
