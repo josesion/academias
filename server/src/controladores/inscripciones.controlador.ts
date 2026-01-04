@@ -39,11 +39,10 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 
 const inscripcion = async( req : Request , res : Response ) =>{
 
-const dataInscripcion = await inscripcionServicios.inscripcionServicios(req.body);
-
+ const dataInscripcion = await inscripcionServicios.inscripcionServicios(req.body);
 switch(dataInscripcion.code){
     // Casos en el cual devueve un error de negocio
-    case "INSCRIPCION_EXISTE" : {
+    case "INSCRIPCION_EXISTENTE" : {
             return enviarResponseError(
                 res,
                 CodigoEstadoHTTP.CONFLICTO,

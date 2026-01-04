@@ -16,8 +16,9 @@ import { TipadoData } from "../tipados/tipado.data";
 
 const inscripcionServicios = async( data : InscripcionInputs)
 : Promise<TipadoData<{ id_plan : number , dni_alumno : number }>> =>{
-
+    
     const dataInscripcion : InscripcionInputs = InscripcionSchema.parse(data);
+    
     const inscVigente = await inscripcionesData.verificacion(dataInscripcion);
 
     switch(inscVigente.code ){
@@ -25,7 +26,7 @@ const inscripcionServicios = async( data : InscripcionInputs)
         case "INSCRIPCION_NO_EXISTE" : {
 
             const resultadoInscripcion = await inscripcionesData.alta(dataInscripcion);
-
+            //console.log(resultadoInscripcion)
             if ( resultadoInscripcion.code === "INSCRIPCIONES_CREAR" ){
                 return {
                     error : false,

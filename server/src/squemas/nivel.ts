@@ -3,7 +3,7 @@ import { z } from "zod";
 export const CrearNivelSchema = z.object({
     nivel : z.string({ message: "Nivel debe ser texto" })
             .trim()
-            .min(6, { message: "El nivel es requerido." }) 
+            .min(4, { message: "El nivel debe tener al menos 4 caracteres." }) 
             .max( 20 , { message: "El nivel debe tener al menos 15 caracteres." }),
 
     fecha_creacion :z.string({ message: "La fecha de creación es requerida" })

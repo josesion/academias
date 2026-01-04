@@ -18,7 +18,7 @@ nombre: z
 
   apellido: z
     .string()
-    .min(6, { message: "El apellido debe tener 6 caracteres min." })
+    .min(4, { message: "El apellido debe tener 4 caracteres min." })
     .max(100, { message: "El apellido no puede superar los 100 caracteres" })
     .transform((val) => val.trim()),
 

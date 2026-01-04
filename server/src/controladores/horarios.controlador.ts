@@ -254,7 +254,7 @@ const modHorario = async( req : Request, res : Response) => {
  */
 
 const elimnarHorario = async ( req : Request , res: Response) => {
-    console.log(req.body)
+    
     const  data = {
         id_escuela : Number(req.body.id_escuela),
         id         : Number(req.body.id),

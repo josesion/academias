@@ -62,9 +62,13 @@ const verificacion = async( data : VerificacionInputs )
 const registroInscripcion = async( data : InscripcionInputs) 
 : Promise<TipadoData<{ id_plan : number , dni_alumno : number }>> =>{
 
+    
+
     const { id_plan, id_escuela ,dni_alumno ,fecha_inicio ,fecha_fin ,
             clases_asignadas_inscritas , meses_asignados_inscritos ,monto
     } = data ;
+
+
  
     const sql : string = `INSERT INTO inscripciones (
                             id_plan, 
