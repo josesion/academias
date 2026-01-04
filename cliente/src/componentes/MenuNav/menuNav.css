@@ -9,22 +9,19 @@
     top: 0;
     z-index: 100;
 
-    /* Glassmorphism elegante */
-    background: rgba(20, 20, 20, 0.85);
+    background: transparent; /* fondo oscuro del navbar */
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
 
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    transition: background 0.3s ease;
 }
 
 /* ------------------- NOMBRE DE LA APP ------------------- */
 .app-name-container {
     display: flex;
-    justify-content: center;
     align-items: center;
-    width: auto;
-    padding: 0 6px;
 }
 
 .app-name {
@@ -38,6 +35,9 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+.app-name:hover {
+    transform: scale(1.05);
+}
 
 /* ------------------- LISTA DE MENÚ ------------------- */
 .menu_nav_lista {
@@ -47,6 +47,7 @@
     margin: 0;
     padding: 0;
     gap: 14px;
+    transition: all 0.3s ease;
 }
 
 .menu_nav_lista li {
@@ -54,31 +55,42 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 6px 15px;
-    border-radius: 8px;
+    gap: 8px;
+    padding: 8px 18px;
+    border-radius: 12px;
     color: var(--color-letra);
     font-size: 15px;
     position: relative; 
-    transition: all 0.25s ease-in-out;
+    transition: all 0.25s ease-in-out, transform 0.25s ease;
+}
+
+/* Hover visible usando colores del root */
+.menu_nav_lista li:hover {
+    background: var(--color-secundario);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+
+.menu_nav_lista li svg {
+    color: var(--color-letra);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.menu_nav_lista li:hover svg {
+    color: var(--color-fondo-azul); /* acento visible */
+    transform: scale(1.1);
 }
 
 /* Subrayado dinámico animado */
 .menu_nav_lista li::after {
     content: "";
     position: absolute;
-    bottom: -3px; /* justo debajo del texto */
+    bottom: -4px;
     left: 50%;
     width: 0%;
     height: 2px;
-    background-color: var(--color-letra);
+    background-color: var(--color-fondo-azul); /* acento */
     transition: width 0.3s ease, left 0.3s ease;
-}
-
-.menu_nav_lista li:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
 .menu_nav_lista li:hover::after {
@@ -91,7 +103,7 @@
     overflow: hidden;
     max-height: 0;
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-15px);
     transition: all 0.35s ease-in-out;
 }
 
@@ -99,7 +111,6 @@
     max-height: 500px;
     opacity: 1;
     transform: translateY(0);
-    transition: all 0.35s ease-in-out;
 }
 
 /* ------------------- BOTÓN HAMBURGUESA ------------------- */
@@ -107,25 +118,21 @@
     display: none;
     background: transparent;
     border: none;
-    color: var(--color-letra, #fff);
+    color: var(--color-letra);
     font-size: 1.8rem;
     padding: 6px;
     border-radius: 50%;
     cursor: pointer;
     z-index: 150;
-    margin-right: 15px;
-
     transition: all 0.3s ease-in-out;
 }
 
 .btn_menu:hover {
-    background: rgba(255, 255, 255, 0.12);
-    transform: scale(1.1);
+    background: var(--color-secundario);
+    transform: scale(1.15);
 }
 
 /* ------------------- RESPONSIVE ------------------- */
-
-/* 📱 Móviles */
 @media (max-width: 576px) {
     .menu_nav {
         flex-direction: column;
@@ -142,7 +149,7 @@
 
     .menu_nav_lista li {
         width: 100%;
-        padding: 10px 15px;
+        padding: 12px 18px;
     }
 
     .btn_menu {
@@ -153,17 +160,10 @@
     }
 }
 
-/* 📊 Tablets */
 @media (min-width: 577px) and (max-width: 1069px) {
     .menu_nav {
         justify-content: center;
         gap: 20px;
-      
-    }
-
-    .app-name-container {
-        -webkit-mask-image: none;
-        mask-image: none;
     }
 
     .menu {
@@ -175,7 +175,6 @@
     }
 }
 
-/* 🖥️ Escritorio */
 @media (min-width: 1070px) {
     .menu_nav {
         justify-content: space-between;

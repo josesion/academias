@@ -20,9 +20,11 @@
     background: rgba(0, 0, 0, 0.7); /* Color semitransparente */
     display: flex; /* Para centrar el formulario */
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     z-index: 1000;
     backdrop-filter: blur(5px); /* Efecto de desenfoque opcional */
+    overflow-y: auto;
+    padding-top: 80px;
 }
 
 .modal_eliminar{
@@ -53,6 +55,16 @@
     z-index: 1000;
     align-items: center;
     justify-content: center;
+
+    max-height: calc(100dvh - 60px);
+    overflow-y: auto;
+
+    width: 100%;
+    max-width: 900px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #69c7ff transparent; 
+    
 }
 
 

@@ -1,42 +1,40 @@
-
 .contenedor_calendario {
     width: 100%;
     max-height: 80dvh;       
     overflow-y: auto;            
     overflow-x: auto;
-    background: linear-gradient(135deg, #0f2027, transparent);
+    background: linear-gradient(135deg, #0b0f1a, transparent); /* más azul oscuro */
     border-radius: 12px;
 }
 
 /* Tabla */
 .tabla_calendario {
     width: 100%;
-    background-color: #08151b;
-    color: #ffffff;
+    background-color: #0d1421; /* azul noche */
+    color: #e0e6f0; /* texto claro */
     border-collapse: separate; 
     border-spacing: 0;
 }
 
-
+/* Cabecera */
 .cabecera_calendario th {
     position: sticky;
     top: 0;
     z-index: 10;
 
-    background-color: #08151b; 
-    color: #e6f1f5;
+    background-color: #101b2c; /* azul oscuro */
+    color: #cfd8ef; /* azul claro */
     font-weight: 600;
     padding: 12px;
     text-align: center;
-    border-bottom: 2px solid #1e4a5f;
+    border-bottom: 2px solid #1c3a63;
 
-    box-shadow: 0 4px 6px rgba(41, 39, 39, 0.45);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.35);
 }
-
 
 /* Columna hora */
 .cuerpo_calendario td:first-child {
-    background-color: #01090e;
+    background-color: #0a111f; /* azul noche más oscuro */
     font-weight: bold;
     text-align: center;
     width: 80px;
@@ -52,43 +50,25 @@
 
 /* Celdas */
 .cuerpo_calendario td {
-    border: 1px solid #333435;
+    border: 1px solid #1f2a42; /* borde azul oscuro */
     padding: 6px;
     text-align: center;
     transition: background-color 0.2s ease;
 }
 
-/* Hover */
+/* Hover general */
 .cuerpo_calendario td:hover {
-    background-color: rgba(24, 25, 26, 0.15);
+   background:var(--color-gradiente-azul);
     cursor: pointer;
 }
 
 /* Celda vacía */
 .celda_vacia {
-    color: #6b8b99;
-    font-size: 12px;
-}
-
-/* Clase asignada */
-.clase_asignada {
-    background-color: #474881;
-    color: #c9cdcf;
-    font-size: 12px;
-    font-weight: 600;
-    border-radius: 6px;
-    padding: 4px;
-}
-
-
-/* ───────────── Celda vacía ───────────── */
-.celda_vacia {
     position: relative;
-    color: #6b8b99;
+    color: #7a92b0; /* azul grisáceo */
     font-size: 12px;
     cursor: pointer;
     text-align: center;
-
     padding: 4px 2px;
     border-radius: 6px;
 
@@ -98,36 +78,34 @@
         background-color 0.15s ease;
 }
 
-/* Área clickeable visual expandida */
 .celda_vacia::before {
     content: "";
     position: absolute;
-    inset: -6px 0; /* 👈 agranda arriba y abajo */
+    inset: -6px 0;
     border-radius: 8px;
     background-color: transparent;
     z-index: -1;
-
     transition: background-color 0.15s ease;
 }
 
 .celda_vacia:hover {
-    transform: scaleY(1.15); /* 👈 sensación de más alto */
-    background-color: rgba(71, 72, 129, 0.1);
-    box-shadow: 0 0 0 1px rgba(71, 72, 129, 0.2);
+    transform: scaleY(1.15);
+    background-color: rgba(36, 58, 105, 0.25);
+    box-shadow: 0 0 0 1px rgba(36, 58, 105, 0.3);
 }
 
 .celda_vacia:hover::before {
-    background-color: rgba(71, 72, 129, 0.06);
+    background-color: rgba(36, 58, 105, 0.1);
 }
 
 .celda_vacia:active {
     transform: scaleY(1.05);
 }
 
-/* ───────────── Clase asignada ───────────── */
+/* Clase asignada */
 .clase_asignada {
-    background-color: #474881;
-    color: #c9cdcf;
+    background:var(--color-gradiente-azul);
+    color: #d0d7f1;
     font-size: 12px;
     font-weight: 600;
     border-radius: 6px;
@@ -142,15 +120,13 @@
 
 .clase_asignada:hover {
     transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 14px rgba(71, 72, 129, 0.45);
-    filter: brightness(1.08);
+    box-shadow: 0 6px 14px rgba(63, 74, 145, 0.45);
+    filter: brightness(1.1);
 }
 
 .clase_asignada:active {
     transform: translateY(0) scale(0.98);
 }
-
-
 
 /* Responsive */
 @media (max-width: 768px) {

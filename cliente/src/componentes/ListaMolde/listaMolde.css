@@ -3,7 +3,7 @@
     display: grid;
     gap: 16px;
     padding: 16px;
-    background-color:var(--color-secundario);
+    background-color:transparent;
     animation: slideFade 0.4s ease;
     border-radius: 8px;
     width: 97%;

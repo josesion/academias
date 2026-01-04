@@ -44,6 +44,7 @@ interface FormHorarioProps {
   handleMoficar: () => void;
   handleCancelar: () => void;
   handleEliminar: () => void;
+  handleVolver: () => void;
   handleModificarData: (clase: ClaseHorario) => void;
   handleAbrirModal: (mensaje: MensajeCelda) => void;
 }
@@ -71,6 +72,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
     handleAbrirModal,
     handleMoficar,
     handleEliminar,
+    handleVolver,
     diasSemana,
     horarios,
   } = props;
@@ -164,6 +166,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
           calendario={calendario}
           handleModData={handleModificarData}
           handleAbrirModal={handleAbrirModal}
+          handleVolver={handleVolver}
         />
       </div>
     </div>

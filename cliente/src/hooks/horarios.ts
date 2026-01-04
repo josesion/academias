@@ -14,7 +14,7 @@ import type * as TipadoHorario from "../tipadosTs/horario";
 import { type ClaseHorario  } from "../componentes/ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../componentes/CeldaVacia/CeldaVacia";
 import { type ResultHoras } from "./setHora";
-import { set } from "zod";
+
 
 
 
@@ -48,6 +48,8 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
     const [carga , setCarga] = useState<boolean>(true);
 
     const [ modalInterno , setModalInterno ] = useState<boolean>(false);
+    const [modalHorario, setModalHorario] = useState<boolean>(false);
+   
     const [ metodo , setMetodo] = useState<TipadoHorario.metodo | null>(null);
 // ──────────────────────────────────────────────────────────────
 // Seccion para el filtrado de Profesores , Tipos y Niveles
@@ -368,7 +370,11 @@ const resetFormulario = () => {
             id_nivel  : null,
             id_horario : null
         });
-   };    
+   };   
+   
+   const hanldeVolver = () =>{
+     setModalHorario(false);
+   };
    
 // ──────────────────────────────────────────────────────────────
 // Handles de supcripciones Alta, Modificacion y Eliminar Horarios
@@ -636,8 +642,11 @@ return {
     handleCerrarModalHoarios,
     handleAltaHorario,
     handleEliminarHorario,
+    hanldeVolver,
 
     modalInterno,
+    modalHorario,setModalHorario,
+
     errorGenericoHorario
 };
 

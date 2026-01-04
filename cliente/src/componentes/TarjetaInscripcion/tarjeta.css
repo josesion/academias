@@ -11,7 +11,7 @@
     border-radius: 18px;
 
     /* Glassmorphism */
-    background: rgba(255, 255, 255, 0.08);
+    background:var(--color-gradiente-azul);
     backdrop-filter: blur(12px);
 
     /* Neon border */

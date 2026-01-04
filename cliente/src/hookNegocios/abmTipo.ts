@@ -39,12 +39,12 @@ const inputsTipo : InputsPropsFormulario[] =[
 
 const mapTipoForm = ( dataM : any) =>({
     id : dataM.id,
-    tipo : dataM.nivel
+    tipo : dataM.tipo
 });
 
 const mapTipoEliminar = ( data : any) =>({
     id: data.id,
-    tipo : data.nivel 
+    tipo : data.tipo 
 }); 
 
 const mapTextoEliminar = (dataE: any) => ` El estado de Nivel : ${dataE.id} cambiara`;

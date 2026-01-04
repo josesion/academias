@@ -6,7 +6,6 @@
     background: transparent; /* azul oscuro */
     border-radius: 12px;
     width: 95dvw;
-  
     min-height: 80dvh;
 }
 
@@ -22,6 +21,7 @@
     padding: 1rem;
     background: #020617;
     border-radius: 10px;
+    background:var(--color-gradiente-azul);
 }
 
 /* Cada selector que no empuje */
@@ -38,7 +38,7 @@
     overflow-y: auto;           /* 🔥 SCROLL INTERNO */
         
 
-    background: linear-gradient(180deg,transparent, #2c2e35cc);
+    background:var(--color-gradiente-azul);
     border-radius: 12px;
     border: 1px solid #1e293b;
     
@@ -52,7 +52,7 @@
 /* ───────────────────────────── */
 
 .info_horario {
-    background: #020617;
+    background:var(--color-gradiente-azul);
     border: 1px solid #1e293b;
     border-radius: 10px;
 
@@ -62,7 +62,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-
+    width: 100%;
     color: #e5e7eb;
 }
 
@@ -70,7 +70,7 @@
 .info_horario_titulo {
     font-size: 1rem;
     font-weight: 600;
-    color: #38bdf8;
+    color: #bcc2c5;
 
     margin: 0 0 0.25rem 0;
 }
@@ -161,4 +161,26 @@
 
 .info_horario {
     animation: infoFadeSlide 0.25s ease-out;
+}
+
+.formulario_horario{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ───────────────────────────── */
+/* BOTONERA */
+/* ───────────────────────────── */
+.formualrio_horario_botonera{
+    display:  flex;
+    width: 95%;
+    justify-content: space-between;
+   
+   
+}
+
+.formulario_horario_botonera1{
+    display: flex;
+    flex-direction: row;
 }

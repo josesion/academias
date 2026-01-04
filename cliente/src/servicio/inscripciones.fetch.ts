@@ -32,7 +32,8 @@ export const incripcion =async ( datos : TipadoInscripcion.inscripcionData)
             fecha_fin                   : datos.fecha_fin,
             monto                       : datos.monto,
             clases_asignadas_inscritas  : datos.clases_asignadas_inscritas,
-            meses_asignados_inscritos   : datos.meses_asignados_inscritos
+            meses_asignados_inscritos   : datos.meses_asignados_inscritos,
+            estado : "activos"
         }
     });
 

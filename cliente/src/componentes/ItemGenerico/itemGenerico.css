@@ -1,106 +1,84 @@
-/* ---------- ITEM GENÉRICO (estilo pulido) ---------- */
+/* ---------- ITEM GENÉRICO (estilo tipo input) ---------- */
 .item_generico {
-    --morado: #a855f7;           /* acento morado */
-    --morado-oscuro: #7c3aed;
-    --borde-morado: rgba(168,85,247,0.25);
-    --bg1: #1b1b1b;
-    --bg2: #232323;
-
-    background: linear-gradient(180deg, var(--bg1), var(--bg2));
-    border: 1px solid var(--borde-morado);
-    border-radius: 12px;
-    padding: 14px;
-    margin: 10px 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+    background: linear-gradient(135deg, #2e2e4d, #030308);
+    border: 1px solid #555;    /* borde sutil como los inputs */
+    border-radius: 8px;        /* similar a los inputs */
+    padding: 10px 12px;        /* compacto */
+    margin: 6px 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3); /* sombra ligera */
+    
     display: flex;
     flex-direction: column;
     gap: 6px;
-    max-width: 400px;
-
-    /* animación de entrada + suavidad general */
+    max-width: 360px;
+    
+    /* animación de entrada */
     opacity: 0;
-    transform: translateY(6px);
-    animation: cardFadeUp .45s ease forwards;
-
-    transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease;
-    will-change: transform, box-shadow;
-
-    background-color: #dbcece
-    ;
+    transform: translateY(4px);
+    animation: cardFadeUp 0.4s ease forwards;
+    
+    transition: all 0.25s ease;
+    will-change: transform, box-shadow, background;
 }
 
 .item_generico:hover {
+    background: var(--color-fondo-negro); /* degradado suave como los inputs */
+    border-color: #2a233d;                     /* borde morado tipo foco */
+    box-shadow: 0 0 10px rgba(127, 91, 228, 0.5); /* glow */
     transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(168,85,247,0.18), 0 2px 6px rgba(0,0,0,0.35);
-    border-color: rgba(168,85,247,0.45);
 }
 
-/* resalta cuando hay foco en botones/inputs internos */
+/* foco interno */
 .item_generico:focus-within {
-    box-shadow: 0 0 0 2px rgba(168,85,247,0.25), 0 8px 22px rgba(168,85,247,0.16);
+    border-color: #7f5be4;
+    box-shadow: 0 0 10px rgba(127, 91, 228, 0.5);
 }
 
-/* ---------- FILAS (clave arriba izq / valor abajo der) ---------- */
+/* ---------- FILAS ---------- */
 .item_generico_contenedor {
     display: flex;
     flex-direction: column;
-    padding: 8px 10px;
-    border-bottom: 1px solid #eee; /* mantiene la línea */
-    margin: 0 8px;
+    padding: 6px 8px; /* compacto como los inputs */
+    border-bottom: 1px solid #555; /* borde sutil */
+    margin: 0 4px;
     position: relative;
-
-    /* animación por fila */
+    
     opacity: 0;
-    transform: translateY(4px);
+    transform: translateY(2px);
     animation: rowFadeSlide .35s ease forwards;
-    transition: background .2s ease;
+    transition: background .2s ease, color .2s ease;
 }
 
 .item_generico_contenedor:hover {
-    background: rgba(255,255,255,0.03);
+    background: rgba(127,91,228,0.08); /* hover sutil */
 }
 
-/* última fila sin borde */
-.item_generico_contenedor:last-of-type {
-    border-bottom: none;
-}
-
-/* clave (arriba, izquierda) */
 .item_generico_key {
-    font-weight: 600;
-    color: #9f9f9f;
-    text-align: left;
+    font-weight: 500;
+    color: #bbb;
+    font-size: 0.9rem;
     margin-bottom: 2px;
-    letter-spacing: .2px;
 }
 
-/* valor (abajo, derecha) */
 .item_generico_value {
-    color: #f7f0f0;
+    color: #f4f4f4;
+    font-size: 0.95rem;
     text-align: right;
-    font-variant-numeric: tabular-nums; /* alineación numérica limpia */
     transition: color .2s ease, transform .2s ease;
 }
 
-/* micro feedback al pasar por la fila */
 .item_generico_contenedor:hover .item_generico_value {
     color: #ffffff;
     transform: translateX(-1px);
 }
 
 /* ---------- BOTONERA ---------- */
-.botonera_item_generico{
+.botonera_item_generico {
     display: flex;
-    width: 100%;
     justify-content: center;
     align-items: center;
-    gap: 10px;
-    margin-top: 12px;
-
-    /* suave aparición */
-    opacity: 0;
-    transform: translateY(4px);
-    animation: rowFadeSlide .35s ease .06s forwards;
+    gap: 8px;
+    margin-top: 10px;
 }
 
 /* ---------- ANIMACIONES ---------- */
@@ -112,36 +90,9 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* retrasos escalonados para las primeras filas (stagger) */
-.item_generico_contenedor:nth-of-type(1) { animation-delay: .02s; }
-.item_generico_contenedor:nth-of-type(2) { animation-delay: .05s; }
-.item_generico_contenedor:nth-of-type(3) { animation-delay: .08s; }
-.item_generico_contenedor:nth-of-type(4) { animation-delay: .11s; }
-.item_generico_contenedor:nth-of-type(5) { animation-delay: .14s; }
-.item_generico_contenedor:nth-of-type(6) { animation-delay: .17s; }
-
-/* ---------- RESPONSIVE (opcional, por si el contenedor no limita ancho) ---------- */
+/* ---------- RESPONSIVE ---------- */
 @media (max-width: 576px) {
-    .item_generico { max-width: 100%; }
-    .item_generico_contenedor { margin: 0 4px; padding: 8px;}
-    .botonera_item_generico { flex-direction: column;}
-}
-
-@media  (min-width: 701px) and (max-width: 1069px)  {
-   .botonera_item_generico { flex-direction: column;}
-
-}
-
-@media (max-width: 1000px) {
-    .item_generico { max-width: 560px; background-color: #7c3aed;}
-}
-
-/* Respeto a usuarios con “reducir movimiento” */
-@media (prefers-reduced-motion: reduce) {
-    .item_generico,
-    .item_generico_contenedor,
-    .botonera_item_generico {
-        animation: none !important;
-        transition: none !important;
-    }
+    .item_generico { max-width: 100%; padding: 8px; }
+    .item_generico_contenedor { margin: 0 4px; padding: 6px; }
+    .botonera_item_generico { flex-direction: column; gap: 6px; }
 }

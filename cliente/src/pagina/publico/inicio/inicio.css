@@ -1,15 +1,29 @@
 /* Importa la fuente Inter de Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Estilos generales del cuerpo */
+/* -------------------------- */
+/* Reset y estilos generales  */
+/* -------------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f3f4f6;
-    color: #eef1f5; /* Color del texto gris oscuro */
+    background-color: #121212; /* fondo oscuro */
+    color: #e0e0e0; /* texto claro */
     line-height: 1.6;
 }
 
-/* Contenedor principal de la aplicación */
+a {
+    text-decoration: none;
+}
+
+/* -------------------------- */
+/* Contenedor principal       */
+/* -------------------------- */
 .app-container {
     width: 100%;
     display: flex;
@@ -17,11 +31,13 @@ body {
     align-items: center;
 }
 
-/* Estilos de la sección Hero */
+/* -------------------------- */
+/* Hero Section               */
+/* -------------------------- */
 .hero-section {
     width: 100%;
-    max-width: 1280px; /* max-w-6xl */
-    padding: 80px 16px; /* py-20 px-4 */
+    max-width: 1280px;
+    padding: 100px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -29,57 +45,59 @@ body {
 }
 
 .hero-title {
-    font-size: 3rem; /* text-4xl */
-    font-weight: 700; /* font-bold */
-    letter-spacing: -0.025em; /* tracking-tight */
-    color: #d1d5dd; /* text-gray-900 */
-    margin-bottom: 1rem; /* mb-4 */
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1rem;
 }
 
 .hero-subtitle {
-    font-size: 1.125rem; /* text-lg */
-    color: #4b5563; /* text-gray-600 */
-    margin-bottom: 2rem; /* mb-8 */
-    max-width: 640px; /* max-w-2xl */
+    font-size: 1.25rem;
+    color: #b0b0b0;
+    margin-bottom: 2rem;
+    max-width: 700px;
 }
 
 .hero-button {
-    background-color: #4f46e5; /* bg-indigo-600 */
+    background-color: #6d5dfc; /* azul violeta */
     color: #ffffff;
-    font-weight: 500; /* font-medium */
-    padding: 12px 32px; /* py-3 px-8 */
-    border-radius: 9999px; /* rounded-full */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
-    transition: background-color 0.3s ease;
+    font-weight: 600;
+    padding: 14px 36px;
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .hero-button:hover {
-    background-color: #4338ca; /* hover:bg-indigo-700 */
+    background-color: #5548c8;
+    transform: translateY(-2px);
 }
 
-/* Estilos de la sección de características */
+/* -------------------------- */
+/* Features Section           */
+/* -------------------------- */
 .features-section {
     width: 100%;
     max-width: 1280px;
-    padding: 64px 16px; /* py-16 px-4 */
-    background-color: #ffffff;
-    border-radius: 24px; /* rounded-3xl */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
-    margin-bottom: 4rem; /* mb-16 */
+    padding: 80px 20px;
+    background-color: #1e1e1e;
+    border-radius: 24px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    margin-bottom: 4rem;
 }
 
 .features-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 700;
     text-align: center;
-    margin-bottom: 3rem; /* mb-12 */
-    color: #111827;
+    margin-bottom: 3rem;
+    color: #ffffff;
 }
 
 .features-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem; /* gap-8 */
+    gap: 2rem;
 }
 
 .feature-card {
@@ -87,49 +105,52 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 1.5rem; /* p-6 */
-    background-color: #f9fafb; /* bg-gray-50 */
-    border-radius: 1rem; /* rounded-2xl */
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
-    transition: box-shadow 0.3s ease;
+    padding: 2rem;
+    background-color: #2a2a2a;
+    border-radius: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .feature-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* hover:shadow-lg */
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
 }
 
 .feature-icon {
-    width: 3rem; /* w-12 */
-    height: 3rem; /* h-12 */
-    color: #6366f1; /* text-indigo-500 */
-    margin-bottom: 1rem; /* mb-4 */
+    width: 3rem;
+    height: 3rem;
+    color: #6d5dfc;
+    margin-bottom: 1rem;
 }
 
 .feature-heading {
-    font-size: 1.25rem; /* text-xl */
-    font-weight: 600; /* font-semibold */
-    color: #111827;
-    margin-bottom: 0.5rem; /* mb-2 */
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
 }
 
 .feature-description {
-    color: #4b5563; /* text-gray-600 */
+    color: #b0b0b0;
 }
 
-/* Estilos de la sección de precios */
+/* -------------------------- */
+/* Pricing Section            */
+/* -------------------------- */
 .pricing-section {
     width: 100%;
     max-width: 1280px;
-    padding: 64px 16px; /* py-16 px-4 */
-    margin-bottom: 4rem; /* mb-16 */
+    padding: 80px 20px;
+    margin-bottom: 4rem;
 }
 
 .pricing-title {
-    font-size: 2rem;
+    font-size: 2.25rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 3rem;
-    color: #d7d9df;
+    color: #ffffff;
 }
 
 .pricing-grid {
@@ -139,33 +160,33 @@ body {
 }
 
 .plan-card {
-    background-color: #ffffff;
-    padding: 2rem; /* p-8 */
+    background-color: #1e1e1e;
+    padding: 2rem;
     border-radius: 24px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e5e7eb; /* border-gray-200 */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    border: 1px solid #333333;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.plan-card.plan-special {
-    border: 2px solid #6366f1; /* border-indigo-400 */
+.plan-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.5);
 }
 
 .plan-card.plan-premium {
-    background-color: #4f46e5;
+    background-color: #6d5dfc;
     color: #ffffff;
-    border: 1px solid #4338ca;
+    border: 1px solid #5548c8;
     transform: scale(1.05);
 }
 
 .plan-card.plan-premium:hover {
-    transform: scale(1.08); /* Aumenta el tamaño en el hover */
+    transform: scale(1.08);
 }
-
 
 .plan-heading {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
     margin-bottom: 0.5rem;
 }
 
@@ -174,19 +195,19 @@ body {
 }
 
 .plan-description {
-    color: #4b5563;
+    color: #b0b0b0;
     margin-bottom: 1rem;
 }
 
 .plan-card.plan-premium .plan-description {
-    color: #e0e7ff;
+    color: #e0e0ff;
 }
 
 .plan-price {
     font-size: 2.25rem;
     font-weight: 700;
-    color: #4f46e5;
     margin-bottom: 1.5rem;
+    color: #6d5dfc;
 }
 
 .plan-card.plan-premium .plan-price {
@@ -195,11 +216,11 @@ body {
 
 .plan-frequency {
     font-size: 1rem;
-    color: #6b7280;
+    color: #888888;
 }
 
 .plan-card.plan-premium .plan-frequency {
-    color: #e0e7ff;
+    color: #e0e0ff;
 }
 
 .plan-features {
@@ -208,13 +229,13 @@ body {
     margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem; /* space-y-3 */
+    gap: 0.75rem;
 }
 
 .plan-features li {
     display: flex;
     align-items: center;
-    color: #374151;
+    color: #b0b0b0;
 }
 
 .plan-card.plan-premium .plan-features li {
@@ -226,7 +247,7 @@ body {
     width: 1.25rem;
     height: 1.25rem;
     margin-right: 0.5rem;
-    color: #10b981; /* text-green-500 */
+    color: #10b981; /* verde */
 }
 
 .feature-check-white {
@@ -234,24 +255,23 @@ body {
     width: 1.25rem;
     height: 1.25rem;
     margin-right: 0.5rem;
-    color: #ffffff; /* Icono blanco para el plan premium */
+    color: #ffffff;
 }
-
 
 .plan-button {
     display: block;
     width: 100%;
     text-align: center;
-    background-color: #e5e7eb;
-    color: #1f2937;
-    font-weight: 500;
-    padding: 12px 0;
+    background-color: #333333;
+    color: #ffffff;
+    font-weight: 600;
+    padding: 14px 0;
     border-radius: 9999px;
     transition: background-color 0.3s ease;
 }
 
 .plan-button:hover {
-    background-color: #d1d5db;
+    background-color: #444444;
 }
 
 .plan-button-premium {
@@ -259,56 +279,51 @@ body {
     width: 100%;
     text-align: center;
     background-color: #ffffff;
-    color: #4f46e5;
+    color: #6d5dfc;
     font-weight: 700;
-    padding: 12px 0;
+    padding: 14px 0;
     border-radius: 9999px;
     transition: background-color 0.3s ease;
 }
 
 .plan-button-premium:hover {
-    background-color: #f3f4f6;
+    background-color: #f3f3ff;
 }
 
-/* Estilos del pie de página */
+/* -------------------------- */
+/* Footer Section             */
+/* -------------------------- */
 .footer-section {
     width: 100%;
     text-align: center;
-    padding: 2rem 0; /* py-8 */
-    color: #6b7280;
-    font-size: 0.875rem; /* text-sm */
+    padding: 2rem 0;
+    color: #888888;
+    font-size: 0.875rem;
 }
 
-/* Media Queries para adaptabilidad */
+/* -------------------------- */
+/* Media Queries              */
+/* -------------------------- */
 @media (min-width: 768px) {
     .hero-section {
-        padding-top: 128px; /* py-32 */
-        padding-bottom: 128px;
+        padding-top: 140px;
+        padding-bottom: 140px;
     }
 
     .hero-title {
-        font-size: 3.75rem; /* text-5xl */
+        font-size: 4rem;
     }
 
     .hero-subtitle {
-        font-size: 1.25rem; /* text-xl */
+        font-size: 1.5rem;
     }
 
-    .features-section, .pricing-section {
-        padding-top: 96px; /* py-24 */
-        padding-bottom: 96px;
-    }
-
-    .features-title, .pricing-title {
-        font-size: 2.25rem; /* text-4xl */
-    }
-    
     .features-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .pricing-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
@@ -316,5 +331,8 @@ body {
     .features-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-}
 
+    .pricing-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

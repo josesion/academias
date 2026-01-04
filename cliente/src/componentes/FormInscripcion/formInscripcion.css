@@ -6,7 +6,7 @@
     justify-items: center;
     padding: 10px;
     gap: 10px;
-    background: linear-gradient(135deg, #2e2e4d, #030308);
+    background:var(--color-gradiente-azul);
     border-radius: 16px;
 
     /* Sombra elegante */

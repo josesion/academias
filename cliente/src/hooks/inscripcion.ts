@@ -130,11 +130,10 @@ export const useInscipcion =( config : InscripcionConfig) =>{
             clases_asignadas_inscritas : plan.clases
         };
         
-
         const subcripcionInsc = await servicioApiFetch( datos );
-   
-        if ( subcripcionInsc.code === "INSCRIPCIONES_CREAR" ){
-            console.log("sub correctamente y cerrar el modal ")
+        
+        if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
+            setErrorGenerico(null)
             setModalInsc(false);
             return
         }else{
@@ -147,7 +146,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 
     const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
         e.preventDefault();
-         console.log("Cancelacion -- cerrar el modal")
+        setErrorGenerico(null)
         setModalInsc(false) 
    };
 
@@ -253,6 +252,7 @@ useEffect( () =>{
         alumno,
         errorGenerico,
         modalInsc,
+        setModalInsc,
 
         listadoPlan,
         listadoAlumno,
