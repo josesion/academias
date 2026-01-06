@@ -87,6 +87,10 @@ INSERT INTO asistencias (
 VALUES (
     ?, ?, ?, ?, CURDATE(), 'presente'
 );
+-- actualizar el estado a vencido--
+UPDATE inscripciones 
+         SET estado = 'vencidos'
+         WHERE id_inscripcion = ?
 
 
 --Sentencia para colorcar vencidos a los estados q ya pasaron la fecha de su vencimiento ---
@@ -106,6 +110,14 @@ WHERE id_inscripcion = 25
   AND dni_alumno = 40567890
   AND id_escuela = 107
   AND estado = 'activos'
+LIMIT 1;
+
+-- VErifiucar si ya asistio 
+SELECT 1
+FROM asistencias
+WHERE id_inscripcion = 23
+  AND id_horario_clase = 14
+  AND fecha = CURDATE()
 LIMIT 1;
 
 
@@ -144,3 +156,19 @@ WHERE i.id_inscripcion = 26
             AND a.estado = 'presente'
       )
   ) <= 0;
+
+-- para verificar la ventana para marcar la asistencia --
+SELECT 1
+FROM horarios_clases
+WHERE id = 47
+AND NOW() BETWEEN
+  DATE_SUB(
+    TIMESTAMP(CURDATE(), CAST(hora_inicio AS TIME)),
+    INTERVAL 15 MINUTE
+  )
+  AND
+  DATE_ADD(
+    TIMESTAMP(CURDATE(), CAST(hora_inicio AS TIME)),
+    INTERVAL 30 MINUTE
+  )
+LIMIT 1;

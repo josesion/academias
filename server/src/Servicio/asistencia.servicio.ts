@@ -1,0 +1,151 @@
+// ──────────────────────────────────────────────────────────────
+// Sección de Hooks
+// ──────────────────────────────────────────────────────────────
+import { tryCatchDatos } from "../utils/tryCatchBD";
+
+import { method as asistenciaData } from "../data/asistencia.data";
+// ──────────────────────────────────────────────────────────────
+// Sección de Tipados
+// ──────────────────────────────────────────────────────────────
+import { TipadoData } from "../tipados/tipado.data"; 
+import { VerificarInscripcionInput, VerificarInscripcionSchema } from "../squemas/inscripciones";
+import { AsistenciaInputs, AsistenciaSchema } from "../squemas/asistencias"; 
+
+
+/**
+ * Registra una asistencia para un alumno en una clase específica y
+ * actualiza el estado de la inscripción si corresponde.
+ *
+ * Esta operación se ejecuta dentro de una transacción para garantizar
+ * la integridad de los datos.
+ *
+ * Flujo interno:
+ * 1. Inserta la asistencia del alumno para el día actual (CURDATE).
+ * 2. Calcula la cantidad de clases restantes de la inscripción.
+ * 3. Si las clases restantes llegan a 0 o menos, marca la inscripción como "vencidos".
+ * 4. Confirma la transacción si todo sale bien, o hace rollback ante cualquier error.
+ *
+ * @param {VerificarInscripcionInput} verificacion
+ * Datos necesarios para validar la inscripción activa del alumno.
+ * Incluye:
+ * - id_escuela
+ * - dni_alumno
+ * - id_inscripcion
+ *
+ * @param {AsistenciaInputs} asistencia
+ * Datos propios de la asistencia a registrar.
+ * Incluye:
+ * - id_horario_clase
+ *
+ * @returns {Promise<TipadoData<{ idAsistencia: number, clasesRestantes: number }>>}
+ * Retorna un objeto tipado con el resultado de la operación.
+ *
+ * @returns.code TRANSACCION_OK
+ * La asistencia fue registrada correctamente.
+ * Se devuelve:
+ * - idAsistencia: ID generado de la asistencia
+ * - clasesRestantes: cantidad de clases disponibles luego del registro
+ *
+ * @returns.code TRANSACCION_FALLIDA
+ * Ocurrió un error durante la transacción y no se aplicaron cambios.
+ *
+ * @remarks
+ * - La función asume que todas las validaciones previas ya fueron realizadas:
+ *   - Inscripción existente y activa
+ *   - No doble asistencia en el mismo día
+ *   - Horario dentro de la ventana permitida
+ * - La lógica de vencimiento de inscripción depende exclusivamente
+ *   del cálculo de clases restantes.
+ * - El uso de transacciones evita estados inconsistentes ante errores intermedios.
+ *
+ * @example
+ * // Resultado exitoso
+ * {
+ *   error: false,
+ *   message: "Asistencia registrada correctamente",
+ *   data: {
+ *     idAsistencia: 123,
+ *     clasesRestantes: 5
+ *   },
+ *   code: "TRANSACCION_OK"
+ * }
+ */
+const altaAsistencia = async( verificacion : VerificarInscripcionInput , asistencia : AsistenciaInputs ) 
+: Promise<TipadoData<{idAsistencia : number, clasesRestantes : number}>>=> {
+   
+    const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse(verificacion);
+    const dataAsistencia : AsistenciaInputs = AsistenciaSchema.parse(asistencia);
+    
+    const verificarInsc  = await asistenciaData.verificarInscripcion( dataVerificacionInsc );
+    
+
+    switch (verificarInsc.code){
+        case  'INSCRIPCION_NO_EXISTE' : {
+            //  si no existe quiere decir q ya se vencio por alguna razon 
+            return {
+                error: true,
+                message : `El alumno :${verificacion.dni_alumno} no tiene plan activo`,
+                code : "INSCRIPCION_NO_EXISTE"
+            };
+        };
+
+        case  'INSCRIPCION_EXISTE' : {
+              //logica de ventana de horario
+            const ventanaTiempo = await asistenciaData.ventanaAsistencia( dataAsistencia.id_horario_clase);
+            
+            if( ventanaTiempo.code === 'HORARIO_NO_EXISTE' ){
+                // se esta queirendo inscribir  en un horario q no existe o fuera de la ventana de tiempo permitida 
+                return {
+                    error : true,
+                    message :"No estás dentro del horario permitido para marcar asistencia",
+                    code : "FUERA_DE_VENTANA_HORARIA"
+                };    
+            };
+            if( ventanaTiempo.code === 'HORARIO_EXISTE' ){
+                const verificarDobleAsistencia = await asistenciaData.dobleAsitencia(dataVerificacionInsc.id_inscripcion , dataAsistencia.id_horario_clase);
+            
+                if( verificarDobleAsistencia.code === "ASISTENCIA_EXISTE" ){
+                    return {
+                        error : true,
+                        message : `El alumno : ${ dataVerificacionInsc.dni_alumno } ya esta en clase`,
+                        code : "ALUMNO_EN_CLASE"
+                    };
+                };
+                if( verificarDobleAsistencia.code === "ASISTENCIA_NO_EXISTE" ){
+                    const asistenciaResultado = await asistenciaData.asistencia( dataVerificacionInsc, dataAsistencia);
+        
+                    if (asistenciaResultado.code === "TRANSACCION_FALLIDA"){
+                        return {
+                            error : true,
+                            message : `Error, falla en la transaccion en consultas`,
+                            code : "TRANSACCION_FALLIDA"
+                        };
+                    };
+                    if (asistenciaResultado.code === "TRANSACCION_OK"){
+                        return {
+                            error : false,
+                            message : `Asistencia correcta del alumno :${verificacion.dni_alumno} `,
+                            data : asistenciaResultado.data,
+                            code  : "ASISTENCIA_OK"
+                        };
+                    };
+                };
+            };
+
+        };
+
+      default:{
+            return {
+                error : true,
+                message : "No se Logro generar la asistencia",
+                code   :"ERROR_ASISTENCIA"
+            };        
+      };    
+    };
+
+}; 
+
+
+export const method = {
+    asistencia : tryCatchDatos( altaAsistencia ),
+};

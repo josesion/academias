@@ -3,6 +3,9 @@ import { z } from "zod";
 // Define el patrón de fecha YYYY-MM-DD
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 
+export const EstadoEnum = z.enum(["activos", "inactivos", "vencidos"]);
+
+
 export const InscripcionSchema = z.object({
     // --- ID del Plan (INT) ---
     id_plan: z.coerce.number()
@@ -48,8 +51,22 @@ export const InscripcionSchema = z.object({
         
 });
 
+export const VerificarInscripcionSchema  = z.object({
+    id_inscripcion : z.coerce.number()
+                    .int("El ID de inscripcion debe ser un número entero.")
+                    .positive("El ID de inscripcion debe ser positivo (mayor que 0)."),
+    dni_alumno: z.coerce.number()
+                    .int("El DNI debe ser un número entero sin decimales.")
+                    .positive("El DNI debe ser un número positivo."),
+    id_escuela: z.coerce.number()
+                    .int("El ID de la escuela debe ser un número entero.")
+                    .positive("El ID de la escuela debe ser positivo (mayor que 0)."),                
+    estado : EstadoEnum
+});
+
 export interface VerificacionInputs {
      dni_alumno : number , id_escuela : number , estado : 'activos' | 'vencidos' | 'suspendidos'
 };
 
 export type InscripcionInputs = z.infer<typeof InscripcionSchema>;
+export type VerificarInscripcionInput = z.infer<typeof VerificarInscripcionSchema>;
