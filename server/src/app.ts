@@ -21,10 +21,12 @@ import horarios from "./rutas/horarios.ruta";
 import asistencias  from "./rutas/asistencias";
 
 import protectRutas from "./rutas/protegida.rutas";
-
+import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
 
 
 const app : Express = express();
+
+iniciarCronVencimientoInscripciones();
 
 app.use(cors({
     origin : "http://localhost:5173",

@@ -5,6 +5,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 //import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
+import pool from "../bd";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -12,7 +13,17 @@ import { TipadoData } from "../tipados/tipado.data";
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
 import { AsistenciaInputs } from "../squemas/asistencias";
 
+const vencerInscripciones = async () => {
+  const sql = `
+    UPDATE inscripciones
+    SET estado = 'vencidos'
+    WHERE id_inscripcion > 0
+    AND estado = 'activos'
+    AND fecha_fin < CURDATE();
+  `;
 
+  await pool.execute(sql);
+};
 
 /**
  * Verifica si una inscripción existe y se encuentra en el estado esperado.
@@ -301,4 +312,5 @@ export const method = {
     dobleAsitencia  : tryCatchDatos( dobleAsitencia ),
     ventanaAsistencia : tryCatchDatos( ventanaAsistencia ),
     asistencia : tryCatchDatos( asistenciaAlta ),
+    vencerInscripciones : tryCatchDatos( vencerInscripciones)
 };
