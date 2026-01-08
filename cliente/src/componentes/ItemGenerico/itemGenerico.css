@@ -1,98 +1,165 @@
-/* ---------- ITEM GENÉRICO (estilo tipo input) ---------- */
-.item_generico {
-    background: linear-gradient(135deg, #2e2e4d, #030308);
-    border: 1px solid #555;    /* borde sutil como los inputs */
-    border-radius: 8px;        /* similar a los inputs */
-    padding: 10px 12px;        /* compacto */
-    margin: 6px 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3); /* sombra ligera */
-    
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-width: 360px;
-    
-    /* animación de entrada */
-    opacity: 0;
-    transform: translateY(4px);
-    animation: cardFadeUp 0.4s ease forwards;
-    
-    transition: all 0.25s ease;
-    will-change: transform, box-shadow, background;
+/* =========================
+   TARJETA BASE
+   ========================= */
+.item_card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
+
+  border-radius: 22px;
+  padding: 18px 20px 16px 36px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.item_generico:hover {
-    background: var(--color-fondo-negro); /* degradado suave como los inputs */
-    border-color: #2a233d;                     /* borde morado tipo foco */
-    box-shadow: 0 0 10px rgba(127, 91, 228, 0.5); /* glow */
-    transform: translateY(-2px);
+/* Hover tarjeta */
+.item_card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
-/* foco interno */
-.item_generico:focus-within {
-    border-color: #7f5be4;
-    box-shadow: 0 0 10px rgba(127, 91, 228, 0.5);
+/* =========================
+   LÍNEA VERTICAL PANSEADA
+   ========================= */
+.item_card::before {
+  content: "";
+  position: absolute;
+
+  left: 12px;
+  top: 14px;
+  bottom: 14px;
+
+  width: 7px;
+
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+
+  border-radius: 999px;
+
+  box-shadow:
+    0 0 14px rgba(99, 102, 241, 0.6);
 }
 
-/* ---------- FILAS ---------- */
-.item_generico_contenedor {
-    display: flex;
-    flex-direction: column;
-    padding: 6px 8px; /* compacto como los inputs */
-    border-bottom: 1px solid #555; /* borde sutil */
-    margin: 0 4px;
-    position: relative;
-    
-    opacity: 0;
-    transform: translateY(2px);
-    animation: rowFadeSlide .35s ease forwards;
-    transition: background .2s ease, color .2s ease;
+/* Hover línea */
+.item_card:hover::before {
+  box-shadow:
+    0 0 22px rgba(99, 102, 241, 0.85);
 }
 
-.item_generico_contenedor:hover {
-    background: rgba(127,91,228,0.08); /* hover sutil */
+/* =========================
+   CUERPO DE INFO
+   ========================= */
+.item_card_body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px 22px;
 }
 
-.item_generico_key {
-    font-weight: 500;
-    color: #bbb;
-    font-size: 0.9rem;
-    margin-bottom: 2px;
+/* Fila */
+.item_row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.item_generico_value {
-    color: #f4f4f4;
-    font-size: 0.95rem;
-    text-align: right;
-    transition: color .2s ease, transform .2s ease;
+/* Key */
+.item_key {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  color: var(--color-letra);
 }
 
-.item_generico_contenedor:hover .item_generico_value {
-    color: #ffffff;
-    transform: translateX(-1px);
+/* Value */
+.item_value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-letra);
+  word-break: break-word;
 }
 
-/* ---------- BOTONERA ---------- */
-.botonera_item_generico {
-    display: flex;
+/* =========================
+   ACCIONES / BOTONES
+   ========================= */
+.item_card_actions {
+  display: flex;
+  justify-content: center;   /* 🔥 CENTRADO */
+  align-items: center;
+  gap: 14px;
+
+  padding-top: 14px;
+  margin-top: 16px;
+
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Responsive botones */
+@media (min-width: 481px) and (max-width: 768px) {
+
+  .formulario_asistencia_contenedor {
+    grid-template-columns: 1fr;
+    max-width: 600px;
+  }
+
+  .item_card_body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item_card_actions {
     justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
+  }
+
+  .item_card_actions{
+    flex-direction: column;
+  }
 }
 
-/* ---------- ANIMACIONES ---------- */
-@keyframes cardFadeUp {
-    to { opacity: 1; transform: translateY(0); }
+@media (min-width: 769px) and (max-width: 1200px) {
+
+  .formulario_asistencia_contenedor {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .item_card_body {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item_card_actions{
+    flex-direction: column;
+  }
 }
 
-@keyframes rowFadeSlide {
-    to { opacity: 1; transform: translateY(0); }
+
+@media (min-width: 1200px) {
+
+  .formulario_asistencia_contenedor {
+    max-width: 1100px;
+    gap: 32px;
+  }
+
+  .formulario_asistenica_titulo {
+    font-size: 1.6rem;
+  }
+
+  .item_value {
+    font-size: 1.2rem;
+  }
+
+  .boton {
+    font-size: 1.2rem;
+    padding: 16px 28px;
+  }
 }
 
-/* ---------- RESPONSIVE ---------- */
-@media (max-width: 576px) {
-    .item_generico { max-width: 100%; padding: 8px; }
-    .item_generico_contenedor { margin: 0 4px; padding: 6px; }
-    .botonera_item_generico { flex-direction: column; gap: 6px; }
-}

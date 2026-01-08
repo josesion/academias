@@ -52,6 +52,12 @@ interface CalendarioProps {
 export const Calendario = (data: CalendarioProps) => {
   const { horarios, diasSemana, calendario } = data;
 
+  const calendarioMap = new Map<string, ClaseHorarioData>();
+
+  calendario?.forEach((clase) => {
+    calendarioMap.set(`${clase.dia}-${clase.hora_inicio}`, clase);
+  });
+
   return (
     <div className="contenedor_calendario_completo">
       <div className="contenedor_calendario">
@@ -74,31 +80,31 @@ export const Calendario = (data: CalendarioProps) => {
               <tr key={hora}>
                 <td className="tr_cuerpo_calendario">{hora}</td>
 
-                {diasSemana.map((dia) => (
-                  <td key={dia} className="tr_cuerpo_calendario">
-                    {calendario?.find(
-                      (clase) => clase.dia === dia && clase.hora_inicio === hora
-                    ) ? (
-                      <div className="clase_asignada">
-                        {
+                {diasSemana.map((dia) => {
+                  const clase = calendarioMap.get(`${dia}-${hora}`);
+
+                  return (
+                    <td key={dia} className="tr_cuerpo_calendario">
+                      {clase ? (
+                        <div className="clase_asignada">
                           <ClaseAsignada
                             dia={dia}
                             hora={hora}
                             Horarios_Clases={calendario}
                             onSelect={data.handleModData}
                           />
-                        }
-                      </div>
-                    ) : (
-                      <CeldaVacia
-                        dia={dia}
-                        hora={hora}
-                        mensaje="Disponible"
-                        onSelect={data.handleAbrirModal}
-                      />
-                    )}
-                  </td>
-                ))}
+                        </div>
+                      ) : (
+                        <CeldaVacia
+                          dia={dia}
+                          hora={hora}
+                          mensaje="Disponible"
+                          onSelect={data.handleAbrirModal}
+                        />
+                      )}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

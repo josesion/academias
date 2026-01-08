@@ -1,76 +1,128 @@
-/* Contenedor general de la tarjeta */
-.tarjeta_inscripcion_contenedor {
-    width: 100%;
-    max-width: 600px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    padding: 22px;
-    border-radius: 18px;
-
-    /* Glassmorphism */
-    background:var(--color-gradiente-azul);
-    backdrop-filter: blur(12px);
-
-    /* Neon border */
-    border: 1.5px solid rgba(94, 98, 100, 0.5);
-
-
-    animation: fadeIn 0.7s ease-out;
+/* ===== CONTENEDOR GENERAL ===== */
+.tarjeta_card {
+  min-width: 60%;
+  margin: 0 auto;
+  padding: 16px;
 }
 
-/* Título */
-.tarjeta_inscripcion_contenedor > p {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #e9f8ff;
-    margin: 0;
-    text-align: center;
-    letter-spacing: 0.5px;
+/* ===== TÍTULO ===== */
+.tarjeta_titulo {
+  text-align: center;
+  margin-bottom: 18px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  background: linear-gradient(
+    90deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Contenedor de filtros (plan/alumno) */
-.tarjeta_inscripcion_filtros {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+/* ===== CARD ===== */
+.tarjeta_card_body {
+  position: relative;
 
-    padding: 14px;
-    border-radius: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 28px;
+  row-gap: 14px;
 
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 26px 28px 26px 40px;
 
-    color: #dfefff;
-    font-size: 0.95rem;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 35, 0.92),
+    rgba(10, 10, 20, 0.92)
+  );
+
+  border-radius: 28px;
+
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-/* Información detallada */
-.tarjeta_inscripcion_info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+/* ===== LÍNEA DE COLOR ===== */
+.tarjeta_card_body::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  bottom: 18px;
+  width: 5px;
 
-    padding: 14px;
-    border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
 
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-
-    color: #e6faff;
-    font-size: 0.95rem;
+  border-radius: 6px;
 }
 
-.tarjeta_inscripcion_info p,
-.tarjeta_inscripcion_filtros p {
-    margin: 0;
-    letter-spacing: 0.4px;
+/* ===== FILA ===== */
+.tarjeta_row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-/* Animación suave */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
+/* ===== CLAVES ===== */
+.tarjeta_key {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.65;
+}
+
+/* ===== VALORES ===== */
+.tarjeta_value {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e5e7eb;
+}
+
+/* ===== DESTACADO (PRECIO) ===== */
+.tarjeta_row.destacado {
+  grid-column: span 2;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tarjeta_row.destacado .tarjeta_value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #22d3ee;
+}
+@media (max-width: 768px) {
+  .tarjeta_card{
+    min-width: 90%;
+  }  
+
+  .tarjeta_card_body {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+
+    padding: 18px 18px 16px 28px;
+    border-radius: 20px;
+  }
+
+  .tarjeta_row.destacado {
+    grid-column: span 1;
+    margin-top: 6px;
+    padding-top: 8px;
+  }
+
+  .tarjeta_row.destacado .tarjeta_value {
+    font-size: 1.05rem;
+  }
 }

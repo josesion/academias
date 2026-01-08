@@ -1,0 +1,104 @@
+.asistencia_kiosco {
+  min-height: 100vh;
+  background: var(--color-gradiente-multicolor);
+  color: var(--color-letra);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  font-family: var(--fuente-principal);
+  padding: 24px;
+}
+
+/* HEADER */
+.asistencia_header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.asistencia_header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.asistencia_header p {
+  opacity: 0.75;
+}
+
+/* CLASES */
+.asistencia_clases {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.clase_card {
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 18px;
+  padding: 18px 22px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.clase_card.actual {
+  border-left: 4px solid #22c55e;
+}
+
+.clase_card.proxima {
+  border-left: 4px solid #6366f1;
+}
+
+.clase_card h2 {
+  margin: 6px 0 2px;
+  font-size: 1.4rem;
+}
+
+.clase_card p {
+  opacity: 0.85;
+}
+
+.badge {
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  opacity: 0.7;
+}
+
+/* ACCIÓN */
+.asistencia_accion {
+  width: 100%;
+  max-width: 520px;
+
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(14px);
+  border-radius: 22px;
+
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ESTADO */
+.estado_inscripcion {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  background: rgba(255,255,255,0.05);
+  border-radius: 14px;
+  padding: 14px 18px;
+}
+
+.estado_inscripcion span {
+  font-size: 0.7rem;
+  opacity: 0.7;
+}
+
+.estado_inscripcion strong {
+  font-size: 1.2rem;
+  color: var(--color-primario);
+}

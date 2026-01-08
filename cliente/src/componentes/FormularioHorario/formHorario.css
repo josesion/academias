@@ -1,186 +1,263 @@
-/* CONTENEDOR GENERAL */
+/* ================= CONTENEDOR GENERAL ================= */
 .contenedor_formulario_horario {
-    display: flex;
-    flex-direction: column;
+  width: 95dvw;
+  min-height: 80dvh;
 
-    background: transparent; /* azul oscuro */
-    border-radius: 12px;
-    width: 95dvw;
-    min-height: 80dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
 }
 
-/* ───────────────────────────── */
-/* FILTRO PRIMARIO */
-/* ───────────────────────────── */
+/* ================= FILTRO PRIMARIO ================= */
 .formulario_horario_filtro_primario {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    flex-wrap: wrap;
+  position: relative;
 
-    padding: 1rem;
-    background: #020617;
-    border-radius: 10px;
-    background:var(--color-gradiente-azul);
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+
+  padding: 22px 26px 22px 40px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 35, 0.92),
+    rgba(10, 10, 20, 0.92)
+  );
+
+  border-radius: 26px;
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }
 
-/* Cada selector que no empuje */
+/* Línea de color */
+.formulario_horario_filtro_primario::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  bottom: 18px;
+  width: 5px;
+
+
+  border-radius: 6px;
+}
+
+/* Selectores */
 .formulario_horario_filtro_primario > div {
-    flex: 1;
-    min-width: 220px;
+  flex: 1;
+  min-width: 220px;
 }
 
-/* ───────────────────────────── */
-/* FILTRO SECUNDARIO (CALENDARIO) */
-/* ───────────────────────────── */
+/* ================= FILTRO SECUNDARIO ================= */
 .formulario_horario_filtro_secundario {
-                      /* 🔥 CLAVE */
-    overflow-y: auto;           /* 🔥 SCROLL INTERNO */
-        
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
 
-    background:var(--color-gradiente-azul);
-    border-radius: 12px;
-    border: 1px solid #1e293b;
-    
+  padding: 16px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 30, 0.94),
+    rgba(10, 10, 18, 0.94)
+  );
+
+  border-radius: 28px;
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-
-
-
-/* ───────────────────────────── */
-/* PANEL INFORMACIÓN DEL HORARIO */
-/* ───────────────────────────── */
-
+/* ================= PANEL INFO HORARIO ================= */
 .info_horario {
-    background:var(--color-gradiente-azul);
-    border: 1px solid #1e293b;
-    border-radius: 10px;
+  position: relative;
 
-    padding: 1rem 1.2rem;
-    margin-top: 1rem;
+  padding: 24px 26px 22px 42px;
+  margin-top: 1rem;
 
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-    color: #e5e7eb;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 20, 35, 0.92),
+    rgba(10, 10, 20, 0.92)
+  );
+
+  border-radius: 28px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  color: #e5e7eb;
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+
+  animation: infoFadeSlide 0.25s ease-out;
 }
 
-/* Título del panel */
+/* Línea de color */
+.info_horario::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  bottom: 18px;
+  width: 5px;
+
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+
+  border-radius: 6px;
+}
+
+/* ================= TÍTULO ================= */
 .info_horario_titulo {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #bcc2c5;
+  text-align: center;
 
-    margin: 0 0 0.25rem 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  margin-bottom: 8px;
+
+  background: linear-gradient(
+    90deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* Bloques internos */
+/* ================= BLOQUES ================= */
 .info_horario_bloque {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 10px;
 }
 
-/* Item individual */
+/* ================= ITEMS ================= */
 .info_item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* Etiqueta */
 .info_label {
-    color: #94a3b8;
-    font-weight: 500;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.6;
 }
 
 /* Valor */
 .info_valor {
-    color: #e5e7eb;
-    font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #e5e7eb;
 }
 
-/* Divisor */
-.info_divisor {
-    border: none;
-    border-top: 1px solid #1e293b;
-    margin: 0.4rem 0;
-}
+/* Profesor multilinea */
 .profe_linea {
   display: block;
 }
 
-/* ───────────────────────────── */
-/* ESTADO */
-/* ───────────────────────────── */
+/* ================= DIVISOR ================= */
+.info_divisor {
+  grid-column: span 2;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin: 6px 0;
+}
 
+/* ================= ESTADO ================= */
 .info_estado {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  grid-column: span 2;
 
-    font-size: 0.85rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 8px;
+  padding-top: 12px;
+
+  border-top: 1px solid rgba(255,255,255,0.08);
+
+  font-size: 0.8rem;
 }
 
 .info_estado_label {
-    color: #94a3b8;
+  opacity: 0.6;
 }
 
-/* Estado listo */
 .info_estado_valor {
-    font-weight: 600;
+  font-weight: 700;
 }
 
 .info_estado_valor.listo {
-    color: #22c55e;
+  color: #22d3ee;
 }
 
-/* Estado incompleto (por si lo usás después) */
 .info_estado_valor.incompleto {
-    color: #f59e0b;
+  color: #f59e0b;
 }
 
-/* Estado error (opcional futuro) */
 .info_estado_valor.error {
-    color: #ef4444;
+  color: #ef4444;
 }
 
+/* ================= BOTONERA ================= */
+.formualrio_horario_botonera {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin-top: 1rem;
+}
+
+.formulario_horario_botonera1 {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* ================= ANIMACIÓN ================= */
 @keyframes infoFadeSlide {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.info_horario {
-    animation: infoFadeSlide 0.25s ease-out;
-}
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .formulario_horario_filtro_primario,
+  .info_horario {
+    padding: 18px 18px 16px 28px;
+    border-radius: 20px;
+  }
 
-.formulario_horario{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+  .info_horario_bloque {
+    grid-template-columns: 1fr;
+  }
 
-/* ───────────────────────────── */
-/* BOTONERA */
-/* ───────────────────────────── */
-.formualrio_horario_botonera{
-    display:  flex;
-    width: 95%;
-    justify-content: space-between;
-   
-   
-}
-
-.formulario_horario_botonera1{
-    display: flex;
-    flex-direction: row;
+  .info_divisor,
+  .info_estado {
+    grid-column: span 1;
+  }
 }

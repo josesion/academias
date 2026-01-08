@@ -3,17 +3,36 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 18px;
-    padding: 20px 25px;
-    background:var(--color-gradiente-azul);
-    border-radius: 16px;
+    gap: 16px;
 
-    /* Sombra elegante */
+    padding: 22px;
+    margin: 0 auto;
+
+    background: var(--color-gradiente-azul);
+    border-radius: 14px;
+
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 
-    animation: fadeInForm 0.6s ease-in-out;
-    margin: 0 auto;
-    transition: all 0.3s ease-in-out;
+    animation: fadeInForm 0.4s ease;
+    transition: box-shadow 0.25s ease;
+}
+
+.formulario:hover {
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
+/* --- TÍTULO --- */
+.formulario_titulo {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-letra);
+
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 8px;
 }
 
 /* --- INPUTS --- */
@@ -22,113 +41,53 @@
 .formulario textarea {
     width: 100%;
     max-width: 450px;
-    padding: 12px 14px;
-    border: 1px solid #444;
-    border-radius: 8px;
+
+    padding: 11px 14px;
     font-size: 15px;
-    color: #f5f5f5;
-    background: #2a2a3b;
-    transition: all 0.3s ease-in-out;
+    color: #f2f2f2;
+
+    background-color: #1f1f2b;
+    border: 1px solid #3a3a4a;
+    border-radius: 8px;
+
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .formulario input::placeholder,
-.formulario select,
 .formulario textarea::placeholder {
-    color: #bbb;
+    color: #9a9a9a;
 }
 
 .formulario input:focus,
 .formulario select:focus,
 .formulario textarea:focus {
-    border-color: #42a5f5;
-    box-shadow: 0 0 12px rgba(66, 165, 245, 0.4);
     outline: none;
-    transform: scale(1.02);
+    border-color: var(--color-fondo-azul);
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.25);
 }
 
 /* --- BOTONERA --- */
 .botonera_formulario {
     display: flex;
     justify-content: center;
-    gap: 14px;
-    margin-top: 12px;
-    animation: fadeInButtons 0.6s ease-in-out;
-    flex-wrap: wrap;
+    gap: 12px;
     width: 100%;
+    margin-top: 12px;
+    flex-wrap: wrap;
 }
 
 .botonera_formulario .boton_personalizado {
-    max-width: 220px;
     width: 100%;
-    transition: all 0.3s ease-in-out;
+    max-width: 220px;
 }
 
-/* Hover con animación */
-.botonera_formulario .boton_personalizado:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-}
 
-/* --- TÍTULO DEL FORMULARIO --- */
-.formulario_titulo {
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-align: center;
-    background: rgb(224, 221, 221);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    margin-bottom: 25px;
-    letter-spacing: 1.5px;
-
-    opacity: 0;
-    transform: translateY(-10px);
-    animation: fadeSlideDown 0.6s ease forwards;
-}
-
-/* --- ERROR GENERAL --- */
-.errores_genericos {
-    margin-top: 12px;
-    color: #ff6b6b;
-    font-size: 14px;
-    font-weight: 500;
-    animation: fadeInError 0.4s ease-in-out;
-}
 
 /* --- ANIMACIONES --- */
-@keyframes fadeSlideDown {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
 @keyframes fadeInForm {
     from {
         opacity: 0;
-        transform: translateY(-12px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInButtons {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInError {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
+        transform: translateY(-6px);
     }
     to {
         opacity: 1;
@@ -140,13 +99,12 @@
 @media (max-width: 576px) {
     .formulario {
         width: 90%;
-        padding: 20px;
-        gap: 10px;
-        
+        padding: 18px;
+        gap: 12px;
     }
+
     .botonera_formulario {
         flex-direction: column;
-        gap: 10px;
         align-items: center;
     }
 }
@@ -154,7 +112,6 @@
 @media (min-width: 577px) and (max-width: 999px) {
     .formulario {
         width: 80%;
-        padding: 22px;
     }
 }
 

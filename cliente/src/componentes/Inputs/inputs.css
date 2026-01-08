@@ -48,31 +48,55 @@
     align-items: center;
 }
 
-/* Mensaje de error con animación suave */
+/* Mensaje de error mejorado */
 .mensaje_error {
-    color: #d32f2f; /* rojo sobrio */
+    position: relative;
+
+    color: #ffecec;
     font-size: 0.85rem;
-    font-weight: 500;
-    background-color: rgba(211, 47, 47, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
+    font-weight: 600;
+
+    background: linear-gradient(
+        135deg,
+       transparent,
+        rgba(107, 16, 25, 0.9)
+    );
+
+    padding: 6px 10px 6px 14px;
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 12px rgba(255, 60, 60, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
     opacity: 0;
-    transform: translateY(-4px);
-    animation: mostrarError 0.3s ease forwards;
+    transform: translateY(-6px) scale(0.96);
+
+    animation:
+        mostrarError 0.35s ease-out forwards,
+        errorGlow 2.5s ease-in-out infinite;
 }
 
-/* Animación */
+
+
+/* Animación de entrada */
 @keyframes mostrarError {
-to {
-    opacity: 1;
-    transform: translateY(0);
-}
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
-
-@media (max-width: 576px){
-    .inputs_contenedor{
-       max-width: 280px;
+/* Pulso suave de error */
+@keyframes errorGlow {
+    0%, 100% {
+        box-shadow:
+            0 3px 12px rgba(255, 60, 60, 0.35),
+            inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    50% {
+        box-shadow:
+            0 6px 20px rgba(245, 4, 4, 0.55),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
     }
 }

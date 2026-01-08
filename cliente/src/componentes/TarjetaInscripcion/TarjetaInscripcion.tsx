@@ -1,39 +1,64 @@
-import './tarjeta.css';
-import { fechaVencimiento , fechaHoy } from '../../hooks/fecha';
-
-import {type  DataPlan , type DataAlumno } from '../../hooks/inscripcion'; 
-
+import "./tarjeta.css";
+import { fechaVencimiento, fechaHoy } from "../../hooks/fecha";
+import { type DataPlan, type DataAlumno } from "../../tipadosTs/inscripciones";
 
 interface PropsTarjeta {
-    plan: DataPlan | null;
-    alumno: DataAlumno | null;
+  plan: DataPlan | null;
+  alumno: DataAlumno | null;
 }
 
 export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
-    const meses = plan?.meses ?? 0;
+  const meses = plan?.meses ?? 0;
 
-    return (
-        <div className="tarjeta_inscripcion_contenedor">
-            <p>Estado de Inscripcion</p>
+  return (
+    <div className="tarjeta_card">
+      <p className="tarjeta_titulo">Estado de inscripción</p>
 
-            <div className="tarjeta_inscripcion_filtros">
-                <p>Plan Seleccionado : {plan?.descripcion ?? "Ninguno (ID: 0)"}</p>
-
-                <p>
-                    Alumno Seleccionado : 
-                    {alumno
-                        ? ` ${alumno.Apellido} ${alumno.Nombre} (${alumno.Dni})`
-                        : "Ninguno / Búsqueda inválida"}
-                </p>
-            </div>
-
-            <div className="tarjeta_inscripcion_info">
-                <p>Fecha Inscripcion : {fechaHoy()}</p>
-                <p>Fecha de Vencimiento : {plan ? fechaVencimiento(meses) : "0000-00-00"}</p>
-                <p>Cant. Clases : {plan?.clases ?? "0"}</p>
-                <p>Cant. Meses :  {plan?.meses ?? "0"}</p>
-                <p>Precio : $ {plan?.monto ?? "00.00"}</p>
-            </div>
+      {/* Datos principales */}
+      <div className="tarjeta_card_body">
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Plan</span>
+          <span className="tarjeta_value">
+            {plan?.descripcion ?? "Ninguno"}
+          </span>
         </div>
-    );
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Alumno</span>
+          <span className="tarjeta_value">
+            {alumno
+              ? `${alumno.Apellido} ${alumno.Nombre} (${alumno.Dni})`
+              : "No seleccionado"}
+          </span>
+        </div>
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Fecha inscripción</span>
+          <span className="tarjeta_value">{fechaHoy()}</span>
+        </div>
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Fecha vencimiento</span>
+          <span className="tarjeta_value">
+            {plan ? fechaVencimiento(meses) : "—"}
+          </span>
+        </div>
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Clases</span>
+          <span className="tarjeta_value">{plan?.clases ?? 0}</span>
+        </div>
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Meses</span>
+          <span className="tarjeta_value">{plan?.meses ?? 0}</span>
+        </div>
+
+        <div className="tarjeta_row destacado">
+          <span className="tarjeta_key">Precio</span>
+          <span className="tarjeta_value">$ {plan?.monto ?? "0.00"}</span>
+        </div>
+      </div>
+    </div>
+  );
 };
