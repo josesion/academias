@@ -11,6 +11,7 @@ import { method as asistenciaServicio } from "../Servicio/asistencia.servicio";
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
 
+
 /**
  * Controlador HTTP para registrar la asistencia de un alumno.
  *
@@ -116,7 +117,7 @@ const altaAsistencia = async( req : Request , res: Response)=> {
                 respuestaAsistencia.message,
                 respuestaAsistencia.data,
                 undefined ,
-                respuestaAsistencia.code
+                respuestaAsistencia.code,
             );
         };
 
@@ -133,6 +134,67 @@ const altaAsistencia = async( req : Request , res: Response)=> {
 
 };
 
+/**
+ * Controlador HTTP que obtiene la información de horarios de asistencia
+ * correspondientes a una escuela:
+ * - Clase actualmente en curso.
+ * - Próxima clase del día.
+ *
+ * Este endpoint actúa como capa de exposición del servicio `fechaAsistencia`,
+ * transformando los parámetros de la request y devolviendo una respuesta
+ * estandarizada al cliente.
+ *
+ *  Flujo:
+ * 1️ Extrae `id_escuela` y `estado` desde los parámetros de la URL.
+ * 2️ Invoca el servicio de asistencia para calcular clases en curso y próxima.
+ * 3️ Si el resultado es correcto, responde con HTTP 200 y los datos.
+ * 4️ Ante cualquier error inesperado, responde con error interno del servidor.
+ *
+ *  Consideraciones:
+ * - El cálculo de fechas depende del reloj del servidor.
+ * - No se realiza cacheo de resultados.
+ * - Ideal para ser consumido en tiempo real por la pantalla de asistencia.
+ *
+ * @param req - Request de Express.
+ * @param req.params.id_escuela - Identificador de la escuela.
+ * @param req.params.estado - Estado de los horarios a evaluar (ej: activo).
+ *
+ * @param res - Response de Express.
+ *
+ * @returns Respuesta HTTP estandarizada:
+ * - 200 OK con información de clases en curso y próxima.
+ * - 500 Error interno si ocurre un fallo inesperado.
+ *
+ * @example
+ * GET /asistencia_fechas/107/activos
+ */
+const fechasHorarios = async( req : Request, res : Response) =>{
+    const data = {
+        id_escuela : Number(req.params.id_escuela),
+        estado : req.params.estado as string  
+    };
+
+    const fechaClase_actual_proxima = await asistenciaServicio.fechaAsistencia(data);
+
+    if ( fechaClase_actual_proxima.code ===  'CURSANDO_PROXIMA_CLASES_OK' ){
+        return enviarResponse(
+            res, 
+            CodigoEstadoHTTP.OK,
+            fechaClase_actual_proxima.message,
+            fechaClase_actual_proxima.data,
+            undefined,
+            fechaClase_actual_proxima.code
+        );
+    };
+
+    return enviarResponseError(
+        res,
+        CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        "Error en el servidor",
+    );
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
+    fechasHorarios : tryCatch( fechasHorarios)
 } 

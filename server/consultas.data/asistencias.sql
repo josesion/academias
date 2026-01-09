@@ -172,3 +172,23 @@ AND NOW() BETWEEN
     INTERVAL 30 MINUTE
   )
 LIMIT 1;
+
+
+--- Consulta para ver la clase q esta en curso ----
+select id as id_horario_en_clase, hora_inicio, hora_fin from horarios_clases
+where
+	id_escuela = 107 and estado = "activos" and vigente = 1
+	and now() between CAST( hora_inicio as time) and  CAST( hora_fin as time);
+
+
+--- consulta para ver la proxima clase ------
+SELECT id as id_horario_prox_clase, hora_inicio, hora_fin FROM horarios_clases
+WHERE 
+    id_escuela = 107 
+    AND estado = 'activos' 
+    AND vigente = 1
+    -- Filtramos las clases que empiezan después de ahora
+    AND CAST(hora_inicio AS TIME) > CAST(NOW() AS TIME)
+ORDER BY 
+    CAST(hora_inicio AS TIME) ASC
+LIMIT 1; 

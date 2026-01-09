@@ -10,8 +10,9 @@ import pool from "../bd";
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data"; 
+import { ResultadoClaseEnCruso, ResultadoClaseProxima } from "../tipados/asistencia.tipado";
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
-import { AsistenciaInputs } from "../squemas/asistencias";
+import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs} from "../squemas/asistencias";
 
 const vencerInscripciones = async () => {
   const sql = `
@@ -306,11 +307,135 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
 
 };
 
+/**
+ * Obtiene la clase que se encuentra actualmente en curso para una escuela.
+ *
+ * La función consulta los horarios de clases y determina si existe una clase
+ * activa en este momento, considerando:
+ * - Escuela
+ * - Estado del horario
+ * - Día de la semana
+ * - Rango horario actual
+ *
+ * Soporta correctamente:
+ * - Rangos normales (ej: 09:00 → 11:00)
+ * - Rangos que cruzan la medianoche (ej: 23:00 → 01:00)
+ *
+ * La comparación horaria se realiza contra la hora actual del servidor (`NOW()`).
+ *
+ * @param data - Datos necesarios para la verificación de clase en curso.
+ * @param data.id_escuela - Identificador de la escuela.
+ * @param data.estado - Estado del horario (ej: activo/inactivo).
+ * @param data.dia - Día de la semana en texto (ej: "lunes", "martes").
+ *
+ * @returns Promesa con un objeto `TipadoData` que contiene:
+ * - `data`: Información de la clase en curso si existe.
+ * - `code`: Código de resultado de la consulta.
+ * - `message`: Mensaje descriptivo del resultado.
+ *
+ * @example
+ * ```ts
+ * const resultado = await clase_en_curso({
+ *   id_escuela: 3,
+ *   estado: "activo",
+ *   dia: "lunes"
+ * });
+ *
+ * if (resultado.code === "CLASE_EN_CURSO_EXISTE") {
+ *   console.log(resultado.data);
+ * }
+ * ```
+ */
+const clase_en_curso = async( data : ClasesActualInputs) 
+: Promise<TipadoData<ResultadoClaseEnCruso>> =>{
+    const { id_escuela , estado, dia } = data ;
+    const sql : string = `select id as id_horario_en_clase, hora_inicio, hora_fin from horarios_clases
+                            where
+                                id_escuela = ? and estado = ? and vigente = 1  and dia_semana = ?
+                                and  (
+                                    -- CASO A: Rango normal (ej: 09:00 a 11:00)
+                                    (hora_inicio < hora_fin AND CAST(NOW() AS TIME) BETWEEN CAST(hora_inicio AS TIME) AND CAST(hora_fin AS TIME))
+                                    OR
+                                    -- CASO B: Rango que cruza medianoche (ej: 23:00 a 01:00)
+                                    (hora_inicio > hora_fin AND (CAST(NOW() AS TIME) >= CAST(hora_inicio AS TIME) OR CAST(NOW() AS TIME) <= CAST(hora_fin AS TIME)))
+                                );`;
+    const valores : unknown[] = [id_escuela , estado , dia];
+    return await buscarExistenteEntidad<ResultadoClaseEnCruso>({
+        slqEntidad : sql,
+        valores,
+        entidad : "clase_en_curso"
+    });
+};
+
+/**
+ * Obtiene la próxima clase a dictarse para una escuela en el día actual.
+ *
+ * La función busca el siguiente horario de clase cuya hora de inicio
+ * sea posterior a la hora actual del servidor (`NOW()`), teniendo en cuenta:
+ * - Escuela
+ * - Estado del horario
+ * - Vigencia
+ * - Día de la semana
+ *
+ * El resultado se ordena por hora de inicio ascendente y se limita
+ * a una única clase (la más próxima).
+ *
+ *  Consideraciones:
+ * - Solo evalúa clases del mismo día (`dia_semana`).
+ * - No contempla clases que comiencen al día siguiente.
+ * - Asume que no existen horarios superpuestos.
+ *
+ * @param data - Datos necesarios para la búsqueda de la próxima clase.
+ * @param data.id_escuela - Identificador de la escuela.
+ * @param data.estado - Estado del horario (ej: activo/inactivo).
+ * @param data.dia - Día de la semana en texto (ej: "lunes", "martes").
+ *
+ * @returns Promesa con un objeto `TipadoData` que contiene:
+ * - `data`: Información de la próxima clase si existe.
+ * - `code`: Código de resultado de la consulta.
+ * - `message`: Mensaje descriptivo del resultado.
+ *
+ * @example
+ * ```ts
+ * const resultado = await clase_proxima_clase({
+ *   id_escuela: 3,
+ *   estado: "activo",
+ *   dia: "lunes"
+ * });
+ *
+ * if (resultado.code === "PROXIMA_CLASE_EXISTE") {
+ *   console.log(resultado.data);
+ * }
+ * ```
+ */
+const clase_proxima_clase = async( data : ClasesProximaInputs) 
+: Promise<TipadoData<ResultadoClaseProxima>>  =>{
+    const { id_escuela , estado, dia } = data ;  
+    const sql : string = `SELECT id as id_horario_prox_clase, hora_inicio, hora_fin FROM horarios_clases
+                            WHERE 
+                                id_escuela = ? 
+                                AND estado = ? 
+                                AND vigente = 1
+                                and dia_semana = ?
+                                AND CAST(hora_inicio AS TIME) > CAST(NOW() AS TIME)
+                            ORDER BY 
+                                CAST(hora_inicio AS TIME) ASC
+                            LIMIT 1;`;
+
+    const valores : unknown[] = [id_escuela , estado, dia];
+    return await buscarExistenteEntidad<ResultadoClaseProxima>({
+        slqEntidad : sql ,
+        valores,
+        entidad : "proxima_clase"
+    });
+};
 
 export const method = {
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
     dobleAsitencia  : tryCatchDatos( dobleAsitencia ),
     ventanaAsistencia : tryCatchDatos( ventanaAsistencia ),
     asistencia : tryCatchDatos( asistenciaAlta ),
-    vencerInscripciones : tryCatchDatos( vencerInscripciones)
+    vencerInscripciones : tryCatchDatos( vencerInscripciones),
+    claseEnCurso : tryCatchDatos( clase_en_curso ),
+    proximaClase : tryCatchDatos( clase_proxima_clase ),
 };

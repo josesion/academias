@@ -9,7 +9,9 @@ import { method as asistenciaData } from "../data/asistencia.data";
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data"; 
 import { VerificarInscripcionInput, VerificarInscripcionSchema } from "../squemas/inscripciones";
-import { AsistenciaInputs, AsistenciaSchema } from "../squemas/asistencias"; 
+import { AsistenciaInputs, AsistenciaSchema, ClasesActualInputs, ClaseActualSchema, ClaseProximaSchema ,ClasesProximaInputs } from "../squemas/asistencias"; 
+import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia,} from "../tipados/asistencia.tipado";
+
 
 
 /**
@@ -145,7 +147,105 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
 
 }; 
 
+/**
+ * Obtiene la información de asistencia correspondiente al día actual:
+ * - Clase que se encuentra actualmente en curso (si existe).
+ * - Próxima clase a dictarse en el mismo día (si existe).
+ *
+ * La función determina automáticamente el día de la semana actual
+ * utilizando el reloj del servidor y realiza dos consultas:
+ *
+ * 1️ Clase en curso:
+ *    - Busca una clase cuyo horario incluya la hora actual (`NOW()`).
+ *    - Contempla rangos normales y rangos que cruzan medianoche.
+ *
+ * 2️ Próxima clase:
+ *    - Busca la clase con la hora de inicio más cercana posterior a la hora actual.
+ *
+ *  Consideraciones importantes:
+ * - La información depende exclusivamente del tiempo actual del servidor.
+ * - No se cachea el resultado.
+ * - Está pensada para ser ejecutada cada vez que se necesita mostrar
+ *   el estado real de la asistencia (evita información obsoleta).
+ * - Solo evalúa clases del día actual.
+ *
+ * @param data - Datos base para la consulta de asistencia.
+ * @param data.id_escuela - Identificador de la escuela.
+ * @param data.estado - Estado de los horarios a evaluar (ej: activo).
+ *
+ * @returns Promesa con un objeto `TipadoData` que contiene:
+ * - `data.enCursoClase`: Clase actualmente en curso o un objeto de error.
+ * - `data.proximaClase`: Próxima clase del día o un objeto de error.
+ * - `code`: Código de resultado general.
+ * - `message`: Mensaje descriptivo del resultado.
+ *
+ * @example
+ * ```ts
+ * const resultado = await fechaAsistencia({
+ *   id_escuela: 5,
+ *   estado: "activo"
+ * });
+ *
+ * if (resultado.code === "CURSANDO_PROXIMA_CLASES_OK") {
+ *   console.log(resultado.data.enCursoClase);
+ *   console.log(resultado.data.proximaClase);
+ * }
+ * ```
+ */
+const fechaAsistencia = async( data : ClasesActualInputs)
+: Promise<TipadoData<ResulClases_curso_proxima>> =>{
+    
+    const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+    const diaHoy = dias[new Date().getDay()];  
+
+    const verificacionFechas_en_curso : ClasesActualInputs =ClaseActualSchema.parse({id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy});
+    const clase_en_curso  = await asistenciaData.claseEnCurso(verificacionFechas_en_curso);
+
+    let clase_actual : ResultadoClaseEnCruso | ResultErrorAsistencia = { error : null , message : null , code : null};
+    let clase_proxima : ResultadoClaseProxima | ResultErrorAsistencia = { error : null , message : null , code : null};
+
+    switch (clase_en_curso.code){
+        case 'CLASE_EN_CURSO_NO_EXISTE' : {
+            clase_actual = {
+                error : true,
+                message: "No se registra ninguna clase en curso",
+                code  : "NO_HAY_CLASES_EN_CURSO"
+            };
+        };
+        case 'CLASE_EN_CURSO_EXISTE'    : {
+            if (clase_en_curso.data) clase_actual  = clase_en_curso.data  ;
+        };
+    };
+   
+  const verificaionFechas_proxima_clase : ClasesProximaInputs = ClaseProximaSchema.parse({ id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy }); 
+  const proxima_Clase = await asistenciaData.proximaClase(verificaionFechas_proxima_clase);  
+ 
+  switch ( proxima_Clase.code){
+    case "PROXIMA_CLASE_NO_EXISTE" : {
+        clase_proxima = {
+            error : true,
+            message: "No se registra ninguna proxima clase",
+            code  : "NO_HAY_PROXIMA_CLASE"
+        };
+    };
+    case "PROXIMA_CLASE_EXISTE" : {
+        if (proxima_Clase.data) clase_proxima = proxima_Clase.data
+    };
+    
+  };
+ 
+  return{
+    error: false,
+    message : "Resultado de clases acutal y proxima",
+    data :{ 
+        enCursoClase : clase_actual,
+        proximaClase : clase_proxima
+    },
+    code : "CURSANDO_PROXIMA_CLASES_OK"
+  };
+};
 
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
+    fechaAsistencia : tryCatchDatos( fechaAsistencia)
 };
