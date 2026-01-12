@@ -195,12 +195,12 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
 const fechaAsistencia = async( data : ClasesActualInputs)
 : Promise<TipadoData<ResulClases_curso_proxima>> =>{
     
-    const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+    const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sabado"];
     const diaHoy = dias[new Date().getDay()];  
 
     const verificacionFechas_en_curso : ClasesActualInputs =ClaseActualSchema.parse({id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy});
     const clase_en_curso  = await asistenciaData.claseEnCurso(verificacionFechas_en_curso);
-
+  
     let clase_actual : ResultadoClaseEnCruso | ResultErrorAsistencia = { error : null , message : null , code : null};
     let clase_proxima : ResultadoClaseProxima | ResultErrorAsistencia = { error : null , message : null , code : null};
 

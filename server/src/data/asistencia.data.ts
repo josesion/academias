@@ -349,16 +349,38 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
 const clase_en_curso = async( data : ClasesActualInputs) 
 : Promise<TipadoData<ResultadoClaseEnCruso>> =>{
     const { id_escuela , estado, dia } = data ;
-    const sql : string = `select id as id_horario_en_clase, hora_inicio, hora_fin from horarios_clases
-                            where
-                                id_escuela = ? and estado = ? and vigente = 1  and dia_semana = ?
-                                and  (
-                                    -- CASO A: Rango normal (ej: 09:00 a 11:00)
-                                    (hora_inicio < hora_fin AND CAST(NOW() AS TIME) BETWEEN CAST(hora_inicio AS TIME) AND CAST(hora_fin AS TIME))
+    const sql : string = `SELECT 
+                                hc.id AS id_horario_en_clase,
+                                hc.hora_inicio,
+                                hc.hora_fin,
+                                tc.tipo AS nombre_clase
+                            FROM horarios_clases hc
+                            INNER JOIN tipo_clase tc 
+                                ON tc.id = hc.id_tipo_clase
+                            WHERE
+                                hc.id_escuela = ?
+                                AND hc.estado = ?
+                                AND hc.vigente = 1
+                                AND hc.dia_semana = ?
+                                AND (
+                                    -- CASO A: rango normal (ej: 09:00 a 11:00)
+                                    (
+                                        hc.hora_inicio < hc.hora_fin
+                                        AND CAST(NOW() AS TIME)
+                                            BETWEEN CAST(hc.hora_inicio AS TIME)
+                                            AND CAST(hc.hora_fin AS TIME)
+                                    )
                                     OR
-                                    -- CASO B: Rango que cruza medianoche (ej: 23:00 a 01:00)
-                                    (hora_inicio > hora_fin AND (CAST(NOW() AS TIME) >= CAST(hora_inicio AS TIME) OR CAST(NOW() AS TIME) <= CAST(hora_fin AS TIME)))
-                                );`;
+                                    -- CASO B: cruza medianoche (ej: 23:00 a 01:00)
+                                    (
+                                        hc.hora_inicio > hc.hora_fin
+                                        AND (
+                                            CAST(NOW() AS TIME) >= CAST(hc.hora_inicio AS TIME)
+                                            OR CAST(NOW() AS TIME) <= CAST(hc.hora_fin AS TIME)
+                                        )
+                                    )
+                                );
+`;
     const valores : unknown[] = [id_escuela , estado , dia];
     return await buscarExistenteEntidad<ResultadoClaseEnCruso>({
         slqEntidad : sql,
@@ -411,16 +433,23 @@ const clase_en_curso = async( data : ClasesActualInputs)
 const clase_proxima_clase = async( data : ClasesProximaInputs) 
 : Promise<TipadoData<ResultadoClaseProxima>>  =>{
     const { id_escuela , estado, dia } = data ;  
-    const sql : string = `SELECT id as id_horario_prox_clase, hora_inicio, hora_fin FROM horarios_clases
-                            WHERE 
-                                id_escuela = ? 
-                                AND estado = ? 
-                                AND vigente = 1
-                                and dia_semana = ?
-                                AND CAST(hora_inicio AS TIME) > CAST(NOW() AS TIME)
-                            ORDER BY 
-                                CAST(hora_inicio AS TIME) ASC
-                            LIMIT 1;`;
+    const sql : string = `SELECT 
+                            hc.id AS id_horario_prox_clase,
+                            hc.hora_inicio,
+                            hc.hora_fin,
+                            tc.tipo AS nombre_clase
+                        FROM horarios_clases hc
+                        INNER JOIN tipo_clase tc 
+                            ON tc.id = hc.id_tipo_clase
+                        WHERE 
+                            hc.id_escuela = ?
+                            AND hc.estado = ?
+                            AND hc.vigente = 1
+                            AND hc.dia_semana = ?
+                            AND CAST(hc.hora_inicio AS TIME) > CAST(NOW() AS TIME)
+                        ORDER BY 
+                            CAST(hc.hora_inicio AS TIME) ASC
+                        LIMIT 1;`;
 
     const valores : unknown[] = [id_escuela , estado, dia];
     return await buscarExistenteEntidad<ResultadoClaseProxima>({

@@ -23,7 +23,7 @@ export const generateToken = (payload: { id: string }): string => {
             payload, // Carga útil del token
             process.env.JWT_CLAVE || "jjsskkss", // Clave secreta para firmar el token
             {
-                expiresIn: "5m" // Duración del token (1 hora)
+                expiresIn: "30m" // Duración del token (1 hora)
             }
         );
         return token;
