@@ -1,11 +1,15 @@
 // Compontenes
-import { Boton } from "../Boton/Boton";
-import { Inputs } from "../Inputs/Inputs";
+import { Boton } from "../../../componentes/Boton/Boton";
+import { Inputs } from "../../../componentes/Inputs/Inputs";
+
+import { useAsistenciaSet } from "../../../hookNegocios/asistencia";
 
 //css
 import "./formularioAsistencia.css";
 
 export const FormularioAsistencia = () => {
+  const { claseEnCurso, claseProxima } = useAsistenciaSet();
+
   return (
     <div className="asistencia_kiosco">
       <header className="asistencia_header">
@@ -17,14 +21,39 @@ export const FormularioAsistencia = () => {
       <section className="asistencia_clases">
         <div className="clase_card actual">
           <span className="badge">EN CURSO</span>
-          <h2>Yoga</h2>
-          <p>09:00 → 10:00</p>
+          <h2>
+            {claseEnCurso && "nombre_clase" in claseEnCurso
+              ? claseEnCurso.nombre_clase
+              : "Sin clase en curso"}
+          </h2>
+          <p>
+            {claseEnCurso && "hora_inicio" in claseEnCurso
+              ? claseEnCurso.hora_inicio
+              : "00:00"}{" "}
+            →{" "}
+            {claseEnCurso && "hora_fin" in claseEnCurso
+              ? claseEnCurso.hora_fin
+              : "00:00"}
+          </p>
         </div>
 
         <div className="clase_card proxima">
           <span className="badge">PRÓXIMA</span>
-          <h2>Funcional</h2>
-          <p>10:15 → 11:15</p>
+          <h2>
+            {claseProxima && "nombre_clase" in claseProxima
+              ? claseProxima.nombre_clase
+              : "Sin mas clases por hoy"}
+          </h2>
+          <p>
+            {" "}
+            {claseProxima && "hora_inicio" in claseProxima
+              ? claseProxima.hora_inicio
+              : "00:00"}{" "}
+            →{" "}
+            {claseProxima && "hora_fin" in claseProxima
+              ? claseProxima.hora_fin
+              : "00:00"}
+          </p>
         </div>
       </section>
 
@@ -47,7 +76,7 @@ export const FormularioAsistencia = () => {
           </div>
           <div>
             <span>Clases restantes : </span>
-            <strong>5</strong>
+            <strong>6</strong>
           </div>
         </div>
 

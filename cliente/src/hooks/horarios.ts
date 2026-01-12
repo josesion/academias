@@ -344,7 +344,7 @@ const resetFormulario = () => {
 
    const handleAbirModalHoarios = ( mensaje : MensajeCelda) =>{
         
-        if (mensaje.mensaje === "Disponible"){
+        if (mensaje.mensaje === "+"){
            const {hora_fin , hora_inicio} = generarRangoUnaHora(mensaje.hora);
            setModalInterno(true)
            setHoraInicioFin(generarRangoUnaHora(mensaje.hora));

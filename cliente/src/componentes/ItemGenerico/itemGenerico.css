@@ -106,6 +106,16 @@
 }
 
 /* Responsive botones */
+@media (min-width: 0px) and (max-width: 420px) {
+  .item_card_actions{
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+  }
+}
+
+
+
 @media (min-width: 481px) and (max-width: 768px) {
 
   .formulario_asistencia_contenedor {
@@ -119,6 +129,7 @@
 
   .item_card_actions {
     justify-content: center;
+    align-items: center;
   }
 
   .item_card_actions{

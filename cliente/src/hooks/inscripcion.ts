@@ -104,6 +104,16 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         };
     };
 
+// ──────────────────────────────────────────────────────────────
+//Reseteo de los estados 
+// ────────────────────────────────────────────────────────────── 
+    const resetFormulario = () => {
+        setAlumno(null);
+        setPlan(null);
+        setErrorGenerico(null);
+    } ;
+
+
     const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
 
@@ -133,11 +143,11 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         const subcripcionInsc = await servicioApiFetch( datos );
         
         if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
-            setErrorGenerico(null)
+            resetFormulario();
             setModalInsc(false);
             return
         }else{
-            console.log("mostrar el error al cliente")
+           // console.log("mostrar el error al cliente")
             setErrorGenerico( subcripcionInsc.message  );
         };
 

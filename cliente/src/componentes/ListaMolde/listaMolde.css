@@ -7,6 +7,9 @@
     animation: slideFade 0.4s ease;
     border-radius: 8px;
     width: 97%;
+   
+    justify-content: center;
+    
 }
 
 
@@ -55,9 +58,6 @@
     padding: 12px;
     animation: slideFade 0.4s ease;
 }
-
-
-
 
 }
 

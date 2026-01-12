@@ -12,20 +12,24 @@
 }
 
 .formulario_overlay {
-    position: fixed; /* Esto es clave para que ocupe toda la pantalla */
-    top: 0;
-    left: 0;
+    position: fixed;
+    inset: 0;
+
     width: 100%;
     height: 100dvh;
-    background: rgba(0, 0, 0, 0.7); /* Color semitransparente */
-    display: flex; /* Para centrar el formulario */
+
+    background: rgba(0, 0, 0, 0.7);
+
+    display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+
     z-index: 1000;
-    backdrop-filter: blur(5px); /* Efecto de desenfoque opcional */
-    overflow-y: auto;
-    padding-top: 80px;
+    backdrop-filter: blur(5px);
+
+    overflow: hidden; /* 🔒 nunca scroll */
 }
+
 
 .modal_eliminar{
     position: fixed; /* Esto es clave para que ocupe toda la pantalla */
@@ -114,10 +118,44 @@
     background: #1f1f831e;
     padding: 16px;
     overflow-y: auto;
+    overflow-x: hidden;
     transition: all 0.3s ease;
     width: 99%; /* Usar porcentaje relativo a su padre */
-
+    align-items: center;
+    justify-items: center;
+    max-height: calc(100dvh - 80px);
 }
+/* ================= Colorear el scrool  ================= */
+.Listado_contenedor::-webkit-scrollbar {
+  width: 8px;
+}
+
+.Listado_contenedor::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.Listado_contenedor::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 10px;
+}
+
+.fListado_contenedor::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22d3ee,
+    #c084fc
+  );
+}
+
+
+
 
 .paginacion_contenedor {
     margin-top: 5px;

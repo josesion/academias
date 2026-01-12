@@ -1,5 +1,5 @@
-
-.buscador_contenedor_comp{
+/* ================= COLORES DEL CONTENEDOR ================= */
+.buscador_contenedor_comp {
     display: flex;
     align-items: center;
     max-height: 155px;
@@ -7,15 +7,14 @@
     margin: 8px;
 }
 
-.buscador_buscadores{
+.buscador_buscadores {
     display: flex;
     max-height: 80px;
     width: 80%;
     justify-content: space-around;
-    
 }
 
-.buscador_boton{
+.buscador_boton {
     display: flex;
     align-items: center;
     width: 50%;
@@ -23,48 +22,57 @@
     gap: 10px;
 }
 
-/* --- Estilos para el select dentro del contenedor --- */
+/* ================= COLORES DEL SELECT (MEJORADOS) ================= */
 .buscador_boton .buscador_estado {
-    background-color: #424549; /* Color de fondo oscuro */
-    color: #e4e7ea; /* Color de texto claro */
-    border: 1px solid #6c7075; /* Borde sutil */
-    border-radius: 8px; /* Bordes redondeados */
-    padding: 0.75rem 1rem; /* Espaciado interno */
+    /* Fondo coherente con tus otros paneles */
+    background-color: rgba(20, 20, 35, 0.9); 
+    color: #e5e7eb; 
+    /* Borde sutil que combina con el diseño de cristal */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
     font-size: 1rem;
     cursor: pointer;
-    -webkit-appearance: none; /* Elimina los estilos por defecto del navegador */
+    -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    transition: all 0.3s ease-in-out; /* Transición suave para los cambios */
+    transition: all 0.3s ease-in-out;
 }
 
-/* Estilo para el select cuando el cursor está encima o está en foco */
+/* Estado Focus/Hover con tus colores de marca (Cyan/Indigo) */
 .buscador_boton .buscador_estado:hover,
 .buscador_boton .buscador_estado:focus {
-    border-color: #7289da; /* Borde azul al pasar el mouse */
-    box-shadow: 0 0 0 3px rgba(114, 137, 218, 0.3); /* Sombra suave para destacar */
-    outline: none; /* Elimina el contorno de foco por defecto */
+    border-color: #140f30; /* Color Cyan de tu diseño */
+    /* Sombra con el brillo Cyan que usas en el calendario */
+    box-shadow: 0 0 12px rgba(34, 9, 70, 0.3); 
+    outline: none;
 }
 
-/* --- Animaciones sutiles para el contenedor y sus elementos --- */
-.buscador_contenedor {
-    /* La animación se aplicará al cargar el componente */
-    animation: fadeInUp 0.5s ease-in-out;
-}
-
-
+/* ================= COLORES DEL TÍTULO ================= */
 .buscador_titulo {
-    font-size: 1em; /* Tamaño de letra más grande para que destaque */
-    font-weight: 600; /* Lo hace un poco más audaz */
-    color: #e4e7ea; /* Un color blanco apagado para el texto */
-    text-align: center; /* Lo centra horizontalmente */
-    margin-bottom: 1.5rem; /* Espacio debajo del título */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Sombra de texto sutil para profundidad */
-    transition: color 0.3s ease-in-out;
+    font-size: 1em;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    
+    /* Gradiente igual al de tus títulos de info_horario */
+    background: linear-gradient(90deg, #4f46e5, #06b6d4, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
 }
 
-.buscador_contenedor:hover .buscador_titulo {
-    color: #7289da; /* El color cambia cuando pasas el mouse por el contenedor principal */
+/* Al pasar el mouse, el título brilla más */
+.buscador_contenedor_comp:hover .buscador_titulo {
+    filter: brightness(1.2);
+    text-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+}
+
+/* Animación sutil */
+.buscador_contenedor {
+    animation: fadeInUp 0.5s ease-in-out;
 }
 
 @keyframes fadeInUp {
@@ -77,7 +85,6 @@
         transform: translateY(0);
     }
 }
-
 
 @media (min-width: 1070px) {
     .buscador_contenedor_comp {
@@ -104,9 +111,6 @@
     }
 }
 
-
-/* --- Media Query para pantallas hasta 576px --- */
-/* (Esta sobreescribe la anterior si el ancho es menor a 576px) */
 @media screen and (min-width: 0px) and (max-width: 799px) {
     .buscador_contenedor_comp {
         flex-direction: row;

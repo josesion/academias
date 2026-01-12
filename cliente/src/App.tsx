@@ -15,7 +15,7 @@ import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario";
 import { AbmTipoUsuarios } from "./pagina/privado/tipo.usuario";
 
 // Formulario para asistencia
-import { FormularioAsistencia } from "./componentes/FormularioAsistencia/FormularioAsistencia";
+import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
 
 // seccion de componentes
 

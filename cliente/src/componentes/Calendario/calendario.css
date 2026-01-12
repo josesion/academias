@@ -1,141 +1,137 @@
+/* ===== CONTENEDOR GENERAL DEL CALENDARIO ===== */
 .contenedor_calendario {
     width: 100%;
     max-height: 80dvh;       
-    overflow-y: auto;            
-    overflow-x: auto;
-    background: linear-gradient(135deg, #0b0f1a, transparent); /* más azul oscuro */
-    border-radius: 12px;
+    overflow: auto;
+    /* Usamos tu gradiente de fondo de tarjeta */
+    background: linear-gradient(180deg, rgba(20, 20, 35, 0.95), rgba(10, 10, 20, 0.95));
+    border-radius: 28px; /* Igual a tu tarjeta_card_body */
+    padding: 12px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Tabla */
+/* Tabla con espaciado para que las clases floten */
 .tabla_calendario {
     width: 100%;
-    background-color: #0d1421; /* azul noche */
-    color: #e0e6f0; /* texto claro */
     border-collapse: separate; 
-    border-spacing: 0;
+    border-spacing: 12px;
 }
 
-/* Cabecera */
+/* Cabecera con tu estilo de Título Gradiente */
 .cabecera_calendario th {
     position: sticky;
     top: 0;
     z-index: 10;
-
-    background-color: #101b2c; /* azul oscuro */
-    color: #cfd8ef; /* azul claro */
-    font-weight: 600;
-    padding: 12px;
-    text-align: center;
-    border-bottom: 2px solid #1c3a63;
-
-    box-shadow: 0 4px 6px rgba(0,0,0,0.35);
+    padding: 16px;
+    background: #141423; /* Fondo sólido oscuro para que no se transparente el scroll */
+    color: #06b6d4; /* Color Cyan de tu gradiente */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-radius: 12px;
+    border-bottom: 2px solid rgb(37, 21, 74);
 }
 
-/* Columna hora */
-.cuerpo_calendario td:first-child {
-    background-color: #0a111f; /* azul noche más oscuro */
-    font-weight: bold;
+/* Columna de hora lateral (estilo tarjeta_key) */
+.celda_hora_lateral {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #e5e7eb;
+    opacity: 0.9; /* Más opaco para que se lea bien */
+    font-weight: 700;
     text-align: center;
-    width: 80px;
+    
     position: sticky;
     left: 0;
-    z-index: 5;
+    z-index: 90;
+
+    /* Fondo sólido y borde derecho para separar de las clases */
+    background-color: #0f111a; 
+    border-right: 2px solid rgba(79, 70, 229, 0.3); /* Usamos el Índigo de tu gradiente */
+    padding: 0 10px;
 }
 
-/* Filas */
-.cuerpo_calendario tr {
-    height: 48px;
+/* Celdas de la grilla */
+.celda_interactiva {
+    min-width: 160px;
+    height: 110px;
+    vertical-align: top;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.01);
 }
 
-/* Celdas */
-.cuerpo_calendario td {
-    border: 1px solid #1f2a42; /* borde azul oscuro */
-    padding: 6px;
-    text-align: center;
-    transition: background-color 0.2s ease;
-}
-
-/* Hover general */
-.cuerpo_calendario td:hover {
-   background:var(--color-gradiente-azul);
-    cursor: pointer;
-}
-
-/* Celda vacía */
-.celda_vacia {
+/* CLASE ASIGNADA: El "Post-it" con tu línea de color lateral */
+.wrapper_clase_postit {
     position: relative;
-    color: #7a92b0; /* azul grisáceo */
-    font-size: 12px;
-    cursor: pointer;
-    text-align: center;
-    padding: 4px 2px;
-    border-radius: 6px;
-
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease,
-        background-color 0.15s ease;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 15px 15px 15px 25px; /* Espacio para la línea de la izquierda */
+    height: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    
+    transform: rotate(-1deg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
-.celda_vacia::before {
+/* La línea de color idéntica a la de tu componente */
+.wrapper_clase_postit::before {
     content: "";
     position: absolute;
-    inset: -6px 0;
-    border-radius: 8px;
-    background-color: transparent;
-    z-index: -1;
-    transition: background-color 0.15s ease;
-}
-
-.celda_vacia:hover {
-    transform: scaleY(1.15);
-    background-color: rgba(36, 58, 105, 0.25);
-    box-shadow: 0 0 0 1px rgba(36, 58, 105, 0.3);
-}
-
-.celda_vacia:hover::before {
-    background-color: rgba(36, 58, 105, 0.1);
-}
-
-.celda_vacia:active {
-    transform: scaleY(1.05);
-}
-
-/* Clase asignada */
-.clase_asignada {
-    background:var(--color-gradiente-azul);
-    color: #d0d7f1;
-    font-size: 12px;
-    font-weight: 600;
+    left: 8px;
+    top: 12px;
+    bottom: 12px;
+    width: 4px;
+    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
     border-radius: 6px;
-    padding: 4px;
-    cursor: pointer;
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        filter 0.2s ease;
 }
 
-.clase_asignada:hover {
-    transform: translateY(-2px) scale(1.03);
-    box-shadow: 0 6px 14px rgba(63, 74, 145, 0.45);
-    filter: brightness(1.1);
+.wrapper_clase_postit:hover {
+    transform: scale(1.05) rotate(0deg);
+    background: rgba(255, 255, 255, 0.07);
+    border-color: #06b6d4;
+    z-index: 50;
 }
 
-.clase_asignada:active {
-    transform: translateY(0) scale(0.98);
+/* Celda vacía (discreta) */
+.wrapper_celda_vacia {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.2;
+    font-size: 1.5rem;
+    color: #4f46e5;
+    transition: 0.3s;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .cabecera_calendario th {
-        font-size: 12px;
-        padding: 8px;
-    }
+.wrapper_celda_vacia:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
 
-    .cuerpo_calendario td {
-        font-size: 11px;
-    }
+/* Footer y Botón */
+.seccion_footer_calendario {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Personalización del Scroll */
+.contenedor_calendario::-webkit-scrollbar { width: 6px; height: 6px; }
+.contenedor_calendario::-webkit-scrollbar-thumb { 
+    background: #4f46e5; 
+    border-radius: 10px; 
+}
+
+.th_hora_label {
+    z-index: 110 !important; /* La celda más importante para que no desaparezca */
+    border-right: 2px solid rgba(79, 70, 229, 0.3);
 }

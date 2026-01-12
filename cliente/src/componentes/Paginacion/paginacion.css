@@ -1,108 +1,106 @@
-/* --- CONTENEDOR PRINCIPAL --- */
+/* ================= CONTENEDOR EXTERIOR ================= */
 .paginacion_contenedor {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 10px 0;
-    background: transparent; /* el contenedor principal transparente */
+    padding: 20px 0;
+    margin-top: auto; /* Empuja la paginación al final si estás en un flex column */
 }
 
-/* --- CONTENEDOR INTERIOR --- */
+/* ================= CUERPO DE LA PAGINACIÓN ================= */
 .paginacion_componente {
     display: flex;
     align-items: center;
-    gap: 15px;
-    background: #1c1c28; /* fondo oscuro solo para el bloque */
+    gap: 12px;
     padding: 8px 16px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    background: linear-gradient(180deg, rgba(20, 20, 35, 0.8), rgba(10, 10, 20, 0.9));
+    backdrop-filter: blur(10px);
+    border-radius: 50px; /* Estilo cápsula */
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-/* --- BOTONES DE NAVEGACIÓN (flechas) --- */
+/* ================= BOTONES NAVEGACIÓN (Flechas) ================= */
 .btn_nav {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
-    border-radius: 8px;
-    background: #2a2a3b;
+    background: transparent;
     border: none;
-    color: #ddd;
+    color: #06b6d4; /* Color Cyan */
     cursor: pointer;
-    transition: all 0.25s ease;
+    padding: 5px;
+    transition: all 0.2s ease;
 }
 
 .btn_nav:hover:not(:disabled) {
-    background: #3a3a4f;
-    transform: scale(1.1);
+    color: #fff;
+    transform: scale(1.2);
 }
 
 .btn_nav:disabled {
-    opacity: 0.4;
+    color: rgba(255, 255, 255, 0.1);
     cursor: not-allowed;
-    transform: none;
 }
 
-/* --- CENTRO DE PAGINACIÓN --- */
+/* ================= BOTONES NUMÉRICOS ================= */
 .paginacion_centro {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* Botones numéricos */
-.btn_generico {
-    background: #2a2a3b;
-    color: #ddd;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.25s ease;
+.btn_generico, .btn_seleccionado {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 50%; /* Botones circulares */
+    border: 1px solid transparent;
     font-size: 0.9rem;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Botón normal */
+.btn_generico {
+    background: rgba(255, 255, 255, 0.03);
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .btn_generico:hover {
-    background: #3a3a4f;
-    transform: translateY(-2px);
-}
-
-/* Botón de página seleccionada */
-.btn_seleccionado {
-    background: #1565c0;
+    background: rgba(255, 255, 255, 0.1);
     color: #fff;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Botón de la página actual (Resaltado) */
+.btn_seleccionado {
+    background: linear-gradient(135deg, #4f46e5, #06b6d4);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
     border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: default;
-    animation: pulse 1s infinite alternate;
 }
 
-/* --- Estilo para los puntos suspensivos --- */
+/* Puntos suspensivos */
 .puntos_suspensivos {
-    color: #888;
-    font-size: 1rem;
-    padding: 0 6px;
-    user-select: none;
-    animation: fadeIn 0.5s ease;
+    color: rgba(255, 255, 255, 0.3);
+    padding: 0 4px;
+    font-weight: bold;
 }
 
-/* --- Animaciones --- */
-@keyframes pulse {
-    from {
-        box-shadow: 0 0 8px rgba(21, 101, 192, 0.4);
-        transform: scale(1);
+/* ================= RESPONSIVE ================= */
+@media (max-width: 480px) {
+    .paginacion_componente {
+        gap: 5px;
+        padding: 6px 10px;
     }
-    to {
-        box-shadow: 0 0 14px rgba(21, 101, 192, 0.7);
-        transform: scale(1.07);
-    }
-}
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.8); }
-    to   { opacity: 1; transform: scale(1); }
+    .btn_generico, .btn_seleccionado {
+        min-width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
 }

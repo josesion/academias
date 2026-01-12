@@ -63,30 +63,28 @@ export const Calendario = (data: CalendarioProps) => {
       <div className="contenedor_calendario">
         <table className="tabla_calendario">
           <thead className="cabecera_calendario">
-            <tr className="tr_cabecera_calendario">
-              <th>Hora</th>
-              <th>Lunes</th>
-              <th>Martes</th>
-              <th>Miércoles</th>
-              <th>Jueves</th>
-              <th>Viernes</th>
-              <th>Sábado</th>
-              <th>Domingo</th>
+            <tr>
+              <th className="th_hora_label">Hora</th>
+              {diasSemana.map((dia) => (
+                <th key={dia}>{dia}</th>
+              ))}
             </tr>
           </thead>
 
           <tbody className="cuerpo_calendario">
             {horarios.map((hora) => (
               <tr key={hora}>
-                <td className="tr_cuerpo_calendario">{hora}</td>
+                {/* Columna de hora lateral fija */}
+                <td className="celda_hora_lateral">{hora}</td>
 
                 {diasSemana.map((dia) => {
                   const clase = calendarioMap.get(`${dia}-${hora}`);
 
                   return (
-                    <td key={dia} className="tr_cuerpo_calendario">
+                    <td key={dia} className="celda_interactiva">
                       {clase ? (
-                        <div className="clase_asignada">
+                        /* Contenedor estilo Post-it */
+                        <div className="wrapper_clase_postit">
                           <ClaseAsignada
                             dia={dia}
                             hora={hora}
@@ -95,12 +93,15 @@ export const Calendario = (data: CalendarioProps) => {
                           />
                         </div>
                       ) : (
-                        <CeldaVacia
-                          dia={dia}
-                          hora={hora}
-                          mensaje="Disponible"
-                          onSelect={data.handleAbrirModal}
-                        />
+                        /* Contenedor que ocupa el 100% de la celda y centra el + */
+                        <div className="wrapper_celda_vacia">
+                          <CeldaVacia
+                            dia={dia}
+                            hora={hora}
+                            mensaje="+"
+                            onSelect={data.handleAbrirModal}
+                          />
+                        </div>
                       )}
                     </td>
                   );
@@ -110,12 +111,15 @@ export const Calendario = (data: CalendarioProps) => {
           </tbody>
         </table>
       </div>
-      <Boton
-        clase="aceptar"
-        logo="Back"
-        texto="Volver"
-        onClick={data.handleVolver}
-      />
+
+      <div className="seccion_footer_calendario">
+        <Boton
+          clase="aceptar"
+          logo="Back"
+          texto="Volver"
+          onClick={data.handleVolver}
+        />
+      </div>
     </div>
   );
 };
