@@ -56,7 +56,7 @@ export const useAbmNivelUsuarios = () =>{
    const { rol } = useContext( RutasProtegidasContext ); 
 
      const config ={
-        recursoSingular : "Nivel Usuario",
+        recursoSingular : "Nivel",
         idEscuela: rol?.escuela || 1 ,
         
     servicios : {

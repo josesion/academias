@@ -89,7 +89,7 @@ export const useAbmProfesoresUsuarios = () => {
     const { rol } = useContext( RutasProtegidasContext );
 
     const config ={
-        recursoSingular : "Profesor Usuario",
+        recursoSingular : "Profesor",
 
         idEscuela: rol?.escuela || 1 ,
 

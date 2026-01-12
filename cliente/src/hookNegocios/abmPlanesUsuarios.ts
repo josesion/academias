@@ -96,7 +96,7 @@ export const useAbmPlanesUsuarios = () =>{
 const { rol } = useContext( RutasProtegidasContext );
 
    const config = {
-         recursoSingular : "Planes Usuario",
+         recursoSingular : "Planes",
 
          idEscuela: rol?.escuela || 1 ,
 

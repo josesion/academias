@@ -54,7 +54,7 @@ export const useAbmTipoUsuarios = () =>{
     const { rol } = useContext( RutasProtegidasContext ); 
 
      const config = {
-        recursoSingular : "Tipo Usuario",
+        recursoSingular : "Tipo",
         idEscuela: rol?.escuela || 1 , 
         
         servicios : {
