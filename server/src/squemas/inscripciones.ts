@@ -68,5 +68,26 @@ export interface VerificacionInputs {
      dni_alumno : number , id_escuela : number , estado : 'activos' | 'vencidos' | 'suspendidos'
 };
 
+
+export const VerificlarPlanSchema = z.object({
+        dni_alumno: z.coerce.number()
+                    .int("El DNI debe ser un número entero sin decimales.")
+                    .positive("El DNI debe ser un número positivo."),
+
+        estado : EstadoEnum,
+
+        id_escuela: z.coerce.number()
+                    .int("El ID de la escuela debe ser un número entero.")
+                    .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
+
+});
+
+export interface ResultInscripcionAsistencia{
+    id_inscripcion : number,
+    vencimiento : string,
+    clases_restantes : number
+};
+
 export type InscripcionInputs = z.infer<typeof InscripcionSchema>;
 export type VerificarInscripcionInput = z.infer<typeof VerificarInscripcionSchema>;
+export type VerificarPlanAsistenciaUnputs  = z.infer<typeof VerificlarPlanSchema >;

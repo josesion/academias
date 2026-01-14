@@ -25,3 +25,27 @@ export interface ResulClases_curso_proxima{
     enCursoClase : ResultadoClaseEnCruso | ResultErrorAsistencia ,
     proximaClase : ResultadoClaseProxima | ResultErrorAsistencia 
 }
+
+ type DataInscripcionVigente ={
+    id_inscripcion : number,
+    vencimiento : string,
+    clases_restantes : number
+};
+
+type DataHorarioAsistencia = {
+    id_horario_clase : number,
+    hora_inicio : string,
+    hora_fin : string,
+    nombre_clase : string
+};
+
+type DataResultErrrorAsistencia = {
+    error : boolean | null,
+    message : string | null,
+    code : string | null
+};
+
+export interface ResultDataAsistencia{
+    dataHorario : DataHorarioAsistencia | DataResultErrrorAsistencia,
+    dataInscripcion : DataInscripcionVigente | DataResultErrrorAsistencia
+}

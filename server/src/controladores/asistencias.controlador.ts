@@ -1,4 +1,4 @@
-import { Response , Request } from "express";
+import  { Response , Request } from "express";
 // ──────────────────────────────────────────────────────────────
 // Sección de Hooks
 // ──────────────────────────────────────────────────────────────
@@ -194,7 +194,73 @@ const fechasHorarios = async( req : Request, res : Response) =>{
     );
 };
 
+/**
+ * @async
+ * @function dataAsistencia
+ * @description Controlador para procesar y obtener los datos de asistencia de un alumno.
+ * Valida la existencia de la inscripción, el horario vigente y retorna la información 
+ * necesaria para marcar la asistencia.
+ * * @param {Request} req - Objeto de solicitud de Express.
+ * @param {Object} req.params - Parámetros de la URL.
+ * @param {string} req.params.id_escuela - ID de la escuela (se convierte a número).
+ * @param {string} req.params.dni - DNI del alumno (se convierte a número).
+ * @param {string} req.params.estado - Estado del alumno (ej: 'activos').
+ * * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<Response>} Retorna una respuesta HTTP:
+ * - **200 (OK)**: Si la validación es exitosa (`ASISTENCIA_OK`). Retorna datos de inscripción y clases.
+ * - **403 (FORBIDDEN)**: Si el alumno no tiene una inscripción válida (`INSCRIPCION_NO_EXISTE`).
+ * - **409 (CONFLICT)**: Si no se encuentra un horario de clase dentro del rango permitido (`HORARIO_NO_EXISTE`).
+ * - **500 (INTERNAL_SERVER_ERROR)**: Error genérico no controlado.
+ */
+const dataAsistencia = async( req : Request, res : Response) =>{
+   
+    const data = {
+        id_escuela : Number(req.params.id_escuela),
+        dni_alumno : Number(req.params.dni),
+        estado : req.params.estado as string,
+    };
+
+    const dataAsitenciaResult = await asistenciaServicio.dataAsistenciaServicio(data);
+    
+    switch( dataAsitenciaResult.code ){
+        case "INSCRIPCION_NO_EXISTE" : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.PROHIBIDO,
+                dataAsitenciaResult.message,
+                dataAsitenciaResult.code
+            );
+        };
+        case "HORARIO_NO_EXISTE" : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.CONFLICTO,
+                dataAsitenciaResult.message,
+                dataAsitenciaResult.code
+            );
+        };
+        case "ASISTENCIA_OK" : {
+            return enviarResponse(
+                res,
+                CodigoEstadoHTTP.OK,
+                dataAsitenciaResult.message,
+                dataAsitenciaResult.data,
+                undefined,
+                dataAsitenciaResult.code
+            );
+        };
+        default : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                "Error interno del servidor"    
+            );
+        }
+    }; 
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
-    fechasHorarios : tryCatch( fechasHorarios)
+    fechasHorarios : tryCatch( fechasHorarios),
+    dataAsistencia : tryCatch( dataAsistencia ),
 } 

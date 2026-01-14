@@ -4,8 +4,8 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 // typados
-import { HorarioClaseInput , HorarioCalendarioInput , ModHorarioInput , EliminarHorarioInput} from "../squemas/horarios_clases";
-import { ResultadoAltaHorario , ResultCalendarioHorario , ResultModHorario , ResultEliminarHorario} from "../tipados/horarios";
+import { HorarioClaseInput , HorarioCalendarioInput , ModHorarioInput , EliminarHorarioInput, DataHorarioAsistenciaInputs} from "../squemas/horarios_clases";
+import { ResultadoAltaHorario , ResultCalendarioHorario , ResultModHorario , ResultEliminarHorario, ResultadoDataHorarioAsitencia} from "../tipados/horarios";
 import { TipadoData } from "../tipados/tipado.data"; 
 
 
@@ -442,11 +442,78 @@ const eliminarHorario = async ( data : EliminarHorarioInput)
 
 };
 
+/**
+ * Consulta en la base de datos el horario de clase disponible en el momento actual.
+ * * Esta función ejecuta una consulta SQL compleja que valida si existe una clase
+ * cuya ventana de acreditación coincida con la hora del servidor (NOW()).
+ * * @param {DataHorarioAsistenciaInputs} data
+ * Objeto con los criterios de filtrado:
+ * - id_escuela: Identificador de la institución.
+ * - estado: Estado de la clase (ej: 'activos').
+ * - dia: Nombre del día de la semana (ej: 'lunes').
+ * * @returns {Promise<TipadoData<ResultadoDataHorarioAsitencia>>}
+ * Retorna una promesa con el resultado de `buscarExistenteEntidad`:
+ * - Si encuentra clase: Retorna el código de éxito y los datos del horario.
+ * - Si no encuentra: Retorna el código de entidad no existente.
+ * * @remarks
+ * - La consulta utiliza `SUBTIME` y `ADDTIME` para crear una ventana de tiempo
+ * de 45 minutos en total (15 antes del inicio y 30 después del inicio).
+ * - Maneja casos especiales de clases que inician cerca de la medianoche.
+ * - Se delega la ejecución a la función genérica `buscarExistenteEntidad`.
+ * * @sqlLogic
+ * La ventana de tiempo se calcula exclusivamente sobre `hc.hora_inicio`:
+ * - Límite Inferior: hora_inicio - 15 minutos.
+ * - Límite Superior: hora_inicio + 30 minutos.
+ */
+const dataHorarioAsistencia = async( data : DataHorarioAsistenciaInputs ) 
+:Promise<TipadoData<ResultadoDataHorarioAsitencia>> => {
+    const { id_escuela, estado, dia} = data;
+
+    const sql : string = `SELECT 
+                                hc.id AS id_horario_en_clase,
+                                hc.hora_inicio,
+                                hc.hora_fin,
+                                tc.tipo AS nombre_clase
+                                
+                            FROM horarios_clases hc
+                            INNER JOIN tipo_clase tc 
+                                ON tc.id = hc.id_tipo_clase
+                            WHERE
+                                hc.id_escuela = ?
+                                AND hc.estado = ?
+                                AND hc.vigente = 1
+                                AND hc.dia_semana = ?
+                                AND (
+                                    -- CASO A: Horario estándar (no cruza medianoche)
+                                    (
+                                        hc.hora_inicio < hc.hora_fin
+                                        AND CAST(NOW() AS TIME) BETWEEN SUBTIME(hc.hora_inicio, '00:15:00') 
+                                                                AND ADDTIME(hc.hora_inicio, '00:30:00')
+                                    )
+                                    OR
+                                    -- CASO B: La clase empieza cerca de medianoche (ej: 00:05)
+                                    (
+                                        hc.hora_inicio > hc.hora_fin
+                                        AND (
+                                            CAST(NOW() AS TIME) >= SUBTIME(hc.hora_inicio, '00:15:00')
+                                            OR CAST(NOW() AS TIME) <= ADDTIME(hc.hora_inicio, '00:30:00')
+                                        )
+                                    )
+                                );`;
+    const valores : unknown[] = [ id_escuela, estado , dia ];
+    return await buscarExistenteEntidad<ResultadoDataHorarioAsitencia>({
+        slqEntidad : sql,
+        valores,
+        entidad : "horario_asistencia"
+    });
+};
+
 export const method = {
     altaHorario : tryCatchDatos( altaHorario ),
     modHorario  : tryCatchDatos ( modHorario ),
     eliminarHorario : tryCatchDatos( eliminarHorario ),
     verificarHorarioEscuela : tryCatchDatos( verificarHorarioEscuela ),
     verificarProfesor : tryCatchDatos( verificarProfesor ),
-    listaCalendario   : tryCatchDatos( calendarioEscuela)
+    listaCalendario   : tryCatchDatos( calendarioEscuela),
+    dataHorarioAsistencia : tryCatchDatos( dataHorarioAsistencia),
 };

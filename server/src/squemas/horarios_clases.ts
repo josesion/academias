@@ -67,8 +67,26 @@ export const EliminarHorarioSchema = z.object({
      id_escuela: z.number().int().positive(),
 });
 
+
+export const DataHorarioAsistenciaSchema = z.object({
+    id_escuela: z.number().int().positive(),  
+    estado : EstadoEnum,
+    dia : DiaSemanaEnum
+});
+
+export const DataAlumnoVigenteSchema = z.object({
+    id_escuela: z.number().int().positive(),  
+    estado : EstadoEnum,
+    dia : DiaSemanaEnum,
+    dni_alumno: z.coerce.number()
+        .int("El DNI debe ser un número entero sin decimales.")
+        .positive("El DNI debe ser un número positivo."), 
+});
+
+
 export type HorarioClaseInput = z.infer<typeof HorarioClaseSchema>;
 export type HorarioCalendarioInput = z.infer<typeof CalendarioHorarioSchema>;
 export type ModHorarioInput = z.infer<typeof modHorariosSchema>;
 export type EliminarHorarioInput = z.infer<typeof EliminarHorarioSchema>;
-
+export type DataHorarioAsistenciaInputs =  z.infer<typeof DataHorarioAsistenciaSchema>;
+export type DataAlumnoVigenteInputs =  z.infer<typeof DataAlumnoVigenteSchema>;

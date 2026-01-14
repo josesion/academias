@@ -8,7 +8,7 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { InscripcionInputs , VerificacionInputs} from "../squemas/inscripciones";
+import { InscripcionInputs , VerificacionInputs , VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia } from "../squemas/inscripciones";
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -95,8 +95,54 @@ const registroInscripcion = async( data : InscripcionInputs)
 
 };
 
+/**
+ * Consulta la vigencia de la inscripción y calcula el saldo de clases disponibles.
+ * * Esta función realiza un cálculo dinámico cruzando la inscripción con el histórico 
+ * de asistencias para determinar cuántos créditos le quedan al alumno.
+ * * @param {VerificarPlanAsistenciaUnputs} data
+ * Objeto con los criterios de búsqueda:
+ * - dni_alumno: Documento del alumno a consultar.
+ * - estado: Estado de la inscripción (ej: 'activos').
+ * - id_escuela: Identificador de la institución.
+ * * @returns {Promise<TipadoData<ResultInscripcionAsistencia>>}
+ * Retorna una promesa con el resultado de `buscarExistenteEntidad`:
+ * - id_inscripcion: ID único del plan contratado.
+ * - vencimiento: Fecha de fin del plan formateada como 'YYYY-MM-DD'.
+ * - clases_restantes: Resultado de (clases totales - asistencias consumidas).
+ * * @remarks
+ * - Utiliza `DATE_FORMAT` para evitar problemas de conversión de zona horaria en el cliente.
+ * - Emplea un `LEFT JOIN` para asegurar que el cálculo funcione incluso si el alumno posee 0 asistencias.
+ * - Requiere `GROUP BY` debido a la función de agregación `COUNT`.
+ * * @sqlLogic
+ * El saldo de clases se calcula mediante la fórmula:
+ * `(clases_por_mes * meses_contratados) - asistencias_registradas`
+ */
+const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
+: Promise<TipadoData<ResultInscripcionAsistencia>> => {
+    const {dni_alumno ,estado ,id_escuela, } = data;
+    const sql : string = `SELECT 
+                                i.id_inscripcion,
+                                DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
+                                ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(a.id_asistencia)) AS clases_restantes
+                            FROM inscripciones i
+                            LEFT JOIN asistencias a 
+                                ON i.id_inscripcion = a.id_inscripcion
+                            WHERE 
+                                i.dni_alumno = ?
+                                AND i.estado = ? 
+                                AND i.id_escuela = ?
+                            GROUP BY i.id_inscripcion;`;
+    const valores : unknown[] = [ dni_alumno, estado , id_escuela];
+    return await buscarExistenteEntidad<ResultInscripcionAsistencia>({
+        slqEntidad : sql,
+        valores ,
+        entidad : "inscripcion"
+    });
+};
+
 
 export const method = {
     alta  : tryCatchDatos( registroInscripcion ), 
-    verificacion : tryCatchDatos( verificacion )
+    verificacion : tryCatchDatos( verificacion ),
+    verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
 };

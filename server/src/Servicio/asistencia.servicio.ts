@@ -4,13 +4,25 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 
 import { method as asistenciaData } from "../data/asistencia.data";
+import { method as inscripcionData } from "../data/inscripciones.data";
+import { method as horarioData  } from "../data/horarios.data"
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data"; 
-import { VerificarInscripcionInput, VerificarInscripcionSchema } from "../squemas/inscripciones";
-import { AsistenciaInputs, AsistenciaSchema, ClasesActualInputs, ClaseActualSchema, ClaseProximaSchema ,ClasesProximaInputs } from "../squemas/asistencias"; 
-import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia,} from "../tipados/asistencia.tipado";
+import { VerificarInscripcionInput, VerificarInscripcionSchema,  } from "../squemas/inscripciones";
+import { 
+         AsistenciaInputs, AsistenciaSchema, 
+         ClasesActualInputs,ClaseActualSchema, 
+         ClaseProximaSchema, ClasesProximaInputs,
+       } from "../squemas/asistencias"; 
+
+import { DataAlumnoVigenteInputs, DataAlumnoVigenteSchema, } from "../squemas/horarios_clases";       
+import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia, ResultDataAsistencia} from "../tipados/asistencia.tipado";
+
+
+
+
 
 
 
@@ -245,7 +257,86 @@ const fechaAsistencia = async( data : ClasesActualInputs)
   };
 };
 
+
+/**
+ * Servicio de lógica de negocio para validar la vigencia de un alumno y su horario.
+ * * Coordina la verificación de dos reglas críticas:
+ * 1. Existencia de un plan activo en la base de datos.
+ * 2. Existencia de una clase programada cuya ventana de acreditación coincida con NOW().
+ * * @param {DataAlumnoVigenteInputs} data
+ * Objeto con los criterios de búsqueda: id_escuela, dni_alumno y estado.
+ * * @returns {Promise<TipadoData<ResultDataAsistencia>>}
+ * Objeto con el código de resultado, mensaje y el payload con `dataHorario` e `dataInscripcion`.
+ * * @remarks
+ * - Utiliza `DataAlumnoVigenteSchema` para validar la integridad de los inputs antes de operar.
+ * - Calcula dinámicamente el día de la semana para segmentar la búsqueda del horario.
+ * - La ventana de tiempo permitida es: [hora_inicio - 15min] hasta [hora_inicio + 30min].
+ * * @codeResult
+ * - ASISTENCIA_OK: Validación exitosa.
+ * - INSCRIPCION_NO_EXISTE: El alumno no tiene planes vigentes.
+ * - HORARIO_NO_EXISTE: No hay clases disponibles para acreditar en este momento.
+ */
+export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs) 
+: Promise<TipadoData<ResultDataAsistencia>> => {
+     const { id_escuela , dni_alumno, estado} = data;
+
+     const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sabado"];
+     const diaHoy = dias[new Date().getDay()];
+
+
+    // primero verifico si tiene plan activos
+    const verificardata : DataAlumnoVigenteInputs = DataAlumnoVigenteSchema.parse({ id_escuela : id_escuela , dni_alumno : dni_alumno , estado : estado , dia : diaHoy });
+    const planResult = await inscripcionData.verificarPlanAsistencia(verificardata);
+
+    if ( planResult.code === 'INSCRIPCION_NO_EXISTE' ){
+        return {
+            error : true,
+            message : `El alumno :${data.dni_alumno} no tiene plan activo`,
+            code : "INSCRIPCION_NO_EXISTE"
+        };
+    }; 
+    if ( planResult.code === 'INSCRIPCION_EXISTE' ){
+       
+        // segundo veo si exsite una horario justo en el momento actual
+        const dataAsisntenciaResult = await horarioData.dataHorarioAsistencia(verificardata);
+       
+        if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_EXISTE"){
+            return {
+                error : false,
+                message : "Horario de clase en curso",
+                data  : {
+                    dataHorario : { id_horario_clase : dataAsisntenciaResult.data!.id_horario_en_clase,
+                                    hora_inicio : dataAsisntenciaResult.data!.hora_inicio,
+                                    hora_fin : dataAsisntenciaResult.data!.hora_fin,
+                                    nombre_clase : dataAsisntenciaResult.data!.nombre_clase},
+
+                    dataInscripcion : { id_inscripcion : planResult.data!.id_inscripcion,
+                                        vencimiento : planResult.data!.vencimiento,
+                                        clases_restantes : planResult.data!.clases_restantes,}                
+                },
+                code  : "ASISTENCIA_OK"
+            };
+        };
+        if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_NO_EXISTE"){
+            return {
+                error : true,
+                message : "No hay un horario de clase",
+                code  : "HORARIO_NO_EXISTE"
+            };
+        };
+        
+    }; 
+    
+    return {
+        error : true,
+        message : "Funcionalidad en desarrollo",
+        code : "DATA_ASISTENCIA_EN_DESARROLLO"
+    };
+
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
-    fechaAsistencia : tryCatchDatos( fechaAsistencia)
+    fechaAsistencia : tryCatchDatos( fechaAsistencia),
+    dataAsistenciaServicio : tryCatchDatos( dataAsistenciaServicio ),
 };

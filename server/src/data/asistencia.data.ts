@@ -10,9 +10,11 @@ import pool from "../bd";
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data"; 
-import { ResultadoClaseEnCruso, ResultadoClaseProxima } from "../tipados/asistencia.tipado";
+import { ResultadoClaseEnCruso, ResultadoClaseProxima, } from "../tipados/asistencia.tipado";
+
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
-import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs} from "../squemas/asistencias";
+import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, } from "../squemas/asistencias";
+
 
 const vencerInscripciones = async () => {
   const sql = `
@@ -459,6 +461,9 @@ const clase_proxima_clase = async( data : ClasesProximaInputs)
     });
 };
 
+
+
+
 export const method = {
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
     dobleAsitencia  : tryCatchDatos( dobleAsitencia ),
@@ -467,4 +472,5 @@ export const method = {
     vencerInscripciones : tryCatchDatos( vencerInscripciones),
     claseEnCurso : tryCatchDatos( clase_en_curso ),
     proximaClase : tryCatchDatos( clase_proxima_clase ),
+    
 };
