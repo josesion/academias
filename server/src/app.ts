@@ -3,6 +3,8 @@ import { z } from "zod";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
+import { method as asistenciaData} from "./data/asistencia.data";
+
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
 
@@ -27,6 +29,7 @@ import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripcion
 const app : Express = express();
 
 iniciarCronVencimientoInscripciones();
+asistenciaData.vencerInscripciones();
 
 app.use(cors({
     origin : "http://localhost:5173",
