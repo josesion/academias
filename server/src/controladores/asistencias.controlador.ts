@@ -67,9 +67,9 @@ const altaAsistencia = async( req : Request , res: Response)=> {
         id_escuela : Number( req.body.id_escuela),
         dni_alumno : Number( req.body.dni_alumno),
         id_inscripcion : Number( req.body.id_inscripcion),
-        estado  : req.body.estado as string,
-        
+        estado  : req.body.estado as string, 
     };
+
     const dataAsitencia = {id_horario_clase :  Number(req.body.id_horario_clase),}
     const respuestaAsistencia = await asistenciaServicio.asistencia(data, dataAsitencia);
 
@@ -221,7 +221,7 @@ const dataAsistencia = async( req : Request, res : Response) =>{
     };
 
     const dataAsitenciaResult = await asistenciaServicio.dataAsistenciaServicio(data);
-    
+
     switch( dataAsitenciaResult.code ){
         case "INSCRIPCION_NO_EXISTE" : {
             return enviarResponseError(

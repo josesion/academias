@@ -207,7 +207,7 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
 const fechaAsistencia = async( data : ClasesActualInputs)
 : Promise<TipadoData<ResulClases_curso_proxima>> =>{
     
-    const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sabado"];
+    const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
     const diaHoy = dias[new Date().getDay()];  
 
     const verificacionFechas_en_curso : ClasesActualInputs =ClaseActualSchema.parse({id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy});
@@ -280,7 +280,7 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
 : Promise<TipadoData<ResultDataAsistencia>> => {
      const { id_escuela , dni_alumno, estado} = data;
 
-     const dias = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sabado"];
+     const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
      const diaHoy = dias[new Date().getDay()];
 
 

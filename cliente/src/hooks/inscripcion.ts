@@ -41,6 +41,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
     const [ modalInsc , setModalInsc] = useState<boolean>(false);
+    const [ actualizarListado , setActualizarListado ] = useState<boolean>( false );
 
     const [carga , setCarga] = useState<boolean>(true);
 
@@ -66,6 +67,9 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 
     const [listadoPlan , setListadoPlan] = useState<TipadoInscripcion.DataPlan[]>([]);
     const [listadoAlumno , setListadoAlumno] = useState<TipadoInscripcion.DataAlumno[]>([]);
+
+    console.log(listadoAlumno);
+    console.log(listadoPlan);
 
     const handleCachearPlan = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -107,13 +111,30 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 // ──────────────────────────────────────────────────────────────
 //Reseteo de los estados 
 // ────────────────────────────────────────────────────────────── 
-    const resetFormulario = () => {
-        setAlumno(null);
-        setPlan(null);
-        setErrorGenerico(null);
-    } ;
+const resetFormulario = () => {
+    // 1. Limpiamos los filtros para que los inputs se vacíen
+    setFiltroBusquedaAlumno({
+        ...config.inicialFiltroAlumno,
+        estado: "activos",
+        id_escuela: config.idEscuela,
+        pagina: config.paginacion.pagina,
+        limite: config.paginacion.limite        
+    });
 
+    setFiltroBusquedaPlan({
+        ...config.inicialFiltroPlan,
+        estado: "activos",
+        id_escuela: config.idEscuela,
+        pagina: config.paginacion.pagina,
+        limite: config.paginacion.limite 
+    });
 
+    // 2. Limpiamos las selecciones actuales
+    setPlan(null);
+    setAlumno(null);
+    setErrorGenerico(null);
+
+};
     const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
 
@@ -203,7 +224,7 @@ useEffect(()=>{
             clearTimeout(timeoutId);
         };
 
-},[filtroBusquedaAlumno]);
+},[filtroBusquedaAlumno, actualizarListado]);
 
 // ──────────────────────────────────────────────────────────────
 // Listado de planes con paginacion y sin paginacion
@@ -252,7 +273,7 @@ useEffect( () =>{
         clearTimeout(timeoutId);
     }
 
-},[filtroBusquedaPlan]);
+},[filtroBusquedaPlan, actualizarListado]);
 
 
 

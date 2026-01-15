@@ -1,6 +1,11 @@
+import { useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+
 // Compontenes
+import { CompoError } from "../../../componentes/Error/Error";
 import { Boton } from "../../../componentes/Boton/Boton";
 import { Inputs } from "../../../componentes/Inputs/Inputs";
+import { LogoExito } from "../../../componentes/CuadroExito/CuadroExito";
 
 import { useAsistenciaSet } from "../../../hookNegocios/asistencia";
 
@@ -8,7 +13,24 @@ import { useAsistenciaSet } from "../../../hookNegocios/asistencia";
 import "./formularioAsistencia.css";
 
 export const FormularioAsistencia = () => {
-  const { claseEnCurso, claseProxima } = useAsistenciaSet();
+  const inputDniRef = useRef<HTMLInputElement>(null);
+
+  const {
+    errorGenerico,
+    exitoAsistencia,
+    claseEnCurso,
+    claseProxima,
+    registroAsistencia,
+    dataInscripcion,
+    handleCachearAlumno,
+    handleResgistrarAsistencia,
+  } = useAsistenciaSet();
+
+  useEffect(() => {
+    if (!exitoAsistencia) {
+      inputDniRef.current?.focus();
+    }
+  }, [exitoAsistencia]);
 
   return (
     <div className="asistencia_kiosco">
@@ -62,25 +84,44 @@ export const FormularioAsistencia = () => {
         <Inputs
           label="Ingrese su DNI"
           placeholder="Ej: 30023547"
-          name="dni"
+          name="dni_alumno"
           type="number"
-          value={"33333"}
-          error={""}
+          ref={inputDniRef}
+          value={registroAsistencia.dni_alumno}
           readonly={false}
+          onChange={handleCachearAlumno}
         />
 
         <div className="estado_inscripcion">
           <div>
             <span>Vencimiento : </span>
-            <strong>15 / 02 / 2026</strong>
+            <strong>{dataInscripcion?.vencimiento || "----/--/--"}</strong>
           </div>
           <div>
             <span>Clases restantes : </span>
-            <strong>6</strong>
+            <strong>{dataInscripcion?.clases_restantes || "-"}</strong>
           </div>
         </div>
 
-        <Boton clase="aceptar" texto="Asistir a clase" logo="Go" />
+        <Boton
+          clase="aceptar"
+          texto="Asistir a clase"
+          logo="Go"
+          onClick={handleResgistrarAsistencia}
+        />
+        {errorGenerico && <CompoError mensaje={errorGenerico} />}
+        {exitoAsistencia &&
+          createPortal(
+            <div className="overlay-exito">
+              <div className="card-exito">
+                <div style={{ width: "80px", height: "80px" }}>
+                  <LogoExito />
+                </div>
+                <h2>¡Asistencia Exitosa!</h2>
+              </div>
+            </div>,
+            document.body // Esto lo teletransporta fuera del contenedor con animación
+          )}
       </section>
     </div>
   );

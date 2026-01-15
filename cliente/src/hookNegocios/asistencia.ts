@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 import { useAsistenciaLogica } from "../hooks/asistencia";
 //Seccion de servicios--------------------------------------
-import { asistenciaHorarios } from "../servicio/asistencia.fetch";
+import { asistenciaHorarios, registroAsistencia, obtenerDataAsistencia } from "../servicio/asistencia.fetch";
 
 
 export const useAsistenciaSet = () =>{
@@ -14,11 +14,13 @@ export const useAsistenciaSet = () =>{
         id_escuela :rol?.escuela || 1 ,
         //nombre_escuela : rol. , declarar en login el nombre de la esucela 
         servicios : {
-            asistenciaHorarios : asistenciaHorarios
+            asistenciaHorarios : asistenciaHorarios,
+            registroAsistencia : registroAsistencia,
+            obtenerDataAsistencia : obtenerDataAsistencia 
         },
 
         inicalFiltroAlumno :{
-            dni : ""
+            dni_alumno : ""
         }
     };
 
