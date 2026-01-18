@@ -1,62 +1,38 @@
 CREATE TABLE inscripciones (
-    -- Clave primaria autoincremental para identificar cada inscripción
     id_inscripcion INT PRIMARY KEY AUTO_INCREMENT,
-    
-    -- ID del Plan: Clave foránea que apunta a la tabla de planes
-    -- Se usará en conjunto con id_escuela para garantizar la existencia del plan en esa escuela.
     id_plan INT NOT NULL,
-    
-    -- ID de la Escuela: Clave foránea que apunta a la tabla de escuelas
-    -- Fundamental para segmentar la inscripción por academia.
     id_escuela INT NOT NULL,
-    
-    -- DNI del Alumno: Clave foránea que apunta a la tabla de alumnos
-    -- Asegura que solo se inscriban alumnos existentes.
     dni_alumno BIGINT NOT NULL,
     
-    -- Fecha de Inicio: Almacenado como DATE.
-    fecha_inicio DATE NOT NULL,
+    -- Datos de la transacción
+    id_caja INT NULL, -- Vínculo con el turno de caja actual
+    medio_pago ENUM('efectivo', 'transferencia', 'otros') DEFAULT 'efectivo',
+    monto DECIMAL(10, 2) NOT NULL, -- Lo que costó el plan
+    fecha_pago TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    -- Fecha de Fin: Almacenado como DATE.
+    -- Fechas y vigencia
+    fecha_inicio DATE NOT NULL,
     fecha_fin DATE NULL,
     
-    -- Monto Total Pagado o a Pagar: Usa DECIMAL para precisión financiera.
-    monto DECIMAL(10, 2) NOT NULL,
-
-    -- Campos de histórico/snapshot del plan al momento de la inscripción para evitar mutación de datos
+    -- Snapshots para evitar mutaciones si el plan cambia de precio/clases en el futuro
     clases_asignadas_inscritas INT NOT NULL, 
     meses_asignados_inscritos INT NOT NULL,
-    
-    -- Nuevo campo para el seguimiento de la asistencia (ej. número de clases tomadas).
     asistencia INT DEFAULT 0,
-    
-     -- Estado de la Inscripción: Ahora usa ENUM para limitar los valores a 'activos' o 'suspendido'.
     estado ENUM('activos', 'suspendido', 'vencidos') DEFAULT 'activos',
-    
-    
-    -- ----------------------------------------------------
-    -- Definición de Claves Foráneas
-    -- ----------------------------------------------------
 
-    -- FK a alumnos: Garantiza que el DNI exista en la tabla principal de alumnos
-    FOREIGN KEY (dni_alumno) 
-        REFERENCES alumnos(dni_alumno)
-        ON DELETE RESTRICT,
-        
-    -- NUEVA FK compuesta a alumnos_en_escuela: 
-    -- Asegura que el alumno esté efectivamente dado de alta en la escuela antes de inscribirse en un plan.
+    -- Claves Foráneas
+    FOREIGN KEY (dni_alumno) REFERENCES alumnos(dni_alumno) ON DELETE RESTRICT,
+    
     FOREIGN KEY (dni_alumno, id_escuela) 
-        REFERENCES alumnos_en_escuela(dni_alumno, id_escuela)
-        ON DELETE RESTRICT,
+        REFERENCES alumnos_en_escuela(dni_alumno, id_escuela) ON DELETE RESTRICT,
         
-    -- FK compuesta a planes_en_escuela: 
-    -- Es crucial asegurar que el plan (id_plan) esté disponible en la escuela (id_escuela).
     FOREIGN KEY (id_escuela, id_plan) 
-        REFERENCES planes_en_escuela(id_escuela, id_plan)
-        ON DELETE RESTRICT
+        REFERENCES planes_en_escuela(id_escuela, id_plan) ON DELETE RESTRICT,
+
+    FOREIGN KEY (id_caja) REFERENCES cajas(id_caja) ON DELETE RESTRICT
 );
 
--- Inserccion de datos a incripciones --
+-- Inserccion de datos a incripciones -- IMPORTANTE SE TIENE Q MODIFICAR AL INSERT DE INCRIPCIONES
 INSERT INTO inscripciones (
     id_plan, 
     id_escuela, 
