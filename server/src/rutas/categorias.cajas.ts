@@ -4,5 +4,8 @@ import { method as categoriaCaja} from "../controladores/categorias.caja.control
 const rutas = Router();
 
 rutas.post("/api/categoria_caja", categoriaCaja.altaCategoriaCaja   );
-
- export default rutas;
+rutas.put("/api/mod_categoria_caja/:id/:nombre/:movimiento/:estado/:id_escuela", categoriaCaja.modCategoriaCaja);
+rutas.delete("/api/baja_categoria_caja/:id/:estado/:id_escuela",categoriaCaja.bajaCategoriaCaja);
+rutas.get("/api/lista_categoria_caja", categoriaCaja.listadoCategoriaCaja)
+ 
+export default rutas;
