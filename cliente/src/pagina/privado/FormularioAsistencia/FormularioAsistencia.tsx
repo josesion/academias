@@ -38,7 +38,6 @@ export const FormularioAsistencia = () => {
         <h1>Academia Fuerza Gigante</h1>
         <p>Registro de asistencia</p>
       </header>
-
       {/* ───────── CLASES ───────── */}
       <section className="asistencia_clases">
         <div className="clase_card actual">
@@ -78,7 +77,6 @@ export const FormularioAsistencia = () => {
           </p>
         </div>
       </section>
-
       {/* ───────── ACCIÓN ───────── */}
       <section className="asistencia_accion">
         <Inputs
@@ -120,7 +118,7 @@ export const FormularioAsistencia = () => {
                 <h2>¡Asistencia Exitosa!</h2>
               </div>
             </div>,
-            document.body // Esto lo teletransporta fuera del contenedor con animación
+            document.body, // Esto lo teletransporta fuera del contenedor con animación
           )}
       </section>
     </div>

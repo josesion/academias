@@ -89,7 +89,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
      
 
 // -------------------------------- Manejadores de Modales y Acciones Principales ---------------------------------- 
-
+      
 /** Manejador para abrir el modal de Alta. Resetea formData y setea el tipo de formulario. */
     const handleAgragar = ( ) =>{
             setFormData({            
@@ -104,6 +104,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 /** Manejador para abrir el modal de Modificación. Mapea los datos del listado al formulario. */
     const handleModificar = ( dataM :  TData ) =>{
         const mapData = config.mapDeFormulario(dataM)
+
         setFormData({
             ...mapData,
             id_escuela : config.idEscuela
@@ -170,7 +171,30 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
                 pagina: 1,
                 estado : e.target.value
             });
-    };  
+    }; 
+/** Maneja el cambio del estado de listado (items genericos), ajustando el botón de acción. */
+   const handleItems = (e: React.ChangeEvent<HTMLSelectElement>)  => { 
+        if (e.target.value === "todos"){
+           setFiltroData({
+                ...filtroData,
+                pagina : 1 ,
+                [e.target.name] :"%",   
+           });     
+        }else{
+           setFiltroData({
+                ...filtroData,
+                pagina : 1 ,
+                [e.target.name] : e.target.value,   
+           }); 
+        };
+   };
+
+  const handleItemsFormulario  = (e: React.ChangeEvent<HTMLSelectElement>)  => {
+     setFormData({
+        ...formData,
+        [e.target.name] : e.target.value
+     });
+  };
 
 /** Actualiza el filtro con la nueva página solicitada por el componente de paginación. */
     const handlePaginaCambiada = (pagina: number) => {
@@ -247,6 +271,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
 
 // ---------------------------------- Efecto de Listado ----------------------------------
+    console.log(dataListado)    
 
 /** Efecto principal que gestiona la carga del listado en cada cambio de filtro o actualización forzada. */
     useEffect(() => {
@@ -318,10 +343,10 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
         // Manejadores (funciones de interacción para la UI)
         handleAgragar, handleModificar, handleEliminar,
-        handleChangeFormulario, handleChangeBuscador, handleEstado,
+        handleChangeFormulario, handleChangeBuscador, handleEstado, handleItems,handleItemsFormulario,
         handleSubmit, handleSubmitEliminar,
         handleCancelar, handleCancelarEliminar,
-        handlePaginaCambiada,
+        handlePaginaCambiada, 
     }
 
 };

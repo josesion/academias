@@ -48,6 +48,7 @@
 /* --- FORMULARIO --- */
 .formulario_contenedor {
     background:#000a; /* oscuro sobrio */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Esto le daría un borde tipo cristal que resalta el modo oscuro */
     border-radius: 14px;
     width: 100%;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);

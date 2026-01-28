@@ -3,7 +3,7 @@ import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
 
 // seccion de css
-import "./buscador.css"
+import "./buscador.css";
 
 //seccion typado
 /**
@@ -17,17 +17,29 @@ import "./buscador.css"
  * @property {string | null} [error] - Mensaje de error para mostrar bajo el input.
  */
 
-
-
 export type InputsPropsBuscador = {
-    label?: string;
-    type?: 'text' | 'password' | 'email' | 'number' | 'date' | 'checkbox' | 'radio' | 'file';
-    placeholder?: string;
-    value?: string | number;
-    name?: string;
-    error?: string | null;
-}
+  label?: string;
 
+  type?:
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "date"
+    | "checkbox"
+    | "radio"
+    | "file";
+
+  placeholder?: string;
+
+  value?: string | number;
+
+  name?: string;
+
+  error?: string | null;
+
+  options?: string[];
+};
 
 /**
  * @typedef {Object} BuscadorProps
@@ -43,15 +55,16 @@ export type InputsPropsBuscador = {
  */
 
 interface BuscadorProps {
-    onChange ?  : ( event : React.ChangeEvent<HTMLInputElement>) => void,
-    onAgregar ? : ( event : React.MouseEvent<HTMLButtonElement>) => void,
-    onEstados ? : ( event : React.ChangeEvent<HTMLSelectElement>) => void, 
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAgregar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onEstados?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onItems?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 
-    intputBuscador  : InputsPropsBuscador[],
-    tituloBuscador ? : string,
-    buscadorData ?   : Record<string, string | number>,
-    captionBoton : string,
-    estados : string[]
+  intputBuscador: InputsPropsBuscador[];
+  tituloBuscador?: string;
+  buscadorData?: Record<string, string | number>;
+  captionBoton: string;
+  estados: string[];
 }
 
 /**
@@ -61,55 +74,69 @@ interface BuscadorProps {
  * @returns {JSX.Element} La estructura JSX del buscador.
  */
 
-
-export const Buscadores = ( parametros : BuscadorProps) =>{
-return(
+export const Buscadores = (parametros: BuscadorProps) => {
+  return (
     <div className="buscador_contenedor_comp">
-            <p className="buscador_titulo"> {parametros.tituloBuscador} </p>
-            <div className="buscador_buscadores">
-                {
-                    parametros.intputBuscador.map( input =>{
-                        return(
-                            <Inputs
-                                key={input.name}
-                                label={input.label}
-                                type={input.type}
-                                name={input.name}
-                                value={ parametros.buscadorData ? parametros.buscadorData[input.name ?? ""] : "" }
-                                onChange={parametros.onChange}
-                                placeholder={input.placeholder}
-                                readonly = {false}
-                            />
-                        );
-                    })
-                }
+      <p className="buscador_titulo"> {parametros.tituloBuscador} </p>
+
+      <div className="buscador_buscadores">
+        {parametros.intputBuscador.map((input) => {
+          const isSelect = input.options && input.options.length > 0;
+
+          return isSelect ? (
+            <div className="buscadores_select">
+              <p>Tipo</p>
+              <select
+                className="buscador_estado"
+                name={input.name}
+                onChange={parametros.onItems}
+              >
+                {input.options?.map((item, index) => (
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
             </div>
+          ) : (
+            <Inputs
+              key={input.name}
+              label={input.label}
+              type={input.type}
+              name={input.name}
+              value={
+                parametros.buscadorData
+                  ? parametros.buscadorData[input.name ?? ""]
+                  : ""
+              }
+              onChange={parametros.onChange}
+              placeholder={input.placeholder}
+              readonly={false}
+            />
+          );
+        })}
+      </div>
 
- 
+      <div className="buscador_boton">
+        <Boton
+          texto={parametros.captionBoton}
+          logo="Add"
+          clase="aceptar"
+          onClick={parametros.onAgregar}
+        />
 
-            <div className="buscador_boton">
-                <Boton
-                    texto={parametros.captionBoton}
-                    logo="Add"
-                    clase="aceptar"
-                    onClick={parametros.onAgregar}
-                />
-
-                <select 
-                    className="buscador_estado"
-                    name="estado"
-
-                    onChange={parametros.onEstados}
-                >
-                    {
-                        parametros.estados.map((estado, index) => (
-                            <option key={index} value={estado}>{estado}</option>
-                        ))
-                    }
-                </select>
-
-            </div>
+        <select
+          className="buscador_estado"
+          name="estado"
+          onChange={parametros.onEstados}
+        >
+          {parametros.estados.map((estado, index) => (
+            <option key={index} value={estado}>
+              {estado}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
-)
-
-}
+  );
+};

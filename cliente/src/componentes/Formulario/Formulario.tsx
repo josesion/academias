@@ -1,11 +1,11 @@
-import { useRef , useEffect} from "react";
+import { useRef, useEffect } from "react";
 // Seccion de componentes
 import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
 import { CompoError } from "../Error/Error";
 // Seccion de estilos
 import "./formularios.css";
-import "../Boton/boton.css"
+import "../Boton/boton.css";
 // Seccion de tipados
 
 /**
@@ -18,14 +18,23 @@ import "../Boton/boton.css"
  * @property {string | null} [error] - Mensaje de error específico para este input.
  */
 export type InputsPropsFormulario = {
-    label?: string;
-    type?: 'text' | 'password' | 'email' | 'number' | 'date' | 'checkbox' | 'radio' | 'file';
-    placeholder?: string;
-    value?: string | number;
-    name?: string;
-    error?: string | null;
-    readonly : boolean;
-}
+  label?: string;
+  type?:
+    | "text"
+    | "password"
+    | "email"
+    | "number"
+    | "date"
+    | "checkbox"
+    | "radio"
+    | "file";
+  placeholder?: string;
+  value?: string | number;
+  name?: string;
+  error?: string | null;
+  readonly: boolean;
+  options?: string[];
+};
 
 /**
  * @typedef {Object} FormularioProps - Propiedades del componente Formulario.
@@ -39,15 +48,16 @@ export type InputsPropsFormulario = {
  * @property {string} tituloFormulario - El título que se mostrará en la parte superior del formulario.
  */
 interface FormularioProps {
-    data: InputsPropsFormulario[],
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-    onCancelar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-    formData?: Record<string, string | number>;
-    errorsZod?: Record<string, string | null>;
-    errorGenerico?: string | null;
-    tituloFormulario: string;
-    textoSubmit: string;
+  data: InputsPropsFormulario[];
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  onCancelar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onItemsFormulario?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  formData?: Record<string, string | number>;
+  errorsZod?: Record<string, string | null>;
+  errorGenerico?: string | null;
+  tituloFormulario: string;
+  textoSubmit: string;
 }
 
 /**
@@ -87,60 +97,74 @@ interface FormularioProps {
  * // El componente renderizará un formulario con un campo de correo y uno de contraseña.
  */
 export const Formulario = (props: FormularioProps) => {
-    // Crea la referencia para el primer input.
-    const primerInputRef = useRef<HTMLInputElement>(null);
+  // Crea la referencia para el primer input.
+  const primerInputRef = useRef<HTMLInputElement>(null);
 
-    // Aplica el foco una vez que el componente se ha renderizado.
-    useEffect(() => {
-        if (primerInputRef.current) {
-            primerInputRef.current.focus();
-        }
-    }, []); // El array vacío asegura que solo se ejecute una vez al montar.
+  // Aplica el foco una vez que el componente se ha renderizado.
+  useEffect(() => {
+    if (primerInputRef.current) {
+      primerInputRef.current.focus();
+    }
+  }, []); // El array vacío asegura que solo se ejecute una vez al montar.
 
-    return (
-        <form className="formulario" onSubmit={props.onSubmit}>
-            <p className="formulario_titulo">{props.tituloFormulario}</p>
-            {
-                props.data.map( (input, index) => {
-                    return (
-                        <Inputs
-                            key={input.name}
-                            ref = {index === 0 ? primerInputRef : null}
-                            label={input.label}
-                            type={input.type}
-                            placeholder={input.placeholder}
-                            name={input.name}
-                            value={props.formData ? props.formData[input.name ?? ""] : ""}
-                            onChange={props.onChange}
-                            readonly = {input.readonly}
-                            error={props.errorsZod && input.name ? props.errorsZod[input.name] : undefined}
-
-                        />
-                    );
-                })
+  return (
+    <form className="formulario" onSubmit={props.onSubmit}>
+      <p className="formulario_titulo">{props.tituloFormulario}</p>
+      {props.data.map((input, index) => {
+        const isSelect = input.options && input.options.length > 0;
+        return isSelect ? (
+          <div>
+            <p>Tipo</p>
+            <select
+              className="buscador_estado"
+              name={input.name}
+              onChange={props.onItemsFormulario}
+            >
+              {input.options?.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <Inputs
+            key={input.name}
+            ref={index === 0 ? primerInputRef : null}
+            label={input.label}
+            type={input.type}
+            placeholder={input.placeholder}
+            name={input.name}
+            value={props.formData ? props.formData[input.name ?? ""] : ""}
+            onChange={props.onChange}
+            readonly={input.readonly}
+            error={
+              props.errorsZod && input.name
+                ? props.errorsZod[input.name]
+                : undefined
             }
-            <div className="botonera_formulario">
-                <Boton
-                    texto={props.textoSubmit}
-                    logo="Check"
-                    size={25}
-                    clase="aceptar"
-                />
-                <Boton
-                    texto="Cancelar"
-                    logo="Cancel"
-                    size={25}
-                    clase="flechas"
-                    onClick={props.onCancelar}
-                />
-            </div>
+          />
+        );
+      })}
+      <div className="botonera_formulario">
+        <Boton
+          texto={props.textoSubmit}
+          logo="Check"
+          size={25}
+          clase="aceptar"
+        />
+        <Boton
+          texto="Cancelar"
+          logo="Cancel"
+          size={25}
+          clase="flechas"
+          onClick={props.onCancelar}
+        />
+      </div>
 
-            <div className="errores_genericos">
-                {
-                    props.errorGenerico && <CompoError mensaje={props.errorGenerico} />
-                }
-            </div>
-
-        </form>
-    );
-}
+      <div className="errores_genericos">
+        {props.errorGenerico && <CompoError mensaje={props.errorGenerico} />}
+      </div>
+    </form>
+  );
+};

@@ -179,6 +179,7 @@ const resetFormulario = () => {
         e.preventDefault();
         setErrorGenerico(null)
         setModalInsc(false) 
+        resetFormulario();
    };
 
 // ──────────────────────────────────────────────────────────────

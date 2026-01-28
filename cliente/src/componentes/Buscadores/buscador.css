@@ -12,6 +12,7 @@
     max-height: 80px;
     width: 80%;
     justify-content: space-around;
+    
 }
 
 .buscador_boton {
@@ -22,7 +23,38 @@
     gap: 10px;
 }
 
+.buscadores_select{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+}
+
+div p{
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #ddd;
+}
+
 /* ================= COLORES DEL SELECT (MEJORADOS) ================= */
+.buscador_buscadores .buscador_estado {
+    /* Fondo coherente con tus otros paneles */
+    background-color: rgba(20, 20, 35, 0.9); 
+    color: #c7c9cc; 
+    /* Borde sutil que combina con el diseño de cristal */
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: all 0.3s ease-in-out;
+    
+}
+
+
 .buscador_boton .buscador_estado {
     /* Fondo coherente con tus otros paneles */
     background-color: rgba(20, 20, 35, 0.9); 
@@ -38,6 +70,9 @@
     appearance: none;
     transition: all 0.3s ease-in-out;
 }
+
+
+
 
 /* Estado Focus/Hover con tus colores de marca (Cyan/Indigo) */
 .buscador_boton .buscador_estado:hover,

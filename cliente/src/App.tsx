@@ -13,6 +13,7 @@ import { AmbPlanesUsuarios } from "./pagina/privado/planes.usuario";
 import { AmbProfesorUsuarios } from "./pagina/privado/profesor.usuario";
 import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario";
 import { AbmTipoUsuarios } from "./pagina/privado/tipo.usuario";
+import { AmbCategoriasCajaUsuarios } from "./pagina/privado/categoria.caja.usuario";
 
 // Formulario para asistencia
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
@@ -63,6 +64,10 @@ function App() {
                 />
                 <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
                 <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
+                <Route
+                  path="/user_categoria_caja"
+                  element={<AmbCategoriasCajaUsuarios />}
+                />
                 <Route path="/alum_manager_priv" element={<AlumnoPage />} />
               </Route>
             </Route>

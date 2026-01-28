@@ -1,13 +1,13 @@
 // Seccion Bibliotecas
 import { useState, useContext } from "react";
-import {useNavigate}  from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Seccion de Iconos
 import { FaDoorClosed } from "react-icons/fa6";
 import { VscAccount } from "react-icons/vsc";
 import { MdAppRegistration } from "react-icons/md";
 import { GiBlackBook } from "react-icons/gi";
-import { HiChevronDown , HiChevronUp} from "react-icons/hi";
+import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 
 import { PiStudentBold } from "react-icons/pi";
 import { BsPersonRolodex } from "react-icons/bs";
@@ -22,109 +22,121 @@ import { RutasProtegidasContext } from "../../contexto/protectRutas";
 //Seccion Estilos
 import "../MenuNav/menuNav.css";
 
+export const MenuNav = () => {
+  const navegar = useNavigate();
+  const { rol } = useContext(RutasProtegidasContext);
 
+  const [menu, setMenu] = useState<boolean>(false);
 
-export const MenuNav = () =>{
-    const navegar =  useNavigate();
-    const {rol} = useContext(RutasProtegidasContext);
+  const irInicio = () => {
+    navegar("/");
+  };
+  const irLogin = () => {
+    navegar("/login");
+  };
 
-    const [menu , setMenu] = useState<boolean>(false);
+  //administrador
 
-    const irInicio = () =>{navegar("/")};
-    const irLogin = () =>{navegar("/login")};
+  //Usuario
+  const irAlumno = () => {
+    (navegar("/user_alumno"), setMenu(false));
+  };
+  const irPlanes = () => {
+    (navegar("/user_planes"), setMenu(false));
+  };
+  const irProfesores = () => {
+    (navegar("/user_profesores"), setMenu(false));
+  };
+  const irNiveles = () => {
+    (navegar("/user_nivel"), setMenu(false));
+  };
+  const irTipos = () => {
+    (navegar("/user_tipo"), setMenu(false));
+  };
+  const irCategoriaCajas = () => {
+    (navegar("/user_categoria_caja"), setMenu(false));
+  };
 
-    //administrador
+  return (
+    <nav className="menu_nav  ">
+      <div className="app-name-container">
+        <p className="app-name">StudioPro</p>
+      </div>
 
-    //Usuario
-    const irAlumno = () =>{ navegar("/user_alumno"), setMenu(false)};
-    const irPlanes = () =>{ navegar("/user_planes"), setMenu(false)};
-    const irProfesores = () =>{ navegar("/user_profesores"), setMenu(false)};
-    const irNiveles = () =>{ navegar("/user_nivel"), setMenu(false)};
-    const irTipos = () =>{ navegar("/user_tipo"), setMenu(false)};
+      <ul className={`menu_nav_lista   ${menu ? "abierto" : "menu"}`}>
+        {rol?.rol === "visita" && (
+          <>
+            <li className="alinear" onClick={irInicio}>
+              <GiBlackBook size={20} className="alinear" />
+              Inicio
+            </li>
+            <li className="alinear" onClick={irLogin}>
+              <VscAccount size={20} className="alinear" />
+              Login
+            </li>
+            <li className="alinear">
+              <GiBlackBook size={20} className="alinear" />
+              Contacto
+            </li>
+          </>
+        )}
+        {rol?.rol === "administrador" && (
+          <>
+            <li className="alinear" onClick={irLogin}>
+              <VscAccount size={20} className="alinear" />
+              Registrar
+            </li>
 
-    return(
+            <li className="alinear">
+              <FaDoorClosed size={20} className="alinear" />
+              Cerrar
+            </li>
+          </>
+        )}
 
-        <nav className="menu_nav  ">
+        {rol?.rol === "usuario" && (
+          <>
+            <li className="alinear" onClick={irAlumno}>
+              <PiStudentBold size={20} className="alinear" />
+              Alumnos
+            </li>
 
-            <div className="app-name-container">
-                <p className="app-name">StudioPro</p>
-            </div>
-            
-            <ul className={`menu_nav_lista   ${menu ? 'abierto' : 'menu'}`}>
-                {
-                    rol?.rol === "visita" && (
-                        <>
-                            <li  className="alinear" onClick={irInicio}>
-                                <GiBlackBook size={20} className="alinear" />Inicio
-                            </li>
-                            <li className="alinear" onClick={irLogin}>
-                                <VscAccount size={20} className="alinear" />Login
-                            </li>
-                            <li  className="alinear">
-                                <GiBlackBook size={20} className="alinear" />Contacto
-                            </li>
-                        </>
-                    )
-                }
-                {
-                    rol?.rol === "administrador" && (
-                        <>
-                            <li className="alinear" onClick={irLogin}>
-                                <VscAccount size={20} className="alinear" />Registrar
-                            </li>
+            <li className="alinear" onClick={irPlanes}>
+              <MdAppRegistration size={20} className="alinear" />
+              Planes
+            </li>
 
-                            <li className="alinear">
-                                <FaDoorClosed size={20} className="alinear" />Cerrar
-                            </li>
-                            
-                        </>
-                    )
-                }
+            <li className="alinear" onClick={irProfesores}>
+              <BsPersonRolodex size={20} className="alinear" />
+              Profesor
+            </li>
 
-                {
-                    rol?.rol === "usuario" && (
-                        <>
-                            <li  className="alinear" onClick={ irAlumno } >
-                                <PiStudentBold  size={20} className="alinear" />Alumnos
-                            </li>
+            <li className="alinear" onClick={irNiveles}>
+              <SiLevelsdotfyi size={20} className="alinear" />
+              Niveles
+            </li>
 
-                            <li  className="alinear" onClick={ irPlanes } >
-                                <MdAppRegistration size={20} className="alinear" />Planes
-                            </li>
+            <li className="alinear" onClick={irTipos}>
+              <AiOutlineCustomerService size={20} className="alinear" />
+              Generos
+            </li>
 
-                            
-                            <li  className="alinear" onClick={ irProfesores } >
-                                <BsPersonRolodex size={20} className="alinear" />Profesor
-                            </li>
+            <li className="alinear" onClick={irCategoriaCajas}>
+              <AiOutlineCustomerService size={20} className="alinear" />
+              Categoria Cajas
+            </li>
 
-                            <li  className="alinear" onClick={ irNiveles } >
-                                <SiLevelsdotfyi size={20} className="alinear" />Niveles
-                            </li>
+            <li className="alinear">
+              <ImExit size={20} className="alinear" />
+              Salir
+            </li>
+          </>
+        )}
+      </ul>
 
-                            <li  className="alinear" onClick={ irTipos } >
-                                <AiOutlineCustomerService size={20} className="alinear" />Generos
-                            </li>
-
-                            <li  className="alinear"  >
-                                <ImExit size={20} className="alinear" />Salir
-                            </li>
-
-                        </>
-                    )
-                }
-                
-            </ul>
-
-
-                <button
-                    className="btn_menu"
-                    onClick={ ()=>setMenu(!menu) }
-                >{
-                    menu ? 
-                        <HiChevronUp size={25} />
-                        :
-                        <HiChevronDown size={25} /> 
-                }</button>
-        </nav> 
-    )
+      <button className="btn_menu" onClick={() => setMenu(!menu)}>
+        {menu ? <HiChevronUp size={25} /> : <HiChevronDown size={25} />}
+      </button>
+    </nav>
+  );
 };
