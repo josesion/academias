@@ -22,3 +22,12 @@ SET
     nombre_categoria = 'Nuevo Nombre', 
     tipo_movimiento = 'egreso' 
 WHERE id_categoria = 1;
+
+
+SELECT 
+    COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
+    COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+    COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0) AS balance_neto
+FROM detalle_caja det
+JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+WHERE det.id_caja = 4;

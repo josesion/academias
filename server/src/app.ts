@@ -19,6 +19,8 @@ import nivelRutas from "./rutas/nivel.ruta";
 import tipoRutas from  "./rutas/tipo.ruta";
 import categoriasCajasRutas from "./rutas/categorias.cajas";
 
+import cajasRutas from "./rutas/caja.rutas"
+
 import inscripciones from "./rutas/inscripciones";
 import horarios from "./rutas/horarios.ruta";
 import asistencias  from "./rutas/asistencias";
@@ -49,6 +51,8 @@ app.use(nivelRutas);
 app.use(tipoRutas);
 app.use(asistencias);
 app.use(categoriasCajasRutas);
+
+app.use(cajasRutas);
 
 app.use(inscripciones);
 app.use(horarios);

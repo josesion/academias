@@ -93,6 +93,7 @@ const modCategoriaCaja = async( req : Request, res : Response) =>{
         estado          : req.params.estado,
         id_escuela : Number(req.params.id_escuela)
     };
+
    
    const modCategoria = await categoriaCajaServicio.modCategoriaCaja(data);
 
@@ -192,6 +193,7 @@ const listadoCategoriaCaja = async( req : Request, res : Response) =>{
         pagina : Number(req.query.pagina)
     };
     
+
     const resultadoListado = await categoriaCajaServicio.listadoCategoriaCaja(data);
    
     switch (resultadoListado.code){
