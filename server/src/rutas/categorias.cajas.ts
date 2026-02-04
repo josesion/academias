@@ -6,6 +6,8 @@ const rutas = Router();
 rutas.post("/api/categoria_caja", categoriaCaja.altaCategoriaCaja   );
 rutas.put("/api/mod_categoria_caja/:id/:nombre/:movimiento/:estado/:id_escuela", categoriaCaja.modCategoriaCaja);
 rutas.delete("/api/baja_categoria_caja/:id/:estado/:id_escuela",categoriaCaja.bajaCategoriaCaja);
-rutas.get("/api/lista_categoria_caja", categoriaCaja.listadoCategoriaCaja)
+rutas.get("/api/lista_categoria_caja", categoriaCaja.listadoCategoriaCaja);
+rutas.get("/api/id_inscripcion/:id_escuela", categoriaCaja.buscarInscripcionCategoria);
+
  
 export default rutas;

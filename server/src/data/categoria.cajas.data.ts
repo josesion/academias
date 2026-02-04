@@ -9,7 +9,7 @@ import { listarEntidad } from "../hooks/funcionListar";
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data";
-import { CategoriaCajaInpurts, ModCategoriaCajaInputs, BajaCategoriCajaInputs, ListadoCategoriaCajaInputs }  from "../squemas/categoria.caja";
+import { CategoriaCajaInpurts, ModCategoriaCajaInputs, BajaCategoriCajaInputs, ListadoCategoriaCajaInputs, CategoriaCajaInscripcionInputs }  from "../squemas/categoria.caja";
 import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
 
 
@@ -45,6 +45,32 @@ const verificarCategoriaExistente = async(  data : CategoriaCajaInpurts ) => {
       valores : valor,
       entidad : "Categoria_Caja",
     });
+};
+
+/**
+ * Realiza la consulta SQL para localizar el ID de la categoría 'Inscripcion' en la base de datos.
+ * * Esta es la capa final de acceso a datos. Utiliza una consulta preparada para buscar 
+ * la categoría específica por escuela, nombre y tipo de movimiento, garantizando 
+ * que se obtenga el registro correcto creado por el trigger de sistema.
+ *
+ * @param {CategoriaCajaInscripcionInputs} data - Objeto validado que contiene el id_escuela.
+ * @returns {Promise<TipadoData<{id_categoria : number}>>} Resultado de la búsqueda:
+ * - Si existe: Retorna el id_categoria mapeado por buscarExistenteEntidad.
+ * - Si no existe: Retorna el código de error de entidad no encontrada.
+ */
+const localizarIncripcionCategortia = async( data : CategoriaCajaInscripcionInputs)
+: Promise<TipadoData<{id_categoria : number}>> =>{
+    const sql : string = `SELECT id_categoria FROM categorias_caja
+                            WHERE id_escuela = ? 
+                            AND nombre_categoria = 'Inscripcion'
+                            AND tipo_movimiento = 'ingreso'; `;
+
+    const valor : unknown[]  = [ data.id_escuela ];
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad :"ID_INSCRIPCION_CATCAJA",
+    });                   
 };
 
 
@@ -200,5 +226,6 @@ export const method = {
     altaCategoriaCaja : tryCatchDatos(altaCategoriaCaja),
     modCategoriaCaja  : tryCatchDatos( modCategoriaCaja),
     bajaCategoriaCaja : tryCatchDatos( bajaCategoriaCaja ),
-    listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja )
+    listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja ),
+    localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia )
 };

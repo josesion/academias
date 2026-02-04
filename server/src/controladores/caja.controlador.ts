@@ -172,8 +172,56 @@ const cierreCaja = async( req : Request, res : Response) =>{
     ); 
 };  
 
+
+/**
+ * Controlador para obtener el ID de la caja actualmente abierta de una escuela.
+ * * Verifica si existe una sesión de caja activa para la escuela proporcionada.
+ * Es un paso obligatorio antes de realizar cualquier movimiento de tesorería (ingresos/egresos),
+ * asegurando que los fondos se asignen a una sesión de caja válida.
+ *
+ * @param {Request} req - Objeto de petición de Express. Debe incluir id_escuela en los parámetros.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta HTTP:
+ * - 200 (OK): Retorna el ID de la caja abierta.
+ * - 404 (NOT_FOUND): No hay ninguna caja abierta para esa escuela.
+ * - 500 (INTERNAL_SERVER_ERROR): Error crítico al consultar el estado de la caja.
+ */
+const idCajaAbierta =async ( req : Request, res : Response) =>{
+   
+    const data = { id_escuela : Number(req.params.id_escuela)};
+
+    const idCajaAbiertaResult = await cajaServicio.idCajaAbiertaServicio(data);
+ 
+    if ( idCajaAbiertaResult.code === "ID_CAJA_OK"){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            idCajaAbiertaResult.message,
+            idCajaAbiertaResult.data,
+            undefined,
+            idCajaAbiertaResult.code
+        );
+    };
+    if ( idCajaAbiertaResult.code === "SIN_CAJA_ABIERTA"){
+        return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                idCajaAbiertaResult.message,
+                idCajaAbiertaResult.code
+        );        
+    };
+
+    return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+            idCajaAbiertaResult.message,
+            idCajaAbiertaResult.code
+    ); 
+};
+
 export const method ={
     abrirCaja : tryCatch( abrirCaja ),
     detalleCaja : tryCatch( detalleCaja),
-    cierreCaja : tryCatch( cierreCaja)
+    cierreCaja : tryCatch( cierreCaja),
+    idCajaAbierta : tryCatch( idCajaAbierta )
 };

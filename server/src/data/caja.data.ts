@@ -8,7 +8,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 // ──────────────────────────────────────────────────────────────
 // Sección de  Typados
 // ──────────────────────────────────────────────────────────────
-import { VerificarCajaInputs, AbrirCajaInputs, DetalleCajaInputs, CierreCajaInputs } from "../squemas/cajas"; 
+import { VerificarCajaInputs, AbrirCajaInputs, DetalleCajaInputs, CierreCajaInputs, IdCajaAbiertaInputs } from "../squemas/cajas"; 
 import { ResultAqueoCaja } from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
@@ -222,10 +222,35 @@ const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, mo
     });                       
 };
 
+/**
+ * Consulta la base de datos para obtener el ID de la caja activa de una escuela.
+ * * * Esta función busca en la tabla 'cajas' un registro que cumpla simultáneamente 
+ * con tener el estado 'abierta' y pertenecer al id_escuela proporcionado. 
+ * Utiliza la utilidad 'buscarExistenteEntidad' para manejar la ejecución de la 
+ * sentencia y el mapeo de la respuesta.
+ *
+ * @param {IdCajaAbiertaInputs} data - Objeto que contiene el id_escuela para filtrar.
+ * @returns {Promise<TipadoData<{id_caja : number}>>} Resultado de la operación:
+ * - Éxito: Objeto con id_caja si existe una sesión abierta.
+ * - Fallo: Error de entidad si no hay cajas abiertas o el ID de escuela es inválido.
+ */
+const idCajaAbierta = async ( data : IdCajaAbiertaInputs ) 
+: Promise<TipadoData<{id_caja : number }>>    =>{
+        const sql : string = `select id_caja from cajas c 
+                             where  c.estado = "abierta" and c.id_escuela = ?;`;
+        const valores : unknown[] = [ data.id_escuela ];
+        return await buscarExistenteEntidad({
+            slqEntidad : sql,
+            valores,
+            entidad : "ID_CAJA"
+        });
+};
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
     detalleCajaAlta : tryCatchDatos( detalleCajaAlta ),
     arqueoCaja   : tryCatchDatos( arqueoCaja ),
-    cierreCaja   : tryCatchDatos( cierreCaja)
+    cierreCaja   : tryCatchDatos( cierreCaja),
+    idCajaAbierta : tryCatchDatos( idCajaAbierta ),
 };

@@ -1,5 +1,7 @@
 type Estado = "abierta" | "cerrada";
-type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'otro';
+type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'credito';
+
+
 
 export interface DataAltaCaja{
     id_escuela : number,

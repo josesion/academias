@@ -11,11 +11,56 @@ import { method as categoriaCajaData } from "../data/categoria.cajas.data";
 import { CategoriaCajaInpurts , CategoriaCajaSchema,
          ModCategoriaCajaInputs , ModCategoriaCajaSchema,   
          BajaCategoriCajaInputs, BajaCategoriaCajaSchema,
-         ListadoCategoriaCajaInputs, ListaCategoriaCajaSchema
+         ListadoCategoriaCajaInputs, ListaCategoriaCajaSchema,
+         CategoriaCajaInscripcionInputs, CategoriaCajaInscripcionSchema,
  }  from "../squemas/categoria.caja";
 
 import { TipadoData } from "../tipados/tipado.data";
 import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
+
+
+/**
+ * Servicio encargado de verificar la existencia de la categoría 'Inscripcion' para una escuela.
+ * * Este método valida los inputs mediante un Schema (Zod), consulta la existencia en la 
+ * capa de datos y mapea los resultados a códigos de respuesta internos. Se utiliza 
+ * principalmente para asegurar que los procesos de pago automatizados tengan una 
+ * categoría válida a la cual asociarse.
+ *
+ * @param {CategoriaCajaInscripcionInputs} data - Objeto que contiene el id_escuela a validar.
+ * @returns {Promise<TipadoData<{id_categoria : number}>>} Objeto de respuesta tipado:
+ * - CATEGORIA_INSCRIPCION_OK: Si se encontró el ID de la categoría obligatoria.
+ * - SIN_CATEGORIA_INSCRIPCION: Si la escuela no tiene la categoría creada (falló el trigger o se borró).
+ * - ERROR_CATEGORIA_CAJA_INSCRIPCION: Error genérico ante fallos en la consulta o validación.
+ * * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ */
+const verificacionInscripcionCategoria = async ( data : CategoriaCajaInscripcionInputs)
+: Promise<TipadoData<{id_categoria : number}>> => {
+
+    const dataCatInscripcion : CategoriaCajaInscripcionInputs = CategoriaCajaInscripcionSchema.parse( data )
+    const dataCatInscripcionResult = await categoriaCajaData.localizarIncripcionCategortia(dataCatInscripcion);
+    //    console.log( dataCatInscripcionResult)
+    if ( dataCatInscripcionResult.code === "ID_INSCRIPCION_CATCAJA_NO_EXISTE"){
+        return{
+            error : true,
+            message : "No existe esta categoria inscripcion",
+            code : "SIN_CATEGORIA_INSCRIPCION"
+        };
+    };
+    if ( dataCatInscripcionResult.code === "ID_INSCRIPCION_CATCAJA_EXISTE"){
+        return{
+            error : false,
+            message : "Existe la categoria Obligatoria en categorias cajas",
+            data : dataCatInscripcionResult.data,
+            code : "CATEGORIA_INSCRIPCION_OK"
+        };
+    };
+    
+    return {
+        error: true,
+        message: `Se produjo un error en la veridicacion de categoria Inscripcion`,
+        code: "ERROR_CATEGORIA_CAJA_INSCRIPCION"
+    };
+};
 
 
 /**
@@ -220,5 +265,6 @@ export const method = {
     altaCategoriaCajaServicio : tryCatchDatos(altaCategoriaCajaServicio),
     modCategoriaCaja          : tryCatchDatos( modCategoriaCaja ),
     bajaCategoriaCaja         : tryCatchDatos( bajaCategoriaCaja),
-    listadoCategoriaCaja      : tryCatchDatos( listadoCategoriaCaja )
+    listadoCategoriaCaja      : tryCatchDatos( listadoCategoriaCaja ),
+    verificacionInscripcionCategoria : tryCatchDatos( verificacionInscripcionCategoria ),
 };

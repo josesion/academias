@@ -18,7 +18,7 @@ CREATE TABLE detalle_caja (
     id_caja INT NOT NULL,
     id_categoria INT NOT NULL,
     monto DECIMAL(10, 2) NOT NULL,
-    metodo_pago ENUM('efectivo', 'transferencia', 'tarjeta', 'otro') DEFAULT 'efectivo', -- Nuevo campo
+    metodo_pago ENUM('efectivo', 'transferencia', 'credito', 'debito') DEFAULT 'efectivo', -- Nuevo campo
     descripcion TEXT,
     referencia_id INT NULL, 
     fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

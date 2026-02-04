@@ -15,6 +15,51 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 
 
 /**
+ * Controlador para buscar el ID de la categoría 'Inscripcion' de una escuela específica.
+ * * Esta función extrae el id_escuela de los parámetros de la ruta, consulta el servicio
+ * de categorías y devuelve una respuesta estructurada. Es vital para procesos de 
+ * automatización donde el sistema necesita identificar la categoría de ingreso base.
+ *
+ * @param {Request} req - Objeto de petición de Express. Debe contener id_escuela en params.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Devuelve una respuesta HTTP con el resultado de la búsqueda:
+ * - 200 (OK): Categoría encontrada exitosamente.
+ * - 404 (NOT_FOUND): La escuela no tiene una categoría de 'Inscripcion' definida.
+ * - 500 (INTERNAL_SERVER_ERROR): Error inesperado en el servicio o base de datos.
+ */
+const buscarInscripcionCategoria = async ( req : Request, res : Response ) =>{   
+    const data = { id_escuela : Number( req.params.id_escuela)};
+    const inscripcionCategoriaResult = await categoriaCajaServicio.verificacionInscripcionCategoria(data);
+    
+    if ( inscripcionCategoriaResult.code === "CATEGORIA_INSCRIPCION_OK"){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            inscripcionCategoriaResult.message,
+            inscripcionCategoriaResult.data,
+            undefined,
+            inscripcionCategoriaResult.code
+        );
+    };
+    if ( inscripcionCategoriaResult.code === "SIN_CATEGORIA_INSCRIPCION"){
+        return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            inscripcionCategoriaResult.message,
+            inscripcionCategoriaResult.code
+        );
+    };
+
+    return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+            inscripcionCategoriaResult.message,
+            inscripcionCategoriaResult.code
+       );
+};
+
+
+/**
  * Controlador HTTP para el registro de una nueva categoría de caja.
  * * Este endpoint se encarga de:
  * 1. Mapear el cuerpo de la petición (body) al objeto de datos de la categoría.
@@ -230,7 +275,8 @@ export const method = {
     altaCategoriaCaja : tryCatch(altaCategoriaCaja),
     modCategoriaCaja  : tryCatch(modCategoriaCaja),
     bajaCategoriaCaja : tryCatch(bajaCategoriaCaja),
-    listadoCategoriaCaja : tryCatch( listadoCategoriaCaja )
+    listadoCategoriaCaja : tryCatch( listadoCategoriaCaja ),
+    buscarInscripcionCategoria : tryCatch( buscarInscripcionCategoria )
 };
 
 

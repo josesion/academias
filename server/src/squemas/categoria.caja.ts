@@ -10,6 +10,11 @@ export const CategoriaCajaSchema = z.object({
     estado: EstadoEnum.default("activos"),
 });
 
+export const CategoriaCajaInscripcionSchema = z.object({
+    id_escuela : z.number().int().positive()
+});
+
+
 export const ModCategoriaCajaSchema = z.object({
     id_escuela : z.number().int().positive(),
     id_categoria : z.number().int().positive(),
@@ -41,6 +46,7 @@ export const ListaCategoriaCajaSchema = z.object({
 
 
 export type CategoriaCajaInpurts = z.infer<typeof CategoriaCajaSchema>;
+export type CategoriaCajaInscripcionInputs = z.infer<typeof CategoriaCajaInscripcionSchema>;
 export type ModCategoriaCajaInputs = z.infer<typeof ModCategoriaCajaSchema>; 
 export type BajaCategoriCajaInputs  = z.infer<typeof BajaCategoriaCajaSchema>; 
 export type ListadoCategoriaCajaInputs  = z.infer<typeof ListaCategoriaCajaSchema>;

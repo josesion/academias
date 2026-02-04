@@ -12,6 +12,7 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          AbrirCajaInputs , AbrirCajaSchema,
          DetalleCajaInputs ,DetalleCajaSchema,
          CierreCajaInputs, CierreCajaSchema,
+         IdCajaAbiertaInputs, IdCajaAbiertaSchema
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { DataAltaCaja , DataAltaCajaResult, ResultDetalleCaja } from "../tipados/caja.data.tipado"; 
@@ -166,9 +167,51 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
 };
 
 
+/**
+ * Servicio de validación de estado de caja para operaciones financieras.
+ * * Este método valida el id_escuela mediante el Schema correspondiente y consulta 
+ * la existencia de una caja con estado 'abierta'. Es un paso crítico en el flujo 
+ * de cobros para evitar registros de movimientos en sesiones de caja inexistentes o cerradas.
+ *
+ * @param {IdCajaAbiertaInputs} data - Inputs que contienen el id_escuela.
+ * @returns {Promise<TipadoData<{id_caja : number}>>} Resultado de la validación:
+ * - ID_CAJA_OK: Si la escuela tiene una caja abierta lista para operar.
+ * - SIN_CAJA_ABIERTA: Si no hay sesiones activas (éxito en la consulta, pero resultado vacío).
+ * - ERROR_ID_CAJA: Ante fallos técnicos en la comunicación con la capa de datos.
+ * * @throws {ZodError} Si el formato del id_escuela es incorrecto según IdCajaAbiertaSchema.
+ */
+const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
+: Promise<TipadoData<{id_caja : number}>> => {
+    const dataIdCaja : IdCajaAbiertaInputs = IdCajaAbiertaSchema.parse(data);
+    const dataIdCajaResult = await dataCaja.idCajaAbierta(dataIdCaja);
+   
+    if(dataIdCajaResult.code === "ID_CAJA_EXISTE"){
+        return{
+            error : false,
+            message : "La caja se encuentra abierta",
+            data : dataIdCajaResult.data,
+            code : "ID_CAJA_OK"
+        };
+    };
+    if(dataIdCajaResult.code === "ID_CAJA_NO_EXISTE"){
+        return{
+            error : false,
+            message : "No se encuentra la caja abierta",
+            code : "SIN_CAJA_ABIERTA"
+        };
+    };
+    
+    return {
+        error : true,
+        message : "ERROR, No se logro obtener el id de caja",
+        code : "ERROR_ID_CAJA"
+    };         
+};
+
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
+    idCajaAbiertaServicio : tryCatchDatos( idCajaAbiertaServicio),
 };
 
