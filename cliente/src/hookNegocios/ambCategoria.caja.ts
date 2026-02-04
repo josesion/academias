@@ -53,7 +53,7 @@ const inputsFiltro : InputsPropsBuscador[] = [
 const mapCategiriaForm  = ( dataM : any) => ({
     id_categoria : dataM.id_categoria,
     nombre_categoria      : dataM.nombre_categoria,
-    tipo_movimiento       : dataM.tipo_movimiento,
+    tipo_movimiento       : "ingreso",
 });
 
 const mapCategiriaEliminar = ( data : any) =>({

@@ -10,6 +10,8 @@ import { useInscipcion } from "../hooks/inscripcion";
 import { listadoAlumnos , listadoAlumnoSinPag } from "../servicio/alumnos.fetch";
 import { listadoPlanesUsuarios , listadoPlaneSinPag} from "../servicio/planes.usuarios";
 import { incripcion } from "../servicio/inscripciones.fetch";
+import { registrarMovimientoCaja, obtenerIdCaja } from "../servicio/caja.fetch";
+import { buscarInscripcionCategoria } from "../servicio/categoria.caja.fetch";
 
 
 export const useIncripcionesUsuarios = () =>{
@@ -17,14 +19,17 @@ export const useIncripcionesUsuarios = () =>{
 
     const config = {
         idEscuela: rol?.escuela || 1 ,
-
+      
         servicios : {
             listaAlumnosPaginado : listadoAlumnos,
             listaPlanPaginado    : listadoPlanesUsuarios,
             listadoAlumnosBusqueda : listadoAlumnoSinPag,
             listadoPlanesBusqueda  : listadoPlaneSinPag,
 
-            metodoInscripcion     : incripcion
+            metodoInscripcion     : incripcion,
+            registroMovimiento    : registrarMovimientoCaja,
+            inscripcionCategoriaCaja : buscarInscripcionCategoria,
+            obtenerIdCaja :  obtenerIdCaja, 
         },
 
         paginacion : { 

@@ -158,15 +158,16 @@ div p{
 
     .buscador_buscadores{
         flex-direction: column;
-        max-height: 250px;
+        max-height: 240px;
         width: 90%;
-       
+        justify-content: center;
     }
 
 
     .buscador_buscadores{
       width: 100%;
     }
+    
     .buscador_boton{
         display: flex;
         flex-direction: column;

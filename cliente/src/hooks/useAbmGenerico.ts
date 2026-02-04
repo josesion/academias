@@ -104,7 +104,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 /** Manejador para abrir el modal de Modificación. Mapea los datos del listado al formulario. */
     const handleModificar = ( dataM :  TData ) =>{
         const mapData = config.mapDeFormulario(dataM)
-
+    
         setFormData({
             ...mapData,
             id_escuela : config.idEscuela
@@ -173,7 +173,9 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             });
     }; 
 /** Maneja el cambio del estado de listado (items genericos), ajustando el botón de acción. */
+
    const handleItems = (e: React.ChangeEvent<HTMLSelectElement>)  => { 
+   
         if (e.target.value === "todos"){
            setFiltroData({
                 ...filtroData,
@@ -188,7 +190,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
            }); 
         };
    };
-
+ 
   const handleItemsFormulario  = (e: React.ChangeEvent<HTMLSelectElement>)  => {
      setFormData({
         ...formData,

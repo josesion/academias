@@ -47,7 +47,6 @@ export const modCategoriaCaja = async (
     };
 
    const { id_categoria, nombre_categoria, tipo_movimiento, id_escuela} = data; 
-
    const ruta = `${PAGINA}api/mod_categoria_caja/${id_categoria}/${nombre_categoria}/${tipo_movimiento}/activos/${id_escuela}`;
   
    return await apiFetch( ruta ,{
@@ -111,4 +110,24 @@ export const listadoCategoriaCaja = async(
     signal : signal
   })
 
+};
+
+export const buscarInscripcionCategoria = async( id_escuela : number)
+: Promise<ApiResponse<{id_categoria : number}>> => {
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }; 
+    
+    const ruta = `${PAGINA}api/id_inscripcion/${id_escuela}`;
+   
+    return await apiFetch( ruta , {
+        method : "GET"
+    }) ;   
 };

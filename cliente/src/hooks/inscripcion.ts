@@ -6,6 +6,7 @@ import { fechaHoy, fechaVencimiento } from "./fecha";
 // Typados 
 import {type PaginacionProps } from "../tipadosTs/genericos";
 import type * as TipadoInscripcion from "../tipadosTs/inscripciones";
+import type { DataCajaDetalleIDs, MetodoPago } from "../tipadosTs/caja.typado";
 
 
 /**
@@ -29,6 +30,10 @@ interface InscripcionConfig {
         listadoPlanesBusqueda  : ServicioCrud,
         
         metodoInscripcion   : ServicioCrud,
+        registroMovimiento  : ServicioCrud,
+
+        inscripcionCategoriaCaja : ServicioCrud,  
+        obtenerIdCaja :  ServicioCrud
     },
     paginacion : PaginacionProps,
 
@@ -44,10 +49,17 @@ export const useInscipcion =( config : InscripcionConfig) =>{
     const [ actualizarListado , setActualizarListado ] = useState<boolean>( false );
 
     const [carga , setCarga] = useState<boolean>(true);
+    const [enviando, setEnviando] = useState<boolean>(false);
 
     const [plan , setPlan] = useState< TipadoInscripcion.DataPlan | null >( null );
     const [alumno , setAlumno] = useState< TipadoInscripcion.DataAlumno | null>(null);
+    const [notas ,setNotas] = useState<string>("");
+    const [ metodoPago , setMetodoPago ] = useState<MetodoPago | null >(null);
 
+    const [ detalleMovimientoIds, setDetalleMovimientoIds ] = useState<DataCajaDetalleIDs>({
+        id_caja : null,
+        id_categoria : null
+    });
 
     const [filtroBusquedaAlumno , setFiltroBusquedaAlumno] = useState<TipadoInscripcion.FiltroAlumno>({
         ... config.inicialFiltroAlumno ,
@@ -68,8 +80,6 @@ export const useInscipcion =( config : InscripcionConfig) =>{
     const [listadoPlan , setListadoPlan] = useState<TipadoInscripcion.DataPlan[]>([]);
     const [listadoAlumno , setListadoAlumno] = useState<TipadoInscripcion.DataAlumno[]>([]);
 
-    console.log(listadoAlumno);
-    console.log(listadoPlan);
 
     const handleCachearPlan = (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -108,47 +118,128 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         };
     };
 
+    const handleCachearMetodoPago = (e: React.ChangeEvent<HTMLInputElement>) =>{
+        console.log( e.target.value)
+        if (   e.target.value === "efectivo"
+            || e.target.value === "transferencia"
+            || e.target.value === "credito"
+            || e.target.value === "debito" 
+        ){
+            console.log("paso")
+            const metodo = e.target.value as MetodoPago;
+            setMetodoPago(metodo)
+        }else{
+            console.log("no paso")
+            setMetodoPago(null)
+        };
+    };
+
+    const handleTextAreaNotas = (e: React.ChangeEvent<HTMLTextAreaElement>) =>{    
+        setNotas(e.target.value);
+    };
 // ──────────────────────────────────────────────────────────────
 //Reseteo de los estados 
 // ────────────────────────────────────────────────────────────── 
-const resetFormulario = () => {
-    // 1. Limpiamos los filtros para que los inputs se vacíen
-    setFiltroBusquedaAlumno({
-        ...config.inicialFiltroAlumno,
-        estado: "activos",
-        id_escuela: config.idEscuela,
-        pagina: config.paginacion.pagina,
-        limite: config.paginacion.limite        
-    });
+    const resetFormulario = () => {
+        // 1. Limpiamos los filtros para que los inputs se vacíen
+        setFiltroBusquedaAlumno({
+            ...config.inicialFiltroAlumno,
+            estado: "activos",
+            id_escuela: config.idEscuela,
+            pagina: config.paginacion.pagina,
+            limite: config.paginacion.limite        
+        });
 
-    setFiltroBusquedaPlan({
-        ...config.inicialFiltroPlan,
-        estado: "activos",
-        id_escuela: config.idEscuela,
-        pagina: config.paginacion.pagina,
-        limite: config.paginacion.limite 
-    });
+        setFiltroBusquedaPlan({
+            ...config.inicialFiltroPlan,
+            estado: "activos",
+            id_escuela: config.idEscuela,
+            pagina: config.paginacion.pagina,
+            limite: config.paginacion.limite 
+        });
 
-    // 2. Limpiamos las selecciones actuales
-    setPlan(null);
-    setAlumno(null);
-    setErrorGenerico(null);
+        // 2. Limpiamos las selecciones actuales
+        setPlan(null);
+        setAlumno(null);
+        setNotas("");
+        setMetodoPago(null)
+        setErrorGenerico(null);
 
-};
-    const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
+    };
+
+
+const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
 
-        
-        if ( alumno === null || plan === null ){
-           
-
-            if ( plan   === null && alumno === null ){ setErrorGenerico("Seleccionar Plan y Alumno") ; return}; 
-            if ( alumno === null){ setErrorGenerico("Seleccionar alumno") ; return};
-            if ( plan   === null){ setErrorGenerico("Seleccionar Plan") ; return}; 
     
-            return;
+        if (alumno === null || plan === null || metodoPago === null || detalleMovimientoIds.id_caja === null) {
+            // Validación de infraestructura (Caja)
+            if (detalleMovimientoIds.id_caja === null) { 
+                setErrorGenerico("Abra caja antes de realizar una inscripcion"); 
+                return; 
+            }
+
+            //Caso extremo: Falta todo
+            if (plan === null && alumno === null && metodoPago === null) { 
+                setErrorGenerico("Seleccionar Plan, Alumno y Metodo de Pago"); 
+                return; 
+            }
+
+            //Casos individuales
+            if (alumno === null) { setErrorGenerico("Seleccionar alumno"); return; }
+            if (plan === null) { setErrorGenerico("Seleccionar Plan"); return; }
+            if (metodoPago === null) { setErrorGenerico("Seleccione el metodo de pago"); return; }
+            
+            return; // Seguridad extra
+        }
+        setEnviando(true);
+
+        try{
+                // se realiza el servicio de incripcion 
+                const servicioApiFetch = config.servicios.metodoInscripcion;
+                const datos = {
+                    id_escuela : config.idEscuela,
+                    id_plan    : plan.id,
+                    dni_alumno : Number(alumno.Dni),
+                    fecha_inicio :fechaHoy(),
+                    fecha_fin    : fechaVencimiento(plan.meses),
+                    monto  : plan.monto,
+                    meses_asignados_inscritos : plan.meses,
+                    clases_asignadas_inscritas : plan.clases
+                };
+                
+                const subcripcionInsc = await servicioApiFetch( datos );
+                
+                if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
+                    // al ser exitosa obtengo el id de la inscripcion para agregarla al detalle de caja 
+                    const servicioApiFetchDetalleCaja = config.servicios.registroMovimiento;
+                    const detalleMovimientoResult = await servicioApiFetchDetalleCaja({
+                        id_caja : detalleMovimientoIds.id_caja,
+                        id_categoria : detalleMovimientoIds.id_categoria,
+                        monto : Number(plan.monto),
+                        metodo_pago : metodoPago,
+                        descripcion : notas,
+                        referencia_id : subcripcionInsc.data.id // este id
+                    });
+                    
+                    if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
+                        resetFormulario();
+                        setModalInsc(false);             
+                    }else{
+                            setErrorGenerico(detalleMovimientoResult.message)
+                    }
+                    return
+                }else{
+                    // console.log("mostrar el error al cliente")
+                    setErrorGenerico( subcripcionInsc.message  );
+                }
+        }catch(error){
+            setErrorGenerico("Error de conexión");
+        }finally{
+            setEnviando(false);
         };
 
+        // se realiza el servicio de incripcion 
         const servicioApiFetch = config.servicios.metodoInscripcion;
         const datos = {
             id_escuela : config.idEscuela,
@@ -164,23 +255,86 @@ const resetFormulario = () => {
         const subcripcionInsc = await servicioApiFetch( datos );
         
         if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
-            resetFormulario();
-            setModalInsc(false);
+            // al ser exitosa obtengo el id de la inscripcion para agregarla al detalle de caja 
+            const servicioApiFetchDetalleCaja = config.servicios.registroMovimiento;
+            const detalleMovimientoResult = await servicioApiFetchDetalleCaja({
+                id_caja : detalleMovimientoIds.id_caja,
+                id_categoria : detalleMovimientoIds.id_categoria,
+                monto : Number(plan.monto),
+                metodo_pago : metodoPago,
+                descripcion : notas,
+                referencia_id : subcripcionInsc.data.id // este id
+            });
+ 
+            if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
+               resetFormulario();
+               setModalInsc(false);             
+            };
             return
         }else{
            // console.log("mostrar el error al cliente")
             setErrorGenerico( subcripcionInsc.message  );
-        };
+        }
 
       
-    };
+};
 
     const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
         e.preventDefault();
         setErrorGenerico(null)
         setModalInsc(false) 
         resetFormulario();
-   };
+};
+
+// ──────────────────────────────────────────────────────────────
+// Obtencion del id de Inscripcion predeterminado
+// ──────────────────────────────────────────────────────────────
+
+useEffect( () => {
+    const obtenerIdInscipcion = async () => {
+        const servicioApiFetch = config.servicios.inscripcionCategoriaCaja;
+        const idCategoriaInscripcion = await servicioApiFetch( config.idEscuela );   
+           
+        if ( idCategoriaInscripcion.code === "CATEGORIA_INSCRIPCION_OK" && idCategoriaInscripcion.data){
+
+            setDetalleMovimientoIds(prev => ({
+                ...prev,          
+                id_categoria :  idCategoriaInscripcion.data.id_categoria
+            }));     
+        }else{
+            setDetalleMovimientoIds(prev => ({
+                ...prev,          
+                id_categoria : null
+            })); 
+        }
+    };
+    obtenerIdInscipcion();
+}, [] );
+
+// ──────────────────────────────────────────────────────────────
+// Obtencion del id_caja si es q se eencuentra abierta
+// ──────────────────────────────────────────────────────────────
+
+useEffect( () => {
+    const obtenerIdCaja = async () =>{
+        const servicioApiFetch = config.servicios.obtenerIdCaja;
+        const idCajaAbierta = await servicioApiFetch(config.idEscuela);
+       
+        if ( idCajaAbierta.code === "ID_CAJA_OK" && idCajaAbierta.data){
+            setDetalleMovimientoIds(prev => ({
+                ...prev,          
+                id_caja: idCajaAbierta.data.id_caja
+            }));
+        }else{
+            setDetalleMovimientoIds(prev => ({
+                ...prev,          
+                id_caja : null
+            }));           
+        };
+    }; 
+    obtenerIdCaja();
+}, []);
+
 
 // ──────────────────────────────────────────────────────────────
 // Listado de alumnos  con paginacion y sin paginacion 
@@ -282,7 +436,9 @@ useEffect( () =>{
     return{
         plan,
         alumno,
+        notas,
         errorGenerico,
+        enviando,
         modalInsc,
         setModalInsc,
 
@@ -291,6 +447,8 @@ useEffect( () =>{
 
         handleCachearPlan,
         handleCachearAlumno,
+        handleCachearMetodoPago,
+        handleTextAreaNotas,
 
         handleInscribir,
         handleCancelar

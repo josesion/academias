@@ -11,11 +11,15 @@ export const UsuarioPage = () => {
   const {
     plan,
     alumno,
+    notas,
+    enviando,
     errorGenerico,
     listadoPlan,
     listadoAlumno,
     handleCachearPlan,
     handleCachearAlumno,
+    handleCachearMetodoPago,
+    handleTextAreaNotas,
     handleInscribir,
     handleCancelar,
     modalInsc,
@@ -67,6 +71,10 @@ export const UsuarioPage = () => {
             handleCachearAlumno={handleCachearAlumno}
             inscribir={handleInscribir}
             cancelar={handleCancelar}
+            handleCachearMetodoPago={handleCachearMetodoPago}
+            handleTextAreaNotas={handleTextAreaNotas}
+            notas={notas}
+            enviando={enviando}
           />
         </div>
       )}
