@@ -17,7 +17,8 @@ import { AmbCategoriasCajaUsuarios } from "./pagina/privado/categoria.caja.usuar
 
 // Formulario para asistencia
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
-
+// Formulario  Arqueo Caja
+import { CajaArqueo } from "./pagina/privado/usuario/caja/Caja";
 // seccion de componentes
 
 import { RutasPrivadas } from "./Rutas.Protegidas";
@@ -40,6 +41,7 @@ function App() {
             <Route element={<LayoutSinMenu />}>
               <Route element={<RutasPrivadas />}>
                 <Route path="/asistencia" element={<FormularioAsistencia />} />
+                <Route path="/caja_usuario" element={<CajaArqueo />} />
               </Route>
             </Route>
 

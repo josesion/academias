@@ -1,0 +1,57 @@
+.movimiento_detalle_contenedor {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.tabla-finanzas {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 10px; /* Espacio entre filas */
+}
+
+.tabla-finanzas tr {
+  background: rgba(11, 11, 11, 0.45);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.tabla-finanzas tr:hover {
+  transform: scale(1.005);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tabla-finanzas td {
+  padding: 14px 20px;
+  color: var(--color-letra);
+  font-size: 0.9rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Bordes redondeados para las puntas de la fila */
+.tabla-finanzas td:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px 0 0 12px;
+  opacity: 0.5;
+}
+
+.tabla-finanzas td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0 12px 12px 0;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* Colores dinámicos */
+.monto-positivo {
+  color: #10b981 !important; /* Verde Esmeralda */
+}
+
+.monto-negativo {
+  color: #ef4444 !important; /* Rojo */
+}
+
+/* Indicador sutil lateral según el tipo */
+.fila-ingreso { border-left: 3px solid #10b981; }
+.fila-egreso { border-left: 3px solid #ef4444; }

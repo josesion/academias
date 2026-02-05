@@ -1,0 +1,167 @@
+/* =============================================
+   1. VARIABLES Y RESET (Base)
+   ============================================= */
+:root {
+  --color-letra: #ffffff; /* Ajusta según tu proyecto */
+}
+
+/* =============================================
+   2. SCROLLBAR PERSONALIZADO (Gradiente Neón)
+   ============================================= */
+/* Aplicado a toda la página y contenedores internos */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22d3ee,
+    #c084fc
+  )
+}
+
+/* =============================================
+   3. ESTRUCTURA PRINCIPAL (LAYOUT)
+   ============================================= */
+.caja_arqueo_contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.caja_arqueo_cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.caja_arqueo_cabecera_botones {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Títulos <p> */
+.caja_arqueo_titulo, 
+.caja_arqueo_metricas_detalles > p, 
+.caja_arqueo_metricas_metodo_pago > p {
+  color: var(--color-letra);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0.8;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.caja_arqueo_titulo {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+/* =============================================
+   4. GRILLA DE TARJETAS (Resumen Superior)
+   ============================================= */
+.caja_arqueo_info_contenedor {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+/* =============================================
+   5. SECCIÓN MÉTRICAS (Tabla y Resumen)
+   ============================================= */
+.caja_arqueo_metricas {
+  display: flex;
+  flex-direction: row; /* En fila */
+  gap: 25px;
+  align-items: flex-start;
+  flex: 1;
+  min-height: 0; 
+}
+
+/* Tabla: 70% del ancho */
+.caja_arqueo_metricas_detalles {
+  flex: 2;
+  min-width: 0;
+  max-height: 75vh; /* Límite para activar el scroll */
+  overflow-y: auto;
+  padding-right: 12px;
+}
+
+/* Panel Pagos: 30% del ancho */
+.caja_arqueo_metricas_metodo_pago {
+  flex: 0.8;
+  position: sticky;
+  top: 0;
+}
+.caja_arqueo_metricas_detalles > p::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
+  margin-left: 10px;
+}
+/* =============================================
+   6. RESPONSIVE (Ajustes de Pantalla)
+   ============================================= */
+@media (max-width: 750px) {
+  .caja_arqueo_metricas {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .caja_arqueo_metricas_detalles, 
+  .caja_arqueo_metricas_metodo_pago {
+    width: 100%;
+    flex: none;
+    max-height: none;
+  }
+
+  .caja_arqueo_metricas_metodo_pago {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .caja_arqueo_cabecera {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .caja_arqueo_cabecera_botones {
+    width: 100%;
+  }
+
+  .caja_arqueo_cabecera_botones > * {
+    flex: 1;
+  }
+}
