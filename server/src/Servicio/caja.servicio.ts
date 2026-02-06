@@ -12,10 +12,11 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          AbrirCajaInputs , AbrirCajaSchema,
          DetalleCajaInputs ,DetalleCajaSchema,
          CierreCajaInputs, CierreCajaSchema,
-         IdCajaAbiertaInputs, IdCajaAbiertaSchema
+         IdCajaAbiertaInputs, IdCajaAbiertaSchema,
+         PanelMetricasInputs, PanelMetricasSchema,
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
-import { DataAltaCaja , DataAltaCajaResult, ResultDetalleCaja } from "../tipados/caja.data.tipado"; 
+import { DataAltaCaja , DataAltaCajaResult, ResultDetalleCaja, MetricaPanelPrincipal } from "../tipados/caja.data.tipado"; 
 
 
 /**
@@ -208,10 +209,55 @@ const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
     };         
 };
 
+/**
+ * Procesa y normaliza las métricas del panel principal de una caja.
+ * * @description
+ * 1. Valida los datos de entrada (id_caja, id_escuela) mediante `PanelMetricasSchema`.
+ * 2. Consulta la capa de datos para obtener cálculos SQL (ingresos, egresos, saldos).
+ * 3. Mapea los códigos internos ("METRICAS_CAJA_EXISTE") a códigos de negocio ("METRICAS_OK").
+ * * @param {PanelMetricasInputs} data - Parámetros de entrada (id_caja, id_escuela).
+ * @returns {Promise<TipadoData<MetricaPanelPrincipal>>} Objeto estandarizado:
+ * - `METRICAS_OK`: Si se obtuvieron los cálculos correctamente.
+ * - `SIN_METRICAS`: Si la caja no existe o no se encontraron registros.
+ * - `ERROR_METRICAS`: Error inesperado en la consulta.
+ * * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ */
+const metricaPanelPrincipal  = async ( data : PanelMetricasInputs)
+: Promise<TipadoData<MetricaPanelPrincipal>> => {
+    const metricasData : PanelMetricasInputs = PanelMetricasSchema.parse(data);
+    const metricasResult = await dataCaja.metricasCaja(metricasData);
+
+
+    if ( metricasResult.code === "METRICAS_CAJA_EXISTE" ){
+        return {
+            error : false,
+            message : "Metricas Caja",
+            data : metricasResult.data,
+            code : "METRICAS_OK"
+        };           
+    };
+
+    if ( metricasResult.code === "METRICAS_CAJA_NO_EXISTE" ){
+        // en teoria nunca pasaria, ya q simpre q entremos por aca la caja estaria abierta
+        return {
+            error : true,
+            message : 'Sin metricas de caja',
+            code    : 'SIN_METRICAS'
+        }
+    };
+
+    return {
+        error : true,
+        message : "ERROR, No se logro obtener Metricas ",
+        code : "ERROR_METRICAS"
+    };       
+};
+
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
     idCajaAbiertaServicio : tryCatchDatos( idCajaAbiertaServicio),
+    metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal)
 };
 

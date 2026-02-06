@@ -37,3 +37,25 @@ export interface ResultAqueoCaja{
     monto_inicial : number,
     monto_sistema_calculado : number
 };
+
+
+export interface MetricaPanelPrincipal {
+    id_caja: number;
+    monto_inicial: number;
+    
+    // Totales generales del movimiento
+    total_ingresos: number;
+    total_egresos: number;
+    
+    // El neto del día (Ingresos - Egresos)
+    flujo_del_dia: number;
+
+    // Desglose por método de pago (específico para ingresos)
+    total_efectivo: number;
+    total_transferencia: number;
+    total_debito: number;
+    total_credito: number;
+
+    // El monto final que debería haber sumando el inicial
+    balance_total_real: number;
+}

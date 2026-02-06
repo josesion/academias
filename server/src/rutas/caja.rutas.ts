@@ -6,6 +6,7 @@ const ruta  =  Router();
  ruta.post("/api/detalle_caja", cajaControlador.detalleCaja);
  ruta.post("/api/cierre_caja", cajaControlador.cierreCaja);
  ruta.get("/api/id_caja/:id_escuela", cajaControlador.idCajaAbierta);
+ ruta.get("/api/metricas_caja/:id_caja/:id_escuela",cajaControlador.metricasPanelCaja);
 
 
  export default ruta ;

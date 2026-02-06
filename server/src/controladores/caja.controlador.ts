@@ -219,9 +219,52 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
     ); 
 };
 
+/**
+ * Handler de Express para obtener las métricas del panel de caja.
+ * * @async
+ * @param {Request} req - Objeto de petición de Express (espera params: id_caja, id_escuela).
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} 
+ * - 200: Si se obtienen las métricas correctamente.
+ * - 404: Si no se encuentran métricas (caja inexistente).
+ * - 500: Si ocurre un error inesperado en el servidor.
+ */
+const metricasPanelCaja = async ( req : Request, res : Response) =>{
+    const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
+    const metricasResult = await cajaServicio.metricaPanelPrincipal( data );
+
+    if ( metricasResult.code === "SIN_METRICAS"){
+        return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                "Sin Metricas para Caja",
+                "SIN_METRICAS"
+        );         
+    };
+
+
+    if ( metricasResult.code === "METRICAS_OK"){
+        return enviarResponse(
+            res, 
+            CodigoEstadoHTTP.OK,
+            metricasResult.message,
+            metricasResult.data,
+            undefined ,
+            metricasResult.code
+        );
+    };
+    return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+            "Error , Metricas Caja server Error",
+            metricasResult.code
+    );    
+};
+
 export const method ={
     abrirCaja : tryCatch( abrirCaja ),
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
-    idCajaAbierta : tryCatch( idCajaAbierta )
+    idCajaAbierta : tryCatch( idCajaAbierta ),
+    metricasPanelCaja : tryCatch( metricasPanelCaja )
 };

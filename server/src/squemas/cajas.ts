@@ -39,7 +39,7 @@ export const DetalleCajaSchema = z.object({
 
 export const CierreCajaSchema = z.object({
     id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),
-monto_final_real: z
+    monto_final_real: z
     .union([z.number(), z.string(), z.undefined(), z.null()])
     .refine((val) => val !== "" && val !== undefined && val !== null, {
         message: "¡Freno! Tenés que poner el monto antes de cerrar",
@@ -62,8 +62,16 @@ export const IdCajaAbiertaSchema = z.object({
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."),    
 });
 
+export const PanelMetricasSchema = z.object({
+     id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
+     id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),      
+});
+
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
 export type DetalleCajaInputs = z.infer<typeof DetalleCajaSchema>;
 export type VerificarCajaInputs = z.infer<typeof VerificarCajaSchema>;
 export type AbrirCajaInputs = z.infer<typeof AbrirCajaSchema>;
 export type CierreCajaInputs = z.infer<typeof CierreCajaSchema>;
+export type PanelMetricasInputs = z.infer<typeof PanelMetricasSchema>;
