@@ -210,8 +210,8 @@ const metricaPanelPrincipal = ( data : CierreCajaInputs )
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
                             
-                            -- 2. Total del Día (Flujo neto del día: ingresos - egresos)
-                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0) AS flujo_del_dia,
+                            -- 2. Total del Día (Monto inicial + flujo neto: ingresos - egresos)
+                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS flujo_del_dia,
 
                             -- 3. Desglose por Método de Pago (Solo de ingresos para el arqueo)
                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_efectivo,

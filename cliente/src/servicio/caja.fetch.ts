@@ -51,3 +51,24 @@ export const obtenerIdCaja = async ( id_escuela : TipadoCaja.idCajaAbierta)
         method : "GET"
     });
 };
+
+export const metricasPanelCaja = async ( data : TipadoCaja.MetricasCaja)
+: Promise<ApiResponse<TipadoCaja.MetricaPanelPrincipal>> => {
+   const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };  
+    const {id_caja , id_escuela} = data ;
+    const ruta = `${PAGINA}api/metricas_caja/${id_caja}/${id_escuela}`;   
+    return await apiFetch(ruta, {
+        method : "GET"
+    });
+    
+};
