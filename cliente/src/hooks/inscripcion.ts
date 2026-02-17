@@ -47,6 +47,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
     const [ modalInsc , setModalInsc] = useState<boolean>(false);
     const [ actualizarListado , setActualizarListado ] = useState<boolean>( false );
+    const [actualizarIngresoInscipcion , setActualizarIngresoIncripcion] = useState<boolean>( false );
 
     const [carga , setCarga] = useState<boolean>(true);
     const [enviando, setEnviando] = useState<boolean>(false);
@@ -224,7 +225,8 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                     
                     if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
                         resetFormulario();
-                        setModalInsc(false);             
+                        setModalInsc(false);     
+                        setActualizarIngresoIncripcion(!actualizarIngresoInscipcion);        
                     }else{
                             setErrorGenerico(detalleMovimientoResult.message)
                     }
@@ -451,7 +453,8 @@ useEffect( () =>{
         handleTextAreaNotas,
 
         handleInscribir,
-        handleCancelar
+        handleCancelar,
+        actualizarIngresoInscipcion
     };    
 
 };

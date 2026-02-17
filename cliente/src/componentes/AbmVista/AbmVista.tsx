@@ -72,8 +72,8 @@ interface AmbViewProps {
   onHandleChangeFormulario: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onHandleAgregar: () => void;
   onHandleEstado: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onHandleItems: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onHandleItemsFormulario: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onHandleItems?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onHandleItemsFormulario?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 
   onHandlePaginaCambiada: (pagina: number) => void;
 

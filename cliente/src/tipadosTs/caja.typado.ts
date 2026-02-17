@@ -50,3 +50,28 @@ export interface MetricaPanelPrincipal {
     // El monto final que debería haber sumando el inicial
     balance_total_real: number;
 }
+
+export interface AperturaCajaInputs {
+    id_escuela: number;
+    estado: 'abierta' | 'cerrada'; // Lo tipamos como literal para evitar errores de escritura
+    id_usuario: number | null;     // Permitimos null por si aún no se asignó
+    monto_inicial: number;
+};
+
+export interface AperturaCajaRespuesta {
+    id_escuela: number;
+     id : number;
+    id_usuario: number | null;     // Permitimos null por si aún no se asignó
+    monto_inicial: number;
+}
+
+export interface CierreCajaData{
+    id_caja : number,
+    id_escuela : number
+    monto_final_real : number
+};
+
+export interface CierreCajaRespuesta{
+    id_caja : number,
+    estado : "cerrada"
+};

@@ -1,0 +1,96 @@
+/* --- CONTENEDOR (Basado en tu clase formulario) --- */
+.apertura-caja-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 2rem;
+
+    /* Estilo visual exacto */
+    background: var(--color-gradiente-azul);
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    
+    width: 90%;
+    max-width: 450px;
+    margin: 0 auto; /* Centrado */
+    
+    animation: fadeInForm 0.4s ease;
+    transition: box-shadow 0.25s ease;
+}
+
+.apertura-caja-container:hover {
+    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+
+/* --- TÍTULO (Basado en tu clase formulario_titulo) --- */
+.titulo-apertura {
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--color-letra);
+    letter-spacing: 1px;
+    width: 100%;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    padding-bottom: 8px;
+    margin: 0;
+}
+
+/* --- INPUTS (Forzando el estilo que me pasaste) --- */
+.apertura-caja-container input {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 15px;
+    color: #f2f2f2;
+    background-color: #1f1f2b;
+    border: 1px solid #3a3a4a;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.apertura-caja-container input:focus {
+    outline: none;
+    border-color: var(--color-fondo-azul);
+    box-shadow: 0 0 0 2px rgba(79,70,229,0.25);
+}
+
+/* --- BOTONERA (Basado en tu clase botonera_formulario) --- */
+.acciones-apertura {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 12px;
+    
+}
+
+/* Estilo para los botones dentro de la botonera */
+.acciones-apertura > * {
+    width: 100%;
+    max-width: 200px;
+}
+
+/* --- ANIMACIÓN --- */
+@keyframes fadeInForm {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- MEDIA QUERIES --- */
+@media (max-width: 576px) {
+    .apertura-caja-container {
+        width: 95%;
+        padding: 18px;
+    }
+    .acciones-apertura {
+        flex-direction: column;
+        align-items: center;
+    }
+}
