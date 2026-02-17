@@ -5,13 +5,14 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidad } from "../hooks/iudEntidad";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 // ──────────────────────────────────────────────────────────────
 // Sección de  Typados
 // ──────────────────────────────────────────────────────────────
 import { VerificarCajaInputs, AbrirCajaInputs, 
          DetalleCajaInputs, CierreCajaInputs,
-         IdCajaAbiertaInputs,  } from "../squemas/cajas"; 
-import { ResultAqueoCaja, MetricaPanelPrincipal } from "../tipados/caja.data.tipado"; 
+         IdCajaAbiertaInputs,ListaMovimientosCajaInputs  } from "../squemas/cajas"; 
+import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento } from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -210,22 +211,26 @@ const metricaPanelPrincipal = ( data : CierreCajaInputs )
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
                             
-                            -- 2. Total del Día (Monto inicial + flujo neto: ingresos - egresos)
+                            -- 2. Total del Día (Monto inicial + flujo neto)
                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS flujo_del_dia,
 
-                            -- 3. Desglose por Método de Pago (Solo de ingresos para el arqueo)
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_efectivo,
+                            -- 3. Desglose por Método de Pago
+                            -- AJUSTE: Sumamos el monto inicial al efectivo acumulado
+                            (c.monto_inicial + COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                                                WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                                                ELSE 0 END), 0)) AS total_efectivo,
+                            
                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_transferencia,
                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_debito,
                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_credito,
 
-                            -- 4. Balance Final de Caja (Monto inicial + todos los movimientos)
+                            -- 4. Balance Final de Caja
                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS balance_total_real
 
                         FROM cajas c
                         LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
                         LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-                        WHERE c.id_caja = ? and c.id_escuela = ?
+                        WHERE c.id_caja = ? AND c.id_escuela = ?
                         GROUP BY c.id_caja, c.monto_inicial;`;
    const valores : unknown[] = [ data.id_caja, data.id_escuela];     
    return buscarExistenteEntidad({
@@ -299,6 +304,47 @@ const idCajaAbierta = async ( data : IdCajaAbiertaInputs )
         });
 };
 
+/**
+ * Lista los movimientos detallados de una caja específica con soporte para scroll infinito (paginación manual).
+ * * @param {ListaMovimientosCajaInputs} data - Objeto con los parámetros de entrada.
+ * @param {number} data.id_caja - ID de la caja de la cual se quieren obtener los movimientos.
+ * @param {number} data.limite - Cantidad de registros a recuperar por página.
+ * @param {number} data.offset - Cantidad de registros a saltar (0 para la primera carga).
+ * * @returns {Promise<TipadoData<DetalleCajaMovimiento[]>>} Promesa que resuelve a un objeto de tipo TipadoData conteniendo el array de movimientos.
+ * * @example
+ * const result = await listaMovimientosCaja({ id_caja: 25, limite: 10, offset: 0 });
+ * if (!result.error) console.log(result.data);
+ */
+const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
+: Promise<TipadoData<DetalleCajaMovimiento[]>> =>  {
+    const { id_caja , limite , offset} = data;
+     const sql : string = `SELECT 
+                                det.id_movimiento,
+                                det.monto,
+                                det.metodo_pago,
+                                det.descripcion,
+                                cat.nombre_categoria,
+                                cat.tipo_movimiento, -- Para saber si es ingreso o egreso
+                                -- Separamos fecha y hora para el agrupador del Front
+                                DATE(det.fecha_movimiento) as fecha_grupo, 
+                                TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada
+                            FROM detalle_caja det
+                            INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                            WHERE det.id_caja = ?
+                            ORDER BY det.fecha_movimiento DESC, det.id_movimiento DESC -- Lo más nuevo arriba de todo
+                            LIMIT ${limite} OFFSET ${offset}; `;
+
+     const valores : unknown[] = [ id_caja ];
+     return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores,
+        entidad : "LISTA_MOVIMIENTOS_CAJA",
+        estado : "=)"
+     });
+};
+
+
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
@@ -307,4 +353,5 @@ export const method = {
     cierreCaja   : tryCatchDatos( cierreCaja),
     idCajaAbierta : tryCatchDatos( idCajaAbierta ),
     metricasCaja : tryCatchDatos( metricaPanelPrincipal ),
+    listaMovimientosCaja : tryCatchDatos( listaMovimientosCaja ),
 };

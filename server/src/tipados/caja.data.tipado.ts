@@ -1,7 +1,18 @@
 type Estado = "abierta" | "cerrada";
 type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'credito';
 
-
+export interface DetalleCajaMovimiento {
+    id_movimiento: number;
+    monto: number; // Viene como DECIMAL(10,2), en JS es number
+    metodo_pago: MetodoPago;
+    descripcion: string | null; // Puede ser NULL según tu tabla
+    nombre_categoria: string;
+    tipo_movimiento: Estado;
+    
+    // Estos campos son los que generamos con DATE() y TIME_FORMAT()
+    fecha_grupo: string; // Formato 'YYYY-MM-DD'
+    hora_formateada: string; // Formato 'HH:mm'
+}
 
 export interface DataAltaCaja{
     id_escuela : number,
@@ -58,4 +69,5 @@ export interface MetricaPanelPrincipal {
 
     // El monto final que debería haber sumando el inicial
     balance_total_real: number;
-}
+};
+

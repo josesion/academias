@@ -261,10 +261,55 @@ const metricasPanelCaja = async ( req : Request, res : Response) =>{
     );    
 };
 
+
+/**
+ * Endpoint de Express para listar movimientos de caja.
+ * Extrae parámetros de la URL, delega la lógica al servicio y despacha la respuesta HTTP.
+ * * @param {Request} req - Objeto de petición Express. Espera query params: id_caja, limite, offset.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<Response>} Respuesta JSON con estado HTTP correspondiente.
+ */
+const movimientosCaja = async ( req : Request, res : Response) => {
+    const data = {
+        id_caja : Number(req.query.id_caja),
+        limite : Number(req.query.limite) || 10,
+        offset : Number(req.query.offset) || 0
+    };
+    const movimientosResult = await cajaServicio.movimientosCaja( data );
+    console.log(movimientosResult)
+    if ( movimientosResult.code === "MOVIMIENTOS_CAJA_OK"){
+        return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            movimientosResult.message,
+            movimientosResult.data,
+            undefined,
+            movimientosResult.code
+        );
+    };
+
+    if ( movimientosResult.code === "MOVIMIENTOS_CAJA_VACIO" ){
+        return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                "No se encontraron movimientos de caja",
+                movimientosResult.code
+        );         
+    };
+
+    return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+            "Error , Movimientos Caja server Error",
+            movimientosResult.code
+    );      
+};
+
 export const method ={
     abrirCaja : tryCatch( abrirCaja ),
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
-    metricasPanelCaja : tryCatch( metricasPanelCaja )
+    metricasPanelCaja : tryCatch( metricasPanelCaja ),
+    movimientosCaja : tryCatch( movimientosCaja )
 };

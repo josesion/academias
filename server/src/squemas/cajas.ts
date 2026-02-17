@@ -15,7 +15,7 @@ export const AbrirCajaSchema = z.object({
         .int("El ID de la escuela debe ser un número entero.")
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."), 
    id_usuario: z.number().nullable().default(null), // por el momento quedara en null
-   monto_inicial: z.number().min(0),     
+   monto_inicial: z.number("El monto inicial debe ser un número válido").min(0),     
 });
 
 
@@ -69,9 +69,25 @@ export const PanelMetricasSchema = z.object({
      id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),      
 });
 
+export const listaMovimientosCajaSchema = z.object({
+    id_caja: z.coerce.number()
+        .int("El ID de la caja debe ser un número entero.")
+        .positive("El ID de la caja debe ser positivo (mayor que 0)."),
+    limite: z.coerce.number()
+        .int("El limite debe ser un numero entero.")
+        .nonnegative("El limite no puede ser negativo.")
+        .default(20),
+        
+    offset: z.coerce.number()
+        .int("El offset debe ser un numero entero.")
+        .nonnegative("El offset no puede ser negativo.")
+        .default(0)        
+});
+
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
 export type DetalleCajaInputs = z.infer<typeof DetalleCajaSchema>;
 export type VerificarCajaInputs = z.infer<typeof VerificarCajaSchema>;
 export type AbrirCajaInputs = z.infer<typeof AbrirCajaSchema>;
 export type CierreCajaInputs = z.infer<typeof CierreCajaSchema>;
 export type PanelMetricasInputs = z.infer<typeof PanelMetricasSchema>;
+export type ListaMovimientosCajaInputs = z.infer<typeof listaMovimientosCajaSchema>;

@@ -14,9 +14,13 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          CierreCajaInputs, CierreCajaSchema,
          IdCajaAbiertaInputs, IdCajaAbiertaSchema,
          PanelMetricasInputs, PanelMetricasSchema,
+         ListaMovimientosCajaInputs, listaMovimientosCajaSchema
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
-import { DataAltaCaja , DataAltaCajaResult, ResultDetalleCaja, MetricaPanelPrincipal } from "../tipados/caja.data.tipado"; 
+import { DataAltaCaja , DataAltaCajaResult,
+         ResultDetalleCaja, MetricaPanelPrincipal ,DetalleCajaMovimiento
+ } from "../tipados/caja.data.tipado"; 
+
 
 
 /**
@@ -253,11 +257,51 @@ const metricaPanelPrincipal  = async ( data : PanelMetricasInputs)
     };       
 };
 
+/**
+ * Controlador de negocio para obtener movimientos de caja.
+ * Valida la entrada con Zod, consulta la base de datos y normaliza la respuesta.
+ * * @param {ListaMovimientosCajaInputs} data - Parámetros de entrada (id_caja, limite, offset).
+ * @returns {Promise<TipadoData<DetalleCajaMovimiento[]>>} Resultado de la operación con data tipada.
+ * * @example
+ * // Caso de éxito: devuelve array de movimientos
+ * // Caso vacío: devuelve error: false pero con código "MOVIMIENTOS_CAJA_VACIO"
+ * // Caso error: devuelve error: true para ser capturado por el manejador de trychat
+ */
+const movimientosCaja = async ( data : ListaMovimientosCajaInputs)
+: Promise<TipadoData<DetalleCajaMovimiento[]>> =>{
+    const movimientosData :  ListaMovimientosCajaInputs = listaMovimientosCajaSchema.parse(data);
+    const movimientosResult = await dataCaja.listaMovimientosCaja(movimientosData);
+    //console.log(movimientosResult)
+    if ( movimientosResult.code === 'LISTA_MOVIMIENTOS_CAJA_LISTED'){
+        return{
+            error : false, 
+            message : "Movimientos de caja obtenidos",
+            data : movimientosResult.data,
+            code : "MOVIMIENTOS_CAJA_OK"
+        };
+    };
+    
+    if ( movimientosResult.code === 'NO_ACTIVE_LISTA_MOVIMIENTOS_CAJA'){
+        return{
+            error : false,
+            message : "No se encontraron movimientos de caja",
+            code : "MOVIMIENTOS_CAJA_VACIO"
+        };
+    };        
+
+    return {
+        error : true,
+        message : "ERROR, No se logro obtener los movimientos de caja ",
+        code : "ERROR_MOVIMIENTOS_CAJA"
+    };  
+};
+
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
     idCajaAbiertaServicio : tryCatchDatos( idCajaAbiertaServicio),
-    metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal)
+    metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal),
+    movimientosCaja : tryCatchDatos( movimientosCaja )
 };
 
