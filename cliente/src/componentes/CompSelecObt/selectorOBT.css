@@ -1,0 +1,58 @@
+/* Contenedor principal */
+.grupo_input_caja {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+/* Estilo del Select con fondo tipo "Dark Mode / AI" */
+.input_caja {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.95rem;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    
+    /* El color de fondo gris oscuro que pediste */
+    background-color: #1e1e1e; 
+    /* Texto en blanco suave */
+    color: #d4d4d4; 
+    
+    /* Borde sutil para que no se pierda */
+    border: 1px solid #333;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    
+    /* Flecha personalizada en color claro */
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23d4d4d4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+}
+
+/* Efecto al pasar el mouse */
+.input_caja:hover {
+    background-color: #252525;
+    border-color: #444;
+}
+
+/* Efecto cuando está activo */
+.input_caja:focus {
+    outline: none;
+    border-color: #007acc; /* Un azul tipo VS Code */
+    box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.3);
+}
+
+/* Estilo para las opciones (el menú desplegable) */
+.input_caja option {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 10px;
+}
+
+/* Para que la primera opción se vea como un placeholder */
+.input_caja option[value=""] {
+    color: #757575;
+}

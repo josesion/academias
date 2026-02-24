@@ -110,11 +110,10 @@
 
 /* Tabla: 70% del ancho */
 .caja_arqueo_metricas_detalles {
-  flex: 2;
-  min-width: 0;
-  max-height: 75vh; /* Límite para activar el scroll */
-  overflow-y: auto;
-  padding-right: 12px;
+    height: 500px; /* O el alto que quieras */
+    overflow-y: auto; /* Esto crea el scroll interno */
+    position: relative;
+    overflow-x: hidden;
 }
 
 /* Panel Pagos: 30% del ancho */

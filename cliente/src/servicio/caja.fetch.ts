@@ -125,3 +125,31 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
         }
     });  
 };
+
+
+export const movimientoCajaDetalle = async ( data : TipadoCaja.DetalleMovimientoCaja, signal? : AbortSignal )
+: Promise<ApiResponse<TipadoCaja.DetalleCajaMovimientoResult[]>> => {
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };  
+   
+    const parametrosConvertidos = {
+        id_caja : data.id_caja.toString(),
+        limite  : data.limite.toString(),
+        offset  : data.offset.toString()
+    };
+   const rutaCompleta = `${PAGINA}api/movimientos_caja?${new URLSearchParams(parametrosConvertidos).toString()}`;
+    console.log(rutaCompleta)
+   return await apiFetch( rutaCompleta, {
+        method : "GET",
+        signal : signal
+   });
+};

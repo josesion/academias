@@ -273,7 +273,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
 
 // ---------------------------------- Efecto de Listado ----------------------------------
-    console.log(dataListado)    
+   
 
 /** Efecto principal que gestiona la carga del listado en cada cambio de filtro o actualización forzada. */
     useEffect(() => {

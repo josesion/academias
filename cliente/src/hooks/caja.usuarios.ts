@@ -1,9 +1,11 @@
-import { useState , useEffect } from "react";
+import { useState , useEffect , useCallback, useRef} from "react";
 import { useIncripcionesUsuarios } from "../hookNegocios/Inscripciones";
 
 
-
-
+//Seccion de Tipados--------------------------------------
+import  { type DataCaja , type DataMetricasResult, type DataAperturaCaja,
+          type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData
+        } from "../tipadosTs/caja.typado"
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 interface DataCajaUsuariosConfig {
@@ -13,39 +15,17 @@ interface DataCajaUsuariosConfig {
          metricasPanelCaja : ServicioCrud,
          obtenerIdCaja     : ServicioCrud,
          abrirCaja : ServicioCrud,
-         cerrarCaja : ServicioCrud
+         cerrarCaja : ServicioCrud,
+         movimientoCajaDetalle : ServicioCrud
     }
 };
 
 export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
+
     const { actualizarIngresoInscipcion } = useIncripcionesUsuarios();//  para actrualizar los parametros por la inscripcion
 
-    type EstadoCaja = "abierta" | "cerrada";
 
-    interface DataCaja{
-        id_caja : number | null,
-        id_escuela : number | null
-    };
-
-    interface DataMetricasResult {
-        monto_inicial: number;
-        total_ingresos: number;
-        total_egresos: number;
-        flujo_del_dia: number;
-        total_efectivo: number;
-        total_transferencia: number;
-        total_debito: number;
-        total_credito: number;
-        balance_total_real: number;
-    };
-
-    interface DataAperturaCaja{
-       id_escuela : number | null,
-       estado : EstadoCaja
-       id_usuario : null // es por el momento 
-       monto_inicial : number | string
-    };
-
+  //------------------  estados para manejar la logica de caja  ------------------  .
     const [modalApertura , setModalApertura] = useState<boolean>(false);
     const [modalCierre , setModalCierre] = useState<boolean>(false);
     const [dataCaja, setDataCaja] = useState<DataCaja>({id_caja : null , id_escuela : config.id_escuela});
@@ -53,6 +33,7 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     const [apertura ,setApertura] = useState<DataAperturaCaja>({
         id_escuela : config.id_escuela , estado : "abierta", id_usuario : null, monto_inicial : "" 
     });
+   //------------------  metricas de caja  ------------------  .
 
     const [montoInicial, setMontoInicial] = useState<number>(0);
     const [totalIngresos, setTotalIngresos] = useState<number>(0);
@@ -80,7 +61,91 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
         setBalanceTotalReal(Number(data.balance_total_real));
     };
 
+    //------------------  Estados detalle de caja ------------------
+    const observer = useRef<IntersectionObserver | null>(null);
+    const [movimientos, setMovimientos] = useState<DetalleCajaMovimientoResult[]>([]);
+    const [scrollState, setScrollState] = useState<scrollStateData>({
+        loading: false,
+        hasMore: true,
+        offset: 0,
+        limite: 5
+    });
 
+    //------------------- Estados Ingresos e Egresos ---------------------
+  //  type estadoRegistro = null | "ingreso" | "egreso";
+
+    const [modalEgresoIngreso , setModalEgresoIngreso] = useState<boolean>(false);
+    const [movimientoExtraordinario, setMovimientoExtraordinario] = useState({
+        id_caja: dataCaja.id_caja,
+        id_categoria: "", // Aquí cae el ID del selector (ej: ID de 'Luz')
+        monto: "",
+        metodo_pago: "efectivo",
+        estado : "" ,
+        descripcion: "",   // Aquí podés poner "Pago de boleta Edesa"   
+    });
+
+
+const handleMovimientoExtraordinarioChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
+ //   console.log( e.target.value)
+ //   console.log( e.target.name)
+    if (e.target.value ){
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            [e.target.name]: e.target.value,
+            estadoRegistro : true
+        }));
+    }else{
+        console.log("nulo")      
+    };
+};
+
+const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = e.target;
+    console.log(value)
+    if (value){
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            [name]: value
+        }));        
+    }else{
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            monto : ""
+        }));        
+    };
+};
+
+console.log(movimientoExtraordinario)
+
+const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+   const { value, name } = e.target;
+    if (value === "" ){
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            [name]: ""
+        }));        
+    }else{
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            [name]: value
+        }));        
+    };
+
+};
+
+const handRegistarMovimientoExtraordinario = () => {
+    console.log("Registro de moviemiento extra");
+};
+ //console.log(movimientoExtraordinario)
+const handleAbrirIngreso = () => {
+    setMovimientoExtraordinario( prev => ({ ...prev, estado : "ingreso"}));
+    setModalEgresoIngreso(true);
+};
+
+const handleAbrirEgreso = () => {
+    setMovimientoExtraordinario( prev => ({ ...prev, estado : "egreso"}));
+    setModalEgresoIngreso(true);
+};
 
 // ──────────────────────────────────────────────────────────────
 //Hanldes para manejar los estados de caja
@@ -193,6 +258,75 @@ const handleCerrarModalCerrar = () =>{
     setModalCierre(false);
 };
 
+// ──────────────────────────────────────────────────────────────
+//Handle para Cerrar modal de INGRESO / EGRESO EXTRAORDINARIO
+// ────────────────────────────────────────────────────────────── 
+
+const handleCerrarModalEgrIng = () =>{
+    setModalEgresoIngreso(false)
+};
+
+// ──────────────────────────────────────────────────────────────
+//Metodo para cargar los movimientos de caja con scroll infinito
+// ────────────────────────────────────────────────────────────── 
+
+const cargarMovimientos = useCallback(async () => {
+    // Si no hay ID, o ya está cargando, o no hay más: FRENAMOS
+    if (!dataCaja.id_caja || scrollState.loading || !scrollState.hasMore) { return }; 
+
+    setScrollState(prev => ({ ...prev, loading: true }));
+
+    try {
+        const dataDetalle = {
+            id_caja: dataCaja.id_caja,
+            limite: scrollState.limite,
+            offset: scrollState.offset
+        };
+
+        const res = await config.servicios.movimientoCajaDetalle(dataDetalle);
+    
+        if (res.code === "MOVIMIENTOS_CAJA_OK") {
+            setMovimientos(prev => [...prev, ...res.data]);
+            setScrollState(prev => ({
+                ...prev,
+                loading: false,
+                offset: prev.offset + prev.limite,
+                hasMore: res.data.length === prev.limite
+            }));
+        } else {
+            setScrollState(prev => ({ ...prev, loading: false, hasMore: false }));
+        }
+    } catch (error) {
+        setScrollState(prev => ({ ...prev, loading: false }));
+    };
+}, [dataCaja.id_caja, scrollState.offset, scrollState.limite, scrollState.hasMore, scrollState.loading]);
+
+
+// ──────────────────────────────────────────────────────────────
+// Configuración del IntersectionObserver para el scroll infinito
+// ────────────────────────────────────────────────────────────── 
+const lastElementRef = useCallback((node: HTMLDivElement | null) => {
+    // 1. Si está cargando, no hacemos nada
+    if (scrollState.loading) return;
+
+    // 2. Si ya existía un observador, lo desconectamos para limpiar
+    if (observer.current) observer.current.disconnect();
+
+    // 3. Creamos el nuevo observador
+    observer.current = new IntersectionObserver(entries => {
+        // Si el div es visible en pantalla Y hay más datos por cargar...
+        if (entries[0].isIntersecting && scrollState.hasMore) {
+            // ...disparamos la función que ya tiene el offset actualizado
+            cargarMovimientos();
+        }
+    });
+   
+    // 4. Le decimos al observador que mire el div (el nodo)
+    if (node) observer.current.observe(node); 
+
+}, [scrollState.loading, scrollState.hasMore, cargarMovimientos, dataCaja.id_caja]); // Dependencias: cargarMovimientos y dataCaja.id_caja (porque se usa dentro de cargarMovimientos)
+// Importante: cargarMovimientos debe estar en las dependencias
+
 
 
 // ──────────────────────────────────────────────────────────────
@@ -205,7 +339,7 @@ useEffect( ()=> {
         const idCajaResult  = await servicioApiFetch(config.id_escuela);
  
         if ( idCajaResult.code === "ID_CAJA_OK" && idCajaResult.data){
-            console.log("aQUI")
+           
             setDataCaja( prev => ({
                 ...prev,
                 id_caja : idCajaResult.data.id_caja
@@ -254,6 +388,25 @@ useEffect( ()=> {
 },[dataCaja.id_caja, actualizarIngresoInscipcion, estadoCaja]);    
 
 
+// ──────────────────────────────────────────────────────────────
+//Obtener  los movimientos de caja para el detalle
+// ────────────────────────────────────────────────────────────── 
+
+useEffect(() => {
+    if (dataCaja.id_caja) {
+        cargarMovimientos();
+    } else {
+        // Si el ID es null (Caja cerrada), reseteamos todo
+        setMovimientos([]);
+        setScrollState({
+            loading: false,
+            hasMore: true,
+            offset: 0,
+            limite: 5
+        });
+    }
+}, [dataCaja.id_caja, cargarMovimientos]);
+
     return{
         montoInicial,
         totalIngresos, 
@@ -280,6 +433,21 @@ useEffect( ()=> {
         estadoCaja,
         modalApertura,
         modalCierre,
-        enviando
+        modalEgresoIngreso,
+        enviando,
+
+        lastElementRef,
+        movimientos,
+        scrollState,
+
+        movimientoExtraordinario,
+        handleMovimientoExtraordinarioChange,
+        handleCerrarModalEgrIng,
+        handRegistarMovimientoExtraordinario,
+        handleMontoChange,
+        handleMemoChange,
+        handleAbrirEgreso,
+        handleAbrirIngreso
+
     };
 };    

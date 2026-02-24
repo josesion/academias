@@ -1,12 +1,11 @@
 import { TarjetasNormales } from "../../../../componentes/TarjetasNormales/TarjetaNormali";
-import {
-  MovientoCaja,
-  type Movimiento,
-} from "../../../../componentes/MovimientoCaja/MovientoCaja";
+import { MovientoCaja } from "../../../../componentes/MovimientoCaja/MovientoCaja";
 import { PanelMetodoPAgo } from "../../../../componentes/MetodoPago/PanelMetodoPago";
 import { Boton } from "../../../../componentes/Boton/Boton";
 import { AperturaCaja } from "../../../../componentes/AperturaCaja/AperturaCaja";
 import { CompoVerificacion } from "../../../../componentes/CompoVerificacion/CompoVerificacion";
+
+import { CompoIngEgr } from "../../../../componentes/CompoIngEgr/CompoIngEgr";
 
 // logica -----
 import { cajasCongif } from "../../../../hookNegocios/caja.usuario";
@@ -15,29 +14,11 @@ import { cajasCongif } from "../../../../hookNegocios/caja.usuario";
 import { FcStatistics } from "react-icons/fc";
 import "./caja.css";
 
-const misMovimientos: Movimiento[] = [
-  {
-    id: 1,
-    hora: "14:30",
-    detalle: "Inscripción Alumno",
-    metodo: "Efectivo",
-    monto: 15500,
-    tipo: "ingreso",
-  },
-  {
-    id: 2,
-    hora: "15:00",
-    detalle: "Pago de Luz",
-    metodo: "Transferencia",
-    monto: 8000,
-    tipo: "egreso",
-  },
-];
-
 export const CajaArqueo = () => {
   const {
     modalApertura,
     modalCierre,
+    modalEgresoIngreso,
     montoInicial,
     totalIngresos,
     totalEgresos,
@@ -56,7 +37,57 @@ export const CajaArqueo = () => {
     handleEstadosCaja,
     handleAbrirCajaModalCerrar,
     handleAbrirCaja,
+    lastElementRef,
+    movimientos,
+    scrollState,
+    handleMovimientoExtraordinarioChange,
+    handRegistarMovimientoExtraordinario,
+    handleCerrarModalEgrIng,
+    handleMontoChange,
+    movimientoExtraordinario,
+    handleAbrirEgreso,
+    handleAbrirIngreso,
+    handleMemoChange,
   } = cajasCongif();
+
+  interface Categoria {
+    id_categoria: number;
+    nombre_categoria: string;
+    tipo_movimiento: string;
+  }
+
+  // Solo Ingresos
+  const categoriasIngresos: Categoria[] = [
+    {
+      id_categoria: 8,
+      nombre_categoria: "Inscripciones",
+      tipo_movimiento: "ingreso",
+    },
+    {
+      id_categoria: 12,
+      nombre_categoria: "Venta Uniformes",
+      tipo_movimiento: "ingreso",
+    },
+  ];
+
+  // Solo Egresos
+  const categoriasEgresos: Categoria[] = [
+    {
+      id_categoria: 10,
+      nombre_categoria: "luz",
+      tipo_movimiento: "egreso",
+    },
+    {
+      id_categoria: 9,
+      nombre_categoria: "Limpieza",
+      tipo_movimiento: "egreso",
+    },
+    {
+      id_categoria: 11,
+      nombre_categoria: "Alquiler",
+      tipo_movimiento: "egreso",
+    },
+  ];
 
   return (
     <div className="caja_arqueo_contenedor">
@@ -84,6 +115,30 @@ export const CajaArqueo = () => {
         </div>
       )}
 
+      {modalEgresoIngreso && (
+        <div className="formulario_overlay">
+          <CompoIngEgr
+            titulo={movimientoExtraordinario.estado}
+            categorias={
+              movimientoExtraordinario.estado === "ingreso"
+                ? categoriasIngresos
+                : categoriasEgresos
+            }
+            itemKey="id_categoria"
+            itemLabel="nombre_categoria"
+            name="id_categoria"
+            onChangeSelector={handleMovimientoExtraordinarioChange}
+            labelDefault="Seleccionar Categoría"
+            onClickCancelar={handleCerrarModalEgrIng}
+            onClickRegistrar={handRegistarMovimientoExtraordinario}
+            montoValue={movimientoExtraordinario.monto.toString()}
+            onChangeInput={handleMontoChange}
+            onChangeTextArea={handleMemoChange}
+            valueTextArea={movimientoExtraordinario.descripcion || ""}
+          />
+        </div>
+      )}
+
       <div className="caja_arqueo_cabecera">
         <p className="caja_arqueo_titulo">
           Gestion de Caja <FcStatistics />
@@ -97,8 +152,16 @@ export const CajaArqueo = () => {
             texto={estadoCaja === "abierta" ? "Cerrar Caja" : "Abrir Caja"}
             onClick={handleEstadosCaja}
           />
-          <Boton clase="agregar" texto=" + Ingreso / Extras" />
-          <Boton clase="eliminar" texto=" - Egresos / Gastos" />
+          <Boton
+            clase="agregar"
+            texto=" + Ingreso / Extras"
+            onClick={handleAbrirIngreso}
+          />
+          <Boton
+            clase="eliminar"
+            texto=" - Egresos / Gastos"
+            onClick={handleAbrirEgreso}
+          />
         </div>
       </div>
 
@@ -128,7 +191,31 @@ export const CajaArqueo = () => {
       <div className="caja_arqueo_metricas">
         <div className="caja_arqueo_metricas_detalles">
           <p>Movimientos del Dia</p>
-          <MovientoCaja movimientos={misMovimientos} />
+
+          <MovientoCaja movimientos={movimientos} />
+
+          {/* Solo mostramos el sensor y los mensajes si hay al menos un movimiento */}
+          {movimientos.length > 0 && (
+            <div
+              ref={lastElementRef}
+              style={{ height: "40px", textAlign: "center", marginTop: "10px" }}
+            >
+              {scrollState?.loading && <p>Cargando más movimientos...</p>}
+
+              {scrollState?.hasMore === false && (
+                <p style={{ color: "gray" }}>— Fin del historial —</p>
+              )}
+            </div>
+          )}
+
+          {/*  Un mensaje si la caja está realmente vacía */}
+          {movimientos.length === 0 && !scrollState?.loading && (
+            <p
+              style={{ textAlign: "center", color: "gray", marginTop: "20px" }}
+            >
+              No hay movimientos registrados hoy.
+            </p>
+          )}
         </div>
         <div className="caja_arqueo_metricas_metodo_pago">
           <p>Resumens Metodo Pago</p>

@@ -75,3 +75,59 @@ export interface CierreCajaRespuesta{
     id_caja : number,
     estado : "cerrada"
 };
+
+export interface DetalleMovimientoCaja {
+    id_caja : number,
+    limite : number ,
+    offset : number
+}
+
+type Estado = "abierta" | "cerrada";
+
+
+export interface DetalleCajaMovimientoResult {
+    id_movimiento: number;
+    monto: number; // Viene como DECIMAL(10,2), en JS es number
+    metodo_pago: MetodoPago;
+    descripcion: string | null; // Puede ser NULL según tu tabla
+    nombre_categoria: string;
+    tipo_movimiento: Estado;
+    
+    // Estos campos son los que generamos con DATE() y TIME_FORMAT()
+    fecha_grupo: string; // Formato 'YYYY-MM-DD'
+    hora_formateada: string; // Formato 'HH:mm'
+};
+
+
+    export type EstadoCaja = "abierta" | "cerrada";
+
+    export interface DataCaja{
+        id_caja : number | null,
+        id_escuela : number | null
+    };
+
+    export interface DataMetricasResult {
+        monto_inicial: number;
+        total_ingresos: number;
+        total_egresos: number;
+        flujo_del_dia: number;
+        total_efectivo: number;
+        total_transferencia: number;
+        total_debito: number;
+        total_credito: number;
+        balance_total_real: number;
+    };
+
+    export interface DataAperturaCaja{
+       id_escuela : number | null,
+       estado : EstadoCaja
+       id_usuario : null // es por el momento 
+       monto_inicial : number | string
+    };
+
+    export interface scrollStateData {
+        offset : number,
+        hasMore : boolean,
+        loading : boolean,
+        limite : number
+    };
