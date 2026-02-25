@@ -11,8 +11,9 @@ import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 // ──────────────────────────────────────────────────────────────
 import { VerificarCajaInputs, AbrirCajaInputs, 
          DetalleCajaInputs, CierreCajaInputs,
-         IdCajaAbiertaInputs,ListaMovimientosCajaInputs  } from "../squemas/cajas"; 
-import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento } from "../tipados/caja.data.tipado"; 
+         IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
+         ListaCategoriaCajaTipoInputs  } from "../squemas/cajas"; 
+import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -211,21 +212,37 @@ const metricaPanelPrincipal = ( data : CierreCajaInputs )
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
                             
-                            -- 2. Total del Día (Monto inicial + flujo neto)
-                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS flujo_del_dia,
+                            -- 2. Total del Día (Monto inicial + ingresos - egresos)
+                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                                                ELSE 0 END), 0)) AS flujo_del_dia,
 
-                            -- 3. Desglose por Método de Pago
-                            -- AJUSTE: Sumamos el monto inicial al efectivo acumulado
+                            -- 3. Desglose por Método de Pago (CORREGIDO: Ahora descuentan egresos)
+                            
+                            -- Efectivo (Monto inicial + ingresos efectivo - egresos efectivo)
                             (c.monto_inicial + COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                                                 WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                                                 ELSE 0 END), 0)) AS total_efectivo,
                             
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_transferencia,
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_debito,
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_credito,
+                            -- Transferencia
+                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                            WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                            ELSE 0 END), 0) AS total_transferencia,
+
+                            -- Débito
+                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                            WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                            ELSE 0 END), 0) AS total_debito,
+
+                            -- Crédito
+                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                            WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                            ELSE 0 END), 0) AS total_credito,
 
                             -- 4. Balance Final de Caja
-                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS balance_total_real
+                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                                                ELSE 0 END), 0)) AS balance_total_real
 
                         FROM cajas c
                         LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
@@ -326,7 +343,7 @@ const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
                                 cat.nombre_categoria,
                                 cat.tipo_movimiento, -- Para saber si es ingreso o egreso
                                 -- Separamos fecha y hora para el agrupador del Front
-                                DATE(det.fecha_movimiento) as fecha_grupo, 
+                                DATE_FORMAT(det.fecha_movimiento, '%Y-%m-%d') as fecha_grupo, 
                                 TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada
                             FROM detalle_caja det
                             INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
@@ -343,7 +360,39 @@ const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
      });
 };
 
+/**
+ * Obtiene el listado de categorías de caja filtradas por escuela, estado y tipo de movimiento.
+ * * @async
+ * @function listaCategiriaCajaTipos
+ * @param {ListaCategoriaCajaTipoInputs} data - Objeto con los criterios de filtrado.
+ * @param {number} data.id_escuela - ID de la escuela a la que pertenecen las categorías.
+ * @param {string} data.tipo - El tipo de movimiento (ej: 'ingreso', 'egreso').
+ * @param {string} data.estado - El estado de la categoría (ej: 'activo', 'inactivo').
+ * * @returns {Promise<TipadoData<CategoríaCaja[]>>} Promesa que resuelve con un objeto tipado que contiene el array de categorías encontradas.
+ * * @example
+ * const categorias = await listaCategiriaCajaTipos({ 
+ * id_escuela: 1, 
+ * tipo: 'ingreso', 
+ * estado: 'activo' 
+ * });
+ */
+const listaCategiriaCajaTipos = async( data : ListaCategoriaCajaTipoInputs)
+:Promise<TipadoData<CategoríaCaja[]>> => {
+    const {id_escuela, tipo , estado} = data ; 
 
+    const sql : string =`select * from categorias_caja 
+                            where id_escuela =  ?
+                            and estado = ?
+                            and tipo_movimiento = ?;`;
+
+    const valores : unknown[]  = [ id_escuela, estado, tipo];
+    return await listarEntidadSinPaginacion<CategoríaCaja>({
+        slqListado : sql,
+        valores,
+        entidad : "LISTA_CATEGORIA_CAJA_TIPO",
+        estado : estado
+    });
+};
 
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
@@ -354,4 +403,5 @@ export const method = {
     idCajaAbierta : tryCatchDatos( idCajaAbierta ),
     metricasCaja : tryCatchDatos( metricaPanelPrincipal ),
     listaMovimientosCaja : tryCatchDatos( listaMovimientosCaja ),
+    listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos),
 };

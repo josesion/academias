@@ -276,7 +276,7 @@ const movimientosCaja = async ( req : Request, res : Response) => {
         offset : Number(req.query.offset) || 0
     };
     const movimientosResult = await cajaServicio.movimientosCaja( data );
-    console.log(movimientosResult)
+    
     if ( movimientosResult.code === "MOVIMIENTOS_CAJA_OK"){
         return enviarResponse(
             res,
@@ -305,11 +305,67 @@ const movimientosCaja = async ( req : Request, res : Response) => {
     );      
 };
 
+/**
+ * Controlador de Express para obtener el listado de categorías de caja filtradas.
+ * * Extrae los parámetros `id_escuela`, `tipo` y `estado` de la URL, invoca al 
+ * servicio correspondiente y despacha la respuesta HTTP utilizando helpers estandarizados.
+ * * @async
+ * @function listarCategoriaCajaTipos
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.params - Parámetros de la ruta.
+ * @param {string} req.params.id_escuela - ID de la escuela (se castea a Number).
+ * @param {string} req.params.tipo - Tipo de movimiento ('ingreso' o 'egreso').
+ * @param {string} req.params.estado - Estado de la categoría ('activo', etc.).
+ * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<void>} No retorna un valor, pero envía una respuesta JSON al cliente:
+ * - 200 (OK): Si se listan las categorías correctamente.
+ * - 404 (Not Found): Si la lista está vacía.
+ * - 500 (Internal Server Error): Si ocurre un error inesperado en el servidor.
+ */
+const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
+   
+    const data = {
+        id_escuela : Number(req.params.id_escuela),
+        tipo : req.params.tipo as string,
+        estado : req.params.estado as string
+    };
+
+    const listaCategoriaResult = await cajaServicio.listaCategiriaCajaTipos( data );
+
+    if ( listaCategoriaResult.code === "LISTADO_CATEGORIA_OK"){
+       return enviarResponse(
+            res,
+            CodigoEstadoHTTP.OK,
+            listaCategoriaResult.message,
+            listaCategoriaResult.data,
+            undefined,
+            listaCategoriaResult.code
+       );
+    };
+
+    if ( listaCategoriaResult.code = "LISTADO_CATEGORIA_VACIO"){
+      return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.NO_ENCONTRADO,
+            listaCategoriaResult.message,
+            listaCategoriaResult.code
+      );  
+    };
+
+    return enviarResponseError(
+            res,
+            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+            "Error , Problemas a devolver el listado",
+            listaCategoriaResult.code
+    );         
+};
+
 export const method ={
     abrirCaja : tryCatch( abrirCaja ),
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
     metricasPanelCaja : tryCatch( metricasPanelCaja ),
-    movimientosCaja : tryCatch( movimientosCaja )
+    movimientosCaja : tryCatch( movimientosCaja ),
+    listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
 };

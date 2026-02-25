@@ -1,3 +1,5 @@
+
+
 type Estado = "abierta" | "cerrada";
 type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'credito';
 
@@ -71,3 +73,10 @@ export interface MetricaPanelPrincipal {
     balance_total_real: number;
 };
 
+export interface CategoríaCaja  {
+    id_categoria : number,
+    id_escuela : number,
+    nombre_categoria : string,
+    tipo_movimiento : Estado,
+    estado : "activos" | "inactivos",
+};

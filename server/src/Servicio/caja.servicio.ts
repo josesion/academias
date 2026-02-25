@@ -14,11 +14,12 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          CierreCajaInputs, CierreCajaSchema,
          IdCajaAbiertaInputs, IdCajaAbiertaSchema,
          PanelMetricasInputs, PanelMetricasSchema,
-         ListaMovimientosCajaInputs, listaMovimientosCajaSchema
+         ListaMovimientosCajaInputs, listaMovimientosCajaSchema,
+         ListaCategoriaCajaTipoInputs, ListaCategoriaCajaTipoSchema,
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { DataAltaCaja , DataAltaCajaResult,
-         ResultDetalleCaja, MetricaPanelPrincipal ,DetalleCajaMovimiento
+         ResultDetalleCaja, MetricaPanelPrincipal ,DetalleCajaMovimiento, CategoríaCaja
  } from "../tipados/caja.data.tipado"; 
 
 
@@ -296,12 +297,58 @@ const movimientosCaja = async ( data : ListaMovimientosCajaInputs)
     };  
 };
 
+/**
+ * Controlador para listar categorías de caja filtradas por tipo y estado.
+ * Valida los datos de entrada mediante un esquema y gestiona la respuesta del servicio.
+ * * @async
+ * @function listaCategiriaCajaTipos
+ * @param {ListaCategoriaCajaTipoInputs} data - Parámetros de entrada (id_escuela, tipo, estado).
+ * * @returns {Promise<TipadoData<CategoríaCaja[]>>} 
+ * Devuelve un objeto estandarizado:
+ * - `error: false` + `code: LISTADO_CATEGORIA_OK`: Si se encontraron datos.
+ * - `error: false` + `code: LISTADO_CATEGORIA_VACIO`: Si no hay categorías activas.
+ * - `error: true` + `code: ERROR_LISTADO_CATEGORIA_CAJA`: Si hubo un fallo en el servicio o validación.
+ * * @throws {ZodError} Si los datos de entrada no cumplen con `ListaCategoriaCajaTipoSchema`.
+ */
+const listaCategiriaCajaTipos = async ( data : ListaCategoriaCajaTipoInputs)
+: Promise<TipadoData<CategoríaCaja[]>> =>{
+    const dataLista : ListaCategoriaCajaTipoInputs = ListaCategoriaCajaTipoSchema.parse(data);
+  //  console.log("data de listado", dataLista);
+    const listaServicioResult = await dataCaja.listaCategiriaCajaTipos( dataLista );
+  //  console.log("resultado del servicio", listaServicioResult);
+
+    if ( listaServicioResult.code === "LISTA_CATEGORIA_CAJA_TIPO_LISTED"){
+        return {    
+            error : false , 
+            message : "Listado Categorias ok",
+            data : listaServicioResult.data,
+            code : "LISTADO_CATEGORIA_OK"
+        };
+    };
+
+    if ( listaServicioResult.code === "NO_ACTIVE_LISTA_CATEGORIA_CAJA_TIPO"){
+        return{
+            error : false, 
+            message : "Lista Categotia vacia",
+            code : "LISTADO_CATEGORIA_VACIO"
+        };
+    };
+
+    return {
+        error : true,
+        message : "ERROR al obtener el listado de categorias",
+        code : "ERROR_LISTADO_CATEGORIA_CAJA"
+    };  
+};
+
+
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
     idCajaAbiertaServicio : tryCatchDatos( idCajaAbiertaServicio),
     metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal),
-    movimientosCaja : tryCatchDatos( movimientosCaja )
+    movimientosCaja : tryCatchDatos( movimientosCaja ),
+    listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos ),
 };
 
