@@ -1,14 +1,14 @@
-import { TarjetasNormales } from "../../../../componentes/TarjetasNormales/TarjetaNormali";
-import { MovientoCaja } from "../../../../componentes/MovimientoCaja/MovientoCaja";
-import { PanelMetodoPAgo } from "../../../../componentes/MetodoPago/PanelMetodoPago";
-import { Boton } from "../../../../componentes/Boton/Boton";
-import { AperturaCaja } from "../../../../componentes/AperturaCaja/AperturaCaja";
-import { CompoVerificacion } from "../../../../componentes/CompoVerificacion/CompoVerificacion";
+import { TarjetasNormales } from "../../../componentes/TarjetasNormales/TarjetaNormali";
+import { MovientoCaja } from "../../../componentes/MovimientoCaja/MovientoCaja";
+import { PanelMetodoPAgo } from "../../../componentes/MetodoPago/PanelMetodoPago";
+import { Boton } from "../../../componentes/Boton/Boton";
+import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
+import { CompoVerificacion } from "../../../componentes/CompoVerificacion/CompoVerificacion";
 
-import { CompoIngEgr } from "../../../../componentes/CompoIngEgr/CompoIngEgr";
+import { CompoIngEgr } from "../../../componentes/CompoIngEgr/CompoIngEgr";
 
 // logica -----
-import { cajasCongif } from "../../../../hookNegocios/caja.usuario";
+import { cajasCongif } from "../../../hookNegocios/caja.usuario";
 
 // estilos -----
 import { FcStatistics } from "react-icons/fc";

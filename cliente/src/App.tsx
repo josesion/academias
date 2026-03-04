@@ -18,7 +18,7 @@ import { AmbCategoriasCajaUsuarios } from "./pagina/privado/categoria.caja.usuar
 // Formulario para asistencia
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
 // Formulario  Arqueo Caja
-import { CajaArqueo } from "./pagina/privado/usuario/caja/Caja";
+import { CajaArqueo } from "./pagina/privado/caja/Caja";
 // seccion de componentes
 
 import { RutasPrivadas } from "./Rutas.Protegidas";
