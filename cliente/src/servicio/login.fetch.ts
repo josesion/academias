@@ -1,5 +1,5 @@
 import { PAGINA  } from "./variables.globales";   
-import { apiFetch ,type ApiResponse  } from "../hooks/apiFetch";
+import { apiFetch ,type ApiResponse  } from "../utils/apiFetch";
 
 interface UserData {
     id_usuario : number,
