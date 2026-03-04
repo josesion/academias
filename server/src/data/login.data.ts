@@ -18,9 +18,10 @@ const loginData = async( data : LoginInputs)
 : Promise<TipadoData<{id_usuario: number, 
                       usuario: string, 
                       id_escuela : number
-                      contrasena : string  
+                      contrasena : string,
+                      rol : "usuario" | "admin"  
                     }>>=> {
-    const sql : string = `SELECT usuario, id_usuario, id_escuela, contrasena FROM usuarios WHERE usuario = ?`;
+    const sql : string = `SELECT usuario, id_usuario, id_escuela, contrasena, rol FROM usuarios WHERE usuario = ?`;
     const { usuario } = data ;    
     const valores : unknown[] = [ usuario ]
     return buscarExistenteEntidad({

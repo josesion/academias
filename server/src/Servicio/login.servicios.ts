@@ -10,6 +10,7 @@ interface LoginDataResult {
     id_escuela : number,
     usuario    : string,
     tokenCadena : string,
+    rol : "usuario" | "admin" 
 };
 
 /**
@@ -31,7 +32,6 @@ interface LoginDataResult {
 const loginUsuario =  async ( data : LoginInputs) 
 : Promise<TipadoData<LoginDataResult>>=> {
     const loginData : LoginInputs = loginSchema.parse( data );
-    console.log("servicio login " , loginData);
     const loginResult = await dataLogin.loginData( loginData );
    
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
@@ -45,6 +45,7 @@ const loginUsuario =  async ( data : LoginInputs)
                     id_escuela : loginResult.data.id_escuela,
                     id_usuario :  loginResult.data.id_usuario,
                     usuario    :  loginResult.data.usuario,
+                    rol        : loginResult.data.rol, 
                     tokenCadena : token
                 },
                 code : "USUARIO_EXISTE"

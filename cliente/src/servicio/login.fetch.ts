@@ -2,10 +2,7 @@ import { PAGINA  } from "./variables.globales";
 import { apiFetch ,type ApiResponse  } from "../hooks/apiFetch";
 
 interface UserData {
-    usuario: string; 
-    nombre: string;
-    apellido: string;
-    estado: string;
+    id_usuario : number,
     rol: string;
     id_escuela : number
 }

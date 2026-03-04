@@ -27,21 +27,34 @@ const buscarUsuario= async (usuario : string) : Promise<TipadoData<DataUsuarioNu
         throw new ClientError("Verificar el Usuario", 404, "USER_FOUND");
     }
 
-const buscarIdUsuario =  async(usuario : string): Promise<TipadoData<DataIdUsuario>>  =>{
-    const sql = `SELECT * FROM usuarios WHERE usuario = ?;`;
-    const valores = [usuario];    
-    const resultado = await select(sql, valores);
-    if (resultado.length <= 0 ) throw new ClientError("Uusario no encontrado " , 500 ,"USER_NOT_FOUND");
+const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> => {
+    
+    // 1. Cambiamos la consulta SQL para que busque por ID (esto es vital)
+    const sql = `SELECT * FROM usuarios WHERE id_usuario = ?;`;
+    const valores = [id];    
+    
+    // 2. Le decimos a TS que el resultado es un array de objetos con la columna 'usuario'
+    // Usamos <any[]> o una interfaz específica si la tenés
+    const resultado = await select(sql, valores) as any[]; 
+
+
+    if (resultado.length <= 0) {
+        return {
+            error: true,
+            message: "Usuario no encontrado",
+            data: null as any,
+            code: "USER_NOT_FOUND"
+        };
+    }
+
+    // 4. Ahora sí, TS sabe que resultado[0] tiene la propiedad usuario
     return {
         error: false,
         message: "Usuario encontrado",
-        data: { usuario : usuario }, //no retorno nada para cuidar la privacidad
-        paginacion : undefined,
+        data: { usuario: resultado[0].usuario }, 
         code: "USER_FOUND",
-        errorsDetails: undefined
-    }
+    };
 };
-
 const crearUsuario = async (usuarioData: CrearInputsUsuario) : Promise<TipadoData<DataUsuarioNuevo>> => {
     const { usuario, contrasena, nombre, apellido, celular, rol, correo, estado ,id_escuela} = usuarioData;
     const hashedPassword = await bcrypt.hash(contrasena, 10); // Hasheamos la contraseña antes de guardarla

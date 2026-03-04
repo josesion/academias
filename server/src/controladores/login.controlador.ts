@@ -42,7 +42,10 @@ const login = async( req: Request, res: Response ) =>{
                 res,
                 CodigoEstadoHTTP.OK,
                 "Login Exitoso",
-                { id_escuela : loginResult.data?.id_escuela, id_usuario : loginResult.data?.id_usuario},
+                { id_escuela : loginResult.data?.id_escuela,
+                  id_usuario : loginResult.data?.id_usuario,
+                  rol        : loginResult.data?.rol     
+                },
                 undefined,
                 loginResult.code
             );
