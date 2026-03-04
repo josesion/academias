@@ -5,7 +5,10 @@ import { useContext } from "react";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 import { useCajaUsuario } from "../hooks/caja.usuarios";
 //Seccion de servicios--------------------------------------
-import { metricasPanelCaja, obtenerIdCaja , abrirCaja , cerrarCaja , movimientoCajaDetalle} from "../servicio/caja.fetch";
+import { metricasPanelCaja, obtenerIdCaja , abrirCaja , 
+         cerrarCaja , movimientoCajaDetalle, listadoCategoriaCaja,
+         registrarMovimientoCaja,    
+        } from "../servicio/caja.fetch";
 
 export const  cajasCongif = () =>{
     const { rol } = useContext( RutasProtegidasContext ); 
@@ -17,7 +20,9 @@ export const  cajasCongif = () =>{
             metricasPanelCaja : metricasPanelCaja,
             abrirCaja         : abrirCaja,
             cerrarCaja        : cerrarCaja,
-            movimientoCajaDetalle : movimientoCajaDetalle
+            movimientoCajaDetalle : movimientoCajaDetalle,
+            listadoCategoriaCaja  : listadoCategoriaCaja,
+            registrarMovimientoCaja : registrarMovimientoCaja
         }  
     };
     return useCajaUsuario(config)    

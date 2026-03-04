@@ -14,6 +14,15 @@ export interface DataDetalleCaja{
     referencia_id : number  | null,  
 }; 
 
+export interface RegistroDetalleCaja {
+    tipo : string,
+    id_caja : number  | null,
+    id_categoria : number  | null,
+    monto  : string ,
+    metodo_pago :  MetodoPago | null,
+    descripcion : string  | null,
+    referencia_id : number  | null,
+}
 
 export interface DataCajaDetalleIDs{
     id_caja : number  | null,
@@ -131,3 +140,33 @@ export interface DetalleCajaMovimientoResult {
         loading : boolean,
         limite : number
     };
+
+    export interface listadoCategoriaCaja{
+        id_escuela : number,
+        tipo : "ingreso" | "egreso",
+        estado :  "activos" | "inactivos";
+    };
+
+
+
+export interface CategoríaCaja  {
+    id_categoria : number,
+    id_escuela : number,
+    nombre_categoria : string,
+    tipo_movimiento : Estado,
+    estado : "activos" | "inactivos",
+};
+
+export interface Categoria {
+    id_categoria: number;
+    nombre_categoria: string;
+    tipo_movimiento: string;
+  }
+
+
+type MetodoPagoTipo = "efectivo" | "transferencia" | "credito" | "debito";
+  export interface Tipo_pago {
+    id_tipo_pago: number;
+    nombre_tipo_pago: MetodoPagoTipo;
+  }
+

@@ -40,11 +40,14 @@ export const CajaArqueo = () => {
     lastElementRef,
     movimientos,
     scrollState,
+    tipo_pago,
     handleMovimientoExtraordinarioChange,
+    handleTipoPagoChange,
     handRegistarMovimientoExtraordinario,
     handleCerrarModalEgrIng,
     handleMontoChange,
     movimientoExtraordinario,
+    listadoExtraordinario,
     handleAbrirEgreso,
     handleAbrirIngreso,
     handleMemoChange,
@@ -56,36 +59,12 @@ export const CajaArqueo = () => {
     tipo_movimiento: string;
   }
 
-  // Solo Ingresos
-  const categoriasIngresos: Categoria[] = [
+  // Categoria para cargar si es q no llega nada
+  const categoriasVacias: Categoria[] = [
     {
-      id_categoria: 8,
-      nombre_categoria: "Inscripciones",
+      id_categoria: 0,
+      nombre_categoria: "Sin Cargar",
       tipo_movimiento: "ingreso",
-    },
-    {
-      id_categoria: 12,
-      nombre_categoria: "Venta Uniformes",
-      tipo_movimiento: "ingreso",
-    },
-  ];
-
-  // Solo Egresos
-  const categoriasEgresos: Categoria[] = [
-    {
-      id_categoria: 10,
-      nombre_categoria: "luz",
-      tipo_movimiento: "egreso",
-    },
-    {
-      id_categoria: 9,
-      nombre_categoria: "Limpieza",
-      tipo_movimiento: "egreso",
-    },
-    {
-      id_categoria: 11,
-      nombre_categoria: "Alquiler",
-      tipo_movimiento: "egreso",
     },
   ];
 
@@ -118,23 +97,27 @@ export const CajaArqueo = () => {
       {modalEgresoIngreso && (
         <div className="formulario_overlay">
           <CompoIngEgr
-            titulo={movimientoExtraordinario.estado}
+            titulo={movimientoExtraordinario.tipo}
             categorias={
-              movimientoExtraordinario.estado === "ingreso"
-                ? categoriasIngresos
-                : categoriasEgresos
+              listadoExtraordinario ? listadoExtraordinario : categoriasVacias
             }
             itemKey="id_categoria"
             itemLabel="nombre_categoria"
             name="id_categoria"
             onChangeSelector={handleMovimientoExtraordinarioChange}
             labelDefault="Seleccionar Categoría"
+            tipos_pago={tipo_pago}
+            itemLabelTipo="nombre_tipo_pago"
+            itemKeyTipo="nombre_tipo_pago"
+            nameTipoPago="metodo_pago"
+            onChanceSelectorTipo={handleTipoPagoChange}
             onClickCancelar={handleCerrarModalEgrIng}
             onClickRegistrar={handRegistarMovimientoExtraordinario}
             montoValue={movimientoExtraordinario.monto.toString()}
             onChangeInput={handleMontoChange}
             onChangeTextArea={handleMemoChange}
             valueTextArea={movimientoExtraordinario.descripcion || ""}
+            errorMensaje={errorGenerico}
           />
         </div>
       )}

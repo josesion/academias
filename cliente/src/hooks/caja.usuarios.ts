@@ -1,12 +1,16 @@
 import { useState , useEffect , useCallback, useRef} from "react";
 import { useIncripcionesUsuarios } from "../hookNegocios/Inscripciones";
-
+// utils -------------------------------------------------------------
+import { idCajaFuntion } from "../utils/idCaja";
 
 //Seccion de Tipados--------------------------------------
 import  { type DataCaja , type DataMetricasResult, type DataAperturaCaja,
-          type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData
+          type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData,
+          type Categoria,  type RegistroDetalleCaja, type  Tipo_pago
         } from "../tipadosTs/caja.typado"
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
+
+
 
 interface DataCajaUsuariosConfig {
     id_escuela : number, 
@@ -16,9 +20,31 @@ interface DataCajaUsuariosConfig {
          obtenerIdCaja     : ServicioCrud,
          abrirCaja : ServicioCrud,
          cerrarCaja : ServicioCrud,
-         movimientoCajaDetalle : ServicioCrud
+         movimientoCajaDetalle : ServicioCrud,
+         listadoCategoriaCaja : ServicioCrud,
+         registrarMovimientoCaja : ServicioCrud,
     }
 };
+
+
+  const tipo_pago: Tipo_pago[] = [
+    {
+      id_tipo_pago: 1,
+      nombre_tipo_pago: "efectivo",
+    },
+    {
+      id_tipo_pago: 2,
+      nombre_tipo_pago: "transferencia",
+    },
+    {
+      id_tipo_pago: 3,
+      nombre_tipo_pago: "credito",
+    },
+    {
+      id_tipo_pago: 4,
+      nombre_tipo_pago: "debito",
+    },
+  ];
 
 export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
 
@@ -29,12 +55,11 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     const [modalApertura , setModalApertura] = useState<boolean>(false);
     const [modalCierre , setModalCierre] = useState<boolean>(false);
     const [dataCaja, setDataCaja] = useState<DataCaja>({id_caja : null , id_escuela : config.id_escuela});
-
     const [apertura ,setApertura] = useState<DataAperturaCaja>({
         id_escuela : config.id_escuela , estado : "abierta", id_usuario : null, monto_inicial : "" 
     });
    //------------------  metricas de caja  ------------------  .
-
+    const [disparadorRefresco , setDisparadorRefresco] = useState<number>(0);
     const [montoInicial, setMontoInicial] = useState<number>(0);
     const [totalIngresos, setTotalIngresos] = useState<number>(0);
     const [totalEgresos, setTotalEgresos] = useState<number>(0);
@@ -72,36 +97,76 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     });
 
     //------------------- Estados Ingresos e Egresos ---------------------
-  //  type estadoRegistro = null | "ingreso" | "egreso";
+
 
     const [modalEgresoIngreso , setModalEgresoIngreso] = useState<boolean>(false);
-    const [movimientoExtraordinario, setMovimientoExtraordinario] = useState({
-        id_caja: dataCaja.id_caja,
-        id_categoria: "", // Aquí cae el ID del selector (ej: ID de 'Luz')
+    const [verificadorSelector , setVerificadorSelector]= useState<boolean>(false); 
+    const [verificadorSelectorTipo , setVerificadorSelectorTipo]= useState<boolean>(false);
+    const [movimientoExtraordinario, setMovimientoExtraordinario] = useState<RegistroDetalleCaja>({
+        id_caja: dataCaja.id_caja ,
+        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
         monto: "",
         metodo_pago: "efectivo",
-        estado : "" ,
-        descripcion: "",   // Aquí podés poner "Pago de boleta Edesa"   
+        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
+        tipo : "",
+        referencia_id : 0 // es cerro por defecto ya q no es una inscripcion     
     });
+    const [listadoExtraordinario , setListadoExtraordionario] = useState<Categoria[] | null>( null);
 
 
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+//                    SECCION PARA LOS HANDLES  DE INGRESOS O EGRESOS DE CAJA 
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────     
+
+// ──────────────────────────────────────────────────────────────
+//Hanldes para manejar los estados de de INGRESOS EGRESOS
+// ────────────────────────────────────────────────────────────── 
+ 
 const handleMovimientoExtraordinarioChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
- //   console.log( e.target.value)
- //   console.log( e.target.name)
+
     if (e.target.value ){
         setMovimientoExtraordinario( prev => ({
             ...prev,
-            [e.target.name]: e.target.value,
-            estadoRegistro : true
+            [e.target.name]: e.target.value
         }));
+        setVerificadorSelector(true);
     }else{
-        console.log("nulo")      
+        setVerificadorSelector(false);
+    };
+};
+
+const handleCerrarModalEgrIng = () =>{
+    setListadoExtraordionario( null );
+    setMovimientoExtraordinario({
+        id_caja: dataCaja.id_caja ,
+        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
+        monto: "",
+        metodo_pago: "efectivo",
+        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
+        tipo : "",
+        referencia_id : 0 // e
+    });
+    setModalEgresoIngreso(false);
+    setErrorGenerico(null)
+};
+
+const handleTipoPagoChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
+    if (e.target.value) {
+        setMovimientoExtraordinario( prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }));
+        setVerificadorSelectorTipo(true);
+    }else {
+        setVerificadorSelectorTipo(false);
     };
 };
 
 const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
-    console.log(value)
+
     if (value){
         setMovimientoExtraordinario( prev => ({
             ...prev,
@@ -110,12 +175,12 @@ const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     }else{
         setMovimientoExtraordinario( prev => ({
             ...prev,
-            monto : ""
-        }));        
+            monto :""
+        }));  
+       
     };
 };
 
-console.log(movimientoExtraordinario)
 
 const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
    const { value, name } = e.target;
@@ -133,19 +198,83 @@ const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 
 };
 
-const handRegistarMovimientoExtraordinario = () => {
-    console.log("Registro de moviemiento extra");
-};
- //console.log(movimientoExtraordinario)
-const handleAbrirIngreso = () => {
-    setMovimientoExtraordinario( prev => ({ ...prev, estado : "ingreso"}));
-    setModalEgresoIngreso(true);
+
+const handRegistarMovimientoExtraordinario = async () => {
+
+    if ( !verificadorSelector  || movimientoExtraordinario.monto === "" || !verificadorSelectorTipo  ) {
+        setErrorGenerico("Verificar los campos del formulario")
+    }else{
+        const servicioApiFetch =config.servicios.registrarMovimientoCaja;
+        const registroMovimientoResult = await servicioApiFetch({
+            id_caja       : dataCaja.id_caja,
+            id_categoria  : Number(movimientoExtraordinario.id_categoria),
+            monto         : Number(movimientoExtraordinario.monto),
+            metodo_pago   : movimientoExtraordinario.metodo_pago,
+            descripcion   : movimientoExtraordinario.descripcion,
+            referencia_id : 0   
+        }); 
+        if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
+            setDisparadorRefresco( disparadorRefresco + 1);
+            setErrorGenerico(null);
+
+            setMovimientos([]);
+            setScrollState({
+                loading: false,
+                hasMore: true,
+                offset: 0,
+                limite: 5
+            });
+            await cargarMovimientos();            
+            setMovimientoExtraordinario( prev =>  ({
+                ...prev,
+                monto: "",
+                metodo_pago: "efectivo",
+                descripcion: "",
+                tipo : "",
+                referencia_id : 0 
+            }));
+            setModalEgresoIngreso(false);
+        }else{
+            setErrorGenerico(registroMovimientoResult.message)
+        };
+    };
+
 };
 
-const handleAbrirEgreso = () => {
-    setMovimientoExtraordinario( prev => ({ ...prev, estado : "egreso"}));
+
+const handleAbrirIngreso =  async () => {
+    setMovimientoExtraordinario( prev => ({ ...prev, tipo : "ingreso"}));
     setModalEgresoIngreso(true);
+    const servicioApiFetch = config.servicios.listadoCategoriaCaja;
+    const listadoIngresos = await servicioApiFetch({
+        id_escuela : config.id_escuela,
+        tipo : "ingreso",
+        estado : "activos"
+    });
+    
+    setListadoExtraordionario(listadoIngresos.data);
 };
+
+const handleAbrirEgreso = async () => {
+    setMovimientoExtraordinario( prev => ({ ...prev, tipo : "egreso"}));
+    setModalEgresoIngreso(true);
+    const servicioApiFetch = config.servicios.listadoCategoriaCaja;
+    const listadoEgresos = await servicioApiFetch({
+        id_escuela : config.id_escuela,
+        tipo : "egreso",
+        estado : "activos"
+    });
+    setListadoExtraordionario(listadoEgresos.data);
+};
+
+
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+//                     SECCION HANDLES  ESTADO DE CAJA  ( ABIERTA / CERRADA ) 
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+
+
 
 // ──────────────────────────────────────────────────────────────
 //Hanldes para manejar los estados de caja
@@ -155,10 +284,8 @@ const handleEstadosCaja = () =>{
     try{
         setEnviando(true);
         if ( dataCaja.id_caja === null){
-                console.log("cerrada caja")
                 setModalApertura(true);
         }else{
-                console.log("abierta caja")
                 setModalCierre(true);
         };
     }catch(error){
@@ -182,7 +309,7 @@ const cachearMontoInicial = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 // ──────────────────────────────────────────────────────────────
-//Handle para Abrir caja 
+//  Handle para Abrir caja 
 // ────────────────────────────────────────────────────────────── 
 
 const handleAbrirCaja = async() =>{
@@ -190,9 +317,13 @@ const handleAbrirCaja = async() =>{
       setEnviando(true);
       const servicioApiFetch = config.servicios.abrirCaja;
       const aperturaCajaResult = await servicioApiFetch(apertura);
-    
+       
         if (aperturaCajaResult.code === "CAJA_ABIERTA_OK"){
             setModalApertura(false)
+            setDataCaja( prev => ({
+                ...prev,
+                id_caja : aperturaCajaResult.data.id
+            }));
             setEstadoCaja("abierta");
             setApertura( prev =>({
                 ...prev,
@@ -210,12 +341,10 @@ const handleAbrirCaja = async() =>{
 };
 
 // ──────────────────────────────────────────────────────────────
-//Handle para Cerrar caja
+//  Handle para Cerrar caja
 // ────────────────────────────────────────────────────────────── 
 
 const handleCerrarCaja =async () =>{
-    console.log("cerrar caja");
-
     try{
         setEnviando(true);
         const dataCierre = {
@@ -227,12 +356,17 @@ const handleCerrarCaja =async () =>{
         const cierreCajaResult = await servicioApiFetch(dataCierre);
 
         if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
-            setModalCierre(false);
+            
+            setDataCaja( prev => ({
+                ...prev,
+                id_caja : null
+            }));
             setEstadoCaja("cerrada");
             setDataCaja(prev => ({
                 ...prev,
                 id_caja : null
             }));
+            setModalCierre(false);
         };
 
     }catch(error){
@@ -243,7 +377,7 @@ const handleCerrarCaja =async () =>{
 };
 
 // ──────────────────────────────────────────────────────────────
-//Handle para Cerrar Caja ABierta
+//Handle para Cerrar Caja Abierta
 // ────────────────────────────────────────────────────────────── 
 
 const handleAbrirCajaModalCerrar = () =>{
@@ -258,13 +392,12 @@ const handleCerrarModalCerrar = () =>{
     setModalCierre(false);
 };
 
-// ──────────────────────────────────────────────────────────────
-//Handle para Cerrar modal de INGRESO / EGRESO EXTRAORDINARIO
-// ────────────────────────────────────────────────────────────── 
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+//                     FUNCIONES PARA CARAGAR LOS DETALLES DE CAJA CON SCROLL INFINITO
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
 
-const handleCerrarModalEgrIng = () =>{
-    setModalEgresoIngreso(false)
-};
 
 // ──────────────────────────────────────────────────────────────
 //Metodo para cargar los movimientos de caja con scroll infinito
@@ -284,7 +417,7 @@ const cargarMovimientos = useCallback(async () => {
         };
 
         const res = await config.servicios.movimientoCajaDetalle(dataDetalle);
-    
+       
         if (res.code === "MOVIMIENTOS_CAJA_OK") {
             setMovimientos(prev => [...prev, ...res.data]);
             setScrollState(prev => ({
@@ -328,21 +461,28 @@ const lastElementRef = useCallback((node: HTMLDivElement | null) => {
 // Importante: cargarMovimientos debe estar en las dependencias
 
 
-
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+//                      USEEFECT SECCION 1-IDCAJA    2-METRICAS   3-DETALLE DE CAJA 
+// ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
 // ──────────────────────────────────────────────────────────────
 //Obtener id de caja
 // ────────────────────────────────────────────────────────────── 
 
 useEffect( ()=> {
     const idCaja = async () => {
-        const servicioApiFetch = config.servicios.obtenerIdCaja;
-        const idCajaResult  = await servicioApiFetch(config.id_escuela);
- 
-        if ( idCajaResult.code === "ID_CAJA_OK" && idCajaResult.data){
+    
+        const idCajaResult = await idCajaFuntion(config.id_escuela);
+        
+        if ( idCajaResult){
            
             setDataCaja( prev => ({
                 ...prev,
-                id_caja : idCajaResult.data.id_caja
+                id_caja : idCajaResult
+            }));
+            setMovimientoExtraordinario( prev => ({
+                ...prev, id_caja : idCajaResult
             }));
             setEstadoCaja("abierta");
             setErrorGenerico(null);
@@ -351,7 +491,7 @@ useEffect( ()=> {
         };
     };
     idCaja();
-},[estadoCaja]);  
+},[]);  
 
 // ──────────────────────────────────────────────────────────────
 //Obtener las metricas para el panel 
@@ -368,7 +508,6 @@ useEffect( ()=> {
                 setErrorGenerico(null);
         }
         else{
-
             actualizarMetricas({
                 monto_inicial: 0,
                 total_ingresos: 0,
@@ -385,7 +524,7 @@ useEffect( ()=> {
 
     metricas();
 
-},[dataCaja.id_caja, actualizarIngresoInscipcion, estadoCaja]);    
+},[dataCaja.id_caja, actualizarIngresoInscipcion, estadoCaja, disparadorRefresco]);    
 
 
 // ──────────────────────────────────────────────────────────────
@@ -440,8 +579,11 @@ useEffect(() => {
         movimientos,
         scrollState,
 
+        tipo_pago,
         movimientoExtraordinario,
+        listadoExtraordinario,
         handleMovimientoExtraordinarioChange,
+        handleTipoPagoChange,
         handleCerrarModalEgrIng,
         handRegistarMovimientoExtraordinario,
         handleMontoChange,

@@ -1,5 +1,5 @@
 import "./tarjeta.css";
-import { fechaVencimiento, fechaHoy } from "../../hooks/fecha";
+import { fechaVencimiento, fechaHoy } from "../../utils/fecha";
 import { type DataPlan, type DataAlumno } from "../../tipadosTs/inscripciones";
 
 interface PropsTarjeta {

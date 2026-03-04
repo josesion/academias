@@ -126,6 +126,26 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
     });  
 };
 
+export const listadoCategoriaCaja = async ( data : TipadoCaja.listadoCategoriaCaja) 
+: Promise<ApiResponse<TipadoCaja.CategoríaCaja[]>> =>{
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };   
+    const { id_escuela , tipo , estado}  = data; 
+    const ruta = `${PAGINA}api/lista_categoria_caja_tipos/${id_escuela}/${tipo}/${estado}`;
+    return apiFetch( ruta , {
+        method : "GET"
+    });
+};
+
 
 export const movimientoCajaDetalle = async ( data : TipadoCaja.DetalleMovimientoCaja, signal? : AbortSignal )
 : Promise<ApiResponse<TipadoCaja.DetalleCajaMovimientoResult[]>> => {

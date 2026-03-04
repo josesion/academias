@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 //hooks
 import { peticiones } from "./peticiones";
-import { fechaHoy, fechaVencimiento } from "./fecha";
+import { fechaHoy, fechaVencimiento } from "../utils/fecha";
 // Typados 
 import {type PaginacionProps } from "../tipadosTs/genericos";
 import type * as TipadoInscripcion from "../tipadosTs/inscripciones";
@@ -61,7 +61,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         id_caja : null,
         id_categoria : null
     });
-
+    console.log(detalleMovimientoIds)
     const [filtroBusquedaAlumno , setFiltroBusquedaAlumno] = useState<TipadoInscripcion.FiltroAlumno>({
         ... config.inicialFiltroAlumno ,
         estado : "activos" ,
@@ -222,7 +222,7 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                         descripcion : notas,
                         referencia_id : subcripcionInsc.data.id // este id
                     });
-                    
+                    console.log(detalleMovimientoResult)
                     if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
                         resetFormulario();
                         setModalInsc(false);     
@@ -321,7 +321,7 @@ useEffect( () => {
     const obtenerIdCaja = async () =>{
         const servicioApiFetch = config.servicios.obtenerIdCaja;
         const idCajaAbierta = await servicioApiFetch(config.idEscuela);
-       
+        console.log(idCajaAbierta)
         if ( idCajaAbierta.code === "ID_CAJA_OK" && idCajaAbierta.data){
             setDetalleMovimientoIds(prev => ({
                 ...prev,          

@@ -2,7 +2,7 @@ import { useState , useEffect} from "react";
 
 import { peticiones } from "./peticiones";
 import { generarRangoUnaHora } from "./setHora";
-import { fechaHoy } from "./fecha"; 
+import { fechaHoy } from "../utils/fecha"; 
 import { mensajeErrorTemporal } from "./mensajeTemporales";
 
 /**

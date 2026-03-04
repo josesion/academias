@@ -6,7 +6,6 @@
     gap: 1.2rem;
     padding: 2rem;
 
-    /* Gradiente y sombra igual al de apertura */
     background: var(--color-gradiente-azul);
     border-radius: 14px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
@@ -14,6 +13,11 @@
     width: 90%;
     max-width: 450px;
     margin: 0 auto;
+
+    /* --- NUEVOS AJUSTES PARA EL SCROLL --- */
+    max-height: 85vh; /* No ocupa más del 85% de la altura de la pantalla */
+    overflow-y: auto; /* Aparece scroll si el contenido es muy alto */
+    overflow-x: hidden; /* Evitamos scroll horizontal molesto */
     
     animation: fadeInForm 0.4s ease;
     transition: box-shadow 0.25s ease;
@@ -111,6 +115,21 @@
 .textarea_chulo::-webkit-scrollbar-thumb {
     background: #3a3a4a;
     border-radius: 4px;
+}
+
+
+/* Estilo para la barra de scroll del contenedor (para que no sea la fea por defecto) */
+.contenedor_compoIngEgr::-webkit-scrollbar {
+    width: 6px;
+}
+.contenedor_compoIngEgr::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 10px;
 }
 
 /* Reutilizamos tu animación */
