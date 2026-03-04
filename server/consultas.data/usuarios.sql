@@ -1,7 +1,8 @@
 
 -- Creacion de la tabla usuarios --
 CREATE TABLE usuarios (
-    usuario VARCHAR(50) PRIMARY KEY,
+    id_usuario INT PRIMARY KEY AUTO_INCREMENT, -- El ID numérico que usaremos en Cajas
+    usuario VARCHAR(50) NOT NULL UNIQUE,       -- El nombre de login (sigue siendo único)
     contrasena VARCHAR(255) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -10,12 +11,9 @@ CREATE TABLE usuarios (
     fecha_alta DATE DEFAULT (CURRENT_DATE),
     correo VARCHAR(255) NOT NULL,
     estado VARCHAR(20) NOT NULL DEFAULT 'activos',
-    -- Campo para la clave foránea
     id_escuela INT,
-    -- Definición de la clave foránea
     FOREIGN KEY (id_escuela) REFERENCES escuelas(id_escuela)
 );
-
 
 
 -- Insercion de un usuario de ejemplo --

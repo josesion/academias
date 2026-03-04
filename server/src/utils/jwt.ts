@@ -17,13 +17,13 @@ dotenv.config();
  * @returns Token JWT como string
  * @throws ClientError si hay un fallo durante la generación del token
  */
-export const generateToken = (payload: { id: string }): string => {
+export const generateToken = (payload: { id: number }): string => {
     try {
         const token = jwt.sign(
             payload, // Carga útil del token
             process.env.JWT_CLAVE || "jjsskkss", // Clave secreta para firmar el token
             {
-                expiresIn: "30m" // Duración del token (1 hora)
+                expiresIn: "30m" // Duración del token (30 min)
             }
         );
         return token;

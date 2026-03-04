@@ -39,6 +39,8 @@ INSERT INTO cajas (
 );
 
 
+
+
 UPDATE cajas 
 SET 
     monto_sistema = ?, 
