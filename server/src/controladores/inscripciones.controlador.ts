@@ -15,7 +15,8 @@ import { enviarResponse } from "../utils/response";
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
-
+import { DetalleCajaInputs } from "../squemas/cajas";
+import { InscripcionInputs } from "../squemas/inscripciones";
 
 /**
  * Controlador para gestionar la inscripción de un alumno.
@@ -38,8 +39,31 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
  */
 
 const inscripcion = async( req : Request , res : Response ) =>{
+    const dataRecivida = req.body;
 
- const dataInscripcion = await inscripcionServicios.inscripcionServicios(req.body);
+    //  campos para la Inscripción
+    const dataInscrip: InscripcionInputs = {
+        id_plan: dataRecivida.id_plan,
+        id_escuela: dataRecivida.id_escuela,
+        dni_alumno: dataRecivida.dni_alumno,
+        fecha_inicio: dataRecivida.fecha_inicio,
+        fecha_fin: dataRecivida.fecha_fin,
+        monto: dataRecivida.monto,
+        clases_asignadas_inscritas: dataRecivida.clases_asignadas_inscritas,
+        meses_asignados_inscritos: dataRecivida.meses_asignados_inscritos,
+        estado :"activos"
+    };
+
+    // campos para el Detalle de Caja
+    const dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'> = {
+        id_caja: dataRecivida.id_caja,
+        id_categoria: dataRecivida.id_categoria,
+        monto: dataRecivida.monto, // Usamos el mismo monto
+        metodo_pago: dataRecivida.metodo_pago,
+        descripcion: dataRecivida.descripcion
+    };
+
+ const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
 switch(dataInscripcion.code){
     // Casos en el cual devueve un error de negocio
     case "INSCRIPCION_EXISTENTE" : {

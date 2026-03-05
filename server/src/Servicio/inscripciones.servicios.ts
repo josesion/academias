@@ -9,25 +9,32 @@ import { method as inscripcionesData} from "../data/inscripciones.data";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import {  InscripcionInputs, InscripcionSchema} from "../squemas/inscripciones"
+import {  InscripcionInputs, InscripcionSchema} from "../squemas/inscripciones";
+import { DetalleCajaInputs, DetalleCajaSchema } from "../squemas/cajas";
+
 import { TipadoData } from "../tipados/tipado.data";
 
 
 
-const inscripcionServicios = async( data : InscripcionInputs)
-: Promise<TipadoData<{ id_plan : number , dni_alumno : number }>> =>{
-    
-    const dataInscripcion : InscripcionInputs = InscripcionSchema.parse(data);
-    
-    const inscVigente = await inscripcionesData.verificacion(dataInscripcion);
 
+const inscripcionServiciosCaja = async( 
+    dataInscripcion: InscripcionInputs, 
+    dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>)
+: Promise<TipadoData<{ id_inscripcion : number , dni_alumno : number }>> =>{
+
+    const validInsc = InscripcionSchema.parse(dataInscripcion);
+  
+    const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
+    
+    const inscVigente = await inscripcionesData.verificacion( validInsc );
+   
     switch(inscVigente.code ){
 
         case "INSCRIPCION_NO_EXISTE" : {
 
-            const resultadoInscripcion = await inscripcionesData.alta(dataInscripcion);
+            const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);
             //console.log(resultadoInscripcion)
-            if ( resultadoInscripcion.code === "INSCRIPCIONES_CREAR" ){
+            if ( resultadoInscripcion.code === "TRANSACCION_OK" ){
                 return {
                     error : false,
                     message : `EL alumno : ${ dataInscripcion.dni_alumno }, registro existoso`,
@@ -35,6 +42,15 @@ const inscripcionServicios = async( data : InscripcionInputs)
                     code : "INSCRIPCION_EXITOSA"
                 };
             };
+
+            if ( resultadoInscripcion.code === "TRANSACCION_FALLIDA" ){
+                return {
+                    error : true,
+                    message : `La inscripcion fallo por alguna razon `,
+                    data : resultadoInscripcion.data,
+                    code : "INSCRIPCION_FALLIDA"
+                };
+            };           
            
             return {
                 error: true,
@@ -63,5 +79,5 @@ const inscripcionServicios = async( data : InscripcionInputs)
 };
 
 export const method = {
-    inscripcionServicios : tryCatchDatos( inscripcionServicios)
+    inscripcionServiciosCaja : tryCatchDatos( inscripcionServiciosCaja)
 };

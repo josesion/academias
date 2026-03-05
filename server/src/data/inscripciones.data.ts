@@ -5,10 +5,12 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { InscripcionInputs , VerificacionInputs , VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia } from "../squemas/inscripciones";
+import { InscripcionInputs , VerificacionInputs , VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia, } from "../squemas/inscripciones";
+import { DetalleCajaInputs } from "../squemas/cajas";
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -95,6 +97,62 @@ const registroInscripcion = async( data : InscripcionInputs)
 
 };
 
+export const inscripcionConPagoAlta = async (
+    dataInsc: InscripcionInputs, 
+// 'Omit' crea un tipo nuevo basado en DetalleCajaInputs pero ELIMINA 'referencia_id'.
+// Hacemos esto porque el ID de la inscripción todavía no existe (se genera después del primer INSERT),
+// así evitamos que TypeScript nos tire error por "falta de campo obligatorio" al recibir los datos.
+    dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
+) => {
+    
+    // 1. Definimos las SQL (las mismas que ya tenés)
+    const sqlInsc = `INSERT INTO inscripciones (id_plan, id_escuela, dni_alumno, fecha_inicio, fecha_fin, monto, clases_asignadas_inscritas, meses_asignados_inscritos) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
+    const sqlCaja = `INSERT INTO detalle_caja (id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id) VALUES (?, ?, ?, ?, ?, ?);`;
+
+    const resultado = await iudEntidadTransaction(async (conn) => {
+        
+        // PASO A: Crear la inscripción
+        const valoresInsc = [
+            dataInsc.id_plan, dataInsc.id_escuela, dataInsc.dni_alumno, 
+            dataInsc.fecha_inicio, dataInsc.fecha_fin, dataInsc.monto, 
+            dataInsc.clases_asignadas_inscritas, dataInsc.meses_asignados_inscritos
+        ];
+        
+        const [resInsc] = await conn.execute(sqlInsc, valoresInsc);
+        const idGenerado = (resInsc as any).insertId;
+
+        // PASO B: Crear el detalle de caja usando el ID de la inscripción
+        const valoresCaja = [
+            dataCaja.id_caja, 
+            dataCaja.id_categoria, 
+            dataCaja.monto, 
+            dataCaja.metodo_pago, 
+            dataCaja.descripcion, 
+            idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+        ];
+
+        await conn.execute(sqlCaja, valoresCaja);
+
+        return { id_inscripcion: idGenerado, dni_alumno: dataInsc.dni_alumno };
+    });
+
+    if (resultado.code ===  "TRANSACCION_OK" ){
+        return {
+            error : false,
+            message : "Inscripcion registrada correctamente",
+            data : resultado.data,
+            code : "TRANSACCION_OK"
+        };
+    };
+
+    return {
+            error : true,
+            message : "Transaccion fallida",
+            code : "TRANSACCION_FALLIDA"
+    };    
+
+};
+
 /**
  * Consulta la vigencia de la inscripción y calcula el saldo de clases disponibles.
  * * Esta función realiza un cálculo dinámico cruzando la inscripción con el histórico 
@@ -145,4 +203,5 @@ export const method = {
     alta  : tryCatchDatos( registroInscripcion ), 
     verificacion : tryCatchDatos( verificacion ),
     verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
+    inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta )
 };
