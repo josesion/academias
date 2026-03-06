@@ -1,6 +1,6 @@
 import { useState , useEffect} from "react";
 
-import { peticiones } from "./peticiones";
+import { peticiones } from "../utils/peticiones";
 import { generarRangoUnaHora } from "./setHora";
 import { fechaHoy } from "../utils/fecha"; 
 import { mensajeErrorTemporal } from "./mensajeTemporales";

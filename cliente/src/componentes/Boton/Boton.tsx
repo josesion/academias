@@ -66,20 +66,33 @@ const logoMap = {
  * @param {BotonProps} parametros - Las propiedades pasadas al componente.
  * @returns {JSX.Element} Un elemento JSX que representa el botón.
  */
+
+import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Un icono de carga que gira
+
 export const Boton = (parametros: BotonProps) => {
-  // Obtén el componente del ícono de forma dinámica
   const IconComponent = parametros.logo ? logoMap[parametros.logo] : null;
-  // si parametros.logo es Cancel este traera solo el icono MdCancel
+
   return (
     <button
-      className={`boton_personalizado ${parametros.clase}`}
+      className={`boton_personalizado ${parametros.clase} ${parametros.disable ? "boton_deshabilitado" : ""}`}
       onClick={parametros.onClick}
       autoFocus={parametros.focus}
       disabled={parametros.disable}
     >
-      {/* Si existe el componente, renderízalo */}
-      {IconComponent && <IconComponent size={parametros.size} />}
-      {parametros.disable ? "Enviado Formulario ..." : parametros.texto}
+      {/* Si está enviando, mostramos el spinner girando */}
+      {parametros.disable ? (
+        <AiOutlineLoading3Quarters
+          className="spinner_girando"
+          size={parametros.size || 20}
+        />
+      ) : (
+        IconComponent && <IconComponent size={parametros.size || 20} />
+      )}
+
+      {/* Cambiamos el texto dinámicamente */}
+      <span style={{ marginLeft: "8px" }}>
+        {parametros.disable ? "Procesando..." : parametros.texto}
+      </span>
     </button>
   );
 };

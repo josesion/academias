@@ -9,7 +9,7 @@ export interface inscripcionData{
     dni_alumno                  : number,
     fecha_inicio                : string,
     fecha_fin                   : string,
-    monto                       : number,
+    monto                       : number | null,
     clases_asignadas_inscritas  : number,
     meses_asignados_inscritos   :number
 }; 

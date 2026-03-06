@@ -101,3 +101,21 @@
 .editar:hover svg {
     animation: editarBounce 0.4s ease;
 }
+
+/* Estilo para el botón cuando está enviando */
+.boton_personalizado:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+    filter: grayscale(0.2);
+    /* Evita que el botón cambie de tamaño si el texto es más largo */
+    min-width: 150px; 
+}
+
+/* Animación para el spinner si decidís ponerlo */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spinner_girando {
+    animation: spin 1s linear infinite;
+}

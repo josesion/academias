@@ -5,7 +5,7 @@ import type { ErrorBackend } from "./erroresZod";
 
 // Seccion de hooks
 import { transformErrores } from "./erroresZod";
-import { peticiones } from "./peticiones";
+import { peticiones } from "../utils/peticiones";
 
 
 /**

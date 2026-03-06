@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 //hooks
-import { peticiones } from "./peticiones";
+import { peticiones } from "../utils/peticiones";
 import { fechaHoy, fechaVencimiento } from "../utils/fecha";
 // Typados 
 import {type PaginacionProps } from "../tipadosTs/genericos";
@@ -194,43 +194,33 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
             return; // Seguridad extra
         }
         setEnviando(true);
-
+        await new Promise(resolve => setTimeout(resolve, 600));
         try{
                 // se realiza el servicio de incripcion 
                 const servicioApiFetch = config.servicios.metodoInscripcion;
-                const datos = {
+
+                const datosInscpDetalle = {
                     id_escuela : config.idEscuela,
                     id_plan    : plan.id,
                     dni_alumno : Number(alumno.Dni),
                     fecha_inicio :fechaHoy(),
                     fecha_fin    : fechaVencimiento(plan.meses),
-                    monto  : plan.monto,
+                    monto  : Number(plan.monto),
                     meses_asignados_inscritos : plan.meses,
-                    clases_asignadas_inscritas : plan.clases
+                    clases_asignadas_inscritas : plan.clases,
+
+                    id_caja : detalleMovimientoIds.id_caja,
+                    id_categoria : detalleMovimientoIds.id_categoria,
+                    metodo_pago : metodoPago,
+                    descripcion : notas, 
                 };
                 
-                const subcripcionInsc = await servicioApiFetch( datos );
+                const subcripcionInsc = await servicioApiFetch( datosInscpDetalle );
                 
                 if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
-                    // al ser exitosa obtengo el id de la inscripcion para agregarla al detalle de caja 
-                    const servicioApiFetchDetalleCaja = config.servicios.registroMovimiento;
-                    const detalleMovimientoResult = await servicioApiFetchDetalleCaja({
-                        id_caja : detalleMovimientoIds.id_caja,
-                        id_categoria : detalleMovimientoIds.id_categoria,
-                        monto : Number(plan.monto),
-                        metodo_pago : metodoPago,
-                        descripcion : notas,
-                        referencia_id : subcripcionInsc.data.id // este id
-                    });
-                    console.log(detalleMovimientoResult)
-                    if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
                         resetFormulario();
                         setModalInsc(false);     
-                        setActualizarIngresoIncripcion(!actualizarIngresoInscipcion);        
-                    }else{
-                            setErrorGenerico(detalleMovimientoResult.message)
-                    }
-                    return
+                        setActualizarIngresoIncripcion(!actualizarIngresoInscipcion);               
                 }else{
                     // console.log("mostrar el error al cliente")
                     setErrorGenerico( subcripcionInsc.message  );
@@ -239,46 +229,7 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
             setErrorGenerico("Error de conexión");
         }finally{
             setEnviando(false);
-        };
-
-        // se realiza el servicio de incripcion 
-        const servicioApiFetch = config.servicios.metodoInscripcion;
-        const datos = {
-            id_escuela : config.idEscuela,
-            id_plan    : plan.id,
-            dni_alumno : Number(alumno.Dni),
-            fecha_inicio :fechaHoy(),
-            fecha_fin    : fechaVencimiento(plan.meses),
-            monto  : plan.monto,
-            meses_asignados_inscritos : plan.meses,
-            clases_asignadas_inscritas : plan.clases
-        };
-        
-        const subcripcionInsc = await servicioApiFetch( datos );
-        
-        if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
-            // al ser exitosa obtengo el id de la inscripcion para agregarla al detalle de caja 
-            const servicioApiFetchDetalleCaja = config.servicios.registroMovimiento;
-            const detalleMovimientoResult = await servicioApiFetchDetalleCaja({
-                id_caja : detalleMovimientoIds.id_caja,
-                id_categoria : detalleMovimientoIds.id_categoria,
-                monto : Number(plan.monto),
-                metodo_pago : metodoPago,
-                descripcion : notas,
-                referencia_id : subcripcionInsc.data.id // este id
-            });
- 
-            if ( detalleMovimientoResult.code === "DETALLE_CAJA_OK"){
-               resetFormulario();
-               setModalInsc(false);             
-            };
-            return
-        }else{
-           // console.log("mostrar el error al cliente")
-            setErrorGenerico( subcripcionInsc.message  );
-        }
-
-      
+        };  
 };
 
     const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
@@ -321,7 +272,7 @@ useEffect( () => {
     const obtenerIdCaja = async () =>{
         const servicioApiFetch = config.servicios.obtenerIdCaja;
         const idCajaAbierta = await servicioApiFetch(config.idEscuela);
-        console.log(idCajaAbierta)
+
         if ( idCajaAbierta.code === "ID_CAJA_OK" && idCajaAbierta.data){
             setDetalleMovimientoIds(prev => ({
                 ...prev,          
@@ -335,7 +286,7 @@ useEffect( () => {
         };
     }; 
     obtenerIdCaja();
-}, []);
+}, [modalInsc, config.idEscuela]);
 
 
 // ──────────────────────────────────────────────────────────────

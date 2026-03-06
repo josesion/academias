@@ -5,8 +5,12 @@ import { verificarAutenticacion } from "../hooks/verificacionUsuario";
 // Seccion de tipados Alumnos
 
 import  type * as TipadoInscripcion  from "../tipadosTs/inscripciones";
+import  type { DataDetalleCaja } from "../tipadosTs/caja.typado";
 
-export const incripcion =async ( datos : TipadoInscripcion.inscripcionData)
+
+type PayloadInscripcionCompleto = TipadoInscripcion.inscripcionData & Omit<DataDetalleCaja, 'referencia_id'>;
+
+export const incripcion =async ( datos : PayloadInscripcionCompleto )
 : Promise<ApiResponse<TipadoInscripcion.ResultInscripcion>> =>{
 
 
@@ -33,7 +37,12 @@ export const incripcion =async ( datos : TipadoInscripcion.inscripcionData)
             monto                       : datos.monto,
             clases_asignadas_inscritas  : datos.clases_asignadas_inscritas,
             meses_asignados_inscritos   : datos.meses_asignados_inscritos,
-            estado : "activos"
+            estado : "activos",
+            
+            id_caja : datos.id_caja,
+            id_categoria : datos.id_categoria,
+            metodo_pago : datos.metodo_pago,
+            descripcion : datos.descripcion,
         }
     });
 
