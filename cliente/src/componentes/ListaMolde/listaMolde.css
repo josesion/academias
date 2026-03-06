@@ -1,73 +1,41 @@
-/* Contenedor general del listado */
-.listado_molde {
-    display: grid;
-    gap: 16px;
-    padding: 16px;
-    background-color:transparent;
-    animation: slideFade 0.4s ease;
-    border-radius: 8px;
-    width: 97%;
-   
-    justify-content: center;
-    
-}
-
-
-
-/* Tarjetas (los .item_generico que contiene) */
-.listado_molde > .item_generico {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.listado_molde > .item_generico:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-@keyframes slideFade {
-0% {
-    opacity: 0;
-    transform: translateY(15px);
-}
-100% {
-    opacity: 1;
-    transform: translateY(0);
-}
-}
-
-
-
-@media (max-width: 576px) {
+/* ============================================================
+   CONTENEDOR DEL LISTADO (HÍBRIDO)
+   ============================================================ */
 
 .listado_molde {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column; /* Apila los elementos hacia abajo */
+    gap: 15px;
+    padding: 20px;
+    width: 95%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: transparent;
+    animation: slideFade 0.4s ease-out;
     
+    /* Centrado y limpieza */
     align-items: center;
-    justify-items: auto;
-    padding: 8px;
-    animation: slideFade 0.4s ease;
+    justify-content: flex-start;
+    min-height: 400px;
 }
 
+/* Animación de entrada */
+@keyframes slideFade {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-
-@media (min-width: 701px) and (max-width: 1069px) {
-
-.listado_molde {
-    grid-template-columns: repeat(3, 1fr);
-    padding: 12px;
-    animation: slideFade 0.4s ease;
-}
-
-}
-
-
-@media (min-width: 1070px) {
-
-.listado_molde {
-    grid-template-columns: repeat(3, 1fr); 
-    padding: 5px ;
-    margin: 10px 30px; 
-}
-
+/* Ajustes para pantallas pequeñas */
+@media (max-width: 600px) {
+    .listado_molde {
+        width: 100%;
+        padding: 10px;
+        gap: 10px;
+    }
 }

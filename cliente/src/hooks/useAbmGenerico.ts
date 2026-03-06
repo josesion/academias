@@ -64,7 +64,8 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     const [ estadoUrl , setEstadoUrl ] = useState<"activos" | "inactivos">("inactivos"); // Estado de la entidad (para la URL de eliminación/restauración).
     const [ tipoFormulario , setTipoFormulario] = useState<"alta" | "modificar">("alta"); // Determina el modo del formulario.
     const [ carga , setCarga] = useState<boolean>(true);         // Estado de carga/loading para peticiones.
-
+    const [enProceso, setEnProceso] = useState<boolean>(false);
+    const [a, setA] = useState("gola prieuya")
 // --- Estados de Datos y Errores ---
     const [dataListado, setDataListado] = useState<TData[]>([]);              // Almacena el listado de entidades.
     const [ errorsZod, setErrorsZod] = useState<Record<string, string | null>>({ }); // Errores de validación del backend (Zod).
@@ -247,29 +248,47 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     };
 
 /** Maneja el envío de la confirmación de Eliminación/Restauración. */
-    const handleSubmitEliminar = async( ) =>{
-        const servicioApiFetch = config.servicios.eliminar;
 
-        const resultado = await servicioApiFetch(formData);
+const handleSubmitEliminar = async () => {
+    // 1. Iniciamos la carga: los botones se bloquean y aparece el spinner neón
+    setEnProceso(true); 
+    setErrorGenerico(null); // Limpiamos errores previos por las dudas
 
-        // Éxito: Actualiza la lista y cierra el modal.
-        if ( resultado.error === false  ){ 
-            setActualizarListado( actualizarListado + 1 );
-            setModalEliminar(false);
-            return;
-        }
+    const servicioApiFetch = config.servicios.eliminar;
 
-        // Manejo de errores, muestra el mensaje y cierra el modal tras un breve tiempo.
-        if ( resultado.error === true) {
-            setErrorGenerico( resultado.message);
-                setTimeout(() => {
-                    setModalEliminar(false);
-                    return    
-                }, 1500);
-        }
+    try {
+        const resultado = await servicioApiFetch(formData);
 
-        setModalEliminar(false);
-    };
+        // Éxito: Actualiza la lista y cierra el modal.
+        if (resultado.error === false) { 
+            await new Promise(resolve => setTimeout(resolve, 800));
+            setActualizarListado(actualizarListado + 1);
+            setModalEliminar(false);
+            return;
+        }
+
+        // Manejo de errores
+        if (resultado.error === true) {
+            setErrorGenerico(resultado.message);
+            
+            // 2. Apagamos la carga acá para que el usuario vea el mensaje de error
+            // sin el spinner molestando.
+            setEnProceso(false); 
+
+            setTimeout(() => {
+                setModalEliminar(false);
+                setErrorGenerico(null); // Limpiamos para la próxima
+            }, 3000); // Le damos un poquito más de tiempo para leer
+            return;
+        }
+    } catch (err) {
+        // Por si explota algo que no sea de la API
+        setErrorGenerico("Error de conexión inesperado");
+    } finally {
+        // 3. Por seguridad, si no entró en los IFs, aseguramos que la carga pare
+        setEnProceso(false);
+    }
+};
 
 
 // ---------------------------------- Efecto de Listado ----------------------------------
@@ -339,6 +358,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         filtroData,
         barraPaginacion,
         carga,
+        enProceso,
         estadoListado,
         errorsZod, errorGenerico,
         tipoFormulario, accionEliminar, textoboton,
@@ -349,6 +369,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         handleSubmit, handleSubmitEliminar,
         handleCancelar, handleCancelarEliminar,
         handlePaginaCambiada, 
+
     }
 
 };

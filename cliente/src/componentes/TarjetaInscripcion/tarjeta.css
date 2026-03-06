@@ -1,130 +1,212 @@
-/* ===== CONTENEDOR GENERAL ===== */
+/* ============================================================
+   TARJETA DE INSCRIPCIÓN - ESTADO DE INSCRIPCIÓN
+   ============================================================ */
+
+/* ===== CONTENEDOR GENERAL (Cajón de Sastre) ===== */
 .tarjeta_card {
-  min-width: 60%;
-  margin: 0 auto;
-  padding: 16px;
-  
+    /* Quitamos anchos fijos y márgenes automáticos */
+    width: 100%; 
+    min-width: 0; /* Importante para el Grid */
+    margin: 0;
+    padding: 0; /* El padding lo maneja el body interno */
+    box-sizing: border-box;
 }
 
-/* ===== TÍTULO ===== */
+/* ===== TÍTULO DE SECCIÓN ===== */
 .tarjeta_titulo {
-  text-align: center;
-  margin-bottom: 18px;
-
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-
-  background: linear-gradient(
-    90deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    
+    /* Mantenemos tu gradiente de marca para el texto */
+    background: linear-gradient(
+        90deg,
+        #4f46e5,
+        #06b6d4,
+        #a855f7
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* Subrayado sutil con el mismo degradado */
+    border-bottom: 1px solid rgba(105, 199, 255, 0.1);
 }
 
-/* ===== CARD ===== */
+/* ===== EL CUERPO DE LA TARJETA (El panel visual) ===== */
 .tarjeta_card_body {
-  position: relative;
-  
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 28px;
-  row-gap: 14px;
+    position: relative;
+    
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    column-gap: 30px;
+    row-gap: 16px;
 
-  padding: 26px 28px 26px 40px;
+    /* Padding ajustado para balancear la línea lateral */
+    padding: 30px 30px 30px 48px;
 
-  background: linear-gradient(
-    180deg,
-    rgba(20, 20, 35, 0.92),
-    rgba(10, 10, 20, 0.92)
-  );
+    /* Gradiente de fondo ultra-oscuro para contraste */
+    background: linear-gradient(
+        180deg,
+        rgba(15, 15, 25, 0.96),
+        rgba(10, 10, 18, 0.96)
+    );
 
-  border-radius: 28px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
-  box-shadow:
-    0 18px 45px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  min-height: 420px;  
+    /* Sombra profunda y suave */
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    
+    /* Mantenemos el height automático para que el Grid mande */
+    height: 100%;
+    min-height: auto; 
+    box-sizing: border-box;
+
+    transition: all 0.3s ease;
+    animation: fadeInTarjeta 0.6s ease;
 }
 
-/* ===== LÍNEA DE COLOR ===== */
+/* Levitar suavemente */
+.tarjeta_card_body:hover {
+    transform: translateY(-4px);
+    border-color: rgba(105, 199, 255, 0.15);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== LÍNEA LATERAL (¡Aquí está tu gradiente de marca!) ===== */
 .tarjeta_card_body::before {
-  content: "";
-  position: absolute;
-  left: 14px;
-  top: 18px;
-  bottom: 18px;
-  width: 5px;
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 25px;
+    bottom: 25px;
+    width: 6px;
 
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
+    /* Tu gradiente exacto y sagrado */
+    background: linear-gradient(
+        180deg,
+        #4f46e5,
+        #06b6d4,
+        #a855f7
+    );
 
-  border-radius: 6px;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); /* Un toque de glow */
 }
 
-/* ===== FILA ===== */
+/* ===== FILA DE DATOS (Flexbox para clave/valor) ===== */
 .tarjeta_row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.01); /* Un respiro visual */
+    transition: background 0.2s ease;
 }
 
-/* ===== CLAVES ===== */
+.tarjeta_row:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ===== CLAVES (Las etiquetas) ===== */
 .tarjeta_key {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  opacity: 0.65;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #94a3b8; /* Slate-400 */
 }
 
-/* ===== VALORES ===== */
+/* ===== VALORES (El dato real) ===== */
 .tarjeta_value {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #e5e7eb;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #f1f5f9; /* Slate-100 */
 }
 
 /* ===== DESTACADO (PRECIO) ===== */
 .tarjeta_row.destacado {
-  grid-column: span 2;
-  margin-top: 10px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+    grid-column: 1 / -1; /* Ocupa todo el ancho del Grid */
+    margin-top: 15px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tarjeta_row.destacado .tarjeta_key {
+    color: #fff;
 }
 
 .tarjeta_row.destacado .tarjeta_value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #22d3ee;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #38bdf8; /* Celeste marca */
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
-@media (max-width: 768px) {
-  .tarjeta_card{
-    min-width: 90%;
-  }  
 
-  .tarjeta_card_body {
-    grid-template-columns: 1fr;
-    row-gap: 10px;
+/* Animaciones */
+@keyframes fadeInTarjeta {
+    from { 
+        opacity: 0; 
+        transform: translateY(15px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
 
-    padding: 18px 18px 16px 28px;
-    border-radius: 20px;
-  }
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
-  .tarjeta_row.destacado {
-    grid-column: span 1;
-    margin-top: 6px;
-    padding-top: 8px;
-  }
+/* Tablet y Móvil */
+@media (max-width: 900px) {
+    .tarjeta_card {
+        min-width: 100%;
+    } 
 
-  .tarjeta_row.destacado .tarjeta_value {
-    font-size: 1.05rem;
-  }
+    .tarjeta_card_body {
+        /* En móviles forzamos una columna */
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+        padding: 20px 20px 20px 36px;
+        border-radius: 20px;
+    }
+
+    .tarjeta_card_body::before {
+        left: 12px;
+        top: 20px;
+        bottom: 20px;
+        width: 5px;
+    }
+
+    .tarjeta_row {
+        padding: 8px;
+    }
+
+    .tarjeta_value {
+        font-size: 0.9rem;
+    }
+
+    .tarjeta_row.destacado .tarjeta_value {
+        font-size: 1.2rem;
+    }
+}
+
+/* Celulares ultra-chicos */
+@media (max-width: 480px) {
+    .tarjeta_card_body {
+        padding: 16px 16px 16px 28px;
+    }
+    
+    .tarjeta_card_body::before {
+        left: 10px;
+        width: 4px;
+    }
 }

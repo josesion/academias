@@ -5,14 +5,15 @@
     justify-content: space-between;
     width: 100%;
     padding: 14px 24px;
+    /* Sticky se mantiene arriba, pero ahora controlamos que no empuje */
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 
     background: linear-gradient(
         180deg,
-        rgba(0,0,0,0.65),
-        rgba(0,0,0,0.35)
+        rgba(0,0,0,0.85),
+        rgba(0,0,0,0.65)
     );
 
     backdrop-filter: blur(14px);
@@ -22,8 +23,7 @@
         0 6px 24px rgba(0,0,0,0.55),
         inset 0 -1px 0 rgba(255,255,255,0.06);
 
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    transition: background 0.3s ease, box-shadow 0.3s ease;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 /* ------------------- NOMBRE DE LA APP ------------------- */
@@ -37,212 +37,90 @@
     font-size: 1.35rem;
     font-weight: 800;
     letter-spacing: 1.2px;
-
-    background: linear-gradient(
-        90deg,
-        #60a5fa,
-        #38bdf8,
-        #a78bfa
-    );
-
+    background: linear-gradient(90deg, #60a5fa, #38bdf8, #a78bfa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
-    transition: transform 0.25s ease, filter 0.25s ease;
+    transition: transform 0.25s ease;
 }
 
-.app-name:hover {
-    transform: translateY(-1px) scale(1.04);
-    filter: drop-shadow(0 0 8px rgba(120,180,255,0.45));
-}
-
-/* ------------------- LISTA DE MENÚ ------------------- */
+/* ------------------- LISTA DE MENÚ (Escritorio) ------------------- */
 .menu_nav_lista {
     display: flex;
-    flex-wrap: wrap;
     flex-direction: row;
     margin: 0;
     padding: 0;
-    gap: 14px;
-    transition: all 0.3s ease;
+    gap: 10px;
 }
 
 .menu_nav_lista li {
     list-style: none;
     cursor: pointer;
-
     display: flex;
     align-items: center;
     gap: 8px;
-
-    padding: 9px 18px;
-    border-radius: 14px;
-
-    color: var(--color-letra);
-    font-size: 15px;
+    padding: 9px 16px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
     font-weight: 500;
-
-    position: relative;
-    isolation: isolate;
-
-    transition:
-        background 0.25s ease,
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+    transition: all 0.25s ease;
 }
 
-/* Hover elegante */
 .menu_nav_lista li:hover {
-    background: linear-gradient(
-        135deg,
-        rgba(79,70,229,0.25),
-        rgba(6,182,212,0.18)
-    );
-
+    background: rgba(255, 255, 255, 0.1);
     transform: translateY(-2px);
-    box-shadow:
-        0 8px 22px rgba(0,0,0,0.45),
-        inset 0 1px 0 rgba(255,255,255,0.12);
-}
-
-/* Íconos */
-.menu_nav_lista li svg {
-    color: var(--color-letra);
-    transition: transform 0.25s ease, color 0.25s ease;
-}
-
-.menu_nav_lista li:hover svg {
-    color: #93c5fd;
-    transform: scale(1.15);
-}
-
-/* Subrayado animado refinado */
-.menu_nav_lista li::after {
-    content: "";
-    position: absolute;
-    bottom: 6px;
-    left: 50%;
-    width: 0%;
-    height: 2px;
-
-    background: linear-gradient(
-        90deg,
-        #60a5fa,
-        #38bdf8,
-        #a78bfa
-    );
-
-    border-radius: 2px;
-    transition: width 0.3s ease, left 0.3s ease;
-}
-
-.menu_nav_lista li:hover::after {
-    width: 70%;
-    left: 15%;
-}
-
-/* ------------------- EFECTO DESLIZAR ------------------- */
-.menu {
-    overflow: hidden;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-14px);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.abierto {
-    max-height: 500px;
-    opacity: 1;
-    transform: translateY(0);
 }
 
 /* ------------------- BOTÓN HAMBURGUESA ------------------- */
 .btn_menu {
-    display: none;
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.08),
-        rgba(255,255,255,0.02)
-    );
-
-    border: 1px solid rgba(255,255,255,0.12);
-    color: var(--color-letra);
-
-    font-size: 1.8rem;
+    display: none; /* Oculto en PC */
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
     padding: 8px;
     border-radius: 50%;
-
     cursor: pointer;
-    z-index: 150;
-
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease,
-        box-shadow 0.25s ease;
 }
 
-.btn_menu:hover {
-    transform: scale(1.15) rotate(4deg);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
-}
-
-/* ------------------- RESPONSIVE ------------------- */
-@media (max-width: 576px) {
-    .menu_nav {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 12px 16px;
-        gap: 10px;
+/* ------------------- RESPONSIVE MÓVIL (Aquí está la magia) ------------------- */
+@media (max-width: 900px) {
+    .btn_menu {
+        display: flex;
     }
 
     .menu_nav_lista {
-        flex-direction: column;
+        /* TRANSFORMAMOS LA LISTA EN UN OVERLAY */
+        position: absolute;
+        top: 100%; /* Aparece justo debajo de la barra */
+        left: 0;
         width: 100%;
-        gap: 10px;
+        flex-direction: column;
+        gap: 0;
+        padding: 15px;
+        background: rgba(15, 15, 25, 0.98); /* Fondo sólido para que no se mezcle */
+        backdrop-filter: blur(20px);
+        border-bottom: 2px solid #38bdf8;
+        
+        /* Control de visibilidad */
+        display: none; 
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Clase que activás con el estado 'menu' en React */
+    .menu_nav_lista.abierto {
+        display: flex;
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 80vh;
+        overflow-y: auto; /* Por si agregás muchos botones */
     }
 
     .menu_nav_lista li {
         width: 100%;
-        padding: 12px 18px;
-    }
-
-    .btn_menu {
-        display: flex;
-        position: absolute;
-        top: 14px;
-        right: 16px;
-    }
-}
-
-@media (min-width: 577px) and (max-width: 1069px) {
-    .menu_nav {
-        justify-content: center;
-        gap: 20px;
-    }
-
-    .menu {
-        display: flex !important;
-        flex-direction: row;
-        max-height: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-}
-
-@media (min-width: 1070px) {
-    .menu_nav {
-        justify-content: space-between;
-    }
-
-    .menu {
-        display: flex !important;
-        flex-direction: row;
-        max-height: none !important;
-        opacity: 1 !important;
-        transform: none !important;
-    }
-
-    .menu_nav_lista li:last-child {
-        margin-right: 25px;
+        padding: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        border-radius: 0;
     }
 }

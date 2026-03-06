@@ -1,8 +1,21 @@
+/* ------------------- CONTENEDOR PRINCIPAL ------------------- */
+.usuario_contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 20px;
+    /* Evitamos que el contenido se pegue a la Navbar */
+    box-sizing: border-box;
+    background-color: #1e1e2f; /* Fondo oscuro coherente con el sistema */
+}
+
 /* ------------------- SECCIÓN HEADER ------------------- */
 .usuario_header {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto 30px;
+    margin-bottom: 40px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -11,89 +24,122 @@
 
 .usuario_header h2 {
     color: #e0f3ff;
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(90deg, #fff, #69c7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .usuario_header p {
     color: #b0cce0;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    opacity: 0.8;
 }
 
-/* ------------------- BOTONES ------------------- */
+/* ------------------- CONTENEDOR DE BOTONES ------------------- */
 .usuario_botones {
     display: flex;
-    gap: 20px;
+    gap: 15px;
     justify-content: center;
     flex-wrap: wrap;
     margin-top: 10px;
 }
 
+/* Usamos tu estilo de botón personalizado aquí también */
 .usuario_botones button {
-    padding: 12px 25px;
+    padding: 14px 28px;
     border: none;
     border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
-    font-weight: 600;
-    background: linear-gradient(135deg, #69c7ff, #5bbaf7);
-    color: #1e1e2f;
-    box-shadow: 0 6px 12px rgba(105, 199, 255, 0.4);
-    transition: all 0.3s ease;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .usuario_botones button:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(105, 199, 255, 0.6);
-    background: linear-gradient(135deg, #5bbaf7, #42a5f5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    filter: brightness(1.1);
 }
 
-/* ------------------- MÉTRICAS ------------------- */
+/* ------------------- SECCIÓN MÉTRICAS (GRID) ------------------- */
 .usuario_metricas {
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: grid;
+    /* Esto hace que las cards se acomoden solas según el espacio */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
 }
 
 .metrica_card {
-    flex: 1 1 250px;
-    background-color: #2c2c3c;
-    border-radius: 16px;
-    padding: 25px;
+    background: rgba(44, 44, 60, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 30px;
     text-align: center;
-    color: #e0f3ff;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .metrica_card:hover {
-    transform: translateY(-5px) scale(1.03);
-    box-shadow: 0 12px 28px rgba(105, 199, 255, 0.45);
+    transform: translateY(-8px);
+    background: rgba(50, 50, 70, 0.8);
+    border-color: rgba(105, 199, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 .metrica_card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-    color: #69c7ff;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .metrica_card p {
-    font-size: 2rem;
-    font-weight: 700;
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin: 0;
+}
+
+/* ------------------- OVERLAY DE FORMULARIOS ------------------- */
+.formulario_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* Siempre por encima del MenuNav */
+    padding: 20px;
 }
 
 /* ------------------- RESPONSIVO ------------------- */
 @media (max-width: 768px) {
+    .usuario_header h2 {
+        font-size: 1.7rem;
+    }
+
     .usuario_botones {
         flex-direction: column;
+        width: 100%;
+        max-width: 300px;
     }
+
     .usuario_metricas {
-        flex-direction: column;
-        gap: 15px;
+        grid-template-columns: 1fr; /* Una card por fila en celulares */
     }
 }

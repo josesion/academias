@@ -1,176 +1,149 @@
-/* =========================
-   TARJETA BASE
-   ========================= */
+/* ============================================================
+   ITEM GENÉRICO (TRANSFORMER: ROW TO CARD)
+   ============================================================ */
+
 .item_card {
-  position: relative;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(10px);
-
-  border-radius: 22px;
-  padding: 18px 20px 16px 36px;
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-
-  overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    display: flex;
+    flex-direction: row; /* MODO LÍNEA EN PC */
+    align-items: center;
+    justify-content: space-between;
+    
+    width: 100%;
+    min-height: 70px;
+    background: rgba(15, 15, 25, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 15px;
+    padding: 12px 25px 12px 50px; /* Espacio extra a la izq para la línea */
+    
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
 }
 
-/* Hover tarjeta */
+/* Efecto Glow al pasar el mouse */
 .item_card:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 18px 45px rgba(0,0,0,0.55),
-    inset 0 1px 0 rgba(255,255,255,0.06);
+    transform: scale(1.01);
+    border-color: rgba(6, 182, 212, 0.4);
+    background: rgba(20, 20, 35, 0.85);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* =========================
-   LÍNEA VERTICAL PANSEADA
-   ========================= */
+/* LA LÍNEA VERTICAL (EL INDICADOR DE FÁBRICA) */
 .item_card::before {
-  content: "";
-  position: absolute;
-
-  left: 12px;
-  top: 14px;
-  bottom: 14px;
-
-  width: 7px;
-
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-
-  border-radius: 999px;
-
-  box-shadow:
-    0 0 14px rgba(99, 102, 241, 0.6);
+    content: "";
+    position: absolute;
+    left: 15px;
+    top: 15%;
+    height: 70%;
+    width: 6px;
+    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+    transition: all 0.3s ease;
 }
 
-/* Hover línea */
 .item_card:hover::before {
-  box-shadow:
-    0 0 22px rgba(99, 102, 241, 0.85);
+    height: 85%;
+    top: 7.5%;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
 }
 
-/* =========================
-   CUERPO DE INFO
-   ========================= */
+/* CONTENEDOR DE DATOS */
 .item_card_body {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 14px 22px;
+    display: flex;
+    flex-direction: row; /* Datos uno al lado del otro en PC */
+    flex-wrap: wrap;    /* Si hay muchos datos, bajan de nivel automáticamente */
+    gap: 30px;
+    flex-grow: 1;
+    align-items: center;
 }
 
-/* Fila */
+/* CADA PAR CLAVE-VALOR */
 .item_row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    flex-direction: column; /* Label arriba, Valor abajo */
+    gap: 2px;
+    min-width: 120px;
 }
 
-/* Key */
 .item_key {
-  font-size: 0.65rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  opacity: 0.65;
-  color: var(--color-letra);
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-/* Value */
 .item_value {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-letra);
-  word-break: break-word;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    word-break: break-all;
 }
 
-/* =========================
-   ACCIONES / BOTONES
-   ========================= */
+/* BOTONES DE ACCIÓN */
 .item_card_actions {
-  display: flex;
-  justify-content: center;   /* 🔥 CENTRADO */
-  align-items: center;
-  gap: 14px;
-
-  padding-top: 14px;
-  margin-top: 16px;
-
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-/* Responsive botones */
-@media (min-width: 0px) and (max-width: 420px) {
-  .item_card_actions{
-    flex-direction: column;
-    justify-items: center;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-  }
+    gap: 12px;
+    padding-left: 20px;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    margin-left: 10px;
 }
 
+/* ============================================================
+   RESPONSIVE: DE LÍNEA A TARJETA (PANTALLAS MEDIANAS/CHICAS)
+   ============================================================ */
 
+@media (max-width: 1000px) {
+    .item_card {
+        flex-direction: column; /* Cambia a modo Tarjeta */
+        align-items: flex-start;
+        padding: 20px 20px 20px 45px;
+        border-radius: 25px;
+    }
 
-@media (min-width: 481px) and (max-width: 768px) {
+    .item_card::before {
+        top: 20px;
+        bottom: 20px;
+        height: auto; /* Se estira con la tarjeta */
+    }
 
-  .formulario_asistencia_contenedor {
-    grid-template-columns: 1fr;
-    max-width: 600px;
-  }
+    .item_card_body {
+        flex-direction: column; /* Datos hacia abajo */
+        align-items: flex-start;
+        gap: 15px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-  .item_card_body {
-    grid-template-columns: repeat(2, 1fr);
-  }
+    .item_row {
+        width: 100%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 8px;
+    }
 
-  .item_card_actions {
-    justify-content: center;
-    align-items: center;
-  }
-
-  .item_card_actions{
-    flex-direction: column;
-  }
+    .item_card_actions {
+        width: 100%;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 15px;
+        justify-content: space-evenly; /* Botones repartidos */
+    }
 }
 
-@media (min-width: 769px) and (max-width: 1200px) {
-
-  .formulario_asistencia_contenedor {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .item_card_body {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .item_card_actions{
-    flex-direction: column;
-  }
+@media (max-width: 480px) {
+    .item_card_actions {
+        flex-direction: column; /* Botones uno arriba del otro en mini-celus */
+        width: 100%;
+    }
+    
+    .item_card_actions button {
+        width: 100% !important;
+    }
 }
-
-
-@media (min-width: 1200px) {
-
-  .formulario_asistencia_contenedor {
-    max-width: 1100px;
-    gap: 32px;
-  }
-
-  .formulario_asistenica_titulo {
-    font-size: 1.6rem;
-  }
-
-  .item_value {
-    font-size: 1.2rem;
-  }
-
-  .boton {
-    font-size: 1.2rem;
-    padding: 16px 28px;
-  }
-}
-

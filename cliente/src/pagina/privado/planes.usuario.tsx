@@ -3,93 +3,102 @@
 // (Componentes de UI y Hooks de Lógica)
 // ===================================
 import { AmbVistas } from "../../componentes/AbmVista/AbmVista";
-import { useAbmPlanesUsuarios } from "../../hookNegocios/abmPlanesUsuarios"; 
+import { useAbmPlanesUsuarios } from "../../hookNegocios/abmPlanesUsuarios";
 
 // ===================================
 // COMPONENTE PRINCIPAL
 // ===================================
 
-export const AmbPlanesUsuarios  = () => {
+export const AmbPlanesUsuarios = () => {
+  const {
+    //  Estados y Datos
+    inputsFiltro,
+    inputsFormulario,
+    estados,
+    dataListado,
+    modal,
+    modalEliminar,
+    formData,
+    barraPaginacion,
+    carga,
+    enProceso,
+    estadoListado,
+    filtroData,
+    tipoFormulario,
+    accionEliminar,
+    textoboton,
+    entidad,
 
-    const { 
-            //  Estados y Datos
-        inputsFiltro, inputsFormulario, estados, dataListado,
-        modal, modalEliminar, formData, barraPaginacion,
-        carga, estadoListado, filtroData, tipoFormulario,
-        accionEliminar, textoboton, entidad ,
-        
-        //  Errores y Validaciones
-        errorsZod, errorGenerico,
-        
-        //  Manejadores de Eventos
-        handleChangeBuscador, handleCancelar, handleSubmit,
-        handleChangeFormulario, handleAgragar, handleEstado,
-        handlePaginaCambiada, handleModificar, handleEliminar,
-        handleCancelarEliminar, handleSubmitEliminar 
-     } = useAbmPlanesUsuarios();
+    //  Errores y Validaciones
+    errorsZod,
+    errorGenerico,
 
+    //  Manejadores de Eventos
+    handleChangeBuscador,
+    handleCancelar,
+    handleSubmit,
+    handleChangeFormulario,
+    handleAgragar,
+    handleEstado,
+    handlePaginaCambiada,
+    handleModificar,
+    handleEliminar,
+    handleCancelarEliminar,
+    handleSubmitEliminar,
+  } = useAbmPlanesUsuarios();
 
-         //  Lógica específica del componente (Manipulación del input 'dni')
-    // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
-    const inputsModificar = inputsFormulario.map( (input) => {
-        if ( tipoFormulario === "modificar" && input.name === "id" ) {
-            return { ...input, readonly: true };
-        }
-        return input;
-    });
+  //  Lógica específica del componente (Manipulación del input 'dni')
+  // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
+  const inputsModificar = inputsFormulario.map((input) => {
+    if (tipoFormulario === "modificar" && input.name === "id") {
+      return { ...input, readonly: true };
+    }
+    return input;
+  });
 
-
-  
-   return(
-        <AmbVistas
-            // PROPS DE FORMULARIO Y MODAL ===
-            modal={modal}
-            modalEliminar={modalEliminar}
-            tipoFormulario={tipoFormulario}
-            entidad={entidad}
-            // Lógica para elegir qué inputs mostrar
-            inputsEntidad={
-                tipoFormulario === 'alta' ? inputsFormulario : inputsModificar
-            }
-            formData={formData}
-            
-            // Manejo de Errores y Validación
-            errorsZod={errorsZod}
-            errorGenerico={errorGenerico}
-            
-            // Handlers de Formulario
-            onHandleCancelar={handleCancelar}
-            onHandleChangeFormulario={handleChangeFormulario}
-            onHandleSubmit={handleSubmit}
-
-            //  PROPS DE FILTRO Y LISTADO ===
-            inputsFiltro={inputsFiltro}
-            filtroData={filtroData}
-            estados={estados}
-            onHandleChangeBuscador={handleChangeBuscador}
-            onHandleAgregar={handleAgragar}
-            onHandleEstado={handleEstado}
-
-            // PROPS DE ESTADO DE LISTADO Y ACCIONES ===
-            carga={carga}
-            error={estadoListado.error} // Usando el error del estadoListado
-            statuscode={estadoListado.statuscode} // Usando el statuscode del estadoListado
-
-            // Acciones de la tabla
-            onEliminar={handleEliminar}
-            onModificar={handleModificar}
-            
-            // Acciones de Modal de Eliminación
-            onHandleCancelarEliminar={handleCancelarEliminar}
-            onHandleSubmitEliminar={handleSubmitEliminar}
-            accionEliminar={accionEliminar}
-            
-            // Paginación y Datos
-            botonTexto={textoboton}
-            barraPaginacion={barraPaginacion}
-            dataAlumnosListado={dataListado}
-            onHandlePaginaCambiada={handlePaginaCambiada}
-        />
-   );  
-
+  return (
+    <AmbVistas
+      // PROPS DE FORMULARIO Y MODAL ===
+      modal={modal}
+      modalEliminar={modalEliminar}
+      tipoFormulario={tipoFormulario}
+      entidad={entidad}
+      // Lógica para elegir qué inputs mostrar
+      inputsEntidad={
+        tipoFormulario === "alta" ? inputsFormulario : inputsModificar
+      }
+      formData={formData}
+      // Manejo de Errores y Validación
+      errorsZod={errorsZod}
+      errorGenerico={errorGenerico}
+      // Handlers de Formulario
+      onHandleCancelar={handleCancelar}
+      onHandleChangeFormulario={handleChangeFormulario}
+      onHandleSubmit={handleSubmit}
+      //  PROPS DE FILTRO Y LISTADO ===
+      inputsFiltro={inputsFiltro}
+      filtroData={filtroData}
+      estados={estados}
+      onHandleChangeBuscador={handleChangeBuscador}
+      onHandleAgregar={handleAgragar}
+      onHandleEstado={handleEstado}
+      // PROPS DE ESTADO DE LISTADO Y ACCIONES ===
+      carga={carga}
+      enProceso={enProceso}
+      error={estadoListado.error} // Usando el error del estadoListado
+      statuscode={estadoListado.statuscode} // Usando el statuscode del estadoListado
+      // Acciones de la tabla
+      onEliminar={handleEliminar}
+      onModificar={handleModificar}
+      // Acciones de Modal de Eliminación
+      onHandleCancelarEliminar={handleCancelarEliminar}
+      onHandleSubmitEliminar={handleSubmitEliminar}
+      accionEliminar={accionEliminar}
+      // Paginación y Datos
+      botonTexto={textoboton}
+      barraPaginacion={barraPaginacion}
+      dataAlumnosListado={dataListado}
+      onHandlePaginaCambiada={handlePaginaCambiada}
+    />
+  );
 };

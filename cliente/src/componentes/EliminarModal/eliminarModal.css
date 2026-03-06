@@ -108,3 +108,54 @@
         flex-direction: column; /* Botones uno arriba del otro en móvil */
     }
 }
+
+/* --- Contenedor del Spinner --- */
+.spinner_container_eliminar {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.8); /* Oscurece el modal interno */
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    border-radius: 28px;
+}
+
+/* --- El círculo neón --- */
+.spinner_neon_circle {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(239, 68, 68, 0.1);
+    border-top: 3px solid #ef4444; /* Rojo fuerte */
+    border-radius: 50%;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+    animation: spin_neon 0.8s linear infinite;
+}
+
+.texto_cargando {
+    margin-top: 15px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #ef4444;
+    font-weight: bold;
+    animation: pulse_text 1.5s ease-in-out infinite;
+}
+
+/* --- Animaciones --- */
+@keyframes spin_neon {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse_text {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; text-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
+}
+
+/* Bloquear el modal cuando carga */
+.estado_cargando {
+    pointer-events: none; /* No permite clicks accidentales */
+}

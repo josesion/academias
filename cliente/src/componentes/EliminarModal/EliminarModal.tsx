@@ -19,6 +19,7 @@ type ComponenteEliminar<T extends object> = {
   onCancelar?: () => void;
   accion: string;
   mensaje?: string | null;
+  cargando?: boolean; // <-- Nueva Prop
 };
 
 /**
@@ -37,21 +38,32 @@ export function EliminarVentana<T extends object>({
   onCancelar,
   accion,
   mensaje,
+  cargando, // Por defecto no carga
 }: ComponenteEliminar<T>) {
   return (
-    <div className="componente_eliminar">
+    <div className={`componente_eliminar ${cargando ? "estado_cargando" : ""}`}>
+      {/* SPINNER TECNOLÓGICO */}
+      {cargando && (
+        <div className="spinner_container_eliminar">
+          <div className="spinner_neon_circle"></div>
+          <p className="texto_cargando">Procesando...</p>
+        </div>
+      )}
+
       <div className="datos_eliminar">
-        <p> Estas seguro de Eliminar </p>
-        <p> {accion} </p>
+        <p>¿Estás seguro de eliminar?</p>
+        <p>{accion}</p>
       </div>
+
       <div className="botonera_eliminar">
         <Boton
-          texto="Si"
-          logo="Delete"
+          texto={cargando ? "Eliminando..." : "Sí"}
+          logo={cargando ? null : "Delete"} // Ocultar logo si carga
           size={20}
           clase="eliminar"
           onClick={() => onSi && data && onSi(data)}
-          focus={true}
+          focus={!cargando}
+          disable={cargando} // Desactivar si carga
         />
 
         <Boton
@@ -60,6 +72,7 @@ export function EliminarVentana<T extends object>({
           size={20}
           clase="editar"
           onClick={onCancelar}
+          disable={cargando} // No dejar cancelar si ya está borrando
         />
       </div>
 

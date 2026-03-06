@@ -1,404 +1,807 @@
 /* ================= CONTENEDOR GENERAL ================= */
+
 .contenedor_formulario_horario {
+
   width: 95dvw;
+
   max-height: 90dvh;
+
  
 
+
+
   display: flex;
+
   flex-direction: column;
+
   gap: 1.2rem;
+
 }
+
+
 
 .formulario_horario {
+
   max-height: calc(100dvh - 80px); /* margen arriba/abajo */
+
   overflow-y: auto;
+
   overflow-x: hidden;
 
+
+
   display: flex;
+
   flex-direction: column;
+
   gap: 1rem;
 
+
+
   -webkit-overflow-scrolling: touch; /* mobile smooth */
+
 }
+
 /* ================= Colorear el scrool  ================= */
+
 .formulario_horario::-webkit-scrollbar {
+
   width: 8px;
+
 }
+
+
 
 .formulario_horario::-webkit-scrollbar-track {
+
   background: rgba(255, 255, 255, 0.05);
+
   border-radius: 10px;
+
 }
+
+
 
 .formulario_horario::-webkit-scrollbar-thumb {
+
   background: linear-gradient(
+
     180deg,
+
     #4f46e5,
+
     #06b6d4,
+
     #a855f7
+
   );
+
   border-radius: 10px;
+
 }
 
+
+
 .formulario_horario::-webkit-scrollbar-thumb:hover {
+
   background: linear-gradient(
+
     180deg,
+
     #6366f1,
+
     #22d3ee,
+
     #c084fc
+
   );
+
 }
+
+
+
+
 
 
 
 /* ================= FILTRO PRIMARIO ================= */
+
 .formulario_horario_filtro_primario {
+
   position: relative;
 
+
+
   display: flex;
+
   gap: 1rem;
+
   justify-content: center;
+
   flex-wrap: wrap;
+
+
 
   padding: 22px 26px 22px 40px;
 
+
+
   background: linear-gradient(
+
     180deg,
+
     rgba(20, 20, 35, 0.92),
+
     rgba(10, 10, 20, 0.92)
+
   );
+
+
 
   border-radius: 26px;
 
+
+
   box-shadow:
+
     0 18px 45px rgba(0,0,0,0.45),
+
     inset 0 1px 0 rgba(255,255,255,0.05);
+
 }
 
+
+
 /* Línea de color */
+
 .formulario_horario_filtro_primario::before {
+
   content: "";
+
   position: absolute;
+
   left: 14px;
+
   top: 18px;
+
   bottom: 18px;
+
   width: 5px;
 
 
+
+
+
   border-radius: 6px;
+
 }
+
+
 
 /* Selectores */
+
 .formulario_horario_filtro_primario > div {
+
   flex: 1;
+
   min-width: 220px;
+
 }
 
+
+
 /* ================= FILTRO SECUNDARIO ================= */
+
 .formulario_horario_filtro_secundario {
+
   position: relative;
+
   flex: 1;
-  
+
+ 
+
+
 
   padding: 10px;
 
+
+
   background: linear-gradient(
+
     180deg,
+
     rgba(18, 18, 30, 0.94),
+
     rgba(10, 10, 18, 0.94)
+
   );
 
+
+
   border-radius: 28px;
+
+
 
   box-shadow:
+
     0 18px 45px rgba(0,0,0,0.45),
+
     inset 0 1px 0 rgba(255,255,255,0.04);
+
 }
 
+
+
 /* ================= PANEL INFO HORARIO ================= */
+
 .info_horario {
+
   position: relative;
 
+
+
   padding: 24px 26px 22px 42px;
+
   margin-top: 1rem;
 
+
+
   background: linear-gradient(
+
     180deg,
+
     rgba(20, 20, 35, 0.92),
+
     rgba(10, 10, 20, 0.92)
+
   );
+
+
 
   border-radius: 28px;
 
+
+
   display: flex;
+
   flex-direction: column;
+
   gap: 0.8rem;
+
+
 
   color: #e5e7eb;
 
+
+
   box-shadow:
+
     0 18px 45px rgba(0,0,0,0.45),
+
     inset 0 1px 0 rgba(255,255,255,0.05);
 
+
+
   animation: infoFadeSlide 0.25s ease-out;
+
 }
+
+
 
 /* Línea de color */
+
 .info_horario::before {
+
   content: "";
+
   position: absolute;
+
   left: 14px;
+
   top: 18px;
+
   bottom: 18px;
+
   width: 5px;
 
+
+
   background: linear-gradient(
+
     180deg,
+
     #4f46e5,
+
     #06b6d4,
+
     #a855f7
+
   );
 
+
+
   border-radius: 6px;
+
 }
 
+
+
 /* ================= TÍTULO ================= */
+
 .info_horario_titulo {
+
   text-align: center;
 
+
+
   font-size: 0.8rem;
+
   font-weight: 700;
+
   letter-spacing: 2px;
+
   text-transform: uppercase;
+
+
 
   margin-bottom: 8px;
 
+
+
   background: linear-gradient(
+
     90deg,
+
     #4f46e5,
+
     #06b6d4,
+
     #a855f7
+
   );
+
   -webkit-background-clip: text;
+
   -webkit-text-fill-color: transparent;
+
 }
+
+
 
 /* ================= BLOQUES ================= */
+
 .info_horario_bloque {
+
   display: grid;
+
   grid-template-columns: 1fr 1fr;
+
   column-gap: 24px;
+
   row-gap: 10px;
+
 }
+
+
 
 /* ================= ITEMS ================= */
+
 .info_item {
+
   display: flex;
+
   flex-direction: column;
+
   gap: 4px;
+
 }
+
+
 
 /* Etiqueta */
+
 .info_label {
+
   font-size: 0.65rem;
+
   letter-spacing: 1px;
+
   text-transform: uppercase;
+
   opacity: 0.6;
+
 }
+
+
 
 /* Valor */
+
 .info_valor {
+
   font-size: 0.95rem;
+
   font-weight: 500;
+
   color: #e5e7eb;
+
 }
+
+
 
 /* Profesor multilinea */
+
 .profe_linea {
+
   display: block;
+
 }
+
+
 
 /* ================= DIVISOR ================= */
+
 .info_divisor {
+
   grid-column: span 2;
+
   border: none;
+
   border-top: 1px solid rgba(255,255,255,0.08);
+
   margin: 6px 0;
+
 }
+
+
 
 /* ================= ESTADO ================= */
+
 .info_estado {
+
   grid-column: span 2;
 
+
+
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
 
+
+
   margin-top: 8px;
+
   padding-top: 12px;
+
+
 
   border-top: 1px solid rgba(255,255,255,0.08);
 
+
+
   font-size: 0.8rem;
+
 }
+
+
 
 .info_estado_label {
+
   opacity: 0.6;
+
 }
+
+
 
 .info_estado_valor {
+
   font-weight: 700;
+
 }
+
+
 
 .info_estado_valor.listo {
+
   color: #22d3ee;
+
 }
+
+
 
 .info_estado_valor.incompleto {
+
   color: #f59e0b;
+
 }
+
+
 
 .info_estado_valor.error {
+
   color: #ef4444;
+
 }
+
+
 
 /* ================= BOTONERA ================= */
+
 .formualrio_horario_botonera {
+
   display: flex;
+
   justify-content: space-between;
+
   width: 95%;
+
   margin-top: 1rem;
+
 }
+
+
 
 .formulario_horario_botonera1 {
+
   display: flex;
+
   gap: 0.75rem;
+
 }
+
+
 
 /* ================= ANIMACIÓN ================= */
+
 @keyframes infoFadeSlide {
+
   from {
+
     opacity: 0;
+
     transform: translateY(6px);
+
   }
+
   to {
+
     opacity: 1;
+
     transform: translateY(0);
+
   }
+
 }
 
+
+
 /* ================= RESPONSIVE ================= */
+
 @media (max-width: 768px) {
+
   .formulario_horario_filtro_primario,
+
   .info_horario {
+
     padding: 18px 18px 16px 28px;
+
     border-radius: 20px;
+
   }
 
+
+
   .info_horario_bloque {
+
     grid-template-columns: 1fr;
+
   }
+
+
 
   .info_divisor,
+
   .info_estado {
+
     grid-column: span 1;
+
   }
+
 }
+
+
+
 
 
 /* ================= RESPONSIVE ================= */
+
 @media (max-width: 768px) {
 
+
+
   /* Contenedor general */
+
   .contenedor_formulario_horario {
+
     min-height: auto;
+
     gap: 0.8rem;
+
   }
+
+
 
   /* Filtro primario */
+
   .formulario_horario_filtro_primario {
+
     padding: 14px 16px 14px 26px;
+
     gap: 0.6rem;
+
   }
+
+
 
   .formulario_horario_filtro_primario > div {
+
     min-width: 100%;
+
   }
+
+
 
   /* Panel info */
+
   .info_horario {
+
     padding: 16px 16px 14px 26px;
+
     gap: 0.6rem;
+
     margin-top: 0.6rem;
+
   }
+
+
 
   /* Título más compacto */
+
   .info_horario_titulo {
+
     font-size: 0.7rem;
+
     letter-spacing: 1.5px;
+
     margin-bottom: 4px;
+
   }
+
+
 
   /* Bloques en columna */
+
   .info_horario_bloque {
+
     grid-template-columns: 1fr;
+
     row-gap: 6px;
+
   }
+
+
 
   /* Items más compactos */
+
   .info_item {
+
     gap: 2px;
+
   }
+
+
 
   .info_label {
+
     font-size: 0.6rem;
+
   }
 
+
+
   .info_valor {
+
     font-size: 0.85rem;
+
   }
+
+
 
   /* Divisor */
+
   .info_divisor {
+
     grid-column: span 1;
+
     margin: 4px 0;
+
   }
+
+
 
   /* Estado */
+
   .info_estado {
+
     grid-column: span 1;
+
     padding-top: 8px;
+
     margin-top: 4px;
+
     font-size: 0.75rem;
+
   }
+
+
 
   /* Botonera */
+
   .formualrio_horario_botonera {
+
     width: 100%;
+
     flex-direction: column;
+
     gap: 0.6rem;
+
     margin-top: 0.6rem;
+
   }
+
+
 
   .formulario_horario_botonera1 {
+
     justify-content: space-between;
+
   }
+
 }
 
+
+
 /* Extra compacto (celulares chicos) */
+
 @media (max-width: 420px) {
 
+
+
   .formulario_horario_filtro_primario,
+
   .info_horario {
+
     padding: 12px 14px 12px 22px;
+
     border-radius: 18px;
+
   }
+
+
 
   .info_valor {
+
     font-size: 0.8rem;
+
   }
 
+
+
   .info_estado {
+
     font-size: 0.7rem;
+
   }
+
 }

@@ -1,102 +1,101 @@
+/* ============================================================
+   INPUTS STUDIOPRO - ESTILO DARK LINEAR
+   ============================================================ */
+
 .inputs_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    max-width: 400px;
+    gap: 8px;
     width: 100%;
-    margin: 5px 5px;
-    
+    max-width: 450px; /* Ajustado al máximo del formulario */
+    margin: 5px 0;
 }
 
 .inputs_contenedor label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #ddd;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8; /* Gris azulado sobrio */
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-left: 4px;
 }
 
 .inputs {
-    padding: 10px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #222;
-    font-size: 1rem;
-    color: white;
+    padding: 12px 16px;
+    /* Fondo casi negro para que se funda con el form */
+    background-color: rgba(0, 0, 0, 0.4); 
+    
+    /* Borde muy sutil */
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    
+    font-size: 0.95rem;
+    color: #f1f5f9;
     outline: none;
-    transition: all 0.2s ease;
-    border-color: #555;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .inputs::placeholder {
-    color: #6d6a6a;
+    color: #4b5563; /* Gris oscuro para el placeholder */
 }
 
-.inputs:focus {
-    border-color: #7f5be4;
-    box-shadow: 0 0 10px rgba(95, 70, 187, 0.6);
-    background: var(--color-gradiente-claro);
-    color: #757373;
-}
-
+/* --- ESTADO HOVER --- */
 .inputs:hover {
-    border-color: #797676;
+    border-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.02);
 }
 
+/* --- ESTADO EN FOCO (EL GLOW) --- */
+.inputs:focus {
+    /* Mantenemos el fondo oscuro en el foco para no romper la estética */
+    background-color: rgba(0, 0, 0, 0.6); 
+    color: white;
+    
+    /* Borde que brilla con tu color de marca (violeta/azul) */
+    border-color: rgba(99, 102, 241, 0.6);
+    
+    /* Sombra difusa para el efecto neón sutil */
+    box-shadow: 
+        0 0 0 4px rgba(99, 102, 241, 0.1),
+        0 0 15px rgba(99, 102, 241, 0.1);
+}
 
+/* --- ESTADO READONLY --- */
+.inputs:read-only {
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: transparent;
+    color: #64748b;
+    cursor: default;
+}
+
+/* --- SECCIÓN DE ERROR --- */
 .error_espacio {
-    min-height: 20px; /* reserva espacio aunque no haya error */
-     display: flex;
+    min-height: 22px; 
+    display: flex;
     align-items: center;
+    padding-top: 4px;
 }
 
-/* Mensaje de error mejorado */
 .mensaje_error {
-    position: relative;
-
-    color: #ffecec;
-    font-size: 0.85rem;
+    color: #fb7185; /* Rojo rosado suave, menos agresivo */
+    font-size: 0.75rem;
     font-weight: 600;
-
-    background: linear-gradient(
-        135deg,
-       transparent,
-        rgba(107, 16, 25, 0.9)
-    );
-
-    padding: 6px 10px 6px 14px;
-    border-radius: 8px;
-
-    box-shadow:
-        0 4px 12px rgba(255, 60, 60, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-    opacity: 0;
-    transform: translateY(-6px) scale(0.96);
-
-    animation:
-        mostrarError 0.35s ease-out forwards,
-        errorGlow 2.5s ease-in-out infinite;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(251, 113, 133, 0.1); /* Fondo rojizo muy sutil */
+    border-left: 2px solid #fb7185; /* Línea de aviso lateral */
+    
+    animation: mostrarError 0.3s ease-out forwards;
 }
 
-
-
-/* Animación de entrada */
+/* Animación simplificada para el error (menos "saltarina") */
 @keyframes mostrarError {
+    from {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* Pulso suave de error */
-@keyframes errorGlow {
-    0%, 100% {
-        box-shadow:
-            0 3px 12px rgba(255, 60, 60, 0.35),
-            inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-    50% {
-        box-shadow:
-            0 6px 20px rgba(245, 4, 4, 0.55),
-            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transform: translateX(0);
     }
 }

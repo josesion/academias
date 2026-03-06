@@ -1,185 +1,93 @@
-/* --- CONTENEDOR PRINCIPAL --- */
-.amb_contenedor_principal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-     /* más padding a la derecha */
-    width: 100dvw;
-    height: 90dvh;
-    background-color: transparent; /* transparente */
+/* ============================================================
+   ESTRUCTURA DE FLUJO CONTINUO (SIN RECUADROS REPETIDOS)
+   ============================================================ */
 
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden; /* 🚫 Adiós scroll del navegador */
+    background-color: #050508;
 }
 
-.formulario_overlay {
+.amb_master_wrapper {
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(circle at 50% 0%, #161625, #050508);
+    display: flex;
+    justify-content: center;
+}
+
+.amb_layout_container {
+    display: flex;
+    flex-direction: column;
+    width: 98%; /* Un poco más ancho para aprovechar el espacio */
+    max-width: 1500px;
+    height: 100vh;
+    padding: 10px 0;
+    box-sizing: border-box;
+}
+
+/* --- ÁREAS DE POSICIONAMIENTO (SIN BORDES PROPIOS) --- */
+
+.area_buscador {
+    flex-shrink: 0;
+    padding: 10px;
+    /* No le ponemos fondo ni borde porque el componente ya los tiene */
+}
+
+.area_listado {
+    flex-grow: 1; /* Estira el listado */
+    overflow-y: auto; /* ÚNICO scroll de la app */
+    padding: 0 10px;
+    margin: 5px 0;
+}
+
+.area_paginacion {
+    flex-shrink: 0;
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    
+    /* Única línea sutil de separación */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ================= SCROLLBAR (ESTILO NEÓN) ================= */
+
+.area_listado::-webkit-scrollbar {
+    width: 6px;
+}
+
+.area_listado::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.area_listado::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4f46e5, #06b6d4);
+    border-radius: 10px;
+}
+
+/* ================= MODALES (SIMPLIFICADOS) ================= */
+
+.modal_overlay_fix {
     position: fixed;
     inset: 0;
-
-    width: 100%;
-    height: 100dvh;
-
-    background: rgba(0, 0, 0, 0.7);
-
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-
-    z-index: 1000;
-    backdrop-filter: blur(5px);
-
-    overflow: hidden; /* 🔒 nunca scroll */
+    z-index: 9999;
 }
 
-
-.modal_eliminar{
-    position: fixed; /* Esto es clave para que ocupe toda la pantalla */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100dvh;
-    background: rgba(0, 0, 0, 0.7); /* Color semitransparente */
-    display: flex; /* Para centrar el formulario */
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(5px); /* Efecto de desenfoque opcional */ 
+/* Si tu componente Formulario ya tiene su caja, no hace falta envolverlo más */
+.area_listado {
+    /* ... lo que ya tenés ... */
+    transition: background 0.3s ease;
 }
 
-/* --- FORMULARIO --- */
-.formulario_contenedor {
-    background:#000a; /* oscuro sobrio */
-    border: 1px solid rgba(255, 255, 255, 0.1); /* Esto le daría un borde tipo cristal que resalta el modo oscuro */
-    border-radius: 14px;
-    width: 100%;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-    transition: all 0.3s ease-in-out;
-    animation: fadeInUp 0.6s ease-in-out;
-    margin-right: 30px;
-    position: absolute;
-    height: 100dvh;
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-
-    max-height: calc(100dvh - 60px);
-    overflow-y: auto;
-
-    width: 100%;
-    max-width: 900px;
-
-    scrollbar-width: thin;
-    scrollbar-color: #69c7ff transparent; 
-    
+.area_listado:hover {
+    /* Un brillo casi imperceptible para indicar que es scrolleable */
+    background: rgba(255, 255, 255, 0.01);
 }
-
-
-
-/* --- CONTENEDOR DEL LISTADO --- */
-.listado_contenedor_principal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background: transparent;
-    border-radius: 14px;
-    padding: 10px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-    animation: fadeInUp 0.7s ease-in-out;
-    width: 95%;
-    min-height : 90dvh;
-    overflow: hidden; /* importante para que el scroll quede interno */
-}
-
-.buscador_contenedor{
-    display: flex;
-    
-    justify-content: center;
-    align-items: center;
-   
-    padding: 9px 12px;
-    border: 1px solid #333;
-    border-radius: 10px;
-    background: #252538;
-    transition: all 0.3s ease;
-    width: 99%;
-    border-radius: 12px;
-
-    background-color: transparent;
-    background: linear-gradient(135deg, transparent, #030308);;
-}
-
-
-
-/* --- LISTADO --- */
-.Listado_contenedor {
-    flex-grow: 1;
-    border: 1px solid #333;
-    border-radius: 12px;
-    background: #1f1f831e;
-    padding: 16px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transition: all 0.3s ease;
-    width: 99%; /* Usar porcentaje relativo a su padre */
-    align-items: center;
-    justify-items: center;
-    max-height: calc(100dvh - 80px);
-}
-/* ================= Colorear el scrool  ================= */
-.Listado_contenedor::-webkit-scrollbar {
-  width: 8px;
-}
-
-.Listado_contenedor::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.Listado_contenedor::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-  border-radius: 10px;
-}
-
-.fListado_contenedor::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #6366f1,
-    #22d3ee,
-    #c084fc
-  );
-}
-
-
-
-
-.paginacion_contenedor {
-    margin-top: 5px;
-    padding: 3px;
-    background: #242431;
-    border-radius: 10px;
-    width: 90%;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* --- ANIMACIONES --- */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-

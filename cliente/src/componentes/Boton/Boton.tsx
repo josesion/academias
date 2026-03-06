@@ -28,7 +28,8 @@ interface BotonProps {
     | "Delete"
     | "Go"
     | "Back"
-    | "Edit";
+    | "Edit"
+    | null;
   size?: number | 20;
   clase?:
     | "aceptar"

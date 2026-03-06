@@ -21,6 +21,7 @@ export const AmbAlumnos = () => {
     formData,
     barraPaginacion,
     carga,
+    enProceso,
     estadoListado,
     filtroData,
     tipoFormulario,
@@ -84,6 +85,7 @@ export const AmbAlumnos = () => {
       onHandleEstado={handleEstado}
       // PROPS DE ESTADO DE LISTADO Y ACCIONES ===
       carga={carga}
+      enProceso={enProceso}
       error={estadoListado.error} // Usando el error del estadoListado
       statuscode={estadoListado.statuscode} // Usando el statuscode del estadoListado
       // Acciones de la tabla

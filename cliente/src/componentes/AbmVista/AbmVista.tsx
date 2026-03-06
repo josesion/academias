@@ -59,6 +59,7 @@ interface AmbViewProps {
   entidad: string;
 
   carga: boolean;
+  enProceso: boolean;
   error: boolean;
   statuscode: number;
 
@@ -106,6 +107,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
     inputsEntidad,
     estados,
     carga,
+    enProceso,
     error,
     statuscode,
     tipoFormulario,
@@ -128,9 +130,10 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
   } = props;
 
   return (
-    <div className="amb_contenedor_principal">
+    <div className="amb_master_wrapper">
+      {/* MODALES - Sin cambios en la lógica */}
       {modal && (
-        <div className="formulario_overlay">
+        <div className="modal_overlay_fix">
           <Formulario
             data={inputsEntidad}
             formData={formData}
@@ -138,7 +141,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             tituloFormulario={
               tipoFormulario === "alta"
                 ? `Alta ${entidad}`
-                : `Mofidicar ${entidad}`
+                : `Modificar ${entidad}`
             }
             onCancelar={onHandleCancelar}
             onChange={onHandleChangeFormulario}
@@ -151,22 +154,24 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
       )}
 
       {modalEliminar && (
-        <div className="modal_eliminar">
+        <div className="modal_overlay_fix">
           <EliminarVentana
             onCancelar={onHandleCancelarEliminar}
             onSi={onHandleSubmitEliminar}
             accion={accionEliminar}
             data={formData}
             mensaje={errorGenerico}
+            cargando={enProceso}
           />
         </div>
       )}
 
-      <div className="listado_contenedor_principal">
-        <div className="buscador_contenedor">
+      {/* ESTRUCTURA DE ALTO RENDIMIENTO */}
+      <div className="amb_layout_container">
+        {/* BUSCADOR: Ahora es solo un área de posicionamiento */}
+        <header className="area_buscador">
           <Buscadores
             intputBuscador={inputsFiltro}
-            tituloBuscador=""
             buscadorData={filtroData}
             onChange={onHandleChangeBuscador}
             captionBoton="Agregar"
@@ -175,8 +180,10 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             onEstados={onHandleEstado}
             onItems={onHandleItems}
           />
-        </div>
-        <div className="Listado_contenedor">
+        </header>
+
+        {/* LISTADO: Ocupa todo el centro */}
+        <main className="area_listado">
           <ListadoMolde
             items={dataAlumnosListado}
             onEditar={onModificar}
@@ -186,14 +193,16 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             statusCode={statuscode}
             botonEstado={botonTexto}
           />
-        </div>
-        <div className="paginacion_contenedor">
+        </main>
+
+        {/* PAGINACIÓN: Solo la línea sutil y el componente */}
+        <footer className="area_paginacion">
           <Paginacion
             contadorPagina={barraPaginacion.contadorPagina || 0}
             paginaActual={barraPaginacion.pagina || 1}
             onPaginaCambiada={onHandlePaginaCambiada}
           />
-        </div>
+        </footer>
       </div>
     </div>
   );

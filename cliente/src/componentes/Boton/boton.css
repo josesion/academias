@@ -1,121 +1,122 @@
+/* ============================================================
+   BOTONES PROFESIONALES - STUDIOPRO STYLE
+   ============================================================ */
+
 .boton_personalizado {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 
-    height: 40px;
-    max-height: 80px;
-    min-width: 130px;
-    min-height: 40px;
+    height: 44px; /* Un poquito más alto para mejor ergonomía */
+    min-width: 140px;
+    padding: 0 20px;
 
-
-    margin: 10px;
-    padding: 0 12px;
-
-    font-weight: 500;
-    line-height: 1; /* evita que el texto desplace el icono */
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     color: white;
-    border: none;
-    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px; /* Menos redondeado, más moderno */
     cursor: pointer;
-
-    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Asegurar que los iconos tengan el mismo tamaño y estén centrados */
-.boton_personalizado svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0; /* evita que se compriman */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* --- COLORES SOBRIOS --- */
-.aceptar { background-color: var(--color-fondo--azul); }         /* verde moderno */
-.aceptar:hover { background-color:#443bf1; }
-
-.cancelar { background-color: #E53935; }        /* rojo elegante */
-.cancelar:hover { background-color: #d32f2f; }
-
-.agregar { background-color: #1E88E5; }         /* azul vivo */
-.agregar:hover { background-color: #1976D2; }
-
-.eliminar { background-color: #882f2f; }        /* violeta sobrio */
-.eliminar:hover { background-color: #c42d2d; }
-
-.listar { background-color: #039BE5; }          /* celeste brillante */
-.listar:hover { background-color: #0288D1; }
-
-.flechas { background-color: #757575; }         /* gris neutro */
-.flechas:hover { background-color: #616161; }
-
-.editar { background-color: #1c2a6b; }          /* naranja moderno */
-.editar:hover { background-color: #253991; }
-/* --- Efectos comunes --- */
+/* Efecto de brillo general al pasar el mouse */
 .boton_personalizado:hover {
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* --- Animaciones de iconos --- */
-@keyframes bounce-icon {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+/* --- PALETA DE COLORES SOBRIOS Y MODERNOS --- */
+
+/* ACEPTAR: Usamos tu gradiente de marca pero más oscuro */
+.aceptar { 
+    background: linear-gradient(135deg, #3730a3, #0891b2); 
+    box-shadow: 0 4px 15px rgba(55, 48, 163, 0.3);
+}
+.aceptar:hover {
+    background: linear-gradient(135deg, #4338ca, #06b6d4);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
 }
 
-@keyframes rotate-icon {
-    0% { transform: rotate(0deg); }
-    50% { transform: rotate(15deg); }
-    100% { transform: rotate(0deg); }
+/* CANCELAR: Un rojo "Slate" o terracota oscuro, no chillón */
+.cancelar { 
+    background: #334155; /* Gris azulado muy oscuro (sobrio) */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.cancelar:hover { 
+    background: #ef4444; /* Solo se vuelve rojo al hacer hover (alerta) */
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
 }
 
-@keyframes shake-icon {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    75% { transform: translateX(2px); }
+/* AGREGAR: Azul medianoche */
+.agregar { 
+    background: #1e293b; 
+    border: 1px solid #38bdf8;
+    color: #38bdf8;
+}
+.agregar:hover { 
+    background: #38bdf8;
+    color: white;
 }
 
-@keyframes editarBounce {
-    0%   { transform: translateY(0) rotate(0deg) scale(1); }
-    30%  { transform: translateY(-3px) rotate(5deg) scale(1.1); }
-    60%  { transform: translateY(0) rotate(10deg) scale(1.05); }
-    100% { transform: translateY(0) rotate(0deg) scale(1); }
+/* ELIMINAR: Un bordeaux profundo */
+.eliminar { 
+    background: #450a0a; 
+    border: 1px solid #991b1b;
+}
+.eliminar:hover { 
+    background: #991b1b;
 }
 
-.aceptar:hover svg,
-.agregar:hover svg {
-    animation: bounce-icon 0.4s ease;
+/* EDITAR: Violeta grafito */
+.editar { 
+    background: #2e1065; 
+    border: 1px solid #a855f7;
+}
+.editar:hover { 
+    background: #a855f7;
 }
 
-.flechas:hover svg {
-    animation: rotate-icon 0.4s ease;
+/* LISTAR / FLECHAS: Neutros Glass */
+.listar, .flechas { 
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(5px);
+}
+.listar:hover, .flechas:hover { 
+    background: rgba(255, 255, 255, 0.15);
 }
 
-.cancelar:hover svg,
-.eliminar:hover svg {
-    animation: shake-icon 0.3s ease;
-}
+/* --- ESTADOS ESPECIALES --- */
 
-.editar:hover svg {
-    animation: editarBounce 0.4s ease;
-}
-
-/* Estilo para el botón cuando está enviando */
-.boton_personalizado:disabled {
+.boton_deshabilitado {
+    background: #1e293b !important;
+    color: #64748b !important;
+    border-color: #334155 !important;
     cursor: not-allowed;
-    opacity: 0.7;
-    filter: grayscale(0.2);
-    /* Evita que el botón cambie de tamaño si el texto es más largo */
-    min-width: 150px; 
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.6;
 }
 
-/* Animación para el spinner si decidís ponerlo */
+/* Iconos y Animaciones */
+.boton_personalizado svg {
+    transition: transform 0.3s ease;
+}
+
+.spinner_girando {
+    animation: spin 1s linear infinite;
+}
+
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-.spinner_girando {
-    animation: spin 1s linear infinite;
-}
+
+/* Mantenemos tus animaciones de iconos que están geniales */
+.aceptar:hover svg { animation: bounce-icon 0.4s ease; }
+.cancelar:hover svg { animation: shake-icon 0.3s ease; }
