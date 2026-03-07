@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-
+import { useNavigate } from "react-router-dom";
 //hooks
 import { peticiones } from "../utils/peticiones";
 import { fechaHoy, fechaVencimiento } from "../utils/fecha";
@@ -43,8 +43,10 @@ interface InscripcionConfig {
 
 
 export const useInscipcion =( config : InscripcionConfig) =>{
+     const navegar = useNavigate();
 
     const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
+    // se deja modalInsc para q actualice el id de caja al cerrar o realizar la inscripcion
     const [ modalInsc , setModalInsc] = useState<boolean>(false);
     const [ actualizarListado , setActualizarListado ] = useState<boolean>( false );
     const [actualizarIngresoInscipcion , setActualizarIngresoIncripcion] = useState<boolean>( false );
@@ -61,7 +63,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
         id_caja : null,
         id_categoria : null
     });
-    console.log(detalleMovimientoIds)
+
     const [filtroBusquedaAlumno , setFiltroBusquedaAlumno] = useState<TipadoInscripcion.FiltroAlumno>({
         ... config.inicialFiltroAlumno ,
         estado : "activos" ,
@@ -214,13 +216,14 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                     metodo_pago : metodoPago,
                     descripcion : notas, 
                 };
-                
+        
                 const subcripcionInsc = await servicioApiFetch( datosInscpDetalle );
                 
                 if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
                         resetFormulario();
                         setModalInsc(false);     
-                        setActualizarIngresoIncripcion(!actualizarIngresoInscipcion);               
+                        setActualizarIngresoIncripcion(!actualizarIngresoInscipcion); 
+                        navegar("/user_manager_priv");              
                 }else{
                     // console.log("mostrar el error al cliente")
                     setErrorGenerico( subcripcionInsc.message  );
@@ -237,7 +240,8 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         setErrorGenerico(null)
         setModalInsc(false) 
         resetFormulario();
-};
+        navegar("/user_manager_priv");// mando a la pagina princiapal
+    };
 
 // ──────────────────────────────────────────────────────────────
 // Obtencion del id de Inscripcion predeterminado
@@ -392,8 +396,6 @@ useEffect( () =>{
         notas,
         errorGenerico,
         enviando,
-        modalInsc,
-        setModalInsc,
 
         listadoPlan,
         listadoAlumno,

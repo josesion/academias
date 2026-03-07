@@ -15,6 +15,10 @@ import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario";
 import { AbmTipoUsuarios } from "./pagina/privado/tipo.usuario";
 import { AmbCategoriasCajaUsuarios } from "./pagina/privado/categoria.caja.usuario";
 
+//Formulario para Horarios
+import { HorarioPagina } from "./pagina/privado/Horarios/Horarios";
+//Formulario para Inscripcion
+import { InscripcionPage } from "./pagina/privado/Inscripcion/Inscripcion";
 // Formulario para asistencia
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
 // Formulario  Arqueo Caja
@@ -66,6 +70,9 @@ function App() {
                 />
                 <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
                 <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
+
+                <Route path="/inscrip_page" element={<InscripcionPage />} />
+                <Route path="/horario_page" element={<HorarioPagina />} />
                 <Route
                   path="/user_categoria_caja"
                   element={<AmbCategoriasCajaUsuarios />}

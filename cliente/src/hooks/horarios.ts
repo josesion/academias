@@ -1,4 +1,5 @@
 import { useState , useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 
 import { peticiones } from "../utils/peticiones";
 import { generarRangoUnaHora } from "./setHora";
@@ -41,6 +42,8 @@ interface HorarioConfig {
 
 
 export const useHorarioHook = ( config : HorarioConfig ) =>{
+
+    const irA = useNavigate();
 
     const [errorGenericoHorario , setErrorGenerico] =  useState< string | null >("Completar los campos Profesor , Nivel y Tipo");
     const [listoEnviar , setListoEnviar]  = useState<boolean>(false);
@@ -374,6 +377,7 @@ const resetFormulario = () => {
    
    const hanldeVolver = () =>{
      setModalHorario(false);
+     irA("/user_manager_priv");
    };
    
 // ──────────────────────────────────────────────────────────────

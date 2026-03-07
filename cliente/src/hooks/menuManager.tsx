@@ -4,10 +4,15 @@ import { MenuNav } from "../componentes/MenuNav/MenuNav";
 
 export const LayoutConMenu = () => {
   return (
-    <>
+    <div className="layout_principal">
+      {/* 1. La barra lateral fija */}
       <MenuNav />
-      <Outlet />
-    </>
+
+      {/* 2. El contenedor que empuja el contenido a la derecha */}
+      <main className="contenido_derecha">
+        <Outlet />
+      </main>
+    </div>
   );
 };
 

@@ -5,55 +5,36 @@
     justify-content: space-between;
     width: 100%;
     padding: 14px 24px;
-    /* Sticky se mantiene arriba, pero ahora controlamos que no empuje */
     position: sticky;
     top: 0;
     z-index: 1000;
-
-    background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.85),
-        rgba(0,0,0,0.65)
-    );
-
+    background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
-
-    box-shadow:
-        0 6px 24px rgba(0,0,0,0.55),
-        inset 0 -1px 0 rgba(255,255,255,0.06);
-
+    box-shadow: 0 6px 24px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(255,255,255,0.06);
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
-/* ------------------- NOMBRE DE LA APP ------------------- */
-.app-name-container {
-    display: flex;
-    align-items: center;
-}
-
 .app-name {
-    font-family: var(--fuente-principal, "Segoe UI", sans-serif);
     font-size: 1.35rem;
     font-weight: 800;
-    letter-spacing: 1.2px;
     background: linear-gradient(90deg, #60a5fa, #38bdf8, #a78bfa);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    transition: transform 0.25s ease;
 }
 
-/* ------------------- LISTA DE MENÚ (Escritorio) ------------------- */
+/* ------------------- LISTA DE MENÚ ------------------- */
 .menu_nav_lista {
     display: flex;
     flex-direction: row;
     margin: 0;
     padding: 0;
     gap: 10px;
+    list-style: none;
 }
 
-.menu_nav_lista li {
-    list-style: none;
+/* Items Principales */
+.menu_nav_lista .alinear {
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -64,16 +45,56 @@
     font-size: 14px;
     font-weight: 500;
     transition: all 0.25s ease;
+    position: relative; /* Para que el submenú se pegue acá */
 }
 
-.menu_nav_lista li:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: translateY(-2px);
+/* Hover solo en PC */
+@media (hover: hover) {
+    .menu_nav_lista .alinear:hover {
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+    /* no levantar elementos que contienen submenus */
+    .menu_nav_lista .alinear.menu-item:hover {
+        transform: none;
+    }
+}
+
+/* ------------------- SUBMENÚS (ESCRITORIO) ------------------- */
+.submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    list-style: none;
+    padding: 8px 0;
+    margin: 5px 0 0 0;
+    background: #0f0f19;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    z-index: 2000; /* poner más arriba para no cortarse */
+    min-width: 200px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.submenu li {
+    padding: 10px 16px;
+    font-size: 13px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (hover: hover) {
+    .submenu li:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #38bdf8;
+    }
 }
 
 /* ------------------- BOTÓN HAMBURGUESA ------------------- */
 .btn_menu {
-    display: none; /* Oculto en PC */
+    display: none;
     background: rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.2);
     color: #fff;
@@ -82,45 +103,45 @@
     cursor: pointer;
 }
 
-/* ------------------- RESPONSIVE MÓVIL (Aquí está la magia) ------------------- */
+/* ------------------- RESPONSIVE MÓVIL ------------------- */
 @media (max-width: 900px) {
-    .btn_menu {
-        display: flex;
-    }
+    .btn_menu { display: flex; }
 
     .menu_nav_lista {
-        /* TRANSFORMAMOS LA LISTA EN UN OVERLAY */
         position: absolute;
-        top: 100%; /* Aparece justo debajo de la barra */
+        top: 100%;
         left: 0;
         width: 100%;
         flex-direction: column;
-        gap: 0;
-        padding: 15px;
-        background: rgba(15, 15, 25, 0.98); /* Fondo sólido para que no se mezcle */
+        background: rgba(15, 15, 25, 0.98);
         backdrop-filter: blur(20px);
-        border-bottom: 2px solid #38bdf8;
-        
-        /* Control de visibilidad */
         display: none; 
-        opacity: 0;
-        transform: translateY(-10px);
-        transition: opacity 0.3s ease, transform 0.3s ease;
+        padding: 15px 0;
     }
 
-    /* Clase que activás con el estado 'menu' en React */
-    .menu_nav_lista.abierto {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0);
-        max-height: 80vh;
-        overflow-y: auto; /* Por si agregás muchos botones */
-    }
+    .menu_nav_lista.abierto { display: flex; }
 
-    .menu_nav_lista li {
+    .menu_nav_lista .alinear {
         width: 100%;
-        padding: 15px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
         border-radius: 0;
+        padding: 15px 24px;
+        flex-wrap: wrap; /* Para que el submenú baje */
+        transform: none !important; /* No salta en el celu */
+    }
+
+    /* SUBMENÚ EN MÓVIL: Deja de flotar y empuja */
+    .submenu {
+        position: static !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        background: #0f0f19 !important;
+        border: none !important;
+        border-left: 3px solid #38bdf8 !important;
+        margin: 10px 0 0 10px !important;
+    }
+
+    .submenu li {
+        padding: 12px 20px !important;
+        font-size: 14px !important;
     }
 }

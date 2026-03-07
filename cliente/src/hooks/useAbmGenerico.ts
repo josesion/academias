@@ -65,7 +65,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     const [ tipoFormulario , setTipoFormulario] = useState<"alta" | "modificar">("alta"); // Determina el modo del formulario.
     const [ carga , setCarga] = useState<boolean>(true);         // Estado de carga/loading para peticiones.
     const [enProceso, setEnProceso] = useState<boolean>(false);
-    const [a, setA] = useState("gola prieuya")
+    
 // --- Estados de Datos y Errores ---
     const [dataListado, setDataListado] = useState<TData[]>([]);              // Almacena el listado de entidades.
     const [ errorsZod, setErrorsZod] = useState<Record<string, string | null>>({ }); // Errores de validación del backend (Zod).
