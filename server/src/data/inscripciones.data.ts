@@ -6,12 +6,19 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
+import { listarEntidad } from "../hooks/funcionListar";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { InscripcionInputs , VerificacionInputs , VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia, } from "../squemas/inscripciones";
+import { InscripcionInputs , VerificacionInputs , 
+         VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia,
+         FiltroHistorialInputs,
+
+ } from "../squemas/inscripciones";
 import { DetalleCajaInputs } from "../squemas/cajas";
 import { TipadoData } from "../tipados/tipado.data";
+import { InscripcionListado } from "../tipados/inscripciones";
+
 
 
 /**
@@ -198,10 +205,72 @@ const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
     });
 };
 
+/**
+ * Obtiene el listado de inscripciones con conteo de asistencias y paginación.
+ * * @async
+ * @function listadoInscripciones
+ * @param {Object} data - Objeto con los filtros de búsqueda.
+ * @param {number} data.id_escuela - ID de la escuela/academia.
+ * @param {string} data.fecha_desde - Fecha de inicio del rango (YYYY-MM-DD).
+ * @param {string} data.fecha_hasta - Fecha de fin del rango (YYYY-MM-DD).
+ * @param {string} data.estado - Estado de la inscripción a excluir (ej: 'suspendido').
+ * @param {number} data.limit - Cantidad de registros por página.
+ * @param {number} data.offset - Desplazamiento de registros para la paginación.
+ * @param {string} pagina - El número de página actual (usado para el retorno de metadata).
+ * * @returns {Promise<TipadoData<InscripcionListado[]>>} Objeto estandarizado con la data, error y paginación.
+ * * @example
+ * const inscripciones = await listadoInscripciones(misInputs, "1");
+ */
+const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : string) 
+: Promise<TipadoData<InscripcionListado[]>> =>{
+  const { id_escuela, fecha_desde, fecha_hasta , estado, limit, offset} = data ;   
+  const sql : string = `SELECT 
+                            i.id_inscripcion,
+                            a_alumno.dni_alumno,
+                            CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) AS nombre_completo,
+                            COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS nombre_plan,
+                            COUNT(asist.id_asistencia) AS clases_usadas,
+                            (i.clases_asignadas_inscritas * i.meses_asignados_inscritos) AS clases_totales,
+                            DATE_FORMAT(i.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+                            DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vigencia,
+                            i.monto AS monto_pagado,
+                            (SELECT dc.metodo_pago 
+                            FROM detalle_caja dc 
+                            WHERE dc.referencia_id = i.id_inscripcion 
+                            ORDER BY dc.id_movimiento DESC LIMIT 1) AS metodo_pago,
+                            
+                            -- Columna para la paginación de tu función listarEntidad
+                            COUNT(*) OVER() AS total_registros
+
+                        FROM inscripciones i
+                        JOIN alumnos a_alumno ON i.dni_alumno = a_alumno.dni_alumno
+                        JOIN planes_pago p ON i.id_plan = p.id_plan
+                        LEFT JOIN planes_en_escuela pe ON (i.id_plan = pe.id_plan AND i.id_escuela = pe.id_escuela)
+                        LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
+                        WHERE i.id_escuela = ? 
+                        AND i.fecha_inicio BETWEEN ? AND ? 
+                        AND i.estado != ?
+                        GROUP BY i.id_inscripcion
+                        ORDER BY i.fecha_inicio DESC
+                                    limit ${limit}
+                                    offset ${offset};`;
+
+                   
+  const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estado];// por defecto todos estado                     
+  return listarEntidad({
+        slqListado : sql,
+        valores,
+        limit, 
+        pagina,
+        entidad : "Inscripciones",
+        estado  : estado
+  });    
+};
 
 export const method = {
     alta  : tryCatchDatos( registroInscripcion ), 
     verificacion : tryCatchDatos( verificacion ),
     verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
-    inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta )
+    inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta ),
+    listadoInscripciones   : tryCatchDatos( listadoInscripciones ),
 };

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {  z } from "zod";
 
 // Define el patrón de fecha YYYY-MM-DD
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -146,7 +146,37 @@ export const InscripDetalleSchema  = z.object({
         
 });
 
+export const FiltroHistorialSchema = z.object({
+  id_escuela: z.coerce.number().int().positive("ID de escuela inválido"),
+  
+  // Validamos que sean strings de fecha válidos (YYYY-MM-DD)
+  fecha_desde: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Fecha de inicio inválida",
+  }),
+  
+  fecha_hasta: z.string().refine((val) => !isNaN(Date.parse(val)), {
+    message: "Fecha de fin inválida",
+  }),
+  
+  // Opcional: para filtrar por estado desde el input
+  estado: z.enum(['activos', 'vencidos', 'todos']).optional().default('todos'),
+
+        pagina : z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El limite debe ser un número entero.' })
+                .positive({ message: 'El limite debe ser un número positivo.' }),
+
+        limit : z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El limite debe ser un número entero.' })
+                .positive({ message: 'El limite debe ser un número positivo.' }),
+
+        offset :z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El offset debe ser un número entero.' })
+                .min(0, { message: 'El offset debe ser un número  mayor a 0.' })  
+});
+
+
 export type InscripcionInputs = z.infer<typeof InscripcionSchema>;
 export type InscripcionesDetallesInputs = z.infer<typeof InscripDetalleSchema>; 
 export type VerificarInscripcionInput = z.infer<typeof VerificarInscripcionSchema>;
 export type VerificarPlanAsistenciaUnputs  = z.infer<typeof VerificlarPlanSchema >;
+export type FiltroHistorialInputs = z.infer<typeof FiltroHistorialSchema>;

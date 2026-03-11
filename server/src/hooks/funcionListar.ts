@@ -47,7 +47,7 @@ export const listarEntidad = async <TRespuesta>(
             errorsDetails: undefined
         } as unknown as TipadoData<TRespuesta[]>;
     }
- 
+
     const totalRegistro  =listado[0].total_registros;
     const totalPagina = Math.ceil( totalRegistro / limit);
     // extraigo el total de registros para la renderizacion 

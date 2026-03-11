@@ -119,6 +119,63 @@ switch(dataInscripcion.code){
 };
 
 
+/**
+ * Controlador de Express para manejar la petición HTTP del listado de inscripciones.
+ * Extrae los parámetros de la URL (query strings), invoca el servicio de inscripciones
+ * y devuelve una respuesta estandarizada al cliente.
+ * * @async
+ * @function listadoInscripciones
+ * @param {Request} req - Objeto de petición de Express. 
+ * Se esperan en req.query: limit, pagina, id_escuela, fecha_desde, fecha_hasta, estado.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<void>} Envía una respuesta HTTP usando enviarResponse o enviarResponseError.
+ */
+const listadoInscripciones = async ( req : Request, res : Response ) => {
+  
+    const dataListado = {
+        limit : Number(req.query.limit),
+        pagina : Number(req.query.pagina),
+        id_escuela : Number(req.query.id_escuela),
+        fecha_desde : req.query.fecha_desde as string,
+        fecha_hasta : req.query.fecha_hasta as string,
+        estado  : req.query.estado as string
+    };
+     // console.log( dataListado)
+    const listadoResultado = await inscripcionServicios.listadoInscripciones(dataListado);
+
+    switch ( listadoResultado.code){
+        case "LISTADO_INSCRIPCION_OK" : {
+            return enviarResponse(
+                res,
+                CodigoEstadoHTTP.OK,
+                listadoResultado.message,
+                listadoResultado.data,
+                listadoResultado.paginacion,
+                listadoResultado.code
+            );
+        };
+
+        case "LISTADO_VACIO" : {
+           return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                listadoResultado.message,
+                listadoResultado.code
+           ); 
+        };
+
+        default : {
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                "Error , Listado Inscripciones",
+                listadoResultado.code
+            );
+        };    
+    };
+};
+
 export const method = {
-    inscripcion    : tryCatch( inscripcion )
+    inscripcion    : tryCatch( inscripcion ),
+    listadoInscripciones : tryCatch( listadoInscripciones ),
 }

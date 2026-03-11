@@ -13,7 +13,7 @@ CREATE TABLE inscripciones (
     clases_asignadas_inscritas INT NOT NULL, 
     meses_asignados_inscritos INT NOT NULL,
     monto DECIMAL(10, 2) NOT NULL,
-    asistencia INT DEFAULT 0,
+
     estado ENUM('activos', 'suspendido', 'vencidos') DEFAULT 'activos',
 
     -- Claves Foráneas (Tus originales)
@@ -49,4 +49,4 @@ INSERT INTO inscripciones (
     1
 );
 
--- verid
+-- veridaver  se q se puese hacer select y hacer la bsuqueda q quiero hacer , para q tenego q crear otra tanbña
