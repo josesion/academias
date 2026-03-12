@@ -19,22 +19,7 @@ import { TipadoData } from "../tipados/tipado.data";
 
 
 
-/**
- * Servicio integral para la creación de inscripciones vinculadas a un movimiento de caja.
- * * Realiza la validación de esquemas (Zod), verifica si el alumno ya posee una inscripción vigente
- * y, en caso negativo, ejecuta la transacción de alta de inscripción junto con su pago.
- * * @async
- * @function inscripcionServiciosCaja
- * @param {InscripcionInputs} dataInscripcion - Datos principales de la inscripción (DNI, Plan, Escuela, etc.).
- * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Datos del pago para caja (Monto, Método de pago, etc.).
- * @returns {Promise<TipadoData<{ id_inscripcion : number, dni_alumno : number }>>} 
- * Objeto estandarizado con el resultado de la operación y los datos del alumno inscrito.
- * * @example
- * const resultado = await inscripcionServiciosCaja(datosAlumno, datosPago);
- * if (!resultado.error) {
- * console.log("Inscripción creada con ID:", resultado.data.id_inscripcion);
- * }
- */
+
 const inscripcionServiciosCaja = async( 
     dataInscripcion: InscripcionInputs, 
     dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>)
@@ -115,7 +100,7 @@ const inscripcionServiciosCaja = async(
  */
 const listadoInscripciones = async ( data : FiltroHistorialInputs )
 : Promise<TipadoData<InscripcionListado[]>> =>{
-    const { limit , estado , id_escuela, fecha_desde , fecha_hasta, pagina } = data ;
+    const { limit , estado , id_escuela, fecha_desde , fecha_hasta, pagina, nombre_alumno, dni_alumno } = data ;
 
     const offset = ( pagina -1 ) * Number(limit) ;
 
@@ -126,6 +111,8 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs )
         fecha_desde,
         fecha_hasta,
         offset, 
+        nombre_alumno,
+        dni_alumno,
         pagina
     };
 

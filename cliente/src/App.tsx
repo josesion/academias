@@ -45,7 +45,6 @@ function App() {
             <Route element={<LayoutSinMenu />}>
               <Route element={<RutasPrivadas />}>
                 <Route path="/asistencia" element={<FormularioAsistencia />} />
-                <Route path="/caja_usuario" element={<CajaArqueo />} />
               </Route>
             </Route>
 
@@ -70,7 +69,7 @@ function App() {
                 />
                 <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
                 <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
-
+                <Route path="/caja_usuario" element={<CajaArqueo />} />
                 <Route path="/inscrip_page" element={<InscripcionPage />} />
                 <Route path="/horario_page" element={<HorarioPagina />} />
                 <Route

@@ -148,6 +148,9 @@ export const InscripDetalleSchema  = z.object({
 
 export const FiltroHistorialSchema = z.object({
   id_escuela: z.coerce.number().int().positive("ID de escuela inválido"),
+
+  nombre_alumno: z.string().optional().default(''),
+  dni_alumno: z.string().optional().default(''),
   
   // Validamos que sean strings de fecha válidos (YYYY-MM-DD)
   fecha_desde: z.string().refine((val) => !isNaN(Date.parse(val)), {

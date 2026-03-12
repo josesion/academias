@@ -43,9 +43,9 @@ export const MenuNav = () => {
   const irNiveles = () => irA("/user_nivel");
   const irTipos = () => irA("/user_tipo");
   const irCategoriaCajas = () => irA("/user_categoria_caja");
-  const irAsistencia = () => irA("/user_asistencia");
+  const irAsistencia = () => irA("/asistencia");
   //const irInscripciones = () => irA("/user_inscripciones");
-  const irArqueoCaja = () => irA("/user_arqueo_caja");
+  const irArqueoCaja = () => irA("/caja_usuario");
   const irInscripciones = () => irA("/inscrip_page");
   const irHorarios = () => irA("/horario_page");
   return (

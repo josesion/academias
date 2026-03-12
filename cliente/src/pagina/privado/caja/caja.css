@@ -1,3 +1,4 @@
+ 
 /* =============================================
    1. VARIABLES Y RESET (Base)
    ============================================= */
@@ -121,6 +122,7 @@
   flex: 0.8;
   position: sticky;
   top: 0;
+  padding-bottom: 50px;
 }
 .caja_arqueo_metricas_detalles > p::after {
   content: "";
@@ -129,6 +131,10 @@
   background: linear-gradient(90deg, rgba(255,255,255,0.2), transparent);
   margin-left: 10px;
 }
+
+
+
+
 /* =============================================
    6. RESPONSIVE (Ajustes de Pantalla)
    ============================================= */

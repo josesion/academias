@@ -70,6 +70,7 @@ export const CajaArqueo = () => {
 
   return (
     <div className="caja_arqueo_contenedor">
+      <div style={{ height: "var(--alto-menu-superior)", width: "100%" }}></div>
       {modalApertura && (
         <div className="formulario_overlay">
           <AperturaCaja

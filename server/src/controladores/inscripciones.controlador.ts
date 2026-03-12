@@ -138,7 +138,9 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
         id_escuela : Number(req.query.id_escuela),
         fecha_desde : req.query.fecha_desde as string,
         fecha_hasta : req.query.fecha_hasta as string,
-        estado  : req.query.estado as string
+        estado  : req.query.estado as string,
+        nombre_alumno : req.query.nombre_alumno,
+        dni_alumno   : req.query.dni_alumno
     };
      // console.log( dataListado)
     const listadoResultado = await inscripcionServicios.listadoInscripciones(dataListado);
