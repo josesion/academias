@@ -1,0 +1,81 @@
+/* ============================================================
+   ESTILO STUDIO PRO - RESPETANDO TU ESTRUCTURA ORIGINAL
+   ============================================================ */
+
+.filtro_fechas_contenedor {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    
+    /* Estilo Cápsula Studio Pro */
+    width: fit-content;
+    padding: 10px 25px;
+    background: rgba(10, 10, 15, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    margin: 0; /* Para que el contenedor padre lo maneje */
+}
+
+.filtro_input_group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.filtro_input_group label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-left: 12px;
+}
+
+.input_wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input_icon {
+    position: absolute;
+    left: 15px;
+    color: #4f46e5; /* Violeta Studio Pro */
+    pointer-events: none;
+    z-index: 2;
+}
+
+.filtro_input_group input {
+    height: 38px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    padding: 0 15px 0 38px; /* Espacio para el icono */
+    color: white;
+    font-size: 0.85rem;
+    outline: none;
+    width: 160px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.filtro_input_group input:focus {
+    border-color: #06b6d4;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.filtro_separador {
+    color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+    margin-top: 18px; /* Para alinear con los inputs */
+}
+
+/* Icono nativo de fecha (el de la derecha) */
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.4;
+    cursor: pointer;
+}

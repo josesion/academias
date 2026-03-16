@@ -23,8 +23,10 @@ import { InscripcionPage } from "./pagina/privado/Inscripcion/Inscripcion";
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
 // Formulario  Arqueo Caja
 import { CajaArqueo } from "./pagina/privado/caja/Caja";
-// seccion de componentes
+// Formulario listado Inscripciones
+import { ListadoInscripcionPage } from "./pagina/privado/Listado_inscripcion/ListadoInscrip";
 
+// seccion de componentes de logicas
 import { RutasPrivadas } from "./Rutas.Protegidas";
 import { LayoutConMenu, LayoutSinMenu } from "./hooks/menuManager";
 
@@ -72,6 +74,10 @@ function App() {
                 <Route path="/caja_usuario" element={<CajaArqueo />} />
                 <Route path="/inscrip_page" element={<InscripcionPage />} />
                 <Route path="/horario_page" element={<HorarioPagina />} />
+                <Route
+                  path="/list_inscrip"
+                  element={<ListadoInscripcionPage />}
+                />
                 <Route
                   path="/user_categoria_caja"
                   element={<AmbCategoriasCajaUsuarios />}

@@ -55,3 +55,33 @@ export const fechaVencimiento = ( meses : number) : string=>{
         return  `${year}-${month}-${day}`;
 
 };
+
+
+/**
+ * Calcula una fecha restando 6 meses a partir de una fecha base dada.
+ * * @param {string} fechaBase - La fecha de referencia en formato 'YYYY-MM-DD'.
+ * @returns {string} La nueva fecha calculada (6 meses atrás) en formato 'YYYY-MM-DD'.
+ * * @example
+ * // Si hoy es 2026-03-12
+ * const resultado = calcularSeisMesesAtras("2026-03-12");
+ * console.log(resultado); // "2025-09-12"
+ * * @description
+ * La función utiliza .replace(/-/g, '\/') para instanciar el objeto Date, 
+ * evitando desfases de zona horaria (UTC vs Local) que ocurren habitualmente 
+ * al parsear strings con guiones en JavaScript.
+ */
+export const calcularSeisMesesAtras = (fechaBase: string): string => {
+    // 1. Creamos el objeto Date a partir del string recibido
+    // Usamos el reemplazo de '-' por '/' para evitar problemas de zona horaria en JS
+    const date = new Date(fechaBase.replace(/-/g, '\/')); 
+
+    // 2. Restamos los 6 meses
+    date.setMonth(date.getMonth() - 6);
+
+    // 3. Extraemos las partes para el formato YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+};

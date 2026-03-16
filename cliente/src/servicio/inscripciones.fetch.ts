@@ -23,7 +23,7 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
             code: "NOT_AUTHENTICATED",
             errorsDetails: undefined
         };
-    }
+    };
 
     const ruta  = `${PAGINA}api/inscripcion`;  
     return await apiFetch( ruta , {
@@ -45,5 +45,34 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
             descripcion : datos.descripcion,
         }
     });
+    
+}
 
+export const listadoInscripciones = async( data : TipadoInscripcion.FiltroBusqueda, signal? : AbortSignal  )
+: Promise<ApiResponse<TipadoInscripcion.InscripcionListadoResult[]>> =>{
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+    const parametrosQuery = {
+        estado: data.estado || "activos",
+        id_escuela: data.id_escuela.toString(),
+        nombre_alumno : data.nombre_alumno,
+        dni_alumno  : data.dni_alumno,
+        fecha_desde : data.fecha_desde,
+        fecha_hasta : data.fecha_hasta,
+        pagina : data.pagina.toString(),
+        limit : data.limit.toString()
+    }; 
+   const ruta  = `${PAGINA}api/list_inscrip?${new URLSearchParams(parametrosQuery as Record<string, string>).toString()}`;
+   return await apiFetch( ruta , {
+    method : "GET",
+    signal
+   });
 };

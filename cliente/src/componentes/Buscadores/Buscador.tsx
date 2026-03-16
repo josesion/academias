@@ -27,7 +27,7 @@ interface BuscadorProps {
   onItems?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   intputBuscador: InputsPropsBuscador[];
   tituloBuscador?: string;
-  buscadorData?: Record<string, string | number>;
+  buscadorData?: any;
   captionBoton: string;
   estados: string[];
 }

@@ -1,0 +1,39 @@
+/* =============================================
+   CONTENEDOR DE FILTROS (CODO A CODO)
+   ============================================= */
+.contenedor_filtros {
+    display: flex;
+    flex-direction: row;      /* Por defecto uno al lado del otro */
+    justify-content: center;   /* Los centra en el medio de la pantalla */
+    align-items: flex-end;     /* Los alinea por la base */
+    gap: 15px;                 /* Espacio entre los dos */
+    width: 100%;
+    margin: 20px 0;
+    flex-wrap: wrap;           /* PERMITE que bajen cuando no hay espacio */
+}
+
+/* =============================================
+   CONTROL DE POSICIONAMIENTO (HIJOS)
+   ============================================= */
+.contenedor_filtros > * {
+    /* IMPORTANTE: Quitamos el margin auto que suele tener el buscador 
+       para que no se repelan y se mantengan pegados al medio */
+    margin: 0 !important; 
+    flex-shrink: 0;           /* Evita que se deformen */
+}
+
+/* =============================================
+   COMPORTAMIENTO MÓVIL (CUANDO BAJA)
+   ============================================= */
+@media (max-width: 600px) { /* Ajustá este número según el ancho de tus buscadores */
+    .contenedor_filtros {
+        flex-direction: column; /* Se ponen en columna */
+        align-items: center;    /* Los centra uno sobre otro */
+        gap: 20px;
+    }
+    
+    .contenedor_filtros > * {
+        width: 95% !important;  /* Para que en el celu ocupen casi todo el ancho */
+        max-width: 400px;       /* Pero que no se estiren infinitamente */
+    }
+}

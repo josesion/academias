@@ -1,0 +1,128 @@
+.fila_inscripcion {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.2s ease;
+}
+
+.fila_inscripcion:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.celda_inscripcion {
+    padding: 1.2rem 1rem;
+    vertical-align: middle;
+}
+
+/* --- Alumno --- */
+.alumno_contenedor { display: flex; align-items: center; gap: 12px; }
+.alumno_avatar {
+    padding: 8px;
+    border-radius: 9999px;
+    background: rgba(30, 41, 59, 0.7);
+    color: #818cf8;
+    transition: all 0.3s ease;
+}
+.fila_inscripcion:hover .alumno_avatar {
+    background: #4f46e5;
+    color: white;
+}
+.alumno_nombre { display: block; color: #f1f5f9; font-weight: 700; font-size: 0.9rem; }
+.alumno_dni { color: #64748b; font-size: 0.75rem; }
+
+/* --- Plan y Pago --- */
+.plan_contenedor { display: flex; flex-direction: column; gap: 4px; }
+.plan_nombre { color: #cbd5e1; font-size: 0.85rem; font-weight: 500; }
+.pago_info { display: flex; align-items: center; gap: 8px; }
+.pago_monto { display: flex; align-items: center; gap: 4px; color: #34d399; font-weight: 700; font-size: 0.75rem; }
+.pago_metodo { 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    background: rgba(30, 41, 59, 0.6); 
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8; font-size: 9px; text-transform: uppercase;
+}
+
+/* --- Consumo --- */
+.consumo_contenedor { width: 140px; display: flex; flex-direction: column; gap: 6px; }
+.consumo_header { display: flex; justify-content: space-between; align-items: center; }
+.consumo_titulo { display: flex; align-items: center; gap: 4px; color: #64748b; font-size: 9px; text-transform: uppercase; font-weight: 800; }
+.consumo_numeros { color: #cbd5e1; font-size: 10px; font-family: monospace; }
+.barra_fondo { height: 6px; width: 100%; background: #1e293b; border-radius: 10px; overflow: hidden; }
+.barra_progreso { height: 100%; background: linear-gradient(90deg, #4f46e5, #06b6d4); border-radius: 10px; transition: width 0.5s ease; }
+
+/* --- Vigencia --- */
+.vigencia_contenedor { display: flex; flex-direction: column; align-items: flex-end; }
+.vigencia_label { font-size: 9px; color: #64748b; text-transform: uppercase; font-weight: 800; margin-bottom: 4px; }
+.vigencia_fecha { 
+    font-size: 0.8rem; color: #e2e8f0; font-family: monospace;
+    background: rgba(30, 41, 59, 0.4); padding: 4px 8px; border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+
+/* =============================================
+   RESPONSIVE: DE TABLA A TARJETA (Cards)
+   ============================================= */
+
+@media (max-width: 768px) {
+    /* 1. Transformamos la fila en una tarjeta */
+    .fila_inscripcion {
+        display: block;
+        margin: 15px;
+        padding: 15px;
+        
+        
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* 2. Hacemos que las celdas ocupen todo el ancho y no tengan padding de tabla */
+    .celda_inscripcion {
+        display: block;
+        width: 100% !important;
+        padding: 8px 0 !important;
+        border: none !important;
+    }
+
+    /* 3. Reordenamos el contenido para que luzca como tarjeta */
+    
+    /* El Alumno arriba de todo con un separador */
+    .alumno_contenedor {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 12px;
+        margin-bottom: 8px;
+    }
+
+    /* Plan y Pago: uno al lado del otro */
+    .plan_contenedor {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Consumo: Centrado y más ancho */
+    .consumo_contenedor {
+        width: 100% !important;
+        max-width: none !important;
+        margin-top: 10px;
+        background: rgba(15, 23, 42, 0.3);
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    /* Vigencia: Flotando arriba a la derecha o abajo alineado */
+    .vigencia_contenedor {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        border-top: 1px dotted rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+    }
+
+    .vigencia_fecha {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        color: #818cf8 !important; /* Resaltamos la fecha en móvil */
+    }
+}
