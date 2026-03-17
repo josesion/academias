@@ -226,6 +226,14 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
   const { id_escuela, fecha_desde, fecha_hasta , estado, limit, offset , nombre_alumno, dni_alumno} = data ;   
   const dniFiltro = `%${dni_alumno}%`;
   const nombreFiltro = `%${nombre_alumno}%`;
+  let estadoFiltro : string;
+
+  if (estado === "todos" ) {
+     estadoFiltro = `%%`
+  }else{
+      estadoFiltro = `%${estado}%`;
+  }; 
+
   const sql : string = `SELECT 
                             i.id_inscripcion,
                             a_alumno.dni_alumno,
@@ -251,7 +259,7 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
                         LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
                         WHERE i.id_escuela = ? 
                         AND i.fecha_inicio BETWEEN ? AND ? 
-                        AND i.estado != ?
+                        AND i.estado LIKE ?
                         AND (
                                 CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ? 
                                 and a_alumno.dni_alumno LIKE ?
@@ -263,7 +271,7 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
                                     offset ${offset};`;
 
                    
-  const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estado, nombreFiltro, dniFiltro];// por defecto todos estado                     
+  const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estadoFiltro, nombreFiltro, dniFiltro];// por defecto todos estado                     
   return listarEntidad({
         slqListado : sql,
         valores,

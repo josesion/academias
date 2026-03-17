@@ -1,0 +1,93 @@
+
+
+.listado_wrapper {
+    width: 100%; 
+    height: 450px; 
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: rgba(15, 23, 42, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    position: relative; /* Para que el sticky header sepa dónde quedarse */
+}
+
+/* --- Personalización del Scroll (Webkit) --- */
+.listado_wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.listado_wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.listado_wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
+    border-radius: 10px;
+}
+
+.listado_wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #6366f1, #22d3ee, #c084fc);
+}
+
+/* --- Tabla General --- */
+.tabla_inscripciones {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Mantiene las columnas estables en Desktop */
+}
+
+/* --- Encabezados Sticky (Desktop) --- */
+.tabla_header th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #0f172a; 
+    padding: 1.2rem 1rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-align: center; /* Centrado como pediste */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+/* --- Cuerpo de Tabla --- */
+.tabla_body {
+    position: relative;
+}
+
+/* Espacio de seguridad al final para que no tape el último elemento */
+.tabla_body::after {
+    content: "";
+    display: block;
+    height: 30px; 
+}
+
+/* --- Ajustes Responsive --- */
+@media (max-width: 768px) {
+    .listado_wrapper {
+        height: auto;
+        max-height: 80vh; /* Para que no sea infinita en tablets */
+        background: transparent;
+        border: none;
+        overflow-y: auto;
+    }
+
+    .tabla_header {
+        display: none; /* Desaparece la tabla tradicional */
+    }
+
+    .tabla_inscripciones, 
+    .tabla_body {
+        display: block;
+        width: 100%;
+    }
+
+    /* Espacio extra en móvil para que el dedo llegue bien al fondo */
+    .tabla_body::after {
+        height: 80px;
+    }
+}
