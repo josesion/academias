@@ -34,6 +34,9 @@ const app : Express = express();
 iniciarCronVencimientoInscripciones();
 asistenciaData.vencerInscripciones();
 
+import logger from "./utils/logger";
+logger.error("¡Gritalo Jose! El logger está funcionando.");
+
 app.use(cors({
     origin : "http://localhost:5173",
     credentials: true 
@@ -90,8 +93,18 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
              message    =  "Error de sintaxis JSON: El cuerpo de la solicitud no es un JSON válido.", 
              code = "INVALID_JSON_SYNTAX"          
         }else{
-            console.error("Server Error no manejado:", err);
-        }
+            // 1. Buscamos el ID de la escuela en el body o en la URL (query)
+                const id_escuela = __req.body?.id_escuela || __req.query?.id_escuela || "N/A";
+                
+                // 2. Buscamos el nombre del usuario si lo tenés
+                const usuario = __req.body?.usuario_nom || "Anónimo";
+
+                // 3. El logger ahora guarda todo el "ADN" del error
+                logger.error(`[${__req.method}] ${__req.url} | Escuela: ${id_escuela} | User: ${usuario}`, { 
+                    mensaje: err.message,
+                    stack: err.stack 
+                });
+        };
 
     enviarResponseError(res, statusCode, message, code, errorsDetails );
 

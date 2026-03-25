@@ -12,7 +12,7 @@ import { listarEntidad } from "../hooks/funcionListar";
 // ──────────────────────────────────────────────────────────────
 import { InscripcionInputs , VerificacionInputs , 
          VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia,
-         FiltroHistorialInputs,
+         FiltroHistorialInputs, AnularInscripcionInputs,
 
  } from "../squemas/inscripciones";
 import { DetalleCajaInputs } from "../squemas/cajas";
@@ -104,6 +104,31 @@ const registroInscripcion = async( data : InscripcionInputs)
 
 };
 
+
+
+
+/**
+ * Realiza el alta integral de una nueva inscripción junto con su primer pago.
+ * * Esta función es una operación transaccional que asegura la coherencia entre
+ * el registro académico y el financiero:
+ * 1. Inserta la nueva inscripción en la tabla `inscripciones`.
+ * 2. Recupera el `insertId` generado automáticamente por la base de datos.
+ * 3. Inserta el movimiento de ingreso en `detalle_caja`, usando el ID de la 
+ * inscripción como `referencia_id`.
+ * * @param {InscripcionInputs} dataInsc - Objeto con los datos académicos (plan, fechas, montos, clases).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataCaja - Datos financieros del pago (caja, categoría, método, descripción).
+ * * @returns {Promise<{
+ * error: boolean,
+ * message: string,
+ * data?: { id_inscripcion: number, dni_alumno: string },
+ * code: "TRANSACCION_OK" | "TRANSACCION_FALLIDA"
+ * }>} Respuesta estandarizada con los datos de la nueva inscripción o el error ocurrido.
+ * * @example
+ * const alta = await inscripcionConPagoAlta(nuevaInsc, datosPago);
+ * if (!alta.error) {
+ * console.log(`Alumno ${alta.data.dni_alumno} inscrito con ID: ${alta.data.id_inscripcion}`);
+ * }
+ */
 export const inscripcionConPagoAlta = async (
     dataInsc: InscripcionInputs, 
 // 'Omit' crea un tipo nuevo basado en DetalleCajaInputs pero ELIMINA 'referencia_id'.
@@ -159,6 +184,124 @@ export const inscripcionConPagoAlta = async (
     };    
 
 };
+
+/**
+ * Realiza la anulación física de una inscripción mediante una transacción atómica.
+ * * Esta función ejecuta dos operaciones vinculadas:
+ * 1. Cambia el estado de la inscripción a 'suspendido'.
+ * 2. Registra el movimiento de egreso en el detalle de caja, vinculándolo al ID de la inscripción.
+ * * Si cualquiera de las dos operaciones falla, la transacción realiza un rollback 
+ * automático para mantener la integridad de los datos.
+ * * @param {AnularInscripcionInputs} dataInsc - Datos identificadores de la inscripción (id_escuela, id_inscripcion).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataCaja - Datos financieros del reembolso (monto, categoría, descripción).
+ * * @returns {Promise<{
+ * error: boolean,
+ * message: string,
+ * data?: { id_inscripcion: number },
+ * code: "TRANSACCION_OK" | "TRANSACCION_FALLIDA"
+ * }>} Objeto de respuesta que indica el éxito o fracaso de la operación doble.
+ * * @example
+ * const resultado = await anularInscripcion(datosInsc, datosDinero);
+ * if (!resultado.error) {
+ * console.log("Caja actualizada e inscripción suspendida.");
+ * }
+ */
+const anularInscripcion = async( 
+    dataInsc : AnularInscripcionInputs, 
+    dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
+) =>{
+    // 1. Definimos las SQL (las mismas que ya tenés)
+    const sqlInsc = `update inscripciones 
+                        set inscripciones.estado = "suspendido"
+                        where 
+                        inscripciones. id_escuela = ?
+                        and
+                        inscripciones.id_inscripcion = ?;`;
+
+    const sqlCaja = `INSERT INTO detalle_caja (id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id) VALUES (?, ?, ?, ?, ?, ?);`;   
+    
+    const resultado = await iudEntidadTransaction(async (conn) => {
+            
+            // PASO A: Crear la inscripción la suspencion
+            const valoresInsc = [ dataInsc.id_escuela, dataInsc.id_inscripcion ];
+            
+            await conn.execute(sqlInsc, valoresInsc);
+
+            const idGenerado = dataInsc.id_inscripcion;
+           
+            // PASO B: Crear el detalle de caja usando el ID de la inscripción
+            const valoresCaja = [
+                dataCaja.id_caja, 
+                dataCaja.id_categoria, 
+                dataCaja.monto, 
+                dataCaja.metodo_pago, 
+                dataCaja.descripcion, 
+                idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+            ];
+
+            await conn.execute(sqlCaja, valoresCaja);
+
+            return { id_inscripcion: idGenerado };
+        });  
+
+        if (resultado.code ===  "TRANSACCION_OK" ){
+            return {
+                error : false,
+                message : "Inscripcion anulada correctamente",
+                data : resultado.data,
+                code : "TRANSACCION_OK"
+            };
+        };
+
+        return {
+                error : true,
+                message : "Transaccion fallida",
+                code : "TRANSACCION_FALLIDA"
+        };              
+};
+
+/**
+ * Ejecuta una validación atómica de seguridad y recupera el monto histórico para anulación.
+ * * Esta función consulta en un solo viaje a la base de datos tres puntos críticos:
+ * 1. Si la inscripción sigue en estado 'activos' (evita doble anulación).
+ * 2. Si el alumno tiene asistencias 'presente' (regla de negocio de la academia).
+ * 3. El monto original abonado (para validar que no se devuelva más dinero del que entró).
+ * * @param {AnularInscripcionInputs} data - Objeto con los identificadores de la inscripción.
+ * @param {number} data.id_inscripcion - ID único de la inscripción a consultar.
+ * @param {number} data.id_escuela - ID de la escuela para validar el contexto.
+ * * @returns {Promise<TipadoData<{esta_activa: number, tiene_asistencias: number, monto_inscripcion: number}>>} 
+ * Promesa que resuelve a un objeto con:
+ * - `esta_activa`: 1 si el estado es 'activos', 0 si ya fue anulada o venció.
+ * - `monto_inscripcion`: El valor monetario original registrado en la inscripción.
+ * - `tiene_asistencias`: 1 si existe al menos una asistencia 'presente', 0 si está limpia.
+ * * @example
+ * const { data } = await reglaAnulacionInscripcion(inputs);
+ * // Usar data.monto_inscripcion para validar contra el monto solicitado por el usuario.
+ */
+const reglaAnulacionInscripcion = async ( data :  AnularInscripcionInputs)
+: Promise<TipadoData<{tiene_asistencias : number , esta_activa : number, monto_inscripcion : number}>> => {
+
+    const sql : string = `SELECT 
+                                -- 1 si está activa, 0 si ya está suspendida/vencida
+                                (i.estado = 'activos') AS esta_activa,
+                                i.monto AS monto_inscripcion,
+                                -- 1 si tiene asistencias, 0 si está limpia
+                                EXISTS (
+                                    SELECT 1 FROM asistencias 
+                                    WHERE id_inscripcion = i.id_inscripcion AND estado = 'presente'
+                                ) AS tiene_asistencias
+                            FROM inscripciones i
+                            WHERE i.id_inscripcion = ? AND i.id_escuela = ?;`;    
+    
+    const { id_escuela, id_inscripcion} = data;
+    const valores : unknown[] = [ id_inscripcion , id_escuela];
+    return buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores,
+        entidad : "Inscripcion"
+    });
+};
+
 
 /**
  * Consulta la vigencia de la inscripción y calcula el saldo de clases disponibles.
@@ -282,10 +425,15 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
   });    
 };
 
+
+
+
 export const method = {
     alta  : tryCatchDatos( registroInscripcion ), 
     verificacion : tryCatchDatos( verificacion ),
     verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
     inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta ),
     listadoInscripciones   : tryCatchDatos( listadoInscripciones ),
+    anularInscripcion  : tryCatchDatos( anularInscripcion ),
+    reglaAnulacionInscripcion : tryCatchDatos( reglaAnulacionInscripcion ),
 };

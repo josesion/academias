@@ -6,17 +6,16 @@ import {
 import { ComponenteCargando } from "../Cargando/Cargando";
 import { SinResultado } from "../SinItemsListado/SinResultado";
 
+import { obtenerEstadoVigencia } from "../../utils/fecha";
 import "./contenedorlsitado.css";
 interface Props {
   data: InscripcionListado[];
   carga: boolean;
-  statusCode: number;
 }
 
 export const ContenedorListadoInscripciones: React.FC<Props> = ({
   data,
   carga,
-  statusCode,
 }) => {
   return (
     <div className="listado_wrapper">
@@ -27,13 +26,14 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
             <th>Alumno</th>
             <th>Plan y Pago</th>
             <th>Estado de Consumo</th>
+            <th className="text-right">Inicio</th>
             <th className="text-right">Vigencia</th>
           </tr>
         </thead>
 
         {carga === true ? (
           <ComponenteCargando />
-        ) : statusCode === 404 ? (
+        ) : data.length === 0 ? (
           <td colSpan={4} className="sin_datos">
             <SinResultado />
           </td>
@@ -44,6 +44,11 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
                 <ElementoLista
                   key={inscripcion.id_inscripcion}
                   inscripcion={inscripcion}
+                  vigencia={obtenerEstadoVigencia(
+                    inscripcion.vigencia,
+                    inscripcion.clases_usadas,
+                    inscripcion.clases_totales,
+                  )}
                 />
               ))
             ) : (

@@ -60,6 +60,33 @@
     
 }
 
+/* Estilo base de la fila */
+.fila_inscripcion {
+    border-left: 4px solid transparent; /* Espacio para el indicador */
+    transition: all 0.2s ease;
+}
+
+/* Indicador lateral según estado */
+.fila_inscripcion.vencida {
+    border-left-color: #ef4444; /* Rojo */
+    background-color:rgb(47, 3, 3); /* Fondo apenas rojizo */
+}
+
+.fila_inscripcion.por_vencer {
+    border-left-color: #f59e0b; /* Naranja */
+    background-color: rgb(56, 32, 6);
+}
+
+.fila_inscripcion.activa {
+    border-left-color: #10b981; /* Verde */
+}
+
+/* Efecto Hover para que resalte la fila al pasar el mouse */
+.fila_inscripcion:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+
 
 /* =============================================
    RESPONSIVE: DE TABLA A TARJETA (Cards)

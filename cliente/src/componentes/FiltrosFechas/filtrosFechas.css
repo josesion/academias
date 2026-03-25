@@ -79,3 +79,37 @@
     opacity: 0.4;
     cursor: pointer;
 }
+
+/* ============================================================
+   RESPONSIVE - PARA PANTALLAS CHICAS (MÓVILES)
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .filtro_fechas_contenedor {
+        flex-direction: column; /* Cambiamos a columna */
+        align-items: stretch;   /* Para que los inputs ocupen todo el ancho */
+        border-radius: 20px;    /* Cambiamos de cápsula a tarjeta redondeada */
+        width: 100%;            /* Ocupa el ancho disponible */
+        padding: 20px;
+        gap: 10px;
+    }
+
+    .filtro_input_group {
+        width: 100%;
+    }
+
+    .filtro_input_group input {
+        width: 100%;           /* El input se estira al 100% del contenedor */
+        height: 45px;          /* Un poco más alto para que sea fácil de tocar con el dedo */
+    }
+
+    .filtro_separador {
+        display: none;         /* En vertical el guion medio queda feo, mejor lo ocultamos */
+    }
+
+    .filtro_input_group label {
+        margin-left: 5px;
+        margin-bottom: 2px;
+        font-size: 0.75rem;    /* Un poquito más grande para legibilidad */
+    }
+}

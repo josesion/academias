@@ -73,6 +73,21 @@ const localizarIncripcionCategortia = async( data : CategoriaCajaInscripcionInpu
     });                   
 };
 
+const localizarAnulacionCategortia = async( data : CategoriaCajaInscripcionInputs)
+: Promise<TipadoData<{id_categoria : number}>> =>{
+    const sql : string = `SELECT id_categoria FROM categorias_caja
+                            WHERE id_escuela = ? 
+                            AND nombre_categoria = 'Anulacion Inscripcion'
+                            AND tipo_movimiento = 'egreso';`;
+
+    const valor : unknown[]  = [ data.id_escuela ];
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad :"ID_ANULACION_CATCAJA",
+    });                   
+};
+
 
 const altaCategoriaCaja = async( data : CategoriaCajaInpurts )
 : Promise<TipadoData<DataCategoriaCajas>> => {
@@ -89,6 +104,8 @@ const altaCategoriaCaja = async( data : CategoriaCajaInpurts )
       datosRetorno : datosADevolver
     });
 };
+
+
 
 
 /**
@@ -227,5 +244,6 @@ export const method = {
     modCategoriaCaja  : tryCatchDatos( modCategoriaCaja),
     bajaCategoriaCaja : tryCatchDatos( bajaCategoriaCaja ),
     listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja ),
-    localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia )
+    localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia ),
+    localizarAnulacionCategortia : tryCatchDatos( localizarAnulacionCategortia ),
 };

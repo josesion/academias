@@ -177,7 +177,99 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
     };
 };
 
+
+/**
+ * Controlador de Express para manejar la petición HTTP de anulación de inscripción.
+ * * Este método extrae los parámetros del cuerpo de la solicitud (body), los formatea
+ * y delega la lógica de negocio al servicio de inscripciones. Finalmente, 
+ * responde al cliente con el código de estado HTTP adecuado según el resultado.
+ * * @param {Request} req - Objeto de petición de Express. 
+ * Debe contener en el body: id_escuela, id_inscripcion, dni_alumno, monto, metodo_pago y descripcion.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta JSON con el resultado de la operación.
+ * * @example
+ * // Posibles respuestas:
+ * // 200 (OK): Éxito.
+ * // 404 (Not Found): No hay caja abierta o categoría de anulación.
+ * // 405 (Method Not Allowed): Regla de negocio violada (asistencias existentes o inactiva).
+ * // 500 (Internal Server Error): Error en la transacción o base de datos.
+ */
+const anularInscripcion = async ( req : Request, res : Response) => {
+   
+    const dataInsc = {
+        id_escuela : Number( req.body.id_escuela),
+        id_inscripcion : Number( req.body.id_inscripcion ),
+        dni_alumno  : Number( req.body.dni_alumno ),
+        estadoInsc  : "activos",// queda fijo pàra q siempre busque el activos
+    };
+    const dataCaja = {
+        id_caja : null,    //  se calcula en el servicio
+        id_categoria : null, // se calcula en el servicio   
+        monto : Number( req.body.monto ),
+        metodo_pago : req.body.metodo_pago,
+        descripcion : req.body.descripcion
+    };
+
+    const anularResultado = await inscripcionServicios.anularInscripcionServicio( dataInsc, dataCaja );
+   
+    switch (anularResultado.code) {
+        case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION":
+            return enviarResponse(
+                res,
+                CodigoEstadoHTTP.OK,
+                anularResultado.message,
+                anularResultado.data,
+                undefined,
+                anularResultado.code
+            );
+
+
+        case "SIN_CATEGORIA_ANULACION" :
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                anularResultado.message,
+                anularResultado.code            
+            );
+          
+        case "ID_CAJA_NO_EXISTE" :
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.NO_ENCONTRADO,
+                anularResultado.message,
+                anularResultado.code
+            );
+
+        case "SIN_PERMISO":
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.METODO_NO_PERMITIDO,
+                anularResultado.message,
+                anularResultado.code
+            );
+
+        case "TRANSACCION_FALLIDA_ANULAR_INCRIPCION":
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                anularResultado.message,
+                anularResultado.code
+            );
+
+        default:
+            // Caso por defecto para cualquier otro error no contemplado
+            return enviarResponseError(
+                res,
+                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+                anularResultado.message || "Error no identificado",
+                anularResultado.code || "ERROR_DESCONOCIDO"
+            );
+    };
+};
+
+
 export const method = {
     inscripcion    : tryCatch( inscripcion ),
     listadoInscripciones : tryCatch( listadoInscripciones ),
-}
+    anularInscripcion   : tryCatch( anularInscripcion ),
+};

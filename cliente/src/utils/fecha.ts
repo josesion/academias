@@ -85,3 +85,26 @@ export const calcularSeisMesesAtras = (fechaBase: string): string => {
 
     return `${year}-${month}-${day}`;
 };
+
+
+export const obtenerEstadoVigencia =  (fechaVigencia: string, clasesUsadas: number, clasesTotales: number) => {
+  const hoy = new Date();
+  const vencimiento = new Date(fechaVigencia);
+  
+  // 1. Cálculo por Fecha
+  const diferenciaDias = Math.ceil((vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // 2. Cálculo por Clases (¿Cuántas le quedan?)
+  const clasesRestantes = clasesTotales - clasesUsadas;
+
+  // ORDEN DE PRIORIDAD:
+  
+  // A. Ya no tiene clases O la fecha ya pasó
+  if (clasesRestantes <= 0 || diferenciaDias < 0) return "vencida";
+  
+  // B. Le quedan pocas clases (ej. 2 o menos) O faltan menos de 7 días
+  if (clasesRestantes <= 3 || diferenciaDias <= 7) return "por_vencer";
+  
+  // C. Todo ok
+  return "activa";
+};

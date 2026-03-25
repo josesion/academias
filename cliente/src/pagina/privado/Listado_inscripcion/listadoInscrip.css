@@ -1,39 +1,60 @@
-/* =============================================
-   CONTENEDOR DE FILTROS (CODO A CODO)
-   ============================================= */
+/* ============================================================
+   CONTENEDOR PRINCIPAL CON SCROLL GLOBAL
+   ============================================================ */
+.contenedor_listado {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+    width: 100%;
+    height: 95vh;           /* Ocupa casi todo el alto de la pantalla */
+    overflow-y: auto;       /* Habilita scroll si el contenido supera el alto */
+    overflow-x: hidden;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background:  rgba(255, 255, 255, 0.05);    /* Color de fondo para que el scroll no se vea raro */
+}
+
+/* Personalización de la barra de scroll global (opcional) */
+.contenedor_listado::-webkit-scrollbar {
+    width: 6px;
+}
+.contenedor_listado::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+/* ============================================================
+   SECCIÓN DE FILTROS EN COLUMNA
+   ============================================================ */
 .contenedor_filtros {
     display: flex;
-    flex-direction: row;      /* Por defecto uno al lado del otro */
-    justify-content: center;   /* Los centra en el medio de la pantalla */
-    align-items: flex-end;     /* Los alinea por la base */
-    gap: 15px;                 /* Espacio entre los dos */
+    flex-direction: column; /* Filtros uno debajo del otro */
+    gap: 8px;             /* Espacio entre el bloque Buscadores y FiltroFechas */
     width: 100%;
-    margin: 20px 0;
-    flex-wrap: wrap;           /* PERMITE que bajen cuando no hay espacio */
+    background: rgba(30, 41, 59, 0.5);
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* =============================================
-   CONTROL DE POSICIONAMIENTO (HIJOS)
-   ============================================= */
+/* Aseguramos que los componentes internos ocupen todo el ancho */
 .contenedor_filtros > * {
-    /* IMPORTANTE: Quitamos el margin auto que suele tener el buscador 
-       para que no se repelan y se mantengan pegados al medio */
-    margin: 0 !important; 
-    flex-shrink: 0;           /* Evita que se deformen */
+    width: 100%;
 }
 
-/* =============================================
-   COMPORTAMIENTO MÓVIL (CUANDO BAJA)
-   ============================================= */
-@media (max-width: 600px) { /* Ajustá este número según el ancho de tus buscadores */
-    .contenedor_filtros {
-        flex-direction: column; /* Se ponen en columna */
-        align-items: center;    /* Los centra uno sobre otro */
-        gap: 20px;
-    }
-    
-    .contenedor_filtros > * {
-        width: 95% !important;  /* Para que en el celu ocupen casi todo el ancho */
-        max-width: 400px;       /* Pero que no se estiren infinitamente */
-    }
+/* ============================================================
+   CONTENEDOR DE LA TABLA
+   ============================================================ */
+/* Si la tabla ya tiene su propio scroll, esto ayuda a que no colapsen */
+.contenedor_listado > :nth-child(2) {
+    flex: 1; 
+    min-height: 400px; /* Evita que la tabla desaparezca en pantallas muy chicas */
+}
+
+/* ============================================================
+   PAGINACIÓN
+   ============================================================ */
+.contenedor_listado > :last-child {
+    padding-bottom: 20px; /* Espacio extra al final para que no pegue al borde */
 }

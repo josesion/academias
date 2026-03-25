@@ -14,22 +14,24 @@ export interface InscripcionListado {
   fecha_inicio: string;
   vigencia: string;
   monto_pagado: string;
-  metodo_pago: "transferencia" | "efectivo" | "tarjeta" | string;
+  metodo_pago: "efectivo" | "transferencia" | "debito" | "credito" | string;
 }
 
 interface ElementoListaProps {
   inscripcion: InscripcionListado;
+  vigencia: string;
 }
 
 export const ElementoLista: React.FC<ElementoListaProps> = ({
   inscripcion,
+  vigencia,
 }) => {
   // Calculamos el porcentaje de clases para la barra
   const porcentajeUso =
     (inscripcion.clases_usadas / inscripcion.clases_totales) * 100;
 
   return (
-    <tr className="fila_inscripcion group">
+    <tr className={`fila_inscripcion group ${vigencia}`}>
       {/* CELDA ALUMNO */}
       <td className="celda_inscripcion">
         <div className="alumno_contenedor">
@@ -72,7 +74,7 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
             <span className="consumo_numeros">
               {inscripcion.clases_usadas} /{" "}
               {inscripcion.clases_totales > 1000
-                ? `${(inscripcion.clases_totales / 1000).toFixed(0)}k`
+                ? `${(Math.floor(inscripcion.clases_totales / 100) / 10).toFixed(1)}K`
                 : inscripcion.clases_totales}
             </span>
           </div>
@@ -82,6 +84,14 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
               style={{ width: `${porcentajeUso}%` }}
             />
           </div>
+        </div>
+      </td>
+
+      {/* CELDA Inicio */}
+      <td className="celda_inscripcion">
+        <div className="vigencia_contenedor">
+          <span className="vigencia_label">Inicio</span>
+          <span className="vigencia_fecha">{inscripcion.fecha_inicio}</span>
         </div>
       </td>
 

@@ -16,7 +16,7 @@ import {  type InputsPropsBuscador } from "../componentes/Buscadores/Buscador"
 
 const inputsFiltro: InputsPropsBuscador[] = [
   {
-    name: "dni_nombre",
+    name: "dni_alumno",
     label: "DNI Alumno",
     type: "number",
     placeholder: "Ingrese DNI",
@@ -44,10 +44,10 @@ export const setListadoInscripcion = () => {
     
     inputsFiltros : inputsFiltro,
 
-    estados: ["activos", "vencidos", "todos"], 
+    estados: ["todos","activos", "vencidos"], 
 
     inicialFiltros : {
-        dni_nombre: "",
+        dni_alumno: "",
         nombre_alumno : "",
         fecha_desde : "",
         fecha_hasta : ""

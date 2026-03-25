@@ -177,9 +177,23 @@ export const FiltroHistorialSchema = z.object({
                 .min(0, { message: 'El offset debe ser un número  mayor a 0.' })  
 });
 
+export const AnularInscripcionSchema = z.object({
+  id_escuela: z.coerce.number()
+    .int("El ID de la escuela debe ser un número entero.")
+    .positive("El ID de la escuela debe ser positivo."),
+
+  id_inscripcion: z.coerce.number()
+    .int("El ID de la inscripción debe ser un número entero.")
+    .positive("El ID de la inscripción debe ser positivo."),
+
+
+});
+
+
 
 export type InscripcionInputs = z.infer<typeof InscripcionSchema>;
 export type InscripcionesDetallesInputs = z.infer<typeof InscripDetalleSchema>; 
 export type VerificarInscripcionInput = z.infer<typeof VerificarInscripcionSchema>;
 export type VerificarPlanAsistenciaUnputs  = z.infer<typeof VerificlarPlanSchema >;
 export type FiltroHistorialInputs = z.infer<typeof FiltroHistorialSchema>;
+export type AnularInscripcionInputs = z.infer<typeof AnularInscripcionSchema>;
