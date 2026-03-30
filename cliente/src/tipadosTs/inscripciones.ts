@@ -72,3 +72,12 @@ export interface InscripcionListadoResult {
   metodo_pago: 'efectivo' | 'transferencia' | 'debito' | 'credito' | string;
 };
 
+
+export interface AnulacionInscripcion {
+    id_escuela: number;
+    id_inscripcion: number;
+    estadoInsc: 'activos' | 'vencidos' | 'anulados'; // Esto se llama Literal Type, para que no entre cualquier fruta
+    monto: number;
+    metodo_pago: 'efectivo' | 'transferencia' | 'debito' | 'credito' | string;
+    descripcion: string;
+}

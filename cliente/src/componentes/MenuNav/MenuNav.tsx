@@ -46,7 +46,8 @@ export const MenuNav = () => {
   const irAsistencia = () => irA("/asistencia");
   //const irInscripciones = () => irA("/user_inscripciones");
   const irArqueoCaja = () => irA("/caja_usuario");
-  const irInscripciones = () => irA("/inscrip_page");
+  // const irInscripciones = () => irA("/inscrip_page");
+  const irListInscripciones = () => irA("/list_inscrip");
   const irHorarios = () => irA("/horario_page");
   return (
     <nav className="menu_nav">
@@ -114,7 +115,7 @@ export const MenuNav = () => {
                   <li
                     onClick={(e) => {
                       e.stopPropagation();
-                      irInscripciones();
+                      irListInscripciones();
                     }}
                   >
                     <LuUserPlus size={18} color="#38bdf8" /> Inscripciones

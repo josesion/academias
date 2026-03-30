@@ -1,16 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { fechaHoy, calcularSeisMesesAtras} from "../utils/fecha";
 import { peticiones } from "../utils/peticiones";
 
 import { type FiltroBusqueda, type InscripcionListadoResult } from "../tipadosTs/inscripciones"; 
 import { type PaginacionProps } from "../tipadosTs/genericos";
+
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 interface InscripcionConfig{
 
     servicios : {
-        listado : ServicioCrud
+        listado : ServicioCrud,
+        anulacion : ServicioCrud,
     },
 
     idEscuela : number  , 
@@ -23,9 +26,13 @@ interface InscripcionConfig{
 
 
 export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
+ const irA = useNavigate();   
 
  const [errorGenerico , setErrorGenerico] =  useState< string | null >(null);
-
+// abro la ventana para inscribir al alumno
+ const abrirInscribir = () =>{
+    irA("/inscrip_page");
+ };
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,7 +48,7 @@ export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
         dni_alumno: config.inicialFiltros?.dni_alumno || '',
         fecha_desde : calcularSeisMesesAtras(fechaHoy()), 
         fecha_hasta : fechaHoy(),
-        estado : "todos",
+        estado : "activos",
         pagina : config.paginacion.pagina as number,
         limit : config.paginacion.limite as number,
     });
@@ -55,7 +62,7 @@ export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
     };
 //--------------------- HANDLES FILTROS BUSQUEDA ---------------------------------   
     const handleChangaValue = (event: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(event.target.name)
+      //  console.log(event.target.name)
         setFiltroData( prev  => ({
             ...prev,
             [event.target.name] : event.target.value,
@@ -87,6 +94,114 @@ export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+//  Anular la inscripcion
+//
+/////////////////////////////////////////////////////////////////////////////// 
+  interface dataAnular {
+    modalAnular: boolean;
+    idInscripcion: number | null;
+    metodo_pago : string,
+    monto_pagado : string,
+    carga: boolean  ;
+    texto: string  ;
+    mensajeError : string
+  }
+
+const [ dataAnularInscripcion , setDataAnularInscripcion ] = useState<dataAnular>({
+    modalAnular : false,
+    idInscripcion : null,
+    metodo_pago : "",
+    monto_pagado : "",
+    carga : false,
+    texto : "",
+    mensajeError : ""
+});
+
+const [ actualizarListado , setActualizarListado] = useState<number>(0);
+
+const setearDataosAnulacion = () =>{
+    setDataAnularInscripcion( prev => ({
+        ...prev,
+        idInscripcion : null, 
+        monto_pagado : "",
+        metodo_pago : "",
+        modalAnular : false , 
+        texto : "",
+        mensajeError : "",
+        carga : false, 
+    }));
+};
+
+const manejarSeleccionInscripcion = ( id : number , metodo_pago : string, monto_pagado : string) => {
+
+ //console.log("PASO 1: ¡Llegó al Hook! ID:", id , metodo_pago);
+ if (!id) {  
+    setearDataosAnulacion();
+ }else{
+    setDataAnularInscripcion( prev => ({
+        ...prev,
+        idInscripcion : id , 
+        modalAnular : true , 
+        metodo_pago : metodo_pago,
+        monto_pagado : monto_pagado,
+        texto : `Se anulara la inscripcion de : ${id},
+                 metodo de pago : ${metodo_pago} `,
+        mensajeError : ""
+    }));
+ };
+
+};
+
+const handleCancelarAnulacion = () =>{
+    setearDataosAnulacion();
+};
+
+const handleAnularInscripcion = async () =>{
+    setDataAnularInscripcion( prev => ({ ...prev , carga : true}));
+    try {
+       const servicioApiFetch  = config.servicios.anulacion;
+       const respuestaAnulacion = await  servicioApiFetch({
+            id_escuela : config.idEscuela,
+            id_inscripcion : dataAnularInscripcion.idInscripcion as number,
+            estadoInsc : "activos",
+            metodo_pago : dataAnularInscripcion.metodo_pago,
+            monto :  Number(dataAnularInscripcion.monto_pagado),
+            descripcion : "Anulación de inscripción", 
+       }); 
+
+    
+       switch (respuestaAnulacion.code ){
+            case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION" :{
+                await new Promise(resolve => setTimeout(resolve, 600));
+                setActualizarListado( actualizarListado + 1);
+                setearDataosAnulacion();
+
+                return;                    
+            };
+            case "SIN_PERMISO" : {
+                setDataAnularInscripcion( prev => ({
+                    ...prev , 
+                    mensajeError : "No Tienes permiso para anular esta inscripción.",
+                }));
+                return;
+            };
+            default : {
+                setDataAnularInscripcion( prev => ({...prev , mensajeError : "Ocurrio un error al intentar anular la isncuion, por favor intente nuevamente."}));
+                return;
+            };
+       };
+
+    }catch ( error) {
+       setDataAnularInscripcion( prev => ({ ...prev , mensajeError : "Ocurrió un error inesperado al anular la inscripción."}));
+    }finally{
+       setDataAnularInscripcion( prev => ({ ...prev , carga : false})); 
+    };
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+//
 //  LISTADO DE INSCRIPCIONES 
 //
 ///////////////////////////////////////////////////////////////////////////////    
@@ -96,7 +211,6 @@ export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
     const [carga , setCarga] = useState<boolean>(true);
     const [ barraPaginacion , setBarraPaginacion ] = useState<PaginacionProps>(config.paginacion);
 
-    console.log(dataListado)
 
 // Listado de isncriopciones --------------------------------------------------
 useEffect( () =>{
@@ -112,7 +226,7 @@ const listadoInscrip = async () => {
     try {
         const servcioListado = config.servicios.listado;    
         const listadoRespuesta = await servcioListado(filtroData, signal);
-        
+       
         //  VALIDACIÓN CRÍTICA:
         // Si la respuesta no es lo que esperamos, no seteamos basura
         if (listadoRespuesta && listadoRespuesta.data) {
@@ -145,7 +259,7 @@ const listadoInscrip = async () => {
         clearTimeout( timeoutId );
         controlador.abort();
     };    
-},[ filtroData ]);
+},[ filtroData, actualizarListado]);
 
 
 
@@ -163,7 +277,13 @@ const listadoInscrip = async () => {
         handleChangeFechaHasta,
         handlePaginaCambiada,
     //-------------------------------------    
-        dataListado
-
+        dataListado,
+    //-------------------------------------      
+        abrirInscribir,
+    //-------------------------------------  
+        dataAnularInscripcion,
+        manejarSeleccionInscripcion,
+        handleCancelarAnulacion,
+        handleAnularInscripcion,
     };
 };

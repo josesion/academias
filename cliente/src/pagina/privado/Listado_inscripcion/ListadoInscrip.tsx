@@ -1,5 +1,6 @@
 import { Buscadores } from "../../../componentes/Buscadores/Buscador";
 import { FiltroFechas } from "../../../componentes/FiltrosFechas/FiltrosFechas";
+import { EliminarVentana } from "../../../componentes/EliminarModal/EliminarModal";
 import { ContenedorListadoInscripciones } from "../../../componentes/ContenedorListadoInscrp/ContendorListadoInscrip";
 import { Paginacion } from "../../../componentes/Paginacion/Paginacion";
 
@@ -20,10 +21,34 @@ export const ListadoInscripcionPage = () => {
     handlePaginaCambiada,
     barraPaginacion,
     dataListado,
+    abrirInscribir,
+
+    dataAnularInscripcion,
+    manejarSeleccionInscripcion,
+    handleCancelarAnulacion,
+    handleAnularInscripcion,
   } = setListadoInscripcion();
+
+  const { idInscripcion } = dataAnularInscripcion;
 
   return (
     <div className="contenedor_listado">
+      {dataAnularInscripcion.modalAnular && (
+        <div className="modal_overlay_fix">
+          (
+          <EliminarVentana
+            onSi={handleAnularInscripcion}
+            onCancelar={handleCancelarAnulacion}
+            cargando={dataAnularInscripcion.carga}
+            key={dataAnularInscripcion.idInscripcion}
+            accion={dataAnularInscripcion.texto}
+            data={{ idInscripcion }}
+            mensaje={dataAnularInscripcion.mensajeError}
+          />
+          )
+        </div>
+      )}
+
       <div className="contenedor_filtros">
         <Buscadores
           tituloBuscador="Filtro de Busqueda"
@@ -33,6 +58,7 @@ export const ListadoInscripcionPage = () => {
           captionBoton={"Inscribir"}
           onChange={handleChangaValue}
           onEstados={handleChangeEstado}
+          onAgregar={abrirInscribir}
         />
         <FiltroFechas
           fechaDesde={filtroData.fecha_desde}
@@ -42,7 +68,11 @@ export const ListadoInscripcionPage = () => {
         />
       </div>
 
-      <ContenedorListadoInscripciones data={dataListado} carga={carga} />
+      <ContenedorListadoInscripciones
+        data={dataListado}
+        carga={carga}
+        onSeleccionarInscripcion={manejarSeleccionInscripcion}
+      />
 
       <Paginacion
         paginaActual={barraPaginacion.pagina as number}

@@ -20,18 +20,33 @@ export interface InscripcionListado {
 interface ElementoListaProps {
   inscripcion: InscripcionListado;
   vigencia: string;
+  onSeleccionar: (
+    id: number,
+    metodo_pago: string,
+    monto_pagado: string,
+  ) => void;
 }
 
 export const ElementoLista: React.FC<ElementoListaProps> = ({
   inscripcion,
   vigencia,
+  onSeleccionar,
 }) => {
   // Calculamos el porcentaje de clases para la barra
   const porcentajeUso =
     (inscripcion.clases_usadas / inscripcion.clases_totales) * 100;
 
   return (
-    <tr className={`fila_inscripcion group ${vigencia}`}>
+    <tr
+      className={`fila_inscripcion group ${vigencia}`}
+      onClick={() =>
+        onSeleccionar(
+          inscripcion.id_inscripcion,
+          inscripcion.metodo_pago,
+          inscripcion.monto_pagado,
+        )
+      }
+    >
       {/* CELDA ALUMNO */}
       <td className="celda_inscripcion">
         <div className="alumno_contenedor">

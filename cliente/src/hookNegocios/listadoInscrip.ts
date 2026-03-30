@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 //Sericios ---------------------------------------------------
-import { listadoInscripciones } from "../servicio/inscripciones.fetch";
+import { listadoInscripciones, anularInscripcion } from "../servicio/inscripciones.fetch";
 
 
 // Logica -----------------------------------------------------
@@ -40,11 +40,12 @@ export const setListadoInscripcion = () => {
 
     servicios :{
       listado : listadoInscripciones,  
+      anulacion : anularInscripcion,
     },
     
     inputsFiltros : inputsFiltro,
 
-    estados: ["todos","activos", "vencidos"], 
+    estados: ["activos",  "todos", "vencidos", "suspendido"], 
 
     inicialFiltros : {
         dni_alumno: "",

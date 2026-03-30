@@ -223,7 +223,7 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                         resetFormulario();
                         setModalInsc(false);     
                         setActualizarIngresoIncripcion(!actualizarIngresoInscipcion); 
-                        navegar("/user_manager_priv");              
+                        navegar("/list_inscrip");              
                 }else{
                     // console.log("mostrar el error al cliente")
                     setErrorGenerico( subcripcionInsc.message  );
@@ -240,7 +240,7 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         setErrorGenerico(null)
         setModalInsc(false) 
         resetFormulario();
-        navegar("/user_manager_priv");// mando a la pagina princiapal
+        navegar("/list_inscrip");// mando a la pagina princiapal
     };
 
 // ──────────────────────────────────────────────────────────────

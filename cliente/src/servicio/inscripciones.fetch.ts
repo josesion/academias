@@ -76,3 +76,32 @@ export const listadoInscripciones = async( data : TipadoInscripcion.FiltroBusque
     signal
    });
 };
+
+
+export const anularInscripcion  =async ( data : TipadoInscripcion.AnulacionInscripcion ) 
+: Promise<ApiResponse<{id_inscripcion : number}>> => {
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };    
+
+    const ruta  = `${PAGINA}api/anular_inscrip`;  
+
+    return apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_escuela : data.id_escuela,
+            id_inscripcion : data.id_inscripcion,
+            estadoInsc : data.estadoInsc,
+            monto : data.monto,
+            metodo_pago : data.metodo_pago,
+            descripcion : data.descripcion
+        }
+    });
+};

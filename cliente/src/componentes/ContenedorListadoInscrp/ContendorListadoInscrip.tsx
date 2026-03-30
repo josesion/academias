@@ -11,11 +11,17 @@ import "./contenedorlsitado.css";
 interface Props {
   data: InscripcionListado[];
   carga: boolean;
+  onSeleccionarInscripcion: (
+    id: number,
+    metodo_pago: string,
+    monto_pagado: string,
+  ) => void;
 }
 
 export const ContenedorListadoInscripciones: React.FC<Props> = ({
   data,
   carga,
+  onSeleccionarInscripcion,
 }) => {
   return (
     <div className="listado_wrapper">
@@ -32,32 +38,37 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
         </thead>
 
         {carga === true ? (
-          <ComponenteCargando />
+          <tbody className="tabla_body">
+            <tr>
+              <td colSpan={5}>
+                <ComponenteCargando />
+              </td>
+            </tr>
+          </tbody>
         ) : data.length === 0 ? (
-          <td colSpan={4} className="sin_datos">
-            <SinResultado />
-          </td>
+          <tbody className="tabla_body">
+            <tr>
+              <td colSpan={5} className="sin_datos">
+                <SinResultado />
+              </td>
+            </tr>
+          </tbody>
         ) : (
           <tbody className="tabla_body">
-            {data.length > 0 ? (
-              data.map((inscripcion) => (
-                <ElementoLista
-                  key={inscripcion.id_inscripcion}
-                  inscripcion={inscripcion}
-                  vigencia={obtenerEstadoVigencia(
-                    inscripcion.vigencia,
-                    inscripcion.clases_usadas,
-                    inscripcion.clases_totales,
-                  )}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={4} className="sin_datos">
-                  No se encontraron inscripciones con estos filtros.
-                </td>
-              </tr>
-            )}
+            {data.map((inscripcion) => (
+              <ElementoLista
+                key={inscripcion.id_inscripcion}
+                inscripcion={inscripcion}
+                onSeleccionar={(id, metodo_pago, monto_pagado) => {
+                  onSeleccionarInscripcion(id, metodo_pago, monto_pagado);
+                }}
+                vigencia={obtenerEstadoVigencia(
+                  inscripcion.vigencia,
+                  inscripcion.clases_usadas,
+                  inscripcion.clases_totales,
+                )}
+              />
+            ))}
           </tbody>
         )}
       </table>
