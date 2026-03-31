@@ -162,7 +162,7 @@ export const FiltroHistorialSchema = z.object({
   }),
   
   // Opcional: para filtrar por estado desde el input
-  estado: z.enum(['activos', 'vencidos', 'todos']).optional().default('todos'),
+  estado: z.enum(['activos', 'vencidos', 'todos', "suspendido"]).optional().default('todos'),
 
         pagina : z.number({message:"Limit debe ser de tipo numerico"})
                 .int({ message: 'El limite debe ser un número entero.' })

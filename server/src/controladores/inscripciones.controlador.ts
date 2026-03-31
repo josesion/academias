@@ -211,7 +211,7 @@ const anularInscripcion = async ( req : Request, res : Response) => {
     };
 
     const anularResultado = await inscripcionServicios.anularInscripcionServicio( dataInsc, dataCaja );
-   
+    console.log("Resultado de anulación:", anularResultado);
     switch (anularResultado.code) {
         case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION":
             return enviarResponse(
@@ -232,7 +232,8 @@ const anularInscripcion = async ( req : Request, res : Response) => {
                 anularResultado.code            
             );
           
-        case "ID_CAJA_NO_EXISTE" :
+        case "NO_EXISTE_CAJA" :
+          
             return enviarResponseError(
                 res,
                 CodigoEstadoHTTP.NO_ENCONTRADO,
@@ -258,6 +259,7 @@ const anularInscripcion = async ( req : Request, res : Response) => {
 
         default:
             // Caso por defecto para cualquier otro error no contemplado
+           
             return enviarResponseError(
                 res,
                 CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,

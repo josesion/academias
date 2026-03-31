@@ -18,6 +18,7 @@ import profesorRutas from "./rutas/profesores.ruta";
 import nivelRutas from "./rutas/nivel.ruta";
 import tipoRutas from  "./rutas/tipo.ruta";
 import categoriasCajasRutas from "./rutas/categorias.cajas";
+import cuentasCajaRutas  from "./rutas/cuentas.escuelas";
 
 import cajasRutas from "./rutas/caja.rutas"
 
@@ -54,6 +55,7 @@ app.use(nivelRutas);
 app.use(tipoRutas);
 app.use(asistencias);
 app.use(categoriasCajasRutas);
+app.use(cuentasCajaRutas);
 
 app.use(cajasRutas);
 
