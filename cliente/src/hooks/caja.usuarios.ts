@@ -281,6 +281,7 @@ const handleAbrirEgreso = async () => {
 // ────────────────────────────────────────────────────────────── 
 
 const handleEstadosCaja = () =>{
+   
     try{
         setEnviando(true);
         if ( dataCaja.id_caja === null){
@@ -288,6 +289,7 @@ const handleEstadosCaja = () =>{
         }else{
                 setModalCierre(true);
         };
+        
     }catch(error){
 
     }finally{
@@ -345,6 +347,7 @@ const handleAbrirCaja = async() =>{
 // ────────────────────────────────────────────────────────────── 
 
 const handleCerrarCaja =async () =>{
+
     try{
         setEnviando(true);
         const dataCierre = {
@@ -352,11 +355,12 @@ const handleCerrarCaja =async () =>{
             id_escuela : config.id_escuela,
             monto_final_real : balanceTotalReal
         };
+      
         const servicioApiFetch = config.servicios.cerrarCaja;
         const cierreCajaResult = await servicioApiFetch(dataCierre);
-
+       
         if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
-            
+           
             setDataCaja( prev => ({
                 ...prev,
                 id_caja : null

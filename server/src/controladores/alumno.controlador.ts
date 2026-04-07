@@ -37,7 +37,7 @@ const altaAlumno = async( req :  Request , res : Response) =>{
     } else{
            // 3. Si no existe, crea el alumno en el sistema global  
        const nuevoAlumno = await dataAlumno.registarAlumno(alumnoData);
-       console.log(nuevoAlumno);
+  
        if (nuevoAlumno.error === false && nuevoAlumno.data && nuevoAlumno.code === AlumnoServioCode.ALUMNO_CREATED) {
             const dniAlumnoCreado = nuevoAlumno.data as RetornoRegistroAlumno  ;
             dniCapturado = Number(dniAlumnoCreado.dni) ;

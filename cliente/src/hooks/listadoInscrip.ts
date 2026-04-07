@@ -169,7 +169,7 @@ const handleAnularInscripcion = async () =>{
             descripcion : "Anulación de inscripción", 
        }); 
 
-    
+   
        switch (respuestaAnulacion.code ){
             case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION" :{
                 await new Promise(resolve => setTimeout(resolve, 600));
@@ -178,15 +178,41 @@ const handleAnularInscripcion = async () =>{
 
                 return;                    
             };
+
             case "SIN_PERMISO" : {
                 setDataAnularInscripcion( prev => ({
                     ...prev , 
-                    mensajeError : "No Tienes permiso para anular esta inscripción.",
+                    mensajeError : respuestaAnulacion.message || "No tienes permiso para anular esta inscripción.",
                 }));
                 return;
             };
+
+            case "NO_EXISTE_CAJA" : {
+                setDataAnularInscripcion( prev => ({
+                    ...prev , 
+                    mensajeError : respuestaAnulacion.message || "No se encontró una caja abierta para esta escuela, Abra una caja para poder anular la inscripción.",
+                }));
+                return;           
+            };
+
+            case "TRANSACCION_FALLIDA_ANULAR_INCRIPCION" : {
+                setDataAnularInscripcion( prev => ({
+                    ...prev , 
+                    mensajeError : respuestaAnulacion.message || "Error al anular la inscripción, por favor intente nuevamente.",
+                }));
+                return;           
+            };
+
+            case "SIN_CATEGORIA_ANULACION" : {
+                setDataAnularInscripcion( prev => ({
+                    ...prev , 
+                    mensajeError : respuestaAnulacion.message || "Error en el seteo de la categoría de anulación.",
+                }));
+                return;           
+            };
+
             default : {
-                setDataAnularInscripcion( prev => ({...prev , mensajeError : "Ocurrio un error al intentar anular la isncuion, por favor intente nuevamente."}));
+                setDataAnularInscripcion( prev => ({...prev , mensajeError : "Ocurrio un error al intentar anular la inscripcion, por favor intente nuevamente."}));
                 return;
             };
        };
