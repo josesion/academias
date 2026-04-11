@@ -6,5 +6,7 @@ const rutas = Router();
 
 rutas.post("/api/alta_cuenta", cuentasControlador.crearCuentaEscuela);
 rutas.put("/api/mod_cuenta/:id_cuenta/:id_escuela", cuentasControlador.modCuentaEscuela);
+rutas.put("/api/estado_cuenta/:id_cuenta/:id_escuela/:estado", cuentasControlador.estadoCuentasEscuela);
+rutas.get("/api/list_tipos_cuentas", cuentasControlador.listaCuentas);
 
 export default rutas;

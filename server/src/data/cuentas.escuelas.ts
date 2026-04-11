@@ -3,10 +3,14 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidad } from "../hooks/funcionListar";
 
 // Tipados seccion
 import { TipadoData } from "../tipados/tipado.data"; 
-import { CuentaEscuelaInput, ModificarCuentaEscuelaUnputs } from "../squemas/cuentas.escuelas";
+import { ResultListadoCuentas } from "../tipados/cuentas.escuelas";
+import { CuentaEscuelaInput, ModificarCuentaEscuelaUnputs,
+         EstadoCuentasInputs, ListadoCuentasInputs,
+ } from "../squemas/cuentas.escuelas";
 
 /**
  * Registra una nueva cuenta contable o bancaria asociada a una escuela.
@@ -92,9 +96,93 @@ const modCuentaEscuela = async ( dataMod : ModificarCuentaEscuelaUnputs)
 
 };
 
+const estadoCuenta = async ( dataEstado : EstadoCuentasInputs) 
+: Promise<TipadoData<{id_cuenta : number, estado : string}>>=>{
+   const sql  : string  =`UPDATE cuentas_escuela 
+                            SET
+                                estado = ?
+                            WHERE 
+                                id_cuenta = ? 
+                                AND id_escuela = ?;`;
+   const { estado, id_cuenta, id_escuela} = dataEstado;
+   const parametros  : unknown[] = [ estado, id_cuenta, id_escuela ];
+   const retorno = { id_cuenta, estado};
+
+   return await iudEntidad({
+      slqEntidad: sql,
+      valores : parametros,
+      metodo : "MODIFICAR", // es modificar ya q es una baja logica
+      entidad : "CUENTAS",
+      datosRetorno : retorno
+   });
+};
+
+
+/**
+ * Obtiene un listado paginado y filtrado de las cuentas de una escuela.
+ * * @async
+ * @function listadoCuentas
+ * @param {ListadoCuentasInputs} paramListado - Objeto con los criterios de búsqueda y paginación.
+ * @param {string} paramListado.nombre_cuenta - Nombre o parte del nombre de la cuenta para filtrar (LIKE).
+ * @param {string} paramListado.tipo_cuenta - Tipo de cuenta ('fisico', 'virtual' o 'todos').
+ * @param {number} paramListado.id_escuela - ID único de la escuela a la que pertenecen las cuentas.
+ * @param {string} paramListado.estado - Estado de las cuentas a listar (ej: 'activos', 'eliminados').
+ * @param {number} paramListado.pagina - Número de página actual para el cálculo de paginación.
+ * @param {number} paramListado.limite - Cantidad de registros por página.
+ * @param {number} paramListado.offset - Punto de inicio de la consulta (calculado previamente).
+ * @param {string} pagina - Número de página en formato string para la respuesta genérica.
+ * * @returns {Promise<TipadoData<ResultListadoCuentas[]>>} Retorna una promesa con la estructura de datos 
+ * estandarizada, incluyendo el array de cuentas y la información de paginación.
+ * * @description
+ * La función aplica filtros por nombre y tipo de cuenta usando operadores LIKE. 
+ * Si el `tipo_cuenta` es 'todos', se anula el filtro para traer todos los tipos.
+ * Utiliza `COUNT(*) OVER()` para obtener el total de registros sin necesidad de una segunda consulta.
+ */
+const listadoCuentas = async ( paramListado : ListadoCuentasInputs)
+: Promise<TipadoData<ResultListadoCuentas[]>> =>{
+    const { nombre_cuenta ,  tipo_cuenta, id_escuela , estado ,pagina ,limite,offset} = paramListado;
+    
+    const nombreFiltro =  `%${nombre_cuenta}%`;
+    let tipoFiltro = `%${tipo_cuenta}%`;
+  
+    if (tipo_cuenta === `todos`){ tipoFiltro = "%%" };
+    
+    const sql : string = `select
+                                id_cuenta,
+                                nombre_cuenta,
+                                tipo_cuenta,
+                                count(*) over() as total_registros
+                            from 
+                                cuentas_escuela 
+                            where 
+                                nombre_cuenta like ?
+                            and
+                                tipo_cuenta like ?
+                            and 
+                                id_escuela = ?
+                            and
+		                        estado = ?                              
+                            order by 
+                                    nombre_cuenta
+                            limit ${Number(limite)}
+                            offset ${Number(offset)}    
+                                    `;
+    const parametros : unknown[] = [ nombreFiltro, tipoFiltro, id_escuela , estado];
+
+    return listarEntidad<ResultListadoCuentas>({
+        slqListado : sql,
+        valores : parametros,
+        limit : limite,
+        pagina : String(pagina),
+        entidad : "Tipo_Cuentas",
+        estado
+    });
+};
 
 export const method = {
     crearCuentaEscuela : tryCatchDatos( crearCuentaEscuela ),
     verificarCuentaEscuela : tryCatchDatos( verificarCuentaEscuela ),
-    modCuentaEscuela : tryCatchDatos(modCuentaEscuela )
+    modCuentaEscuela : tryCatchDatos(modCuentaEscuela ), 
+    estadoCuenta : tryCatchDatos( estadoCuenta ),
+    listdoCuentasDatos : tryCatchDatos( listadoCuentas )
 };

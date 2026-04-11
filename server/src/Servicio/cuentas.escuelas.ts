@@ -7,8 +7,11 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 // Tipados seccion -----------------------------------
 import { CuentaEscuelaInput, CuentaEscuelaSchema,
          ModificarCuentaEscuelaUnputs, ModificarCuentaEscuelaSchema,
+         EstadoCuentasInputs, EstadoCuentasSchema,
+         ListadoCuentasInputs, ListadoCuentasSchema,
  } from "../squemas/cuentas.escuelas"; 
 import { TipadoData } from "../tipados/tipado.data";
+
 
 /**
  * Servicio principal para la creación de una nueva cuenta/billetera de escuela.
@@ -122,8 +125,89 @@ const modCuentaEscuelaServicio = async ( dataMod : ModificarCuentaEscuelaUnputs)
     };
 };
 
+const estadoCuentasEscuela = async ( dataEstado : EstadoCuentasInputs)
+: Promise<TipadoData<{ id_cuenta : number , estado : string}>>  =>{
+   const validarDatos : EstadoCuentasInputs = EstadoCuentasSchema.parse( dataEstado);
+  // console.log( "datos validados", validarDatos)
+   const modEstadoCuenta = await cuentasData.estadoCuenta( validarDatos);
+
+   if ( modEstadoCuenta.code === "CUENTAS_MODIFICAR"){
+      return {
+            error : false , 
+            message : "Estado de cuenta modificado exitosamente",
+            data : modEstadoCuenta.data,
+            code : "CUENTAS_MODIFICADA_EXITOSAMENTE"
+      };
+   };
+
+   if ( modEstadoCuenta.code === "MODIFICAR_NOT_FOUND"){
+      return{
+           error : true,
+           message : "No se pudo cambie el estado de la cuenta, por favor intente nuevamente",
+           code : "ERROR_CUENTAS_SERVIDOR"
+      };
+   };
+   return {
+        error : true,
+        message : "Error en el servidor al cambiar estado de cuenta, por favor intente nuevamente",
+        code : "ERROR_SERVIDOR"
+    };   
+};
+
+/**
+ * Servicio para obtener el listado de cuentas con validación de esquema y lógica de negocio.
+ * * @async
+ * @function listadoCuentas
+ * @param {ListadoCuentasInputs} params - Parámetros de entrada (filtros, página y límite).
+ * * @returns {Promise<{
+ * error: boolean,
+ * message: string,
+ * data?: any[],
+ * paginacion?: any,
+ * code: string
+ * }>} Objeto de respuesta estandarizado para el controlador.
+ * * @description
+ * 1. Calcula el `offset` basado en la página y el límite recibidos.
+ * 2. Valida la integridad de todos los datos mediante `ListadoCuentasSchema`.
+ * 3. Llama a la capa de datos para ejecutar la consulta SQL.
+ * 4. Mapea los códigos de respuesta de la base de datos a códigos de respuesta de servicio.
+ */
+const listadoCuentas = async ( params : ListadoCuentasInputs) =>{
+    const offsetCalculado = ( Number(params.pagina) -1 ) * Number(params.limite) ;
+    const dataParceada = { ...params, offset : offsetCalculado} 
+    const validarData : ListadoCuentasInputs = ListadoCuentasSchema.parse(dataParceada);
+   
+    const listadoCuentas = await cuentasData.listdoCuentasDatos(validarData);
+    console.log(listadoCuentas)
+   if ( listadoCuentas.code === 'TIPO_CUENTAS_LISTED' ){
+        return {
+            error : false, 
+            message : "Listado de tipos cuentas",
+            data : listadoCuentas.data,
+            paginacion : listadoCuentas.paginacion,
+            code : "LISTADO_TIPOS_CUENTAS_OK"
+        };
+   };
+
+   if ( listadoCuentas.code === 'NO_ACTIVE_TIPO_CUENTAS' ){
+        return {
+            error : true,
+            message : "Sin listado de tipos de cuentas",
+            code : "SIN_LISTADO_TIPOS_CUENTAS"
+        };
+   };
+
+   return {
+        error : true,
+        message : "Errro en el servidor para obtener listado, intente nuevamente",
+        code : "ERROR_SERVIDOR"
+   };
+
+};
 
 export const method = {
     crearCuentaServicios : tryCatchDatos( crearCuentaEscuelaServicio ),
     modCuentaEscuelaServicio : tryCatchDatos(modCuentaEscuelaServicio),
+    estadoCuentasEscuelaServicio : tryCatchDatos( estadoCuentasEscuela),
+    listadoCuentasServicio : tryCatchDatos( listadoCuentas)
 };

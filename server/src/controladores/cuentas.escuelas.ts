@@ -10,8 +10,8 @@ import { enviarResponse } from '../utils/response';
 import { CodigoEstadoHTTP } from '../tipados/generico';
 
 // Respuestas Seccion --------------------------
-import { MAPA_CUENTAS_MODIFICACION, MAPA_CUENTAS_CREACCION, 
-        ERROR_INTERNO_SERVIDOR, 
+import { MAPA_CUENTAS_MODIFICACION, MAPA_CUENTAS_CREACCION,MAPA_CUENTAS_ESTADO, 
+         ERROR_INTERNO_SERVIDOR, MAPA_CUENTAS_LISTADO,
 } from '../respuestas/cuentas.escuelas';
 
 /**
@@ -111,8 +111,104 @@ const modCuentaEscuela = async ( req : Request, res : Response) => {
       
 };
 
+/**
+ * Controlador para actualizar el estado (ej. activo/inactivo) de una cuenta específica.
+ * * * Obtiene el nuevo estado y los identificadores desde los parámetros de la URL,
+ * procesa el cambio a través del servicio y responde siguiendo el contrato 
+ * unificado de la API.
+ *
+ * @async
+ * @param {Request} req - Objeto de petición de Express. 
+ * - Params: estado (string), id_escuela (number), id_cuenta (number).
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante `enviarResponse` o `enviarResponseError`.
+ * * @example
+ * // Ejemplo de ruta: /cuentas/activar/1/5
+ * // Donde 'activar' es el estado, '1' la escuela y '5' la cuenta.
+ */
+const estadoCuentasEscuela = async ( req : Request , res : Response) =>{
+       
+        const data = {
+            estado : req.params.estado,
+            id_escuela : Number(req.params.id_escuela),
+            id_cuenta : Number(req.params.id_cuenta)
+        };
+
+        const resultEstadoCuenta = await cuentaServicio.estadoCuentasEscuelaServicio( data);
+       
+        const config = MAPA_CUENTAS_ESTADO[resultEstadoCuenta.code] || ERROR_INTERNO_SERVIDOR;
+
+        if ( config.status ===  CodigoEstadoHTTP.OK){
+            return enviarResponse(
+                res,
+                config.status,
+                resultEstadoCuenta.message || config.msg,
+                resultEstadoCuenta.data,
+                undefined,
+                resultEstadoCuenta.code
+            );
+
+        }else{
+            return enviarResponseError(
+                res,
+                config.status,
+                resultEstadoCuenta.message || config.msg,
+                resultEstadoCuenta.code
+            );
+        };
+
+};
+
+
+/**
+ * Controlador HTTP para el listado de cuentas.
+ * * @async
+ * @function listaCuentas
+ * @param {Request} req - Objeto de petición Express. Se esperan query params: limit, pagina, id_escuela, estado, nombre_cuenta, tipo_cuenta.
+ * @param {Response} res - Objeto de respuesta Express.
+ * @returns {Promise<Response>} Respuesta JSON estandarizada mediante `enviarResponse` o `enviarResponseError`.
+ * * @description
+ * 1. Extrae y formatea los parámetros de búsqueda desde `req.query`.
+ * 2. Delega la lógica de negocio y validación al servicio `listadoCuentasServicio`.
+ * 3. Utiliza `MAPA_CUENTAS_LISTADO` para determinar el status HTTP y el mensaje base según el código de retorno.
+ * 4. Envía la respuesta final al cliente incluyendo datos de paginación si la operación fue exitosa.
+ */
+const listaCuentas =  async ( req : Request, res : Response) =>{
+    const data = {
+        limite : Number(req.query.limit),
+        pagina : Number(req.query.pagina),
+        id_escuela : Number(req.query.id_escuela),
+        estado : req.query.estado,
+        nombre_cuenta : req.query.nombre_cuenta,
+        tipo_cuenta  : req.query.tipo_cuenta,
+    };
+    
+    const resultadoLista = await cuentaServicio.listadoCuentasServicio(data);
+  
+    const config = MAPA_CUENTAS_LISTADO[resultadoLista.code] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            resultadoLista.message || config.msg,
+            resultadoLista.data,
+            resultadoLista.paginacion,
+            resultadoLista.code
+        );
+    }else{
+        return enviarResponseError(
+                res,
+                config.status,
+                resultadoLista.message || config.msg,
+                resultadoLista.code
+        );  
+    };
+};
 
 export const method = {
     crearCuentaEscuela : tryCatch( crearCuentaEscuela ),
     modCuentaEscuela : tryCatch( modCuentaEscuela ),
+    estadoCuentasEscuela : tryCatch( estadoCuentasEscuela),
+    listaCuentas : tryCatch( listaCuentas)
 };
