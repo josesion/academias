@@ -14,6 +14,7 @@ import { AmbProfesorUsuarios } from "./pagina/privado/profesor.usuario";
 import { AbmNivelUsuarios } from "./pagina/privado/nivel.usuario";
 import { AbmTipoUsuarios } from "./pagina/privado/tipo.usuario";
 import { AmbCategoriasCajaUsuarios } from "./pagina/privado/categoria.caja.usuario";
+import { AmbTipoCuentasUsuario } from "./pagina/privado/tipo.cuenta";
 
 //Formulario para Horarios
 import { HorarioPagina } from "./pagina/privado/Horarios/Horarios";
@@ -65,6 +66,10 @@ function App() {
                 <Route path="/user_manager_priv" element={<UsuarioPage />} />
                 <Route path="/user_alumno" element={<AmbAlumnos />} />
                 <Route path="/user_planes" element={<AmbPlanesUsuarios />} />
+                <Route
+                  path="/user_tipo_cuenta"
+                  element={<AmbTipoCuentasUsuario />}
+                />
                 <Route
                   path="/user_profesores"
                   element={<AmbProfesorUsuarios />}

@@ -72,7 +72,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     const [ errorGenerico, setErrorGenerico] = useState<string | null>(null);   // Mensajes de error generales del backend/conexión.
     const [ actualizarListado , setActualizarListado] = useState<number>(0);   // Contador para forzar la actualización del listado.
     const [ estadoListado , setEstadoListado] = useState({ error : false , statuscode : 0}); // Estado y código de la última respuesta del listado.
-    
+  
 // --- Estados del Formulario y Filtros ---
     const [ formData , setFormData ] = useState<any>({   // Datos del formulario de alta/modificación.
         ...config.inicialFormData,
@@ -105,7 +105,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 /** Manejador para abrir el modal de Modificación. Mapea los datos del listado al formulario. */
     const handleModificar = ( dataM :  TData ) =>{
         const mapData = config.mapDeFormulario(dataM)
-    
+   
         setFormData({
             ...mapData,
             id_escuela : config.idEscuela
@@ -293,7 +293,7 @@ const handleSubmitEliminar = async () => {
 
 // ---------------------------------- Efecto de Listado ----------------------------------
    
-
+    
 /** Efecto principal que gestiona la carga del listado en cada cambio de filtro o actualización forzada. */
     useEffect(() => {
     // 1. Configura el controlador de aborto y la lógica del temporizador.
@@ -305,12 +305,13 @@ const handleSubmitEliminar = async () => {
 
     const listado = async () => {
 
-
+      
         const servicioApiFetch = config.servicios.listado;
         try {
             setCarga(true);
                   //console.log(filtroData)
             const listado_alumnos = await servicioApiFetch(filtroData, signal);
+
             // NOTA: Aquí podrías añadir una lógica para redirigir al login si el statusCode es de No Autorizado.
                   //console.log(listado_alumnos)
             // Éxito: Verifica que los datos y la paginación existan.

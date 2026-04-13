@@ -5,6 +5,7 @@ import {
   MdOutlineClass,
   MdOutlineAssignmentInd,
   MdOutlineMusicNote,
+  MdOutlineCategory,
 } from "react-icons/md";
 import {
   PiStudentBold,
@@ -43,6 +44,8 @@ export const MenuNav = () => {
   const irNiveles = () => irA("/user_nivel");
   const irTipos = () => irA("/user_tipo");
   const irCategoriaCajas = () => irA("/user_categoria_caja");
+  const irTipoCuentas = () => irA("/user_tipo_cuenta");
+
   const irAsistencia = () => irA("/asistencia");
   //const irInscripciones = () => irA("/user_inscripciones");
   const irArqueoCaja = () => irA("/caja_usuario");
@@ -232,6 +235,16 @@ export const MenuNav = () => {
                   >
                     <MdOutlineAssignmentInd size={18} color="#60a5fa" />{" "}
                     Categoría Cajas
+                  </li>
+
+                  <li
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      irTipoCuentas();
+                    }}
+                  >
+                    <MdOutlineCategory size={18} color="#60a5fa" /> Tipos
+                    Cuentas
                   </li>
                 </ul>
               )}

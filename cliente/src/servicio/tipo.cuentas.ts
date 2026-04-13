@@ -48,12 +48,12 @@ export const modTipoCuenta = async( data : TipadoTipoCuentas.TipoCuentasMod)
     };
     
     const rutaCompleta = `${PAGINA}api/mod_cuenta/${data.id_cuenta}/${data.id_escuela}`;     
-
+    console.log(rutaCompleta)
     return await apiFetch( rutaCompleta, {
         method : "PUT",
         body : {
-              nuevo_nombre_cuenta  : data.nuevo_nombre_cuenta,
-              nuevo_tipo_cuenta : data.nuevo_tipo_cuenta
+              nuevo_nombre_cuenta  : data.nombre_cuenta,
+              nuevo_tipo_cuenta : data.tipo_cuenta
         }
     });
 
@@ -101,14 +101,15 @@ export const listaTipoCuentas = async ( data : TipadoTipoCuentas.ListaTipoCuenta
         estado : data.estado,
         
         id_escuela : data.id_escuela.toString(),
-        limit : data.limit.toString(),
+        limit : data.limite.toString(),
         pagina : data.pagina.toString()
     };
 
    const rutaCompleta = `${PAGINA}api/list_tipos_cuentas?${new URLSearchParams(parametrosConvertidos).toString()}`;  
-
+ 
    return await apiFetch( rutaCompleta, {
         method : "GET",
         signal : signal 
    });
+
 };
