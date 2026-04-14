@@ -258,6 +258,35 @@ const metricaPanelPrincipal  = async ( data : PanelMetricasInputs)
     };       
 };
 
+
+const listaMetricasCaja  = async ( data : PanelMetricasInputs) => {
+    const metricasData : PanelMetricasInputs = PanelMetricasSchema.parse(data);
+    const resultMetricas = await dataCaja.listaMetricasCaja(metricasData);
+ //   console.log(resultMetricas);
+    if ( resultMetricas.code === "METRICAS_CAJA_CUENTAS_LISTED"){ 
+        return {
+            error : false , 
+            message : "Metricas Caja Cuentas",
+            data : resultMetricas.data,
+            code : "METRICAS_CAJA_CUENTAS_OK"
+        };
+    };
+    if ( resultMetricas.code === "NO_ACTIVE_METRICAS_CAJA_CUENTAS"){
+       return {
+            error : true ,
+            message : "No se encontraron metricas",
+            code : "SIN_METRICAS_CAJA_CUENTAS"
+       }; 
+    };
+
+    return {
+        error : true ,
+        message : "Error, no se pudieron obtener las metricas",
+        code : "ERROR_SERVIDOR"            
+    };
+
+};
+
 /**
  * Controlador de negocio para obtener movimientos de caja.
  * Valida la entrada con Zod, consulta la base de datos y normaliza la respuesta.
@@ -350,5 +379,6 @@ export const method = {
     metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal),
     movimientosCaja : tryCatchDatos( movimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos ),
+    listaMetricasCaja : tryCatchDatos(listaMetricasCaja),
 };
 

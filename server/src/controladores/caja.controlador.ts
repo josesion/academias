@@ -10,7 +10,7 @@ import { enviarResponse } from "../utils/response";
 // Sección de tipados
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
-
+import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR } from "../respuestas/caja"; 
 
 
 /**
@@ -229,38 +229,65 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
  * - 404: Si no se encuentran métricas (caja inexistente).
  * - 500: Si ocurre un error inesperado en el servidor.
  */
-const metricasPanelCaja = async ( req : Request, res : Response) =>{
-    const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
-    const metricasResult = await cajaServicio.metricaPanelPrincipal( data );
+// const metricasPanelCaja = async ( req : Request, res : Response) =>{
+//     const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
+//     const metricasResult = await cajaServicio.metricaPanelPrincipal( data );
 
-    if ( metricasResult.code === "SIN_METRICAS"){
-        return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                "Sin Metricas para Caja",
-                "SIN_METRICAS"
-        );         
-    };
+//     if ( metricasResult.code === "SIN_METRICAS"){
+//         return enviarResponseError(
+//                 res,
+//                 CodigoEstadoHTTP.NO_ENCONTRADO,
+//                 "Sin Metricas para Caja",
+//                 "SIN_METRICAS"
+//         );         
+//     };
 
 
-    if ( metricasResult.code === "METRICAS_OK"){
+//     if ( metricasResult.code === "METRICAS_OK"){
+//         return enviarResponse(
+//             res, 
+//             CodigoEstadoHTTP.OK,
+//             metricasResult.message,
+//             metricasResult.data,
+//             undefined ,
+//             metricasResult.code
+//         );
+//     };
+//     return enviarResponseError(
+//             res,
+//             CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+//             "Error , Metricas Caja server Error",
+//             metricasResult.code
+//     );    
+// };
+
+
+const listaMetricasCaja = async ( req : Request, res : Response) => {
+     const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
+
+     const metricasResult = await  cajaServicio.listaMetricasCaja( data );
+   
+     const config = MAPA_METRICAS_PANEL[metricasResult.code] || ERROR_INTERNO_SERVIDOR;
+
+     if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
-            res, 
-            CodigoEstadoHTTP.OK,
-            metricasResult.message,
+            res,
+            config.status,
+            metricasResult.message || config.msg,
             metricasResult.data,
-            undefined ,
+            undefined,
             metricasResult.code
         );
-    };
-    return enviarResponseError(
+     }else{
+        return enviarResponseError(
             res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            "Error , Metricas Caja server Error",
+            config.status,
+            metricasResult.message || config.msg,
             metricasResult.code
-    );    
-};
+        );
+     };
 
+};
 
 /**
  * Endpoint de Express para listar movimientos de caja.
@@ -365,7 +392,8 @@ export const method ={
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
-    metricasPanelCaja : tryCatch( metricasPanelCaja ),
+   // metricasPanelCaja : tryCatch( metricasPanelCaja ),
     movimientosCaja : tryCatch( movimientosCaja ),
     listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
+    listaMetricasCaja : tryCatch( listaMetricasCaja)
 };

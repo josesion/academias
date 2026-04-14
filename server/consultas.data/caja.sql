@@ -13,19 +13,29 @@ CREATE TABLE cajas (
 );
 
 
+DROP TABLE IF EXISTS detalle_caja;
+
 CREATE TABLE detalle_caja (
     id_movimiento INT PRIMARY KEY AUTO_INCREMENT,
     id_caja INT NOT NULL,
     id_categoria INT NOT NULL,
+    id_cuenta INT NOT NULL, 
     monto DECIMAL(10, 2) NOT NULL,
-    metodo_pago ENUM('efectivo', 'transferencia', 'credito', 'debito') DEFAULT 'efectivo', -- Nuevo campo
     descripcion TEXT,
     referencia_id INT NULL, 
     fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
-    FOREIGN KEY (id_caja) REFERENCES cajas(id_caja),
-    FOREIGN KEY (id_categoria) REFERENCES categorias_caja(id_categoria)
-);
+    -- Relaciones
+    CONSTRAINT fk_detalle_caja_padre 
+        FOREIGN KEY (id_caja) REFERENCES cajas(id_caja),
+        
+    CONSTRAINT fk_detalle_categoria 
+        FOREIGN KEY (id_categoria) REFERENCES categorias_caja(id_categoria),
+        
+    -- Corregido el nombre de la tabla de referencia a 'cuentas_escuela'
+    CONSTRAINT fk_detalle_cuenta_escuela 
+        FOREIGN KEY (id_cuenta) REFERENCES cuentas_escuela(id_cuenta)
+) ENGINE=InnoDB;
 
 
 INSERT INTO cajas (
@@ -53,6 +63,7 @@ WHERE id_caja = ? AND estado = 'abierta';
 INSERT INTO detalle_caja (
     id_caja, 
     id_categoria, 
+    id_cuenta,
     monto, 
     metodo_pago, 
     descripcion, 
@@ -60,6 +71,7 @@ INSERT INTO detalle_caja (
 ) VALUES (
     ?, -- id_caja (la que está abierta actualmente)
     ?, -- id_categoria (ej: 5 para 'Cuotas')
+    ?, -- id_cuenta (ej: 12 para 'Efectivo' o 'Mercado Pago')
     ?, -- monto (ej: 1500.50)
     ?, -- metodo_pago ('efectivo', 'transferencia', etc.)
     ?, -- descripcion (el "anotador" libre)

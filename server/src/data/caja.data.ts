@@ -332,6 +332,8 @@ const idCajaAbierta = async ( data : IdCajaAbiertaInputs )
  * const result = await listaMovimientosCaja({ id_caja: 25, limite: 10, offset: 0 });
  * if (!result.error) console.log(result.data);
  */
+
+// bandera SALE ERROR POR LA MODIFICACION EN CONUSLTAS DE TIPO CUENTAS
 const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
 : Promise<TipadoData<DetalleCajaMovimiento[]>> =>  {
     const { id_caja , limite , offset} = data;
@@ -394,6 +396,40 @@ const listaCategiriaCajaTipos = async( data : ListaCategoriaCajaTipoInputs)
     });
 };
 
+
+const listaMetricasCaja = async ( data : CierreCajaInputs) => {
+    const { id_caja , id_escuela} = data ;
+    const sql : string = `SELECT 
+                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL' ELSE cue.id_cuenta END AS id_cuenta,
+                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL GENERAL' ELSE MAX(cue.nombre_cuenta) END AS nombre_cuenta,
+                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN NULL ELSE MAX(cue.tipo_cuenta) END AS tipo_cuenta,
+                            -- Saldo: (Ingresos - Egresos) + Monto Inicial
+                            COALESCE(SUM(
+                                CASE 
+                                    WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                    WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                    ELSE 0 
+                                END
+                            ), 0) + 
+                            SUM(DISTINCT CASE WHEN cue.tipo_cuenta = 'fisico' THEN COALESCE(c.monto_inicial, 0) ELSE 0 END) AS saldo_actual
+                        FROM cuentas_escuela cue
+                        LEFT JOIN detalle_caja det ON cue.id_cuenta = det.id_cuenta
+                        LEFT JOIN cajas c ON det.id_caja = c.id_caja AND c.id_caja = ?
+                        LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                        WHERE cue.id_escuela = ?
+                        AND cue.estado = 'activos'
+                        GROUP BY cue.id_cuenta WITH ROLLUP;`;
+    const parametros : unknown[] = [ id_caja, id_escuela];
+
+    return listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores : parametros,
+        entidad : "METRICAS_CAJA_CUENTAS",
+        estado : "=)"
+    });
+};
+
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
@@ -404,4 +440,5 @@ export const method = {
     metricasCaja : tryCatchDatos( metricaPanelPrincipal ),
     listaMovimientosCaja : tryCatchDatos( listaMovimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos),
+    listaMetricasCaja : tryCatchDatos( listaMetricasCaja)
 };
