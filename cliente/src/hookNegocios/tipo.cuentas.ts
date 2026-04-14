@@ -43,12 +43,12 @@ const inputsCategoriaCaja : InputsPropsFormulario[] = [
 
     {
         name        : "tipo_cuenta",
-        label       : "Ingresar Tipo Cuenta",
+        label       : "Ingresar Tipo",
         type        : "text",
-        placeholder : "Ingrese Tipo Cuenta",
-        value       : "",
-        readonly    : true,
+        options     : ["fisico", "virtual"],
+        readonly    : false,
     },  
+ 
  
    
 

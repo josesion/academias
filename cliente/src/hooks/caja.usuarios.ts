@@ -501,29 +501,55 @@ useEffect( ()=> {
 //Obtener las metricas para el panel 
 // ────────────────────────────────────────────────────────────── 
 
+  interface metricasTipoCuentas {
+       id_cuenta : number | string,
+       nombre_cuenta : string,
+       tipo_cuenta  : string | null,
+       saldo : string
+  };
+
+const [ metricasTipoCuentas, setMetricasTipoCuentas] = useState<metricasTipoCuentas[]  | null>([]);
+
+// console.log(metricasTipoCuentas)
+
 useEffect( ()=> {
     const metricas = async () => {
         const servicioApiFetch = config.servicios.metricasPanelCaja;
         const metricasCajaResult = await servicioApiFetch(dataCaja);
+        // nuevo code correcto "METRICAS_CAJA_CUENTAS_OK"
+        console.log(metricasCajaResult)
+        if (metricasCajaResult.code ===  "METRICAS_CAJA_CUENTAS_OK" ){
 
-        if (metricasCajaResult.code === "METRICAS_OK"){
-                
-                actualizarMetricas(metricasCajaResult.data);
-                setErrorGenerico(null);
-        }
-        else{
-            actualizarMetricas({
-                monto_inicial: 0,
-                total_ingresos: 0,
-                total_egresos: 0,
-                flujo_del_dia: 0,
-                total_efectivo: 0,
-                total_transferencia: 0,
-                total_debito: 0,
-                total_credito: 0,
-                balance_total_real: 0
-             });
+        const totalCuenta =metricasCajaResult.data.find(
+             (cuenta: metricasTipoCuentas)  => cuenta.id_cuenta === "TOTAL" );
+
+            setBalanceTotalReal(totalCuenta ? Number(totalCuenta.saldo_actual || 0 ) : 0) 
+            setMetricasTipoCuentas(metricasCajaResult.data)
+        }else{
+            setMetricasTipoCuentas(null)
+            setBalanceTotalReal(0);
         };
+
+//--------------------- Codigo antiguo con metricas estaticas 
+
+        // if (metricasCajaResult.code === "METRICAS_OK"){
+                
+        //         actualizarMetricas(metricasCajaResult.data);
+        //         setErrorGenerico(null);
+        // }
+        // else{
+        //     actualizarMetricas({
+        //         monto_inicial: 0,
+        //         total_ingresos: 0,
+        //         total_egresos: 0,
+        //         flujo_del_dia: 0,
+        //         total_efectivo: 0,
+        //         total_transferencia: 0,
+        //         total_debito: 0,
+        //         total_credito: 0,
+        //         balance_total_real: 0
+        //      });
+        // };
     };
 
     metricas();
@@ -593,7 +619,9 @@ useEffect(() => {
         handleMontoChange,
         handleMemoChange,
         handleAbrirEgreso,
-        handleAbrirIngreso
+        handleAbrirIngreso,
+
+        metricasTipoCuentas
 
     };
 };    

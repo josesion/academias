@@ -103,7 +103,7 @@ export const listaTipoCuentas = async ( data : TipadoTipoCuentas.ListaTipoCuenta
         id_escuela : data.id_escuela.toString(),
         limit : data.limite.toString(),
         pagina : data.pagina.toString()
-    };
+    };  
 
    const rutaCompleta = `${PAGINA}api/list_tipos_cuentas?${new URLSearchParams(parametrosConvertidos).toString()}`;  
  

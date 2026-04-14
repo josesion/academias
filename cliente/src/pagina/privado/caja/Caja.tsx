@@ -1,6 +1,6 @@
 import { TarjetasNormales } from "../../../componentes/TarjetasNormales/TarjetaNormali";
 import { MovientoCaja } from "../../../componentes/MovimientoCaja/MovientoCaja";
-import { PanelMetodoPAgo } from "../../../componentes/MetodoPago/PanelMetodoPago";
+import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago";
 import { Boton } from "../../../componentes/Boton/Boton";
 import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
 import { CompoVerificacion } from "../../../componentes/CompoVerificacion/CompoVerificacion";
@@ -23,10 +23,7 @@ export const CajaArqueo = () => {
     totalIngresos,
     totalEgresos,
     flujoDelDia,
-    totalEfectivo,
-    totalTransferencia,
-    totalDebito,
-    totalCredito,
+
     enviando,
     estadoCaja,
     errorGenerico,
@@ -51,6 +48,7 @@ export const CajaArqueo = () => {
     handleAbrirEgreso,
     handleAbrirIngreso,
     handleMemoChange,
+    metricasTipoCuentas,
   } = cajasCongif();
 
   interface Categoria {
@@ -203,14 +201,7 @@ export const CajaArqueo = () => {
         </div>
         <div className="caja_arqueo_metricas_metodo_pago">
           <p>Resumens Metodo Pago</p>
-          <PanelMetodoPAgo
-            totales={{
-              efectivo: totalEfectivo,
-              transferencia: totalTransferencia,
-              credito: totalCredito,
-              debito: totalDebito,
-            }}
-          />
+          <PanelMetodoPago cuentas={metricasTipoCuentas} />
         </div>
       </div>
     </div>

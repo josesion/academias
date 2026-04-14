@@ -252,7 +252,7 @@ const listadoInscrip = async () => {
     try {
         const servcioListado = config.servicios.listado;    
         const listadoRespuesta = await servcioListado(filtroData, signal);
-       
+
         //  VALIDACIÓN CRÍTICA:
         // Si la respuesta no es lo que esperamos, no seteamos basura
         if (listadoRespuesta && listadoRespuesta.data) {
@@ -260,6 +260,7 @@ const listadoInscrip = async () => {
             setBarraPaginacion(listadoRespuesta.paginacion);
         } else {
             // Si el back responde pero sin data (ej. 404), limpiamos
+           
             setDataListado([]); 
             setBarraPaginacion( prev => ({
                 ...prev,
