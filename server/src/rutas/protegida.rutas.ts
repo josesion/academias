@@ -4,6 +4,6 @@ import { method as controladorProtegido } from "../controladores/rutas.protegida
 
 const ruta = Router();
 
-ruta.get("/api/verificar", controladorProtegido.verificarToken);
+ruta.get("/api/verificar", controladorProtegido.verificarSesion);
 
 export default ruta;
