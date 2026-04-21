@@ -74,6 +74,8 @@ const loginUsuario =  async ( data : LoginInputs)
     };    
 };
 
+
+
 export const method = {
     loginServicio : tryCatchDatos( loginUsuario ),
 };
