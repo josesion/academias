@@ -10,181 +10,178 @@ import { enviarResponse } from "../utils/response";
 // Sección de tipados
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
-import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR } from "../respuestas/caja"; 
+import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA, 
+        MAPA_LISTA_TIPO_CUENTAS, MAPA_ABRIR_CAJA, MAPA_LISTADO_CAJAS,
+        MAPA_CERRAR_CAJA, MAPA_DETALLE_MOVIMIENTOS, MAPA_LISTADO_CATEGORIAS,
+
+} from "../respuestas/caja"; 
 
 
 /**
- * Endpoint para la apertura de caja de una academia.
+ * Controlador para gestionar la apertura de una nueva caja.
+ * * Extrae los datos del cuerpo de la petición, delega la lógica al servicio de cajas
+ * y retorna una respuesta formateada según el resultado de la operación.
  * * @async
+ * @function abrirCaja
  * @param {Request} req - Objeto de petición de Express.
- * @param {Object} req.body - Cuerpo de la petición.
- * @param {number} req.body.id_escuela - ID de la escuela.
- * @param {string} req.body.estado - Estado inicial (ej: 'abierta').
- * @param {number|null} [req.body.id_usuario] - ID del usuario (opcional).
- * @param {number} req.body.monto_inicial - Monto de apertura.
+ * @param {Object} req.body - Datos de la caja.
+ * @param {number} req.body.id_escuela - ID de la escuela donde se abre la caja.
+ * @param {string} req.body.estado - Estado inicial de la caja (ej. 'abierta').
+ * @param {number} req.body.id_usuario - ID del usuario que realiza la apertura.
+ * @param {number} req.body.monto_inicial - Saldo inicial de la caja.
  * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP estandarizada.
- * * @description
- * Recibe los datos del cliente, invoca al servicio de apertura y mapea los resultados
- * a los códigos de estado HTTP correspondientes:
- * - 409 (Conflict): Si ya hay una caja abierta.
- * - 200 (OK): Apertura exitosa.
- * - 500 (Internal Server Error): Errores inesperados.
+ * * @returns {Promise<Response>} Retorna una respuesta HTTP exitosa (200) o un error controlado.
+ * * @example
+ * // Éxito: retorna enviarResponse con status 200 y la data de la caja.
+ * // Error: retorna enviarResponseError basado en MAPA_ABRIR_CAJA.
  */
 const abrirCaja = async( req : Request, res : Response) =>{
        
     const dataCaja = {
         id_escuela : req.body.id_escuela,
         estado     : req.body.estado,
-        id_usuario : req.body.id_usuario || null,
-        monto_inicial : req.body.monto_inicial
+        id_usuario : req.body.id_usuario,
+        monto_inicial : req.body.monto_inicial,
+    
     };
 
    const abrirCajaResult = await cajaServicio.abrirCajaServicio( dataCaja );
 
-   switch ( abrirCajaResult.code) {
-        case "CAJA_ABIERTA" : {
-            return enviarResponseError(
+   const config = MAPA_ABRIR_CAJA[abrirCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
+
+   if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
                 res,
-                CodigoEstadoHTTP.CONFLICTO,
-                abrirCajaResult.message,
-                abrirCajaResult.code
-            );
-        };
-        case "CAJA_ABIERTA_OK" : {
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.OK,
-                abrirCajaResult.message,
+                config.status,
+                abrirCajaResult.message || config.msg,
                 abrirCajaResult.data,
                 undefined,
                 abrirCajaResult.code
-            );
-        };
-        default : {
-            return enviarResponseError(
+        );  
+   }else{
+        return enviarResponseError(
                 res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                abrirCajaResult.message,
-                "EXCEPTION_ERROR"
-            );
-        };
+                config.status,
+                abrirCajaResult.message || config.msg,
+                abrirCajaResult.code
+        );
    };
+
 };
 
 /**
- * Endpoint para registrar un movimiento en el detalle de caja.
- * * Este controlador actúa como puerta de entrada para la creación de ingresos o egresos.
- * Extrae los datos del cuerpo de la petición y delega la validación y persistencia
- * al servicio de caja.
+ * Controlador para registrar un nuevo movimiento (detalle) en una caja.
+ * * Extrae y castea los datos de la petición, delega la creación del movimiento
+ * al servicio de cajas y gestiona la respuesta HTTP según el resultado.
  * * @async
- * @param {Request} req - Objeto de petición de Express. Contiene los campos del movimiento en `req.body`.
+ * @function detalleCaja
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.body - Datos del movimiento recibidos en el cuerpo.
+ * @param {number|string} req.body.id_caja - ID de la caja (se castea a Number).
+ * @param {number|string} req.body.id_categoria - ID de la categoría (se castea a Number).
+ * @param {number|string} req.body.id_cuenta - ID de la cuenta/método (se castea a Number).
+ * @param {number|string} req.body.id_usuario - ID del usuario operativo (se castea a Number).
+ * @param {number|string} req.body.monto - Importe del movimiento (se castea a Number).
+ * @param {string} req.body.descripcion - Motivo o descripción del movimiento.
+ * @param {number|null} [req.body.referencia_id] - ID opcional de referencia externa.
  * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} 
- * - 200 (OK): Si el detalle se creó correctamente.
- * - 500 (Internal Server Error): Si hubo un fallo en la lógica de negocio o base de datos.
- * * @description
- * Los datos extraídos son: `id_caja`, `id_categoria`, `monto`, `metodo_pago`, `descripcion` y `referencia_id`.
- * Se utiliza la utilidad `enviarResponse` para estandarizar la salida del API.
+ * * @returns {Promise<Response>} Respuesta formateada basada en MAPRA_DETALLE_MOVIMIENTOS.
  */
 const detalleCaja = async ( req : Request, res : Response ) => {
     const dataDetalle = {
-        id_caja : req.body.id_caja,
-        id_categoria : req.body.id_categoria,
-        monto : req.body.monto,
-        metodo_pago : req.body.metodo_pago,
+        id_caja : Number(req.body.id_caja),
+        id_categoria : Number(req.body.id_categoria),
+        id_cuenta : Number(req.body.id_cuenta),
+        id_usuario : Number(req.body.id_usuario),
+        monto : Number(req.body.monto),
         descripcion : req.body.descripcion,
         referencia_id : req.body.referencia_id 
     };
     
     const detalleCajaResult = await cajaServicio.detalleCaja(dataDetalle);
     
-    if (detalleCajaResult.code === "DETALLE_CAJA_OK"){
+    const config =  MAPA_DETALLE_MOVIMIENTOS[ detalleCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK) {
         return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            detalleCajaResult.message,
-            detalleCajaResult.data,
-            undefined,
-            detalleCajaResult.code
+               res,
+               config.status,
+               detalleCajaResult.message || config.msg,
+               detalleCajaResult.data,
+               undefined,
+               detalleCajaResult.code
+        );
+    }else{
+        return enviarResponseError(
+               res, 
+               config.status,
+               detalleCajaResult.message || config.msg,
+               detalleCajaResult.code
         );
     };
-
-    return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            detalleCajaResult.message,
-            detalleCajaResult.code
-    );   
+   
 };
 
 /**
- * Controlador para procesar el cierre definitivo de una caja.
- * * Este endpoint recibe el monto físico reportado y coordina con el servicio 
- * la verificación de estado y el arqueo contable.
+ * Controlador para gestionar el cierre de una caja activa.
+ * * Recibe los datos del arqueo físico, identifica al usuario que cierra y 
+ * delega al servicio la actualización de saldos y estados.
  * * @async
- * @param {Request} req - Petición de Express. Espera `id_caja`, `monto_final_real` e `id_escuela`.
- * @param {Response} res - Respuesta de Express.
- * @returns {Promise<void>}
- * * @description
- * Maneja tres escenarios de respuesta:
- * 1. **ÉXITO (200 OK)**: La caja se cerró y se guardaron los montos correctamente.
- * 2. **CONFLICTO (409)**: No se encontró una caja abierta para realizar el cierre.
- * 3. **ERROR (500)**: Fallo inesperado en el arqueo o en la actualización de la base de datos.
- * * Importante: La validación de que `monto_final_real` no sea vacío se delega al `cierreCajaServicio`.
+ * @function cierreCaja
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.body - Cuerpo de la petición.
+ * @param {number} req.body.id_caja - ID único de la caja a cerrar.
+ * @param {number} req.body.monto_final_real - Monto físico contado por el usuario.
+ * @param {number|string} req.body.id_escuela - ID de la escuela (se castea a Number).
+ * @param {number|string} req.body.id_usuario - ID del usuario que cierra (se castea a Number).
+ * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<Response>} Respuesta HTTP formateada según el MAPA_CERRAR_CAJA.
  */
 const cierreCaja = async( req : Request, res : Response) =>{
 
     const data = { 
         id_caja : req.body.id_caja,
         monto_final_real : req.body.monto_final_real,
-        id_escuela : Number(req.body.id_escuela)
+        id_escuela : Number(req.body.id_escuela),
+        id_usuario : Number(req.body.id_usuario),
     };
-    const cierreCajaResult = await cajaServicio.cierreCajaServicio( data );
+
+     const cierreCajaResult = await cajaServicio.cierreCajaServicio( data );
    
- 
-    if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
+    const config = MAPA_CERRAR_CAJA[ cierreCajaResult.code] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK ){
         return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            cierreCajaResult.message,
+            res, 
+            config.status,
+            cierreCajaResult.message || config.msg,
             cierreCajaResult.data,
             undefined,
+            cierreCajaResult.code
+        );    
+    }else{
+        return enviarResponseError(
+            res, 
+            config.status,
+            cierreCajaResult.message || config.msg,
             cierreCajaResult.code
         );
     };
 
-
-    if (cierreCajaResult.code === "NO_HAY_CAJA_ABIERTA"){
-       return enviarResponseError(
-            res, 
-            CodigoEstadoHTTP.CONFLICTO,
-            cierreCajaResult.message,
-            cierreCajaResult.code
-       );
-    };
-
-    return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            cierreCajaResult.message,
-            cierreCajaResult.code
-    ); 
 };  
 
 
 /**
- * Controlador para obtener el ID de la caja actualmente abierta de una escuela.
- * * Verifica si existe una sesión de caja activa para la escuela proporcionada.
- * Es un paso obligatorio antes de realizar cualquier movimiento de tesorería (ingresos/egresos),
- * asegurando que los fondos se asignen a una sesión de caja válida.
- *
- * @param {Request} req - Objeto de petición de Express. Debe incluir id_escuela en los parámetros.
+ * Controlador para obtener el ID de la caja que se encuentra actualmente abierta.
+ * * Este endpoint es clave para procesos que requieren validar si existe una jornada 
+ * activa antes de permitir registros de movimientos.
+ * * @async
+ * @function idCajaAbierta
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.params - Parámetros de la ruta.
+ * @param {number|string} req.params.id_escuela - ID de la escuela para filtrar la búsqueda (se castea a Number).
  * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP:
- * - 200 (OK): Retorna el ID de la caja abierta.
- * - 404 (NOT_FOUND): No hay ninguna caja abierta para esa escuela.
- * - 500 (INTERNAL_SERVER_ERROR): Error crítico al consultar el estado de la caja.
+ * * @returns {Promise<Response>} Respuesta con el ID de la caja abierta o error controlado según MAPA_CAJA_ABIERTA.
  */
 const idCajaAbierta =async ( req : Request, res : Response) =>{
    
@@ -192,76 +189,42 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
 
     const idCajaAbiertaResult = await cajaServicio.idCajaAbiertaServicio(data);
  
-    if ( idCajaAbiertaResult.code === "ID_CAJA_OK"){
-        return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            idCajaAbiertaResult.message,
-            idCajaAbiertaResult.data,
-            undefined,
-            idCajaAbiertaResult.code
-        );
-    };
-    if ( idCajaAbiertaResult.code === "SIN_CAJA_ABIERTA"){
-        return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                idCajaAbiertaResult.message,
-                idCajaAbiertaResult.code
-        );        
-    };
+    const config = MAPA_CAJA_ABIERTA[ idCajaAbiertaResult.code] || ERROR_INTERNO_SERVIDOR;
 
-    return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            idCajaAbiertaResult.message,
-            idCajaAbiertaResult.code
-    ); 
+    if ( config.status === CodigoEstadoHTTP.OK) {
+        return enviarResponse(
+               res,
+               config.status,
+               idCajaAbiertaResult.message  || config.msg,
+               idCajaAbiertaResult.data ,
+               undefined,
+               idCajaAbiertaResult.code
+        );
+    }else{
+       return enviarResponseError(
+              res,
+              config.status,
+              idCajaAbiertaResult.message || config.msg,
+              idCajaAbiertaResult.code
+       ); 
+    };
 };
 
 /**
- * Handler de Express para obtener las métricas del panel de caja.
+ * Controlador para obtener las métricas financieras de una caja específica.
+ * * Extrae los identificadores de la URL, consulta al servicio de métricas
+ * y retorna el resumen de saldos y estados de cuentas para el panel.
  * * @async
- * @param {Request} req - Objeto de petición de Express (espera params: id_caja, id_escuela).
+ * @function listaMetricasCaja
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.params - Parámetros de ruta.
+ * @param {number|string} req.params.id_caja - ID de la caja a analizar (se castea a Number).
+ * @param {number|string} req.params.id_escuela - ID de la escuela para validación de contexto (se castea a Number).
  * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} 
- * - 200: Si se obtienen las métricas correctamente.
- * - 404: Si no se encuentran métricas (caja inexistente).
- * - 500: Si ocurre un error inesperado en el servidor.
+ * * @returns {Promise<Response>} Respuesta HTTP con las métricas o error según MAPA_METRICAS_PANEL.
+ * * @example
+ * // GET /metricas/5/1 (Caja 5, Escuela 1)
  */
-// const metricasPanelCaja = async ( req : Request, res : Response) =>{
-//     const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
-//     const metricasResult = await cajaServicio.metricaPanelPrincipal( data );
-
-//     if ( metricasResult.code === "SIN_METRICAS"){
-//         return enviarResponseError(
-//                 res,
-//                 CodigoEstadoHTTP.NO_ENCONTRADO,
-//                 "Sin Metricas para Caja",
-//                 "SIN_METRICAS"
-//         );         
-//     };
-
-
-//     if ( metricasResult.code === "METRICAS_OK"){
-//         return enviarResponse(
-//             res, 
-//             CodigoEstadoHTTP.OK,
-//             metricasResult.message,
-//             metricasResult.data,
-//             undefined ,
-//             metricasResult.code
-//         );
-//     };
-//     return enviarResponseError(
-//             res,
-//             CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-//             "Error , Metricas Caja server Error",
-//             metricasResult.code
-//     );    
-// };
-
-
 const listaMetricasCaja = async ( req : Request, res : Response) => {
      const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
 
@@ -290,11 +253,18 @@ const listaMetricasCaja = async ( req : Request, res : Response) => {
 };
 
 /**
- * Endpoint de Express para listar movimientos de caja.
- * Extrae parámetros de la URL, delega la lógica al servicio y despacha la respuesta HTTP.
- * * @param {Request} req - Objeto de petición Express. Espera query params: id_caja, limite, offset.
- * @param {Response} res - Objeto de respuesta Express.
- * @returns {Promise<Response>} Respuesta JSON con estado HTTP correspondiente.
+ * Controlador para listar los movimientos asociados a una caja específica.
+ * * Obtiene el detalle de transacciones (ingresos/egresos) permitiendo 
+ * paginación mediante el uso de limite y offset.
+ * * @async
+ * @function movimientosCaja
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.query - Parámetros de búsqueda en la URL.
+ * @param {number|string} req.query.id_caja - ID de la caja de la cual se quieren ver los movimientos (se castea a Number).
+ * @param {number|string} [req.query.limite=10] - Cantidad máxima de registros a devolver (opcional, por defecto 10).
+ * @param {number|string} [req.query.offset=0] - Número de registros a saltar para la paginación (opcional, por defecto 0).
+ * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<Response>} Respuesta con el listado de movimientos o error controlado según MAPA_LISTADO_CAJAS.
  */
 const movimientosCaja = async ( req : Request, res : Response) => {
     const data = {
@@ -303,51 +273,43 @@ const movimientosCaja = async ( req : Request, res : Response) => {
         offset : Number(req.query.offset) || 0
     };
     const movimientosResult = await cajaServicio.movimientosCaja( data );
-    
-    if ( movimientosResult.code === "MOVIMIENTOS_CAJA_OK"){
+
+    const config = MAPA_LISTADO_CAJAS[ movimientosResult.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK ) {
         return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            movimientosResult.message,
+            res, 
+            config.status,
+            movimientosResult.message  ||  config.msg,
             movimientosResult.data,
             undefined,
             movimientosResult.code
         );
-    };
-
-    if ( movimientosResult.code === "MOVIMIENTOS_CAJA_VACIO" ){
+    }else{
         return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                "No se encontraron movimientos de caja",
-                movimientosResult.code
-        );         
-    };
-
-    return enviarResponseError(
             res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            "Error , Movimientos Caja server Error",
+            config.status,
+            movimientosResult.message || config.msg,
             movimientosResult.code
-    );      
+        );
+    };      
 };
 
 /**
- * Controlador de Express para obtener el listado de categorías de caja filtradas.
- * * Extrae los parámetros `id_escuela`, `tipo` y `estado` de la URL, invoca al 
- * servicio correspondiente y despacha la respuesta HTTP utilizando helpers estandarizados.
+ * Controlador para listar las categorías de caja filtradas por tipo y estado.
+ * * Permite obtener las categorías (ej: 'Ingreso', 'Egreso') asociadas a una escuela 
+ * específica, filtrando opcionalmente por su estado (activo/inactivo).
  * * @async
  * @function listarCategoriaCajaTipos
  * @param {Request} req - Objeto de petición de Express.
  * @param {Object} req.params - Parámetros de la ruta.
- * @param {string} req.params.id_escuela - ID de la escuela (se castea a Number).
- * @param {string} req.params.tipo - Tipo de movimiento ('ingreso' o 'egreso').
- * @param {string} req.params.estado - Estado de la categoría ('activo', etc.).
+ * @param {number|string} req.params.id_escuela - ID de la escuela (se castea a Number).
+ * @param {string} req.params.tipo - Tipo de categoría a filtrar (ej: 'ingreso', 'egreso').
+ * @param {string} req.params.estado - Estado de la categoría (ej: 'activo', 'inactivo').
  * @param {Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<void>} No retorna un valor, pero envía una respuesta JSON al cliente:
- * - 200 (OK): Si se listan las categorías correctamente.
- * - 404 (Not Found): Si la lista está vacía.
- * - 500 (Internal Server Error): Si ocurre un error inesperado en el servidor.
+ * * @returns {Promise<Response>} Respuesta con el listado de categorías o error según MAPA_LISTADO_CATEGORIAS.
+ * * @example
+ * // GET /categorias/1/ingreso/activo
  */
 const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
    
@@ -359,32 +321,72 @@ const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
 
     const listaCategoriaResult = await cajaServicio.listaCategiriaCajaTipos( data );
 
-    if ( listaCategoriaResult.code === "LISTADO_CATEGORIA_OK"){
-       return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            listaCategoriaResult.message,
-            listaCategoriaResult.data,
-            undefined,
-            listaCategoriaResult.code
-       );
-    };
+    const config = MAPA_LISTADO_CATEGORIAS[ listaCategoriaResult.code ] || ERROR_INTERNO_SERVIDOR;
 
-    if ( listaCategoriaResult.code = "LISTADO_CATEGORIA_VACIO"){
-      return enviarResponseError(
+    if ( config.status === CodigoEstadoHTTP.OK) {
+        return enviarResponse(
+             res,
+             config.status,
+             listaCategoriaResult.message || config.msg,
+             listaCategoriaResult.data,
+             undefined,
+             listaCategoriaResult.code
+        );
+    }else{
+        return enviarResponseError(
             res,
-            CodigoEstadoHTTP.NO_ENCONTRADO,
-            listaCategoriaResult.message,
+            config.status,
+            listaCategoriaResult.message || config.msg,
             listaCategoriaResult.code
-      );  
-    };
+        );
+    };         
+};
 
+
+/**
+ * Controlador para obtener el listado de cuentas configuradas en una escuela.
+ * * Extrae los parámetros de la URL, consulta el servicio de caja y gestiona
+ * la respuesta HTTP utilizando el mapa de códigos de error/éxito correspondiente.
+ *
+ * @async
+ * @function listaTipoCuentas
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {string} req.params.id_escuela - ID de la escuela (se convierte a Number).
+ * @param {string} req.params.estado - Estado de las cuentas a filtrar (ej. 'activos').
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta JSON enviada a través de `enviarResponse` o `enviarResponseError`.
+ * * @example
+ * // GET /api/caja/cuentas/107/activos
+ * listaTipoCuentas(req, res);
+ */
+const listaTipoCuentas = async ( req : Request , res : Response) => {
+
+  const data = {
+    id_escuela : Number(req.params.id_escuela),
+    estado : req.params.estado as string
+  };
+
+  const listaTipoCuentasResult = await cajaServicio.listaTipoCuentas( data);
+   
+  const config = MAPA_LISTA_TIPO_CUENTAS[listaTipoCuentasResult.code] || ERROR_INTERNO_SERVIDOR;
+
+  if ( config.status === CodigoEstadoHTTP.OK){
+    return enviarResponse(
+        res,
+        config.status,
+        listaTipoCuentasResult.message || config.msg,
+        listaTipoCuentasResult.data,
+        undefined,
+        listaTipoCuentasResult.code
+    );
+  }else{
     return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-            "Error , Problemas a devolver el listado",
-            listaCategoriaResult.code
-    );         
+        res,
+        config.status,
+        listaTipoCuentasResult.message || config.msg,
+        listaTipoCuentasResult.code
+    );
+  };
 };
 
 export const method ={
@@ -392,8 +394,8 @@ export const method ={
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
-   // metricasPanelCaja : tryCatch( metricasPanelCaja ),
     movimientosCaja : tryCatch( movimientosCaja ),
     listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
-    listaMetricasCaja : tryCatch( listaMetricasCaja)
+    listaMetricasCaja : tryCatch( listaMetricasCaja),
+    listaTipoCuentas : tryCatch( listaTipoCuentas),
 };

@@ -16,6 +16,7 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          PanelMetricasInputs, PanelMetricasSchema,
          ListaMovimientosCajaInputs, listaMovimientosCajaSchema,
          ListaCategoriaCajaTipoInputs, ListaCategoriaCajaTipoSchema,
+         ListaTipoCuentasInputs, listaTipoCuentasSchema,
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { DataAltaCaja , DataAltaCajaResult,
@@ -68,7 +69,7 @@ const abrirCaja = async( data : DataAltaCaja)
     return {
         error : true,
         message : "No se pudo completar la apertura de caja",
-        code : "ERROR_ABRIR_CAJA"
+        code : "ERROR_SERVIDOR"  
     };
 
 };
@@ -131,7 +132,7 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
 
     const vericarCajaResult = await dataCaja.verificarCajaAbierta({
         id_escuela : cierreCajaData.id_escuela, 
-        estado     : "abierta"
+        estado     : "abierta",
     });
 
     if ( vericarCajaResult.code === "CAJA_ABIERTA_EXISTE" ){
@@ -139,12 +140,13 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
         const arqueoCaja = await dataCaja.arqueoCaja(cierreCajaData);
 
         if (arqueoCaja.code === "ARQUEO_CAJA_EXISTE" && arqueoCaja.data?.balance_neto){
-
+            
             const cierreCajaResult = await dataCaja.cierreCaja({
                 id_caja : cierreCajaData.id_caja,
                 monto_final_real : cierreCajaData.monto_final_real,
                 monto_sistema : Number(arqueoCaja.data.balance_neto),
-                id_escuela   : Number(cierreCajaData.id_escuela)
+                id_escuela   : Number(cierreCajaData.id_escuela),
+                id_usuario : Number(cierreCajaData.id_usuario),
             });
         
             if ( cierreCajaResult.code === "CIERRE_CAJA_MODIFICAR") {
@@ -168,7 +170,7 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
     return {
         error : true,
         message : "ERROR, No se logro cerrar caja ",
-        code : "ERROR_ABRIR_CAJA_ARQUEO"
+        code : "ERROR_SERVIDOR"
     };    
 };
 
@@ -183,7 +185,7 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
  * @returns {Promise<TipadoData<{id_caja : number}>>} Resultado de la validación:
  * - ID_CAJA_OK: Si la escuela tiene una caja abierta lista para operar.
  * - SIN_CAJA_ABIERTA: Si no hay sesiones activas (éxito en la consulta, pero resultado vacío).
- * - ERROR_ID_CAJA: Ante fallos técnicos en la comunicación con la capa de datos.
+ * - ERROR_SERVIDOR: Ante fallos técnicos en la comunicación con la capa de datos.
  * * @throws {ZodError} Si el formato del id_escuela es incorrecto según IdCajaAbiertaSchema.
  */
 const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
@@ -210,7 +212,7 @@ const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
     return {
         error : true,
         message : "ERROR, No se logro obtener el id de caja",
-        code : "ERROR_ID_CAJA"
+        code : "ERROR_SERVIDOR"
     };         
 };
 
@@ -258,7 +260,24 @@ const metricaPanelPrincipal  = async ( data : PanelMetricasInputs)
     };       
 };
 
-
+/**
+ * Servicio encargado de procesar y validar las métricas financieras de la caja activa.
+ * * Valida los datos de entrada mediante PanelMetricasSchema, consulta los saldos 
+ * por cuenta y transforma el código de respuesta para el controlador.
+ * * @async
+ * @function listaMetricasCaja
+ * @param {PanelMetricasInputs} data - Parámetros de filtrado para las métricas (ej. id_caja, id_escuela).
+ * * @returns {Promise<{
+ * error: boolean, 
+ * message: string, 
+ * data?: any, 
+ * code: string
+ * }>} Objeto de respuesta estandarizado:
+ * - `METRICAS_CAJA_CUENTAS_OK`: Éxito con datos.
+ * - `SIN_METRICAS_CAJA_CUENTAS`: No hay movimientos o caja activa.
+ * - `ERROR_SERVIDOR`: Error inesperado en la base de datos.
+ * * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ */
 const listaMetricasCaja  = async ( data : PanelMetricasInputs) => {
     const metricasData : PanelMetricasInputs = PanelMetricasSchema.parse(data);
     const resultMetricas = await dataCaja.listaMetricasCaja(metricasData);
@@ -295,13 +314,13 @@ const listaMetricasCaja  = async ( data : PanelMetricasInputs) => {
  * * @example
  * // Caso de éxito: devuelve array de movimientos
  * // Caso vacío: devuelve error: false pero con código "MOVIMIENTOS_CAJA_VACIO"
- * // Caso error: devuelve error: true para ser capturado por el manejador de trychat
+ * // Caso error: devuelve error: true para ser capturado por el manejador 
  */
 const movimientosCaja = async ( data : ListaMovimientosCajaInputs)
 : Promise<TipadoData<DetalleCajaMovimiento[]>> =>{
     const movimientosData :  ListaMovimientosCajaInputs = listaMovimientosCajaSchema.parse(data);
     const movimientosResult = await dataCaja.listaMovimientosCaja(movimientosData);
-    //console.log(movimientosResult)
+
     if ( movimientosResult.code === 'LISTA_MOVIMIENTOS_CAJA_LISTED'){
         return{
             error : false, 
@@ -322,7 +341,7 @@ const movimientosCaja = async ( data : ListaMovimientosCajaInputs)
     return {
         error : true,
         message : "ERROR, No se logro obtener los movimientos de caja ",
-        code : "ERROR_MOVIMIENTOS_CAJA"
+        code : "ERROR_SERVIDOR"
     };  
 };
 
@@ -342,10 +361,9 @@ const movimientosCaja = async ( data : ListaMovimientosCajaInputs)
 const listaCategiriaCajaTipos = async ( data : ListaCategoriaCajaTipoInputs)
 : Promise<TipadoData<CategoríaCaja[]>> =>{
     const dataLista : ListaCategoriaCajaTipoInputs = ListaCategoriaCajaTipoSchema.parse(data);
-  //  console.log("data de listado", dataLista);
+  
     const listaServicioResult = await dataCaja.listaCategiriaCajaTipos( dataLista );
-  //  console.log("resultado del servicio", listaServicioResult);
-
+  
     if ( listaServicioResult.code === "LISTA_CATEGORIA_CAJA_TIPO_LISTED"){
         return {    
             error : false , 
@@ -366,10 +384,57 @@ const listaCategiriaCajaTipos = async ( data : ListaCategoriaCajaTipoInputs)
     return {
         error : true,
         message : "ERROR al obtener el listado de categorias",
-        code : "ERROR_LISTADO_CATEGORIA_CAJA"
+        code : "ERROR_SERVIDOR"
     };  
 };
 
+
+/**
+ * Servicio encargado de gestionar la obtención de las cuentas de una escuela.
+ * * Este método valida los parámetros de entrada mediante un esquema de Zod,
+ * consulta la capa de persistencia de datos y mapea los códigos de resultado
+ * internos a formatos entendibles por el controlador.
+ *
+ * @async
+ * @function listaTipoCuentas
+ * @param {ListaTipoCuentasInputs} parametros - Datos de entrada (id_escuela, estado).
+ * @throws {ZodError} Si los parámetros no cumplen con el esquema `listaTipoCuentasSchema`.
+ * @returns {Promise<ResultadoServicio>} Objeto con el estado de la operación:
+ * - `error`: boolean indicando si falló.
+ * - `message`: Descripción del resultado.
+ * - `data`: (Opcional) Array de cuentas si la operación fue exitosa.
+ * - `code`: Código de respuesta interno para el mapeo del controlador.
+ */
+const listaTipoCuentas = async ( parametros : ListaTipoCuentasInputs)
+: Promise<TipadoData<{ id_cuenta : number, nombre_cuenta : string , tipo_cuenta : string}[]>> => {
+    const dataLista : ListaTipoCuentasInputs = listaTipoCuentasSchema.parse( parametros );
+   
+    const listaTipoCuentasResult = await dataCaja.listaTipoCuentas( dataLista );
+   
+    if ( listaTipoCuentasResult.code === "LISTA_TIPO_CUENTAS_LISTED"){
+        return{
+            error : false,
+            message : "Listado Tipo Cuentas ok",
+            data : listaTipoCuentasResult.data,
+            code : "LISTA_TIPOS_CUENTAS_OK"
+        };
+    };
+ 
+    if ( listaTipoCuentasResult.code === "NO_ACTIVE_LISTA_TIPO_CUENTAS"){
+        return {
+            error : true,
+            message : "Lista Tipo Cuentas vacia",
+            code : "LISTA_TIPO_CUENTAS_VACIO"
+        };
+    };
+
+    return {
+        error : true,
+        message : "Error, no se pudo obtener el listado de tipo de cuentas",
+        code : "ERROR_SERVIDOR"
+    };
+
+};
 
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
@@ -380,5 +445,6 @@ export const method = {
     movimientosCaja : tryCatchDatos( movimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos ),
     listaMetricasCaja : tryCatchDatos(listaMetricasCaja),
+    listaTipoCuentas : tryCatchDatos( listaTipoCuentas ),
 };
 

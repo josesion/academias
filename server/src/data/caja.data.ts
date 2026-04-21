@@ -12,7 +12,7 @@ import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 import { VerificarCajaInputs, AbrirCajaInputs, 
          DetalleCajaInputs, CierreCajaInputs,
          IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
-         ListaCategoriaCajaTipoInputs  } from "../squemas/cajas"; 
+         ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs  } from "../squemas/cajas"; 
 import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
@@ -51,30 +51,33 @@ const verificarCajaAbierta = async( data : VerificarCajaInputs)
 
 
 /**
- * Realiza la apertura de una nueva caja en la base de datos.
+ * Registra la apertura de una nueva caja en la base de datos.
+ * * Esta función se encarga exclusivamente de la inserción física del registro 
+ * de apertura, vinculando la escuela con el usuario responsable y el monto inicial.
  * * @async
- * @param {AbrirCajaInputs} data - Objeto con la información necesaria para la apertura.
- * @param {number} data.id_escuela - El ID de la escuela propietaria de la caja.
- * @param {number|null} data.id_usuario - ID del usuario que abre la caja (puede ser null).
- * @param {number} data.monto_inicial - Cantidad de dinero base con la que inicia la sesión.
- * * @returns {Promise<TipadoData<AbrirCajaInputs>>} 
- * Promesa con el resultado de la operación, incluyendo los datos creados para el manejo en el frontend.
- * * @description
- * Esta función inserta un registro en la tabla `cajas`. Por defecto, la base de datos
- * asigna el estado 'abierta' y la fecha actual. Utiliza el helper `iudEntidad` para 
- * estandarizar la respuesta y el manejo de errores.
+ * @function abrirCaja
+ * @param {AbrirCajaInputs} data - Objeto con los datos de apertura validados.
+ * @param {number} data.id_escuela - ID único de la escuela a la que pertenece la caja.
+ * @param {number} data.monto_inicial - Saldo con el que inicia la jornada (efectivo/caja chica).
+ * @param {number} data.id_usuario - ID del usuario responsable que realiza la apertura (mapeado a id_usuario_apertura).
+ * * @returns {Promise<TipadoData<AbrirCajaInputs>>} Promesa que resuelve con el resultado de la operación, 
+ * incluyendo los datos insertados para confirmación.
+ * * @example
+ * const resultado = await abrirCaja({ id_escuela: 1, monto_inicial: 5000, id_usuario: 10 });
  */
 const abrirCaja = async( data : AbrirCajaInputs)
 : Promise<TipadoData<AbrirCajaInputs>> => {
     const sql : string = `INSERT INTO cajas (
-                            id_escuela, 
-                            id_usuario, 
-                            monto_inicial
-                        ) VALUES (
-                            ?,      
-                            ?,     -- El ID del profesor/usuario (desde la sesión)
-                            ?
-                        );`; 
+                                id_escuela, 
+                                id_usuario_apertura, 
+                                monto_inicial, 
+                                estado
+                            ) VALUES (
+                                ?,      -- id_escuela
+                                ?,        -- id_usuario_apertura (ID del usuario logueado)
+                                ?,  -- monto_inicial
+                                'abierta'
+                            );`; 
    const {id_escuela , monto_inicial , id_usuario} = data;
    const valores : unknown[] = [id_escuela, id_usuario, monto_inicial];
    const datosRetorno = {id_escuela , monto_inicial, id_usuario};
@@ -90,48 +93,42 @@ const abrirCaja = async( data : AbrirCajaInputs)
 
 
 /**
- * Registra un nuevo movimiento de entrada o salida en el detalle de una caja.
- * * Esta función se encarga de realizar el INSERT en la tabla `detalle_caja`, 
- * vinculando el movimiento a una caja abierta, una categoría contable 
- * y un método de pago específico.
+ * Registra un nuevo movimiento de entrada o salida en el detalle de la caja.
+ * * Inserta un registro vinculado a una caja abierta, especificando la categoría,
+ * la cuenta de destino/origen y el usuario que realiza la operación.
  * * @async
- * @param {DetalleCajaInputs} data - Objeto con los datos del movimiento.
+ * @function detalleCajaAlta
+ * @param {DetalleCajaInputs} data - Objeto con la información del movimiento.
  * @param {number} data.id_caja - ID de la caja activa donde se registra el movimiento.
- * @param {number} data.id_categoria - ID de la categoría (ej: Cuotas, Gastos, Ventas).
- * @param {number} data.monto - Valor numérico del movimiento (positivo para ingresos).
- * @param {string} data.metodo_pago - Forma de pago (ej: 'efectivo', 'transferencia', 'debito').
- * @param {string|null} data.descripcion - Nota u observación libre sobre el movimiento.
- * @param {number|null} data.referencia_id - ID opcional vinculado (ej: ID de una inscripción o factura).
- * * @returns {Promise<TipadoData<DetalleCajaInputs>>} Resultado de la operación con los datos creados.
- * * @example
- * const nuevoMovimiento = await detalleCajaAlta({
- * id_caja: 1,
- * id_categoria: 5,
- * monto: 2500.50,
- * metodo_pago: 'efectivo',
- * descripcion: 'Pago cuota Marzo',
- * referencia_id: 102
- * });
+ * @param {number} data.id_categoria - ID de la categoría (ej: Cuotas, Gastos, sueldos).
+ * @param {number} data.id_cuenta - ID de la cuenta (ej: Caja Efectivo, Banco, Mercado Pago).
+ * @param {number} data.id_usuario - ID del usuario que registra el movimiento.
+ * @param {number} data.monto - Valor decimal del movimiento.
+ * @param {string} data.descripcion - Comentario o nota libre sobre el movimiento.
+ * @param {number|null} data.referencia_id - ID de referencia opcional (ej: id_inscripcion).
+ * * @returns {Promise<TipadoData<DetalleCajaInputs>>} Promesa con el resultado de la inserción y los datos enviados.
  */
 const detalleCajaAlta = async( data : DetalleCajaInputs) 
 : Promise<TipadoData<DetalleCajaInputs>> =>{
     const sql : string = `INSERT INTO detalle_caja (
                                 id_caja, 
                                 id_categoria, 
+                                id_cuenta, 
+                                id_usuario, 
                                 monto, 
-                                metodo_pago, 
                                 descripcion, 
                                 referencia_id
                             ) VALUES (
-                                ?, -- id_caja (la que está abierta actualmente)
-                                ?, -- id_categoria (ej: 5 para 'Cuotas')
-                                ?, -- monto (ej: 1500.50)
-                                ?, -- metodo_pago ('efectivo', 'transferencia', etc.)
-                                ?, -- descripcion (el "anotador" libre)
-                                ?  -- referencia_id (null o el ID de una inscripción/venta)
+                                ?, -- id_caja
+                                ?, -- id_categoria
+                                ?, -- id_cuenta (ej: ID de 'Caja Efectivo' o 'Banco virtual')
+                                ?, -- id_usuario (el que registra el movimiento)
+                                ?, -- monto
+                                ?, -- descripcion
+                                ?  -- referencia_id
                             );`;
-    const { id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id} = data;                        
-    const valores : unknown[] = [id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id];
+    const { id_caja, id_categoria, monto,id_cuenta ,id_usuario , descripcion, referencia_id} = data;                        
+    const valores : unknown[] = [id_caja, id_categoria, id_cuenta, id_usuario  , monto,  descripcion, referencia_id];
     return await iudEntidad({
         slqEntidad : sql,
         valores,
@@ -259,35 +256,42 @@ const metricaPanelPrincipal = ( data : CierreCajaInputs )
 
 
 /**
- * Ejecuta el cierre definitivo de una caja en la base de datos.
- * * Actualiza los montos finales, cambia el estado a 'cerrada' y registra la fecha/hora
- * exacta del cierre. Utiliza condiciones de seguridad para asegurar que solo se cierren
- * cajas que pertenecen a la escuela correspondiente y que estén actualmente abiertas.
+ * Ejecuta la actualización en la base de datos para cerrar una caja abierta.
+ * * Esta función actualiza los montos finales, registra al usuario que realiza el cierre
+ * y cambia el estado de la caja, siempre que pertenezca a la escuela indicada.
  * * @async
- * @param {Object} data - Datos necesarios para el cierre.
+ * @function cierreCaja
+ * @param {Object} data - Datos para el cierre de caja.
  * @param {number} data.id_caja - ID único de la caja a cerrar.
- * @param {number} data.monto_final_real - Dinero físico real reportado por el usuario (Validado por Zod).
- * @param {number} data.monto_sistema - Saldo teórico calculado por el arqueo del sistema.
- * @param {number} data.id_escuela - ID de la escuela para asegurar pertenencia de los datos.
- * * @returns {Promise<TipadoData<{ id_caja : number, estado : string }>>} Objeto confirmando el cierre y el nuevo estado.
- * * @description
- * La consulta emplea `CURRENT_TIMESTAMP` para la auditoría de tiempo y requiere que `estado = 'abierta'`,
- * lo que previene cierres duplicados o accidentales de cajas ya finalizadas.
+ * @param {number} data.monto_final_real - Monto físico reportado por el usuario.
+ * @param {number} data.monto_sistema - Monto calculado automáticamente por el sistema.
+ * @param {number} data.id_escuela - ID de la escuela para validar la pertenencia.
+ * @param {number} data.id_usuario - ID del usuario que cierra (se guarda en id_usuario_cierre).
+ * * @returns {Promise<TipadoData<{ id_caja : number, estado : string }>>} Promesa con el resultado de la modificación.
+ * * @example
+ * const resultado = await cierreCaja({ 
+ * id_caja: 1, 
+ * monto_final_real: 5500, 
+ * monto_sistema: 5500, 
+ * id_escuela: 1, 
+ * id_usuario: 5 
+ * });
  */
-const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, monto_sistema: number, id_escuela : number })
+const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, monto_sistema: number, id_escuela : number, id_usuario : number })
 : Promise<TipadoData<{ id_caja : number , estado : string}>> => {
     
     const sql : string = `UPDATE cajas 
-                            SET 
+                          SET 
                                 monto_sistema = ?, 
                                 monto_final_real = ?, 
+                                id_usuario_cierre = ?, 
                                 estado = 'cerrada', 
                                 fecha_cierre = CURRENT_TIMESTAMP
-                            WHERE id_caja = ? AND estado = 'abierta' AND id_escuela = ?;`;
-    const {id_caja , monto_final_real ,monto_sistema,  id_escuela} =data ;
-  
+                          WHERE id_caja = ? AND estado = 'abierta' AND id_escuela = ?;`;
+    const {id_caja , monto_final_real ,monto_sistema, id_usuario ,id_escuela} =data ;
+
     const datosRetorno = { id_caja , estado : "cerrada" }                        
-    const valores : unknown[] = [ monto_sistema, monto_final_real, id_caja, id_escuela ];
+    const valores : unknown[] = [ monto_sistema, monto_final_real, id_usuario , id_caja, id_escuela ];
     return await iudEntidad({
         slqEntidad : sql ,
         valores ,
@@ -322,36 +326,41 @@ const idCajaAbierta = async ( data : IdCajaAbiertaInputs )
 };
 
 /**
- * Lista los movimientos detallados de una caja específica con soporte para scroll infinito (paginación manual).
- * * @param {ListaMovimientosCajaInputs} data - Objeto con los parámetros de entrada.
- * @param {number} data.id_caja - ID de la caja de la cual se quieren obtener los movimientos.
- * @param {number} data.limite - Cantidad de registros a recuperar por página.
- * @param {number} data.offset - Cantidad de registros a saltar (0 para la primera carga).
- * * @returns {Promise<TipadoData<DetalleCajaMovimiento[]>>} Promesa que resuelve a un objeto de tipo TipadoData conteniendo el array de movimientos.
+ * Obtiene el listado detallado de movimientos de una caja específica.
+ * * Esta función realiza un JOIN entre el detalle de caja, las categorías y las cuentas
+ * de la escuela para devolver información enriquecida, incluyendo nombres de cuentas 
+ * y formatos de fecha/hora amigables para el frontend.
+ *
+ * @async
+ * @function listaMovimientosCaja
+ * @param {ListaMovimientosCajaInputs} data - Objeto de entrada.
+ * @param {number} data.id_caja - ID de la caja a consultar.
+ * @param {number} data.limite - Cantidad de registros por página (Sanitizado internamente).
+ * @param {number} data.offset - Desplazamiento para la paginación (Sanitizado internamente).
+ * * @returns {Promise<TipadoData<DetalleCajaMovimiento[]>>} Promesa con el array de movimientos formateados.
  * * @example
- * const result = await listaMovimientosCaja({ id_caja: 25, limite: 10, offset: 0 });
- * if (!result.error) console.log(result.data);
+ * const movimientos = await listaMovimientosCaja({ id_caja: 1, limite: 10, offset: 0 });
  */
-
-// bandera SALE ERROR POR LA MODIFICACION EN CONUSLTAS DE TIPO CUENTAS
 const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
 : Promise<TipadoData<DetalleCajaMovimiento[]>> =>  {
     const { id_caja , limite , offset} = data;
      const sql : string = `SELECT 
-                                det.id_movimiento,
-                                det.monto,
-                                det.metodo_pago,
-                                det.descripcion,
-                                cat.nombre_categoria,
-                                cat.tipo_movimiento, -- Para saber si es ingreso o egreso
-                                -- Separamos fecha y hora para el agrupador del Front
-                                DATE_FORMAT(det.fecha_movimiento, '%Y-%m-%d') as fecha_grupo, 
-                                TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada
-                            FROM detalle_caja det
-                            INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-                            WHERE det.id_caja = ?
-                            ORDER BY det.fecha_movimiento DESC, det.id_movimiento DESC -- Lo más nuevo arriba de todo
-                            LIMIT ${limite} OFFSET ${offset}; `;
+                            det.id_movimiento,
+                            det.monto,
+                            det.descripcion,
+                            det.referencia_id,
+                            cat.nombre_categoria,
+                            cat.tipo_movimiento, 
+                            cue.nombre_cuenta,  
+                            cue.tipo_cuenta,     
+                            DATE_FORMAT(det.fecha_movimiento, '%Y-%m-%d') as fecha_grupo, 
+                            TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada
+                        FROM detalle_caja det
+                        INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                        INNER JOIN cuentas_escuela cue ON det.id_cuenta = cue.id_cuenta
+                        WHERE det.id_caja = ?
+                        ORDER BY det.fecha_movimiento DESC, det.id_movimiento DESC
+                        LIMIT ${Number(limite)} OFFSET ${Number(offset)}; `;
 
      const valores : unknown[] = [ id_caja ];
      return await listarEntidadSinPaginacion({
@@ -395,6 +404,44 @@ const listaCategiriaCajaTipos = async( data : ListaCategoriaCajaTipoInputs)
         estado : estado
     });
 };
+
+/**
+ * Consulta la base de datos para obtener el listado de cuentas configuradas en la escuela.
+ * * Este método accede directamente a la tabla `cuentas_escuela` filtrando por el estado 
+ * y la escuela específica. Utiliza la utilidad `listarEntidadSinPaginacion` para 
+ * ejecutar la query de forma segura.
+ *
+ * @async
+ * @function listaTipoCuentas
+ * @param {ListaTipoCuentasInputs} data - Objeto con los criterios de búsqueda.
+ * @param {string} data.estado - Estado de las cuentas (ej. 'activos').
+ * @param {number} data.id_escuela - ID de la escuela a la que pertenecen las cuentas.
+ * @returns {Promise<TipadoData<{ id_cuenta: number, nombre_cuenta: string, tipo_cuenta: string }[]>>} 
+ * Promesa que resuelve con un objeto de tipo `TipadoData` que contiene el array de cuentas.
+ * * @example
+ * const resultado = await listaTipoCuentas({ id_escuela: 114, estado: 'activos' });
+ */
+const listaTipoCuentas =async ( data : ListaTipoCuentasInputs)
+: Promise<TipadoData<{ id_cuenta :number, nombre_cuenta : string , tipo_cuenta : string}[]>> => {
+   const sql : string =`select 
+                            id_cuenta, 
+                            nombre_cuenta,
+                            tipo_cuenta 
+                        from 
+                             cuentas_escuela 
+                        where 
+                            estado = ?
+                        and 
+                            id_escuela = ?;`
+    const parametros : unknown[ ] = [ data.estado, data.id_escuela];
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores : parametros,
+        entidad : "LISTA_TIPO_CUENTAS",
+        estado : data.estado
+    });
+};
+
 
 
 const listaMetricasCaja = async ( data : CierreCajaInputs) => {
@@ -440,5 +487,6 @@ export const method = {
     metricasCaja : tryCatchDatos( metricaPanelPrincipal ),
     listaMovimientosCaja : tryCatchDatos( listaMovimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos),
-    listaMetricasCaja : tryCatchDatos( listaMetricasCaja)
+    listaMetricasCaja : tryCatchDatos( listaMetricasCaja),
+    listaTipoCuentas : tryCatchDatos(listaTipoCuentas),
 };

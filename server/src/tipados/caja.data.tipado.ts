@@ -5,13 +5,17 @@ type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'credito';
 
 export interface DetalleCajaMovimiento {
     id_movimiento: number;
-    monto: number; // Viene como DECIMAL(10,2), en JS es number
-    metodo_pago: MetodoPago;
-    descripcion: string | null; // Puede ser NULL según tu tabla
+    monto: number; 
+    descripcion: string | null;
+    referencia_id: number | null; // Lo agregamos porque está en tu SQL
     nombre_categoria: string;
-    tipo_movimiento: Estado;
+    tipo_movimiento: 'ingreso' | 'egreso'; // Refleja el tipo de movimiento de la categoría
     
-    // Estos campos son los que generamos con DATE() y TIME_FORMAT()
+    // Nuevos campos de la tabla cuentas_escuela
+    nombre_cuenta: string; // Ej: "Efectivo", "Mercado Pago"
+    tipo_cuenta: 'fisico' | 'virtual';
+    
+    // Campos formateados por MySQL
     fecha_grupo: string; // Formato 'YYYY-MM-DD'
     hora_formateada: string; // Formato 'HH:mm'
 }

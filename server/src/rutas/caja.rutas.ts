@@ -9,6 +9,6 @@ const ruta  =  Router();
  ruta.get("/api/metricas_caja/:id_caja/:id_escuela",cajaControlador.listaMetricasCaja);// metricasPanelCaja
  ruta.get("/api/movimientos_caja", cajaControlador.movimientosCaja);
  ruta.get("/api/lista_categoria_caja_tipos/:id_escuela/:tipo/:estado", cajaControlador.listarCategoriaCajaTipos);
-
+ ruta.get("/api/lista_tipos_cuentas/:id_escuela/:estado", cajaControlador.listaTipoCuentas );
 
  export default ruta ;

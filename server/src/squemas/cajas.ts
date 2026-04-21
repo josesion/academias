@@ -14,7 +14,9 @@ export const AbrirCajaSchema = z.object({
     id_escuela: z.coerce.number()
         .int("El ID de la escuela debe ser un número entero.")
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."), 
-   id_usuario: z.number().nullable().default(null), // por el momento quedara en null
+   id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."), 
    monto_inicial: z.number("El monto inicial debe ser un número válido").min(0),     
 });
 
@@ -24,14 +26,15 @@ export const DetalleCajaSchema = z.object({
   id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),
   
   id_categoria: z.number({ message: "Categoría requerida" }).positive("ID de categoría no válido"),
+
+  id_usuario: z.number({ message: "Usuario requerido" }).positive("ID de usuario no válido"),
   
+  id_cuenta: z.number({ message: "Categoría requerida" }).positive("ID de categoría no válido"), 
+
   monto: z.number({ message: "El monto debe ser un número" })
     .min(0.01, "El monto debe ser mayor a cero"),
   
-  metodo_pago: z.enum(['efectivo', 'transferencia', 'credito', 'debito'], {
-    message: "Seleccione un método de pago válido" 
-  }),
-  
+
   descripcion: z.string().optional().default("sin nota"),
   
   referencia_id: z.number().optional().default(0),
@@ -53,7 +56,10 @@ export const CierreCajaSchema = z.object({
     }),
     id_escuela: z.coerce.number()
         .int("El ID de la escuela debe ser un número entero.")
-        .positive("El ID de la escuela debe ser positivo (mayor que 0).")     
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."),      
 });
 
 export const IdCajaAbiertaSchema = z.object({
@@ -94,6 +100,15 @@ export const ListaCategoriaCajaTipoSchema = z.object({
      })
 });
 
+export const listaTipoCuentasSchema = z.object({
+      id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+     
+       estado :  z.enum(["activos" , "inactivos"], {
+          message : "El estado debe ser 'activos' o 'inactivos'" })    
+});
+
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
 export type DetalleCajaInputs = z.infer<typeof DetalleCajaSchema>;
 export type VerificarCajaInputs = z.infer<typeof VerificarCajaSchema>;
@@ -102,3 +117,4 @@ export type CierreCajaInputs = z.infer<typeof CierreCajaSchema>;
 export type PanelMetricasInputs = z.infer<typeof PanelMetricasSchema>;
 export type ListaMovimientosCajaInputs = z.infer<typeof listaMovimientosCajaSchema>;
 export type ListaCategoriaCajaTipoInputs = z.infer<typeof ListaCategoriaCajaTipoSchema>;
+export type ListaTipoCuentasInputs =z.infer<typeof listaTipoCuentasSchema>;
