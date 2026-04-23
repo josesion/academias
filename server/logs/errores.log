@@ -594,3 +594,55 @@
 {"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-21T04:25:35.342Z"}
 {"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-21T04:26:20.087Z"}
 {"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-21T04:28:54.809Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-21T04:29:29.457Z"}
+{"level":"error","mensaje":"jwt expired","message":"[GET] /api/verificar | Escuela: N/A | User: Anónimo","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:37:44\n    at Generator.next (<anonymous>)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:4:12)\n    at verificarSesion (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:32:36)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\utils\\tryCatchBD.js:17:26","timestamp":"2026-04-21T17:49:39.703Z"}
+{"level":"error","mensaje":"jwt expired","message":"[GET] /api/verificar | Escuela: N/A | User: Anónimo","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:37:44\n    at Generator.next (<anonymous>)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:4:12)\n    at verificarSesion (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:32:36)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\utils\\tryCatchBD.js:17:26","timestamp":"2026-04-21T17:49:39.706Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:23:55.884Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:26:08.507Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:26:32.046Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:26:34.308Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:27:55.303Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:29:41.759Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:36:15.235Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:40:48.076Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:46:29.068Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:46:40.755Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:55:19.814Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:55:29.913Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:55:49.648Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:55:56.563Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T22:58:22.640Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:00:55.096Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:05:57.698Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:06:14.382Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:06:16.548Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:06:26.433Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:07:52.129Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:07:58.416Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:09:27.115Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:10:12.956Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:10:28.656Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:10:29.580Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:12:00.732Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:12:14.827Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:13:13.107Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:18:25.945Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-22T23:20:52.083Z"}
+{"level":"error","mensaje":"jwt expired","message":"[GET] /api/verificar | Escuela: N/A | User: Anónimo","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:37:44\n    at Generator.next (<anonymous>)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:4:12)\n    at verificarSesion (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:32:36)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\utils\\tryCatchBD.js:17:26","timestamp":"2026-04-23T20:51:15.798Z"}
+{"level":"error","mensaje":"jwt expired","message":"[GET] /api/verificar | Escuela: N/A | User: Anónimo","stack":"TokenExpiredError: jwt expired\n    at C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:190:21\n    at getSecret (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:97:14)\n    at module.exports [as verify] (C:\\Users\\pc\\Desktop\\academias\\server\\node_modules\\jsonwebtoken\\verify.js:101:10)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:37:44\n    at Generator.next (<anonymous>)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:8:71\n    at new Promise (<anonymous>)\n    at __awaiter (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:4:12)\n    at verificarSesion (C:\\Users\\pc\\Desktop\\academias\\server\\build\\Servicio\\rutas.protegidas.servicios.js:32:36)\n    at C:\\Users\\pc\\Desktop\\academias\\server\\build\\utils\\tryCatchBD.js:17:26","timestamp":"2026-04-23T20:51:15.807Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T20:59:17.673Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T20:59:22.116Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:21:47.805Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:24:10.963Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:33:28.533Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:35:56.675Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:37:19.469Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:39:41.428Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:40:08.687Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:40:18.753Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:41:27.797Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:42:12.562Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:42:27.895Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:43:07.265Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:43:16.080Z"}
+{"level":"error","message":"¡Gritalo Jose! El logger está funcionando.","timestamp":"2026-04-23T21:44:57.093Z"}

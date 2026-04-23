@@ -477,6 +477,61 @@ const listaMetricasCaja = async ( data : CierreCajaInputs) => {
 };
 
 
+/**
+ * Ejecuta la consulta SQL para calcular las métricas financieras consolidadas de una caja.
+ * Realiza el cálculo de ingresos, egresos y balance neto integrando el monto inicial.
+ * * @async
+ * @function metricasPrincipal
+ * @param {CierreCajaInputs} data - Objeto con los identificadores necesarios (id_caja, id_escuela).
+ * @returns {Promise<TipadoData<Array<{
+ * monto_inicial: number,
+ * total_ingresos: number,
+ * total_egresos: number,
+ * balence_neto: number,
+ * monto_sistema_calculado: number
+ * }>>>} Promesa con el resultado de la consulta SQL procesado por listarEntidadSinPaginacion.
+ * * @description
+ * La consulta utiliza LEFT JOIN para asegurar que se retornen valores incluso si la caja 
+ * no posee movimientos registrados. El balance neto se calcula como:
+ * Monto Inicial + Σ(Ingresos) - Σ(Egresos).
+ */
+const metricasPrincipal = async (  data : CierreCajaInputs ) 
+: Promise<TipadoData<{
+            monto_inicial : number,
+            total_ingresos : number,
+            total_egresos  : number,
+            balance_neto  : number,
+            monto_sistema_calculado : number }[]>>=> {
+    const { id_caja , id_escuela} = data ; 
+    const slq : string = `SELECT 
+                                c.monto_inicial ,
+                                -- Sumamos ingresos (si no hay, devuelve 0)
+                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
+                                -- Sumamos egresos (si no hay, devuelve 0)
+                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+                                -- BALANCE NETO: monto_inicial + (ingresos - egresos)
+                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                                                        WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                                                        ELSE 0 END), 0)) AS balance_neto,
+                                -- Lo mismo para tu validación de sistema
+                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS monto_sistema_calculado
+                            FROM cajas c
+                            -- El LEFT JOIN es clave: trae la caja aunque no tenga filas en detalle_caja
+                            LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
+                            -- Segundo LEFT JOIN: para que si un detalle no tiene categoría, no rompa la suma
+                            LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                            WHERE c.id_caja = ? and c.id_escuela = ?
+                            GROUP BY c.id_caja, c.monto_inicial ;`;
+    const  valores : unknown[] = [ id_caja , id_escuela];
+
+    return  listarEntidadSinPaginacion({
+        slqListado :slq,
+        valores : valores,
+        entidad : "METRICAS_PANEL",
+        estado : "=)"
+    });
+};
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
@@ -489,4 +544,5 @@ export const method = {
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos),
     listaMetricasCaja : tryCatchDatos( listaMetricasCaja),
     listaTipoCuentas : tryCatchDatos(listaTipoCuentas),
+    metricasPrincipal : tryCatchDatos(metricasPrincipal),
 };

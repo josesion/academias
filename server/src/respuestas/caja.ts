@@ -61,6 +61,14 @@ export const MAPA_CAJA_ABIERTA : Record< string , { status : CodigoEstadoHTTP, m
 
 };
 
+export const MAPA_METRICA_PRINCIPAL : Record< string, {status : CodigoEstadoHTTP , msg :string} > = {
+   
+  "METRICAS_PRINCIPAL_OK" : { status : CodigoEstadoHTTP.OK, msg : "Metricas panel principal ok"},
+   
+  "SIN_METRICAS_PANEL_PRINCIPAL" :{ status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "Sin metricas principales"},
+   
+  ERROR_SERVIDOR
+};
 
 
 export const MAPA_LISTADO_CAJAS : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {

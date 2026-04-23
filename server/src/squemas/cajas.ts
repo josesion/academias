@@ -109,6 +109,15 @@ export const listaTipoCuentasSchema = z.object({
           message : "El estado debe ser 'activos' o 'inactivos'" })    
 });
 
+export const MetricasPrincipalSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
+        id_caja: z.coerce.number()
+        .int("El ID de la caja debe ser un número entero.")
+        .positive("El ID de la caja debe ser positivo (mayor que 0)."),    
+});
+
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
 export type DetalleCajaInputs = z.infer<typeof DetalleCajaSchema>;
 export type VerificarCajaInputs = z.infer<typeof VerificarCajaSchema>;
@@ -118,3 +127,4 @@ export type PanelMetricasInputs = z.infer<typeof PanelMetricasSchema>;
 export type ListaMovimientosCajaInputs = z.infer<typeof listaMovimientosCajaSchema>;
 export type ListaCategoriaCajaTipoInputs = z.infer<typeof ListaCategoriaCajaTipoSchema>;
 export type ListaTipoCuentasInputs =z.infer<typeof listaTipoCuentasSchema>;
+export type MetricasPrincipalInputs =z.infer<typeof MetricasPrincipalSchema>;

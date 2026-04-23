@@ -13,6 +13,7 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA, 
         MAPA_LISTA_TIPO_CUENTAS, MAPA_ABRIR_CAJA, MAPA_LISTADO_CAJAS,
         MAPA_CERRAR_CAJA, MAPA_DETALLE_MOVIMIENTOS, MAPA_LISTADO_CATEGORIAS,
+        MAPA_METRICA_PRINCIPAL,
 
 } from "../respuestas/caja"; 
 
@@ -296,6 +297,53 @@ const movimientosCaja = async ( req : Request, res : Response) => {
 };
 
 /**
+ * Obtiene las métricas financieras principales de una caja específica.
+ * * Esta función actúa como controlador para consultar el estado actual de la caja,
+ * procesando el monto inicial, los ingresos, los egresos y el balance total.
+ * Utiliza un mapa de configuración (MAPA_METRICA_PRINCIPAL) para determinar
+ * la respuesta HTTP adecuada basada en el código retornado por el servicio.
+ * * @async
+ * @function metricasCajaPrincipal
+ * @param {Request} req - Objeto de solicitud de Express.
+ * @param {number} req.params.id_caja - El ID de la caja a consultar.
+ * @param {number} req.params.id_escuela - El ID de la escuela propietaria de la caja.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<void>} Envía una respuesta HTTP con el resumen de métricas 
+ * o un error en caso de fallo.
+ * * @throws {Error} Si ocurre un error interno en el servidor que no está 
+ * contemplado en el mapa de respuestas.
+ */
+const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
+    
+    const data = {
+        id_caja : Number(req.params.id_caja),
+        id_escuela : Number(req.params.id_escuela)
+     };
+     const metricasResult = await cajaServicio.metricasPrincipal( data );
+
+     const config  = MAPA_METRICA_PRINCIPAL[metricasResult.code]  || ERROR_INTERNO_SERVIDOR;
+     
+     if ( config.status = CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res, 
+            config.status,
+            metricasResult.message ||  config.msg,
+            metricasResult.data,
+            undefined,
+            metricasResult.code
+        );
+     }else{
+        return enviarResponseError(
+            res, 
+            config.status,
+            metricasResult.message ||  config.msg,
+            metricasResult.code
+        );
+     };
+};
+
+
+/**
  * Controlador para listar las categorías de caja filtradas por tipo y estado.
  * * Permite obtener las categorías (ej: 'Ingreso', 'Egreso') asociadas a una escuela 
  * específica, filtrando opcionalmente por su estado (activo/inactivo).
@@ -395,6 +443,7 @@ export const method ={
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
     movimientosCaja : tryCatch( movimientosCaja ),
+    metricasPanel : tryCatch( metricasCajaPrincipal),
     listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
     listaMetricasCaja : tryCatch( listaMetricasCaja),
     listaTipoCuentas : tryCatch( listaTipoCuentas),

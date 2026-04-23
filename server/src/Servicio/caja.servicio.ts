@@ -17,6 +17,7 @@ import { VerificarCajaInputs, VerificarCajaSchema,
          ListaMovimientosCajaInputs, listaMovimientosCajaSchema,
          ListaCategoriaCajaTipoInputs, ListaCategoriaCajaTipoSchema,
          ListaTipoCuentasInputs, listaTipoCuentasSchema,
+         MetricasPrincipalInputs , MetricasPrincipalSchema,
  } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { DataAltaCaja , DataAltaCajaResult,
@@ -436,15 +437,72 @@ const listaTipoCuentas = async ( parametros : ListaTipoCuentasInputs)
 
 };
 
+
+/**
+ * Procesa y valida la obtención de las métricas financieras principales de una caja.
+ * * @async
+ * @function metricasPrincipal
+ * @param {MetricasPrincipalInputs} parametros - Objeto con id_caja e id_escuela.
+ * @returns {Promise<TipadoData<Array<{
+ * monto_inicial: number,
+ * total_ingresos: number,
+ * total_egresos: number,
+ * balence_neto: number,
+ * monto_sistema_calculado: number
+ * }>>>} Objeto de respuesta estandarizado con los datos calculados o error.
+ * * @throws {ZodError} Si los parámetros de entrada no cumplen con MetricasPrincipalSchema.
+ * * @example
+ * const resultado = await cajaServicio.metricasPrincipal({ id_caja: 6, id_escuela: 107 });
+ * if (!resultado.error) {
+ * console.log(resultado.data[0].balence_neto);
+ * }
+ */
+const metricasPrincipal = async ( parametros : MetricasPrincipalInputs)
+: Promise<TipadoData<{
+            monto_inicial : number,
+            total_ingresos : number,
+            total_egresos  : number,
+            balance_neto  : number,
+            monto_sistema_calculado : number }[]>> =>{
+
+    const metricasData : MetricasPrincipalInputs = MetricasPrincipalSchema.parse(parametros);
+  
+    const metricasResult = await dataCaja.metricasPrincipal(metricasData);
+   
+    if ( metricasResult.code === "METRICAS_PANEL_LISTED") {
+        return {
+            error : false, 
+            message : "Listado metricas principal ok",
+            data : metricasResult.data,
+            code : "METRICAS_PRINCIPAL_OK"
+        };
+    };
+    if ( metricasResult.code === "NO_ACTIVE_METRICAS_PANEL"){
+        return {
+            error : true,
+            message : "No existen metricas del panel principal",
+            code : "SIN_METRICAS_PANEL_PRINCIPAL"
+        };
+    };
+
+    return {
+        error : true,
+        message : "Error, no se pudo obtener el resultado de las metricas de caja",
+        code : "ERROR_SERVIDOR"
+    };
+   
+};
+
 export const method = {
     abrirCajaServicio : tryCatchDatos( abrirCaja ),
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
     idCajaAbiertaServicio : tryCatchDatos( idCajaAbiertaServicio),
-    metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal),
+    //metricaPanelPrincipal : tryCatchDatos( metricaPanelPrincipal),
     movimientosCaja : tryCatchDatos( movimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos ),
     listaMetricasCaja : tryCatchDatos(listaMetricasCaja),
     listaTipoCuentas : tryCatchDatos( listaTipoCuentas ),
+    metricasPrincipal : tryCatchDatos( metricasPrincipal ),
 };
 
