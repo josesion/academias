@@ -500,8 +500,7 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
             monto_inicial : number,
             total_ingresos : number,
             total_egresos  : number,
-            balance_neto  : number,
-            monto_sistema_calculado : number }[]>>=> {
+            balance_neto  : number }[]>>=> {
     const { id_caja , id_escuela} = data ; 
     const slq : string = `SELECT 
                                 c.monto_inicial ,
@@ -512,9 +511,7 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
                                 -- BALANCE NETO: monto_inicial + (ingresos - egresos)
                                 (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                                                         WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                                                        ELSE 0 END), 0)) AS balance_neto,
-                                -- Lo mismo para tu validación de sistema
-                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS monto_sistema_calculado
+                                                                        ELSE 0 END), 0)) AS balance_neto
                             FROM cajas c
                             -- El LEFT JOIN es clave: trae la caja aunque no tenga filas en detalle_caja
                             LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja

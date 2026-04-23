@@ -462,8 +462,7 @@ const metricasPrincipal = async ( parametros : MetricasPrincipalInputs)
             monto_inicial : number,
             total_ingresos : number,
             total_egresos  : number,
-            balance_neto  : number,
-            monto_sistema_calculado : number }[]>> =>{
+            balance_neto  : number }[]>> =>{
 
     const metricasData : MetricasPrincipalInputs = MetricasPrincipalSchema.parse(parametros);
   
