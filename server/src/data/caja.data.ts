@@ -444,7 +444,8 @@ const listaMetricasCaja = async ( data : CierreCajaInputs) => {
                             CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL' ELSE cue.id_cuenta END AS id_cuenta,
                             CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL GENERAL' ELSE MAX(cue.nombre_cuenta) END AS nombre_cuenta,
                             CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN NULL ELSE MAX(cue.tipo_cuenta) END AS tipo_cuenta,
-                            -- Saldo: (Ingresos - Egresos) + Monto Inicial
+                            
+                            -- Calculamos el saldo acumulado de movimientos
                             COALESCE(SUM(
                                 CASE 
                                     WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
@@ -452,11 +453,17 @@ const listaMetricasCaja = async ( data : CierreCajaInputs) => {
                                     ELSE 0 
                                 END
                             ), 0) + 
-                            SUM(DISTINCT CASE WHEN cue.tipo_cuenta = 'fisico' THEN COALESCE(c.monto_inicial, 0) ELSE 0 END) AS saldo_actual
+                            -- Sumamos el monto inicial SOLO a la cuenta que corresponde
+                            -- Usamos MAX para que el ROLLUP no multiplique el monto inicial en el TOTAL
+                            IFNULL(MAX(CASE WHEN cue.id_cuenta = c.id_cuenta_apertura THEN c.monto_inicial ELSE 0 END), 0) AS saldo_actual
+
                         FROM cuentas_escuela cue
-                        LEFT JOIN detalle_caja det ON cue.id_cuenta = det.id_cuenta
-                        LEFT JOIN cajas c ON det.id_caja = c.id_caja AND c.id_caja = ?
+                        -- Traemos la caja específica una sola vez para toda la consulta
+                        CROSS JOIN (SELECT * FROM cajas WHERE id_caja = ?) c
+                        -- Unimos los movimientos filtrando por esa misma caja
+                        LEFT JOIN detalle_caja det ON cue.id_cuenta = det.id_cuenta AND det.id_caja = c.id_caja
                         LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+
                         WHERE cue.id_escuela = ?
                         AND cue.estado = 'activos'
                         GROUP BY cue.id_cuenta WITH ROLLUP;`;
