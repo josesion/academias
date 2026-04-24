@@ -1,11 +1,18 @@
--- 1. Sesiones de Caja
+
+
 CREATE TABLE cajas (
     id_caja INT PRIMARY KEY AUTO_INCREMENT,
     id_escuela INT NOT NULL,
-    id_usuario INT NULL, -- Campo para la referencia
+    id_usuario INT NULL,
     fecha_apertura DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_cierre DATETIME NULL,
+    
+    -- Monto con el que se abre la caja
     monto_inicial DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    
+    -- NUEVO: Referencia a qué cuenta pertenece el monto_inicial (Efectivo, MP, etc.)
+    id_cuenta_apertura INT NULL, 
+    
     monto_sistema DECIMAL(10, 2) NULL,
     monto_final_real DECIMAL(10, 2) NULL,
     estado ENUM('abierta', 'cerrada') DEFAULT 'abierta',
@@ -14,11 +21,18 @@ CREATE TABLE cajas (
     CONSTRAINT fk_cajas_escuela 
         FOREIGN KEY (id_escuela) REFERENCES escuelas(id_escuela),
     
-    -- Llave foránea a Usuarios (La que agregamos ahora)
+    -- Llave foránea a Usuarios
     CONSTRAINT fk_cajas_usuario 
         FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE SET NULL -- Mantiene el registro de caja aunque el usuario desaparezca
+        ON DELETE SET NULL,
+
+    -- NUEVA: Llave foránea a Cuentas (para saber dónde está el monto inicial)
+    CONSTRAINT fk_cajas_cuenta_apertura 
+        FOREIGN KEY (id_cuenta_apertura) 
+        REFERENCES cuentas_escuela(id_cuenta)
+        ON DELETE SET NULL
 );
+
 
 DROP TABLE IF EXISTS detalle_caja;
 

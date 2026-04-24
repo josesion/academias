@@ -51,36 +51,30 @@ const verificarCajaAbierta = async( data : VerificarCajaInputs)
 
 
 /**
- * Registra la apertura de una nueva caja en la base de datos.
- * * Esta función se encarga exclusivamente de la inserción física del registro 
- * de apertura, vinculando la escuela con el usuario responsable y el monto inicial.
- * * @async
- * @function abrirCaja
- * @param {AbrirCajaInputs} data - Objeto con los datos de apertura validados.
- * @param {number} data.id_escuela - ID único de la escuela a la que pertenece la caja.
- * @param {number} data.monto_inicial - Saldo con el que inicia la jornada (efectivo/caja chica).
- * @param {number} data.id_usuario - ID del usuario responsable que realiza la apertura (mapeado a id_usuario_apertura).
- * * @returns {Promise<TipadoData<AbrirCajaInputs>>} Promesa que resuelve con el resultado de la operación, 
- * incluyendo los datos insertados para confirmación.
- * * @example
- * const resultado = await abrirCaja({ id_escuela: 1, monto_inicial: 5000, id_usuario: 10 });
+ * Registra la apertura de una nueva sesión de caja para una escuela.
+ * * @param {AbrirCajaInputs} data - Objeto con los datos de apertura.
+ * @param {number} data.id_escuela - ID de la escuela a la que pertenece la caja.
+ * @param {number} data.id_usuario - ID del usuario que realiza la apertura.
+ * @param {number} data.monto_inicial - Cantidad de dinero con la que inicia la caja.
+ * @param {number} data.id_cuenta_apertura - ID de la cuenta donde se encuentra el monto inicial (Efectivo, Mercado Pago, etc.).
+ * * @returns {Promise<TipadoData<AbrirCajaInputs>>} Resultado de la operación de inserción.
+ * @throws {Error} Si ocurre un fallo en la base de datos o violación de integridad.
  */
 const abrirCaja = async( data : AbrirCajaInputs)
+
+
 : Promise<TipadoData<AbrirCajaInputs>> => {
+
     const sql : string = `INSERT INTO cajas (
                                 id_escuela, 
-                                id_usuario_apertura, 
+                                id_usuario, 
                                 monto_inicial, 
+                                id_cuenta_apertura, 
                                 estado
-                            ) VALUES (
-                                ?,      -- id_escuela
-                                ?,        -- id_usuario_apertura (ID del usuario logueado)
-                                ?,  -- monto_inicial
-                                'abierta'
-                            );`; 
-   const {id_escuela , monto_inicial , id_usuario} = data;
-   const valores : unknown[] = [id_escuela, id_usuario, monto_inicial];
-   const datosRetorno = {id_escuela , monto_inicial, id_usuario};
+                            ) VALUES (?, ?, ?, ?, 'abierta');`; 
+   const {id_escuela , monto_inicial , id_usuario,id_cuenta_apertura} = data;
+   const valores : unknown[] = [id_escuela, id_usuario, monto_inicial, id_cuenta_apertura];
+   const datosRetorno = {id_escuela , monto_inicial, id_usuario, id_cuenta_apertura};
    
    return await iudEntidad<AbrirCajaInputs>({
         slqEntidad : sql,
@@ -443,7 +437,7 @@ const listaTipoCuentas =async ( data : ListaTipoCuentasInputs)
 };
 
 
-
+// a modifcar 
 const listaMetricasCaja = async ( data : CierreCajaInputs) => {
     const { id_caja , id_escuela} = data ;
     const sql : string = `SELECT 

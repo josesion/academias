@@ -39,11 +39,11 @@ import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA,
 const abrirCaja = async( req : Request, res : Response) =>{
        
     const dataCaja = {
-        id_escuela : req.body.id_escuela,
+        id_escuela : Number( req.body.id_escuela),
         estado     : req.body.estado,
-        id_usuario : req.body.id_usuario,
-        monto_inicial : req.body.monto_inicial,
-    
+        id_usuario :Number(req.body.id_usuario),
+        monto_inicial : Number(req.body.monto_inicial),
+        id_cuenta_apertura : Number(req.body.id_cuenta_apertura)
     };
 
    const abrirCajaResult = await cajaServicio.abrirCajaServicio( dataCaja );
