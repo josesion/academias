@@ -67,14 +67,20 @@ const abrirCaja = async( data : AbrirCajaInputs)
 
     const sql : string = `INSERT INTO cajas (
                                 id_escuela, 
-                                id_usuario, 
+                                id_usuario_apertura, 
                                 monto_inicial, 
                                 id_cuenta_apertura, 
                                 estado
-                            ) VALUES (?, ?, ?, ?, 'abierta');`; 
-   const {id_escuela , monto_inicial , id_usuario,id_cuenta_apertura} = data;
-   const valores : unknown[] = [id_escuela, id_usuario, monto_inicial, id_cuenta_apertura];
-   const datosRetorno = {id_escuela , monto_inicial, id_usuario, id_cuenta_apertura};
+                            ) VALUES (
+                                ?,  -- id_escuela
+                                ?,  -- id_usuario_apertura
+                                ?,  -- monto_inicial (puede ser 0.00)
+                                ?,  -- id_cuenta_apertura (ID de Efectivo, MP, etc.)
+                                'abierta'
+                            );`; 
+   const {id_escuela , monto_inicial , id_usuario_apertura,id_cuenta_apertura} = data;
+   const valores : unknown[] = [id_escuela, id_usuario_apertura, monto_inicial, id_cuenta_apertura];
+   const datosRetorno = {id_escuela , monto_inicial, id_usuario_apertura, id_cuenta_apertura};
    
    return await iudEntidad<AbrirCajaInputs>({
         slqEntidad : sql,
@@ -170,6 +176,7 @@ const arqueoCaja = async ( data : CierreCajaInputs )
                             LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
                             WHERE c.id_caja = ?
                             GROUP BY c.id_caja, c.monto_inicial`;
+
     const valores : unknown[] = [ data.id_caja ]; 
     return await buscarExistenteEntidad({
         slqEntidad : slq,
@@ -271,21 +278,21 @@ const metricaPanelPrincipal = ( data : CierreCajaInputs )
  * id_usuario: 5 
  * });
  */
-const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, monto_sistema: number, id_escuela : number, id_usuario : number })
+const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, monto_sistema: number, id_escuela : number, id_usuario_cierre : number })
 : Promise<TipadoData<{ id_caja : number , estado : string}>> => {
-    
+    console.log("aqui")
     const sql : string = `UPDATE cajas 
                           SET 
                                 monto_sistema = ?, 
-                                monto_final_real = ?, 
-                                id_usuario_cierre = ?, 
+                                monto_final_real =  ?, 
+                                id_usuario_cierre = ?, -- id usuario es el de quien cerro la caja 
                                 estado = 'cerrada', 
                                 fecha_cierre = CURRENT_TIMESTAMP
-                          WHERE id_caja = ? AND estado = 'abierta' AND id_escuela = ?;`;
-    const {id_caja , monto_final_real ,monto_sistema, id_usuario ,id_escuela} =data ;
+                          WHERE id_caja = ? AND  id_escuela = ?;`;
+    const {id_caja , monto_final_real ,monto_sistema, id_usuario_cierre ,id_escuela} =data ;
 
     const datosRetorno = { id_caja , estado : "cerrada" }                        
-    const valores : unknown[] = [ monto_sistema, monto_final_real, id_usuario , id_caja, id_escuela ];
+    const valores : unknown[] = [ monto_sistema, monto_final_real, id_usuario_cierre , id_caja, id_escuela ];
     return await iudEntidad({
         slqEntidad : sql ,
         valores ,

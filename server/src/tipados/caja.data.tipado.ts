@@ -29,7 +29,7 @@ export interface DataAltaCaja{
 
 export interface DataAltaCajaResult{
     id_escuela : number,
-    id_usuario : number | null,
+    id_usuario_apertura : number | null,
     monto_inicial : number
 };
 

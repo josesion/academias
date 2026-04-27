@@ -136,20 +136,21 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
         estado     : "abierta",
     });
 
+
     if ( vericarCajaResult.code === "CAJA_ABIERTA_EXISTE" ){
        
         const arqueoCaja = await dataCaja.arqueoCaja(cierreCajaData);
-
+        
         if (arqueoCaja.code === "ARQUEO_CAJA_EXISTE" && arqueoCaja.data?.balance_neto){
             
             const cierreCajaResult = await dataCaja.cierreCaja({
                 id_caja : cierreCajaData.id_caja,
-                monto_final_real : cierreCajaData.monto_final_real,
+                monto_final_real : cierreCajaData.monto_final_real,// monto  total q se le ingresa el usuario   
                 monto_sistema : Number(arqueoCaja.data.balance_neto),
                 id_escuela   : Number(cierreCajaData.id_escuela),
-                id_usuario : Number(cierreCajaData.id_usuario),
+                id_usuario_cierre : Number(cierreCajaData.id_usuario_cierre),
             });
-        
+             
             if ( cierreCajaResult.code === "CIERRE_CAJA_MODIFICAR") {
                 return {
                     error : false,
@@ -157,8 +158,18 @@ const cierreCajaServicio = async ( data : CierreCajaInputs )
                     data : cierreCajaResult.data,
                     code : "CIERRE_CAJA_OK"
                 };
-            };    
+            };  
+            
         };        
+
+        if ( arqueoCaja.code === 'ARQUEO_CAJA_NO_EXISTE' ){ 
+            return {
+                error : true,
+                message : "No existe Arqueo de caja",
+                code : "NO_HAY_ARQUEO_CAJA"
+            };
+        }; 
+        
 
     }else{
         return {

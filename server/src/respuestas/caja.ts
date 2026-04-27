@@ -39,6 +39,8 @@ export const MAPA_CERRAR_CAJA : Record< string , { status : CodigoEstadoHTTP, ms
 
   "NO_HAY_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "No existe ninguna caja abierta"},
 
+  "NO_HAY_ARQUEO_CAJA" : {status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay arqueo de caja"},
+
   ERROR_SERVIDOR
 
 };

@@ -41,7 +41,7 @@ const abrirCaja = async( req : Request, res : Response) =>{
     const dataCaja = {
         id_escuela : Number( req.body.id_escuela),
         estado     : req.body.estado,
-        id_usuario :Number(req.body.id_usuario),
+        id_usuario_apertura :Number(req.body.id_usuario_apertura),
         monto_inicial : Number(req.body.monto_inicial),
         id_cuenta_apertura : Number(req.body.id_cuenta_apertura)
     };
@@ -144,7 +144,7 @@ const cierreCaja = async( req : Request, res : Response) =>{
         id_caja : req.body.id_caja,
         monto_final_real : req.body.monto_final_real,
         id_escuela : Number(req.body.id_escuela),
-        id_usuario : Number(req.body.id_usuario),
+        id_usuario_cierre : Number(req.body.id_usuario_cierre),
     };
 
      const cierreCajaResult = await cajaServicio.cierreCajaServicio( data );
