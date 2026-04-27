@@ -61,26 +61,20 @@ const verificarCajaAbierta = async( data : VerificarCajaInputs)
  * @throws {Error} Si ocurre un fallo en la base de datos o violación de integridad.
  */
 const abrirCaja = async( data : AbrirCajaInputs)
-
-
 : Promise<TipadoData<AbrirCajaInputs>> => {
 
     const sql : string = `INSERT INTO cajas (
                                 id_escuela, 
                                 id_usuario_apertura, 
-                                monto_inicial, 
-                                id_cuenta_apertura, 
                                 estado
                             ) VALUES (
                                 ?,  -- id_escuela
                                 ?,  -- id_usuario_apertura
-                                ?,  -- monto_inicial (puede ser 0.00)
-                                ?,  -- id_cuenta_apertura (ID de Efectivo, MP, etc.)
                                 'abierta'
                             );`; 
-   const {id_escuela , monto_inicial , id_usuario_apertura,id_cuenta_apertura} = data;
-   const valores : unknown[] = [id_escuela, id_usuario_apertura, monto_inicial, id_cuenta_apertura];
-   const datosRetorno = {id_escuela , monto_inicial, id_usuario_apertura, id_cuenta_apertura};
+   const {id_escuela , id_usuario_apertura } = data;
+   const valores : unknown[] = [id_escuela, id_usuario_apertura];
+   const datosRetorno = {id_escuela ,  id_usuario_apertura};
    
    return await iudEntidad<AbrirCajaInputs>({
         slqEntidad : sql,

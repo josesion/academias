@@ -45,8 +45,9 @@ import { DataAltaCaja , DataAltaCajaResult,
 const abrirCaja = async( data : DataAltaCaja) 
 : Promise<TipadoData<DataAltaCajaResult>>=>{
     const verificar : VerificarCajaInputs = VerificarCajaSchema.parse(data);
+ 
     const vericarResult = await dataCaja.verificarCajaAbierta(verificar);
-    
+   
     if ( vericarResult.code === "CAJA_ABIERTA_EXISTE"){
        return {
           error : true,

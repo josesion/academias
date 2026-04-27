@@ -15,14 +15,10 @@ export const AbrirCajaSchema = z.object({
         .int("El ID de la escuela debe ser un número entero.")
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."), 
 
-    id_cuenta_apertura : z.coerce.number()
-        .int("El ID de la cuenta debe ser un número entero.")
-        .positive("El ID de la c debe ser positivo (mayor que 0)."),
 
    id_usuario_apertura: z.coerce.number()
         .int("El ID de usuario debe ser un número entero.")
-        .positive("El ID de usuario debe ser positivo (mayor que 0)."), 
-   monto_inicial: z.number("El monto inicial debe ser un número válido").min(0),     
+        .positive("El ID de usuario debe ser positivo (mayor que 0).") 
 });
 
 

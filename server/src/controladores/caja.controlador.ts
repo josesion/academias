@@ -41,9 +41,7 @@ const abrirCaja = async( req : Request, res : Response) =>{
     const dataCaja = {
         id_escuela : Number( req.body.id_escuela),
         estado     : req.body.estado,
-        id_usuario_apertura :Number(req.body.id_usuario_apertura),
-        monto_inicial : Number(req.body.monto_inicial),
-        id_cuenta_apertura : Number(req.body.id_cuenta_apertura)
+        id_usuario_apertura :Number(req.body.id_usuario_apertura)
     };
 
    const abrirCajaResult = await cajaServicio.abrirCajaServicio( dataCaja );
