@@ -54,7 +54,7 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
     // Define valores por defecto si las propiedades no están presentes.
     const inputType = parametros.type || "text";
     const inputPlaceholder = parametros.placeholder || "Ingrese un valor";
-    const inputLabel = parametros.label || "Campo de entrada";
+    const inputLabel = parametros.label;
 
     return (
       <div className="inputs_contenedor">

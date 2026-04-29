@@ -1,5 +1,5 @@
 /* ============================================================
-   BOTONES PROFESIONALES - STUDIOPRO STYLE
+   BOTONES PROFESIONALES - STUDIOPRO STYLE (FULL ANIMATED)
    ============================================================ */
 
 .boton_personalizado {
@@ -8,7 +8,7 @@
     align-items: center;
     gap: 10px;
 
-    height: 44px; /* Un poquito más alto para mejor ergonomía */
+    height: 44px; 
     min-width: 140px;
     padding: 0 20px;
 
@@ -17,23 +17,28 @@
     letter-spacing: 0.5px;
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px; /* Menos redondeado, más moderno */
+    border-radius: 14px; 
     cursor: pointer;
     position: relative;
     overflow: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #1e293b; /* Fondo base neutro */
 }
 
-/* Efecto de brillo general al pasar el mouse */
+/* Efecto de elevación y sombra */
 .boton_personalizado:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* --- PALETA DE COLORES SOBRIOS Y MODERNOS --- */
+.boton_personalizado:active {
+    transform: scale(0.96);
+}
 
-/* ACEPTAR: Usamos tu gradiente de marca pero más oscuro */
+/* --- VARIANTES DE COLOR --- */
+
+/* ACEPTAR */
 .aceptar { 
     background: linear-gradient(135deg, #3730a3, #0891b2); 
     box-shadow: 0 4px 15px rgba(55, 48, 163, 0.3);
@@ -43,17 +48,16 @@
     box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
 }
 
-/* CANCELAR: Un rojo "Slate" o terracota oscuro, no chillón */
+/* CANCELAR */
 .cancelar { 
-    background: #334155; /* Gris azulado muy oscuro (sobrio) */
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #334155; 
 }
 .cancelar:hover { 
-    background: #ef4444; /* Solo se vuelve rojo al hacer hover (alerta) */
+    background: #ef4444; 
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
 }
 
-/* AGREGAR: Azul medianoche */
+/* AGREGAR */
 .agregar { 
     background: #1e293b; 
     border: 1px solid #38bdf8;
@@ -64,7 +68,7 @@
     color: white;
 }
 
-/* ELIMINAR: Un bordeaux profundo */
+/* ELIMINAR */
 .eliminar { 
     background: #450a0a; 
     border: 1px solid #991b1b;
@@ -73,7 +77,7 @@
     background: #991b1b;
 }
 
-/* EDITAR: Violeta grafito */
+/* EDITAR */
 .editar { 
     background: #2e1065; 
     border: 1px solid #a855f7;
@@ -82,7 +86,7 @@
     background: #a855f7;
 }
 
-/* LISTAR / FLECHAS: Neutros Glass */
+/* LISTAR / FLECHAS */
 .listar, .flechas { 
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(5px);
@@ -91,7 +95,74 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
-/* --- ESTADOS ESPECIALES --- */
+/* --- ANIMACIONES ESPECÍFICAS DE ICONOS (HOVER) --- */
+
+.boton_personalizado svg {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Aceptar: Salto */
+.aceptar:hover svg { animation: icon-jump 0.4s ease-out; }
+
+/* Cancelar: Vibración */
+.cancelar:hover svg { animation: icon-shake 0.3s ease-in-out; }
+
+/* Agregar: Rotación y escala */
+.agregar:hover svg { animation: icon-rotate-grow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+/* Eliminar: Tiembla y encoge */
+.eliminar:hover svg { animation: icon-shrink-shake 0.4s ease; }
+
+/* Editar: Inclinación tipo lápiz */
+.editar:hover svg { animation: icon-pencil 0.5s ease-in-out infinite alternate; }
+
+/* Flechas: Desplazamiento lateral */
+.flechas:hover svg { animation: icon-slide-right 0.5s ease-in-out infinite alternate; }
+
+/* Listar: Pulso */
+.listar:hover svg { animation: icon-pulse 1.5s ease-in-out infinite; }
+
+/* --- KEYFRAMES --- */
+
+@keyframes icon-jump {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+@keyframes icon-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    75% { transform: translateX(3px); }
+}
+
+@keyframes icon-rotate-grow {
+    0% { transform: scale(1) rotate(0deg); }
+    100% { transform: scale(1.3) rotate(90deg); }
+}
+
+@keyframes icon-shrink-shake {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.8) rotate(5deg); }
+    100% { transform: scale(1); }
+}
+
+@keyframes icon-pencil {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-25deg) translateY(-2px); }
+}
+
+@keyframes icon-slide-right {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(6px); }
+}
+
+@keyframes icon-pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- ESTADOS DE CARGA Y DESHABILITADO --- */
 
 .boton_deshabilitado {
     background: #1e293b !important;
@@ -103,20 +174,12 @@
     opacity: 0.6;
 }
 
-/* Iconos y Animaciones */
-.boton_personalizado svg {
-    transition: transform 0.3s ease;
-}
-
 .spinner_girando {
     animation: spin 1s linear infinite;
+    color: #00ffff; /* Color cyan para el loading */
 }
 
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
-
-/* Mantenemos tus animaciones de iconos que están geniales */
-.aceptar:hover svg { animation: bounce-icon 0.4s ease; }
-.cancelar:hover svg { animation: shake-icon 0.3s ease; }

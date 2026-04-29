@@ -40,6 +40,11 @@ import "./app.css";
 function App() {
   return (
     <div className="app">
+      <div className="fondo-animado">
+        <div className="esfera esfera-1"></div>
+        <div className="esfera esfera-2"></div>
+        <div className="esfera esfera-3"></div>
+      </div>
       <ProtectRutasProv>
         <BrowserRouter>
           <Routes>

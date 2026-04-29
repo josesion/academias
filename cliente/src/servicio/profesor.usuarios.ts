@@ -19,6 +19,7 @@ export const altaProfesor = async( data : TipadoProfesores.RegistroProfesores )
         };
     }
 
+
     const { dni , nombre , apellido , celular , id_escuela } = data;
  
     const ruta  = `${PAGINA}api/registro_profesor`;
@@ -101,6 +102,8 @@ export const listadoProfesores = async(
             errorsDetails: undefined
         };
     }
+ 
+
 
     const parametrosConvertidos = {
             estado: data.estado || "activos",

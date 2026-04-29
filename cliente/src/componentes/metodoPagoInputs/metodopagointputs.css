@@ -1,0 +1,261 @@
+/* Contenedor Principal */
+.contenedor_metodo_pago_input {
+    background: rgba(20, 20, 25, 0.8);
+    border: 1px solid var(--color-borde-cyber); /* Usa tus variables de color */
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+
+
+
+
+.contenedor_metodo_pago_input > p {
+    font-weight: bold;
+    color: #00f2ff; /* Color neón */
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+/* Header de la Tabla */
+.header_arqueo_grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
+    gap: 15px;
+    padding: 10px;
+    border-bottom: 2px solid #333;
+    font-size: 0.85rem;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* Contenedor de las filas mapeadas */
+.contenedor_metodo_pago_inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Espacio entre filas */
+    margin-top: 10px;
+}
+
+/* Fila Individual del Arqueo */
+.fila_metodo_pago {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
+    gap: 15px;
+    align-items: center; /* Alinea verticalmente el icono, inputs y badge */
+    justify-items: center;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.3s ease;
+}
+
+.fila_metodo_pago:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Columna de Nombre e Icono */
+.columna_nombre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon_tipo {
+    font-size: 1.2rem;
+}
+
+.columna_nombre p {
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Estilizamos los Inputs dentro de la grilla */
+.columna_sistema, .columna_input {
+    /* Tu componente Inputs tiene un margin-bottom por el espacio de error. 
+       Lo compensamos para que quede centrado en la fila. */
+    margin-top: -10px; 
+}
+
+/* Badge de Diferencia */
+.columna_diferencia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.badge_dif {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    min-width: 80px;
+    text-align: center;
+}
+
+.badge_dif.ok {
+    background: rgba(0, 255, 0, 0.1);
+    color: #00ff88;
+    border: 1px solid #00ff88;
+}
+
+.badge_dif.negativo {
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff4d4d;
+    border: 1px solid #ff4d4d;
+}
+
+.badge_dif.positivo {
+    background: rgba(0, 150, 255, 0.1);
+    color: #00d9ff;
+    border: 1px solid #00d9ff;
+}
+
+/* Botón Automático */
+.contenedor_boton_accion {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+.contenedor_boton_accion p {
+    cursor: pointer;
+    background: #333;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    transition: 0.3s;
+}
+
+.contenedor_boton_accion p:hover {
+    background: #00f2ff;
+    color: #000;
+}
+
+/* Ajuste para la fila completa */
+.fila_metodo_pago {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
+    gap: 15px;
+    /* Cambiamos center por flex-start y daremos un padding superior 
+       a los elementos de texto para nivelarlos con el input */
+    align-items: flex-start; 
+    padding: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Bajamos el nombre de la cuenta */
+.columna_nombre {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px; /* Este padding lo nivela con el centro del input */
+}
+
+/* Bajamos el badge de diferencia */
+.columna_diferencia {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 8px; /* Ajuste fino para el badge */
+}
+
+/* Opcional: Si los inputs siguen teniendo mucho margen, 
+   podés forzar que el contenedor de error no ocupe espacio si no hay error */
+.inputs_contenedor .error_espacio {
+    min-height: 0px; /* Por si tu CSS de Inputs tiene un min-height */
+}
+
+
+
+/* --- RESPONSIVIDAD --- */
+
+/* 1. Tablets y Pantallas Medianas (menos de 992px) */
+@media (max-width: 992px) {
+    .coontenedor_cierre_caja {
+        margin: 10px;
+        padding: 20px;
+    }
+
+    .contenedor_resumen_general {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Tarjetas de 2 en 2 */
+        gap: 10px;
+    }
+}
+
+/* 2. Pantallas Pequeñas (menos de 768px) - Aquí es donde el Arqueo cambia */
+@media (max-width: 768px) {
+    .fila_metodo_pago{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .coontenedor_cierre_caja h2 {
+        font-size: 1.2rem;
+    }
+
+    /* El Grid del Arqueo necesita más espacio para los inputs */
+    .header_arqueo_grid, 
+    .fila_metodo_pago {
+        grid-template-columns: 1fr 1fr; /* Pasamos de 4 columnas a 2 */
+        gap: 10px;
+    }
+
+    /* Ocultamos el header en móvil porque se rompe el diseño */
+    .header_arqueo_grid {
+        display: none; 
+    }
+
+    .fila_metodo_pago {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Forzamos a que el nombre y el resultado ocupen todo el ancho */
+    .columna_nombre, .columna_diferencia {
+        grid-column: span 2;
+        justify-content: flex-start;
+        padding-top: 0;
+    }
+
+    .columna_diferencia {
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        padding-top: 10px;
+        margin-top: 5px;
+    }
+
+    .columna_sistema, .columna_input {
+        margin-top: 5px;
+    }
+
+    /* Botonera en vertical para que entren los dedos */
+    .contenedor_botonera_cierre_caja {
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+
+    .contenedor_botonera_cierre_caja p {
+        text-align: center;
+        width: 100%;
+    }
+}
+
+/* 3. Móviles muy chicos (menos de 480px) */
+@media (max-width: 480px) {
+    .contenedor_resumen_general {
+        grid-template-columns: 1fr; /* Tarjetas una debajo de otra */
+    }
+
+    .coontenedor_cierre_caja {
+        padding: 15px;
+    }
+
+    .badge_dif {
+        width: 100%; /* El badge ocupa todo el ancho abajo */
+    }
+}

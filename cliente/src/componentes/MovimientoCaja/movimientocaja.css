@@ -55,3 +55,78 @@
 /* Indicador sutil lateral según el tipo */
 .fila-ingreso { border-left: 3px solid #10b981; }
 .fila-egreso { border-left: 3px solid #ef4444; }
+
+
+/* ===================================================
+   RESPONSIVE: TRANSFORMACIÓN A TARJETAS (Mobile)
+   =================================================== */
+
+@media (max-width: 768px) {
+    /* Quitamos el comportamiento de tabla */
+    .tabla-finanzas, 
+    .tabla-finanzas tbody, 
+    .tabla-finanzas tr, 
+    .tabla-finanzas td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-finanzas tr {
+        margin-bottom: 15px; /* Espacio entre cada "tarjeta" */
+        padding: 10px;
+        position: relative;
+        border-radius: 12px;
+        border-left-width: 5px; /* Indicador de ingreso/egreso más grueso */
+    }
+
+    .tabla-finanzas td {
+        border: none;
+        padding: 5px 10px;
+        text-align: left;
+        font-size: 0.85rem;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Estilo para los datos menos importantes (Fecha y Hora) */
+    .tabla-finanzas td:nth-child(1),
+    .tabla-finanzas td:nth-child(2) {
+        display: inline-block;
+        width: auto;
+        opacity: 0.6;
+        font-size: 0.75rem;
+    }
+
+    /* Etiqueta para el Tipo de Cuenta o Categoría si lo necesitas */
+    .tabla-finanzas td:nth-child(3)::before { content: "Cuenta: "; opacity: 0.5; font-size: 0.7rem; }
+    .tabla-finanzas td:nth-child(5)::before { content: "Cat: "; opacity: 0.5; font-size: 0.7rem; }
+
+    /* El monto (último TD) resalta como protagonista de la tarjeta */
+    .tabla-finanzas td:last-child {
+        text-align: right;
+        font-size: 1.1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: 5px;
+        padding-top: 10px;
+        justify-content: flex-end;
+    }
+
+    /* Quitamos bordes redondeados viejos que solo servían en filas */
+    .tabla-finanzas td:first-child,
+    .tabla-finanzas td:last-child {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+}
+
+/* Ajuste extra para celulares muy pequeños */
+@media (max-width: 400px) {
+    .tabla-finanzas td {
+        font-size: 0.8rem;
+    }
+    
+    .tabla-finanzas td:last-child {
+        font-size: 1rem;
+    }
+}

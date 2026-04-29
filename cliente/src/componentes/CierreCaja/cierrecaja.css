@@ -1,0 +1,191 @@
+/* Contenedor principal que envuelve todo el modal/pantalla */
+.coontenedor_cierre_caja {
+    background: rgba(15, 15, 20, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    padding: 30px;
+    border-radius: 12px;
+    color: #fff;
+    max-width: 1000px;
+    margin: 20px auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    max-height: 90dvh;
+    overflow-y: auto;
+}
+
+.coontenedor_cierre_caja::-webkit-scrollbar {
+    width: 8px;
+}
+
+
+.coontenedor_cierre_caja ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+
+.coontenedor_cierre_caja::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 10px;
+}
+
+.coontenedor_cierre_caja ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22d3ee,
+    #c084fc
+  )
+}
+
+.coontenedor_cierre_caja h2 {
+    text-align: center;
+    color: #00f2ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 15px;
+}
+
+/* Sección de Tarjetas (Monto Inicial, Ingresos, etc.) */
+.contenedor_resumen_general {
+    display: flex;
+    flex-wrap: wrap; /* Para que en pantallas chicas bajen */
+    gap: 15px;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.contenedor_resumen_general > p {
+    width: 100%; /* El título de la sección ocupa todo el ancho */
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+/* El contenedor que creamos hace un momento para los inputs */
+.contenedor_detalle_cierre_caja {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 25px;
+}
+
+/* Resultado de Diferencia (El banner llamativo) */
+.contenedor_resultado_cierre_caja {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-left: 4px solid #ff4d4d; /* Por defecto rojo, luego lo haces dinámico */
+    margin-bottom: 20px;
+}
+
+.contenedor_resultado_cierre_caja p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ff4d4d;
+}
+
+/* Sección de Justificación */
+.contenedor_justificacion_cierre_caja {
+    margin-bottom: 25px;
+}
+
+.contenedor_justificacion_cierre_caja p {
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 8px;
+}
+
+/* Botonera Final */
+.contenedor_botonera_cierre_caja {
+    display: flex;
+    justify-content: flex-end;
+    gap: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+}
+
+.contenedor_botonera_cierre_caja p {
+    padding: 10px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    margin: 0;
+}
+
+/* Simulación de botones (cuando los cambies por <button> ya tendrán el estilo) */
+.contenedor_botonera_cierre_caja p:first-child {
+    background: #00f2ff;
+    color: #000;
+}
+
+.contenedor_botonera_cierre_caja p:last-child {
+    background: transparent;
+    border: 1px solid #555;
+    color: #ccc;
+}
+
+.contenedor_botonera_cierre_caja p:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
+
+
+.contenedor_justificacion_cierre_caja {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.contenedor_justificacion_cierre_caja label {
+    font-size: 0.85rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.contenedor_justificacion_cierre_caja .requerido {
+    color: #ff4d4d;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.textarea_cyber {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 242, 255, 0.2);
+    border-radius: 8px;
+    padding: 15px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: none; /* Evita que el usuario deforme el diseño */
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.textarea_cyber:focus {
+    background: rgba(0, 242, 255, 0.05);
+    border-color: #00f2ff;
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.textarea_cyber::placeholder {
+    color: #555;
+}
+
+/* Media query para móviles */
+@media (max-width: 768px) {
+    .textarea_cyber {
+        font-size: 1rem; /* Más grande para que sea fácil escribir en el celu */
+    }
+}

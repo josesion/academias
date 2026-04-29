@@ -6,53 +6,165 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  min-width: 250px;
+  gap: 12px;
+  min-width: 280px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .panel_titulo {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--color-letra);
-  opacity: 0.6;
+  opacity: 0.5;
   margin-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
 }
 
-.metodo_item {
+/* Aplicamos el estilo de "tarjeta_normal_contenedor" a tus items */
+.metodo_item_completo {
+  position: relative; /* Para la línea vertical */
+  padding: 14px 16px 14px 34px; /* Espacio extra a la izquierda para la línea */
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  justify-content: center;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02); /* Un toque de luz de fondo */
+  margin-bottom: 4px;
+}
+
+.metodo_item_completo:hover {
+  transform: translateX(6px); /* Tu efecto original de mover a la derecha */
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* LA LÍNEA VERTICAL (Inspirada en tu otro componente) */
+.metodo_item_completo::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  bottom: 12px;
+  width: 6px;
+  border-radius: 999px;
+  /* Usamos el degradado azul/cian que te gusta */
+  background: linear-gradient(180deg, #4f46e5, #06b6d4);
+  box-shadow: 0 0 12px rgba(79, 70, 229, 0.5);
+}
+
+.metodo_fila_principal {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  transition: all 0.3s ease;
-}
-
-/* Una línea divisoria sutil entre items menos el último */
-.metodo_item:not(:last-child) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
 
 .metodo_nombre {
-  font-size: 0.95rem;
+  font-size: 0.65rem; /* Estilo header del componente nuevo */
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.65;
   color: var(--color-letra);
+}
+
+.metodo_monto_total {
+  font-size: 1.15rem; /* Un poco más grande para que destaque */
+  font-weight: 500;
+  color: var(--color-letra);
+  font-variant-numeric: tabular-nums;
+}
+
+.metodo_desglose {
+  display: flex;
+  gap: 12px;
+  margin-top: 2px;
   opacity: 0.8;
 }
 
-.metodo_monto {
-  font-size: 1rem;
-  font-weight: 600;
+.desglose_dato {
+  display: flex;
+  gap: 4px;
+  font-size: 0.75rem;
+}
+
+.dato_label {
+  opacity: 0.4;
   color: var(--color-letra);
-  font-variant-numeric: tabular-nums; /* Para que los números no bailen */
 }
 
-/* Efecto hover para que se sienta interactivo */
-.metodo_item:hover {
-  transform: translateX(5px);
+.dato_valor {
+  color: var(--color-letra);
 }
 
-.metodo_item:hover .metodo_monto {
-  color: #00b6d4; /* Color cian para resaltar el foco */
+/* Colores semánticos para la sesión */
+.positivo {
+  color: #10b981 !important; 
+  font-weight: 600;
+}
+
+.negativo {
+  color: #ef4444 !important;
+  font-weight: 600;
+}
+
+
+/* ===================================================
+   RESPONSIVE: PANEL MÉTODOS DE PAGO
+   =================================================== */
+
+@media (max-width: 1024px) {
+    .panel_metodo_pago_contenedor {
+        min-width: 100%; /* Ocupa todo el ancho en el aside/columna */
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .metodo_item_completo {
+        padding: 12px 14px 12px 28px; /* Ajuste fino de espaciado */
+    }
+
+    .metodo_item_completo::before {
+        left: 10px; /* Pegamos un poco más la línea al borde */
+        width: 4px;
+    }
+
+    .metodo_fila_principal {
+        flex-direction: row; /* Mantenemos nombre y monto en línea */
+        align-items: baseline;
+    }
+
+    .metodo_monto_total {
+        font-size: 1rem; /* Bajamos un poco el tamaño para que no rompa */
+    }
+
+    .metodo_desglose {
+        flex-direction: column; /* En celulares muy chicos, el desglose va uno abajo de otro */
+        gap: 2px;
+        margin-top: 5px;
+    }
+
+    .desglose_dato {
+        justify-content: flex-start;
+        font-size: 0.7rem; /* Texto más compacto */
+    }
+
+    .metodo_item_completo:hover {
+        transform: translateX(3px); /* Efecto más sutil en touch */
+    }
+}
+
+/* Ajuste para pantallas muy pequeñas (Ej: iPhone SE) */
+@media (max-width: 350px) {
+    .metodo_fila_principal {
+        flex-direction: column; /* Nombre arriba, Monto abajo */
+        gap: 2px;
+    }
+    
+    .metodo_monto_total {
+        font-size: 1.1rem;
+    }
 }

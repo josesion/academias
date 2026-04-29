@@ -1,163 +1,123 @@
-/* --- FORMULARIO --- */
+/* --- FORMULARIO PRINCIPAL --- */
 .formulario {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-
-   max-height: calc(100dvh - 80px); /* margen arriba/abajo */
-   overflow-y: auto;
-   overflow-x: hidden;
-
-   display: flex;
-   flex-direction: column;
-   gap: 1rem;
-
-  -webkit-overflow-scrolling: touch; /* mobile smooth */
-    
-
-    background: var(--color-gradiente-azul);
-    border-radius: 14px;
-
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-
-    animation: fadeInForm 0.4s ease;
-    transition: box-shadow 0.25s ease;
-    
+    gap: 1.2rem;
+    padding: 2.5rem;
+    background: linear-gradient(145deg, rgba(31, 31, 43, 0.95), rgba(13, 13, 18, 0.98));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    max-height: calc(100dvh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    animation: fadeInForm 0.5s ease;
 }
 
-/* ================= Colorear el scrool  ================= */
-.formulario::-webkit-scrollbar {
-  width: 8px;
-}
-
-.formulario::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.formulario::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-  border-radius: 10px;
-}
-
-.formulario::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #6366f1,
-    #22d3ee,
-    #c084fc
-  );
-}
-
-
-
-.formulario:hover {
-    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
-}
-
-/* --- TÍTULO --- */
-.formulario_titulo {
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-align: center;
-    color: var(--color-letra);
-
-    letter-spacing: 1px;
+/* --- TÍTULO Y CONTENEDOR DE LUCES --- */
+.formulario_titulo_container {
+    position: relative;
+    width: 100%;
+    padding: 20px 0;
     margin-bottom: 10px;
-
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    padding-bottom: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* IMPORTANTE: Esto evita que las luces floten sobre los botones */
+    overflow: hidden; 
 }
 
-/* --- INPUTS --- */
-.formulario input,
-.formulario select,
-.formulario textarea {
+.formulario_titulo {
+    position: relative;
+    z-index: 5;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1.5px;
+    background: linear-gradient(90deg, #ffffff, #69797c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+/* --- PARTÍCULAS NEÓN GRANDES --- */
+.particula_titulo {
+    position: absolute;
+    bottom: -10px;
+    border-radius: 50%;
+    z-index: 1;
+    pointer-events: none;
+    animation: fluirHaciaArriba 3s linear infinite;
+    opacity: 0;
+    filter: blur(3px);
+}
+
+.tp-1 { left: 10%; width: 12px; height: 12px; background: #00ffff; box-shadow: 0 0 15px #00ffff; animation-delay: 0s; }
+.tp-2 { left: 25%; width: 10px; height: 10px; background: #bd93f9; box-shadow: 0 0 12px #bd93f9; animation-delay: 0.8s; }
+.tp-3 { left: 45%; width: 15px; height: 15px; background: #00ffff; box-shadow: 0 0 20px #00ffff; animation-delay: 1.5s; }
+.tp-4 { left: 65%; width: 9px; height: 9px; background: #a855f7; box-shadow: 0 0 10px #a855f7; animation-delay: 0.4s; }
+.tp-5 { left: 80%; width: 14px; height: 14px; background: #00ffff; box-shadow: 0 0 18px #00ffff; animation-delay: 2.1s; }
+.tp-6 { left: 90%; width: 11px; height: 11px; background: #bd93f9; box-shadow: 0 0 15px #bd93f9; animation-delay: 1.2s; }
+
+@keyframes fluirHaciaArriba {
+    0% { transform: translateY(20px) scale(0.5); opacity: 0; }
+    30% { opacity: 0.8; }
+    100% { transform: translateY(-100px) translateX(20px) scale(1.2); opacity: 0; }
+}
+
+/* --- SELECTS Y FORM INPUTS --- */
+.contenedor_input_select {
     width: 100%;
     max-width: 450px;
-
-    padding: 11px 14px;
-    font-size: 15px;
-    color: #f2f2f2;
-
-    background-color: #1f1f2b;
-    border: 1px solid #3a3a4a;
-    border-radius: 8px;
-
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.formulario input::placeholder,
-.formulario textarea::placeholder {
-    color: #9a9a9a;
+.label_select {
+    color: #a0a0b0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-left: 4px;
 }
 
-.formulario input:focus,
-.formulario select:focus,
-.formulario textarea:focus {
+.buscador_estado {
+    padding: 12px;
+    background: #16161e;
+    border: 1px solid #2d2d3d;
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buscador_estado:focus {
+    border-color: #06b6d4;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
     outline: none;
-    border-color: var(--color-fondo-azul);
-    box-shadow: 0 0 0 2px rgba(79,70,229,0.25);
 }
 
 /* --- BOTONERA --- */
 .botonera_formulario {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 15px;
     width: 100%;
-    margin-top: 12px;
-    flex-wrap: wrap;
+    margin-top: 20px;
 }
 
-.botonera_formulario .boton_personalizado {
-    width: 100%;
-    max-width: 220px;
+/* --- SCROLLBAR --- */
+.formulario::-webkit-scrollbar { width: 6px; }
+.formulario::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4f46e5, #06b6d4);
+    border-radius: 10px;
 }
 
-
-
-/* --- ANIMACIONES --- */
 @keyframes fadeInForm {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- MEDIA QUERIES --- */
-@media (max-width: 576px) {
-    .formulario {
-        width: 90%;
-        padding: 18px;
-        gap: 12px;
-    }
-
-    .botonera_formulario {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-@media (min-width: 577px) and (max-width: 999px) {
-    .formulario {
-        width: 80%;
-    }
-}
-
-@media (min-width: 1000px) {
-    .formulario {
-        width: 60%;
-        max-width: 720px;
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

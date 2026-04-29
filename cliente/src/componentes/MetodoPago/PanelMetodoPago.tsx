@@ -1,15 +1,16 @@
 import "./panelmovimientopago.css";
-import CountUp from "react-countup"; // No olvides la importación
+import CountUp from "react-countup";
 
-interface metricasTipoCuentas {
+export interface MetricasCuentaSesion {
   id_cuenta: number | string;
   nombre_cuenta: string;
-  tipo_cuenta: string | null;
-  saldo: string;
+  inicial_cuenta: number;
+  movimiento_sesion: number;
+  saldo_final_cuenta: number;
 }
 
 interface PanelMetodoPagoProps {
-  cuentas: metricasTipoCuentas[] | null;
+  cuentas: MetricasCuentaSesion[] | null;
 }
 
 export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
@@ -17,26 +18,50 @@ export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
     <div className="panel_metodo_pago_contenedor">
       <h3 className="panel_titulo">Resumen por Métodos</h3>
 
-      {cuentas
-        ?.filter((c) => c.id_cuenta !== "TOTAL") // Filtramos el total general para no repetirlo
-        .map((cuenta) => (
-          <div className="metodo_item" key={cuenta.id_cuenta}>
-            {" "}
-            {/* Key agregada */}
+      {cuentas?.map((cuenta) => (
+        <div className="metodo_item_completo" key={cuenta.id_cuenta}>
+          {/* Línea Superior: Nombre y el Total Brillante */}
+          <div className="metodo_fila_principal">
             <span className="metodo_nombre">{cuenta.nombre_cuenta}</span>
-            <span className="metodo_monto">
+            <span className="metodo_monto_total">
               ${" "}
               <CountUp
-                end={Number(cuenta.saldo)}
+                end={cuenta.saldo_final_cuenta}
                 duration={1.5}
                 separator="."
                 decimal=","
-                decimals={2} // Agregado para que siempre muestre los centavos
+                decimals={2}
                 preserveValue={true}
               />
             </span>
           </div>
-        ))}
+
+          {/* Línea Inferior: El desglose técnico */}
+          <div className="metodo_desglose">
+            <div className="desglose_dato">
+              <span className="dato_label">Inicial:</span>
+              <span className="dato_valor">
+                $
+                {cuenta.inicial_cuenta.toLocaleString("es-AR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+
+            <div className="desglose_dato">
+              <span className="dato_label">Sesión:</span>
+              <span
+                className={`dato_valor ${cuenta.movimiento_sesion >= 0 ? "positivo" : "negativo"}`}
+              >
+                {cuenta.movimiento_sesion >= 0 ? "+" : ""}$
+                {cuenta.movimiento_sesion.toLocaleString("es-AR", {
+                  minimumFractionDigits: 2,
+                })}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

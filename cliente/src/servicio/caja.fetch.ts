@@ -23,9 +23,11 @@ export const registrarMovimientoCaja = async ( data : TipadoCaja.DataDetalleCaja
         method : "POST",
         body  : {
             id_caja : data.id_caja,
+            id_escuela : data.id_escuela,
             id_categoria : data.id_categoria,
+            id_cuenta : data.id_cuenta,
+            id_usuario : data.id_usuario,
             monto : data.monto,
-            metodo_pago : data.metodo_pago,
             descripcion : data.descripcion,
             referencia_id : data.referencia_id
         }
@@ -74,7 +76,7 @@ export const metricasPanelCaja = async ( data : TipadoCaja.MetricasCaja)
     
 };
 
-export const abrirCaja = async (data : TipadoCaja.AperturaCajaInputs)
+export const abrirCaja = async (data : TipadoCaja.AperturaCajaInputs ,)
 : Promise<ApiResponse<TipadoCaja.AperturaCajaRespuesta>> => {
     const verificarUser= await verificarAutenticacion();
 
@@ -87,15 +89,15 @@ export const abrirCaja = async (data : TipadoCaja.AperturaCajaInputs)
             errorsDetails: undefined
         };
     };
-    const { id_escuela, estado , id_usuario , monto_inicial} = data ;
+    const { id_escuela, estado , id_usuario_apertura , detalle } = data ;
     const ruta = `${PAGINA}api/caja_apertura`;  
     return await apiFetch( ruta,  {
         method : "POST",
         body : {
             id_escuela : id_escuela,
             estado     : estado,
-            id_usuario : id_usuario,
-            monto_inicial : monto_inicial     
+            id_usuario_apertura : id_usuario_apertura,
+            detalle : detalle
         }
     });
 
@@ -114,14 +116,15 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
             errorsDetails: undefined
         };
     }; 
-    const { id_caja , id_escuela , monto_final_real} = data ; 
+    const { id_caja , id_escuela , monto_final_real, id_usuario} = data ; 
     const ruta = `${PAGINA}api/cierre_caja`;
     return await apiFetch( ruta , {
         method : "POST",
         body : {
             id_caja : id_caja,
             id_escuela : id_escuela,
-            monto_final_real : monto_final_real
+            monto_final_real : monto_final_real,
+            id_usuario : id_usuario
         }
     });  
 };
@@ -167,9 +170,54 @@ export const movimientoCajaDetalle = async ( data : TipadoCaja.DetalleMovimiento
         offset  : data.offset.toString()
     };
    const rutaCompleta = `${PAGINA}api/movimientos_caja?${new URLSearchParams(parametrosConvertidos).toString()}`;
-    console.log(rutaCompleta)
+ 
    return await apiFetch( rutaCompleta, {
         method : "GET",
         signal : signal
    });
+};
+
+export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta)
+: Promise<ApiResponse<TipadoCaja.ListadoTipoCuentas[]>> => {
+
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }; 
+    const { id_escuela, estado } = data ;
+
+    const ruta = `${PAGINA}api/lista_tipos_cuentas/${id_escuela}/${estado}`;
+    
+    return await apiFetch( ruta , {
+       method : "GET"  
+    });
+ 
+};
+
+export const metricasPanelPrincipal = async (data : TipadoCaja.CierreCajaData) =>{
+    const {id_caja , id_escuela } = data;
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };    
+    
+    const ruta = `${PAGINA}api/metricas_panel/${id_caja}/${id_escuela}`;   
+
+    return apiFetch( ruta , {
+        method : "GET"
+    });
 };

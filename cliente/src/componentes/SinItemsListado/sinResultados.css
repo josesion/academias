@@ -1,96 +1,113 @@
-/* ================= CONTENEDOR POSICIONAMIENTO ================= */
+/* --- CONTENEDOR PRINCIPAL --- */
 .sin_resultado_contenedor {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 40px;
     width: 100%;
-    min-height: 250px;
 }
 
-/* ================= TARJETA DE ESTADO VACÍO ================= */
 .sin_resultado_card {
-    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    
-    padding: 40px 60px;
-    background: linear-gradient(
-        180deg,
-        rgba(30, 30, 50, 0.4),
-        rgba(15, 15, 25, 0.6)
-    );
-    
-    border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px);
-    
-    /* Sombra profunda para dar elevación */
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    
-    animation: fadeInScale 0.4s ease-out;
+    max-width: 400px;
+    text-align: center;
 }
 
-/* --- Decoración de línea inferior (Gradiente de la app) --- */
-.sin_resultado_card::after {
-    content: "";
+/* --- ESCENA DE ANIMACIÓN (LUPA Y RADAR) --- */
+.escena_busqueda {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.contenedor_icono_animado {
+    font-size: 60px;
+    color: #00ffff; /* Neón principal */
+    z-index: 2;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
+    animation: flotarLupa 3s ease-in-out infinite;
+}
+
+/* Anillos de Radar */
+.radar_anillo {
     position: absolute;
-    bottom: 0;
-    left: 20%;
-    right: 20%;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, #4f46e5, #06b6d4, #a855f7, transparent);
-    border-radius: 10px 10px 0 0;
-    filter: blur(1px);
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: pulsoRadar 2s linear infinite;
 }
 
-/* ================= ICONO Y TEXTOS ================= */
-.sin_resultado_icono {
-    font-size: 3.5rem;
-    color: rgba(255, 255, 255, 0.15);
-    filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.2));
-    margin-bottom: 5px;
+.radar_anillo.lento {
+    animation-delay: 1s;
+}
+
+/* --- PARTÍCULAS DE BÚSQUEDA --- */
+.punto_busqueda {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #00ffff;
+    border-radius: 50%;
+    opacity: 0;
+}
+
+.p1 { top: 10%; left: 20%; animation: aparecerPunto 3s infinite 0.5s; }
+.p2 { top: 80%; right: 10%; animation: aparecerPunto 3s infinite 1.2s; }
+.p3 { bottom: 20%; left: 10%; animation: aparecerPunto 3s infinite 2s; }
+
+/* --- TEXTOS (Grisáceos como pediste) --- */
+.texto_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .sin_resultado_texto {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     margin: 0;
-    /* Gradiente en el texto */
-    background: linear-gradient(90deg, #e5e7eb, #9ca3af);
+    color: #ffffff;
+    letter-spacing: 0.5px;
+    /* Gradiente sutil */
+    background: linear-gradient(90deg, #ffffff 0%, #a0a0b0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .sin_resultado_subtexto {
-    font-size: 0.85rem;
-    color: rgba(229, 231, 235, 0.4);
-    letter-spacing: 0.5px;
+    font-size: 0.95rem;
+    color: #a0a0b0; /* Gris azulado suave */
+    line-height: 1.4;
+    opacity: 0.8;
 }
 
-/* ================= ANIMACIÓN ================= */
-@keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(10px);
-    }
-    to {
+/* --- KEYFRAMES --- */
+
+@keyframes flotarLupa {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(5deg); }
+    66% { transform: translateY(5px) rotate(-5deg); }
+}
+
+@keyframes pulsoRadar {
+    0% {
+        transform: scale(0.5);
         opacity: 1;
-        transform: scale(1) translateY(0);
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
     }
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 480px) {
-    .sin_resultado_card {
-        padding: 30px 20px;
-        width: 100%;
-    }
-    .sin_resultado_texto {
-        font-size: 1rem;
-    }
+@keyframes aparecerPunto {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 0.8; transform: scale(1.2); filter: blur(1px); }
 }

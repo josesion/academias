@@ -46,6 +46,7 @@ html, body {
 .area_paginacion {
     flex-shrink: 0;
     padding: 15px 0;
+    margin-bottom: 20px;
     display: flex;
     justify-content: center;
     

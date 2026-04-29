@@ -109,7 +109,15 @@ export const Formulario = (props: FormularioProps) => {
 
   return (
     <form className="formulario" onSubmit={props.onSubmit}>
-      <p className="formulario_titulo">{props.tituloFormulario}</p>
+      <div className="formulario_titulo_container">
+        <p className="formulario_titulo">{props.tituloFormulario}</p>
+
+        {/* Partículas animadas */}
+        <span className="particula_titulo tp-1"></span>
+        <span className="particula_titulo tp-2"></span>
+        <span className="particula_titulo tp-3"></span>
+        <span className="particula_titulo tp-4"></span>
+      </div>
       {props.data.map((input, index) => {
         const isSelect = input.options && input.options.length > 0;
         return isSelect ? (

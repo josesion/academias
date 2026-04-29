@@ -1,151 +1,89 @@
-/* ===== CONTENEDOR PRINCIPAL ===== */
+/* --- CONTENEDOR ESTÁTICO --- */
 .error-contenedor {
-  position: relative;
-
-  width: 90%;
-  margin: 12px auto;
-  padding: 14px 18px 14px 34px;
-
-  background: linear-gradient(
-    135deg,
-    rgba(60, 10, 15, 0.95),
-    rgba(25, 5, 8, 0.95)
-  );
-
-  border-radius: 18px;
-
-  box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-
-  overflow: hidden;
-
-  animation:
-    errorEnter 0.45s ease-out,
-    errorPulse 2.8s ease-in-out infinite;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px;
+    margin-top: 10px;
+    
+    /* Tu estética oscura con neón */
+    background: #1d1d2b; /* Fondo oscuro sólido */
+    border: 1px solid rgba(255, 77, 77, 0.2); /* Borde suave */
+    border-left: 4px solid #ff4d4d; /* La barra distintiva de error */
+    border-radius: 8px;
+    
+    width: 100%;
+    box-sizing: border-box;
+    /* Una entrada suave para todo el bloque */
+    animation: fadeInErrorBlock 0.3s ease-out;
 }
 
-/* ===== LÍNEA LATERAL ROJA ANIMADA ===== */
-.error-contenedor::before {
-  content: "";
-  position: absolute;
-  left: 14px;
-  top: 10px;
-  bottom: 10px;
-  width: 5px;
-
-  background: linear-gradient(
-    180deg,
-    #ff4d4d,
-    #ff1e1e,
-    #ff6b6b,
-    #ff4d4d
-  );
-
-  border-radius: 6px;
-
-  animation: gradientFlow 2.6s linear infinite;
+/* --- ESCENA DEL ICONO (DONDE OCURRE EL RADAR) --- */
+.escena-radar-icono {
+    position: relative;
+    width: 24px; /* Un poco más grande para el radar */
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Evita que el icono se aplaste */
 }
 
-/* ===== SHIMMER ROJO ===== */
-.error-contenedor::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  background: linear-gradient(
-    120deg,
-    transparent 0%,
-    rgba(255, 80, 80, 0.08) 45%,
-    rgba(255, 80, 80, 0.18) 50%,
-    rgba(255, 80, 80, 0.08) 55%,
-    transparent 100%
-  );
-
-  transform: translateX(-100%);
-  animation: shimmer 2.5s infinite;
-
-  pointer-events: none;
+.error-icono {
+    position: relative;
+    color: #ff4d4d; /* Rojo neón */
+    font-size: 20px;
+    filter: drop-shadow(0 0 5px rgba(255, 77, 77, 0.7));
+    z-index: 2; /* Siempre encima del radar */
 }
 
-/* ===== TEXTO ===== */
+/* --- LOS ANILLOS DEL RADAR --- */
+.radar-anillo_error {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid rgba(255, 77, 77, 0.4);
+    border-radius: 50%;
+    animation: pulsoRadarError 1.8s linear infinite;
+    box-sizing: border-box;
+}
+
+/* El segundo anillo va más lento para efecto de eco */
+.radar-anillo_error.lento {
+    animation-delay: 0.6s;
+}
+
+/* --- TEXTO --- */
 .error-mensaje {
-  font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  color: #ffecec;
-
-  text-shadow:
-    0 0 4px #ff4d4d,
-    0 0 8px #ff1e1e,
-    0 0 14px rgba(255, 50, 50, 0.6);
-
-  animation: textGlow 2.4s ease-in-out infinite;
+    color: #f2f2f2; /* Blanco limpio para lectura rápida */
+    font-size: 13px;
+    margin: 0;
+    font-weight: 500;
+    line-height: 1.3;
 }
 
-/* ===== ANIMACIONES ===== */
+/* --- ANIMACIONES --- */
 
-@keyframes errorEnter {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* El radar se expande y desaparece */
+@keyframes pulsoRadarError {
+    0% {
+        transform: scale(0.6);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
 }
 
-@keyframes errorPulse {
-  0%, 100% {
-    box-shadow:
-      0 10px 28px rgba(0, 0, 0, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-  50% {
-    box-shadow:
-      0 16px 40px rgba(255, 50, 50, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-}
-
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 0% 200%;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  60% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@keyframes textGlow {
-  0%, 100% {
-    opacity: 0.9;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* ===== MOBILE ===== */
-@media (max-width: 576px) {
-  .error-contenedor {
-    padding: 12px 14px 12px 30px;
-  }
-
-  .error-mensaje {
-    font-size: 0.8rem;
-  }
+/* Entrada sutil del bloque completo */
+@keyframes fadeInErrorBlock {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

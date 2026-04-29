@@ -5,21 +5,50 @@ export interface idCajaAbierta{
     id_escuela : number
 };
 
+export interface DataTipoCuenta {
+    id_escuela : number,
+    estado : "activos" | "inactivos"
+};
+
+ export  interface metricasTipoCuentas {
+        id_cuenta: number | string;
+        nombre_cuenta: string;
+        inicial_cuenta: number;
+        movimiento_sesion: number;
+        saldo_final_cuenta: number;
+  };
+
+export interface DetalleApertura {
+  id_cuenta: number;
+  nombre_cuenta: string;
+  monto: number  ;
+}
+export interface ListadoTipoCuentas{
+   id_cuenta : number,
+   nombre_cuenta : string,
+   tipo_cuenta : "fisico"  | "virtual",
+};
+
 export interface DataDetalleCaja{
     id_caja : number  | null,
+    id_escuela : number,
     id_categoria : number  | null,
+    id_cuenta : number | null,
+    id_usuario : number | null,
     monto  : number | null,
-    metodo_pago :  MetodoPago | null,
     descripcion : string  | null,
     referencia_id : number  | null,  
+
 }; 
 
 export interface RegistroDetalleCaja {
-    tipo : string,
+    tipo: string,
+    id_escuela: number,
     id_caja : number  | null,
     id_categoria : number  | null,
+    id_usuario : number  | null,
+    id_cuenta  : number  | null,
     monto  : string ,
-    metodo_pago :  MetodoPago | null,
     descripcion : string  | null,
     referencia_id : number  | null,
 }
@@ -58,26 +87,39 @@ export interface MetricaPanelPrincipal {
 
     // El monto final que debería haber sumando el inicial
     balance_total_real: number;
-}
+};
+
+
+export interface MetricasCajaPanelPrincipal{
+    monto_inicial : number,
+    total_ingresos : number,
+    total_egresos  : number,
+    flujo_dia : number,
+    balance_neto  : number,
+};
 
 export interface AperturaCajaInputs {
     id_escuela: number;
     estado: 'abierta' | 'cerrada'; // Lo tipamos como literal para evitar errores de escritura
-    id_usuario: number | null;     // Permitimos null por si aún no se asignó
-    monto_inicial: number;
+    id_usuario_apertura: number | null;   
+    detalle :  DetalleApertura[]// Permitimos null por si aún no se asignó
 };
+
+
 
 export interface AperturaCajaRespuesta {
     id_escuela: number;
-     id : number;
+    id : number;
     id_usuario: number | null;     // Permitimos null por si aún no se asignó
     monto_inicial: number;
+    detalle : DetalleApertura[]
 }
 
 export interface CierreCajaData{
     id_caja : number,
     id_escuela : number
-    monto_final_real : number
+    monto_final_real : number,
+    id_usuario : number,
 };
 
 export interface CierreCajaRespuesta{
@@ -96,13 +138,17 @@ type Estado = "abierta" | "cerrada";
 
 export interface DetalleCajaMovimientoResult {
     id_movimiento: number;
-    monto: number; // Viene como DECIMAL(10,2), en JS es number
-    metodo_pago: MetodoPago;
-    descripcion: string | null; // Puede ser NULL según tu tabla
+    monto: number; 
+    descripcion: string | null;
+    referencia_id: number | null; // Lo agregamos porque está en tu SQL
     nombre_categoria: string;
-    tipo_movimiento: Estado;
+    tipo_movimiento: 'ingreso' | 'egreso'; // Refleja el tipo de movimiento de la categoría
     
-    // Estos campos son los que generamos con DATE() y TIME_FORMAT()
+    // Nuevos campos de la tabla cuentas_escuela
+    nombre_cuenta: string; // Ej: "Efectivo", "Mercado Pago"
+    tipo_cuenta: 'fisico' | 'virtual';
+    
+    // Campos formateados por MySQL
     fecha_grupo: string; // Formato 'YYYY-MM-DD'
     hora_formateada: string; // Formato 'HH:mm'
 };
@@ -130,8 +176,7 @@ export interface DetalleCajaMovimientoResult {
     export interface DataAperturaCaja{
        id_escuela : number | null,
        estado : EstadoCaja
-       id_usuario : null // es por el momento 
-       monto_inicial : number | string
+       id_usuario_apertura : null | number// es por el momento 
     };
 
     export interface scrollStateData {

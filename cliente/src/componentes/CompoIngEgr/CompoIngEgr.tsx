@@ -3,17 +3,13 @@ import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
 import { CompoError } from "../Error/Error";
 
+import { type ListadoTipoCuentas } from "../../tipadosTs/caja.typado";
 import "./compoIngEgr.css";
 
 interface Categoria {
   id_categoria: number;
   nombre_categoria: string;
   tipo_movimiento: string;
-}
-type MetodoPago = "efectivo" | "transferencia" | "credito" | "debito";
-interface Tipo_pago {
-  id_tipo_pago: number;
-  nombre_tipo_pago: MetodoPago;
 }
 
 interface ComporProps {
@@ -29,7 +25,7 @@ interface ComporProps {
   itemLabel?: string; // lo q nesesita el selector para funcionar
 
   // lo que nesesita  el selector tipo de pagos
-  tipos_pago: Tipo_pago[];
+  tipos_pago: ListadoTipoCuentas[];
   onChanceSelectorTipo: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   nameTipoPago?: string;
   itemKeyTipo?: string;
@@ -46,11 +42,18 @@ interface ComporProps {
 }
 
 export const CompoIngEgr = (props: ComporProps) => {
+  const categoriasFiltradas = props.categorias.filter(
+    (cat) =>
+      cat.nombre_categoria !== "Saldo Inicial" &&
+      cat.nombre_categoria !== "Inscripcion" &&
+      cat.nombre_categoria !== "Anulacion Inscripcion",
+  );
+
   return (
     <div className="contenedor_compoIngEgr">
       <p>Categorias Caja : ({props.titulo})</p>
       <SelectorOpt<Categoria>
-        categorias={props.categorias}
+        categorias={categoriasFiltradas}
         itemKey={props.itemKey as keyof Categoria}
         itemLabel={props.itemLabel as keyof Categoria}
         name={props.name}
@@ -58,10 +61,10 @@ export const CompoIngEgr = (props: ComporProps) => {
         labelDefault={props.labelDefault || "Seleccionar Categoría"}
       />
 
-      <SelectorOpt<Tipo_pago>
+      <SelectorOpt<ListadoTipoCuentas>
         categorias={props.tipos_pago}
-        itemKey={props.itemKeyTipo as keyof Tipo_pago}
-        itemLabel={props.itemLabelTipo as keyof Tipo_pago}
+        itemKey={props.itemKeyTipo as keyof ListadoTipoCuentas}
+        itemLabel={props.itemLabelTipo as keyof ListadoTipoCuentas}
         name={props.nameTipoPago}
         onChangeSelector={props.onChanceSelectorTipo}
         labelDefault="Seleccionar medio de pago"

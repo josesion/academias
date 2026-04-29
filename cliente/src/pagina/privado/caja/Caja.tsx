@@ -4,6 +4,8 @@ import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago
 import { Boton } from "../../../componentes/Boton/Boton";
 import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
 import { CompoVerificacion } from "../../../componentes/CompoVerificacion/CompoVerificacion";
+import { CajaVaciaAnimation } from "../../../componentes/animacionDetalle/detalleVacio";
+import { CierreCaja } from "../../../componentes/CierreCaja/cierreCaja";
 
 import { CompoIngEgr } from "../../../componentes/CompoIngEgr/CompoIngEgr";
 
@@ -19,16 +21,10 @@ export const CajaArqueo = () => {
     modalApertura,
     modalCierre,
     modalEgresoIngreso,
-    montoInicial,
-    totalIngresos,
-    totalEgresos,
-    flujoDelDia,
-
     enviando,
     estadoCaja,
     errorGenerico,
-    cachearMontoInicial,
-    apertura,
+    cachearMontoIniciales,
     handleCerrarCaja,
     handleCerrarModalCerrar,
     handleEstadosCaja,
@@ -37,7 +33,6 @@ export const CajaArqueo = () => {
     lastElementRef,
     movimientos,
     scrollState,
-    tipo_pago,
     handleMovimientoExtraordinarioChange,
     handleTipoPagoChange,
     handRegistarMovimientoExtraordinario,
@@ -49,6 +44,9 @@ export const CajaArqueo = () => {
     handleAbrirIngreso,
     handleMemoChange,
     metricasTipoCuentas,
+    listadoCuentasActivas,
+    panelPrincial,
+    aperturaDetalle,
   } = cajasCongif();
 
   interface Categoria {
@@ -56,8 +54,6 @@ export const CajaArqueo = () => {
     nombre_categoria: string;
     tipo_movimiento: string;
   }
-
-  // Categoria para cargar si es q no llega nada
   const categoriasVacias: Categoria[] = [
     {
       id_categoria: 0,
@@ -65,17 +61,21 @@ export const CajaArqueo = () => {
       tipo_movimiento: "ingreso",
     },
   ];
+  const cuentasVacias = [
+    { id_cuenta: 0, nombre_cuenta: "Sin Cuentas", tipo_cuenta: "fisico" },
+  ];
 
   return (
-    <div className="caja_arqueo_contenedor">
-      <div style={{ height: "var(--alto-menu-superior)", width: "100%" }}></div>
+    <div className="caja_arqueo_grid">
+      {/* 1. MODALES (Se mantienen igual) */}
       {modalApertura && (
         <div className="formulario_overlay">
           <AperturaCaja
-            onCancelar={handleAbrirCajaModalCerrar}
-            onChangeMontoInicial={cachearMontoInicial}
+            listadoCuentasActivas={listadoCuentasActivas}
+            aperturaDetalle={aperturaDetalle}
+            onChangeMontoDinamico={cachearMontoIniciales}
             onAbrirCaja={handleAbrirCaja}
-            monto_inicial={apertura.monto_inicial}
+            onCancelar={handleAbrirCajaModalCerrar}
             enviado={enviando}
             errorGenerico={errorGenerico}
           />
@@ -84,12 +84,7 @@ export const CajaArqueo = () => {
 
       {modalCierre && (
         <div className="formulario_overlay">
-          <CompoVerificacion
-            texto="cerrar caja"
-            onConfirmar={handleCerrarCaja}
-            onCancelar={handleCerrarModalCerrar}
-            enviando={enviando}
-          />
+          <CierreCaja />
         </div>
       )}
 
@@ -105,10 +100,10 @@ export const CajaArqueo = () => {
             name="id_categoria"
             onChangeSelector={handleMovimientoExtraordinarioChange}
             labelDefault="Seleccionar Categoría"
-            tipos_pago={tipo_pago}
-            itemLabelTipo="nombre_tipo_pago"
-            itemKeyTipo="nombre_tipo_pago"
-            nameTipoPago="metodo_pago"
+            tipos_pago={listadoCuentasActivas ?? cuentasVacias}
+            itemLabelTipo="nombre_cuenta"
+            itemKeyTipo="id_cuenta"
+            nameTipoPago="id_cuenta"
             onChanceSelectorTipo={handleTipoPagoChange}
             onClickCancelar={handleCerrarModalEgrIng}
             onClickRegistrar={handRegistarMovimientoExtraordinario}
@@ -121,89 +116,90 @@ export const CajaArqueo = () => {
         </div>
       )}
 
-      <div className="caja_arqueo_cabecera">
-        <p className="caja_arqueo_titulo">
-          Gestion de Caja <FcStatistics />
-          <p>({estadoCaja === "abierta" ? "Abierta" : "Cerrada"})</p>
-        </p>
-
-        <div className="caja_arqueo_cabecera_botones">
+      {/* 2. CABECERA */}
+      <header className="caja_header">
+        <div className="titulo_grupo">
+          <h1>
+            Gestión de Caja <FcStatistics />
+          </h1>
+          <span className={`status_pill ${estadoCaja}`}>
+            {estadoCaja === "abierta" ? "Caja Activa" : "Caja Cerrada"}
+          </span>
+        </div>
+        <div className="acciones_principales">
           <Boton
             clase={estadoCaja === "abierta" ? "cancelar" : "agregar"}
-            logo={estadoCaja === "abierta" ? "Cancel" : "Edit"}
             texto={estadoCaja === "abierta" ? "Cerrar Caja" : "Abrir Caja"}
             onClick={handleEstadosCaja}
           />
-          <Boton
-            clase="agregar"
-            texto=" + Ingreso / Extras"
-            onClick={handleAbrirIngreso}
-          />
-          <Boton
-            clase="eliminar"
-            texto=" - Egresos / Gastos"
-            onClick={handleAbrirEgreso}
-          />
         </div>
-      </div>
+      </header>
 
-      <div className="caja_arqueo_info_contenedor">
+      {/* 3. TARJETAS DE RESUMEN */}
+      <section className="caja_resumen_cards">
         <TarjetasNormales
           titulo="Monto Inicial"
-          monto={montoInicial}
+          monto={panelPrincial?.[0]?.monto_inicial ?? 0}
           claseColor="azul"
         />
         <TarjetasNormales
-          titulo="Ingresos"
-          monto={totalIngresos}
+          titulo="Ingresos (+)"
+          monto={panelPrincial?.[0]?.total_ingresos || 0}
           claseColor="verde"
         />
         <TarjetasNormales
-          titulo="Egresos"
-          monto={totalEgresos}
+          titulo="Egresos (-)"
+          monto={panelPrincial?.[0]?.total_egresos || 0}
           claseColor="rojo"
         />
         <TarjetasNormales
-          titulo="Flujo del Dia"
-          monto={flujoDelDia}
+          titulo="Flujo Sesión"
+          monto={panelPrincial?.[0]?.flujo_dia || 0}
           claseColor="negro"
         />
-      </div>
+        <TarjetasNormales
+          titulo="Balance Neto"
+          monto={panelPrincial?.[0]?.balance_neto || 0}
+          claseColor="negro"
+        />
+      </section>
+      {/* 4. SIDEBAR: METODOS DE PAGO */}
 
-      <div className="caja_arqueo_metricas">
-        <div className="caja_arqueo_metricas_detalles">
-          <p>Movimientos del Dia</p>
+      {/* 5. HISTORIAL DE MOVIMIENTOS */}
+      <main className="caja_historial">
+        <div className="historial_header">
+          <h3>Movimientos del Turno</h3>
+          <div className="btn_operativos">
+            <Boton
+              clase="agregar"
+              texto="+ Ingreso"
+              onClick={handleAbrirIngreso}
+            />
+            <Boton
+              clase="eliminar"
+              texto="- Egreso"
+              onClick={handleAbrirEgreso}
+            />
+          </div>
+        </div>
 
+        <div className="scroll_movimientos">
           <MovientoCaja movimientos={movimientos} />
-
-          {/* Solo mostramos el sensor y los mensajes si hay al menos un movimiento */}
           {movimientos.length > 0 && (
-            <div
-              ref={lastElementRef}
-              style={{ height: "40px", textAlign: "center", marginTop: "10px" }}
-            >
-              {scrollState?.loading && <p>Cargando más movimientos...</p>}
-
-              {scrollState?.hasMore === false && (
-                <p style={{ color: "gray" }}>— Fin del historial —</p>
-              )}
+            <div ref={lastElementRef} className="scroll_sensor">
+              {scrollState?.loading && <p>Cargando...</p>}
+              {!scrollState?.hasMore}
             </div>
           )}
-
-          {/*  Un mensaje si la caja está realmente vacía */}
           {movimientos.length === 0 && !scrollState?.loading && (
-            <p
-              style={{ textAlign: "center", color: "gray", marginTop: "20px" }}
-            >
-              No hay movimientos registrados hoy.
-            </p>
+            <CajaVaciaAnimation />
           )}
         </div>
-        <div className="caja_arqueo_metricas_metodo_pago">
-          <p>Resumens Metodo Pago</p>
+
+        <aside className="caja_sidebar_pagos">
           <PanelMetodoPago cuentas={metricasTipoCuentas} />
-        </div>
-      </div>
+        </aside>
+      </main>
     </div>
   );
 };

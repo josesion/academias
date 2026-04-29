@@ -4,16 +4,20 @@ import { useIncripcionesUsuarios } from "../hookNegocios/Inscripciones";
 import { idCajaFuntion } from "../utils/idCaja";
 
 //Seccion de Tipados--------------------------------------
-import  { type DataCaja , type DataMetricasResult, type DataAperturaCaja,
+import  { type DataCaja , type  DetalleApertura, type DataAperturaCaja,
           type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData,
-          type Categoria,  type RegistroDetalleCaja, type  Tipo_pago
+          type Categoria,  type  RegistroDetalleCaja, type metricasTipoCuentas,
+          type ListadoTipoCuentas, type MetricasCajaPanelPrincipal,
+        
         } from "../tipadosTs/caja.typado"
+
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 
 
 interface DataCajaUsuariosConfig {
     id_escuela : number, 
+    id_usuario : number,
     
     servicios : {
          metricasPanelCaja : ServicioCrud,
@@ -23,28 +27,10 @@ interface DataCajaUsuariosConfig {
          movimientoCajaDetalle : ServicioCrud,
          listadoCategoriaCaja : ServicioCrud,
          registrarMovimientoCaja : ServicioCrud,
+         listadoTipoCuentas : ServicioCrud,
+         metricasPanelPrincipal :ServicioCrud
     }
 };
-
-
-  const tipo_pago: Tipo_pago[] = [
-    {
-      id_tipo_pago: 1,
-      nombre_tipo_pago: "efectivo",
-    },
-    {
-      id_tipo_pago: 2,
-      nombre_tipo_pago: "transferencia",
-    },
-    {
-      id_tipo_pago: 3,
-      nombre_tipo_pago: "credito",
-    },
-    {
-      id_tipo_pago: 4,
-      nombre_tipo_pago: "debito",
-    },
-  ];
 
 export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
 
@@ -56,35 +42,19 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     const [modalCierre , setModalCierre] = useState<boolean>(false);
     const [dataCaja, setDataCaja] = useState<DataCaja>({id_caja : null , id_escuela : config.id_escuela});
     const [apertura ,setApertura] = useState<DataAperturaCaja>({
-        id_escuela : config.id_escuela , estado : "abierta", id_usuario : null, monto_inicial : "" 
+        id_escuela : config.id_escuela , estado : "abierta", id_usuario_apertura : config.id_usuario 
     });
+    const [aperturaDetalle, setAperturaDetalle] = useState<DetalleApertura[]>([]);
+
    //------------------  metricas de caja  ------------------  .
     const [disparadorRefresco , setDisparadorRefresco] = useState<number>(0);
-    const [montoInicial, setMontoInicial] = useState<number>(0);
-    const [totalIngresos, setTotalIngresos] = useState<number>(0);
-    const [totalEgresos, setTotalEgresos] = useState<number>(0);
-    const [flujoDelDia, setFlujoDelDia] = useState<number>(0);
-    const [totalEfectivo, setTotalEfectivo] = useState<number>(0);
-    const [totalTransferencia, setTotalTransferencia] = useState<number>(0);
-    const [totalDebito, setTotalDebito] = useState<number>(0);
-    const [totalCredito, setTotalCredito] = useState<number>(0);
-    const [balanceTotalReal, setBalanceTotalReal] = useState<number>(0);
+    const [ panelPrincial , setPanelPrincial ] = useState<MetricasCajaPanelPrincipal[] | null >( null );
+
 
     const [errorGenerico, setErrorGenerico] = useState< string | null >(null);
     const [enviando , setEnviando] = useState<boolean>(false);
     const [estadoCaja, setEstadoCaja] = useState<EstadoCaja>("cerrada");
 
-    const actualizarMetricas = (data : DataMetricasResult) => {
-        setMontoInicial(Number(data.monto_inicial));
-        setTotalIngresos(Number(data.total_ingresos));
-        setTotalEgresos(Number(data.total_egresos));
-        setFlujoDelDia(Number(data.flujo_del_dia));
-        setTotalEfectivo(Number(data.total_efectivo));
-        setTotalTransferencia(Number(data.total_transferencia));
-        setTotalDebito(Number(data.total_debito));
-        setTotalCredito(Number(data.total_credito));
-        setBalanceTotalReal(Number(data.balance_total_real));
-    };
 
     //------------------  Estados detalle de caja ------------------
     const observer = useRef<IntersectionObserver | null>(null);
@@ -102,16 +72,33 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     const [modalEgresoIngreso , setModalEgresoIngreso] = useState<boolean>(false);
     const [verificadorSelector , setVerificadorSelector]= useState<boolean>(false); 
     const [verificadorSelectorTipo , setVerificadorSelectorTipo]= useState<boolean>(false);
+
+
     const [movimientoExtraordinario, setMovimientoExtraordinario] = useState<RegistroDetalleCaja>({
         id_caja: dataCaja.id_caja ,
         id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
+        id_cuenta : null,
+        id_usuario : config.id_usuario,
         monto: "",
-        metodo_pago: "efectivo",
         descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
-        tipo : "",
-        referencia_id : 0 // es cerro por defecto ya q no es una inscripcion     
+        referencia_id : 0 ,// es cerro por defecto ya q no es una inscripcion     
+        id_escuela : config.id_escuela,
+        tipo :""
     });
     const [listadoExtraordinario , setListadoExtraordionario] = useState<Categoria[] | null>( null);
+
+   //------------------- Estados Tipo Cuentas ---------------------
+   const [listadoCuentasActivas, setListadoCuentasActivas] = useState<ListadoTipoCuentas[]>([]);
+
+   // --filtroCuentasEstatica -- queda fijo por q solo en caja se muestran las cuentas activas de esa escuela 
+   const filtroCuentasEstatica = {
+        id_escuela : config.id_escuela,
+        estado : "activos"
+   }; 
+
+  //------------------- Estado para el panel de metricas de cuentas ---------------------
+
+  const [ metricasTipoCuentas, setMetricasTipoCuentas] = useState<metricasTipoCuentas[]  | null>([]);
 
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -137,22 +124,29 @@ const handleMovimientoExtraordinarioChange = (e: React.ChangeEvent< HTMLSelectEl
     };
 };
 
+    // --- Cerramos el modal y seteamos a 0 los estados
 const handleCerrarModalEgrIng = () =>{
+
     setListadoExtraordionario( null );
     setMovimientoExtraordinario({
         id_caja: dataCaja.id_caja ,
         id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
         monto: "",
-        metodo_pago: "efectivo",
+        id_cuenta : null,
+        id_usuario : config.id_usuario,
         descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
-        tipo : "",
-        referencia_id : 0 // e
+        referencia_id : 0 ,
+        id_escuela : config.id_escuela,
+        tipo : ""
     });
     setModalEgresoIngreso(false);
     setErrorGenerico(null)
 };
 
+
+   // --- capturamos el id del tipo de cuenta
 const handleTipoPagoChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
+ 
     if (e.target.value) {
         setMovimientoExtraordinario( prev => ({
             ...prev,
@@ -164,6 +158,7 @@ const handleTipoPagoChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
     };
 };
 
+  // --- capturamos el monto para tipo de cuentas
 const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
 
@@ -181,7 +176,7 @@ const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     };
 };
 
-
+   // --- capturamos  la descroipcion si es q se le coloca algo en ella     
 const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
    const { value, name } = e.target;
     if (value === "" ){
@@ -198,21 +193,32 @@ const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 
 };
 
-
+    // --- Registramos el movimiento INGRESO/EGRESO 
 const handRegistarMovimientoExtraordinario = async () => {
 
-    if ( !verificadorSelector  || movimientoExtraordinario.monto === "" || !verificadorSelectorTipo  ) {
+    if (dataCaja.id_caja === null){
+         return  setErrorGenerico("Caja esta cerrada")
+    }; 
+    if ( !verificadorSelector  || movimientoExtraordinario.monto === "" || !verificadorSelectorTipo   ) {
         setErrorGenerico("Verificar los campos del formulario")
     }else{
-        const servicioApiFetch =config.servicios.registrarMovimientoCaja;
-        const registroMovimientoResult = await servicioApiFetch({
+
+        const data = {
             id_caja       : dataCaja.id_caja,
+            id_escuela    : Number(config.id_escuela), 
             id_categoria  : Number(movimientoExtraordinario.id_categoria),
             monto         : Number(movimientoExtraordinario.monto),
-            metodo_pago   : movimientoExtraordinario.metodo_pago,
+            id_cuenta     : Number(movimientoExtraordinario.id_cuenta),
+            id_usuario    : Number(movimientoExtraordinario.id_usuario),
             descripcion   : movimientoExtraordinario.descripcion,
-            referencia_id : 0   
-        }); 
+            referencia_id : 0       
+        };
+
+
+        const servicioApiFetch =config.servicios.registrarMovimientoCaja;
+        const registroMovimientoResult = await servicioApiFetch(data); 
+
+
         if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
             setDisparadorRefresco( disparadorRefresco + 1);
             setErrorGenerico(null);
@@ -228,9 +234,9 @@ const handRegistarMovimientoExtraordinario = async () => {
             setMovimientoExtraordinario( prev =>  ({
                 ...prev,
                 monto: "",
-                metodo_pago: "efectivo",
                 descripcion: "",
-                tipo : "",
+                id_cuenta : null,
+                id_categoria : null,
                 referencia_id : 0 
             }));
             setModalEgresoIngreso(false);
@@ -241,7 +247,7 @@ const handRegistarMovimientoExtraordinario = async () => {
 
 };
 
-
+ // --- Seteamos los estados para abrir y determinar q el listado sea Ingreso
 const handleAbrirIngreso =  async () => {
     setMovimientoExtraordinario( prev => ({ ...prev, tipo : "ingreso"}));
     setModalEgresoIngreso(true);
@@ -255,6 +261,7 @@ const handleAbrirIngreso =  async () => {
     setListadoExtraordionario(listadoIngresos.data);
 };
 
+ // --- Seteamos los estados para abrir y determinar q listado sea Egreso
 const handleAbrirEgreso = async () => {
     setMovimientoExtraordinario( prev => ({ ...prev, tipo : "egreso"}));
     setModalEgresoIngreso(true);
@@ -298,39 +305,79 @@ const handleEstadosCaja = () =>{
 };
 
 // ──────────────────────────────────────────────────────────────
-//Handle para Cachear el mono inicial
+//Handle para Cachear los monto iniciales
 // ────────────────────────────────────────────────────────────── 
 
-const cachearMontoInicial = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = e.target;
+   // --- Capturamos el monto de las cuentas para determinar el saldo inical de cada una
+const cachearMontoIniciales = (id_cuenta: number, nombre: string, valor: string) => {
 
-    setApertura((prev) => ({
-        ...prev,
-        [name]: Number(value)
-    }));
+    const montoFinal = valor === "" ? "" : Number(valor);
+
+    if (valor !== "" && isNaN(Number(valor))) return;
+
+    setAperturaDetalle((prev) => {
+        const existe = prev.find((det) => det.id_cuenta === id_cuenta);
+
+        if (existe) {
+            return prev.map((det) =>
+                det.id_cuenta === id_cuenta 
+                    ? { ...det, monto: montoFinal as any }
+                    : det
+            );
+        } else {
+            return [...prev, { id_cuenta, nombre_cuenta: nombre, monto: montoFinal as any }];
+        }
+    });
 };
+
+
+
 
 // ──────────────────────────────────────────────────────────────
 //  Handle para Abrir caja 
 // ────────────────────────────────────────────────────────────── 
 
 const handleAbrirCaja = async() =>{
+
     try{
-      setEnviando(true);
-      const servicioApiFetch = config.servicios.abrirCaja;
-      const aperturaCajaResult = await servicioApiFetch(apertura);
-       
+        setEnviando(true);
+        // Si es q un monto es "" lo limpiamos o lo colocamos en  0
+        const detalleLimpiado = aperturaDetalle.map((item) => {
+            const montoRaw = item.monto as unknown; 
+            return {
+                    ...item,
+                    monto: montoRaw === "" ? 0 : Number(montoRaw)
+            };
+        });
+        
+        const data = {
+            id_escuela : apertura.id_escuela,
+            estado : apertura.estado,    
+            id_usuario_apertura : apertura.id_usuario_apertura,    
+            detalle : detalleLimpiado
+        };
+
+       const servicioApiFetch = config.servicios.abrirCaja;
+       const aperturaCajaResult = await servicioApiFetch(data);
+     
         if (aperturaCajaResult.code === "CAJA_ABIERTA_OK"){
             setModalApertura(false)
+          
+            setScrollState({
+                loading: false,
+                hasMore: true,
+                offset: 0,
+                limite: 5
+            });
+            setMovimientos([]); 
+           
             setDataCaja( prev => ({
                 ...prev,
-                id_caja : aperturaCajaResult.data.id
+                id_caja : aperturaCajaResult.data.id_caja
             }));
-            setEstadoCaja("abierta");
-            setApertura( prev =>({
-                ...prev,
-                monto_inicial : ""
-            }));
+    
+          setEstadoCaja("abierta");
+
         }else{
             setErrorGenerico(aperturaCajaResult.errorsDetails?.[0].message || "Error al abrir caja");
         };
@@ -353,12 +400,13 @@ const handleCerrarCaja =async () =>{
         const dataCierre = {
             id_caja : dataCaja.id_caja,
             id_escuela : config.id_escuela,
-            monto_final_real : balanceTotalReal
+            monto_final_real :  panelPrincial?.[0]?.balance_neto,
+            id_usuario : config.id_usuario 
         };
-      
+
         const servicioApiFetch = config.servicios.cerrarCaja;
         const cierreCajaResult = await servicioApiFetch(dataCierre);
-       
+
         if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
            
             setDataCaja( prev => ({
@@ -385,7 +433,20 @@ const handleCerrarCaja =async () =>{
 // ────────────────────────────────────────────────────────────── 
 
 const handleAbrirCajaModalCerrar = () =>{
+
     setModalApertura(false);
+    setApertura({ id_escuela : config.id_escuela , estado : "abierta", id_usuario_apertura : config.id_usuario });
+    setMovimientoExtraordinario({
+        id_caja: dataCaja.id_caja ,
+        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
+        id_cuenta : null,
+        id_usuario : config.id_usuario,
+        monto: "",
+        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
+        referencia_id : 0 ,// es cerro por defecto ya q no es una inscripcion     
+        id_escuela : config.id_escuela,
+        tipo :""
+    });
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -467,7 +528,7 @@ const lastElementRef = useCallback((node: HTMLDivElement | null) => {
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-//                      USEEFECT SECCION 1-IDCAJA    2-METRICAS   3-DETALLE DE CAJA 
+//                      USEEFECT SECCION 1-IDCAJA    2-METRICAS   3-DETALLE DE CAJA  4- LISTA TIPO CUENTAS  5-METRICAS PANEL PRINCIPAL
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
 // ──────────────────────────────────────────────────────────────
@@ -498,58 +559,37 @@ useEffect( ()=> {
 },[]);  
 
 // ──────────────────────────────────────────────────────────────
-//Obtener las metricas para el panel 
+//Obtener las metricas para el panel metodos de pago
 // ────────────────────────────────────────────────────────────── 
-
-  interface metricasTipoCuentas {
-       id_cuenta : number | string,
-       nombre_cuenta : string,
-       tipo_cuenta  : string | null,
-       saldo : string
-  };
-
-const [ metricasTipoCuentas, setMetricasTipoCuentas] = useState<metricasTipoCuentas[]  | null>([]);
-
-// console.log(metricasTipoCuentas)
 
 useEffect( ()=> {
     const metricas = async () => {
         const servicioApiFetch = config.servicios.metricasPanelCaja;
         const metricasCajaResult = await servicioApiFetch(dataCaja);
-        // nuevo code correcto "METRICAS_CAJA_CUENTAS_OK"
-        console.log(metricasCajaResult)
+
         if (metricasCajaResult.code ===  "METRICAS_CAJA_CUENTAS_OK" ){
+           // console.log(metricasCajaResult)
+        // const totalCuenta =metricasCajaResult.data.find(
+        //      (cuenta: metricasTipoCuentas)  => cuenta.id_cuenta === "TOTAL" );
+        //         setPanelPrincial(prev => {
+        //             if (!prev || prev.length === 0) return prev;
+        //             return [
+        //                 {
+        //                     ...prev[0], 
+        //                     balance_neto: totalCuenta ? Number(totalCuenta.saldo_actual || 0) : 0
+        //                 }
+        //             ];
+        //         });
 
-        const totalCuenta =metricasCajaResult.data.find(
-             (cuenta: metricasTipoCuentas)  => cuenta.id_cuenta === "TOTAL" );
-
-            setBalanceTotalReal(totalCuenta ? Number(totalCuenta.saldo_actual || 0 ) : 0) 
             setMetricasTipoCuentas(metricasCajaResult.data)
         }else{
             setMetricasTipoCuentas(null)
-            setBalanceTotalReal(0);
+            // setPanelPrincial(prev => 
+            //     prev && prev.length > 0 
+            //         ? [{ ...prev[0], balance_neto: 0 }] 
+            //         : prev
+            // );
         };
-
-//--------------------- Codigo antiguo con metricas estaticas 
-
-        // if (metricasCajaResult.code === "METRICAS_OK"){
-                
-        //         actualizarMetricas(metricasCajaResult.data);
-        //         setErrorGenerico(null);
-        // }
-        // else{
-        //     actualizarMetricas({
-        //         monto_inicial: 0,
-        //         total_ingresos: 0,
-        //         total_egresos: 0,
-        //         flujo_del_dia: 0,
-        //         total_efectivo: 0,
-        //         total_transferencia: 0,
-        //         total_debito: 0,
-        //         total_credito: 0,
-        //         balance_total_real: 0
-        //      });
-        // };
     };
 
     metricas();
@@ -562,10 +602,11 @@ useEffect( ()=> {
 // ────────────────────────────────────────────────────────────── 
 
 useEffect(() => {
+
     if (dataCaja.id_caja) {
         cargarMovimientos();
     } else {
-        // Si el ID es null (Caja cerrada), reseteamos todo
+      
         setMovimientos([]);
         setScrollState({
             loading: false,
@@ -576,17 +617,58 @@ useEffect(() => {
     }
 }, [dataCaja.id_caja, cargarMovimientos]);
 
-    return{
-        montoInicial,
-        totalIngresos, 
-        totalEgresos, 
-        flujoDelDia, 
-        totalEfectivo, 
-        totalTransferencia, 
-        totalDebito, 
-        totalCredito, 
-        balanceTotalReal, 
+// ──────────────────────────────────────────────────────────────
+// Obtener el listado de tipo cuentas activas para el selector de movimiento extraordinario
+// ──────────────────────────────────────────────────────────────
+     
+useEffect( ()=> {
 
+    const obtenerListadoCuentas = async () => {
+        const servicioApiFetch = config.servicios.listadoTipoCuentas;
+        const resultListacoCuentas = await servicioApiFetch( filtroCuentasEstatica);
+       
+        if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
+            setListadoCuentasActivas(resultListacoCuentas.data);
+            const detallesIniciales = resultListacoCuentas.data.map((cuenta: ListadoTipoCuentas) => ({
+                id_cuenta: cuenta.id_cuenta,
+                nombre_cuenta: cuenta.nombre_cuenta,
+                monto: "" // Nacen en cero para que no fallen al enviar
+            }));
+
+            setAperturaDetalle(detallesIniciales);
+        }else{
+            setListadoCuentasActivas([]);
+            setErrorGenerico(resultListacoCuentas.message || "Error sin listado cuentas" );
+        };
+    };
+
+    obtenerListadoCuentas();
+
+}, []);
+
+// ──────────────────────────────────────────────────────────────
+// Obtener los montos de las metricas del panel proncipal
+// ──────────────────────────────────────────────────────────────
+
+useEffect( ()=> {
+
+    const metricasPrincipalCaja = async () =>{
+        const servicioApiFetch = config.servicios.metricasPanelPrincipal;
+        const metricasResult = await servicioApiFetch(dataCaja);
+      
+        if (metricasResult.code === 'METRICAS_PRINCIPAL_OK'){   
+            setPanelPrincial(metricasResult.data);  
+        }else{
+            setPanelPrincial(null);
+        };
+    };
+
+    metricasPrincipalCaja();
+
+}, [ dataCaja.id_caja , actualizarIngresoInscipcion, modalApertura , movimientoExtraordinario] );
+
+
+    return{
         apertura,
 
         handleEstadosCaja,
@@ -595,7 +677,7 @@ useEffect(() => {
         handleCerrarModalCerrar,
         handleCerrarCaja,
 
-        cachearMontoInicial,
+        cachearMontoIniciales,
 
         errorGenerico,
 
@@ -609,7 +691,7 @@ useEffect(() => {
         movimientos,
         scrollState,
 
-        tipo_pago,
+       
         movimientoExtraordinario,
         listadoExtraordinario,
         handleMovimientoExtraordinarioChange,
@@ -621,7 +703,11 @@ useEffect(() => {
         handleAbrirEgreso,
         handleAbrirIngreso,
 
-        metricasTipoCuentas
+        metricasTipoCuentas,
+        listadoCuentasActivas,
+        panelPrincial,
+    
 
+        aperturaDetalle,
     };
 };    
