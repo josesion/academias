@@ -19,56 +19,6 @@ import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA,
 
 
 /**
- * Controlador para gestionar la apertura de una nueva caja.
- * * Extrae los datos del cuerpo de la petición, delega la lógica al servicio de cajas
- * y retorna una respuesta formateada según el resultado de la operación.
- * * @async
- * @function abrirCaja
- * @param {Request} req - Objeto de petición de Express.
- * @param {Object} req.body - Datos de la caja.
- * @param {number} req.body.id_escuela - ID de la escuela donde se abre la caja.
- * @param {string} req.body.estado - Estado inicial de la caja (ej. 'abierta').
- * @param {number} req.body.id_usuario - ID del usuario que realiza la apertura.
- * @param {number} req.body.monto_inicial - Saldo inicial de la caja.
- * @param {Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<Response>} Retorna una respuesta HTTP exitosa (200) o un error controlado.
- * * @example
- * // Éxito: retorna enviarResponse con status 200 y la data de la caja.
- * // Error: retorna enviarResponseError basado en MAPA_ABRIR_CAJA.
- */
-const abrirCaja = async( req : Request, res : Response) =>{
-       
-    const dataCaja = {
-        id_escuela : Number( req.body.id_escuela),
-        estado     : req.body.estado,
-        id_usuario_apertura :Number(req.body.id_usuario_apertura)
-    };
-
-   const abrirCajaResult = await cajaServicio.abrirCajaServicio( dataCaja );
-
-   const config = MAPA_ABRIR_CAJA[abrirCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
-
-   if ( config.status === CodigoEstadoHTTP.OK){
-        return enviarResponse(
-                res,
-                config.status,
-                abrirCajaResult.message || config.msg,
-                abrirCajaResult.data,
-                undefined,
-                abrirCajaResult.code
-        );  
-   }else{
-        return enviarResponseError(
-                res,
-                config.status,
-                abrirCajaResult.message || config.msg,
-                abrirCajaResult.code
-        );
-   };
-
-};
-
-/**
  * Controlador para registrar un nuevo movimiento (detalle) en una caja.
  * * Extrae y castea los datos de la petición, delega la creación del movimiento
  * al servicio de cajas y gestiona la respuesta HTTP según el resultado.
@@ -89,6 +39,7 @@ const abrirCaja = async( req : Request, res : Response) =>{
 const detalleCaja = async ( req : Request, res : Response ) => {
     const dataDetalle = {
         id_caja : Number(req.body.id_caja),
+        id_escuela : Number(req.body.id_escuela),
         id_categoria : Number(req.body.id_categoria),
         id_cuenta : Number(req.body.id_cuenta),
         id_usuario : Number(req.body.id_usuario),
@@ -122,30 +73,40 @@ const detalleCaja = async ( req : Request, res : Response ) => {
 };
 
 /**
- * Controlador para gestionar el cierre de una caja activa.
- * * Recibe los datos del arqueo físico, identifica al usuario que cierra y 
- * delega al servicio la actualización de saldos y estados.
- * * @async
- * @function cierreCaja
+ * Controlador para procesar el cierre definitivo de una caja abierta.
+ * * Esta función recibe los datos del arqueo físico, valida los montos contra el sistema,
+ * y persiste el desglose detallado en formato JSON junto con las observaciones.
+ *
+ * @async
  * @param {Request} req - Objeto de petición de Express.
  * @param {Object} req.body - Cuerpo de la petición.
- * @param {number} req.body.id_caja - ID único de la caja a cerrar.
- * @param {number} req.body.monto_final_real - Monto físico contado por el usuario.
- * @param {number|string} req.body.id_escuela - ID de la escuela (se castea a Number).
- * @param {number|string} req.body.id_usuario - ID del usuario que cierra (se castea a Number).
+ * @param {number} req.body.id_caja - Identificador único de la caja a cerrar.
+ * @param {number|string} req.body.id_usuario_cierre - ID del usuario que realiza la operación.
+ * @param {number|string} req.body.id_escuela - ID de la institución a la que pertenece la caja.
+ * @param {number|string} req.body.monto_final_real - Suma total de dinero físico/digital contado por el usuario.
+ * @param {number|string} req.body.monto_sistema - Monto total calculado por el software basándose en movimientos.
+ * @param {number|string} req.body.diferencia_total - Resultado de la resta (monto_final_real - monto_sistema).
+ * @param {Array<Object>} req.body.arqueo_detalle - Listado detallado por cuenta (id_cuenta, nombre, sistema, real, dif).
+ * @param {string|null} req.body.observaciones_cierre - Texto de justificación en caso de diferencias o notas adicionales.
  * @param {Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<Response>} Respuesta HTTP formateada según el MAPA_CERRAR_CAJA.
+ * * @returns {Promise<Response>} Respuesta estandarizada con el resultado de la operación (Success o Error).
  */
 const cierreCaja = async( req : Request, res : Response) =>{
 
     const data = { 
         id_caja : req.body.id_caja,
-        monto_final_real : req.body.monto_final_real,
-        id_escuela : Number(req.body.id_escuela),
         id_usuario_cierre : Number(req.body.id_usuario_cierre),
+        id_escuela : Number(req.body.id_escuela), 
+        monto_final_real : Number(req.body.monto_final_real) ,
+        monto_sistema : Number(req.body.monto_sistema),
+        diferencia_total : Number(req.body.diferencia_total),
+        arqueo_detalle : req.body.arqueo_detalle,
+        observaciones_cierre : req.body.observaciones_cierre
     };
 
-     const cierreCajaResult = await cajaServicio.cierreCajaServicio( data );
+
+
+    const cierreCajaResult = await cajaServicio.cierreCajaServicio( data );
    
     const config = MAPA_CERRAR_CAJA[ cierreCajaResult.code] || ERROR_INTERNO_SERVIDOR;
 
@@ -294,6 +255,7 @@ const movimientosCaja = async ( req : Request, res : Response) => {
     };      
 };
 
+
 /**
  * Obtiene las métricas financieras principales de una caja específica.
  * * Esta función actúa como controlador para consultar el estado actual de la caja,
@@ -435,8 +397,69 @@ const listaTipoCuentas = async ( req : Request , res : Response) => {
   };
 };
 
+
+
+/**
+ * Controlador para la apertura de caja mediante una transacción atómica.
+ * * Este endpoint realiza las siguientes acciones:
+ * 1. Mapea y normaliza los datos recibidos en el cuerpo de la petición.
+ * 2. Invoca al servicio de apertura que valida la existencia de cajas abiertas
+ * y ejecuta la inserción de cabecera y detalles en la base de datos.
+ * 3. Centraliza la respuesta HTTP utilizando un mapa de configuración basado
+ * en el código de resultado del servicio.
+ * * @async
+ * @function abrirCajaTransaccion
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.body - Cuerpo de la petición.
+ * @param {number|string} req.body.id_escuela - ID de la institución.
+ * @param {string} req.body.estado - Estado inicial de la caja (ej: 'abierta').
+ * @param {number|string} req.body.id_usuario_apertura - ID del usuario que realiza la acción.
+ * @param {Array<Object>} req.body.detalle - Listado de cuentas y montos iniciales.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * * @returns {Promise<Response>} Retorna una respuesta JSON estructurada mediante `enviarResponse` 
+ * o `enviarResponseError` según el resultado del servicio.
+ * * @example
+ * // Códigos de resultado esperados:
+ * // - CAJA_ABIERTA_OK (200): Apertura exitosa.
+ * // - CAJA_ABIERTA (400/409): Ya existe una caja abierta para la escuela.
+ * // - ERROR_SERVIDOR (500): Fallo inesperado en la transacción o base de datos.
+ */
+const abrirCajaTransaccion =async (req : Request , res : Response) => {
+
+    const dataCaja = {
+        id_escuela : Number( req.body.id_escuela),
+        estado     : req.body.estado,
+        id_usuario_apertura :Number(req.body.id_usuario_apertura),
+        detalle : req.body.detalle
+    };
+
+   const abrirCajaResult = await cajaServicio.aperturaCajaTransaccion( dataCaja );
+
+
+   const config = MAPA_ABRIR_CAJA[abrirCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
+
+   if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+                res,
+                config.status,
+                abrirCajaResult.message || config.msg,
+                abrirCajaResult.data,
+                undefined,
+                abrirCajaResult.code
+        );  
+   }else{
+        return enviarResponseError(
+                res,
+                config.status,
+                abrirCajaResult.message || config.msg,
+                abrirCajaResult.code
+        );
+   };
+
+
+};
+
 export const method ={
-    abrirCaja : tryCatch( abrirCaja ),
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
     idCajaAbierta : tryCatch( idCajaAbierta ),
@@ -445,4 +468,5 @@ export const method ={
     listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
     listaMetricasCaja : tryCatch( listaMetricasCaja),
     listaTipoCuentas : tryCatch( listaTipoCuentas),
+    abrirCajaTransaccion : tryCatch( abrirCajaTransaccion )
 };

@@ -6,13 +6,16 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
+import {  iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 // ──────────────────────────────────────────────────────────────
 // Sección de  Typados
 // ──────────────────────────────────────────────────────────────
 import { VerificarCajaInputs, AbrirCajaInputs, 
          DetalleCajaInputs, CierreCajaInputs,
          IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
-         ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs  } from "../squemas/cajas"; 
+         ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs,
+         AperturaCajaInput, CierresCajaInputs,   
+        } from "../squemas/cajas"; 
 import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
@@ -195,106 +198,118 @@ const arqueoCaja = async ( data : CierreCajaInputs )
  * * @example
  * const metricas = await metricaPanelPrincipal({ id_caja: 1, id_escuela: 10 });
  */
-const metricaPanelPrincipal = ( data : CierreCajaInputs )
-: Promise<TipadoData<MetricaPanelPrincipal>> => {
-   const slq : string = `SELECT 
-                            c.id_caja,
-                            c.monto_inicial,
-                            -- 1. Totales Generales
-                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
-                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+// const metricaPanelPrincipal = ( data : CierreCajaInputs )
+// : Promise<TipadoData<MetricaPanelPrincipal>> => {
+//    const slq : string = `SELECT 
+//                             c.id_caja,
+//                             c.monto_inicial,
+//                             -- 1. Totales Generales
+//                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
+//                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
                             
-                            -- 2. Total del Día (Monto inicial + ingresos - egresos)
-                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                                                ELSE 0 END), 0)) AS flujo_del_dia,
+//                             -- 2. Total del Día (Monto inicial + ingresos - egresos)
+//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                                                 ELSE 0 END), 0)) AS flujo_del_dia,
 
-                            -- 3. Desglose por Método de Pago (CORREGIDO: Ahora descuentan egresos)
+//                             -- 3. Desglose por Método de Pago (CORREGIDO: Ahora descuentan egresos)
                             
-                            -- Efectivo (Monto inicial + ingresos efectivo - egresos efectivo)
-                            (c.monto_inicial + COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                                                WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                                                ELSE 0 END), 0)) AS total_efectivo,
+//                             -- Efectivo (Monto inicial + ingresos efectivo - egresos efectivo)
+//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                                                 WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                                                 ELSE 0 END), 0)) AS total_efectivo,
                             
-                            -- Transferencia
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                            WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                            ELSE 0 END), 0) AS total_transferencia,
+//                             -- Transferencia
+//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                             WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                             ELSE 0 END), 0) AS total_transferencia,
 
-                            -- Débito
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                            WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                            ELSE 0 END), 0) AS total_debito,
+//                             -- Débito
+//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                             WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                             ELSE 0 END), 0) AS total_debito,
 
-                            -- Crédito
-                            COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                            WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                            ELSE 0 END), 0) AS total_credito,
+//                             -- Crédito
+//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                             WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                             ELSE 0 END), 0) AS total_credito,
 
-                            -- 4. Balance Final de Caja
-                            (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                                                ELSE 0 END), 0)) AS balance_total_real
+//                             -- 4. Balance Final de Caja
+//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+//                                                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+//                                                                 ELSE 0 END), 0)) AS balance_total_real
 
-                        FROM cajas c
-                        LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
-                        LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-                        WHERE c.id_caja = ? AND c.id_escuela = ?
-                        GROUP BY c.id_caja, c.monto_inicial;`;
-   const valores : unknown[] = [ data.id_caja, data.id_escuela];     
-   return buscarExistenteEntidad({
-        slqEntidad : slq,
-        valores,
-        entidad : "METRICAS_CAJA"
-   });                 
-};
+//                         FROM cajas c
+//                         LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
+//                         LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+//                         WHERE c.id_caja = ? AND c.id_escuela = ?
+//                         GROUP BY c.id_caja, c.monto_inicial;`;
+//    const valores : unknown[] = [ data.id_caja, data.id_escuela];     
+//    return buscarExistenteEntidad({
+//         slqEntidad : slq,
+//         valores,
+//         entidad : "METRICAS_CAJA"
+//    });                 
+// };
 
 
 /**
- * Ejecuta la actualización en la base de datos para cerrar una caja abierta.
- * * Esta función actualiza los montos finales, registra al usuario que realiza el cierre
- * y cambia el estado de la caja, siempre que pertenezca a la escuela indicada.
+ * Ejecuta la sentencia SQL para actualizar y cerrar una caja en la base de datos.
  * * @async
- * @function cierreCaja
- * @param {Object} data - Datos para el cierre de caja.
- * @param {number} data.id_caja - ID único de la caja a cerrar.
- * @param {number} data.monto_final_real - Monto físico reportado por el usuario.
- * @param {number} data.monto_sistema - Monto calculado automáticamente por el sistema.
- * @param {number} data.id_escuela - ID de la escuela para validar la pertenencia.
- * @param {number} data.id_usuario - ID del usuario que cierra (se guarda en id_usuario_cierre).
- * * @returns {Promise<TipadoData<{ id_caja : number, estado : string }>>} Promesa con el resultado de la modificación.
- * * @example
- * const resultado = await cierreCaja({ 
- * id_caja: 1, 
- * monto_final_real: 5500, 
- * monto_sistema: 5500, 
- * id_escuela: 1, 
- * id_usuario: 5 
- * });
+ * @param {CierresCajaInputs} data - Objeto con toda la información validada del arqueo.
+ * @returns {Promise<TipadoData<{ id_caja : number , estado : string}>>} 
+ * Retorna el resultado de la operación MODIFICAR mediante iudEntidad.
  */
-const cierreCaja =async ( data : { id_caja: number, monto_final_real: number, monto_sistema: number, id_escuela : number, id_usuario_cierre : number })
-: Promise<TipadoData<{ id_caja : number , estado : string}>> => {
-    console.log("aqui")
-    const sql : string = `UPDATE cajas 
-                          SET 
-                                monto_sistema = ?, 
-                                monto_final_real =  ?, 
-                                id_usuario_cierre = ?, -- id usuario es el de quien cerro la caja 
-                                estado = 'cerrada', 
-                                fecha_cierre = CURRENT_TIMESTAMP
-                          WHERE id_caja = ? AND  id_escuela = ?;`;
-    const {id_caja , monto_final_real ,monto_sistema, id_usuario_cierre ,id_escuela} =data ;
+const cierreCaja = async (data: CierresCajaInputs): 
+Promise<TipadoData<{ id_caja: number, estado: string }>> => {
+    
+    const sql: string = `UPDATE cajas 
+                            SET 
+                                id_usuario_cierre = ?,      
+                                fecha_cierre = NOW(),        
+                                monto_sistema = ?,           
+                                monto_final_real = ?,        
+                                diferencia_total = ?,        
+                                arqueo_detalle = ?,          
+                                observaciones_cierre = ?,    
+                                estado = 'cerrada'           
+                            WHERE 
+                                id_caja = ?                  
+                                AND estado = 'abierta';`;
 
-    const datosRetorno = { id_caja , estado : "cerrada" }                        
-    const valores : unknown[] = [ monto_sistema, monto_final_real, id_usuario_cierre , id_caja, id_escuela ];
+    const { 
+        id_usuario_cierre, 
+        monto_final_real, 
+        monto_sistema, 
+        diferencia_total, 
+        arqueo_detalle, 
+        observaciones_cierre, 
+        id_caja 
+    } = data;
+
+    const datosRetorno = { id_caja, estado: "cerrada" };
+
+    // IMPORTANTE: arqueo_detalle debe ir como string JSON para que MySQL lo acepte correctamente
+    const valores: unknown[] = [
+        id_usuario_cierre, 
+        monto_sistema,           
+        monto_final_real, 
+        diferencia_total, 
+        JSON.stringify(arqueo_detalle), 
+        observaciones_cierre, 
+        id_caja
+    ];
+
     return await iudEntidad({
-        slqEntidad : sql ,
-        valores ,
-        metodo : "MODIFICAR",
-        entidad : "CIERRE_CAJA",
-        datosRetorno : datosRetorno
-    });                       
+        slqEntidad: sql,
+        valores,
+        metodo: "MODIFICAR",
+        entidad: "CIERRE_CAJA",
+        datosRetorno: datosRetorno
+    });
 };
+
+
 
 /**
  * Consulta la base de datos para obtener el ID de la caja activa de una escuela.
@@ -438,37 +453,57 @@ const listaTipoCuentas =async ( data : ListaTipoCuentasInputs)
 };
 
 
-// a modifcar 
-const listaMetricasCaja = async ( data : CierreCajaInputs) => {
-    const { id_caja , id_escuela} = data ;
+
+/**
+ * Obtiene el desglose financiero detallado por cada cuenta de la escuela para una sesión de caja específica.
+ * * Realiza un cálculo agrupado (GROUP BY) que diferencia entre:
+ * 1. inicial_cuenta: Monto con el que abrió la cuenta (Categoría 'Saldo Inicial').
+ * 2. movimiento_sesion: Flujo neto de ingresos y egresos excluyendo la apertura.
+ * 3. saldo_final_cuenta: El balance total actual (Sistema) que el usuario deberá auditar.
+ *
+ * @async
+ * @param {CierreCajaInputs} data - Objeto que contiene el id_caja a consultar.
+ * @returns {Promise<TipadoData<Array<{
+ * id_cuenta: number | string,
+ * nombre_cuenta: string,
+ * inicial_cuenta: number,
+ * movimiento_sesion: number,
+ * saldo_final_cuenta: number
+ * }>>>} Promesa con el array de métricas por cuenta para alimentar el componente de Arqueo.
+ */
+const listaMetricasCaja = async ( data : CierreCajaInputs)
+: Promise<TipadoData<{
+        id_cuenta: number | string;
+        nombre_cuenta: string;
+        inicial_cuenta: number;
+        movimiento_sesion: number;
+        saldo_final_cuenta: number;
+}[]>> => {
+    const { id_caja } = data ;
     const sql : string = `SELECT 
-                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL' ELSE cue.id_cuenta END AS id_cuenta,
-                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN 'TOTAL GENERAL' ELSE MAX(cue.nombre_cuenta) END AS nombre_cuenta,
-                            CASE WHEN GROUPING(cue.id_cuenta) = 1 THEN NULL ELSE MAX(cue.tipo_cuenta) END AS tipo_cuenta,
+                            det.id_cuenta,
+                            cu.nombre_cuenta,
+                            -- Con cuánto arrancó la cuenta
+                            COALESCE(SUM(CASE WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS inicial_cuenta,
                             
-                            -- Calculamos el saldo acumulado de movimientos
-                            COALESCE(SUM(
-                                CASE 
-                                    WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                    WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                    ELSE 0 
-                                END
-                            ), 0) + 
-                            -- Sumamos el monto inicial SOLO a la cuenta que corresponde
-                            -- Usamos MAX para que el ROLLUP no multiplique el monto inicial en el TOTAL
-                            IFNULL(MAX(CASE WHEN cue.id_cuenta = c.id_cuenta_apertura THEN c.monto_inicial ELSE 0 END), 0) AS saldo_actual
+                            -- Movimientos puros de la sesión (Ingresos - Egresos, excluyendo el Saldo Inicial)
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
+                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                ELSE 0 END), 0) AS movimiento_sesion,
+                            
+                            -- El total real que hay en la cuenta (Inicial + Movimientos)
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                ELSE 0 END), 0) AS saldo_final_cuenta
 
-                        FROM cuentas_escuela cue
-                        -- Traemos la caja específica una sola vez para toda la consulta
-                        CROSS JOIN (SELECT * FROM cajas WHERE id_caja = ?) c
-                        -- Unimos los movimientos filtrando por esa misma caja
-                        LEFT JOIN detalle_caja det ON cue.id_cuenta = det.id_cuenta AND det.id_caja = c.id_caja
-                        LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-
-                        WHERE cue.id_escuela = ?
-                        AND cue.estado = 'activos'
-                        GROUP BY cue.id_cuenta WITH ROLLUP;`;
-    const parametros : unknown[] = [ id_caja, id_escuela];
+                        FROM detalle_caja det
+                        INNER JOIN cuentas_escuela cu ON det.id_cuenta = cu.id_cuenta
+                        INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                        WHERE det.id_caja = ? 
+                        GROUP BY det.id_cuenta, cu.nombre_cuenta;`;
+    const parametros : unknown[] = [ id_caja ];
 
     return listarEntidadSinPaginacion({
         slqListado : sql,
@@ -502,25 +537,38 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
             monto_inicial : number,
             total_ingresos : number,
             total_egresos  : number,
+            flujo_dia : number,
             balance_neto  : number }[]>>=> {
     const { id_caja , id_escuela} = data ; 
     const slq : string = `SELECT 
-                                c.monto_inicial ,
-                                -- Sumamos ingresos (si no hay, devuelve 0)
-                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
-                                -- Sumamos egresos (si no hay, devuelve 0)
-                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
-                                -- BALANCE NETO: monto_inicial + (ingresos - egresos)
-                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-                                                                        WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                                                        ELSE 0 END), 0)) AS balance_neto
-                            FROM cajas c
-                            -- El LEFT JOIN es clave: trae la caja aunque no tenga filas en detalle_caja
-                            LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
-                            -- Segundo LEFT JOIN: para que si un detalle no tiene categoría, no rompa la suma
-                            LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-                            WHERE c.id_caja = ? and c.id_escuela = ?
-                            GROUP BY c.id_caja, c.monto_inicial ;`;
+                            -- 1. El monto inicial (Saldo que ya existía)
+                            COALESCE(SUM(CASE WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS monto_inicial,
+                            
+                            -- 2. Total Ingresos (Excluyendo el inicial, solo lo que entró hoy)
+                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
+                            
+                            -- 3. Total Egresos
+                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+
+                            -- 4. FLUJO DEL DÍA (Solo movimientos de la sesión: Ingresos hoy - Egresos hoy)
+                            -- Si entró 10.000 y salió 5.000, acá te va a dar 5.000.
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
+                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                ELSE 0 END), 0) AS flujo_dia,
+                            
+                            -- 5. BALANCE NETO FINAL (Monto Inicial + Ingresos Hoy - Egresos Hoy)
+                            -- Este es el total real de dinero que hay ahora mismo.
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
+                                ELSE 0 END), 0) AS balance_neto
+
+                        FROM cajas c
+                        LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
+                        LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                        WHERE c.id_caja = ? AND c.id_escuela = ?
+                        GROUP BY c.id_caja;`;
     const  valores : unknown[] = [ id_caja , id_escuela];
 
     return  listarEntidadSinPaginacion({
@@ -531,6 +579,93 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
     });
 };
 
+/**
+ * Ejecuta la persistencia de la apertura de caja en la base de datos mediante una transacción.
+ * * Esta función es la encargada de la integridad referencial en la DB:
+ * 1. Recupera dinámicamente el ID de la categoría 'Saldo Inicial' para la escuela.
+ * 2. Inserta el registro de cabecera en la tabla `cajas`.
+ * 3. Itera sobre el array de detalles para insertar cada saldo inicial en `detalle_caja`.
+ * * @async
+ * @function aperturaCajaTransaccion
+ * @memberof DataCaja
+ * @param {AperturaCajaInput} datos - Objeto con la información necesaria para la apertura.
+ * @param {number} datos.id_escuela - ID de la escuela para filtrar la categoría.
+ * @param {number} datos.id_usuario_apertura - ID del usuario que abre la caja.
+ * @param {Array<ItemDetalle>} datos.detalle - Listado de cuentas y sus montos iniciales.
+ * * @returns {Promise<TipadoData<{id_caja: number}>>} Resultado de la transacción:
+ * - TRANSACCION_OK: Si se guardó la cabecera y todos los detalles correctamente.
+ * - TRANSACCION_FALLIDA: Si hubo un error de SQL (activando el ROLLBACK automático).
+ * * @throws {Error} Si no se encuentra la categoría configurada para la escuela.
+ */
+const aperturaCajaTransaccion = async (datos: AperturaCajaInput) => {
+    // 1. Definición de Queries (Consistente con tu estilo)
+    const sqlCategoria: string = `SELECT id_categoria FROM categorias_caja 
+                               WHERE id_escuela = ? AND nombre_categoria = 'Saldo Inicial' LIMIT 1`;
+
+    const sqlCaja: string = `INSERT INTO cajas (id_escuela, id_usuario_apertura, estado) 
+                             VALUES (?, ?, 'abierta')`;
+
+    const sqlCajaDetalle: string = `INSERT INTO detalle_caja (
+                                        id_caja, id_categoria, id_cuenta, id_usuario, 
+                                        monto, descripcion, referencia_id
+                                    ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+    const { id_escuela, id_usuario_apertura, detalle } = datos;
+
+    // 2. Ejecución de la Transacción
+    const resultado = await iudEntidadTransaction(async (conn) => {
+        
+        // PASO A: Obtener la categoría (Valores por separado)
+        const valoresCat: unknown[] = [id_escuela];
+        const [rowsCat]: any = await conn.execute(sqlCategoria, valoresCat);
+        
+        if (rowsCat.length === 0) {
+            throw new Error("No se encontró la categoría 'Saldo Inicial' para esta escuela.");
+        }
+        const idCatApertura = rowsCat[0].id_categoria;
+
+        // PASO B: Crear la caja
+        const valoresCaja: unknown[] = [id_escuela, id_usuario_apertura];
+        const [resCaja] = await conn.execute(sqlCaja, valoresCaja);
+        const idGenerado = (resCaja as any).insertId;
+
+        // PASO C: Mapear e insertar detalles
+        // Uso for...of para que el await funcione y la transacción sea segura
+        for (const item of detalle) {
+            const valoresDetalle: unknown[] = [
+                idGenerado,           // id_caja
+                idCatApertura,        // id_categoria
+                item.id_cuenta,       // id_cuenta (dinámico desde el front)
+                id_usuario_apertura,  // id_usuario
+                item.monto,           // monto
+                `Saldo inicial: ${item.nombre_cuenta}`, // descripcion
+                idGenerado            // referencia_id
+            ];
+
+            await conn.execute(sqlCajaDetalle, valoresDetalle);
+        }
+
+        return { id_caja: idGenerado };
+    });
+
+    // 3. Manejo de respuesta final
+    if (resultado.code === "TRANSACCION_OK") {
+        return {
+            error: false,
+            message: "Apertura de caja registrada correctamente",
+            data: resultado.data,
+            code: "TRANSACCION_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "Error en la apertura de caja",
+        code: "TRANSACCION_FALLIDA"
+    };
+};
+
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
@@ -538,10 +673,10 @@ export const method = {
     arqueoCaja   : tryCatchDatos( arqueoCaja ),
     cierreCaja   : tryCatchDatos( cierreCaja),
     idCajaAbierta : tryCatchDatos( idCajaAbierta ),
-    metricasCaja : tryCatchDatos( metricaPanelPrincipal ),
     listaMovimientosCaja : tryCatchDatos( listaMovimientosCaja ),
     listaCategiriaCajaTipos : tryCatchDatos( listaCategiriaCajaTipos),
     listaMetricasCaja : tryCatchDatos( listaMetricasCaja),
     listaTipoCuentas : tryCatchDatos(listaTipoCuentas),
     metricasPrincipal : tryCatchDatos(metricasPrincipal),
+    aperturaCajaTransaccion : tryCatchDatos( aperturaCajaTransaccion )
 };

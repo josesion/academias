@@ -1,5 +1,3 @@
-
-
 CREATE TABLE cajas (
     id_caja INT PRIMARY KEY AUTO_INCREMENT,
     id_escuela INT NOT NULL,
@@ -11,10 +9,15 @@ CREATE TABLE cajas (
     fecha_apertura DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_cierre DATETIME NULL,
     
-    -- El monto inicial ya no va aquí, se registra en detalle_caja
-    
+    -- Montos de cierre
     monto_sistema DECIMAL(10, 2) NULL,      -- Lo que el sistema calcula al cerrar
-    monto_final_real DECIMAL(10, 2) NULL,   -- Lo que el usuario dice que hay al cerrar
+    monto_final_real DECIMAL(10, 2) NULL,   -- Lo que el usuario dice que hay al cerrar (Neto)
+    diferencia_total DECIMAL(10, 2) NULL,   -- Resultado de Real - Sistema
+    
+    -- Detalle técnico del cierre
+    arqueo_detalle JSON NULL,               -- Desglose por cuenta en formato JSON
+    observaciones_cierre TEXT NULL,         -- Justificación obligatoria si hay diferencia
+    
     estado ENUM('abierta', 'cerrada') DEFAULT 'abierta',
     
     -- Llave foránea a Escuelas
@@ -31,8 +34,6 @@ CREATE TABLE cajas (
         FOREIGN KEY (id_usuario_cierre) REFERENCES usuarios(id_usuario)
         ON DELETE SET NULL
 );
-
-
 
 DROP TABLE IF EXISTS detalle_caja;
 

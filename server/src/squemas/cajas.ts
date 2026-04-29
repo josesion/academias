@@ -25,6 +25,8 @@ export const AbrirCajaSchema = z.object({
 
 export const DetalleCajaSchema = z.object({
   id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),
+
+   id_escuela: z.number({ message: "ID de escuela requerido" }).positive("ID de escuela no válido"),
   
   id_categoria: z.number({ message: "Categoría requerida" }).positive("ID de categoría no válido"),
 
@@ -119,6 +121,71 @@ export const MetricasPrincipalSchema = z.object({
         .positive("El ID de la caja debe ser positivo (mayor que 0)."),    
 });
 
+
+// 1. Definimos el esquema de cada item dentro del array
+const ItemDetalleSchema = z.object({
+  id_cuenta: z.number().positive("ID de cuenta inválido"),
+  nombre_cuenta: z.string().min(1, "El nombre es requerido"),
+  monto: z.number().min(0, "El monto no puede ser negativo"),
+});
+
+// 2. Definimos el esquema principal
+export const AperturaCajaSchema = z.object({
+  id_escuela: z.number().positive("ID de escuela requerido"),
+  estado: z.enum(["abierta", "cerrada"]).default("abierta"),
+  id_usuario_apertura: z.number().positive("ID de usuario requerido"),
+  
+  // ACÁ ESTÁ EL TRUCO: Usamos .array() del esquema anterior
+  detalle: z.array(ItemDetalleSchema).nonempty("Debe haber al menos un detalle de cuenta"),
+});
+
+
+
+export const ArqueoDetalleItemSchema = z.object({
+    id_cuenta: z.coerce.number()
+        .int("El ID de cuenta debe ser entero.")
+        .positive(),
+    nombre_cuenta: z.string().min(1, "El nombre de la cuenta es requerido."),
+    sistema: z.coerce.number(), // Puede ser 0 o positivo
+    real: z.coerce.number()
+        .nonnegative("El monto real no puede ser negativo."),
+    dif: z.coerce.number() // Puede ser negativo (faltante) o positivo (sobrante)
+});
+
+export const CierresCajaSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int()
+        .positive("El ID escuela de cierre es obligatorio."),
+    id_usuario_cierre: z.coerce.number()
+        .int()
+        .positive("El ID de usuario de cierre es obligatorio."),
+
+    monto_final_real: z.coerce.number()
+        .nonnegative("El monto final real no puede ser negativo."),
+
+    monto_sistema: z.coerce.number()
+        .nonnegative("El monto sistema no puede ser negativo."),
+
+
+    // Aquí validamos que sea un array y que cumpla con el esquema anterior
+    arqueo_detalle: z.array(ArqueoDetalleItemSchema)
+        .min(1, "Debe haber al menos un detalle de cuenta para cerrar."),
+
+    observaciones_cierre: z.string()
+        .max(1000, "La justificación es demasiado larga.")
+        .optional()
+        .nullable(),
+
+        
+    // La diferencia total la podemos recibir o calcular en el back
+    diferencia_total: z.coerce.number(),
+    
+    // El id_caja suele venir por params, pero si lo mandas por body:
+    id_caja: z.coerce.number().int().positive()
+});
+
+export type AperturaCajaInput = z.infer<typeof AperturaCajaSchema>;
+export type CierresCajaInputs = z.infer<typeof CierresCajaSchema>;
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
 export type DetalleCajaInputs = z.infer<typeof DetalleCajaSchema>;
 export type VerificarCajaInputs = z.infer<typeof VerificarCajaSchema>;

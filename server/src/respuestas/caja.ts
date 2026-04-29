@@ -39,8 +39,6 @@ export const MAPA_CERRAR_CAJA : Record< string , { status : CodigoEstadoHTTP, ms
 
   "NO_HAY_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "No existe ninguna caja abierta"},
 
-  "NO_HAY_ARQUEO_CAJA" : {status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay arqueo de caja"},
-
   ERROR_SERVIDOR
 
 };
@@ -48,6 +46,8 @@ export const MAPA_CERRAR_CAJA : Record< string , { status : CodigoEstadoHTTP, ms
 export const MAPA_DETALLE_MOVIMIENTOS : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
 
   "DETALLE_CAJA_OK" : { status : CodigoEstadoHTTP.OK , msg : "Se creo correctante el detall de caja." },
+
+  "SIN_CAJA_ABIERTA" : { status :CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
 
   "ERROR_ABRIR_CAJA_DETALLE" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error al crear el detalle, intente nuevamente"}
 

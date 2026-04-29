@@ -36,7 +36,7 @@ iniciarCronVencimientoInscripciones();
 asistenciaData.vencerInscripciones();
 
 import logger from "./utils/logger";
-logger.error("¡Gritalo Jose! El logger está funcionando.");
+
 
 app.use(cors({
     origin : "http://localhost:5173",
