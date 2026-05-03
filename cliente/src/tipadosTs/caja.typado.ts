@@ -16,7 +16,26 @@ export interface DataTipoCuenta {
         inicial_cuenta: number;
         movimiento_sesion: number;
         saldo_final_cuenta: number;
+        tipo_cuenta : string
   };
+
+export  interface JsonDataCierre {
+        id_cuenta : number,
+        nombre_cuenta : string,
+        sistema : number, 
+        real : number,
+  };
+
+  export interface  DataCierreCaja {
+        id_caja : number,
+        id_escuela : number,
+        id_usuario_cierre : number,
+        monto_final_real : number,
+        monto_sistema : number,
+        diferencia_total : number,
+        arqueo_detalle : JsonDataCierre[]
+  };
+
 
 export interface DetalleApertura {
   id_cuenta: number;

@@ -7,9 +7,11 @@ import { idCajaFuntion } from "../utils/idCaja";
 import  { type DataCaja , type  DetalleApertura, type DataAperturaCaja,
           type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData,
           type Categoria,  type  RegistroDetalleCaja, type metricasTipoCuentas,
-          type ListadoTipoCuentas, type MetricasCajaPanelPrincipal,
+          type ListadoTipoCuentas, type MetricasCajaPanelPrincipal, type DataCierreCaja,
+          type JsonDataCierre
         
-        } from "../tipadosTs/caja.typado"
+        } from "../tipadosTs/caja.typado";
+import type { MetodosPago } from "../componentes/metodoPagoInputs/MetodoPagoInputs";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -99,7 +101,12 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
   //------------------- Estado para el panel de metricas de cuentas ---------------------
 
   const [ metricasTipoCuentas, setMetricasTipoCuentas] = useState<metricasTipoCuentas[]  | null>([]);
+  const [ metricasCuentasCierre , setMetricasCuentasCierrre] = useState<MetodosPago[]   >([]);
 
+  console.log(metricasTipoCuentas)
+
+  //------------------- Estado  el cierre de caja ---------------------------------------
+  const [ dataCierreCaja , setDataCierreCaja ] = useState<DataCierreCaja  | null >( null );
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -275,6 +282,38 @@ const handleAbrirEgreso = async () => {
 };
 
 
+console.log(metricasCuentasCierre)
+const handleCierreMontos = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nombreCuenta = event.target.name;
+    const valorCuenta = event.target.value;
+
+    if (valorCuenta !== "" && isNaN(Number(valorCuenta))) return;
+
+    setMetricasCuentasCierrre((prev: MetodosPago[]): MetodosPago[] => {
+        // Usamos una variable para que sea más claro el tipado
+        const result: MetodosPago[] = prev.map((det: MetodosPago) => {
+            if (det.nombre_cuenta === nombreCuenta) {
+                return { 
+                    ...det, 
+                    monto_real: Number(valorCuenta) // Asegurate que MetodosPago acepte string | number
+                };
+            }
+            return det;
+        });
+
+        return result;
+    });
+};
+ 
+const montoRealFinal = metricasCuentasCierre.reduce((total, cuenta) => {
+    const valor = Number(cuenta.monto_real) || 0;
+    return total + valor;
+}, 0);
+
+console.log(montoRealFinal)
+
+
+
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 //                     SECCION HANDLES  ESTADO DE CAJA  ( ABIERTA / CERRADA ) 
@@ -393,39 +432,100 @@ const handleAbrirCaja = async() =>{
 //  Handle para Cerrar caja
 // ────────────────────────────────────────────────────────────── 
 
+console.log(metricasTipoCuentas)
+console.log(metricasCuentasCierre)
+console.log(montoRealFinal) // monto cargado por usuario
+console.log( panelPrincial) // monto final
+
 const handleCerrarCaja =async () =>{
 
-    try{
-        setEnviando(true);
-        const dataCierre = {
-            id_caja : dataCaja.id_caja,
-            id_escuela : config.id_escuela,
-            monto_final_real :  panelPrincial?.[0]?.balance_neto,
-            id_usuario : config.id_usuario 
-        };
+    if (!dataCaja?.id_caja) {
+        setErrorGenerico("Error: No se encontró un ID de caja activo.");
+        return;
+    }
 
-        const servicioApiFetch = config.servicios.cerrarCaja;
-        const cierreCajaResult = await servicioApiFetch(dataCierre);
 
-        if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
-           
-            setDataCaja( prev => ({
-                ...prev,
-                id_caja : null
-            }));
-            setEstadoCaja("cerrada");
-            setDataCaja(prev => ({
-                ...prev,
-                id_caja : null
-            }));
-            setModalCierre(false);
-        };
+    let dataDetalleCuentas : JsonDataCierre[] = [];
+  
 
-    }catch(error){
-        setErrorGenerico("Error al cerrar caja");
-    }finally{
-        setEnviando(false)
+    if (metricasTipoCuentas && metricasTipoCuentas.length > 0) {
+    
+           dataDetalleCuentas = metricasTipoCuentas.map((item) => {
+            return {
+                id_cuenta: Number(item.id_cuenta), // Aseguramos que sea number
+                nombre_cuenta: item.nombre_cuenta,
+                sistema: item.saldo_final_cuenta,   // Lo que el sistema dice que hay
+                real: item.saldo_final_cuenta,      // Inicializamos 'real' con lo mismo (el usuario luego lo edita)
+            };
+           });
     };
+
+    let dataCierreCaja :  DataCierreCaja  | null=  null ;
+
+    if (!dataDetalleCuentas || dataDetalleCuentas.length === 0) {
+       console.error("No se pudo generar el detalle del arqueo");
+       return; 
+    }
+    
+    const montoRealFinal = metricasCuentasCierre.reduce((total, cuenta) => {
+        const valor = Number(cuenta.monto_real) || 0;
+        return total + valor;
+    }, 0);
+
+    console.log( panelPrincial);
+    console.log( montoRealFinal);
+    console.log( dataCaja.id_caja);
+    console.log( dataCaja.id_escuela);
+    console.log( config.id_usuario);
+
+    if ( panelPrincial && montoRealFinal  && dataCaja.id_caja && dataCaja.id_escuela && config.id_usuario){
+        console.log("aqui")
+        dataCierreCaja = {
+                id_caja: dataCaja.id_caja,
+                id_escuela: config.id_escuela,
+                id_usuario_cierre: config.id_usuario,
+            
+                monto_final_real: Number(montoRealFinal), 
+                monto_sistema: panelPrincial[0].balance_neto,
+                diferencia_total: Number(montoRealFinal) - panelPrincial[0].balance_neto,
+                arqueo_detalle: dataDetalleCuentas 
+        };
+    };
+
+    console.log( dataCierreCaja)
+    console.log(dataDetalleCuentas)
+
+    // try{
+    //     setEnviando(true);
+    //     const dataCierre = {
+    //         id_caja : dataCaja.id_caja,
+    //         id_escuela : config.id_escuela,
+    //         monto_final_real :  panelPrincial?.[0]?.balance_neto,
+    //         id_usuario : config.id_usuario 
+    //     };
+
+    //     const servicioApiFetch = config.servicios.cerrarCaja;
+    //     const cierreCajaResult = await servicioApiFetch(dataCierre);
+
+    //     if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
+           
+    //         setDataCaja( prev => ({
+    //             ...prev,
+    //             id_caja : null
+    //         }));
+    //         setEstadoCaja("cerrada");
+    //         setDataCaja(prev => ({
+    //             ...prev,
+    //             id_caja : null
+    //         }));
+    //         setModalCierre(false);
+    //     };
+
+    // }catch(error){
+    //     setErrorGenerico("Error al cerrar caja");
+    // }finally{
+    //     setEnviando(false)
+    // };
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -528,7 +628,8 @@ const lastElementRef = useCallback((node: HTMLDivElement | null) => {
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-//                      USEEFECT SECCION 1-IDCAJA    2-METRICAS   3-DETALLE DE CAJA  4- LISTA TIPO CUENTAS  5-METRICAS PANEL PRINCIPAL
+//        USEEFECT SECCION 1-IDCAJA    2-METRICAS   3-DETALLE DE CAJA  4- LISTA TIPO CUENTAS  5-METRICAS PANEL PRINCIPAL 
+//                         6-METRICAS CIERRE CAJA 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
 // ──────────────────────────────────────────────────────────────
@@ -557,6 +658,9 @@ useEffect( ()=> {
     };
     idCaja();
 },[]);  
+
+
+
 
 // ──────────────────────────────────────────────────────────────
 //Obtener las metricas para el panel metodos de pago
@@ -668,6 +772,29 @@ useEffect( ()=> {
 }, [ dataCaja.id_caja , actualizarIngresoInscipcion, modalApertura , movimientoExtraordinario] );
 
 
+// ──────────────────────────────────────────────────────────────
+// Obtener los metodos de pago para mandarlos al cierre de caja
+// ──────────────────────────────────────────────────────────────
+
+useEffect( ()=> {
+
+    if ( metricasTipoCuentas  && metricasTipoCuentas.length > 0){
+
+     const inicializarForm = metricasTipoCuentas.map(cuenta => ({
+            id_cuenta: cuenta.id_cuenta,
+            nombre_cuenta: cuenta.nombre_cuenta,
+            tipo_cuenta : cuenta.tipo_cuenta,
+            monto_sistema: Number(cuenta.saldo_final_cuenta),
+            monto_real: "", // El usuario empieza con 0
+            //dif: -Number(cuenta.saldo_final_cuenta) // La diferencia inicial es todo el saldo
+        }));   
+
+        setMetricasCuentasCierrre( inicializarForm )
+    };
+
+
+},[metricasTipoCuentas]);   
+
     return{
         apertura,
 
@@ -709,5 +836,8 @@ useEffect( ()=> {
     
 
         aperturaDetalle,
+        metricasCuentasCierre,
+        handleCierreMontos,
+        montoRealFinal, 
     };
 };    

@@ -1,17 +1,4 @@
-/* Contenedor principal que envuelve todo el modal/pantalla */
-.coontenedor_cierre_caja {
-    background: rgba(15, 15, 20, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 242, 255, 0.2);
-    padding: 30px;
-    border-radius: 12px;
-    color: #fff;
-    max-width: 1000px;
-    margin: 20px auto;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    max-height: 90dvh;
-    overflow-y: auto;
-}
+
 
 .coontenedor_cierre_caja::-webkit-scrollbar {
     width: 8px;
@@ -43,149 +30,180 @@
   )
 }
 
-.coontenedor_cierre_caja h2 {
-    text-align: center;
-    color: #00f2ff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 30px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 15px;
+/* --- CONTENEDOR PRINCIPAL --- */
+.coontenedor_cierre_caja {
+    background: rgba(15, 15, 20, 0.98);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(183, 188, 189, 0.15);
+    padding: 30px;
+    border-radius: 16px;
+    color: #fff;
+    max-width: 900px; /* Un poco más estilizado */
+    margin: 20px auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    max-height: 90dvh;
+    overflow-y: auto;
 }
 
-/* Sección de Tarjetas (Monto Inicial, Ingresos, etc.) */
+/* (Tu barra de scroll se mantiene intacta según tu instrucción) */
+
+.coontenedor_cierre_caja h2 {
+    text-align: center;
+    color: #e4eded;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    font-size: 1.5rem;
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+}
+
+/* --- SECCIÓN DE TARJETAS (GRID MEJORADO) --- */
 .contenedor_resumen_general {
-    display: flex;
-    flex-wrap: wrap; /* Para que en pantallas chicas bajen */
+    display: grid;
+    /* Las tarjetas se acomodan solas según el espacio */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
     gap: 15px;
-    justify-content: space-between;
     margin-bottom: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
 }
 
 .contenedor_resumen_general > p {
-    width: 100%; /* El título de la sección ocupa todo el ancho */
-    font-size: 0.8rem;
+    grid-column: 1 / -1; /* El título ocupa siempre toda la fila superior */
+    font-size: 0.75rem;
+    font-weight: 600;
     text-transform: uppercase;
-    color: #888;
-    margin-bottom: 5px;
+    letter-spacing: 1px;
+    color: #555;
+    margin: 0;
 }
 
-/* El contenedor que creamos hace un momento para los inputs */
-.contenedor_detalle_cierre_caja {
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 25px;
-}
-
-/* Resultado de Diferencia (El banner llamativo) */
+/* --- RESULTADO DE DIFERENCIA (BANNER INTELIGENTE) --- */
 .contenedor_resultado_cierre_caja {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 15px;
-    border-left: 4px solid #ff4d4d; /* Por defecto rojo, luego lo haces dinámico */
-    margin-bottom: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ff4d4d;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+/* Clase extra para cuando la caja esté OK (puedes aplicarla dinámicamente) */
+.contenedor_resultado_cierre_caja.positivo {
+    border-left-color: #10b981;
 }
 
 .contenedor_resultado_cierre_caja p {
     margin: 0;
-    font-weight: bold;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.2rem;
     color: #ff4d4d;
+    font-variant-numeric: tabular-nums;
 }
 
-/* Sección de Justificación */
-.contenedor_justificacion_cierre_caja {
-    margin-bottom: 25px;
+.contenedor_resultado_cierre_caja.positivo p {
+    color: #10b981;
 }
 
-.contenedor_justificacion_cierre_caja p {
-    font-size: 0.85rem;
-    color: #aaa;
-    margin-bottom: 8px;
-}
-
-/* Botonera Final */
-.contenedor_botonera_cierre_caja {
-    display: flex;
-    justify-content: flex-end;
-    gap: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 20px;
-}
-
-.contenedor_botonera_cierre_caja p {
-    padding: 10px 25px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: 0.3s;
-    margin: 0;
-}
-
-/* Simulación de botones (cuando los cambies por <button> ya tendrán el estilo) */
-.contenedor_botonera_cierre_caja p:first-child {
-    background: #00f2ff;
-    color: #000;
-}
-
-.contenedor_botonera_cierre_caja p:last-child {
-    background: transparent;
-    border: 1px solid #555;
-    color: #ccc;
-}
-
-.contenedor_botonera_cierre_caja p:hover {
-    filter: brightness(1.2);
-    transform: translateY(-2px);
-}
-
-
+/* --- ÁREA DE TEXTO (TEXTAREA) --- */
 .contenedor_justificacion_cierre_caja {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-bottom: 30px;
 }
 
 .contenedor_justificacion_cierre_caja label {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.8rem;
+    color: #00f2ff;
+    opacity: 0.8;
     text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.contenedor_justificacion_cierre_caja .requerido {
-    color: #ff4d4d;
-    font-size: 0.75rem;
-    font-style: italic;
+    font-weight: 600;
 }
 
 .textarea_cyber {
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 242, 255, 0.2);
-    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
     padding: 15px;
     color: #fff;
-    font-family: inherit;
+    font-family: 'Inter', sans-serif;
     font-size: 0.95rem;
-    resize: none; /* Evita que el usuario deforme el diseño */
-    transition: all 0.3s ease;
-    outline: none;
+    min-height: 100px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .textarea_cyber:focus {
-    background: rgba(0, 242, 255, 0.05);
     border-color: #00f2ff;
-    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+    background: rgba(0, 242, 255, 0.03);
+    box-shadow: 0 0 15px rgba(0, 242, 255, 0.1);
 }
 
-.textarea_cyber::placeholder {
-    color: #555;
+/* --- BOTONERA FINAL --- */
+.contenedor_botonera_cierre_caja {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Botones iguales */
+    gap: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 25px;
 }
 
-/* Media query para móviles */
-@media (max-width: 768px) {
-    .textarea_cyber {
-        font-size: 1rem; /* Más grande para que sea fácil escribir en el celu */
+.contenedor_botonera_cierre_caja p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+/* Botón Principal (Cierre) */
+.contenedor_botonera_cierre_caja p:first-child {
+    background: #00f2ff;
+    color: #000;
+    box-shadow: 0 4px 15px rgba(0, 242, 255, 0.2);
+}
+
+/* Botón Secundario (Cancelar) */
+.contenedor_botonera_cierre_caja p:last-child {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+}
+
+.contenedor_botonera_cierre_caja p:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+}
+
+.contenedor_botonera_cierre_caja p:last-child:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 600px) {
+    .coontenedor_cierre_caja {
+        padding: 20px;
+        margin: 10px;
+        max-height: 95dvh;
+    }
+
+    .contenedor_botonera_cierre_caja {
+        grid-template-columns: 1fr; /* Un botón debajo del otro */
+    }
+
+    .contenedor_resumen_general {
+        grid-template-columns: 1fr 1fr; /* Dos columnas en móviles */
     }
 }

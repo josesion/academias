@@ -2,34 +2,18 @@ import { Inputs } from "../Inputs/Inputs";
 
 import "./metodopagointputs.css";
 
-interface MetodosPago {
+export interface MetodosPago {
   id_cuenta: number | string;
   nombre_cuenta: string;
   tipo_cuenta: string;
   monto_sistema: number;
-  monto_real: number;
+  monto_real: number | string;
 }
 
 interface PropsInputs {
-  listadoMetodoPago?: MetodosPago[];
+  listadoMetodoPago: MetodosPago[];
+  onChangeMontos?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
-const mockCuentas: MetodosPago[] = [
-  {
-    id_cuenta: 1,
-    nombre_cuenta: "Efectivo",
-    tipo_cuenta: "fisico",
-    monto_sistema: 13000.0, // Lo que el software dice que hay
-    monto_real: 12800.0, // Lo que vos vas a escribir en el input
-  },
-  {
-    id_cuenta: 2,
-    nombre_cuenta: "Mercado Pago",
-    tipo_cuenta: "virtual",
-    monto_sistema: 10000.0,
-    monto_real: 10000.0,
-  },
-];
 
 export const MetodosPagoInputs = (props: PropsInputs) => {
   return (
@@ -42,8 +26,8 @@ export const MetodosPagoInputs = (props: PropsInputs) => {
         <span>Diferencia</span>
       </div>
 
-      {mockCuentas.map((item) => {
-        const diferencia = item.monto_real - item.monto_sistema;
+      {props.listadoMetodoPago?.map((item) => {
+        const diferencia = Number(item.monto_real) - item.monto_sistema;
 
         return (
           <div key={item.id_cuenta} className="fila_metodo_pago">
@@ -74,7 +58,8 @@ export const MetodosPagoInputs = (props: PropsInputs) => {
                 readonly={false}
                 value={item.monto_real}
                 placeholder="0.00"
-                name={`conteo_${item.id_cuenta}`}
+                name={item.nombre_cuenta}
+                onChange={props.onChangeMontos}
                 // onChange se conectará luego al estado global del cierre
               />
             </div>

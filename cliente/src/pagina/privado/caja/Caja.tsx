@@ -4,6 +4,7 @@ import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago
 import { Boton } from "../../../componentes/Boton/Boton";
 import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
 import { CompoVerificacion } from "../../../componentes/CompoVerificacion/CompoVerificacion";
+import { AnimacionCierreExitoso } from "../../../componentes/animacionCierreCaja/CierreAnimacionCaja";
 import { CajaVaciaAnimation } from "../../../componentes/animacionDetalle/detalleVacio";
 import { CierreCaja } from "../../../componentes/CierreCaja/cierreCaja";
 
@@ -84,7 +85,10 @@ export const CajaArqueo = () => {
 
       {modalCierre && (
         <div className="formulario_overlay">
-          <CierreCaja />
+          <CierreCaja
+            onCancelar={handleCerrarCaja}
+            onCerrar={handleCerrarModalCerrar}
+          />
         </div>
       )}
 
