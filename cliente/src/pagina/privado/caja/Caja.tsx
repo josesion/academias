@@ -3,10 +3,11 @@ import { MovientoCaja } from "../../../componentes/MovimientoCaja/MovientoCaja";
 import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago";
 import { Boton } from "../../../componentes/Boton/Boton";
 import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
-import { CompoVerificacion } from "../../../componentes/CompoVerificacion/CompoVerificacion";
+import { AnimacionAperturaExitosa } from "../../../componentes/animacionAperturaCaja/AnimacionApertura";
 import { AnimacionCierreExitoso } from "../../../componentes/animacionCierreCaja/CierreAnimacionCaja";
 import { CajaVaciaAnimation } from "../../../componentes/animacionDetalle/detalleVacio";
 import { CierreCaja } from "../../../componentes/CierreCaja/cierreCaja";
+import { InformeDetalleCaja } from "../../../componentes/Informes/DetallesCaja";
 
 import { CompoIngEgr } from "../../../componentes/CompoIngEgr/CompoIngEgr";
 
@@ -19,12 +20,6 @@ import "./caja.css";
 
 export const CajaArqueo = () => {
   const {
-    modalApertura,
-    modalCierre,
-    modalEgresoIngreso,
-    enviando,
-    estadoCaja,
-    errorGenerico,
     cachearMontoIniciales,
     handleCerrarCaja,
     handleCerrarModalCerrar,
@@ -39,16 +34,19 @@ export const CajaArqueo = () => {
     handRegistarMovimientoExtraordinario,
     handleCerrarModalEgrIng,
     handleMontoChange,
-    movimientoExtraordinario,
-    listadoExtraordinario,
+
     handleAbrirEgreso,
     handleAbrirIngreso,
     handleMemoChange,
-    metricasTipoCuentas,
-    listadoCuentasActivas,
-    panelPrincial,
-    aperturaDetalle,
+    hanldeObsevacionesCierre,
+    handleCierreMontos,
+    handleCachearDetalle,
+    hanldeCerrarInforme,
+    state,
   } = cajasCongif();
+
+  console.log(state);
+  console.log();
 
   interface Categoria {
     id_categoria: number;
@@ -69,53 +67,73 @@ export const CajaArqueo = () => {
   return (
     <div className="caja_arqueo_grid">
       {/* 1. MODALES (Se mantienen igual) */}
-      {modalApertura && (
+
+      {state.modalAnimacionesApertura && (
+        <div className="formulario_overlay">
+          <AnimacionAperturaExitosa />
+        </div>
+      )}
+
+      {state.modalAnimaciones && (
+        <div className="formulario_overlay">
+          <AnimacionCierreExitoso />
+        </div>
+      )}
+
+      {state.modalesCaja.apertura && (
         <div className="formulario_overlay">
           <AperturaCaja
-            listadoCuentasActivas={listadoCuentasActivas}
-            aperturaDetalle={aperturaDetalle}
+            listadoCuentasActivas={state.listadoCuentasActivas}
+            aperturaDetalle={state.aperturaDetalle}
             onChangeMontoDinamico={cachearMontoIniciales}
             onAbrirCaja={handleAbrirCaja}
             onCancelar={handleAbrirCajaModalCerrar}
-            enviado={enviando}
-            errorGenerico={errorGenerico}
+            enviado={state.enviando}
+            errorGenerico={state.errorGenerico}
           />
         </div>
       )}
 
-      {modalCierre && (
+      {state.modalesCaja.cierre && (
         <div className="formulario_overlay">
           <CierreCaja
+            metricasPanel={state.panelPrincipal}
+            metricas={state.metricasCuentasCierre}
+            montoRealFinal={state.montoRealFinal}
+            onCambioMontos={handleCierreMontos}
             onCancelar={handleCerrarCaja}
             onCerrar={handleCerrarModalCerrar}
+            onCambioObservaciones={hanldeObsevacionesCierre}
           />
         </div>
       )}
 
-      {modalEgresoIngreso && (
+      {state.modalesEgresoIngreso && (
         <div className="formulario_overlay">
           <CompoIngEgr
-            titulo={movimientoExtraordinario.tipo}
+            titulo={state.movimientoExtraordinario.tipo}
             categorias={
-              listadoExtraordinario ? listadoExtraordinario : categoriasVacias
+              state.listadoExtraordinario
+                ? state.listadoExtraordinario
+                : categoriasVacias
             }
             itemKey="id_categoria"
             itemLabel="nombre_categoria"
             name="id_categoria"
             onChangeSelector={handleMovimientoExtraordinarioChange}
             labelDefault="Seleccionar Categoría"
-            tipos_pago={listadoCuentasActivas ?? cuentasVacias}
+            tipos_pago={state.listadoCuentasActivas ?? cuentasVacias}
             itemLabelTipo="nombre_cuenta"
             itemKeyTipo="id_cuenta"
             nameTipoPago="id_cuenta"
             onChanceSelectorTipo={handleTipoPagoChange}
             onClickCancelar={handleCerrarModalEgrIng}
             onClickRegistrar={handRegistarMovimientoExtraordinario}
-            montoValue={movimientoExtraordinario.monto.toString()}
+            montoValue={state.movimientoExtraordinario.monto.toString()}
             onChangeInput={handleMontoChange}
             onChangeTextArea={handleMemoChange}
-            valueTextArea={movimientoExtraordinario.descripcion || ""}
-            errorMensaje={errorGenerico}
+            valueTextArea={state.movimientoExtraordinario.descripcion || ""}
+            errorMensaje={state.errorGenerico}
           />
         </div>
       )}
@@ -126,14 +144,16 @@ export const CajaArqueo = () => {
           <h1>
             Gestión de Caja <FcStatistics />
           </h1>
-          <span className={`status_pill ${estadoCaja}`}>
-            {estadoCaja === "abierta" ? "Caja Activa" : "Caja Cerrada"}
+          <span className={`status_pill ${state.estadoCaja}`}>
+            {state.estadoCaja === "abierta" ? "Caja Activa" : "Caja Cerrada"}
           </span>
         </div>
         <div className="acciones_principales">
           <Boton
-            clase={estadoCaja === "abierta" ? "cancelar" : "agregar"}
-            texto={estadoCaja === "abierta" ? "Cerrar Caja" : "Abrir Caja"}
+            clase={state.estadoCaja === "abierta" ? "cancelar" : "agregar"}
+            texto={
+              state.estadoCaja === "abierta" ? "Cerrar Caja" : "Abrir Caja"
+            }
             onClick={handleEstadosCaja}
           />
         </div>
@@ -143,27 +163,27 @@ export const CajaArqueo = () => {
       <section className="caja_resumen_cards">
         <TarjetasNormales
           titulo="Monto Inicial"
-          monto={panelPrincial?.[0]?.monto_inicial ?? 0}
+          monto={state.panelPrincipal?.[0]?.monto_inicial ?? 0}
           claseColor="azul"
         />
         <TarjetasNormales
           titulo="Ingresos (+)"
-          monto={panelPrincial?.[0]?.total_ingresos || 0}
+          monto={state.panelPrincipal?.[0]?.total_ingresos || 0}
           claseColor="verde"
         />
         <TarjetasNormales
           titulo="Egresos (-)"
-          monto={panelPrincial?.[0]?.total_egresos || 0}
+          monto={state.panelPrincipal?.[0]?.total_egresos || 0}
           claseColor="rojo"
         />
         <TarjetasNormales
           titulo="Flujo Sesión"
-          monto={panelPrincial?.[0]?.flujo_dia || 0}
+          monto={state.panelPrincipal?.[0]?.flujo_dia || 0}
           claseColor="negro"
         />
         <TarjetasNormales
           titulo="Balance Neto"
-          monto={panelPrincial?.[0]?.balance_neto || 0}
+          monto={state.panelPrincipal?.[0]?.balance_neto || 0}
           claseColor="negro"
         />
       </section>
@@ -187,8 +207,32 @@ export const CajaArqueo = () => {
           </div>
         </div>
 
+        {state.modalInformeDetalle && (
+          <div className="formulario_overlay">
+            <InformeDetalleCaja
+              id_movimiento={state.informeDetalle.id_movimiento}
+              tipo={state.informeDetalle.tipo}
+              monto={state.informeDetalle.monto}
+              usuario={state.informeDetalle.usuario}
+              fecha={state.informeDetalle.fecha}
+              hora={state.informeDetalle.hora}
+              metodo_pago={state.informeDetalle.metodo_pago}
+              observaciones={state.informeDetalle.observaciones}
+              metodo={state.informeDetalle.metodo}
+              // Nueva prop sumada:
+              nombre_alumno_vinculado={
+                state.informeDetalle.nombre_alumno_vinculado
+              }
+              onCerrarModal={hanldeCerrarInforme}
+            />
+          </div>
+        )}
+
         <div className="scroll_movimientos">
-          <MovientoCaja movimientos={movimientos} />
+          <MovientoCaja
+            movimientos={movimientos}
+            infoDetalle={handleCachearDetalle}
+          />
           {movimientos.length > 0 && (
             <div ref={lastElementRef} className="scroll_sensor">
               {scrollState?.loading && <p>Cargando...</p>}
@@ -201,7 +245,7 @@ export const CajaArqueo = () => {
         </div>
 
         <aside className="caja_sidebar_pagos">
-          <PanelMetodoPago cuentas={metricasTipoCuentas} />
+          <PanelMetodoPago cuentas={state.metricasTipoCuentas} />
         </aside>
       </main>
     </div>

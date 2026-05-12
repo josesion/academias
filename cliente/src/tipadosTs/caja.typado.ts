@@ -1,6 +1,22 @@
 //type Estado = "abierta" | "cerrada";
  export type MetodoPago = 'efectivo' | 'transferencia' | 'tarjeta' | 'otro';
 
+
+export interface InformeDetalle {
+    id_movimiento : number,
+    tipo: "ingreso" | "egreso",
+    metodo: string,
+    monto: number,
+    descripcion: string,
+    observaciones: string | null,
+    fecha: string,
+    hora: string,
+    metodo_pago: string,
+    usuario : string
+    nombre_alumno_vinculado: string | null,   
+};
+
+
 export interface idCajaAbierta{
     id_escuela : number
 };
@@ -34,6 +50,7 @@ export  interface JsonDataCierre {
         monto_sistema : number,
         diferencia_total : number,
         arqueo_detalle : JsonDataCierre[]
+        observaciones_cierre : string,
   };
 
 
@@ -62,7 +79,7 @@ export interface DataDetalleCaja{
 
 export interface RegistroDetalleCaja {
     tipo: string,
-    id_escuela: number,
+    id_escuela: number | null,
     id_caja : number  | null,
     id_categoria : number  | null,
     id_usuario : number  | null,
@@ -134,11 +151,16 @@ export interface AperturaCajaRespuesta {
     detalle : DetalleApertura[]
 }
 
+
 export interface CierreCajaData{
-    id_caja : number,
-    id_escuela : number
-    monto_final_real : number,
-    id_usuario : number,
+    id_caja: number,
+    id_escuela : number,
+    id_usuario_cierre: number,
+    monto_final_real: number,
+    monto_sistema : number,
+    diferencia_total:  number,
+    observaciones_cierre : string,
+    arqueo_detalle : JsonDataCierre[]
 };
 
 export interface CierreCajaRespuesta{
@@ -170,6 +192,8 @@ export interface DetalleCajaMovimientoResult {
     // Campos formateados por MySQL
     fecha_grupo: string; // Formato 'YYYY-MM-DD'
     hora_formateada: string; // Formato 'HH:mm'
+    observaciones : string ;
+    nombre_alumno_vinculado: string | null,    
 };
 
 
@@ -177,7 +201,9 @@ export interface DetalleCajaMovimientoResult {
 
     export interface DataCaja{
         id_caja : number | null,
-        id_escuela : number | null
+        id_escuela : number | null,
+        id_usuario : number | null,
+        usuario    : string  | null,
     };
 
     export interface DataMetricasResult {

@@ -1,0 +1,245 @@
+
+
+.cyber_ticket::-webkit-scrollbar {
+    width: 8px;
+}
+
+
+.cyber_ticketa::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+
+.cyber_ticket::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 5px;
+}
+
+.cyber_ticket ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22d3ee,
+    #c084fc
+  )
+}
+
+:root {
+    --neon-green: #00ff88;
+    --neon-red: #ff4444;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --border-glass: rgba(255, 255, 255, 0.1);
+}
+.cyber_ticket::-webkit-scrollbar {
+    width: 8px;
+}
+
+.cyber_ticketa::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.cyber_ticket::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #4f46e5,
+    #06b6d4,
+    #a855f7
+  );
+  border-radius: 5px;
+}
+
+.cyber_ticket ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #6366f1,
+    #22d3ee,
+    #c084fc
+  )
+}
+
+:root {
+    --neon-green: #00ff88;
+    --neon-red: #ff4444;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --border-glass: rgba(255, 255, 255, 0.1);
+}
+
+.cyber_ticket {
+    background: #0d0d0d;
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 2px; 
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    max-height: 80dvh;
+    overflow-y: auto; 
+    /* Agregado para responsive */
+    width: 100%;
+    margin: 0 auto;
+}
+
+.scanline {
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(0deg, transparent, rgba(255,255,255,0.05), transparent);
+    position: absolute;
+    /* animation: scan 4s linear infinite; */ /* <-- ANIMACIÓN COMENTADA */
+}
+
+.ticket_top {
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.monto_principal {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin: 15px 0;
+    letter-spacing: -2px;
+}
+
+.glitch_green { color: var(--neon-green); filter: drop-shadow(0 0 15px rgba(0,255,136,0.4)); }
+.glitch_red { color: var(--neon-red); filter: drop-shadow(0 0 15px rgba(255,68,68,0.4)); }
+
+.glass_body {
+    padding: 25px;
+    backdrop-filter: blur(5px);
+}
+
+.main_info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+}
+
+.data_group label {
+    font-size: 0.6rem;
+    color: #555;
+    display: block;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.tipo_badge, .metodo_badge {
+    background: var(--glass-bg);
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border: 1px solid var(--border-glass);
+}
+
+.destino_terminal {
+    background: #000;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Consolas', monospace;
+    border-left: 3px solid #4facfe;
+    margin-bottom: 25px;
+}
+
+.terminal_prefix { color: #4facfe; font-size: 0.7rem; }
+.terminal_text { color: #fff; font-size: 1.2rem; margin-top: 5px; }
+
+.metadata_grid {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-glass);
+    gap: 5px;
+}
+
+.meta_item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.obs_box {
+    margin-top: 20px;
+    background: rgba(79, 172, 254, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+.obs_header {
+    font-size: 0.6rem;
+    color: #4facfe;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.vinculo_alumno_box {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 0;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alumno_nombre_text {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e0e0e0;
+  letter-spacing: 0.5px;
+}
+
+.boton_cerrar{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+/* --- MEDIA QUERIES --- */
+
+/* Celulares */
+@media (max-width: 480px) {
+    .monto_principal {
+        font-size: 2.2rem;
+    }
+    .main_info {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    .metadata_grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .cyber_ticket {
+        max-height: 85dvh;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 1024px) {
+    .cyber_ticket {
+        max-width: 450px;
+    }
+}
+
+/* Computadora */
+@media (min-width: 1025px) {
+    .cyber_ticket {
+        max-width: 500px;
+    }
+}

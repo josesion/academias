@@ -11,7 +11,7 @@ export interface MetodosPago {
 }
 
 interface PropsInputs {
-  listadoMetodoPago: MetodosPago[];
+  listadoMetodoPago?: MetodosPago[] | null;
   onChangeMontos?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

@@ -4,7 +4,8 @@ import { apiFetch ,type ApiResponse  } from "../utils/apiFetch";
 interface UserData {
     id_usuario : number,
     rol: string;
-    id_escuela : number
+    id_escuela : number,
+    usuario : string,
 }
 
 export interface LoginRequest {

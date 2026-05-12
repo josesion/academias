@@ -17,6 +17,7 @@ export const  cajasCongif = () =>{
     const config = {
         id_escuela :rol?.escuela || 1 ,  
         id_usuario :rol?.id_usuario as number,
+        usuario : rol?.usuario  as string,
         servicios : {
             obtenerIdCaja     : obtenerIdCaja,
             metricasPanelCaja : metricasPanelCaja,

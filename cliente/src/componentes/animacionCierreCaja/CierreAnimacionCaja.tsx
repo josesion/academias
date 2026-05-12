@@ -14,14 +14,16 @@ export const AnimacionCierreExitoso = ({
   const [fase, setFase] = useState(1);
 
   useEffect(() => {
-    // Fase 1: Cerrando (Icono candado)
-    // Fase 2: Procesando (Brillo)
-    // Fase 3: Éxito (Check)
-    const timer1 = setTimeout(() => setFase(2), 1500);
-    const timer2 = setTimeout(() => setFase(3), 3000);
+    // Fase 1: Sincronizando (0ms a 700ms)
+    // Fase 2: Encriptando (700ms a 1500ms)
+    // Fase 3: Éxito (1500ms en adelante)
+
+    const timer1 = setTimeout(() => setFase(2), 700); // Antes 1500
+    const timer2 = setTimeout(() => setFase(3), 1500); // Antes 3000
+
     const timer3 = setTimeout(() => {
       if (onFinished) onFinished();
-    }, 5000);
+    }, 3200); // Antes 5000 (le damos un tiempo para que lean el monto final)
 
     return () => {
       clearTimeout(timer1);

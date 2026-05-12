@@ -116,15 +116,25 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
             errorsDetails: undefined
         };
     }; 
-    const { id_caja , id_escuela , monto_final_real, id_usuario} = data ; 
+    const { id_caja , id_escuela , 
+            id_usuario_cierre, monto_sistema, 
+            monto_final_real, diferencia_total,
+            observaciones_cierre, arqueo_detalle
+        } = data ; 
+
     const ruta = `${PAGINA}api/cierre_caja`;
+
     return await apiFetch( ruta , {
         method : "POST",
         body : {
             id_caja : id_caja,
             id_escuela : id_escuela,
+            id_usuario_cierre :  id_usuario_cierre,
             monto_final_real : monto_final_real,
-            id_usuario : id_usuario
+            monto_sistema : monto_sistema,
+            diferencia_total : diferencia_total,
+            arqueo_detalle : arqueo_detalle,
+            observaciones_cierre : observaciones_cierre
         }
     });  
 };

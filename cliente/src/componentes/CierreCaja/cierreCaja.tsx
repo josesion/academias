@@ -3,26 +3,25 @@ import { MetodosPagoInputs } from "../metodoPagoInputs/MetodoPagoInputs";
 import { Boton } from "../Boton/Boton";
 
 //---- logica de negocio ----//
-import { cajasCongif } from "../../hookNegocios/caja.usuario";
+
+import type { MetodosPago } from "../metodoPagoInputs/MetodoPagoInputs";
+import type { MetricasCajaPanelPrincipal } from "../../tipadosTs/caja.typado";
 
 import "./cierrecaja.css";
 
 interface PropsCierreCaja {
+  metricas: MetodosPago[] | null;
+  metricasPanel?: MetricasCajaPanelPrincipal[] | null;
+  montoRealFinal: number;
+  onCambioObservaciones: (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => void;
+  onCambioMontos: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onCerrar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onCancelar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const CierreCaja = (data: PropsCierreCaja) => {
-  const {
-    panelPrincial,
-    metricasCuentasCierre,
-    handleCierreMontos,
-    montoRealFinal,
-  } = cajasCongif();
-
-  console.log(montoRealFinal === panelPrincial?.[0]?.balance_neto);
-  console.log(montoRealFinal);
-  console.log(panelPrincial?.[0]?.balance_neto);
   return (
     <div className="coontenedor_cierre_caja">
       <h2>RESUMEN Y ARQUEO FINAL DE CAJA</h2>
@@ -31,33 +30,33 @@ export const CierreCaja = (data: PropsCierreCaja) => {
 
         <TarjetasNormales
           titulo="Monto Inicial"
-          monto={panelPrincial?.[0]?.monto_inicial ?? 0}
+          monto={data.metricasPanel?.[0]?.monto_inicial ?? 0}
           claseColor="azul"
         />
 
         <TarjetasNormales
           titulo="Ingresos (+)"
-          monto={panelPrincial?.[0]?.total_ingresos || 0}
+          monto={data.metricasPanel?.[0]?.total_ingresos || 0}
           claseColor="verde"
         />
 
         <TarjetasNormales
           titulo="Egresos (-)"
-          monto={panelPrincial?.[0]?.total_egresos || 0}
+          monto={data.metricasPanel?.[0]?.total_egresos || 0}
           claseColor="rojo"
         />
 
         <TarjetasNormales
           titulo="Balance Neto"
-          monto={panelPrincial?.[0]?.balance_neto || 0}
+          monto={data.metricasPanel?.[0]?.balance_neto || 0}
           claseColor="negro"
         />
       </div>
 
       <div className="contenedor_detalle_cierre_caja">
         <MetodosPagoInputs
-          listadoMetodoPago={metricasCuentasCierre}
-          onChangeMontos={handleCierreMontos}
+          listadoMetodoPago={data.metricas}
+          onChangeMontos={data.onCambioMontos}
         />
       </div>
 
@@ -65,22 +64,24 @@ export const CierreCaja = (data: PropsCierreCaja) => {
         <p
           className={
             // Si todavía no cargó nada (es 0), usamos una clase neutra
-            montoRealFinal === 0
+            data.montoRealFinal === 0
               ? "badge_dif pendiente"
-              : montoRealFinal === panelPrincial?.[0]?.balance_neto
+              : data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
                 ? "badge_dif ok"
-                : montoRealFinal < (panelPrincial?.[0]?.balance_neto ?? 0)
+                : data.montoRealFinal <
+                    (data.metricasPanel?.[0]?.balance_neto ?? 0)
                   ? "badge_dif negativo"
                   : "badge_dif positivo"
           }
         >
-          {montoRealFinal === 0
+          {data.montoRealFinal === 0
             ? "ESPERANDO INGRESO DE MONTOS..."
-            : montoRealFinal === panelPrincial?.[0]?.balance_neto
-              ? `CAJA PERFECTA: ${montoRealFinal}`
-              : montoRealFinal < (panelPrincial?.[0]?.balance_neto ?? 0)
-                ? `FALTANTE EN CAJA: ${montoRealFinal - (panelPrincial?.[0]?.balance_neto ?? 0)}`
-                : `SOBRANTE EN CAJA: ${montoRealFinal - (panelPrincial?.[0]?.balance_neto ?? 0)}`}
+            : data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
+              ? `CAJA PERFECTA: ${data.montoRealFinal}`
+              : data.montoRealFinal <
+                  (data.metricasPanel?.[0]?.balance_neto ?? 0)
+                ? `FALTANTE EN CAJA: ${data.montoRealFinal - (data.metricasPanel?.[0]?.balance_neto ?? 0)}`
+                : `SOBRANTE EN CAJA: ${data.montoRealFinal - (data.metricasPanel?.[0]?.balance_neto ?? 0)}`}
         </p>
       </div>
 
@@ -99,7 +100,10 @@ export const CierreCaja = (data: PropsCierreCaja) => {
           placeholder="Ej: Faltan $200 por compra de insumos..."
           rows={4}
           /* El textarea se habilita solo si ya cargó montos Y la caja NO es perfecta */
-          disabled={montoRealFinal === panelPrincial?.[0]?.balance_neto}
+          disabled={
+            data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
+          }
+          onChange={data.onCambioObservaciones}
         ></textarea>
       </div>
 

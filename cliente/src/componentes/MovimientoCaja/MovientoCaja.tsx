@@ -16,13 +16,32 @@ export interface Movimiento {
   // Campos formateados por MySQL
   fecha_grupo: string; // Formato 'YYYY-MM-DD'
   hora_formateada: string; // Formato 'HH:mm'
+  observaciones: string;
+  nombre_alumno_vinculado: string | null;
 }
 
 interface MovimientoCajaProps {
   movimientos: Movimiento[];
+  infoDetalle: (
+    id_movimiento: number,
+    tipo: "ingreso" | "egreso",
+    metodo: "fisico" | "virtual",
+    monto: number,
+    descripcion: string,
+    observaciones: string | null,
+    dia: string,
+    hora: string,
+    metodo_pago: string,
+    nombre_alumno_vinculado: string | null,
+  ) => void;
 }
 
-export const MovientoCaja = ({ movimientos }: MovimientoCajaProps) => {
+export const MovientoCaja = ({
+  movimientos,
+  infoDetalle,
+}: MovimientoCajaProps) => {
+  console.log(movimientos);
+
   return (
     <div className="movimiento_detalle_contenedor">
       <table className="tabla-finanzas">
@@ -31,6 +50,20 @@ export const MovientoCaja = ({ movimientos }: MovimientoCajaProps) => {
             .filter((mov) => mov.nombre_categoria !== "Saldo Inicial") // Filtro para no mostrar saldos iniciales
             .map((mov) => (
               <tr
+                onClick={() => {
+                  infoDetalle(
+                    mov.id_movimiento,
+                    mov.tipo_movimiento,
+                    mov.tipo_cuenta,
+                    mov.monto,
+                    mov.nombre_cuenta,
+                    mov.descripcion,
+                    mov.fecha_grupo,
+                    mov.hora_formateada,
+                    mov.nombre_categoria,
+                    mov.nombre_alumno_vinculado,
+                  );
+                }}
                 key={mov.id_movimiento}
                 className={
                   mov.tipo_movimiento === "ingreso"

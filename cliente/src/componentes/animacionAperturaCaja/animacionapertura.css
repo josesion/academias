@@ -1,0 +1,128 @@
+/* Contenedor principal (Fondo oscuro semi-transparente) */
+.overlay_animacion_apertura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 8, 15, 0.95); /* Azul muy oscuro tipo terminal */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(8px);
+}
+
+.contenedor_apertura {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Círculo Central e Iconos */
+.circulo_central {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  transition: all 0.5s ease;
+}
+
+.icon_power, .icon_unlock {
+  font-size: 50px;
+  color: #00e5ff;
+  z-index: 2;
+  filter: drop-shadow(0 0 10px #00e5ff);
+}
+
+/* Animación de carga para el icono de Power */
+.icon_power.cargando {
+  animation: pulse_power 0.6s infinite alternate;
+}
+
+/* Estilo cuando la caja ya está activa (Fase 3) */
+.contenedor_apertura.activa .circulo_central {
+  border-color: #00ff88;
+  box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+}
+
+.contenedor_apertura.activa .icon_unlock {
+  color: #00ff88;
+  filter: drop-shadow(0 0 15px #00ff88);
+  animation: unlock_pop 0.4s ease-out;
+}
+
+/* Anillo de energía giratorio */
+.ring_aura {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border: 2px solid transparent;
+  border-top: 2px solid #00e5ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.contenedor_apertura.activa .ring_aura {
+  border-top-color: #00ff88;
+  animation-duration: 0.5s; /* Gira más rápido al final */
+}
+
+/* Textos */
+.textos_apertura h2 {
+  font-family: 'Courier New', Courier, monospace;
+  color: #00e5ff;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+.texto_neon_verde {
+  color: #00ff88 !important;
+  text-shadow: 0 0 10px #00ff88;
+}
+
+.usuario_apertura {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+/* Escáner Horizontal (Fase 2) */
+.scanner_apertura {
+  position: absolute;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00e5ff, transparent);
+  animation: scan_move 1s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse_power {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(1.1); opacity: 0.7; }
+}
+
+@keyframes unlock_pop {
+  0% { transform: scale(0.5); }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes scan_move {
+  0% { transform: translateY(-60px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(60px); opacity: 0; }
+}

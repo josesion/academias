@@ -1,25 +1,27 @@
-import { useState , useEffect , useCallback, useRef} from "react";
+import { useState , useEffect , useCallback, useRef, useReducer} from "react";
 import { useIncripcionesUsuarios } from "../hookNegocios/Inscripciones";
 // utils -------------------------------------------------------------
 import { idCajaFuntion } from "../utils/idCaja";
 
 //Seccion de Tipados--------------------------------------
-import  { type DataCaja , type  DetalleApertura, type DataAperturaCaja,
-          type EstadoCaja, type DetalleCajaMovimientoResult , type scrollStateData,
-          type Categoria,  type  RegistroDetalleCaja, type metricasTipoCuentas,
-          type ListadoTipoCuentas, type MetricasCajaPanelPrincipal, type DataCierreCaja,
-          type JsonDataCierre
+import type{  
+           DetalleCajaMovimientoResult ,  scrollStateData,  RegistroDetalleCaja,  
+           ListadoTipoCuentas,    DataCierreCaja,
+           JsonDataCierre
         
         } from "../tipadosTs/caja.typado";
-import type { MetodosPago } from "../componentes/metodoPagoInputs/MetodoPagoInputs";
+
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
+
+import { cajaReducer, initialState } from "../reducers/cajaReducers";
 
 
 interface DataCajaUsuariosConfig {
     id_escuela : number, 
     id_usuario : number,
+    usuario    : string,
     
     servicios : {
          metricasPanelCaja : ServicioCrud,
@@ -38,28 +40,15 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
 
     const { actualizarIngresoInscipcion } = useIncripcionesUsuarios();//  para actrualizar los parametros por la inscripcion
 
-
-  //------------------  estados para manejar la logica de caja  ------------------  .
-    const [modalApertura , setModalApertura] = useState<boolean>(false);
-    const [modalCierre , setModalCierre] = useState<boolean>(false);
-    const [dataCaja, setDataCaja] = useState<DataCaja>({id_caja : null , id_escuela : config.id_escuela});
-    const [apertura ,setApertura] = useState<DataAperturaCaja>({
-        id_escuela : config.id_escuela , estado : "abierta", id_usuario_apertura : config.id_usuario 
-    });
-    const [aperturaDetalle, setAperturaDetalle] = useState<DetalleApertura[]>([]);
-
-   //------------------  metricas de caja  ------------------  .
-    const [disparadorRefresco , setDisparadorRefresco] = useState<number>(0);
-    const [ panelPrincial , setPanelPrincial ] = useState<MetricasCajaPanelPrincipal[] | null >( null );
-
-
-    const [errorGenerico, setErrorGenerico] = useState< string | null >(null);
-    const [enviando , setEnviando] = useState<boolean>(false);
-    const [estadoCaja, setEstadoCaja] = useState<EstadoCaja>("cerrada");
+    const [ state , dispatch] = useReducer( cajaReducer, initialState({
+        id_escuela: config.id_escuela,
+        id_usuario : config.id_usuario,
+        usuario    : config.usuario,
+    }));
 
 
     //------------------  Estados detalle de caja ------------------
-    const observer = useRef<IntersectionObserver | null>(null);
+    const observer = useRef<IntersectionObserver | null>(null); 
     const [movimientos, setMovimientos] = useState<DetalleCajaMovimientoResult[]>([]);
     const [scrollState, setScrollState] = useState<scrollStateData>({
         loading: false,
@@ -68,29 +57,7 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
         limite: 5
     });
 
-    //------------------- Estados Ingresos e Egresos ---------------------
-
-
-    const [modalEgresoIngreso , setModalEgresoIngreso] = useState<boolean>(false);
-    const [verificadorSelector , setVerificadorSelector]= useState<boolean>(false); 
-    const [verificadorSelectorTipo , setVerificadorSelectorTipo]= useState<boolean>(false);
-
-
-    const [movimientoExtraordinario, setMovimientoExtraordinario] = useState<RegistroDetalleCaja>({
-        id_caja: dataCaja.id_caja ,
-        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
-        id_cuenta : null,
-        id_usuario : config.id_usuario,
-        monto: "",
-        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
-        referencia_id : 0 ,// es cerro por defecto ya q no es una inscripcion     
-        id_escuela : config.id_escuela,
-        tipo :""
-    });
-    const [listadoExtraordinario , setListadoExtraordionario] = useState<Categoria[] | null>( null);
-
    //------------------- Estados Tipo Cuentas ---------------------
-   const [listadoCuentasActivas, setListadoCuentasActivas] = useState<ListadoTipoCuentas[]>([]);
 
    // --filtroCuentasEstatica -- queda fijo por q solo en caja se muestran las cuentas activas de esa escuela 
    const filtroCuentasEstatica = {
@@ -98,15 +65,6 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
         estado : "activos"
    }; 
 
-  //------------------- Estado para el panel de metricas de cuentas ---------------------
-
-  const [ metricasTipoCuentas, setMetricasTipoCuentas] = useState<metricasTipoCuentas[]  | null>([]);
-  const [ metricasCuentasCierre , setMetricasCuentasCierrre] = useState<MetodosPago[]   >([]);
-
-  console.log(metricasTipoCuentas)
-
-  //------------------- Estado  el cierre de caja ---------------------------------------
-  const [ dataCierreCaja , setDataCierreCaja ] = useState<DataCierreCaja  | null >( null );
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -121,33 +79,31 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
 const handleMovimientoExtraordinarioChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
 
     if (e.target.value ){
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-        setVerificadorSelector(true);
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : e.target.name as keyof RegistroDetalleCaja , valor : Number(e.target.value)}    
+        });
+
+        dispatch({ type : "VERIFICADOR_SELECTOR" , payload : true});
+
     }else{
-        setVerificadorSelector(false);
+         dispatch({ type : "VERIFICADOR_SELECTOR" , payload : false});
     };
 };
 
     // --- Cerramos el modal y seteamos a 0 los estados
 const handleCerrarModalEgrIng = () =>{
 
-    setListadoExtraordionario( null );
-    setMovimientoExtraordinario({
-        id_caja: dataCaja.id_caja ,
-        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
-        monto: "",
-        id_cuenta : null,
-        id_usuario : config.id_usuario,
-        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
-        referencia_id : 0 ,
-        id_escuela : config.id_escuela,
-        tipo : ""
+    dispatch({ type : "SET_LISTADO_EXTRAORDINARIO", payload : null});
+
+    dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});
+
+    dispatch({ type : "CERRAR_MODALES_IE" });
+    
+    dispatch({
+        type : "SET_ERROR",
+        payload : null
     });
-    setModalEgresoIngreso(false);
-    setErrorGenerico(null)
 };
 
 
@@ -155,13 +111,15 @@ const handleCerrarModalEgrIng = () =>{
 const handleTipoPagoChange = (e: React.ChangeEvent< HTMLSelectElement>) => {
  
     if (e.target.value) {
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            [e.target.name]: e.target.value
-        }));
-        setVerificadorSelectorTipo(true);
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : e.target.name as keyof RegistroDetalleCaja , valor : Number(e.target.value)}    
+        });        
+
+        dispatch({ type : "VERIFICADOR_SELECTOR_TIPO" , payload : true});
     }else {
-        setVerificadorSelectorTipo(false);
+        dispatch({ type : "VERIFICADOR_SELECTOR_TIPO" , payload : false});
+
     };
 };
 
@@ -170,16 +128,17 @@ const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, name } = e.target;
 
     if (value){
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            [name]: value
-        }));        
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : name as keyof RegistroDetalleCaja , valor : Number(value)}    
+        });
+   
     }else{
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            monto :""
-        }));  
-       
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : name as keyof RegistroDetalleCaja , valor : ""}    
+        }); 
+
     };
 };
 
@@ -187,15 +146,17 @@ const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
    const { value, name } = e.target;
     if (value === "" ){
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            [name]: ""
-        }));        
-    }else{
-        setMovimientoExtraordinario( prev => ({
-            ...prev,
-            [name]: value
-        }));        
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : name as keyof RegistroDetalleCaja , valor : ""}    
+        });   
+       
+    }else{       
+        dispatch({
+            type : "UPDATE_MOVIMIENTO_EXTRA" ,
+            payload : { campo : name as keyof RegistroDetalleCaja , valor : value}    
+        }); 
+      
     };
 
 };
@@ -203,32 +164,45 @@ const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     // --- Registramos el movimiento INGRESO/EGRESO 
 const handRegistarMovimientoExtraordinario = async () => {
 
-    if (dataCaja.id_caja === null){
-         return  setErrorGenerico("Caja esta cerrada")
+    if (state.dataCaja.id_caja === null){
+         return   dispatch({
+            type : "SET_ERROR",
+            payload : "Caja esta cerrada"
+      });
     }; 
-    if ( !verificadorSelector  || movimientoExtraordinario.monto === "" || !verificadorSelectorTipo   ) {
-        setErrorGenerico("Verificar los campos del formulario")
+    if ( !state.verificadorSelector  || state.movimientoExtraordinario.monto === "" || !state.verificadorSelectorTipo   ) {
+        
+      return    dispatch({
+            type : "SET_ERROR",
+            payload : "Verificar los campos del formulario"
+      });
+
     }else{
 
         const data = {
-            id_caja       : dataCaja.id_caja,
+            id_caja       : state.dataCaja.id_caja,
             id_escuela    : Number(config.id_escuela), 
-            id_categoria  : Number(movimientoExtraordinario.id_categoria),
-            monto         : Number(movimientoExtraordinario.monto),
-            id_cuenta     : Number(movimientoExtraordinario.id_cuenta),
-            id_usuario    : Number(movimientoExtraordinario.id_usuario),
-            descripcion   : movimientoExtraordinario.descripcion,
+            id_categoria  : Number(state.movimientoExtraordinario.id_categoria),
+            monto         : Number(state.movimientoExtraordinario.monto),
+            id_cuenta     : Number(state.movimientoExtraordinario.id_cuenta),
+            id_usuario    : Number(state.movimientoExtraordinario.id_usuario),
+            descripcion   : state.movimientoExtraordinario.descripcion,
             referencia_id : 0       
         };
-
+   
 
         const servicioApiFetch =config.servicios.registrarMovimientoCaja;
         const registroMovimientoResult = await servicioApiFetch(data); 
 
 
         if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
-            setDisparadorRefresco( disparadorRefresco + 1);
-            setErrorGenerico(null);
+
+            dispatch({ type : "DISPARAR_REFRESCO"});
+
+            dispatch({
+                type : "SET_ERROR",
+                payload :null
+            });
 
             setMovimientos([]);
             setScrollState({
@@ -237,18 +211,16 @@ const handRegistarMovimientoExtraordinario = async () => {
                 offset: 0,
                 limite: 5
             });
-            await cargarMovimientos();            
-            setMovimientoExtraordinario( prev =>  ({
-                ...prev,
-                monto: "",
-                descripcion: "",
-                id_cuenta : null,
-                id_categoria : null,
-                referencia_id : 0 
-            }));
-            setModalEgresoIngreso(false);
+            await cargarMovimientos(); 
+            dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});           
+
+            dispatch({ type : "CERRAR_MODALES_IE" })
         }else{
-            setErrorGenerico(registroMovimientoResult.message)
+           
+            dispatch({
+                type : "SET_ERROR",
+                payload : registroMovimientoResult.message
+            });
         };
     };
 
@@ -256,63 +228,53 @@ const handRegistarMovimientoExtraordinario = async () => {
 
  // --- Seteamos los estados para abrir y determinar q el listado sea Ingreso
 const handleAbrirIngreso =  async () => {
-    setMovimientoExtraordinario( prev => ({ ...prev, tipo : "ingreso"}));
-    setModalEgresoIngreso(true);
+    dispatch({ type : "UPDATE_MOVIMIENTO_EXTRA" , payload : { campo : "tipo" , valor : "ingreso"}});
+
+    dispatch({ type : "ABRIR_MODAL_IE"});
+
     const servicioApiFetch = config.servicios.listadoCategoriaCaja;
     const listadoIngresos = await servicioApiFetch({
-        id_escuela : config.id_escuela,
+        id_escuela : state.dataCaja.id_escuela,
         tipo : "ingreso",
         estado : "activos"
     });
     
-    setListadoExtraordionario(listadoIngresos.data);
+    dispatch({ type : "SET_LISTADO_EXTRAORDINARIO", payload : listadoIngresos.data});
 };
 
  // --- Seteamos los estados para abrir y determinar q listado sea Egreso
 const handleAbrirEgreso = async () => {
-    setMovimientoExtraordinario( prev => ({ ...prev, tipo : "egreso"}));
-    setModalEgresoIngreso(true);
+
+    dispatch({ type : "UPDATE_MOVIMIENTO_EXTRA" , payload : { campo : "tipo" , valor : "egreso"}});
+
+    dispatch({ type : "ABRIR_MODAL_IE"});
+    
     const servicioApiFetch = config.servicios.listadoCategoriaCaja;
     const listadoEgresos = await servicioApiFetch({
-        id_escuela : config.id_escuela,
+        id_escuela :  state.dataCaja.id_escuela,
         tipo : "egreso",
         estado : "activos"
     });
-    setListadoExtraordionario(listadoEgresos.data);
+    
+    dispatch({ type : "SET_LISTADO_EXTRAORDINARIO", payload : listadoEgresos.data});
 };
 
 
-console.log(metricasCuentasCierre)
+//------------ CAPTURAMOS EL MONTO A CADA METODO DE PAGO, PARA EL CIERRE ------------------- //
+
 const handleCierreMontos = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nombreCuenta = event.target.name;
     const valorCuenta = event.target.value;
 
     if (valorCuenta !== "" && isNaN(Number(valorCuenta))) return;
 
-    setMetricasCuentasCierrre((prev: MetodosPago[]): MetodosPago[] => {
-        // Usamos una variable para que sea más claro el tipado
-        const result: MetodosPago[] = prev.map((det: MetodosPago) => {
-            if (det.nombre_cuenta === nombreCuenta) {
-                return { 
-                    ...det, 
-                    monto_real: Number(valorCuenta) // Asegurate que MetodosPago acepte string | number
-                };
-            }
-            return det;
-        });
-
-        return result;
+    dispatch({ 
+        type: 'UPDATE_MONTO_REAL_CIERRE', 
+        payload: { nombreCuenta, valorCuenta } 
     });
+
 };
  
-const montoRealFinal = metricasCuentasCierre.reduce((total, cuenta) => {
-    const valor = Number(cuenta.monto_real) || 0;
-    return total + valor;
-}, 0);
-
-console.log(montoRealFinal)
-
-
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -329,17 +291,23 @@ console.log(montoRealFinal)
 const handleEstadosCaja = () =>{
    
     try{
-        setEnviando(true);
-        if ( dataCaja.id_caja === null){
-                setModalApertura(true);
+         dispatch({ type : "INICIAR_OPERACION"});
+        if ( state.dataCaja.id_caja === null){
+                dispatch({
+                    type : "ABRIR_MODAL",
+                    payload : "apertura"
+                });
         }else{
-                setModalCierre(true);
+                dispatch({
+                    type : "ABRIR_MODAL",
+                    payload : "cierre"
+                });
         };
         
     }catch(error){
 
     }finally{
-      setEnviando(false)  
+       dispatch({ type : "CARGADO"})
     };
 };
 
@@ -351,22 +319,11 @@ const handleEstadosCaja = () =>{
 const cachearMontoIniciales = (id_cuenta: number, nombre: string, valor: string) => {
 
     const montoFinal = valor === "" ? "" : Number(valor);
+    const idCuenta = id_cuenta;
 
     if (valor !== "" && isNaN(Number(valor))) return;
 
-    setAperturaDetalle((prev) => {
-        const existe = prev.find((det) => det.id_cuenta === id_cuenta);
-
-        if (existe) {
-            return prev.map((det) =>
-                det.id_cuenta === id_cuenta 
-                    ? { ...det, monto: montoFinal as any }
-                    : det
-            );
-        } else {
-            return [...prev, { id_cuenta, nombre_cuenta: nombre, monto: montoFinal as any }];
-        }
-    });
+    dispatch({ type : "UPDATE_MONTO_APERTURA_DETALLE", payload : {  nombreCuenta : nombre , valorCuenta : montoFinal}});
 };
 
 
@@ -379,9 +336,10 @@ const cachearMontoIniciales = (id_cuenta: number, nombre: string, valor: string)
 const handleAbrirCaja = async() =>{
 
     try{
-        setEnviando(true);
+         dispatch({ type : "INICIAR_OPERACION"});
+
         // Si es q un monto es "" lo limpiamos o lo colocamos en  0
-        const detalleLimpiado = aperturaDetalle.map((item) => {
+        const detalleLimpiado = state.aperturaDetalle?.map((item) => {
             const montoRaw = item.monto as unknown; 
             return {
                     ...item,
@@ -390,18 +348,22 @@ const handleAbrirCaja = async() =>{
         });
         
         const data = {
-            id_escuela : apertura.id_escuela,
-            estado : apertura.estado,    
-            id_usuario_apertura : apertura.id_usuario_apertura,    
-            detalle : detalleLimpiado
+            id_escuela : state.dataCaja.id_escuela,
+            estado : "abierta",    
+            id_usuario_apertura : state.dataCaja.id_usuario,    
+            detalle : detalleLimpiado // a modificar mas a delante
         };
 
+        
        const servicioApiFetch = config.servicios.abrirCaja;
        const aperturaCajaResult = await servicioApiFetch(data);
-     
+
+///  AGREGAR ANIMACION DE CAJA ABIERTA
+
         if (aperturaCajaResult.code === "CAJA_ABIERTA_OK"){
-            setModalApertura(false)
-          
+            dispatch({ type : "CERRAR_MODALES"});
+            dispatch({ type : "ABRIR_MODAL_ANIMACION_APERTURA"});    
+
             setScrollState({
                 loading: false,
                 hasMore: true,
@@ -409,38 +371,64 @@ const handleAbrirCaja = async() =>{
                 limite: 5
             });
             setMovimientos([]); 
-           
-            setDataCaja( prev => ({
-                ...prev,
-                id_caja : aperturaCajaResult.data.id_caja
-            }));
-    
-          setEstadoCaja("abierta");
 
+            dispatch({
+                type : "SET_CAJA_ACTIVA",
+                payload : { 
+                     id_caja : aperturaCajaResult.data.id_caja,
+                     estado  : "abierta"
+                 }
+            });
+
+            setTimeout(() => {  
+               dispatch({ type : "CERRAR_MODAL_ANIMACION_APERTURA"});                
+            }, 2000);             
+    
         }else{
-            setErrorGenerico(aperturaCajaResult.errorsDetails?.[0].message || "Error al abrir caja");
+            dispatch({
+                type : "SET_ERROR",
+                payload : aperturaCajaResult.errorsDetails?.[0].message || "Error al abrir caja"
+            });
         };
 
     }catch(error){
-        setErrorGenerico("Error al abrir caja");
+        dispatch({
+            type : "SET_ERROR",
+            payload :"Error servidor,  al abrir caja "
+        });        
     }finally{
-      setEnviando(false)  
+       dispatch({ type : "CARGADO"})
     };
 };
+// ──────────────────────────────────────────────────────────────
+//  Handle para cachear observaciones cierre caja
+// ────────────────────────────────────────────────────────────── 
+
+const hanldeObsevacionesCierre = async( event: React.ChangeEvent<HTMLTextAreaElement>) =>{
+  
+    const valorObse : string = event.target.value;
+    if ( valorObse ){
+        dispatch({ type : "SET_OBSERVACIONES" , payload : event.target.value});
+    }else{
+        dispatch({ type : "SET_OBSERVACIONES" , payload : ""});
+    };
+
+};
+
 
 // ──────────────────────────────────────────────────────────────
 //  Handle para Cerrar caja
 // ────────────────────────────────────────────────────────────── 
-
-console.log(metricasTipoCuentas)
-console.log(metricasCuentasCierre)
-console.log(montoRealFinal) // monto cargado por usuario
-console.log( panelPrincial) // monto final
+  
 
 const handleCerrarCaja =async () =>{
+  
 
-    if (!dataCaja?.id_caja) {
-        setErrorGenerico("Error: No se encontró un ID de caja activo.");
+    if (!state.dataCaja?.id_caja) {
+        dispatch({
+            type : "SET_ERROR",
+            payload :"Error: No se encontró un ID de caja activo."
+        });          
         return;
     }
 
@@ -448,84 +436,70 @@ const handleCerrarCaja =async () =>{
     let dataDetalleCuentas : JsonDataCierre[] = [];
   
 
-    if (metricasTipoCuentas && metricasTipoCuentas.length > 0) {
+    if (state.metricasTipoCuentas && state.metricasTipoCuentas.length > 0) {
     
-           dataDetalleCuentas = metricasTipoCuentas.map((item) => {
-            return {
-                id_cuenta: Number(item.id_cuenta), // Aseguramos que sea number
-                nombre_cuenta: item.nombre_cuenta,
-                sistema: item.saldo_final_cuenta,   // Lo que el sistema dice que hay
-                real: item.saldo_final_cuenta,      // Inicializamos 'real' con lo mismo (el usuario luego lo edita)
-            };
+           dataDetalleCuentas = state.metricasTipoCuentas.map((item) => {
+                return {
+                    id_cuenta: Number(item.id_cuenta), // Aseguramos que sea number
+                    nombre_cuenta: item.nombre_cuenta,
+                    sistema: item.saldo_final_cuenta,   // Lo que el sistema dice que hay
+                    real: item.movimiento_sesion,      // Inicializamos 'real' con lo mismo (el usuario luego lo edita)
+                };
            });
     };
+    
+
 
     let dataCierreCaja :  DataCierreCaja  | null=  null ;
 
     if (!dataDetalleCuentas || dataDetalleCuentas.length === 0) {
-       console.error("No se pudo generar el detalle del arqueo");
+       dispatch({ type : "SET_ERROR" , payload :"No se pudo generar el detalle del arqueo" })
        return; 
     }
     
-    const montoRealFinal = metricasCuentasCierre.reduce((total, cuenta) => {
-        const valor = Number(cuenta.monto_real) || 0;
-        return total + valor;
-    }, 0);
-
-    console.log( panelPrincial);
-    console.log( montoRealFinal);
-    console.log( dataCaja.id_caja);
-    console.log( dataCaja.id_escuela);
-    console.log( config.id_usuario);
-
-    if ( panelPrincial && montoRealFinal  && dataCaja.id_caja && dataCaja.id_escuela && config.id_usuario){
-        console.log("aqui")
+    if ( state.panelPrincipal &&  state.dataCaja.id_caja && state.dataCaja.id_escuela && config.id_usuario){
+    
         dataCierreCaja = {
-                id_caja: dataCaja.id_caja,
+                id_caja: state.dataCaja.id_caja,
                 id_escuela: config.id_escuela,
                 id_usuario_cierre: config.id_usuario,
             
-                monto_final_real: Number(montoRealFinal), 
-                monto_sistema: panelPrincial[0].balance_neto,
-                diferencia_total: Number(montoRealFinal) - panelPrincial[0].balance_neto,
-                arqueo_detalle: dataDetalleCuentas 
+                monto_final_real: Number(state.montoRealFinal), 
+                monto_sistema: state.panelPrincipal[0].balance_neto ?? 0,
+                diferencia_total: Number(state.montoRealFinal) - state.panelPrincipal[0].balance_neto,
+                arqueo_detalle: dataDetalleCuentas,
+                observaciones_cierre : state.observaciones 
         };
     };
 
-    console.log( dataCierreCaja)
-    console.log(dataDetalleCuentas)
+    try{
+        dispatch({ type : "INICIAR_OPERACION"});
 
-    // try{
-    //     setEnviando(true);
-    //     const dataCierre = {
-    //         id_caja : dataCaja.id_caja,
-    //         id_escuela : config.id_escuela,
-    //         monto_final_real :  panelPrincial?.[0]?.balance_neto,
-    //         id_usuario : config.id_usuario 
-    //     };
-
-    //     const servicioApiFetch = config.servicios.cerrarCaja;
-    //     const cierreCajaResult = await servicioApiFetch(dataCierre);
-
-    //     if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
+         const servicioApiFetch = config.servicios.cerrarCaja;
+         const cierreCajaResult = await servicioApiFetch( dataCierreCaja );
+    
+        if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
            
-    //         setDataCaja( prev => ({
-    //             ...prev,
-    //             id_caja : null
-    //         }));
-    //         setEstadoCaja("cerrada");
-    //         setDataCaja(prev => ({
-    //             ...prev,
-    //             id_caja : null
-    //         }));
-    //         setModalCierre(false);
-    //     };
+            dispatch({type : "ABRIR_MODAL_ANIMACION" });
+            dispatch({type : "SET_CAJA_ACTIVA" , payload : { id_caja : null , estado : "cerrada"}});
+            dispatch({type : "CERRAR_MODALES"});
+        
+           setTimeout(() => {  
+             dispatch({type : "CERRAR_MODAL_ANIMACION" }); 
+             dispatch({type : "RESET_MONTO_APERTURA_DETALLE" , payload : state.aperturaDetalle })  
+             dispatch({type : "FORMATEAR_MOV_EXTRAORDINARIOS"});
+             dispatch({ type : "RESET_MONTO_CUENTAS_CIERRE" , payload : state.metricasCuentasCierre});
+           }, 2000);           
+        };
+        if (cierreCajaResult.code === "NO_HAY_CAJA_ABIERTA"){
+           return dispatch({ type : "SET_ERROR" , payload : "No existe caja abierta"}); 
+        }       
 
-    // }catch(error){
-    //     setErrorGenerico("Error al cerrar caja");
-    // }finally{
-    //     setEnviando(false)
-    // };
+    }catch(error){
+        dispatch({ type : "SET_ERROR" , payload : "Error en el servidor"});
+    }finally{
+        dispatch({ type : "FINALIZAR_OPERACION"}); 
+    };
 };
 
 // ──────────────────────────────────────────────────────────────
@@ -534,28 +508,68 @@ const handleCerrarCaja =async () =>{
 
 const handleAbrirCajaModalCerrar = () =>{
 
-    setModalApertura(false);
-    setApertura({ id_escuela : config.id_escuela , estado : "abierta", id_usuario_apertura : config.id_usuario });
-    setMovimientoExtraordinario({
-        id_caja: dataCaja.id_caja ,
-        id_categoria: null, // Aquí cae el ID del selector (ej: ID de 'Luz')
-        id_cuenta : null,
-        id_usuario : config.id_usuario,
-        monto: "",
-        descripcion: "",// Aquí podés poner "Pago de boleta Edesa"
-        referencia_id : 0 ,// es cerro por defecto ya q no es una inscripcion     
-        id_escuela : config.id_escuela,
-        tipo :""
+    dispatch({
+        type : "CERRAR_MODALES"
     });
+
+    dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});
+
 };
 
 // ──────────────────────────────────────────────────────────────
 //Handle para Cerrar modal de cierre de caja
 // ────────────────────────────────────────────────────────────── 
-
+   
 const handleCerrarModalCerrar = () =>{
-    setModalCierre(false);
+    dispatch({ type : "RESET_MONTO_CUENTAS_CIERRE" , payload : state.metricasCuentasCierre}); 
+    dispatch({
+        type : "CERRAR_MODALES"
+    });
+
 };
+
+// ──────────────────────────────────────────────────────────────
+//Handle  INFORMES DE DETALLE
+// ────────────────────────────────────────────────────────────── 
+
+const handleCachearDetalle = (   
+    id_movimiento : number,  
+    tipo: "ingreso" | "egreso",
+    metodo: string,
+    monto: number,
+    descripcion: string,
+    observaciones: string | null,
+    dia: string,
+    hora: string,
+    metodo_pago: string,
+    nombre_alumno_vinculado: string | null
+) =>{
+
+    const data = {
+        id_movimiento : id_movimiento,
+        tipo : tipo,
+        monto  : monto,
+        observaciones : observaciones,
+        usuario : String(state.dataCaja.usuario),// ver q traiga el usuario y no el id
+        fecha : dia,
+        hora : hora,
+        metodo_pago : metodo_pago,
+        descripcion: descripcion,
+        metodo : metodo,
+        nombre_alumno_vinculado : nombre_alumno_vinculado 
+    };    
+
+    dispatch({ type : "SET_INFORME_DETALLE" , payload : data });
+    dispatch({ type : "ABRIR_MODAL_INFORME"});
+};    
+
+
+const hanldeCerrarInforme = () =>{
+     console.log("a")
+    dispatch({type : "CERRAR_MODAL_INFORME"});
+};
+  
+
 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -570,20 +584,20 @@ const handleCerrarModalCerrar = () =>{
 
 const cargarMovimientos = useCallback(async () => {
     // Si no hay ID, o ya está cargando, o no hay más: FRENAMOS
-    if (!dataCaja.id_caja || scrollState.loading || !scrollState.hasMore) { return }; 
+    if (!state.dataCaja.id_caja || scrollState.loading || !scrollState.hasMore) { return }; 
 
     setScrollState(prev => ({ ...prev, loading: true }));
 
     try {
         const dataDetalle = {
-            id_caja: dataCaja.id_caja,
+            id_caja: state.dataCaja.id_caja,
             limite: scrollState.limite,
             offset: scrollState.offset
         };
 
         const res = await config.servicios.movimientoCajaDetalle(dataDetalle);
-       
-        if (res.code === "MOVIMIENTOS_CAJA_OK") {
+        
+        if (res.code === "MOVIMIENTOS_CAJA_OK" && Array.isArray(res.data) ) {
             setMovimientos(prev => [...prev, ...res.data]);
             setScrollState(prev => ({
                 ...prev,
@@ -597,7 +611,7 @@ const cargarMovimientos = useCallback(async () => {
     } catch (error) {
         setScrollState(prev => ({ ...prev, loading: false }));
     };
-}, [dataCaja.id_caja, scrollState.offset, scrollState.limite, scrollState.hasMore, scrollState.loading]);
+}, [state.dataCaja.id_caja, scrollState.offset, scrollState.limite, scrollState.hasMore, scrollState.loading]);
 
 
 // ──────────────────────────────────────────────────────────────
@@ -622,7 +636,7 @@ const lastElementRef = useCallback((node: HTMLDivElement | null) => {
     // 4. Le decimos al observador que mire el div (el nodo)
     if (node) observer.current.observe(node); 
 
-}, [scrollState.loading, scrollState.hasMore, cargarMovimientos, dataCaja.id_caja]); // Dependencias: cargarMovimientos y dataCaja.id_caja (porque se usa dentro de cargarMovimientos)
+}, [scrollState.loading, scrollState.hasMore, cargarMovimientos, state.dataCaja.id_caja]); // Dependencias: cargarMovimientos y dataCaja.id_caja (porque se usa dentro de cargarMovimientos)
 // Importante: cargarMovimientos debe estar en las dependencias
 
 
@@ -632,6 +646,25 @@ const lastElementRef = useCallback((node: HTMLDivElement | null) => {
 //                         6-METRICAS CIERRE CAJA 
 // ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 // ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+
+// ──────────────────────────────────────────────────────────────
+//Obtener el monto real contado por el usuario
+// ────────────────────────────────────────────────────────────── 
+useEffect(() => {
+    // 1. Tomamos la lista del Reducer
+    const listaParaCalcular = state.metricasCuentasCierre || [];
+    
+    // 2. Calculamos el total
+    const total = listaParaCalcular.reduce((acc, cuenta) => {
+        return acc + (Number(cuenta.monto_real) || 0);
+    }, 0);
+
+    // 3. Lo guardamos en el useState local
+
+    dispatch({ type : "SET_MONTO_FINAL" , payload : total})
+
+}, [state.metricasCuentasCierre, state.disparadorRefresco]);
+
 // ──────────────────────────────────────────────────────────────
 //Obtener id de caja
 // ────────────────────────────────────────────────────────────── 
@@ -643,17 +676,29 @@ useEffect( ()=> {
         
         if ( idCajaResult){
            
-            setDataCaja( prev => ({
-                ...prev,
-                id_caja : idCajaResult
-            }));
-            setMovimientoExtraordinario( prev => ({
-                ...prev, id_caja : idCajaResult
-            }));
-            setEstadoCaja("abierta");
-            setErrorGenerico(null);
+            dispatch({
+                type : "SET_CAJA_ACTIVA",
+                payload : {
+                    id_caja : idCajaResult,
+                    estado   : "abierta"
+                }
+            });
+
+            dispatch({
+                type : 'SET_ERROR' ,
+                payload : null
+            });
+
+            dispatch({ type : "UPDATE_MOVIMIENTO_EXTRA" , payload : { campo : "id_caja" , valor : idCajaResult}});
+
         }else{ 
-            setEstadoCaja("cerrada")
+            dispatch({
+                type : "SET_CAJA_ACTIVA",
+                payload : {
+                    id_caja : null,
+                    estado   : "cerrada"
+                }
+            });
         };
     };
     idCaja();
@@ -669,36 +714,28 @@ useEffect( ()=> {
 useEffect( ()=> {
     const metricas = async () => {
         const servicioApiFetch = config.servicios.metricasPanelCaja;
-        const metricasCajaResult = await servicioApiFetch(dataCaja);
+
+        const data = {
+            id_caja : state.dataCaja.id_caja,
+            id_escuela : state.dataCaja.id_escuela
+        };
+
+        const metricasCajaResult = await servicioApiFetch(data);
 
         if (metricasCajaResult.code ===  "METRICAS_CAJA_CUENTAS_OK" ){
-           // console.log(metricasCajaResult)
-        // const totalCuenta =metricasCajaResult.data.find(
-        //      (cuenta: metricasTipoCuentas)  => cuenta.id_cuenta === "TOTAL" );
-        //         setPanelPrincial(prev => {
-        //             if (!prev || prev.length === 0) return prev;
-        //             return [
-        //                 {
-        //                     ...prev[0], 
-        //                     balance_neto: totalCuenta ? Number(totalCuenta.saldo_actual || 0) : 0
-        //                 }
-        //             ];
-        //         });
 
-            setMetricasTipoCuentas(metricasCajaResult.data)
+            dispatch({ type : "SET_METRICAS_TIPO_CUENTAS" , payload : metricasCajaResult.data });
+           
         }else{
-            setMetricasTipoCuentas(null)
-            // setPanelPrincial(prev => 
-            //     prev && prev.length > 0 
-            //         ? [{ ...prev[0], balance_neto: 0 }] 
-            //         : prev
-            // );
+         
+           dispatch({ type : "SET_METRICAS_TIPO_CUENTAS" , payload : null });
+
         };
     };
 
     metricas();
 
-},[dataCaja.id_caja, actualizarIngresoInscipcion, estadoCaja, disparadorRefresco]);    
+},[state.dataCaja.id_caja, actualizarIngresoInscipcion, state.estadoCaja, state.disparadorRefresco] );    
 
 
 // ──────────────────────────────────────────────────────────────
@@ -707,7 +744,7 @@ useEffect( ()=> {
 
 useEffect(() => {
 
-    if (dataCaja.id_caja) {
+    if (state.dataCaja.id_caja) {
         cargarMovimientos();
     } else {
       
@@ -719,7 +756,7 @@ useEffect(() => {
             limite: 5
         });
     }
-}, [dataCaja.id_caja, cargarMovimientos]);
+}, [state.dataCaja.id_caja, cargarMovimientos]);
 
 // ──────────────────────────────────────────────────────────────
 // Obtener el listado de tipo cuentas activas para el selector de movimiento extraordinario
@@ -732,17 +769,29 @@ useEffect( ()=> {
         const resultListacoCuentas = await servicioApiFetch( filtroCuentasEstatica);
        
         if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
-            setListadoCuentasActivas(resultListacoCuentas.data);
+            dispatch({
+                type : "SET_LISTADO_CUENTAS_ACTIVAS",
+                payload : resultListacoCuentas.data
+            });
+         //   setListadoCuentasActivas(resultListacoCuentas.data);
             const detallesIniciales = resultListacoCuentas.data.map((cuenta: ListadoTipoCuentas) => ({
                 id_cuenta: cuenta.id_cuenta,
                 nombre_cuenta: cuenta.nombre_cuenta,
                 monto: "" // Nacen en cero para que no fallen al enviar
             }));
 
-            setAperturaDetalle(detallesIniciales);
+            dispatch({ type : "SET_APERTURA_DETALLE" , payload : detallesIniciales})
+
+            //setAperturaDetalle(detallesIniciales);
         }else{
-            setListadoCuentasActivas([]);
-            setErrorGenerico(resultListacoCuentas.message || "Error sin listado cuentas" );
+            dispatch({
+                type : "SET_LISTADO_CUENTAS_ACTIVAS",
+                payload : []
+            });
+            dispatch({
+                type : "SET_ERROR",
+                payload : resultListacoCuentas.message || "Error sin listado cuentas" 
+            });
         };
     };
 
@@ -758,18 +807,22 @@ useEffect( ()=> {
 
     const metricasPrincipalCaja = async () =>{
         const servicioApiFetch = config.servicios.metricasPanelPrincipal;
-        const metricasResult = await servicioApiFetch(dataCaja);
+        const metricasResult = await servicioApiFetch(state.dataCaja);
       
         if (metricasResult.code === 'METRICAS_PRINCIPAL_OK'){   
-            setPanelPrincial(metricasResult.data);  
+           
+            dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : metricasResult.data });
+
         }else{
-            setPanelPrincial(null);
+
+            dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : null });
+
         };
     };
 
     metricasPrincipalCaja();
 
-}, [ dataCaja.id_caja , actualizarIngresoInscipcion, modalApertura , movimientoExtraordinario] );
+}, [ state.dataCaja.id_caja , actualizarIngresoInscipcion,  state.movimientoExtraordinario] );
 
 
 // ──────────────────────────────────────────────────────────────
@@ -778,25 +831,20 @@ useEffect( ()=> {
 
 useEffect( ()=> {
 
-    if ( metricasTipoCuentas  && metricasTipoCuentas.length > 0){
+    if ( state.metricasTipoCuentas  && state.metricasTipoCuentas.length > 0){
 
-     const inicializarForm = metricasTipoCuentas.map(cuenta => ({
-            id_cuenta: cuenta.id_cuenta,
-            nombre_cuenta: cuenta.nombre_cuenta,
-            tipo_cuenta : cuenta.tipo_cuenta,
-            monto_sistema: Number(cuenta.saldo_final_cuenta),
-            monto_real: "", // El usuario empieza con 0
-            //dif: -Number(cuenta.saldo_final_cuenta) // La diferencia inicial es todo el saldo
-        }));   
+        dispatch({ 
+            type: 'INICIALIZAR_METODO_PAGO', 
+            payload: state.metricasTipoCuentas 
+        });
 
-        setMetricasCuentasCierrre( inicializarForm )
     };
 
-
-},[metricasTipoCuentas]);   
+},[state.metricasTipoCuentas]);   
 
     return{
-        apertura,
+        state,
+      
 
         handleEstadosCaja,
         handleAbrirCajaModalCerrar,
@@ -806,21 +854,11 @@ useEffect( ()=> {
 
         cachearMontoIniciales,
 
-        errorGenerico,
-
-        estadoCaja,
-        modalApertura,
-        modalCierre,
-        modalEgresoIngreso,
-        enviando,
-
         lastElementRef,
         movimientos,
         scrollState,
 
-       
-        movimientoExtraordinario,
-        listadoExtraordinario,
+
         handleMovimientoExtraordinarioChange,
         handleTipoPagoChange,
         handleCerrarModalEgrIng,
@@ -829,15 +867,9 @@ useEffect( ()=> {
         handleMemoChange,
         handleAbrirEgreso,
         handleAbrirIngreso,
-
-        metricasTipoCuentas,
-        listadoCuentasActivas,
-        panelPrincial,
-    
-
-        aperturaDetalle,
-        metricasCuentasCierre,
+        hanldeObsevacionesCierre,
         handleCierreMontos,
-        montoRealFinal, 
+        handleCachearDetalle,
+        hanldeCerrarInforme,
     };
 };    

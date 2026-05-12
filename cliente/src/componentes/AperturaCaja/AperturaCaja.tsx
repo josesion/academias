@@ -26,7 +26,7 @@ interface AbrirCajaProps {
   errorGenerico: string | null;
   listadoCuentasActivas: ListadoTipoCuentas[];
   // Ahora es un Array, no un Record
-  aperturaDetalle: DetalleApertura[];
+  aperturaDetalle: DetalleApertura[] | null;
 }
 
 export const AperturaCaja = (props: AbrirCajaProps) => {
@@ -48,7 +48,7 @@ export const AperturaCaja = (props: AbrirCajaProps) => {
         {props.listadoCuentasActivas.map(
           (item: ListadoTipoCuentas, index: number) => {
             // Buscamos el objeto correspondiente en el array de detalles
-            const detalleActual = props.aperturaDetalle.find(
+            const detalleActual = props.aperturaDetalle?.find(
               (d) => d.id_cuenta === item.id_cuenta,
             );
 
