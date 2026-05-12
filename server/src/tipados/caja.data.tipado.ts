@@ -18,6 +18,7 @@ export interface DetalleCajaMovimiento {
     // Campos formateados por MySQL
     fecha_grupo: string; // Formato 'YYYY-MM-DD'
     hora_formateada: string; // Formato 'HH:mm'
+    nombre_alumno_vinculado : string;
 }
 
 export interface DataAltaCaja{

@@ -142,32 +142,33 @@ export const AperturaCajaSchema = z.object({
 
 
 export const ArqueoDetalleItemSchema = z.object({
-    id_cuenta: z.coerce.number()
+    id_cuenta: z.coerce.number() 
         .int("El ID de cuenta debe ser entero.")
         .positive(),
     nombre_cuenta: z.string().min(1, "El nombre de la cuenta es requerido."),
-    sistema: z.coerce.number(), // Puede ser 0 o positivo
-    real: z.coerce.number()
-        .nonnegative("El monto real no puede ser negativo."),
-    dif: z.coerce.number() // Puede ser negativo (faltante) o positivo (sobrante)
+    sistema: z.coerce.number(), // Acepta negativos, 0 y positivos por defecto
+    
+    real: z.coerce.number(),    
+    // Quitamos .nonnegative() para permitir valores negativos
+    
 });
 
 export const CierresCajaSchema = z.object({
     id_escuela: z.coerce.number()
         .int()
         .positive("El ID escuela de cierre es obligatorio."),
+    
     id_usuario_cierre: z.coerce.number()
         .int()
         .positive("El ID de usuario de cierre es obligatorio."),
 
-    monto_final_real: z.coerce.number()
-        .nonnegative("El monto final real no puede ser negativo."),
+    // Quitamos .nonnegative() para permitir saldos negativos
+    monto_final_real: z.coerce.number(),
 
-    monto_sistema: z.coerce.number()
-        .nonnegative("El monto sistema no puede ser negativo."),
+    // Quitamos .nonnegative() porque el sistema puede marcar balance negativo
+    monto_sistema: z.coerce.number(),
 
-
-    // Aquí validamos que sea un array y que cumpla con el esquema anterior
+    // Detalle de cuentas (reutiliza el que corregimos recién)
     arqueo_detalle: z.array(ArqueoDetalleItemSchema)
         .min(1, "Debe haber al menos un detalle de cuenta para cerrar."),
 
@@ -175,12 +176,10 @@ export const CierresCajaSchema = z.object({
         .max(1000, "La justificación es demasiado larga.")
         .optional()
         .nullable(),
-
         
-    // La diferencia total la podemos recibir o calcular en el back
+    // Ya permite negativos por defecto
     diferencia_total: z.coerce.number(),
     
-    // El id_caja suele venir por params, pero si lo mandas por body:
     id_caja: z.coerce.number().int().positive()
 });
 

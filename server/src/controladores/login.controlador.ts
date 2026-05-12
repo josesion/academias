@@ -7,6 +7,9 @@ import { enviarResponseError } from "../utils/responseError";
 import { crearCookie } from "../utils/jwt";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 
+import { MAPA_LOGUEO, ERROR_INTERNO_SERVIDOR } from "../respuestas/login";
+
+
 import { method as loginServicio } from "../Servicio/login.servicios";
 
 /**
@@ -34,47 +37,33 @@ const login = async( req: Request, res: Response ) =>{
 
     const loginResult = await loginServicio.loginServicio( loginData );    
 
-    switch ( loginResult.code ){
-        case 'USUARIO_EXISTE' : 
+    const config = MAPA_LOGUEO[loginResult.code] || ERROR_INTERNO_SERVIDOR; 
+
+    if ( config.status === CodigoEstadoHTTP.OK){
             const cookieOptions = crearCookie();
             res.cookie("token", loginResult.data?.tokenCadena, cookieOptions);
-            return  enviarResponse(
+        return enviarResponse(
                 res,
-                CodigoEstadoHTTP.OK,
-                "Login Exitoso",
-                { id_escuela : loginResult.data?.id_escuela,
+                config.status,
+                loginResult.message || config.msg,
+                { 
+                  id_escuela : loginResult.data?.id_escuela,
                   id_usuario : loginResult.data?.id_usuario,
-                  rol        : loginResult.data?.rol     
+                  rol        : loginResult.data?.rol ,
+                  usuario    : loginResult.data?.usuario    
                 },
                 undefined,
                 loginResult.code
-            );
-        case  "USUARIO_NO_EXISTE" :{
-            return enviarResponseError(
+        );  
+   }else{
+        return enviarResponseError(
                 res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                loginResult.message,
+                config.status,
+                loginResult.message || config.msg,
                 loginResult.code
-            );
-        };  
-        
-        case  "VERIFICAR_USUARIO" :{
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.CONFLICTO,
-                loginResult.message,
-                loginResult.code
-            );
-        };         
-
-        default:
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                "Ocurrió un error inesperado logueo de usuario",
-                loginResult.code
-            );            
-    };
+        );
+   };
+   
 };
 
 

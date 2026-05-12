@@ -12,4 +12,4 @@ const ruta  =  Router();
  ruta.get("/api/lista_categoria_caja_tipos/:id_escuela/:tipo/:estado", cajaControlador.listarCategoriaCajaTipos);
  ruta.get("/api/lista_tipos_cuentas/:id_escuela/:estado", cajaControlador.listaTipoCuentas );
 
- export default ruta ;
+ export default ruta ;           

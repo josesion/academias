@@ -70,7 +70,7 @@ const loginUsuario =  async ( data : LoginInputs)
     return{
         error : true,
         message :  "Error al intentar loguearse en el sistema",
-        code : "ERROR_LOGIN"
+        code : "ERROR_SERVIDOR"
     };    
 };
 

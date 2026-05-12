@@ -435,7 +435,6 @@ const abrirCajaTransaccion =async (req : Request , res : Response) => {
 
    const abrirCajaResult = await cajaServicio.aperturaCajaTransaccion( dataCaja );
 
-
    const config = MAPA_ABRIR_CAJA[abrirCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
 
    if ( config.status === CodigoEstadoHTTP.OK){

@@ -364,10 +364,17 @@ const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
                             cue.nombre_cuenta,  
                             cue.tipo_cuenta,     
                             DATE_FORMAT(det.fecha_movimiento, '%Y-%m-%d') as fecha_grupo, 
-                            TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada
+                            TIME_FORMAT(det.fecha_movimiento, '%H:%i') as hora_formateada,
+                            -- Traemos nombre y apellido combinados para el ticket
+                            CONCAT(alu.nombre, ' ', alu.apellido) as nombre_alumno_vinculado
                         FROM detalle_caja det
                         INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
                         INNER JOIN cuentas_escuela cue ON det.id_cuenta = cue.id_cuenta
+                        -- Primer salto: hacia la inscripción
+                        LEFT JOIN inscripciones ins ON det.referencia_id = ins.id_inscripcion 
+                            AND det.referencia_id > 0
+                        -- Segundo salto: hacia el alumno usando el DNI
+                        LEFT JOIN alumnos alu ON ins.dni_alumno = alu.dni_alumno
                         WHERE det.id_caja = ?
                         ORDER BY det.fecha_movimiento DESC, det.id_movimiento DESC
                         LIMIT ${Number(limite)} OFFSET ${Number(offset)}; `;
@@ -475,6 +482,7 @@ const listaMetricasCaja = async ( data : CierreCajaInputs)
 : Promise<TipadoData<{
         id_cuenta: number | string;
         nombre_cuenta: string;
+        tipo_cuenta: "fisico" | "virtual",
         inicial_cuenta: number;
         movimiento_sesion: number;
         saldo_final_cuenta: number;
@@ -483,16 +491,17 @@ const listaMetricasCaja = async ( data : CierreCajaInputs)
     const sql : string = `SELECT 
                             det.id_cuenta,
                             cu.nombre_cuenta,
+                            cu.tipo_cuenta, -- <--- Agregamos el tipo (fisico/virtual)
                             -- Con cuánto arrancó la cuenta
                             COALESCE(SUM(CASE WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS inicial_cuenta,
                             
-                            -- Movimientos puros de la sesión (Ingresos - Egresos, excluyendo el Saldo Inicial)
+                            -- Movimientos puros de la sesión (Ingresos - Egresos)
                             COALESCE(SUM(CASE 
                                 WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                 ELSE 0 END), 0) AS movimiento_sesion,
                             
-                            -- El total real que hay en la cuenta (Inicial + Movimientos)
+                            -- El total real que hay en la cuenta (Monto Sistema)
                             COALESCE(SUM(CASE 
                                 WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
@@ -502,7 +511,7 @@ const listaMetricasCaja = async ( data : CierreCajaInputs)
                         INNER JOIN cuentas_escuela cu ON det.id_cuenta = cu.id_cuenta
                         INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
                         WHERE det.id_caja = ? 
-                        GROUP BY det.id_cuenta, cu.nombre_cuenta;`;
+                        GROUP BY det.id_cuenta, cu.nombre_cuenta, cu.tipo_cuenta;`;
     const parametros : unknown[] = [ id_caja ];
 
     return listarEntidadSinPaginacion({
@@ -639,7 +648,7 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput) => {
                 id_usuario_apertura,  // id_usuario
                 item.monto,           // monto
                 `Saldo inicial: ${item.nombre_cuenta}`, // descripcion
-                idGenerado            // referencia_id
+                null            // referencia_id
             ];
 
             await conn.execute(sqlCajaDetalle, valoresDetalle);

@@ -214,6 +214,7 @@ const listaMetricasCaja  = async ( data : PanelMetricasInputs)
 : Promise<TipadoData<{
         id_cuenta: number | string;
         nombre_cuenta: string;
+        tipo_cuenta: "fisico" | "virtual",
         inicial_cuenta: number;
         movimiento_sesion: number;
         saldo_final_cuenta: number;
