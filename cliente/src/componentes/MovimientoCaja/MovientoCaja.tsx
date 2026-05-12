@@ -40,8 +40,6 @@ export const MovientoCaja = ({
   movimientos,
   infoDetalle,
 }: MovimientoCajaProps) => {
-  console.log(movimientos);
-
   return (
     <div className="movimiento_detalle_contenedor">
       <table className="tabla-finanzas">

@@ -3,7 +3,7 @@ import { useContext } from "react";
 
 //Seccion de contexto---------------------------------------
 import { RutasProtegidasContext } from "../contexto/protectRutas";
-import { useCajaUsuario } from "../hooks/caja.usuarios";
+import { useCajaUsuario } from "../hooks/caja/caja.usuarios";
 //Seccion de servicios--------------------------------------
 import { metricasPanelCaja, obtenerIdCaja , abrirCaja , 
          cerrarCaja , movimientoCajaDetalle, listadoCategoriaCaja,
@@ -12,6 +12,7 @@ import { metricasPanelCaja, obtenerIdCaja , abrirCaja ,
         } from "../servicio/caja.fetch";
 
 export const  cajasCongif = () =>{
+    
     const { rol } = useContext( RutasProtegidasContext ); 
     
     const config = {

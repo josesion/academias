@@ -45,9 +45,6 @@ export const CajaArqueo = () => {
     state,
   } = cajasCongif();
 
-  console.log(state);
-  console.log();
-
   interface Categoria {
     id_categoria: number;
     nombre_categoria: string;
