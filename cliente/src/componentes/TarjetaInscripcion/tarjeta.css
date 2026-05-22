@@ -4,11 +4,10 @@
 
 /* ===== CONTENEDOR GENERAL (Cajón de Sastre) ===== */
 .tarjeta_card {
-    /* Quitamos anchos fijos y márgenes automáticos */
     width: 100%; 
     min-width: 0; /* Importante para el Grid */
     margin: 0;
-    padding: 0; /* El padding lo maneja el body interno */
+    padding: 0; 
     box-sizing: border-box;
 }
 
@@ -62,7 +61,6 @@
     /* Sombra profunda y suave */
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     
-    /* Mantenemos el height automático para que el Grid mande */
     height: 100%;
     min-height: auto; 
     box-sizing: border-box;
@@ -130,26 +128,41 @@
     color: #f1f5f9; /* Slate-100 */
 }
 
-/* ===== DESTACADO (PRECIO) ===== */
-.tarjeta_row.destacado {
-    grid-column: 1 / -1; /* Ocupa todo el ancho del Grid */
+/* ============================================================
+   SECCIÓN DE PRECIO DESTACADO (SOLUCIÓN AL REFLUJO DEL GRID)
+   ============================================================ */
+
+/* El contenedor se encarga puramente de romper el Grid y estirarse */
+.tarjeta_destacado_container {
+    grid-column: 1 / -1; 
     margin-top: 15px;
     padding-top: 18px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
 }
 
-.tarjeta_row.destacado .tarjeta_key {
+/* La fila interna de precio, libre para que React la actualice sin trabas */
+.tarjeta_row_destacado {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.tarjeta_row_destacado .tarjeta_key {
     color: #fff;
 }
 
-.tarjeta_row.destacado .tarjeta_value {
+.tarjeta_row_destacado .tarjeta_value {
     font-size: 1.4rem;
     font-weight: 800;
     color: #38bdf8; /* Celeste marca */
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
 }
 
-/* Animaciones */
+/* ===== ANIMACIONES ===== */
 @keyframes fadeInTarjeta {
     from { 
         opacity: 0; 
@@ -172,7 +185,6 @@
     } 
 
     .tarjeta_card_body {
-        /* En móviles forzamos una columna */
         grid-template-columns: 1fr;
         row-gap: 12px;
         padding: 20px 20px 20px 36px;
@@ -194,7 +206,7 @@
         font-size: 0.9rem;
     }
 
-    .tarjeta_row.destacado .tarjeta_value {
+    .tarjeta_row_destacado .tarjeta_value {
         font-size: 1.2rem;
     }
 }

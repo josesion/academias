@@ -95,6 +95,7 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
 
     return{
         state : cajaBase.state,
+        sincronizarEstadoCaja : cajaBase.sincronizarEstadoCaja,
         handleAbrirCaja : cajaBase.handleAbrirCaja,
         handleCerrarCaja : cajaBase.handleCerrarCaja,
         handleEstadosCaja : cajaBase.handleEstadosCaja,

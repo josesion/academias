@@ -34,14 +34,15 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
             dni_alumno                  : datos.dni_alumno,
             fecha_inicio                : datos.fecha_inicio,
             fecha_fin                   : datos.fecha_fin,
-            monto                       : datos.monto,
             clases_asignadas_inscritas  : datos.clases_asignadas_inscritas,
             meses_asignados_inscritos   : datos.meses_asignados_inscritos,
             estado : "activos",
-            
+
+            monto   : datos.monto,
             id_caja : datos.id_caja,
             id_categoria : datos.id_categoria,
-            metodo_pago : datos.metodo_pago,
+            id_usuario  : datos.id_usuario,
+            id_cuenta   : datos.id_cuenta, 
             descripcion : datos.descripcion,
         }
     });

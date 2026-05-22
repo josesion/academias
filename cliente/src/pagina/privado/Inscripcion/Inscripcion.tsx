@@ -4,13 +4,14 @@ import { useIncripcionesUsuarios } from "../../../hookNegocios/Inscripciones";
 export const InscripcionPage = () => {
   // Hooks de inscripciones
   const {
-    plan,
-    alumno,
-    notas,
-    enviando,
-    errorGenerico,
-    listadoPlan,
-    listadoAlumno,
+    // plan,
+    // alumno,
+    // notas,
+    // enviando,
+    // errorGenerico,
+    // listadoPlan,
+    // listadoAlumno,
+    state,
     handleCachearPlan,
     handleCachearAlumno,
     handleCachearMetodoPago,
@@ -19,22 +20,25 @@ export const InscripcionPage = () => {
     handleCancelar,
   } = useIncripcionesUsuarios();
 
+  console.log(state);
+
   return (
     <div className="usuario_contenedor">
       <InscripcionForm
-        errorGenerico={errorGenerico}
-        listadoPlan={listadoPlan}
-        plan={plan}
+        errorGenerico={state.errorGenerico}
+        listadoPlan={state.listadoPlan}
+        plan={state.plan}
         handleCachearPlan={handleCachearPlan}
-        listadoAlumno={listadoAlumno}
-        alumno={alumno}
+        listadoAlumno={state.listadoAlumno}
+        alumno={state.alumno}
         handleCachearAlumno={handleCachearAlumno}
         inscribir={handleInscribir}
         cancelar={handleCancelar}
         handleCachearMetodoPago={handleCachearMetodoPago}
         handleTextAreaNotas={handleTextAreaNotas}
-        notas={notas}
-        enviando={enviando}
+        notas={state.notas}
+        enviando={state.enviando}
+        listaMetodo={state.listadoMetodoPago}
       />
     </div>
   );

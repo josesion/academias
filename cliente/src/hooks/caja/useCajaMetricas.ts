@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useIncripcionesUsuarios } from "../../hookNegocios/Inscripciones";
+//import { useIncripcionesUsuarios } from "../../hookNegocios/Inscripciones";
 
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
@@ -25,7 +25,9 @@ interface MetricasCajaConfig {
 export const useCajaMetricas = ( config : MetricasCajaConfig) => {
    
     const { state, dispatch} = config;
-    const { actualizarIngresoInscipcion } = useIncripcionesUsuarios();
+
+   // VER EL TEMA DE Q CUANDO SE HAGA UNA INSCRIPCION ACTULIZT EL LISTADO  
+   // const { actualizarIngresoInscipcion } = useIncripcionesUsuarios();
 
 // ──────────────────────────────────────────────────────────────
 //Obtener el monto real contado por el usuario
@@ -74,7 +76,7 @@ useEffect( ()=> {
 
     metricas();
 
-},[state.dataCaja.id_caja, actualizarIngresoInscipcion, state.estadoCaja, state.disparadorRefresco] );  
+},[state.dataCaja.id_caja, state.estadoCaja, state.disparadorRefresco] );  
 
 
 // ──────────────────────────────────────────────────────────────
@@ -100,7 +102,7 @@ useEffect( ()=> {
 
     metricasPrincipalCaja();
 
-}, [ state.dataCaja.id_caja , actualizarIngresoInscipcion,  state.movimientoExtraordinario] );
+}, [ state.dataCaja.id_caja,  state.movimientoExtraordinario] );
 
     return ;
 

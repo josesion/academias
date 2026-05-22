@@ -38,6 +38,7 @@ export interface FiltroAlumno extends Paginacion {
     dni: string;
     estado: string;
     id_escuela: number;
+
 };
 
 export interface FiltroPlan extends Paginacion {

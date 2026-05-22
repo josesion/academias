@@ -107,6 +107,7 @@ interface PropSelector<T> {
  */
 
 export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
+  console.log(parametros.objetoListado);
   return (
     <div className="caja_contenedor">
       <p>{parametros.titulo}</p>
@@ -133,7 +134,7 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
             valueToReturn = (item as any).Dni;
             displayLabel = `${(item as any).Nombre} ${(item as any).Apellido}`;
           }
-
+          console.log(item);
           return (
             <option
               className="selector_item"

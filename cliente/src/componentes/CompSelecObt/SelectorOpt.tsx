@@ -19,9 +19,6 @@ export const SelectorOpt = <T,>({
   name,
   labelDefault = "Seleccionar",
 }: CompoIEProps<T>) => {
-  console.log("Datos en Selector:", categorias);
-  console.log("Buscando la llave:", itemKey);
-
   return (
     <div className="grupo_input_caja">
       <select className="input_caja" name={name} onChange={onChangeSelector}>

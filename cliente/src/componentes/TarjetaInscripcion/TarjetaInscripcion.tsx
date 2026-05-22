@@ -32,9 +32,19 @@ export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
           </span>
         </div>
 
+        {/* --- GRUPO TIEMPO Y VENCIMIENTOS (Ordenado) --- */}
         <div className="tarjeta_row">
           <span className="tarjeta_key">Fecha inscripción</span>
           <span className="tarjeta_value">{fechaHoy()}</span>
+        </div>
+
+        <div className="tarjeta_row">
+          <span className="tarjeta_key">Duración</span>
+          <span className="tarjeta_value">
+            {plan?.meses
+              ? `${plan.meses} ${plan.meses === 1 ? "Mes" : "Meses"}`
+              : "0 Meses"}
+          </span>
         </div>
 
         <div className="tarjeta_row">
@@ -44,19 +54,15 @@ export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
           </span>
         </div>
 
+        {/* --- GRUPO CANTIDADES Y PRECIO --- */}
         <div className="tarjeta_row">
-          <span className="tarjeta_key">Clases</span>
+          <span className="tarjeta_key">Clases asignadas</span>
           <span className="tarjeta_value">{plan?.clases ?? 0}</span>
         </div>
 
         <div className="tarjeta_row">
-          <span className="tarjeta_key">Meses</span>
-          <span className="tarjeta_value">{plan?.meses ?? 0}</span>
-        </div>
-
-        <div className="tarjeta_row destacado">
           <span className="tarjeta_key">Precio</span>
-          <span className="tarjeta_value">$ {plan?.monto ?? "0.00"}</span>
+          <span className="tarjeta_value">{plan?.monto ?? 0}</span>
         </div>
       </div>
     </div>

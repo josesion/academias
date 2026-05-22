@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import { TarjetasNormales } from "../../../componentes/TarjetasNormales/TarjetaNormali";
 import { MovientoCaja } from "../../../componentes/MovimientoCaja/MovientoCaja";
 import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago";
@@ -42,6 +44,7 @@ export const CajaArqueo = () => {
     handleCierreMontos,
     handleCachearDetalle,
     hanldeCerrarInforme,
+    sincronizarEstadoCaja,
     state,
   } = cajasCongif();
 
@@ -60,6 +63,10 @@ export const CajaArqueo = () => {
   const cuentasVacias = [
     { id_cuenta: 0, nombre_cuenta: "Sin Cuentas", tipo_cuenta: "fisico" },
   ];
+  // para sincronizar la caja ya que al navegar por la barra este no renderizaba bien el estado de caja
+  useEffect(() => {
+    sincronizarEstadoCaja();
+  }, []);
 
   return (
     <div className="caja_arqueo_grid">

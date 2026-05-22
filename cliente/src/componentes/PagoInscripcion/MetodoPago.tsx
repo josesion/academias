@@ -1,19 +1,26 @@
 import { useState } from "react";
 
 import { SelectorPlegable } from "../Selector/Selector";
+import { SelectorOpt } from "../CompSelecObt/SelectorOpt";
 
 import "./metodoPago.css";
 
-export const METODOS_PAGO = [
-  { id: "efectivo", label: "Efectivo", icono: "💵" },
-  { id: "transferencia", label: "Transferencia Bancaria", icono: "🏦" },
-  { id: "debito", label: "Tarjeta de Débito", icono: "💳" },
-  { id: "credito", label: "Tarjeta de Crédito", icono: "💳" },
-];
+// export const METODOS_PAGO = [
+//   { id: "efectivo", label: "Efectivo", icono: "💵" },
+//   { id: "transferencia", label: "Transferencia Bancaria", icono: "🏦" },
+//   { id: "debito", label: "Tarjeta de Débito", icono: "💳" },
+//   { id: "credito", label: "Tarjeta de Crédito", icono: "💳" },
+// ];
+
+interface MetodoPago {
+  id_metodo: number;
+  descripcion_cuenta: string;
+}
 
 interface MetodoPagoProps {
   notas: string;
-  handleCachearMetodoPago: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  listaMetodoPago: MetodoPago[];
+  handleCachearMetodoPago: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTextAreaNotas: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
 
@@ -26,15 +33,14 @@ export const MetodoPagoInscripcion: React.FC<MetodoPagoProps> = (props) => {
     <div className="contenedor_detalle_caja">
       <div className="contenedor_detalle_caja_filtros">
         {/* Usamos las clases de la tarjeta para los selectores */}
+
         <div className="contenedor_selectores">
-          <SelectorPlegable
-            titulo="Metodo de pago"
-            objetoListado={METODOS_PAGO}
-            onChange={handleCachearMetodoPago}
-            input_list="list_metodos"
-            valueKey="id"
-            tipo="text"
-            name="id"
+          <SelectorOpt
+            categorias={props.listaMetodoPago}
+            itemKey="id_metodo"
+            itemLabel="descripcion_cuenta"
+            name="metodo_pago"
+            onChangeSelector={handleCachearMetodoPago}
           />
         </div>
 

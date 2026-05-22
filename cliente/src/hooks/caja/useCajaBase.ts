@@ -2,7 +2,7 @@ import {  useEffect , useReducer } from "react";
 
 // utils -------------------------------------------------------------
 import { idCajaFuntion } from "../../utils/idCaja";
-import { cajaReducer, initialState } from  "../../reducers/cajaReducers" 
+import { cajaReducer, initialState } from  "../../reducers/cajaReducers";
 
 import type { JsonDataCierre, DataCierreCaja } from "../../tipadosTs/caja.typado"; 
 
@@ -230,6 +230,30 @@ const handleCerrarCaja =async () =>{
         dispatch({ type : "FINALIZAR_OPERACION"}); 
     };
 };
+// ──────────────────────────────────────────────────────────────
+// FUNCION para obtener el estado de caja cuando se renderiza caja , fallaba y esto es un parche
+// ────────────────────────────────────────────────────────────── 
+
+const sincronizarEstadoCaja = async () => {
+    if (!config?.id_escuela) return;
+    try {
+      const idCajaResult = await idCajaFuntion(config.id_escuela);
+      if (idCajaResult) {
+        dispatch({ type: "SET_CAJA_ACTIVA", payload: { id_caja: idCajaResult, estado: "abierta" } });
+        // ... tus otros dispatch de éxito
+      } else {
+        dispatch({ type: "SET_CAJA_ACTIVA", payload: { id_caja: null, estado: "cerrada" } });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+useEffect(() => {
+    sincronizarEstadoCaja();
+  }, [config?.id_escuela]);  
+
 
 // ──────────────────────────────────────────────────────────────
 //Obtener id de caja
@@ -277,7 +301,8 @@ useEffect( ()=> {
         handleAbrirCaja,
         handleCerrarCaja,
         handleEstadosCaja,
-        cachearMontoIniciales
+        cachearMontoIniciales,
+        sincronizarEstadoCaja,
     };
 
 };

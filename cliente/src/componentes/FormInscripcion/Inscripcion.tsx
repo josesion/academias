@@ -9,6 +9,11 @@ import { type DataAlumno, type DataPlan } from "../../tipadosTs/inscripciones";
 
 import "./formInscripcion.css";
 
+interface MetodoPago {
+  id_metodo: number;
+  descripcion_cuenta: string;
+}
+
 interface InscripcionProps {
   errorGenerico: string | null;
 
@@ -19,10 +24,11 @@ interface InscripcionProps {
 
   listadoPlan: DataPlan[];
   listadoAlumno: DataAlumno[];
+  listaMetodo: MetodoPago[];
 
   handleCachearPlan: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCachearAlumno: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleCachearMetodoPago: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCachearMetodoPago: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTextAreaNotas: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 
   inscribir: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -76,6 +82,7 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
         <TarjetaInscripcion plan={plan} alumno={alumno} />
 
         <MetodoPagoInscripcion
+          listaMetodoPago={props.listaMetodo}
           handleCachearMetodoPago={handleCachearMetodoPago}
           handleTextAreaNotas={handleTextAreaNotas}
           notas={notas}

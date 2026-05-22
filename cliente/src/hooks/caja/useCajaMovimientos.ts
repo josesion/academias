@@ -205,7 +205,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 
         // --- Registramos el movimiento INGRESO/EGRESO 
     const handRegistarMovimientoExtraordinario = async () => {
-
+// AGREGAR ESPINER
         if (state.dataCaja.id_caja === null){
             return   dispatch({
                 type : "SET_ERROR",

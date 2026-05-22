@@ -1,0 +1,108 @@
+/* ========================================= */
+/* RESET Y FONDO GLOBAL */
+/* ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #050505;
+    overflow: hidden;
+}
+
+/* ========================================= */
+/* CONTENEDOR PRINCIPAL */
+/* ========================================= */
+.contenedor_logo {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background: radial-gradient(circle at center, #1a0d00 0%, #050505 70%);
+    perspective: 1200px; /* Mantiene el sutil efecto 3D al mover el mouse */
+}
+
+/* ========================================= */
+/* CONTENEDOR DEL ESCUDO (Efecto 3D suave) */
+/* ========================================= */
+.perspectiva_escudo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 350px;
+    height: 350px;
+    transform-style: preserve-3d;
+    transition: transform 0.15s ease-out; 
+}
+
+/* ========================================= */
+/* LOGO CENTRAL (Foco único en la luz del escudo) */
+/* ========================================= */
+.logo_gamer_central {
+    position: relative;
+    width: 320px;
+    z-index: 10;
+    user-select: none;
+    
+    /* Animación combinada: Flota y pulsa suavemente */
+    animation: 
+        flotacionCompleja 4s infinite ease-in-out,
+        luzPulso 3s infinite ease-in-out;
+    
+    /* Brillo intenso original concentrado en los bordes del logo */
+    filter:
+      drop-shadow(0 0 12px #ff7300)
+      drop-shadow(0 0 25px #ff4400)
+      drop-shadow(0 0 50px #ff1a00);
+    
+    transition: filter 0.3s ease;
+}
+
+/* Potenciamos la luz cuando pasás el mouse por encima */
+.logo_gamer_central:hover {
+    filter:
+      drop-shadow(0 0 20px #ff9500)
+      drop-shadow(0 0 45px #ff6200)
+      drop-shadow(0 0 80px #ff3300);
+}
+
+/* ========================================= */
+/* LIMPIEZA: OCULTAMOS TODO LO QUE VA POR FUERA */
+/* ========================================= */
+.super_aura,
+.aura_trasera,
+.particulas_fuga,
+.particulas_frente,
+.escudo_glow {
+    display: none !important; /* Desaparecen por completo del mapa */
+}
+
+/* ========================================= */
+/* ANIMACIONES EXCLUSIVAS DEL LOGO */
+/* ========================================= */
+
+/* Flotación vertical limpia */
+@keyframes flotacionCompleja {
+    0%, 100% {
+        transform: translateZ(20px) translateY(0px);
+    }
+    50% {
+        transform: translateZ(20px) translateY(-12px);
+    }
+}
+
+/* Hace que la luz del escudo tenga "vida" propia, expandiéndose sutilmente */
+@keyframes luzPulso {
+    0%, 100% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 1;
+    }
+}
