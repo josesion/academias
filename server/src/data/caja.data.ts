@@ -16,7 +16,7 @@ import { VerificarCajaInputs, AbrirCajaInputs,
          ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs,
          AperturaCajaInput, CierresCajaInputs,   
         } from "../squemas/cajas"; 
-import { ResultAqueoCaja, MetricaPanelPrincipal, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
+import { ResultAqueoCaja, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -182,75 +182,6 @@ const arqueoCaja = async ( data : CierreCajaInputs )
     });
 };
 
-/**
- * Obtiene las métricas financieras principales de una caja específica.
- * * Calcula:
- * - Totales de ingresos y egresos.
- * - Flujo neto del día (ingresos - egresos).
- * - Desglose de ingresos por método de pago (efectivo, transferencia, débito, crédito).
- * - Balance total real (monto inicial + movimientos).
- * * @param {CierreCajaInputs} data - Objeto con los criterios de búsqueda.
- * @param {number} data.id_caja - Identificador único de la caja.
- * @param {number} data.id_escuela - Identificador de la escuela para asegurar pertenencia.
- * * @returns {Promise<TipadoData<MetricaPanelPrincipal>>} Promesa con el objeto de métricas.
- * Si no hay movimientos, los valores retornan en 0 mediante COALESCE.
- * Si la caja no existe, retorna un error con código "METRICAS_CAJA_NO_EXISTE".
- * * @example
- * const metricas = await metricaPanelPrincipal({ id_caja: 1, id_escuela: 10 });
- */
-// const metricaPanelPrincipal = ( data : CierreCajaInputs )
-// : Promise<TipadoData<MetricaPanelPrincipal>> => {
-//    const slq : string = `SELECT 
-//                             c.id_caja,
-//                             c.monto_inicial,
-//                             -- 1. Totales Generales
-//                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
-//                             COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
-                            
-//                             -- 2. Total del Día (Monto inicial + ingresos - egresos)
-//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                                                 ELSE 0 END), 0)) AS flujo_del_dia,
-
-//                             -- 3. Desglose por Método de Pago (CORREGIDO: Ahora descuentan egresos)
-                            
-//                             -- Efectivo (Monto inicial + ingresos efectivo - egresos efectivo)
-//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                                                 WHEN det.metodo_pago = 'efectivo' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                                                 ELSE 0 END), 0)) AS total_efectivo,
-                            
-//                             -- Transferencia
-//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                             WHEN det.metodo_pago = 'transferencia' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                             ELSE 0 END), 0) AS total_transferencia,
-
-//                             -- Débito
-//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                             WHEN det.metodo_pago = 'debito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                             ELSE 0 END), 0) AS total_debito,
-
-//                             -- Crédito
-//                             COALESCE(SUM(CASE WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                             WHEN det.metodo_pago = 'credito' AND cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                             ELSE 0 END), 0) AS total_credito,
-
-//                             -- 4. Balance Final de Caja
-//                             (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
-//                                                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-//                                                                 ELSE 0 END), 0)) AS balance_total_real
-
-//                         FROM cajas c
-//                         LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
-//                         LEFT JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
-//                         WHERE c.id_caja = ? AND c.id_escuela = ?
-//                         GROUP BY c.id_caja, c.monto_inicial;`;
-//    const valores : unknown[] = [ data.id_caja, data.id_escuela];     
-//    return buscarExistenteEntidad({
-//         slqEntidad : slq,
-//         valores,
-//         entidad : "METRICAS_CAJA"
-//    });                 
-// };
 
 
 /**

@@ -14,6 +14,7 @@ import { enviarResponse } from "../utils/response";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
+import { MAPA_INSCRIPCION, ERROR_INTERNO_SERVIDOR,  MAPA_LISTADO_INSCRIPCIONES } from "../respuestas/inscripciones";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { DetalleCajaInputs } from "../squemas/cajas";
 import { InscripcionInputs } from "../squemas/inscripciones";
@@ -56,66 +57,37 @@ const inscripcion = async( req : Request , res : Response ) =>{
 
     // campos para el Detalle de Caja
     const dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'> = {
+        id_escuela : dataRecivida.id_escuela,
         id_caja: dataRecivida.id_caja,
         id_categoria: dataRecivida.id_categoria,
+        id_cuenta   : dataRecivida.id_cuenta,
+        id_usuario  : dataRecivida.id_usuario,
         monto: dataRecivida.monto, // Usamos el mismo monto
-        metodo_pago: dataRecivida.metodo_pago,
         descripcion: dataRecivida.descripcion
     };
 
- const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
-switch(dataInscripcion.code){
-    // Casos en el cual devueve un error de negocio
-    case "INSCRIPCION_EXISTENTE" : {
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.CONFLICTO,
-                dataInscripcion.message,
-                dataInscripcion.code
-            );
-        };
 
-    case "INSCRIPCION_CREACION_FALLIDA" : {
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
-                "Ocurrió un error inesperado en el alta del horario",
-                dataInscripcion.code
-            );
-    };
+   const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
 
-    case "NO_SE_LOGRO_VERIFICAR" : {
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
-                "Ocurrió un error inesperado al verificar el horario",
-                dataInscripcion.code
-            );        
-    };
+   const config = MAPA_INSCRIPCION[dataInscripcion.code]  || ERROR_INTERNO_SERVIDOR; 
 
-    // Casos en lo que va todo bien
- 
-    case "INSCRIPCION_EXITOSA" : {
+    if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
             res, 
-            CodigoEstadoHTTP.OK,
-            dataInscripcion.message,
+            config.status,
+            dataInscripcion.message || config.msg,
             dataInscripcion.data,
             undefined,
             dataInscripcion.code
         );
-    };
-    
-    default : {
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                "Ocurrió un error inesperado en la inscripcion",
-                dataInscripcion.code
-            );
-    }
-};
-    
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            dataInscripcion.message || config.msg,
+            dataInscripcion.code
+        );
+    };    
 };
 
 
@@ -145,36 +117,58 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
      // console.log( dataListado)
     const listadoResultado = await inscripcionServicios.listadoInscripciones(dataListado);
 
-    switch ( listadoResultado.code){
-        case "LISTADO_INSCRIPCION_OK" : {
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.OK,
-                listadoResultado.message,
-                listadoResultado.data,
-                listadoResultado.paginacion,
-                listadoResultado.code
-            );
-        };
+    const config =  MAPA_LISTADO_INSCRIPCIONES[listadoResultado.code]  || ERROR_INTERNO_SERVIDOR; 
 
-        case "LISTADO_VACIO" : {
-           return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                listadoResultado.message,
-                listadoResultado.code
-           ); 
-        };
 
-        default : {
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                "Error , Listado Inscripciones",
-                listadoResultado.code
-            );
-        };    
+    if (config.status === CodigoEstadoHTTP.OK ){
+        return enviarResponse(
+            res, 
+            config.status,
+            listadoResultado.message || config.msg,
+            listadoResultado.data,
+            undefined,
+            listadoResultado.code
+        );   
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            listadoResultado.message || config.msg,
+            listadoResultado.code
+        );
     };
+
+
+    // switch ( listadoResultado.code){
+    //     case "LISTADO_INSCRIPCION_OK" : {
+    //         return enviarResponse(
+    //             res,
+    //             CodigoEstadoHTTP.OK,
+    //             listadoResultado.message,
+    //             listadoResultado.data,
+    //             listadoResultado.paginacion,
+    //             listadoResultado.code
+    //         );
+    //     };
+
+    //     case "LISTADO_VACIO" : {
+    //        return enviarResponseError(
+    //             res,
+    //             CodigoEstadoHTTP.NO_ENCONTRADO,
+    //             listadoResultado.message,
+    //             listadoResultado.code
+    //        ); 
+    //     };
+
+    //     default : {
+    //         return enviarResponseError(
+    //             res,
+    //             CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+    //             "Error , Listado Inscripciones",
+    //             listadoResultado.code
+    //         );
+    //     };    
+    // };
 };
 
 

@@ -135,53 +135,87 @@ export const inscripcionConPagoAlta = async (
 // Hacemos esto porque el ID de la inscripción todavía no existe (se genera después del primer INSERT),
 // así evitamos que TypeScript nos tire error por "falta de campo obligatorio" al recibir los datos.
     dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
-) => {
+): Promise<TipadoData<{id_inscripcion : number, dni_alumno : number}>> => {
     
     // 1. Definimos las SQL (las mismas que ya tenés)
-    const sqlInsc = `INSERT INTO inscripciones (id_plan, id_escuela, dni_alumno, fecha_inicio, fecha_fin, monto, clases_asignadas_inscritas, meses_asignados_inscritos) VALUES (?, ?, ?, ?, ?, ?, ?, ?);`;
-    const sqlCaja = `INSERT INTO detalle_caja (id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id) VALUES (?, ?, ?, ?, ?, ?);`;
+    const sqlInsc = `INSERT INTO inscripciones 
+                        (
+                            id_plan, 
+                            id_escuela, 
+                            dni_alumno, 
+                            fecha_inicio, 
+                            fecha_fin, 
+                            clases_asignadas_inscritas, 
+                            meses_asignados_inscritos, 
+                            monto, 
+                            estado    
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
-    const resultado = await iudEntidadTransaction(async (conn) => {
+    const sqlCaja = `INSERT INTO detalle_caja (
+                                id_caja, 
+                                id_categoria, 
+                                id_cuenta, 
+                                id_usuario, 
+                                monto, 
+                                descripcion, 
+                                referencia_id
+                            ) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?);`;
         
-        // PASO A: Crear la inscripción
+        // 2 : Crear la inscripción
         const valoresInsc = [
-            dataInsc.id_plan, dataInsc.id_escuela, dataInsc.dni_alumno, 
-            dataInsc.fecha_inicio, dataInsc.fecha_fin, dataInsc.monto, 
-            dataInsc.clases_asignadas_inscritas, dataInsc.meses_asignados_inscritos
-        ];
-        
-        const [resInsc] = await conn.execute(sqlInsc, valoresInsc);
-        const idGenerado = (resInsc as any).insertId;
-
-        // PASO B: Crear el detalle de caja usando el ID de la inscripción
-        const valoresCaja = [
-            dataCaja.id_caja, 
-            dataCaja.id_categoria, 
-            dataCaja.monto, 
-            dataCaja.metodo_pago, 
-            dataCaja.descripcion, 
-            idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+            dataInsc.id_plan, 
+            dataInsc.id_escuela, 
+            dataInsc.dni_alumno, 
+            dataInsc.fecha_inicio, 
+            dataInsc.fecha_fin, 
+            dataInsc.clases_asignadas_inscritas, 
+            dataInsc.meses_asignados_inscritos,
+            dataInsc.monto,
+            dataInsc.estado
         ];
 
-        await conn.execute(sqlCaja, valoresCaja);
+  
+            const resultado = await iudEntidadTransaction(async (conn) => {
 
-        return { id_inscripcion: idGenerado, dni_alumno: dataInsc.dni_alumno };
-    });
+                const  [resInsc] =await conn.execute(sqlInsc, valoresInsc);
+                console.log(resInsc)
+                const  idGenerado = (resInsc as any).insertId;   
 
-    if (resultado.code ===  "TRANSACCION_OK" ){
-        return {
-            error : false,
-            message : "Inscripcion registrada correctamente",
-            data : resultado.data,
-            code : "TRANSACCION_OK"
-        };
-    };
+      // 3: Crear el detalle de caja usando el ID de la inscripción
+                const valoresCaja = [
+                    dataCaja.id_caja, 
+                    dataCaja.id_categoria, 
+                    dataCaja.id_cuenta,
+                    dataCaja.id_usuario, 
+                    dataCaja.monto, 
+                    dataCaja.descripcion, 
+                    idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+                ];
 
-    return {
-            error : true,
-            message : "Transaccion fallida",
-            code : "TRANSACCION_FALLIDA"
-    };    
+              await  conn.execute( sqlCaja, valoresCaja);
+                
+                return { id_inscripcion : idGenerado , dni_alumno : dataInsc.dni_alumno}
+            });
+            console.log(resultado)
+
+
+            // 4. Manejo de respuesta final
+            if (resultado.code === "TRANSACCION_OK") {
+                return {
+                    error: false,
+                    message: "Inscripcion correcta",
+                    data: resultado.data,
+                    code: "TRANSACCION_OK"
+                };
+            }
+
+            return {
+                error: true,
+                message: resultado.message || "Error en la apertura de caja",
+                code: "TRANSACCION_FALLIDA"
+            };  
 
 };
 
@@ -210,7 +244,7 @@ const anularInscripcion = async(
     dataInsc : AnularInscripcionInputs, 
     dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
 ) =>{
-    // 1. Definimos las SQL (las mismas que ya tenés)
+    //1. Definimos las SQL (las mismas que ya tenés)
     const sqlInsc = `update inscripciones 
                         set inscripciones.estado = "suspendido"
                         where 
@@ -218,7 +252,16 @@ const anularInscripcion = async(
                         and
                         inscripciones.id_inscripcion = ?;`;
 
-    const sqlCaja = `INSERT INTO detalle_caja (id_caja, id_categoria, monto, metodo_pago, descripcion, referencia_id) VALUES (?, ?, ?, ?, ?, ?);`;   
+    const sqlCaja = `INSERT INTO detalle_caja (
+                                id_caja, 
+                                id_categoria, 
+                                id_cuenta, 
+                                id_usuario, 
+                                monto, 
+                                descripcion, 
+                                referencia_id
+                            ) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?);`;
     
     const resultado = await iudEntidadTransaction(async (conn) => {
             
@@ -232,9 +275,10 @@ const anularInscripcion = async(
             // PASO B: Crear el detalle de caja usando el ID de la inscripción
             const valoresCaja = [
                 dataCaja.id_caja, 
-                dataCaja.id_categoria, 
-                dataCaja.monto, 
-                dataCaja.metodo_pago, 
+                dataCaja.id_categoria,
+                dataCaja.id_cuenta,
+                dataCaja.id_usuario, 
+                dataCaja.monto,  
                 dataCaja.descripcion, 
                 idGenerado // <--- Aquí vinculamos el dinero con la inscripción
             ];

@@ -49,17 +49,17 @@ const inscripcionServiciosCaja = async(
 : Promise<TipadoData<{ id_inscripcion : number , dni_alumno : number }>> =>{
 
     const validInsc = InscripcionSchema.parse(dataInscripcion);
-  
+   
     const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
     
     const inscVigente = await inscripcionesData.verificacion( validInsc );
-   
+    
     switch(inscVigente.code ){
 
         case "INSCRIPCION_NO_EXISTE" : {
 
             const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);
-            //console.log(resultadoInscripcion)
+      
             if ( resultadoInscripcion.code === "TRANSACCION_OK" ){
                 return {
                     error : false,
@@ -185,14 +185,21 @@ const anularInscripcionServicio = async (
 
     const cajaAbierta = await dataCaja.idCajaAbierta({ id_escuela });
   
-    if ( cajaAbierta.code === "ID_CAJA_EXISTE" ){
-        const idCajaAnulacion  = await categoriasCajaData.localizarAnulacionCategortia({ id_escuela });
+    // Verifico que la caja este abierta primero y obtengo ejemplo id_caja: 72 
 
+    if ( cajaAbierta.code === "ID_CAJA_EXISTE" ){
+        
+        // Verifico  y obtengo el id_categoria q hace referecnia a la Anulacion inscripcion
+
+        const idCajaAnulacion  = await categoriasCajaData.localizarAnulacionCategortia({ id_escuela });
+     
         if ( idCajaAnulacion.code === "ID_ANULACION_CATCAJA_EXISTE" ){
-        const validarConsumo = await inscripcionesData.reglaAnulacionInscripcion(verificacionInsc);
-           
+            const validarConsumo = await inscripcionesData.reglaAnulacionInscripcion(verificacionInsc);
+        
             if (validarConsumo.data?.tiene_asistencias  === 1 || validarConsumo.data?.esta_activa === 0 ){
-                // si tiene asitencia se niega la anulaciion
+
+                // si tiene asitencia  o esta vencida se niegla la anulacion 
+
                 return{
                         error : true,
                         message: validarConsumo.data?.esta_activa === 0 
@@ -215,8 +222,9 @@ const anularInscripcionServicio = async (
                 const dataDetalleParametros  = {
                     id_caja : cajaAbierta.data?.id_caja,
                     id_categoria : idCajaAnulacion.data?.id_categoria,
+                    id_cuenta : "seria el metodo de pago ",
+                    id_usuario : "tamb de algun lado",
                     monto : montoFinal ,
-                    metodo_pago : dataDetalle.metodo_pago,
                     descripcion : dataDetalle.descripcion 
                 };
 

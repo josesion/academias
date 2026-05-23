@@ -35,9 +35,24 @@ const loginUsuario =  async ( data : LoginInputs)
     const loginResult = await dataLogin.loginData( loginData );
    
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
+
+        // validamos que la contraseña sea  la correcta  
+        //  data.contrasena = "130788" es la contraseña q viene del usuario
+        //  loginResult.data.contrasena = "asafshk21234bkja1289"  es la constraseña encripatada en la bd
+
         const passwordValida = await bcrypt.compare(data.contrasena, loginResult.data.contrasena);
-        const token = generateToken({ id: loginResult.data.id_usuario });
+
         if (passwordValida){
+
+            // Mando en la firma token id, tol e id_escuela 
+            const tokenData = {
+                id: loginResult.data.id_usuario,
+                rol: loginResult.data.rol,
+                id_escuela: loginResult.data.id_escuela          
+            };
+
+            const token = generateToken(tokenData);
+
             return{
                 error: false,
                 message : "El usuario existe en el sistema",

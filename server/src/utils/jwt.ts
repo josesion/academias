@@ -17,22 +17,19 @@ dotenv.config();
  * @returns Token JWT como string
  * @throws ClientError si hay un fallo durante la generación del token
  */
-export const generateToken = (payload: { id: number }): string => {
+// Modificamos el tipado para que acepte id, rol e id_escuela
+export const generateToken = (payload: { id: number; rol: string; id_escuela: number }): string => {
     try {
         const token = jwt.sign(
-            payload, // Carga útil del token
-            process.env.JWT_CLAVE || "jjsskkss", // Clave secreta para firmar el token
-            {
-                expiresIn: "30m" // Duración del token (30 min)
-            }
+            payload, // Ahora viaja: { id: 3, rol: "usuario", id_escuela: 107 }
+            process.env.JWT_CLAVE || "jjsskkss", 
+            { expiresIn: "30m" }
         );
         return token;
     } catch (error) {
-        // Lanza un error personalizado si algo falla
         throw new ClientError("Error al generar el token", 500);
     }
 };
-
 /**
  * Crea una configuración de cookie para ser enviada al cliente.
  * 
