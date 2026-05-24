@@ -26,8 +26,28 @@ export const MAPA_LISTADO_INSCRIPCIONES : Record< string , { status : CodigoEsta
     ERROR_SERVIDOR
 };
 
+export const MAPA_ANULACION_INSCRIPCION : Record< string , { status : CodigoEstadoHTTP , msg : string} > ={
+   
+    "NO_EXISTE_CAJA" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "Abrir caja antes porfavor" },
 
+    "SIN_CATEGORIA_ANULACION" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "Error, No se encontro Categoria anulacion" },
+   
+    "ERROR_VALIDACION_INSCRIPCION" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE, msg : "Error, No se logro obtener regla de anulacion" },
 
+    "SIN_PERMISO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "No cumple con los requisitos para anular" },
+   
+    "ERROR_SIN_METODO_PAGO" : { status :CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Error, No se logro detectar el metodo de pago" },
+
+    "SALDO_INSUFICIENTE_CAJA" : { status :CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE, msg : "No cuenta con el monto suficiente" },
+
+  
+    "TRANSACCION_FALLIDA_ANULAR_INCRIPCION" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error, ocurrio un problema intenerno en la operacion" },
+
+    "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION" : { status : CodigoEstadoHTTP.OK , msg : "Anulacion de la inscripcion Correctamente" },
+    
+
+    ERROR_SERVIDOR 
+};
 
 export const ERROR_INTERNO_SERVIDOR = {
     status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,

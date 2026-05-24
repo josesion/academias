@@ -167,118 +167,149 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs )
 };
 
 /**
- * Servicio de anulación con lógica de protección financiera.
- * * @description Orquesta la anulación validando que:
- * 1. Exista caja abierta.
- * 2. Exista categoría de anulación.
- * 3. La inscripción no tenga asistencias y esté activa.
- * 4. El monto a devolver no exceda el monto original de la inscripción (Autocorrección).
- * * @returns {Promise<TipadoData<{id_inscripcion: number}>>}
+ * Servicio centralizado para gestionar la anulación de una inscripción en DanzaStudio Pro.
+ * * Realiza un flujo estricto de validaciones contables y de negocio antes de impactar
+ * la base de datos mediante una transacción segura.
+ * * @async
+ * @function anularInscripcionServicio
+ * @param {AnularInscripcionInputs} dataInsc - Datos de entrada validados para identificar la inscripción a anular.
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Información complementaria para el movimiento de caja (como la descripción).
+ * * @returns {Promise<TipadoData<{ id_inscripcion: number }>>} Estructura estándar con el resultado de la operación.
+ * * @throws {ZodError} Si los datos de entrada o el objeto final de caja no cumplen con los esquemas de validación.
+ * * @description
+ * El servicio ejecuta secuencialmente el siguiente flujo blindado:
+ * 1.  **Validación de Entrada:** Valida los tipos con `AnularInscripcionSchema`.
+ * 2.  **Control de Caja:** Verifica la existencia de una caja abierta activa para la escuela (`Guard Clause`).
+ * 3.  **Control de Categoría:** Localiza el identificador del movimiento configurado para anulaciones (`Guard Clause`).
+ * 4.  **Reglas de Negocio (Alumno):** Bloquea la operación si el alumno ya registra asistencias vigentes o si la inscripción está inactiva.
+ * 5.  **Resolución de Cuenta:** Determina el método de pago final (priorizando la entrada manual o heredando el original de la BD).
+ * 6.  **Control de Liquidez (Patovica Contable):** Consulta el saldo neto actual de la cuenta en esa caja específica. Si el dinero disponible es menor al monto original de la inscripción, frena el flujo para evitar saldos negativos.
+ * 7.  **Persistencia Transaccional:** Ejecuta en bloque la anulación de la inscripción y la salida de dinero en la tabla de detalles de caja.
  */
 const anularInscripcionServicio = async (
-    dataInsc   : AnularInscripcionInputs,
+    dataInsc: AnularInscripcionInputs,
     dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>
-) : Promise<TipadoData<{id_inscripcion : number}>> =>{
+): Promise<TipadoData<{ id_inscripcion: number }>> => {
 
-    const verificacionInsc : AnularInscripcionInputs = AnularInscripcionSchema.parse( dataInsc );
-    const id_escuela = verificacionInsc.id_escuela || 1 ;
+    // 1. Validamos datos de entrada
+    const verificacionInsc = AnularInscripcionSchema.parse(dataInsc);
+    const id_escuela = verificacionInsc.id_escuela || 1;
 
+    // 2. Controlar Caja Abierta (Guard Clause)
     const cajaAbierta = await dataCaja.idCajaAbierta({ id_escuela });
+
+    if (cajaAbierta.code === "ID_CAJA_NO_EXISTE" || !cajaAbierta.data) {
+        return {
+            error: true,
+            message: "No hay caja abierta, abrir para seguir",
+            code: "NO_EXISTE_CAJA"
+        };
+    }
+
+    // 3. Controlar Categoría de Anulación (Guard Clause)
+    const idCajaAnulacion = await categoriasCajaData.localizarAnulacionCategortia({ id_escuela });
+
+    if (idCajaAnulacion.code === "ID_ANULACION_CATCAJA_NO_EXISTE" || !idCajaAnulacion.data) {
+        return {
+            error: true,
+            message: "Error, categoría anulación no existe",
+            code: "SIN_CATEGORIA_ANULACION"
+        };
+    }
+    
+    // 4. Validar Reglas del Alumno (Asistencias / Vencimiento)
+    const validarConsumo = await inscripcionesData.reglaAnulacionInscripcion(verificacionInsc);
+   
   
-    // Verifico que la caja este abierta primero y obtengo ejemplo id_caja: 72 
-
-    if ( cajaAbierta.code === "ID_CAJA_EXISTE" ){
-        
-        // Verifico  y obtengo el id_categoria q hace referecnia a la Anulacion inscripcion
-
-        const idCajaAnulacion  = await categoriasCajaData.localizarAnulacionCategortia({ id_escuela });
-     
-        if ( idCajaAnulacion.code === "ID_ANULACION_CATCAJA_EXISTE" ){
-            const validarConsumo = await inscripcionesData.reglaAnulacionInscripcion(verificacionInsc);
-        
-            if (validarConsumo.data?.tiene_asistencias  === 1 || validarConsumo.data?.esta_activa === 0 ){
-
-                // si tiene asitencia  o esta vencida se niegla la anulacion 
-
-                return{
-                        error : true,
-                        message: validarConsumo.data?.esta_activa === 0 
-                                ? "La inscripción ya no está activa" 
-                                : "No se puede anular: El alumno ya tiene asistencias",
-                        code : "SIN_PERMISO"
-                };     
-            };
-            // si NO tiene se puede anular la inscripcion 
-            if (validarConsumo.data?.tiene_asistencias === 0 ){
-            //
-                const montoOriginal = validarConsumo.data.monto_inscripcion;
-                const montoPeticion = dataDetalle.monto;
-               
-                
-                // Elegimos el monto real a devolver: el de la petición, 
-                // a menos que sea mayor al original (en cuyo caso usamos el original).
-                const montoFinal = montoPeticion > montoOriginal ? montoOriginal : montoPeticion;
-
-                const dataDetalleParametros  = {
-                    id_caja : cajaAbierta.data?.id_caja,
-                    id_categoria : idCajaAnulacion.data?.id_categoria,
-                    id_cuenta : "seria el metodo de pago ",
-                    id_usuario : "tamb de algun lado",
-                    monto : montoFinal ,
-                    descripcion : dataDetalle.descripcion 
-                };
-
-                const validarCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalleParametros); 
-
-                const anularInscripcion = await inscripcionesData.anularInscripcion( verificacionInsc, validarCaja);
-
-                if ( anularInscripcion.code === "TRANSACCION_OK"){
-
-                    const mensajeExito = montoPeticion > montoOriginal 
-                        ? `Se anuló correctamente, pero se devolvió $${montoOriginal} (monto máximo abonado).`
-                        : "Se anuló correctamente la inscripción";
-                    return{
-                        error : false,
-                        message : mensajeExito,
-                        data : anularInscripcion.data,
-                        code : "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"
-                    };
-                }
-                if (  anularInscripcion.code === "TRANSACCION_FALLIDA"){
-                    return{
-                        error : true,
-                        message : "Error en la trnsaccion, intentar mas tarde",
-                        code  : "TRANSACCION_FALLIDA_ANULAR_INCRIPCION"
-                    };
-                };        
-            };
-
-        };
-        if ( idCajaAnulacion.code === "ID_ANULACION_CATCAJA_NO_EXISTE" ){
+        // Si la respuesta dio error o mágicamente no trajo la data, cortamos acá
+        if (!validarConsumo.data) {
             return {
-                error : true,
-                message : "Error, categoria anulacion no existe",
-                code : "SIN_CATEGORIA_ANULACION"
+                error: true,
+                message: validarConsumo.message || "No se encontraron los datos de la inscripción",
+                code: "ERROR_VALIDACION_INSCRIPCION"
             };
-        };
+        }
 
+        // CONTROL DE ASISTENCIAS Y ACTIVIDAD
+        // Como ya validamos arriba que 'validarConsumo.data' EXISTE, acá usamos el signo de pregunta por las dudas
+        // pero TypeScript ya sabe que no va a ser undefined.
+        if (validarConsumo.data.tiene_asistencias >= 1 || validarConsumo.data.esta_activa === 0) {
+            return {
+                error: true,
+                message: validarConsumo.data.esta_activa === 0 
+                    ? "La inscripción ya no está activa" 
+                    : "No se puede anular: El alumno ya tiene asistencias",
+                code: "SIN_PERMISO"
+            };
+        }
+
+    // 5. Resolver Cuenta (Método de Pago) de forma inteligente
+    const id_metodo_pago_bd = await inscripcionesData.idMetodoPago(verificacionInsc.id_inscripcion);
+
+
+    const id_cuenta_final = verificacionInsc.id_cuenta || id_metodo_pago_bd.data?.id_cuenta;
+
+    if (!id_cuenta_final) {
+        return {
+            error: true,
+            message: "Error crítico, no se detectó método de pago para anular",
+            code: "ERROR_SIN_METODO_PAGO"
+        };
     };
 
-    if ( cajaAbierta.code === "ID_CAJA_NO_EXISTE" ){
+    // 6. Cálculos de montos para la devolución
+
+    const montoOriginal = Number(validarConsumo.data?.monto_inscripcion);
+    
+    // 7. Verificamos si existe el monto suficiente  para la anulacion y la devolucion 
+    const verificarSaldo = await inscripcionesData.saldoMetodoPago( cajaAbierta.data.id_caja, id_cuenta_final );
+
+    if ( verificarSaldo.code === "SALDO_NO_EXISTE"|| Number(verificarSaldo.data?.saldo_actual ?? 0) <  montoOriginal){
         return {
-            error : true,
-            message : "No hay caja abierta, abrir para seguir",
-            code : "NO_EXISTE_CAJA"
-        };
-    };       
+                error: true,
+                message: `No se puede anular: Saldo insuficiente o inexistente. Requerido: $${montoOriginal}`,
+                code: "SALDO_INSUFICIENTE_CAJA"
+            };        
+    };
 
-   return{
-        error : true,
-        message : "Error, paso un error en la anulacion de la inscripcion",
-        code : "ERROR_SERVIDOR_ANULACION_INSCRIPCION"
-   }; 
+     //8. Armamos el objeto estructurado para el detalle de caja
+   
+     const dataDetalleParametros = {
+         id_escuela: verificacionInsc.id_escuela,
+         id_caja: cajaAbierta.data.id_caja,
+         id_categoria: idCajaAnulacion.data.id_categoria,
+         id_cuenta: id_cuenta_final,
+         id_usuario: verificacionInsc.id_usuario , // ¡Acá pescamos el id de usuario del token!
+         monto: montoOriginal,
+         descripcion: dataDetalle.descripcion
+     };
+
+  
+     const validarCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalleParametros);
+ 
+     // 9. Impactamos la Base de Datos con la transacción
+     const anularInscripcion = await inscripcionesData.anularInscripcion(verificacionInsc, validarCaja);
+
+     if (anularInscripcion.code === "TRANSACCION_FALLIDA") {
+         return {
+             error: true,
+             message: "Error en la transacción, intentar más tarde",
+             code: "TRANSACCION_FALLIDA_ANULAR_INCRIPCION"
+         };
+     }
+
+     // 10. Todo salió espectacular
+     const mensajeExito = `Se anuló correctamente, pero se devolvió $${montoOriginal}`
+
+
+
+     return {
+         error: false,
+         message: mensajeExito,
+         data: anularInscripcion.data,
+         code: "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"
+     };
 };
-
 
 export const method = {
     inscripcionServiciosCaja : tryCatchDatos( inscripcionServiciosCaja),

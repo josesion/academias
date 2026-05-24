@@ -470,6 +470,56 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
 };
 
 
+/**
+ * Busca y verifica la existencia del método de pago (cuenta) asociado a una inscripción.
+ * * @async
+ * @param {number} id_inscripcion - El ID de la inscripción (referencia_id) que originó el movimiento.
+ * @returns {Promise<TipadoData<{id_cuenta: number}>>} Objeto con el código de estado/existencia y el id_cuenta si corresponde.
+ * * @example
+ * const resultado = await buscarMetodoPago(45);
+ * if (resultado.error === true) {
+ * console.log("El método de pago existe.");
+ * }
+ */
+const buscarMetodoPago =async ( id_inscripcion : number)
+: Promise<TipadoData<{id_cuenta : number}>> => {
+    const slq : string = `SELECT id_cuenta 
+                          FROM detalle_caja 
+                          WHERE referencia_id = ?
+                          LIMIT 1;`;
+
+    const valores : unknown[] = [ id_inscripcion];
+    
+    return buscarExistenteEntidad({ 
+        slqEntidad : slq,
+        valores,
+        entidad : "id_metodo_pago"
+    });
+};
+
+
+/**
+ * Obtiene el saldo neto actual de un método de pago específico dentro de una caja abierta.
+ * Suma todos los movimientos (ingresos y egresos) filtrados por la caja y la cuenta seleccionada.
+ * * @param {number} id_caja - El ID de la caja activa que se está auditando.
+ * @param {number} id_cuenta - El ID del método de pago (cuenta_escuela) a consultar.
+ * @returns {Promise<TipadoData<{ saldo_actual: number }>>} Estructura estándar con el saldo neto calculado.
+ */
+const saldoMetodoPago =async ( id_caja : number , id_cuenta : number)
+: Promise<TipadoData<{saldo_actual : number}>> => {
+    const slq : string = `SELECT 
+                                CAST(COALESCE(SUM(monto), 0) AS SIGNED) AS saldo_actual
+                            FROM detalle_caja
+                            WHERE id_caja = ? AND id_cuenta = ?;`;
+
+    const valores : unknown[] = [ id_caja, id_cuenta];
+    
+    return buscarExistenteEntidad({ 
+        slqEntidad : slq,
+        valores,
+        entidad : "saldo"
+    });
+};
 
 
 export const method = {
@@ -480,4 +530,6 @@ export const method = {
     listadoInscripciones   : tryCatchDatos( listadoInscripciones ),
     anularInscripcion  : tryCatchDatos( anularInscripcion ),
     reglaAnulacionInscripcion : tryCatchDatos( reglaAnulacionInscripcion ),
+    idMetodoPago : tryCatchDatos( buscarMetodoPago ),
+    saldoMetodoPago : tryCatchDatos( saldoMetodoPago )
 };

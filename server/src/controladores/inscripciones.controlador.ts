@@ -14,7 +14,8 @@ import { enviarResponse } from "../utils/response";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { MAPA_INSCRIPCION, ERROR_INTERNO_SERVIDOR,  MAPA_LISTADO_INSCRIPCIONES } from "../respuestas/inscripciones";
+import { MAPA_INSCRIPCION, ERROR_INTERNO_SERVIDOR,  
+         MAPA_LISTADO_INSCRIPCIONES, MAPA_ANULACION_INSCRIPCION } from "../respuestas/inscripciones";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { DetalleCajaInputs } from "../squemas/cajas";
 import { InscripcionInputs } from "../squemas/inscripciones";
@@ -114,7 +115,7 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
         nombre_alumno : req.query.nombre_alumno,
         dni_alumno   : req.query.dni_alumno
     };
-     // console.log( dataListado)
+  
     const listadoResultado = await inscripcionServicios.listadoInscripciones(dataListado);
 
     const config =  MAPA_LISTADO_INSCRIPCIONES[listadoResultado.code]  || ERROR_INTERNO_SERVIDOR; 
@@ -138,128 +139,69 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
         );
     };
 
-
-    // switch ( listadoResultado.code){
-    //     case "LISTADO_INSCRIPCION_OK" : {
-    //         return enviarResponse(
-    //             res,
-    //             CodigoEstadoHTTP.OK,
-    //             listadoResultado.message,
-    //             listadoResultado.data,
-    //             listadoResultado.paginacion,
-    //             listadoResultado.code
-    //         );
-    //     };
-
-    //     case "LISTADO_VACIO" : {
-    //        return enviarResponseError(
-    //             res,
-    //             CodigoEstadoHTTP.NO_ENCONTRADO,
-    //             listadoResultado.message,
-    //             listadoResultado.code
-    //        ); 
-    //     };
-
-    //     default : {
-    //         return enviarResponseError(
-    //             res,
-    //             CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-    //             "Error , Listado Inscripciones",
-    //             listadoResultado.code
-    //         );
-    //     };    
-    // };
 };
 
 
 /**
- * Controlador de Express para manejar la petición HTTP de anulación de inscripción.
- * * Este método extrae los parámetros del cuerpo de la solicitud (body), los formatea
- * y delega la lógica de negocio al servicio de inscripciones. Finalmente, 
- * responde al cliente con el código de estado HTTP adecuado según el resultado.
- * * @param {Request} req - Objeto de petición de Express. 
- * Debe contener en el body: id_escuela, id_inscripcion, dni_alumno, monto, metodo_pago y descripcion.
+ * Controlador HTTP para gestionar la solicitud de anulación de una inscripción.
+ * * Se encarga de recibir la petición del cliente, estructurar los parámetros necesarios,
+ * delegar la lógica de negocio pesada al servicio correspondiente y responder de forma
+ * dinámica utilizando un mapa de configuración basado en los códigos de resultado.
+ * * @async
+ * @function anularInscripcion
+ * @param {Request} req - Objeto de petición de Express. 
+ * Expected `req.usuario` (inyectado por middleware de autenticación) y `req.body.id_inscripcion`.
  * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta JSON con el resultado de la operación.
- * * @example
- * // Posibles respuestas:
- * // 200 (OK): Éxito.
- * // 404 (Not Found): No hay caja abierta o categoría de anulación.
- * // 405 (Method Not Allowed): Regla de negocio violada (asistencias existentes o inactiva).
- * // 500 (Internal Server Error): Error en la transacción o base de datos.
+ * * @returns {Promise<Response>} Respuesta HTTP formateada mediante `enviarResponse` o `enviarResponseError`.
+ * * @description
+ * El controlador ejecuta los siguientes pasos:
+ * 1.  **Extracción de Contexto:** Obtiene los datos del usuario autenticado (`id_escuela`, `id_usuario`) desde el token.
+ * 2.  **Estructuración de Payloads:** Separa y formatea los datos de la inscripción (`dataInsc`) y los datos iniciales de caja (`dataCaja`).
+ * 3.  **Invocación del Servicio:** Delega la transacción a `inscripcionServicios.anularInscripcionServicio`.
+ * 4.  **Mapeo Dinámico de Respuestas:** Utiliza el diccionario `MAPA_ANULACION_INSCRIPCION` pasándole el `anularResultado.code`. 
+ * Si el código no está registrado, aplica por defecto un cortocircuito a `ERROR_INTERNO_SERVIDOR`.
+ * 5.  **Despacho:** Determina si el estado es de éxito (`200 OK`) o un fallo (cualquier otro código) para enviar la respuesta limpia al frontend.
  */
 const anularInscripcion = async ( req : Request, res : Response) => {
+
+    const id_escuela = req.usuario?.id_escuela;
+    const id_usuario = req.usuario?.id;
    
     const dataInsc = {
-        id_escuela : Number( req.body.id_escuela),
+        id_escuela : Number(id_escuela),
         id_inscripcion : Number( req.body.id_inscripcion ),
-        dni_alumno  : Number( req.body.dni_alumno ),
-        estadoInsc  : "activos",// queda fijo pàra q siempre busque el activos
+      
+        estadoInsc  : "activos",// queda fijo para q siempre busque el activos
+        id_usuario : id_usuario,
+        id_cuenta  : req.body.id_cuenta || null,
     };
-    const dataCaja = {
+    const dataDetalle = {
         id_caja : null,    //  se calcula en el servicio
         id_categoria : null, // se calcula en el servicio   
-        monto : Number( req.body.monto ),
-        metodo_pago : req.body.metodo_pago,
-        descripcion : req.body.descripcion
+        monto : req.body.monto,
+        descripcion : "Anulación de inscripción"// queda fijo para q siempre muestre este comentario
     };
 
-    const anularResultado = await inscripcionServicios.anularInscripcionServicio( dataInsc, dataCaja );
-    console.log("Resultado de anulación:", anularResultado);
-    switch (anularResultado.code) {
-        case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION":
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.OK,
-                anularResultado.message,
-                anularResultado.data,
-                undefined,
-                anularResultado.code
-            );
+    const anularResultado = await inscripcionServicios.anularInscripcionServicio( dataInsc, dataDetalle );
+  
+    const config = MAPA_ANULACION_INSCRIPCION[ anularResultado.code ]  || ERROR_INTERNO_SERVIDOR; 
 
-
-        case "SIN_CATEGORIA_ANULACION" :
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                anularResultado.message,
-                anularResultado.code            
-            );
-          
-        case "NO_EXISTE_CAJA" :
-          
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.NO_ENCONTRADO,
-                anularResultado.message,
-                anularResultado.code
-            );
-
-        case "SIN_PERMISO":
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.METODO_NO_PERMITIDO,
-                anularResultado.message,
-                anularResultado.code
-            );
-
-        case "TRANSACCION_FALLIDA_ANULAR_INCRIPCION":
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                anularResultado.message,
-                anularResultado.code
-            );
-
-        default:
-            // Caso por defecto para cualquier otro error no contemplado
-           
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                anularResultado.message || "Error no identificado",
-                anularResultado.code || "ERROR_DESCONOCIDO"
-            );
+    if (config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res, 
+            config.status,
+            anularResultado.message || config.msg,
+            anularResultado.data,
+            undefined,
+            anularResultado.code     
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            anularResultado.message || config.msg,   
+            anularResultado.code      
+        );
     };
 };
 

@@ -23,7 +23,7 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
         const token = jwt.sign(
             payload, // Ahora viaja: { id: 3, rol: "usuario", id_escuela: 107 }
             process.env.JWT_CLAVE || "jjsskkss", 
-            { expiresIn: "30m" }
+            { expiresIn: "60m" }
         );
         return token;
     } catch (error) {

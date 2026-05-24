@@ -6,6 +6,6 @@ const rutas = Router();
 
 rutas.post("/api/inscripcion", permisos.validarPermiso ,controladorInscripciones.inscripcion);
 rutas.get("/api/list_inscrip", controladorInscripciones.listadoInscripciones );
-rutas.post("/api/anular_inscrip", controladorInscripciones.anularInscripcion);
+rutas.post("/api/anular_inscrip", permisos.validarPermiso , controladorInscripciones.anularInscripcion);
 
 export default rutas;

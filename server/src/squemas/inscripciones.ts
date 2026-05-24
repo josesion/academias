@@ -187,6 +187,11 @@ export const AnularInscripcionSchema = z.object({
     .int("El ID de la inscripción debe ser un número entero.")
     .positive("El ID de la inscripción debe ser positivo."),
 
+ id_usuario :  z.coerce.number()
+    .int("El ID del usuario debe ser un numero entero .")
+    .positive("El ID del usuario  debe ser positivo."),
+
+ id_cuenta: z.coerce.number().nullable().default(null), 
 
 });
 
