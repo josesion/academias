@@ -170,15 +170,11 @@ const anularInscripcion = async ( req : Request, res : Response) => {
     const dataInsc = {
         id_escuela : Number(id_escuela),
         id_inscripcion : Number( req.body.id_inscripcion ),
-      
         estadoInsc  : "activos",// queda fijo para q siempre busque el activos
         id_usuario : id_usuario,
         id_cuenta  : req.body.id_cuenta || null,
     };
     const dataDetalle = {
-        id_caja : null,    //  se calcula en el servicio
-        id_categoria : null, // se calcula en el servicio   
-        monto : req.body.monto,
         descripcion : "Anulación de inscripción"// queda fijo para q siempre muestre este comentario
     };
 
