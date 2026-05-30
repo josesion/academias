@@ -17,7 +17,7 @@ import {  type InputsPropsBuscador } from "../componentes/Buscadores/Buscador"
 const inputsFiltro: InputsPropsBuscador[] = [
   {
     name: "dni_alumno",
-    label: "DNI Alumno",
+    label: "Dni del alumno ",
     type: "number",
     placeholder: "Ingrese DNI",
     value: "",

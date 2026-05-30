@@ -17,14 +17,14 @@ import { useAbmGenerico } from "../hooks/useAbmGenerico";
 const inputsFiltro  : InputsPropsBuscador[] =[
     {
         name: "dni",
-        label: "Dni Alumno",
+        label: "Dni",
         type: "number",
         placeholder: "Ingrese Dni",
         value: ""
     },
     {
         name: "apellido",
-        label: "Apellido",
+        label: "Apellido alumno",
         type: "text",
         placeholder: "Ingrese Apellido",
         value: ""

@@ -63,7 +63,6 @@ export const listadoInscripciones = async( data : TipadoInscripcion.FiltroBusque
     };
     const parametrosQuery = {
         estado: data.estado || "activos",
-        id_escuela: data.id_escuela.toString(),
         nombre_alumno : data.nombre_alumno,
         dni_alumno  : data.dni_alumno,
         fecha_desde : data.fecha_desde,
@@ -97,12 +96,7 @@ export const anularInscripcion  =async ( data : TipadoInscripcion.AnulacionInscr
     return apiFetch( ruta , {
         method : "POST",
         body : {
-            id_escuela : data.id_escuela,
             id_inscripcion : data.id_inscripcion,
-            estadoInsc : data.estadoInsc,
-            monto : data.monto,
-            metodo_pago : data.metodo_pago,
-            descripcion : data.descripcion
         }
     });
 };

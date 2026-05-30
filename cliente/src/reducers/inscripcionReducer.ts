@@ -230,7 +230,7 @@ export const InscripcionReducer = (state: ReturnType<typeof inicialState>, actio
             return { ...state, enviando: true };    
          
         case 'FINALIZAR_OPERACION_INSCRIPCION':
-            return { ...state, enviando: false, errorGenerico: null };                
+            return { ...state, enviando: false};                
 
         case 'CARGADO':
             return { ...state, carga: false };            

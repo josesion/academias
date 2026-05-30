@@ -1,6 +1,5 @@
 import { useState } from "react";
 
-import { SelectorPlegable } from "../Selector/Selector";
 import { SelectorOpt } from "../CompSelecObt/SelectorOpt";
 
 import "./metodoPago.css";

@@ -33,6 +33,7 @@ interface BuscadorProps {
 }
 
 export const Buscadores = (p: BuscadorProps) => {
+  console.log(p);
   return (
     <div className="buscador_contenedor_comp">
       {p.tituloBuscador && (

@@ -1,245 +1,543 @@
-
-
-.cyber_ticket::-webkit-scrollbar {
-    width: 8px;
-}
-
-
-.cyber_ticketa::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-
-.cyber_ticket::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-  border-radius: 5px;
-}
-
-.cyber_ticket ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #6366f1,
-    #22d3ee,
-    #c084fc
-  )
-}
+/* ==========================================================================
+   CYBER TICKET — GLASSMORPHISM PREMIUM
+   ========================================================================== */
 
 :root {
-    --neon-green: #00ff88;
-    --neon-red: #ff4444;
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --border-glass: rgba(255, 255, 255, 0.1);
-}
-.cyber_ticket::-webkit-scrollbar {
-    width: 8px;
+  --neon-green: #22c55e;
+  --neon-red: #ef4444;
+
+  --glass-bg: rgba(255, 255, 255, 0.04);
+  --border-glass: rgba(255, 255, 255, 0.08);
+
+  --bg-primary: #0f172a;
+  --bg-secondary: #111827;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+
+  --cyan: #06b6d4;
+  --purple: #a855f7;
+  --indigo: #4f46e5;
 }
 
-.cyber_ticketa::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-}
-
-.cyber_ticket::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    #4f46e5,
-    #06b6d4,
-    #a855f7
-  );
-  border-radius: 5px;
-}
-
-.cyber_ticket ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    #6366f1,
-    #22d3ee,
-    #c084fc
-  )
-}
-
-:root {
-    --neon-green: #00ff88;
-    --neon-red: #ff4444;
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --border-glass: rgba(255, 255, 255, 0.1);
-}
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================================== */
 
 .cyber_ticket {
-    background: #0d0d0d;
-    border: 1px solid var(--border-glass);
-    border-radius: 20px;
-    padding: 2px; 
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-    max-height: 80dvh;
-    overflow-y: auto; 
-    /* Agregado para responsive */
-    width: 100%;
-    margin: 0 auto;
+  position: relative;
+
+  width: 100%;
+  max-width: 520px;
+  max-height: 85dvh;
+
+  margin: 0 auto;
+
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(15, 23, 42, 0.96),
+      rgba(17, 24, 39, 0.92)
+    );
+
+  border: 1px solid var(--border-glass);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.02),
+    0 20px 60px rgba(0,0,0,0.6),
+    0 8px 30px rgba(79,70,229,0.12);
+
+  animation: cyberFade 0.25s ease;
 }
+
+/* Glow superior */
+.cyber_ticket::before {
+  content: "";
+
+  position: absolute;
+  top: -140px;
+  right: -120px;
+
+  width: 260px;
+  height: 260px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99,102,241,0.22),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+/* Glow inferior */
+.cyber_ticket::after {
+  content: "";
+
+  position: absolute;
+  bottom: -120px;
+  left: -120px;
+
+  width: 240px;
+  height: 240px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(6,182,212,0.14),
+      transparent 70%
+    );
+
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   SCROLLBAR
+   ========================================================================== */
+
+.cyber_ticket::-webkit-scrollbar {
+  width: 8px;
+}
+
+.cyber_ticket::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.03);
+  border-radius: 999px;
+}
+
+.cyber_ticket::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #4f46e5,
+      #06b6d4,
+      #a855f7
+    );
+}
+
+.cyber_ticket::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
+}
+
+/* ==========================================================================
+   SCANLINE
+   ========================================================================== */
 
 .scanline {
-    width: 100%;
-    height: 100px;
-    background: linear-gradient(0deg, transparent, rgba(255,255,255,0.05), transparent);
-    position: absolute;
-    /* animation: scan 4s linear infinite; */ /* <-- ANIMACIÓN COMENTADA */
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(255,255,255,0.02),
+      transparent
+    );
+
+  pointer-events: none;
 }
 
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
 .ticket_top {
-    padding: 30px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-bottom: 1px solid var(--border-glass);
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding: 34px 24px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.01)
+    );
 }
 
 .monto_principal {
-    font-size: 3.5rem;
-    font-weight: 900;
-    margin: 15px 0;
-    letter-spacing: -2px;
+  margin: 14px 0;
+
+  font-size: 3.4rem;
+  font-weight: 900;
+
+  letter-spacing: -2px;
+  line-height: 1;
+
+  text-shadow:
+    0 0 20px rgba(255,255,255,0.08);
 }
 
-.glitch_green { color: var(--neon-green); filter: drop-shadow(0 0 15px rgba(0,255,136,0.4)); }
-.glitch_red { color: var(--neon-red); filter: drop-shadow(0 0 15px rgba(255,68,68,0.4)); }
+.glitch_green {
+  color: var(--neon-green);
+
+  filter:
+    drop-shadow(0 0 12px rgba(34,197,94,0.35));
+}
+
+.glitch_red {
+  color: var(--neon-red);
+
+  filter:
+    drop-shadow(0 0 12px rgba(239,68,68,0.35));
+}
+
+/* ==========================================================================
+   BODY
+   ========================================================================== */
 
 .glass_body {
-    padding: 25px;
-    backdrop-filter: blur(5px);
+  padding: 24px;
+
+  backdrop-filter: blur(8px);
 }
 
+/* ==========================================================================
+   INFO PRINCIPAL
+   ========================================================================== */
+
 .main_info {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  margin-bottom: 24px;
+}
+
+.data_group {
+  flex: 1;
+
+  padding: 16px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.04),
+      rgba(255,255,255,0.015)
+    );
+
+  border: 1px solid rgba(255,255,255,0.06);
+
+  text-align: center;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 6px 18px rgba(0,0,0,0.2);
 }
 
 .data_group label {
-    font-size: 0.6rem;
-    color: #555;
-    display: block;
-    text-align: center;
-    margin-bottom: 8px;
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 0.68rem;
+  font-weight: 700;
+
+  color: var(--text-secondary);
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
-.tipo_badge, .metodo_badge {
-    background: var(--glass-bg);
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    border: 1px solid var(--border-glass);
+.tipo_badge,
+.metodo_badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 38px;
+
+  padding: 8px 16px;
+
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.05),
+      rgba(255,255,255,0.02)
+    );
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  color: var(--text-primary);
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03);
 }
+
+/* ==========================================================================
+   TERMINAL
+   ========================================================================== */
 
 .destino_terminal {
-    background: #000;
-    padding: 15px;
-    border-radius: 8px;
-    font-family: 'Consolas', monospace;
-    border-left: 3px solid #4facfe;
-    margin-bottom: 25px;
+  margin-bottom: 24px;
+  padding: 18px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(0,0,0,0.55),
+      rgba(15,23,42,0.85)
+    );
+
+  border: 1px solid rgba(79,172,254,0.14);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.02),
+    0 8px 24px rgba(0,0,0,0.35);
 }
 
-.terminal_prefix { color: #4facfe; font-size: 0.7rem; }
-.terminal_text { color: #fff; font-size: 1.2rem; margin-top: 5px; }
+.terminal_prefix {
+  color: #38bdf8;
+
+  font-size: 0.72rem;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.terminal_text {
+  margin-top: 8px;
+
+  color: var(--text-primary);
+
+  font-size: 1.1rem;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 600;
+
+  word-break: break-word;
+}
+
+/* ==========================================================================
+   METADATA
+   ========================================================================== */
 
 .metadata_grid {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 20px;
-    border-top: 1px solid var(--border-glass);
-    gap: 5px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding-top: 22px;
+
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .meta_item {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.75rem;
-    color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 12px;
+
+  border-radius: 12px;
+
+  background:
+    rgba(255,255,255,0.025);
+
+  border: 1px solid rgba(255,255,255,0.04);
+
+  color: var(--text-secondary);
+
+  font-size: 0.75rem;
 }
 
+/* ==========================================================================
+   OBSERVACIONES
+   ========================================================================== */
+
 .obs_box {
-    margin-top: 20px;
-    background: rgba(79, 172, 254, 0.05);
-    padding: 15px;
-    border-radius: 10px;
+  margin-top: 22px;
+  padding: 18px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(6,182,212,0.08),
+      rgba(168,85,247,0.08)
+    );
+
+  border: 1px solid rgba(34,211,238,0.12);
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.03),
+    0 0 18px rgba(6,182,212,0.05);
 }
 
 .obs_header {
-    font-size: 0.6rem;
-    color: #4facfe;
-    margin-bottom: 8px;
-    text-transform: uppercase;
+  margin-bottom: 10px;
+
+  color: #67e8f9;
+
+  font-size: 0.7rem;
+  font-weight: 800;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
+/* ==========================================================================
+   ALUMNO VINCULADO
+   ========================================================================== */
+
 .vinculo_alumno_box {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 0;
-  margin: 10px 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
+
+  margin: 18px 0;
+  padding: 16px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,0.03),
+      rgba(255,255,255,0.015)
+    );
+
+  border: 1px solid rgba(255,255,255,0.06);
 }
 
 .alumno_nombre_text {
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  color: var(--text-primary);
+
+  font-family: "JetBrains Mono", monospace;
   font-size: 1rem;
-  font-weight: 600;
-  color: #e0e0e0;
-  letter-spacing: 0.5px;
+  font-weight: 700;
+
+  letter-spacing: 0.03em;
 }
 
-.boton_cerrar{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 5px;
+/* ==========================================================================
+   BOTÓN
+   ========================================================================== */
+
+.boton_cerrar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-top: 10px;
+  margin-bottom: 6px;
 }
 
-/* --- MEDIA QUERIES --- */
+.boton_cerrar button {
+  width: 50%;
 
-/* Celulares */
+  min-height: 48px;
+
+  border-radius: 16px;
+
+  font-weight: 700;
+
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.boton_cerrar button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.25);
+}
+
+.boton_cerrar button:active {
+  transform: scale(0.98);
+  
+}
+
+/* ==========================================================================
+   ANIMACIÓN
+   ========================================================================== */
+
+@keyframes cyberFade {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
 @media (max-width: 480px) {
-    .monto_principal {
-        font-size: 2.2rem;
-    }
-    .main_info {
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    .metadata_grid {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-    }
-    .cyber_ticket {
-        max-height: 85dvh;
-    }
+  .cyber_ticket {
+    max-height: 88dvh;
+    border-radius: 20px;
+  }
+
+  .ticket_top {
+    padding: 28px 18px;
+  }
+
+  .monto_principal {
+    font-size: 2.4rem;
+  }
+
+  .glass_body {
+    padding: 18px;
+  }
+
+  .main_info {
+    flex-direction: column;
+  }
+
+  .metadata_grid {
+    flex-direction: column;
+  }
+
+  .meta_item {
+    justify-content: center;
+  }
 }
 
-/* Tablets */
 @media (min-width: 481px) and (max-width: 1024px) {
-    .cyber_ticket {
-        max-width: 450px;
-    }
+  .cyber_ticket {
+    max-width: 460px;
+  }
 }
 
-/* Computadora */
 @media (min-width: 1025px) {
-    .cyber_ticket {
-        max-width: 500px;
-    }
+  .cyber_ticket {
+    max-width: 520px;
+  }
 }

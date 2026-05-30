@@ -182,21 +182,23 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
 
         
                 const subcripcionInsc = await servicioApiFetch( datosInscpDetalle );
-                
+                    
                 if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
                         resetFormulario();
                         dispatch({type : "MODAL_INSCRIPCION", payload : false});     
                         dispatch({type : "ACTUALIZAR_INSCRIPCION"});
                         navegar("/list_inscrip");              
                 }else{
-                    dispatch({type : "SET_ERROR_GENERICO", payload : subcripcionInsc.message});
+                   return dispatch({type : "SET_ERROR_GENERICO", payload : subcripcionInsc.message});
                 }
         }catch(error){
-            dispatch({ type : "SET_ERROR_GENERICO", payload : "Errro en conexion, intente nuevamente"})
+            dispatch({ type : "SET_ERROR_GENERICO", payload : "Errr en conexion, intente nuevamente"})
         }finally{
             dispatch({type : "FINALIZAR_OPERACION_INSCRIPCION"});
         };  
 };
+
+
 
 const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault();

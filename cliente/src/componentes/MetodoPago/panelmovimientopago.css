@@ -1,60 +1,153 @@
+/* ========================================================================== 
+   PANEL METODOS DE PAGO — CYBER GLASS PREMIUM
+   ========================================================================== */
+
 .panel_metodo_pago_contenedor {
-  background: rgba(11, 11, 11, 0.45);
-  backdrop-filter: blur(15px);
-  border-radius: 22px;
+  position: relative;
+
+  background: 
+    linear-gradient(
+      145deg,
+      rgba(15, 23, 42, 0.92),
+      rgba(2, 6, 23, 0.96)
+    );
+
+  backdrop-filter: blur(18px);
+
+  border-radius: 24px;
+
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  border: 1px solid rgba(255, 255, 255, 0.06);
+
   display: flex;
   flex-direction: column;
   gap: 12px;
+
   min-width: 280px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  overflow: hidden;
+
+  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
 }
+
+/* Glow superior como tarjetas */
+.panel_metodo_pago_contenedor::after {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 70%;
+  height: 2px;
+
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.7),
+    transparent
+  );
+
+  opacity: 0.25;
+}
+
+/* Hover global del panel */
+.panel_metodo_pago_contenedor:hover {
+  transform: translateY(-3px);
+
+  border-color: rgba(255,255,255,0.10);
+
+  box-shadow:
+    0 22px 50px rgba(0,0,0,0.58),
+    0 0 25px rgba(6,182,212,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ========================================================================== 
+   TITULO
+   ========================================================================== */
 
 .panel_titulo {
   font-size: 0.8rem;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: var(--color-letra);
-  opacity: 0.5;
+  letter-spacing: 1.6px;
+
+  color: #94a3b8;
+
+  opacity: 0.9;
+
   margin-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
   padding-bottom: 10px;
 }
 
-/* Aplicamos el estilo de "tarjeta_normal_contenedor" a tus items */
+/* ========================================================================== 
+   ITEM — estilo alineado con tarjeta normal
+   ========================================================================== */
+
 .metodo_item_completo {
-  position: relative; /* Para la línea vertical */
-  padding: 14px 16px 14px 34px; /* Espacio extra a la izquierda para la línea */
-  transition: all 0.25s ease;
+  position: relative;
+
+  padding: 14px 16px 14px 38px;
+
   display: flex;
   flex-direction: column;
   gap: 4px;
+
   justify-content: center;
+
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.02); /* Un toque de luz de fondo */
-  margin-bottom: 4px;
+
+  background: rgba(255, 255, 255, 0.02);
+
+  transition: all 0.25s ease;
+
+  overflow: hidden;
 }
 
-.metodo_item_completo:hover {
-  transform: translateX(6px); /* Tu efecto original de mover a la derecha */
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* LA LÍNEA VERTICAL (Inspirada en tu otro componente) */
+/* línea lateral cyber */
 .metodo_item_completo::before {
   content: "";
+
   position: absolute;
+
   left: 14px;
   top: 12px;
   bottom: 12px;
+
   width: 6px;
+
   border-radius: 999px;
-  /* Usamos el degradado azul/cian que te gusta */
+
   background: linear-gradient(180deg, #4f46e5, #06b6d4);
-  box-shadow: 0 0 12px rgba(79, 70, 229, 0.5);
+
+  box-shadow:
+    0 0 16px rgba(79, 70, 229, 0.55),
+    0 0 20px rgba(6, 182, 212, 0.25);
 }
+
+/* hover estilo tarjeta */
+.metodo_item_completo:hover {
+  transform: translateX(6px);
+
+  background: rgba(255,255,255,0.05);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+/* ========================================================================== 
+   CONTENIDO
+   ========================================================================== */
 
 .metodo_fila_principal {
   display: flex;
@@ -63,30 +156,39 @@
 }
 
 .metodo_nombre {
-  font-size: 0.65rem; /* Estilo header del componente nuevo */
-  letter-spacing: 1px;
+  font-size: 0.65rem;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  opacity: 0.65;
-  color: var(--color-letra);
+
+  opacity: 0.7;
+
+  color: #94a3b8;
 }
 
 .metodo_monto_total {
-  font-size: 1.15rem; /* Un poco más grande para que destaque */
-  font-weight: 500;
+  font-size: 1.15rem;
+  font-weight: 800;
+
   color: var(--color-letra);
+
   font-variant-numeric: tabular-nums;
+
+  text-shadow: 0 0 12px rgba(255,255,255,0.04);
 }
 
 .metodo_desglose {
   display: flex;
   gap: 12px;
+
   margin-top: 2px;
-  opacity: 0.8;
+
+  opacity: 0.85;
 }
 
 .desglose_dato {
   display: flex;
   gap: 4px;
+
   font-size: 0.75rem;
 }
 
@@ -99,72 +201,58 @@
   color: var(--color-letra);
 }
 
-/* Colores semánticos para la sesión */
+/* ========================================================================== 
+   ESTADOS
+   ========================================================================== */
+
 .positivo {
-  color: #10b981 !important; 
-  font-weight: 600;
+  color: #10b981 !important;
+  font-weight: 700;
 }
 
 .negativo {
   color: #ef4444 !important;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-
-/* ===================================================
-   RESPONSIVE: PANEL MÉTODOS DE PAGO
-   =================================================== */
+/* ========================================================================== 
+   RESPONSIVE (NO TOCADO ESTRUCTURALMENTE)
+   ========================================================================== */
 
 @media (max-width: 1024px) {
-    .panel_metodo_pago_contenedor {
-        min-width: 100%; /* Ocupa todo el ancho en el aside/columna */
-        padding: 16px;
-    }
+  .panel_metodo_pago_contenedor {
+    min-width: 100%;
+    padding: 16px;
+  }
 }
 
 @media (max-width: 480px) {
-    .metodo_item_completo {
-        padding: 12px 14px 12px 28px; /* Ajuste fino de espaciado */
-    }
+  .metodo_item_completo {
+    padding: 12px 14px 12px 30px;
+  }
 
-    .metodo_item_completo::before {
-        left: 10px; /* Pegamos un poco más la línea al borde */
-        width: 4px;
-    }
+  .metodo_item_completo::before {
+    left: 10px;
+    width: 4px;
+  }
 
-    .metodo_fila_principal {
-        flex-direction: row; /* Mantenemos nombre y monto en línea */
-        align-items: baseline;
-    }
+  .metodo_monto_total {
+    font-size: 1rem;
+  }
 
-    .metodo_monto_total {
-        font-size: 1rem; /* Bajamos un poco el tamaño para que no rompa */
-    }
+  .metodo_desglose {
+    flex-direction: column;
+    gap: 2px;
+  }
 
-    .metodo_desglose {
-        flex-direction: column; /* En celulares muy chicos, el desglose va uno abajo de otro */
-        gap: 2px;
-        margin-top: 5px;
-    }
-
-    .desglose_dato {
-        justify-content: flex-start;
-        font-size: 0.7rem; /* Texto más compacto */
-    }
-
-    .metodo_item_completo:hover {
-        transform: translateX(3px); /* Efecto más sutil en touch */
-    }
+  .metodo_item_completo:hover {
+    transform: translateX(3px);
+  }
 }
 
-/* Ajuste para pantallas muy pequeñas (Ej: iPhone SE) */
 @media (max-width: 350px) {
-    .metodo_fila_principal {
-        flex-direction: column; /* Nombre arriba, Monto abajo */
-        gap: 2px;
-    }
-    
-    .metodo_monto_total {
-        font-size: 1.1rem;
-    }
+  .metodo_fila_principal {
+    flex-direction: column;
+    gap: 2px;
+  }
 }

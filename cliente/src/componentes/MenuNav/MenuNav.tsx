@@ -161,6 +161,7 @@ export const MenuNav = () => {
                     }}
                   >
                     <PiStudentBold size={18} color="#a78bfa" /> Alumnos
+                    Inscriptos
                   </li>
                   <li
                     onClick={(e) => {
@@ -177,7 +178,7 @@ export const MenuNav = () => {
                       irPlanes();
                     }}
                   >
-                    <PiCardsBold size={18} color="#a78bfa" /> Planes
+                    <PiCardsBold size={18} color="#a78bfa" /> Planes Pago
                   </li>
                   <li
                     onClick={(e) => {

@@ -10,6 +10,8 @@ interface PropsTarjeta {
 export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
   const meses = plan?.meses ?? 0;
 
+  console.log(plan);
+
   return (
     <div className="tarjeta_card">
       <p className="tarjeta_titulo">Estado de inscripción</p>

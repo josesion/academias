@@ -1,5 +1,5 @@
 /* ============================================================
-   BOTONES PROFESIONALES - STUDIOPRO STYLE (FULL ANIMATED)
+   BOTONES PROFESIONALES — CYBER GLASS SOFT
    ============================================================ */
 
 .boton_personalizado {
@@ -8,119 +8,135 @@
     align-items: center;
     gap: 10px;
 
-    height: 44px; 
+    height: 44px;
     min-width: 140px;
     padding: 0 20px;
 
     font-size: 0.9rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 14px; 
+
+    border-radius: 14px;
     cursor: pointer;
+
     position: relative;
     overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #1e293b; /* Fondo base neutro */
+
+    transition: all 0.25s ease;
+
+    /* glass base */
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(14px);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    color: #e2e8f0;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
 }
 
-/* Efecto de elevación y sombra */
+/* hover suave (sin “explosión”) */
 .boton_personalizado:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
+
+    border-color: rgba(255, 255, 255, 0.15);
+
+    box-shadow: 0 14px 30px rgba(0,0,0,0.45);
 }
 
 .boton_personalizado:active {
-    transform: scale(0.96);
+    transform: scale(0.97);
 }
 
-/* --- VARIANTES DE COLOR --- */
+/* ============================================================
+   VARIANTES (COLORES SUAVES + GLASS REAL)
+   ============================================================ */
 
-/* ACEPTAR */
-.aceptar { 
-    background: linear-gradient(135deg, #3730a3, #0891b2); 
-    box-shadow: 0 4px 15px rgba(55, 48, 163, 0.3);
+/* ACEPTAR (cyan calmado) */
+.aceptar {
+    background: linear-gradient(
+        135deg,
+        rgba(6, 182, 212, 0.18),
+        rgba(59, 130, 246, 0.10)
+    );
+
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    color: #cffafe;
 }
+
 .aceptar:hover {
-    background: linear-gradient(135deg, #4338ca, #06b6d4);
-    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+    background: linear-gradient(
+        135deg,
+        rgba(6, 182, 212, 0.28),
+        rgba(59, 130, 246, 0.18)
+    );
 }
 
-/* CANCELAR */
-.cancelar { 
-    background: #334155; 
-}
-.cancelar:hover { 
-    background: #ef4444; 
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+/* CANCELAR (rojo apagado, no agresivo) */
+.cancelar {
+    background: rgba(239, 68, 68, 0.10);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fecaca;
 }
 
-/* AGREGAR */
-.agregar { 
-    background: #1e293b; 
-    border: 1px solid #38bdf8;
-    color: #38bdf8;
-}
-.agregar:hover { 
-    background: #38bdf8;
-    color: white;
+.cancelar:hover {
+    background: rgba(239, 68, 68, 0.18);
 }
 
-/* ELIMINAR */
-.eliminar { 
-    background: #450a0a; 
-    border: 1px solid #991b1b;
-}
-.eliminar:hover { 
-    background: #991b1b;
+/* AGREGAR (cyan soft outline) */
+.agregar {
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    color: #bae6fd;
 }
 
-/* EDITAR */
-.editar { 
-    background: #2e1065; 
-    border: 1px solid #a855f7;
-}
-.editar:hover { 
-    background: #a855f7;
+.agregar:hover {
+    background: rgba(56, 189, 248, 0.18);
 }
 
-/* LISTAR / FLECHAS */
-.listar, .flechas { 
+/* ELIMINAR (vino oscuro suave) */
+.eliminar {
+    background: rgba(127, 29, 29, 0.25);
+    border: 1px solid rgba(185, 28, 28, 0.35);
+    color: #fecaca;
+}
+
+.eliminar:hover {
+    background: rgba(185, 28, 28, 0.25);
+}
+
+/* EDITAR (violeta suave) */
+.editar {
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.30);
+    color: #e9d5ff;
+}
+
+.editar:hover {
+    background: rgba(139, 92, 246, 0.20);
+}
+
+/* LISTAR / FLECHAS (glass puro) */
+.listar,
+.flechas {
     background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(5px);
-}
-.listar:hover, .flechas:hover { 
-    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
 }
 
-/* --- ANIMACIONES ESPECÍFICAS DE ICONOS (HOVER) --- */
+.listar:hover,
+.flechas:hover {
+    background: rgba(255, 255, 255, 0.10);
+}
+
+/* ============================================================
+   ICONOS (SIN CAMBIAR ANIMACIONES)
+   ============================================================ */
 
 .boton_personalizado svg {
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
-
-/* Aceptar: Salto */
-.aceptar:hover svg { animation: icon-jump 0.4s ease-out; }
-
-/* Cancelar: Vibración */
-.cancelar:hover svg { animation: icon-shake 0.3s ease-in-out; }
-
-/* Agregar: Rotación y escala */
-.agregar:hover svg { animation: icon-rotate-grow 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-/* Eliminar: Tiembla y encoge */
-.eliminar:hover svg { animation: icon-shrink-shake 0.4s ease; }
-
-/* Editar: Inclinación tipo lápiz */
-.editar:hover svg { animation: icon-pencil 0.5s ease-in-out infinite alternate; }
-
-/* Flechas: Desplazamiento lateral */
-.flechas:hover svg { animation: icon-slide-right 0.5s ease-in-out infinite alternate; }
-
-/* Listar: Pulso */
-.listar:hover svg { animation: icon-pulse 1.5s ease-in-out infinite; }
 
 /* --- KEYFRAMES --- */
 

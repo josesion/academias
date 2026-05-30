@@ -3,6 +3,7 @@ import { FiltroFechas } from "../../../componentes/FiltrosFechas/FiltrosFechas";
 import { EliminarVentana } from "../../../componentes/EliminarModal/EliminarModal";
 import { ContenedorListadoInscripciones } from "../../../componentes/ContenedorListadoInscrp/ContendorListadoInscrip";
 import { Paginacion } from "../../../componentes/Paginacion/Paginacion";
+import { PanelDetalleInscrip } from "../../../componentes/PanelDetalleInsc/PanelDetalleInsc";
 
 import { setListadoInscripcion } from "../../../hookNegocios/listadoInscrip";
 
@@ -10,24 +11,35 @@ import "./listadoInscrip.css";
 
 export const ListadoInscripcionPage = () => {
   const {
-    carga,
+    //carga,
     inputsFiltro,
     estado,
-    filtroData,
+    // filtroData,
     handleChangaValue,
     handleChangeEstado,
     handleChangeFechaDesde,
     handleChangeFechaHasta,
     handlePaginaCambiada,
-    barraPaginacion,
-    dataListado,
+    // barraPaginacion,
+    // dataListado,
     abrirInscribir,
 
     dataAnularInscripcion,
     manejarSeleccionInscripcion,
     handleCancelarAnulacion,
     handleAnularInscripcion,
+    state,
   } = setListadoInscripcion();
+
+  const data = {
+    nombre_completo: "jose manuel",
+    dni_alumno: 33762577,
+    clases_totales: 20,
+    clases_tomadas: 3,
+    vigencia: "2026/08/13",
+    monto_pagado: 5000,
+    metodo_pago_descrip: "Naranjax",
+  };
 
   const { idInscripcion } = dataAnularInscripcion;
 
@@ -36,16 +48,7 @@ export const ListadoInscripcionPage = () => {
       {dataAnularInscripcion.modalAnular && (
         <div className="modal_overlay_fix">
           (
-          <EliminarVentana
-            onSi={handleAnularInscripcion}
-            onCancelar={handleCancelarAnulacion}
-            cargando={dataAnularInscripcion.carga}
-            key={dataAnularInscripcion.idInscripcion}
-            accion={dataAnularInscripcion.texto}
-            data={{ idInscripcion }}
-            mensaje={dataAnularInscripcion.mensajeError}
-          />
-          )
+          <PanelDetalleInscrip infoDetalle={data} />)
         </div>
       )}
 
@@ -54,29 +57,29 @@ export const ListadoInscripcionPage = () => {
           tituloBuscador="Filtro de Busqueda"
           intputBuscador={inputsFiltro}
           estados={estado}
-          buscadorData={filtroData}
+          buscadorData={state.filtroData}
           captionBoton={"Inscribir"}
           onChange={handleChangaValue}
           onEstados={handleChangeEstado}
           onAgregar={abrirInscribir}
         />
         <FiltroFechas
-          fechaDesde={filtroData.fecha_desde}
-          fechaHasta={filtroData.fecha_hasta}
+          fechaDesde={state.filtroData.fecha_desde}
+          fechaHasta={state.filtroData.fecha_hasta}
           onDesdeChange={handleChangeFechaDesde}
           onHastaChange={handleChangeFechaHasta}
         />
       </div>
 
       <ContenedorListadoInscripciones
-        data={dataListado}
-        carga={carga}
+        data={state.listadoInscripcion}
+        carga={state.carga}
         onSeleccionarInscripcion={manejarSeleccionInscripcion}
       />
 
       <Paginacion
-        paginaActual={barraPaginacion.pagina as number}
-        contadorPagina={barraPaginacion.contadorPagina as number}
+        paginaActual={state.barraPaginacion.pagina as number}
+        contadorPagina={state.barraPaginacion.contadorPagina as number}
         onPaginaCambiada={handlePaginaCambiada}
       />
     </div>

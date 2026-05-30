@@ -53,7 +53,7 @@ export interface FiltroBusqueda {
     nombre_alumno : string,
     fecha_desde : string,
     fecha_hasta : string,
-    id_escuela : number,
+    id_escuela?: number,
     estado : "activos" | "vencidos"| "todos",
     pagina : number | 1 ,
     limit : number | 10
