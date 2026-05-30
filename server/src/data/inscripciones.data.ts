@@ -393,20 +393,22 @@ const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
 };
 
 /**
- * Obtiene el listado de inscripciones con conteo de asistencias y paginación.
- * * @async
+ * Obtiene el listado de inscripciones de una escuela filtrado por fechas, estado, 
+ * nombre o DNI del alumno, incluyendo la paginación y el último método de pago utilizado.
+ *
+ * @async
  * @function listadoInscripciones
- * @param {Object} data - Objeto con los filtros de búsqueda.
- * @param {number} data.id_escuela - ID de la escuela/academia.
- * @param {string} data.fecha_desde - Fecha de inicio del rango (YYYY-MM-DD).
- * @param {string} data.fecha_hasta - Fecha de fin del rango (YYYY-MM-DD).
- * @param {string} data.estado - Estado de la inscripción a excluir (ej: 'suspendido').
- * @param {number} data.limit - Cantidad de registros por página.
- * @param {number} data.offset - Desplazamiento de registros para la paginación.
- * @param {string} pagina - El número de página actual (usado para el retorno de metadata).
- * * @returns {Promise<TipadoData<InscripcionListado[]>>} Objeto estandarizado con la data, error y paginación.
- * * @example
- * const inscripciones = await listadoInscripciones(misInputs, "1");
+ * @param {FiltroHistorialInputs} data - Objeto con los filtros de búsqueda enviados desde el frontend.
+ * @param {number} data.id_escuela - Identificador único de la academia.
+ * @param {string} data.fecha_desde - Fecha límite inferior para el filtro (YYYY-MM-DD).
+ * @param {string} data.fecha_hasta - Fecha límite superior para el filtro (YYYY-MM-DD).
+ * @param {string} data.estado - Estado de la inscripción ('todos', 'activos', 'suspendido', 'vencidos').
+ * @param {number} data.limit - Cantidad máxima de registros a retornar por página.
+ * @param {number} data.offset - Cantidad de registros a saltar para la paginación.
+ * @param {string} data.nombre_alumno - Filtro por nombre o apellido del alumno (búsqueda parcial).
+ * @param {string} data.dni_alumno - Filtro por DNI del alumno (búsqueda parcial).
+ * @param {string} pagina - Número de página actual para la metadata del listado.
+ * * @returns {Promise<TipadoData<InscripcionListado[]>>} Promesa que resuelve con la estructura de paginación y el array de inscripciones.
  */
 const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : string) 
 : Promise<TipadoData<InscripcionListado[]>> =>{
@@ -431,12 +433,13 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
                             DATE_FORMAT(i.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
                             DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vigencia,
                             i.monto AS monto_pagado,
-                            (SELECT dc.metodo_pago 
+                            
+                            (SELECT cu.nombre_cuenta 
                             FROM detalle_caja dc 
+                            JOIN cuentas_escuela cu ON dc.id_cuenta = cu.id_cuenta
                             WHERE dc.referencia_id = i.id_inscripcion 
                             ORDER BY dc.id_movimiento DESC LIMIT 1) AS metodo_pago,
                             
-                            -- Columna para la paginación de tu función listarEntidad
                             COUNT(*) OVER() AS total_registros
 
                         FROM inscripciones i
@@ -444,12 +447,13 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
                         JOIN planes_pago p ON i.id_plan = p.id_plan
                         LEFT JOIN planes_en_escuela pe ON (i.id_plan = pe.id_plan AND i.id_escuela = pe.id_escuela)
                         LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
-                        WHERE i.id_escuela = ? 
+                        WHERE i.id_escuela = ?
+
                         AND i.fecha_inicio BETWEEN ? AND ? 
                         AND i.estado LIKE ?
                         AND (
-                                CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ? 
-                                and a_alumno.dni_alumno LIKE ?
+                                CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ?
+                                AND a_alumno.dni_alumno LIKE ?
                             )
 
                         GROUP BY i.id_inscripcion

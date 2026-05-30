@@ -162,9 +162,11 @@ const cierreCajaServicio = async ( data : CierresCajaInputs )
  */
 const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
 : Promise<TipadoData<{id_caja : number}>> => {
+
     const dataIdCaja : IdCajaAbiertaInputs = IdCajaAbiertaSchema.parse(data);
+
     const dataIdCajaResult = await dataCaja.idCajaAbierta(dataIdCaja);
-   
+        
     if(dataIdCajaResult.code === "ID_CAJA_EXISTE"){
         return{
             error : false,

@@ -42,11 +42,12 @@ import { InscripcionInputs } from "../squemas/inscripciones";
 
 const inscripcion = async( req : Request , res : Response ) =>{
     const dataRecivida = req.body;
+    const id_escuela = req.usuario?.id_escuela;
 
     //  campos para la Inscripción
     const dataInscrip: InscripcionInputs = {
         id_plan: dataRecivida.id_plan,
-        id_escuela: dataRecivida.id_escuela,
+        id_escuela: Number(id_escuela),
         dni_alumno: dataRecivida.dni_alumno,
         fecha_inicio: dataRecivida.fecha_inicio,
         fecha_fin: dataRecivida.fecha_fin,
@@ -58,7 +59,7 @@ const inscripcion = async( req : Request , res : Response ) =>{
 
     // campos para el Detalle de Caja
     const dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'> = {
-        id_escuela : dataRecivida.id_escuela,
+        id_escuela : Number(id_escuela),
         id_caja: dataRecivida.id_caja,
         id_categoria: dataRecivida.id_categoria,
         id_cuenta   : dataRecivida.id_cuenta,
@@ -104,11 +105,13 @@ const inscripcion = async( req : Request , res : Response ) =>{
  * @returns {Promise<void>} Envía una respuesta HTTP usando enviarResponse o enviarResponseError.
  */
 const listadoInscripciones = async ( req : Request, res : Response ) => {
+        
+    const id_usuario = req.usuario?.id_escuela;
   
     const dataListado = {
         limit : Number(req.query.limit),
         pagina : Number(req.query.pagina),
-        id_escuela : Number(req.query.id_escuela),
+        id_escuela : Number(id_usuario),
         fecha_desde : req.query.fecha_desde as string,
         fecha_hasta : req.query.fecha_hasta as string,
         estado  : req.query.estado as string,
@@ -120,14 +123,13 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
 
     const config =  MAPA_LISTADO_INSCRIPCIONES[listadoResultado.code]  || ERROR_INTERNO_SERVIDOR; 
 
-
     if (config.status === CodigoEstadoHTTP.OK ){
         return enviarResponse(
             res, 
             config.status,
             listadoResultado.message || config.msg,
             listadoResultado.data,
-            undefined,
+            listadoResultado.paginacion,
             listadoResultado.code
         );   
     }else{

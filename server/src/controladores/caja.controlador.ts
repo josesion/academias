@@ -37,12 +37,13 @@ import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA,
  * * @returns {Promise<Response>} Respuesta formateada basada en MAPRA_DETALLE_MOVIMIENTOS.
  */
 const detalleCaja = async ( req : Request, res : Response ) => {
+
     const dataDetalle = {
         id_caja : Number(req.body.id_caja),
-        id_escuela : Number(req.body.id_escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         id_categoria : Number(req.body.id_categoria),
         id_cuenta : Number(req.body.id_cuenta),
-        id_usuario : Number(req.body.id_usuario),
+        id_usuario : Number(req.usuario?.id),
         monto : Number(req.body.monto),
         descripcion : req.body.descripcion,
         referencia_id : req.body.referencia_id 
@@ -81,8 +82,8 @@ const detalleCaja = async ( req : Request, res : Response ) => {
  * @param {Request} req - Objeto de petición de Express.
  * @param {Object} req.body - Cuerpo de la petición.
  * @param {number} req.body.id_caja - Identificador único de la caja a cerrar.
- * @param {number|string} req.body.id_usuario_cierre - ID del usuario que realiza la operación.
- * @param {number|string} req.body.id_escuela - ID de la institución a la que pertenece la caja.
+ * @param {number|string} req.usuario.id - ID del usuario que realiza la operación.
+ * @param {number|string} req.usuario.id_escuela - ID de la institución a la que pertenece la caja.
  * @param {number|string} req.body.monto_final_real - Suma total de dinero físico/digital contado por el usuario.
  * @param {number|string} req.body.monto_sistema - Monto total calculado por el software basándose en movimientos.
  * @param {number|string} req.body.diferencia_total - Resultado de la resta (monto_final_real - monto_sistema).
@@ -95,8 +96,8 @@ const cierreCaja = async( req : Request, res : Response) =>{
 
     const data = { 
         id_caja : req.body.id_caja,
-        id_usuario_cierre : Number(req.body.id_usuario_cierre),
-        id_escuela : Number(req.body.id_escuela), 
+        id_usuario_cierre : Number(req.usuario?.id),
+        id_escuela : Number(req.usuario?.id_escuela), 
         monto_final_real : Number(req.body.monto_final_real) ,
         monto_sistema : Number(req.body.monto_sistema),
         diferencia_total : Number(req.body.diferencia_total),
@@ -137,18 +138,18 @@ const cierreCaja = async( req : Request, res : Response) =>{
  * activa antes de permitir registros de movimientos.
  * * @async
  * @function idCajaAbierta
- * @param {Request} req - Objeto de petición de Express.
+ * @param {Request} req.usuario.id_escuela - Objeto de petición de Express.
  * @param {Object} req.params - Parámetros de la ruta.
- * @param {number|string} req.params.id_escuela - ID de la escuela para filtrar la búsqueda (se castea a Number).
+ * @param {number|string} req.usuario.id_escuela - ID de la escuela para filtrar la búsqueda (se castea a Number).
  * @param {Response} res - Objeto de respuesta de Express.
  * * @returns {Promise<Response>} Respuesta con el ID de la caja abierta o error controlado según MAPA_CAJA_ABIERTA.
  */
 const idCajaAbierta =async ( req : Request, res : Response) =>{
    
-    const data = { id_escuela : Number(req.params.id_escuela)};
+    const id_escuela    = req.usuario?.id_escuela;
+   
+    const idCajaAbiertaResult = await cajaServicio.idCajaAbiertaServicio({id_escuela});
 
-    const idCajaAbiertaResult = await cajaServicio.idCajaAbiertaServicio(data);
- 
     const config = MAPA_CAJA_ABIERTA[ idCajaAbiertaResult.code] || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK) {
@@ -179,14 +180,14 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
  * @param {Request} req - Objeto de petición de Express.
  * @param {Object} req.params - Parámetros de ruta.
  * @param {number|string} req.params.id_caja - ID de la caja a analizar (se castea a Number).
- * @param {number|string} req.params.id_escuela - ID de la escuela para validación de contexto (se castea a Number).
+ * @param {number|string} req.usuario.id_escuela - ID de la escuela para validación de contexto (se castea a Number).
  * @param {Response} res - Objeto de respuesta de Express.
  * * @returns {Promise<Response>} Respuesta HTTP con las métricas o error según MAPA_METRICAS_PANEL.
  * * @example
  * // GET /metricas/5/1 (Caja 5, Escuela 1)
  */
 const listaMetricasCaja = async ( req : Request, res : Response) => {
-     const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.params.id_escuela)};
+     const data = { id_caja : Number(req.params.id_caja), id_escuela : Number(req.usuario?.id_escuela)};
 
      const metricasResult = await  cajaServicio.listaMetricasCaja( data );
    
@@ -266,7 +267,7 @@ const movimientosCaja = async ( req : Request, res : Response) => {
  * @function metricasCajaPrincipal
  * @param {Request} req - Objeto de solicitud de Express.
  * @param {number} req.params.id_caja - El ID de la caja a consultar.
- * @param {number} req.params.id_escuela - El ID de la escuela propietaria de la caja.
+ * @param {number} req.usuario.id_escuela - El ID de la escuela propietaria de la caja.
  * @param {Response} res - Objeto de respuesta de Express.
  * * @returns {Promise<void>} Envía una respuesta HTTP con el resumen de métricas 
  * o un error en caso de fallo.
@@ -277,7 +278,7 @@ const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
     
     const data = {
         id_caja : Number(req.params.id_caja),
-        id_escuela : Number(req.params.id_escuela)
+        id_escuela : Number(req.usuario?.id_escuela)
      };
      const metricasResult = await cajaServicio.metricasPrincipal( data );
 
@@ -311,7 +312,7 @@ const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
  * @function listarCategoriaCajaTipos
  * @param {Request} req - Objeto de petición de Express.
  * @param {Object} req.params - Parámetros de la ruta.
- * @param {number|string} req.params.id_escuela - ID de la escuela (se castea a Number).
+ * @param {number|string} req.usuario.id_escuela - ID de la escuela (se castea a Number).
  * @param {string} req.params.tipo - Tipo de categoría a filtrar (ej: 'ingreso', 'egreso').
  * @param {string} req.params.estado - Estado de la categoría (ej: 'activo', 'inactivo').
  * @param {Response} res - Objeto de respuesta de Express.
@@ -322,7 +323,7 @@ const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
 const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
    
     const data = {
-        id_escuela : Number(req.params.id_escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         tipo : req.params.tipo as string,
         estado : req.params.estado as string
     };
@@ -370,7 +371,7 @@ const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
 const listaTipoCuentas = async ( req : Request , res : Response) => {
 
   const data = {
-    id_escuela : Number(req.params.id_escuela),
+    id_escuela : Number(req.usuario?.id_escuela),
     estado : req.params.estado as string
   };
 
@@ -425,11 +426,11 @@ const listaTipoCuentas = async ( req : Request , res : Response) => {
  * // - ERROR_SERVIDOR (500): Fallo inesperado en la transacción o base de datos.
  */
 const abrirCajaTransaccion =async (req : Request , res : Response) => {
-
+    console.log(req.usuario)
     const dataCaja = {
-        id_escuela : Number( req.body.id_escuela),
+        id_escuela : Number( req.usuario?.id_escuela),
         estado     : req.body.estado,
-        id_usuario_apertura :Number(req.body.id_usuario_apertura),
+        id_usuario_apertura :Number(req.usuario?.id),
         detalle : req.body.detalle
     };
 
