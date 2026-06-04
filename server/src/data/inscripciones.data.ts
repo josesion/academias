@@ -198,8 +198,7 @@ export const inscripcionConPagoAlta = async (
                 
                 return { id_inscripcion : idGenerado , dni_alumno : dataInsc.dni_alumno}
             });
-            console.log(resultado)
-
+         
 
             // 4. Manejo de respuesta final
             if (resultado.code === "TRANSACCION_OK") {

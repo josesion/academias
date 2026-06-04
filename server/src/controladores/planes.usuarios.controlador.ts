@@ -226,7 +226,7 @@ const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 
 	// Ejecutar la consulta y obtener el resultado (datos y paginación)
 	const resultado = await planesUsuarios.listadoPlanesUsuarios( listaInputs , Number(pagina) );
-    
+	console.log("resultado controlador planes usuarios", resultado)
     // Retornar la respuesta con el listado y la información de paginación
 	if ( resultado.error === false  ) {
 		enviarResponse(

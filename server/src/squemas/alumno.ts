@@ -43,9 +43,9 @@ export const EliminarAlumnoEscuelaSchema = z.object({
                 .nonempty({message : "Dni no debe estar vacio"})
                 .min(8,{message : "EL dni esta incompleto"}),
 
-        id_escuela: z.coerce.number({ message: "id_escuela no es un formato válido." }) 
-                        .min(1, { message: "El id_escuela debe ser mayor o igual a 1." }) 
-                        .positive({ message: 'El id_escuela debe ser un número positivo.' }),
+        id_escuela:  z.number({message:"id escuela debe ser de tipo numerico"})
+                .int({ message: 'El id escuela debe ser un número entero.' })
+                .min(0, { message: 'El id escuela debe ser un número  mayor a 0.' }),      
                         
         estado: z.string()
                 .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
@@ -60,9 +60,9 @@ dni :       z.string({message : "El dni es requerido"}),
 apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
                 .max(60 ,{message: "El Apellido es muy largo"}) ,
 
-escuela : z.number({message:"Limit debe ser de tipo numerico"})
-                .int({ message: 'El offset debe ser un número entero.' })
-                .min(0, { message: 'El offset debe ser un número  mayor a 0.' }),                
+escuela : z.number({message:"id escuela debe ser de tipo numerico"})
+                .int({ message: 'id escuela debe ser un número entero.' })
+                .min(0, { message: 'id escuela debe ser un número  mayor a 0.' }),                
 
         estado: z.string()
                 .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
@@ -74,8 +74,11 @@ escuela : z.number({message:"Limit debe ser de tipo numerico"})
 
         offset :z.number({message:"Limit debe ser de tipo numerico"})
                 .int({ message: 'El offset debe ser un número entero.' })
-                .min(0, { message: 'El offset debe ser un número  mayor a 0.' })
-
+                .min(0, { message: 'El offset debe ser un número  mayor a 0.' }),
+                
+        pagina : z.number({message:"Pagina debe ser de tipo numerico"})
+                .int({ message: 'La pagina debe ser un número entero.' })
+                .min(1, { message: 'La pagina debe ser un número  mayor a 0.' })                
 
 });
 

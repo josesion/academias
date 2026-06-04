@@ -32,6 +32,7 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
  */
 
 const crearPlane = async (req: Request, res: Response) => {
+   
     const planData : CrearInputsPlanes = crearPlanesSchema.parse(req.body);    
     const resultado = await planesData.crearPlan(planData);
     return enviarResponse(res, 201, resultado.message, resultado.data, undefined ,resultado.code);
@@ -93,6 +94,7 @@ const listarPlanes = async( req : Request, res : Response) =>{
         estado, orden, descripcion ,limit :Number(limit) , offset: Number(offset)
     }); 
     const listado =  await planesData.listarPlanes( dataResult , Number(pagina));
+    console.log("listado controlador", listado)
     if ( listado.error === false ) {
         return enviarResponse(res , 200 , listado.message , listado.data, listado.paginacion ,listado.code);
     }else{
