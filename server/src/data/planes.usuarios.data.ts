@@ -34,16 +34,17 @@ import { CrearPlanesUsuarios, CrearPlanesEscuelasUsuarios,
 
 
 
-const existenciaPlan = async( descripcion : string ) =>{
+const existenciaPlan = async( descripcion : string ) 
+: Promise<TipadoData<{id : number}>>=>{
     const sql   = ` select 
-                            planes_pago.id_plan  
+                            planes_pago.id_plan  as id
                     from 
                             planes_pago 
                     where 
 	                        planes_pago.descripcion_plan = ? ;`;
     const valor = [descripcion];
    
-    return await buscarExistenteEntidad<ResultBusquedaPlanes>({
+    return await buscarExistenteEntidad<{ id : number }>({
         slqEntidad : sql ,
         valores    : valor,
         entidad    : "Plan",

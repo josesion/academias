@@ -62,6 +62,7 @@ const crearPlane = async (req: Request, res: Response) => {
  */
 
 const modPlanes = async( req : Request , res : Response) =>{
+ 
     const { id } = req.params;
     const idPlanes = Number(id)
     const { descripcion , limites_cedes , precio_mensual , estado} = req.body ;

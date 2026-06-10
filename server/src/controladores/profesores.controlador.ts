@@ -3,30 +3,42 @@ import { tryCatch } from "../utils/tryCatch";
 import { fechaHoy } from "../hooks/fecha";
 import { enviarResponse } from "../utils/response";
 import { enviarResponseError } from "../utils/responseError";
-import { method as dataProfesores } from "../data/profesores.data";
+
+import { method as servicioProfesor } from "../Servicio/profesores.servicio";
 
 // Typados
 import { CodigoEstadoHTTP } from "../tipados/generico";
-import { ProfesorServicioCode } from "../tipados/profesores.data";
+import {
+     MAPA_ALTA_PROFESORES ,ERROR_INTERNO_SERVIDOR, MAPA_MOD_PROFESORES,
+     MAPA_ESTADO_PROFESORES, MAPA_LISTADO_PROFESORES, MAPA_LISTADO_SIN_PAG_PROFESORES
+ } from "../respuestas/profesores";
 
-import { ProfesoresGlobales } from "../tipados/profesores.data";
-import { CrearProfesorSchema , CrearProfesorEscuelaSchema, ModProfesoresSchema, EstadoProfesorSchema, ListaProfeUsuariosSchema,
-         ProfesorInputs , ProfesorEscuelaInputs , ModProfesorInputs , EstadoProfesorInputs,
-         ListadoProfeInputs , ListaProfeUsuarioSinPagSchema, ListadoProfeSinPagInputs
-} from "../squemas/profesores"; 
 
 
 /**
+ * Controlador para dar de alta un profesor.
+ *
+ * Recibe los datos del profesor desde el body de la petición,
+ * construye el objeto de entrada agregando información del sistema
+ * (fecha de creación, escuela y estado), ejecuta el alta mediante
+ * el servicio correspondiente y devuelve una respuesta estandarizada.
+ *
+ * @async
  * @function altaProfesores
- * @description Da de alta un nuevo profesor. Si el profesor ya existe globalmente, lo asocia con la escuela correspondiente.
- * @route POST /profesores
- * @param {Request} req - Objeto Request de Express con los datos del profesor en `body`
- * @param {Response} res - Objeto Response de Express
- * @returns {Promise<Response>} Respuesta HTTP con el resultado del alta o un error si ya existe.
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta HTTP con el resultado de la operación.
+ *
+ * @property {string} req.body.dni - DNI del profesor.
+ * @property {string} req.body.nombre - Nombre del profesor.
+ * @property {string} req.body.apellido - Apellido del profesor.
+ * @property {string} req.body.celular - Número de celular del profesor.
+ *
+ * @throws {Error} Puede propagar errores provenientes del servicio
+ * de alta de profesores si no son manejados previamente.
  */
-
 const altaProfesores = async( req : Request , res : Response ) => {
-    const { dni , nombre , apellido , celular , id_escuela} = req.body ;
+    const { dni , nombre , apellido , celular} = req.body ;
 
     const dataEntrada = {
             dni       : dni ,
@@ -36,230 +48,244 @@ const altaProfesores = async( req : Request , res : Response ) => {
 
             fecha_creacion : fechaHoy(), 
             fecha_baja : null,
-            id_escuela : id_escuela,
+            id_escuela : ( req.usuario?.id_escuela),
             
             estado : "activos"
-    }
+    };
 
-    const profesorGlobal : ProfesorInputs = CrearProfesorSchema.parse( dataEntrada );
+    const altaResult = await servicioProfesor.altaProfesor( dataEntrada);
 
-    let dniProfesor : string = "0" ; 
-    const existeProfeGlobal = await dataProfesores.verProfesor(dataEntrada.dni);
-
-    if ( existeProfeGlobal.code === "PROFESOR_NO_EXISTE" ) {
-        // no existe se crea el profesor global 
-        const crearProfesorGlobal = await dataProfesores.altaProfesores( profesorGlobal );
-
-        if ( crearProfesorGlobal.code === "PROFESORES_ALTA" ){
-            const profesorCreado = crearProfesorGlobal.data as ProfesoresGlobales ;
-            dniProfesor  = profesorCreado.dni
-        
-        }
-    }else  if (  existeProfeGlobal.code === "PROFESOR_EXISTE"  ) {
-                const profesorExistente  = existeProfeGlobal.data  as ProfesoresGlobales;   
-                dniProfesor = profesorExistente.dni ;
-            }
-
-    const profesoresEscuela : ProfesorEscuelaInputs = CrearProfesorEscuelaSchema.parse( {  ...dataEntrada, dni : dniProfesor,})
-    const existeProfesorEscuela = await dataProfesores.verProfesorEscuela({ dni : profesoresEscuela.dni , id_escuela : profesoresEscuela.id_escuela});
-
-    if ( existeProfesorEscuela.code === "PROFESORESCUELA_NO_EXISTE") {
-    
-        const crearProfesorEscuela = await dataProfesores.altaProfesoresEscuela( profesoresEscuela );
-
-        if ( crearProfesorEscuela.code === "PROFESORESCUELA_ALTA"){
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.CREADO,
-                crearProfesorEscuela.message,
-                crearProfesorEscuela.data,
-                undefined,
-                crearProfesorEscuela.code
-            );
-        }
-
-    }else if ( existeProfesorEscuela.code === "PROFESORESCUELA_EXISTE"  ) {
-    
+    const config = MAPA_ALTA_PROFESORES[ altaResult.code ] || ERROR_INTERNO_SERVIDOR;
+ 
+    if ( config.status === CodigoEstadoHTTP.OK ) {
+        return enviarResponse(
+            res, 
+            config.status,
+            altaResult.message || config.msg,
+            altaResult.data,
+            undefined,
+            altaResult.code
+        ); 
+    }else{
         return enviarResponseError(
-                    res, 
-                    CodigoEstadoHTTP.CONFLICTO , 
-                    "Profesor ya esta en Academia" ,
-                    ProfesorServicioCode.PROFESOR_ESCUELA_ALREADY_EXISTS
-               );
-    }  
-  
+            res, 
+            config.status,
+            altaResult.message ||  config.msg,
+            altaResult.code
+        );
+    };
+
 };
 
 /**
- * @function modProfesores
- * @description Modifica los datos personales de un profesor (nombre, apellido, celular) en base a su DNI.
- * @route PUT /profesores/:dni/:id_escuela
- * @param {Request} req - Objeto Request de Express con `params` y `body` del profesor
- * @param {Response} res - Objeto Response de Express
- * @returns {Promise<Response>} Respuesta HTTP con el resultado de la modificación
+ * Modifica los datos de un profesor existente.
+ *
+ * Obtiene el DNI desde los parámetros de la URL y los datos a modificar
+ * desde el body de la petición. Luego ejecuta la actualización mediante
+ * el servicio de profesores y devuelve una respuesta estandarizada.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con el DNI y los datos a modificar.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la operación de modificación.
+ *
+ * @property {string} req.params.dni - DNI del profesor a modificar.
+ * @property {string} req.body.nombre - Nuevo nombre del profesor.
+ * @property {string} req.body.apellido - Nuevo apellido del profesor.
+ * @property {string} req.body.celular - Nuevo número de celular del profesor.
  */
 
 const modProfesores = async ( req : Request , res : Response )  => {
 
-    const {dni , id_escuela} = req.params;
+    const {dni } = req.params;
     const { nombre , apellido , celular} = req.body ;
 
     const dataMod = {
         dni         : dni, 
-        id_escuela  : id_escuela,
+        id_escuela  : Number(req.usuario?.id_escuela),
         nombre      : nombre,    
         apellido    : apellido ,
         celular     : celular
     };
     
-    const datosProfesor : ModProfesorInputs = ModProfesoresSchema.parse( dataMod );
-    const modProfesor  = await dataProfesores.modProfesores( datosProfesor );
 
-    if ( modProfesor.code === "PROFESORESCUELA_MODIFICAR"){
+    const modResult = await servicioProfesor.modProfesor( dataMod );
+
+    const config = MAPA_MOD_PROFESORES[ modResult.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK ){
         return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            modProfesor.message,
-            modProfesor.data,
+            res, 
+            config.status ,
+            modResult.message || config.msg,
+            modResult.data,
             undefined,
-            modProfesor.code
+            modResult.code
         );
-    }
+    }else {
+        return enviarResponseError(
+            res,
+            config.status ,
+            modResult.message || config.msg,
+
+            modResult.code   
+        );
+    };
+
 };
 
 /**
- * @function estadoProfesor
- * @description Cambia el estado de un profesor (activo/inactivo). Se usa para bajas o reactivaciones.
- * @route PATCH /profesores/estado/:dni/:id_escuela/:estado
- * @param {Request} req - Objeto Request con los parámetros del profesor
- * @param {Response} res - Objeto Response de Express
- * @returns {Promise<Response>} Respuesta con mensaje de baja o reactivación
+ * Actualiza el estado de un profesor (activo/inactivo).
+ *
+ * Obtiene el DNI y el nuevo estado desde los parámetros de la petición,
+ * ejecuta la actualización mediante el servicio de profesores y devuelve
+ * una respuesta estandarizada.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con el DNI y el estado.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la operación.
+ *
+ * @property {string} req.params.dni - DNI del profesor.
+ * @property {string} req.params.estado - Nuevo estado del profesor.
  */
-
 const estadoProfesor = async ( req : Request , res : Response ) => {
  
-    const {dni , id_escuela , estado} = req.params ;
-    const data = {dni : dni , id_escuela : Number(id_escuela) , estado : estado };
+    const {dni , estado} = req.params ;
+    const data = {dni : dni , id_escuela : Number(req.usuario?.id_escuela) , estado : estado };
 
+    const estadoResult = await  servicioProfesor.estadoProfesor( data );
 
-    const estadoProfesorData : EstadoProfesorInputs = EstadoProfesorSchema.parse(data);
-   
-    const estadoProfe = await dataProfesores.estadoProfesor(estadoProfesorData);
+    const config  = MAPA_ESTADO_PROFESORES[ estadoResult.code ]  || ERROR_INTERNO_SERVIDOR;
 
-    if ( estadoProfe.error === false) {
-        switch (estadoProfe.code) {
-            case "PROFESORESCUELA_ELIMINAR":
-            return enviarResponse(res, CodigoEstadoHTTP.OK, "Profesor dado de baja", estadoProfe.data, undefined, estadoProfe.code);
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res, 
+            config.status,
+            estadoResult.message  ||  config.msg,
+            estadoResult.data,
+            undefined,
+            estadoResult.code
+        );   
+    }else{
+        return enviarResponseError(
+            res, 
+            config.status,
+            estadoResult.message  ||  config.msg,
+            estadoResult.code
+        );
+    }; 
 
-            case "PROFESORESCUELA_ALTA":
-            return enviarResponse(res, CodigoEstadoHTTP.OK, "Profesor reactivado", estadoProfe.data, undefined, estadoProfe.code);
-        }  
-    }
 };
 
 /**
- * @function listadoProfesores
- * @description Devuelve un listado paginado de profesores según filtros (dni, apellido, estado, escuela).
- * @route GET /profesores?dni=&apellido=&estado=&escuela=&limit=&pagina=
- * @param {Request} req - Objeto Request con filtros en `query`
- * @param {Response} res - Objeto Response
- * @returns {Promise<Response>} Respuesta con los profesores listados o error si no hay resultados
+ * Obtiene un listado paginado de profesores.
+ *
+ * Permite filtrar por DNI, apellido y estado, además de
+ * aplicar paginación mediante los parámetros de página y límite.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con filtros y parámetros de paginación.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado del listado de profesores.
+ *
+ * @property {string} req.query.dni - DNI utilizado como filtro.
+ * @property {string} req.query.apellido - Apellido utilizado como filtro.
+ * @property {'activos' | 'inactivos'} req.query.estado - Estado utilizado como filtro.
+ * @property {number} req.query.limit - Cantidad de registros por página.
+ * @property {number} req.query.pagina - Número de página solicitada.
  */
 
 
 const listadoProfesores = async( req : Request , res : Response ) => {
+  
 
-    const { dni , apellido , estado , escuela , limit , pagina} = req.query;  
+    const { dni , apellido , estado , limit , pagina} = req.query;  
 
     const offset = ( Number(pagina) -1 ) * Number(limit) ;
 
-    const listadoParams : ListadoProfeInputs = ListaProfeUsuariosSchema.parse({
+    const dataListado = {
         dni : String(dni),
         apellido : String(apellido),
         estado : String(estado) as 'activos' | 'inactivos',
-        id_escuela : Number(escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         limit  : Number(limit),
-        offset : Number(offset)
-    });
+        offset : Number(offset),       
+        pagina : Number(pagina)
+    };
+   
 
+    const listadoResult = await servicioProfesor.listadoProfesor( dataListado );
 
- 
-    const listado = await dataProfesores.listadoProfesores( listadoParams , Number(pagina) );
+    const config = MAPA_LISTADO_PROFESORES[ listadoResult.code ]   ||  ERROR_INTERNO_SERVIDOR;
+  
 
-    if ( listado.error === false ) {
+    if (config.status === CodigoEstadoHTTP.OK) {
         return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            listado.message,
-            listado.data,
-            listado.paginacion,
-            listado.code
+            res, 
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.data,
+            listadoResult.paginacion,
+            listadoResult.code
         );
-    } else {
+    }else{
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.NO_ENCONTRADO,
-            listado.message  || 'Error al obtener el listado de planes.' ,
-            listado.code
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.code          
         );
-    }
+    };
+    
 };
 
 /**
- * ListadoSinPaginacion
- * --------------------
- * Controlador HTTP que obtiene el listado de profesores de una escuela
- * sin paginación, aplicando filtros por DNI y estado.
+ * Obtiene un listado de profesores sin aplicar paginación.
  *
- * Flujo:
- * 1. Obtiene los parámetros de consulta desde `req.query`.
- * 2. Valida y normaliza los datos mediante `ListaProfeUsuarioSinPagSchema`.
- * 3. Ejecuta la consulta a la capa de datos.
- * 4. Retorna el listado o un mensaje de error según el resultado.
+ * Permite filtrar los resultados por DNI y estado.
  *
- * @param {Request} req
- *        Objeto Request de Express.
- *        Query params esperados:
- *        - dni: string (opcional)
- *        - estado: 'activos' | 'inactivos' | 'todos'
- *        - id_escuela: number
+ * @async
+ * @param {Request} req - Petición HTTP con los filtros de búsqueda.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado del listado de profesores.
  *
- * @param {Response} res
- *        Objeto Response de Express.
- *
- * @returns {Promise<void>}
- *        Respuesta HTTP con:
- *        - 200 OK: listado de profesores obtenido.
- *        - 404 NOT FOUND: no se encontraron profesores con los filtros indicados.
- *        - 400 BAD REQUEST: error de validación de datos.
+ * @property {string} req.query.dni - DNI utilizado como filtro.
+ * @property {string} req.query.estado - Estado utilizado como filtro.
  */
-
 const ListadoSinPaginacion = async( req : Request , res : Response ) => {
-    const { dni , estado , id_escuela } = req.query;
-    
-    const dataListado : ListadoProfeSinPagInputs = ListaProfeUsuarioSinPagSchema.parse({
+    const { dni , estado  } = req.query;
+
+
+    const dataListado = {
         dni : String(dni),
         estado : estado ,
-        id_escuela : Number(id_escuela)
-    });
-    const listado = await dataProfesores.listaProfesoresSinPaginacion( dataListado );
-  
-    if ( listado.code === "NO_ACTIVE_PROFESORESCUELA" ){
+        id_escuela : Number(req.usuario?.id_escuela)        
+    };
+
+    const listadoResult = await servicioProfesor.listadoProfesorSinPag( dataListado );
+
+    const config = MAPA_LISTADO_SIN_PAG_PROFESORES[ listadoResult.code ]  ||  ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK ) {
+        return enviarResponse(
+            res,
+            config.status,
+            listadoResult.message  ||  config.msg,
+            listadoResult.data,
+            undefined,
+            listadoResult.code
+        );
+    }else {
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.NO_ENCONTRADO,
-            "No se encontraron profesores con los filtros indicados.",
-            listado.code
+            config.status,
+            listadoResult.message  ||  config.msg,
+            listadoResult.code          
         );
-    }
-    return enviarResponse(
-        res,
-        CodigoEstadoHTTP.OK,
-        "Listado de profesores obtenido.",
-        listado.data,        
-        undefined,
-        listado.code
-    );
+    };
+    
+
 };
 
 export const method = {

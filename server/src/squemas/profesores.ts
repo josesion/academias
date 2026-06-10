@@ -42,6 +42,32 @@ celular: z
     }),
 
 
+  id_escuela: z
+    .number({
+       message : "El ID de la escuela debe ser un número",
+    })
+    .int({ message: "El ID de la escuela debe ser un número entero" })
+    .nonnegative({ message: "El ID de la escuela no puede ser negativo" }),
+    
+  fecha_creacion: z
+    .string()
+    .min(1, { message: "La fecha de creación es obligatoria" })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message:
+        "La fecha de creación debe tener formato YYYY-MM-DD (por ejemplo: 2025-11-05)",
+    })
+    .transform((val) => val.trim()),
+
+  fecha_baja: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message:
+        "La fecha de baja debe tener formato YYYY-MM-DD (por ejemplo: 2025-11-05)",
+    })
+    .or(z.literal("").transform(() => null)) // permite cadena vacía → null
+    .nullable()
+    .optional(),    
+
 });
 
 
@@ -168,7 +194,12 @@ export const ListaProfeUsuariosSchema = z.object({
                     .positive({ message : "Ident. Escuela debe ser positivo"}),
 
         limit: z.coerce.number().int().min(1).default(10), 
-        offset: z.coerce.number().int().min(0).default(0),     
+        offset: z.coerce.number().int().min(0).default(0),  
+        
+        pagina :     z.number({message : "pagina debe ser numerico"})
+                    .int({message : "pagina debe ser entero"})
+                    .positive({ message : "pagina debe ser positivo"}),
+
 });
 
 export const ListaProfeUsuarioSinPagSchema = z.object({

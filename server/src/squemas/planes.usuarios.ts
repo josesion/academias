@@ -37,6 +37,13 @@ export const CrearPlanesPagoSchema = z.object({
     // Campo con valor por defecto
     estado: z.string()
             .default('activos'), 
+
+        // Campo id_escuela (Recibido del body, debe usar coerce)
+    id_escuela : z.coerce.number({ 
+        message : "Ident. Escuela debe ser numérico"
+    })
+    .int({message : "Ident. Escuela debe ser entero"})
+    .positive({ message : "Ident. Escuela debe ser positivo"}),        
 });
 
 export const CrearPlanesEscuelasSchema = z.object({
@@ -156,8 +163,13 @@ export const ListaPlanesUsuariosSchema = z.object({
                     .int({message : "Ident. Escuela debe ser entero"})
                     .positive({ message : "Ident. Escuela debe ser positivo"}),
 
+        pagina : z.coerce.number().int().min(1).default(1),
+
         limite: z.coerce.number().int().min(1).default(10), 
-        offset: z.coerce.number().int().min(0).default(0),     
+        offset: z.coerce.number().int().min(0).default(0),   
+        
+        
+
 });
 
 export const ListaPlanesUsuarioSinPagSchema = z.object({
