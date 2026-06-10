@@ -50,7 +50,11 @@ const EstadoPlanEnum = z.enum(['activos', 'inactivos', 'todos']).default('activo
 export const ListaNivelesUsuariosSchema = z.object({
         nivel   : z.string().optional().default(''), 
 
-        estado        : EstadoPlanEnum,  
+        estado        : EstadoPlanEnum,
+        
+        pagina  :    z.number({message : "pagina debe ser numerico"})
+                    .int({message : "pagina debe ser entero"})
+                    .positive({ message : "pagina debe ser positivo"}),        
 
         id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
                     .int({message : "Ident. Escuela debe ser entero"})

@@ -1,8 +1,9 @@
 import { Request , Response } from "express";
 // ──────────────────────────────────────────────────────────────
-// Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
+// Capa de acceso a servicios para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
-import { method as dataNiveles } from "../data/niveles.data"; 
+
+import { method as servicioNiveles } from "../Servicio/niveles.servicio";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Hooks
@@ -12,292 +13,274 @@ import { tryCatch } from "../utils/tryCatch";
 import { enviarResponseError } from "../utils/responseError";
 import { enviarResponse } from "../utils/response";
 import { fechaHoy } from "../hooks/fecha"; 
+
+import { MAPA_ALTA_NIVEL, ERROR_INTERNO_SERVIDOR , MAPA_MOD_NIVEL,
+         MAPA_ESTADO_NIVEL, MAPA_LISTADO_NIVEL,
+ } from "../respuestas/niveles";
+
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
-import { CrearNivelSchema , ModificarNivelSchema, EstadoNivelSchema, ListaNivelesUsuariosSchema,
-         CrearNivelInput ,  ModificarNivelInput, EstadoNivelInput, ListadoNivelInput,
-         ListadoNivelSinPagInput, ListaNivelesUsuarioSinPagSchema
-        } from "../squemas/nivel";
+
 import {  CodigoEstadoHTTP } from "../tipados/generico";
 
 /**
+ * Da de alta un nuevo nivel para la escuela del usuario autenticado.
+ *
+ * Obtiene los datos desde el body de la petición, construye
+ * la información necesaria para el alta y devuelve una respuesta
+ * estandarizada con el resultado de la operación.
+ *
  * @async
- * @function altaNivel
- * @description Manejador de ruta para registrar un nuevo nivel. Realiza validación de datos, 
- * verifica si el nivel ya existe en la escuela especificada y, si no existe, 
- * procede a crearlo.
- * * @param {Request} req - Objeto de solicitud de Express. Se espera que el body contenga 'nivel' y 'id_escuela'.
- * @param {Response} res - Objeto de respuesta de Express. Utilizado para enviar la respuesta HTTP.
- * * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada ('nivel', 'id_escuela', 'fecha_creacion') falla 
- * contra el esquema 'CrearNivelSchema'.
- * * @example
- * // En el body de la solicitud (req.body):
- * // { "nivel": "Primario", "id_escuela": 101 }
- * * @response 201 Creado: 
- * Si el nivel se crea exitosamente. Mensaje: "Nivel [nombre_nivel] creado exitosamente."
- * @response 403 Prohibido: 
- * Si el nivel ya existe para el id_escuela especificado. Mensaje: "El nivel : [nombre_nivel] ya existe para la escuela."
+ * @param {Request} req - Petición HTTP con los datos del nivel.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la operación.
+ *
+ * @property {string} req.body.nivel - Nombre del nivel a crear.
  */
-
 const altaNivel = async ( req : Request , res : Response ) => {
-    const  { nivel  , id_escuela} = ( req.body );
+    const  { nivel } = ( req.body );
 
-    const dataNivel : CrearNivelInput = CrearNivelSchema.parse({
+    const dataNivel = {
         nivel,
         fecha_creacion : fechaHoy(),
-        id_escuela
-    });
+        id_escuela : Number(req.usuario?.id_escuela)
+    };
 
-const nivelExiste = await dataNiveles.nivelExiste( dataNivel.nivel , dataNivel.id_escuela );
+    const altaResult = await servicioNiveles.altaNivel(dataNivel);
 
-    if( nivelExiste.code === "NIVEL_NO_EXISTE" ){
-        const nuevoNivel = await dataNiveles.altaNivelGlobal( dataNivel );
-        if( nuevoNivel.code === "NIVEL_CREAR" ){
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.CREADO,
-                `Nivel ${nivel} creado exitosamente.`,
-                nuevoNivel.data,
-                undefined,
-                nuevoNivel.code
-            );
-        }
+    const config = MAPA_ALTA_NIVEL[ altaResult.code ] || ERROR_INTERNO_SERVIDOR; 
 
-    }else{
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.PROHIBIDO,
-            `El nivel : ${nivel} ya existe para la escuela `,
-        );
-    }
-};
-
-/**
- * @async
- * @function modNivel
- * @description Manejador de ruta para modificar un nivel existente. Obtiene el ID del nivel y el ID de la escuela 
- * de los parámetros de la URL, y la nueva descripción del nivel del cuerpo de la solicitud.
- * Realiza la validación y verifica que el nuevo nombre del nivel no exista ya en la misma escuela.
- * * @param {Request} req - Objeto de solicitud de Express.
- * @param {Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada (id, nivel, id_escuela) falla contra el esquema 'ModificarNivelSchema'.
- * * @path /niveles/:id/:id_escuela
- * @method PUT
- * * @body {string} nivel - La nueva descripción del nivel.
- * @params {string} id - El ID del nivel a modificar.
- * @params {string} id_escuela - El ID de la escuela a la que pertenece el nivel.
- * * @response 200 OK: 
- * Si el nivel se modifica exitosamente. Mensaje: "Nivel : [nuevo_nivel] modificado exitosamente."
- * * @response 403 Prohibido: 
- * Si la nueva descripción del nivel (nivel) ya existe en la misma escuela. Mensaje: "No se puede modificar [nuevo_nivel], Nivel Ya existe."
- */
-
-const modNivel = async ( req : Request , res : Response ) => {
-   
-    const { id , id_escuela } = req.params;
-    const { nivel } = req.body;
-
-    const dataNivel : ModificarNivelInput = ModificarNivelSchema.parse({
-        id : Number(id),
-        nivel,
-        id_escuela : Number(id_escuela)
-    });
-
-    const existe = await dataNiveles.nivelExiste( nivel , Number(id_escuela));
-
-
-   if ( existe.error === false  ) {
-        const nivelModificado = await dataNiveles.modificarNivel( dataNivel );
-            if( nivelModificado.code === "NIVEL_MODIFICAR" ){
-                return enviarResponse(
-                    res,
-                    CodigoEstadoHTTP.OK,
-                    `Nivel : ${nivel} modificado exitosamente.`,
-                    nivelModificado.data,
-                    undefined,
-                    nivelModificado.code
-                );
-            }  
-   }else{
-     return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.PROHIBIDO,
-            `No se puede modificar ${nivel}, Nivel Ya existe`
-     );
-   }
-
-};
-
-/**
- * @async
- * @function estadoNivel
- * @description Manejador de ruta para cambiar el estado (activo/inactivo) de un nivel específico.
- * Los datos para identificar el nivel ('id', 'id_escuela', 'estado') se obtienen de los parámetros de la URL, 
- * y la descripción del nivel ('nivel') se puede obtener del cuerpo de la solicitud (aunque el cambio se basa en el ID).
- * Realiza la validación de los datos y ejecuta el cambio de estado en la base de datos.
- * * @param {Request} req - Objeto de solicitud de Express.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * @throws {ZodError} Si la validación de los datos de entrada falla contra el esquema 'EstadoNivelSchema'.
- * * @path /niveles/estado/:id/:id_escuela/:estado
- * @method PUT o PATCH (dependiendo de la convención)
- * * @params {string} id - El ID del nivel cuyo estado será modificado.
- * @params {string} id_escuela - El ID de la escuela a la que pertenece el nivel.
- * @params {string} estado - El nuevo estado a aplicar (ej: 'activo' o 'inactivo').
- * @body {string} nivel - (Opcional) La descripción del nivel, utilizada principalmente para mensajes de respuesta.
- * * @response 200 OK: 
- * Si el estado del nivel se modifica exitosamente. Mensaje: "Estado de :[nombre_nivel], cambio existosamente."
- * @response 403 Prohibido: 
- * Si no se pudo completar la operación de cambio de estado. Mensaje: "No se puede modificar el estado de :[nombre_nivel],".
- */
-
-const estadoNivel = async(req : Request , res : Response )=> {
-
-    const { id , id_escuela , estado  } = req.params;
-    const { nivel } = req.body ;
-   
-
-    const dataNivel : EstadoNivelInput = EstadoNivelSchema.parse({ 
-        id : Number(id), 
-        id_escuela : Number(id_escuela),
-        estado : estado,
-        nivel : nivel
-    });
-
-        const estadoNivel = await dataNiveles.cambioEstado(dataNivel);
-
-        if ( estadoNivel.code === "NIVEL_MODIFICAR"){
-            return enviarResponse(
-                res,
-                CodigoEstadoHTTP.OK,
-                `Estado de :${nivel}, cambio existosamente.`,
-                estadoNivel.data,
-                undefined,
-                estadoNivel.code
-            );
-        }
+    if (config.status === CodigoEstadoHTTP.OK){
   
-        return enviarResponseError(
-            res, 
-            CodigoEstadoHTTP.PROHIBIDO,
-            `No se puede modificar el estado de :${nivel},`
-        );
-};
-
-/**
- * @async
- * @function listadoNivel
- * @description Manejador de ruta para obtener un listado paginado de niveles, aplicando filtros (nivel, estado) y 
- * específicos de escuela (id_escuela). La función calcula el offset a partir de la página y el límite 
- * antes de validar y llamar al servicio de datos.
- * * @param {Request} req - Objeto de solicitud de Express. Los parámetros de paginación y filtro se esperan en 'req.query'.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada (incluyendo nivel, estado, id_escuela, limite y offset) 
- * falla contra el esquema 'ListaNivelesUsuariosSchema'.
- * * @path /niveles/listado
- * @method GET
- * * @query {string} nivel - (Opcional) Filtro por descripción del nivel.
- * @query {string} estado - (Opcional) Filtro por estado ('activos'/'inactivos').
- * @query {string} id_escuela - El ID de la escuela para filtrar los niveles.
- * @query {string} limite - El número máximo de registros a devolver por página.
- * @query {string} pagina - El número de página solicitada (se usa para calcular el offset).
- * * @response 200 OK: 
- * Si se encuentran niveles. El cuerpo de la respuesta incluye los datos y la información de paginación. Mensaje: "NIVEL listados activos".
- * @response 200 OK (con error interno): 
- * Si la consulta es exitosa pero no se encuentran datos (ej. lista vacía o error controlado del servicio). Mensaje: "sin listado" o el mensaje de error del servicio.
- */
-
-const listadoNivel = async( req : Request , res : Response ) =>{
-    const { nivel , estado, id_escuela , limite, pagina} = req.query;
-    const offset = ( Number(pagina) -1 ) * Number(limite) ;
-
-    const paramListado: ListadoNivelInput = ListaNivelesUsuariosSchema.parse({
-        nivel : nivel,
-        estado : estado,
-        id_escuela : Number( id_escuela ),
-        limite : Number( limite ),
-        offset  : Number( offset )        
-    }); 
-
-    const dataListado = await dataNiveles.listado( paramListado , Number(pagina) );
-
-    if ( dataListado.code === "NIVEL_LISTED") {
         return enviarResponse(
             res,
-            CodigoEstadoHTTP.OK,
-            `NIVEL listados activos`,
-            dataListado.data,
-            dataListado.paginacion,
-            dataListado.code
+            config.status,
+            altaResult.message || config.msg,
+            altaResult.data,
+            undefined,
+            altaResult.code
         );
     }else {
-        console.log("sin listado")
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.OK,
-            dataListado.message,
+            config.status,
+            altaResult.message || config.msg,
+            altaResult.code
         );
     }
 
+
 };
 
-/**
- * Controlador: listadoNivelSinPag
- * --------------------------------
- * Maneja la petición HTTP para obtener un listado de niveles
- * sin paginación, filtrado por nombre de nivel, estado e escuela.
- *
- * Flujo:
- * 1. Obtiene los parámetros desde `req.query`.
- * 2. Valida y transforma los datos usando `ListaNivelesUsuarioSinPagSchema`.
- * 3. Llama al servicio de datos `listadoNivelSinPag`.
- * 4. Devuelve:
- *    - Error si no existen niveles activos según los filtros.
- *    - Listado de niveles si la consulta fue exitosa.
- *
- * @param {Request} req - Objeto Request de Express.
- * @param {string} req.query.nivel - Texto parcial o completo del nivel a buscar.
- * @param {string} req.query.estado - Estado del nivel (activos | inactivos | todos).
- * @param {string | number} req.query.id_escuela - Identificador de la escuela.
- *
- * @param {Response} res - Objeto Response de Express.
- *
- * @returns {Promise<void>} Respuesta HTTP con:
- * - 200 OK: listado de niveles encontrados.
- * - 200 OK (mensaje informativo): cuando no hay niveles activos.
- *
- * @throws {ZodError} Si los parámetros no cumplen con el esquema de validación.
- */
 
-const listadoNivelSinPag = async( req : Request , res : Response ) =>{
-    const { nivel , estado, id_escuela } = req.query;
-    const paramListado: ListadoNivelSinPagInput = ListaNivelesUsuarioSinPagSchema.parse({
-        nivel : nivel,
-        estado : estado,
-        id_escuela : Number( id_escuela )     
-    });
-    const dataListado = await dataNiveles.listadoNivelSinPag( paramListado );
-  
-    if ( dataListado.code === "NO_ACTIVE_NIVEL") {
+/**
+ * Modifica un nivel existente de la escuela del usuario autenticado.
+ *
+ * Obtiene el identificador del nivel desde los parámetros de la petición
+ * y los nuevos datos desde el body. Luego ejecuta la modificación y
+ * devuelve una respuesta estandarizada.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con el id y los datos a modificar.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la operación.
+ *
+ * @property {number} req.params.id - Identificador del nivel.
+ * @property {string} req.body.nivel - Nuevo nombre del nivel.
+ */
+const modNivel = async ( req : Request , res : Response ) => {
+   
+    const { id } = req.params;
+    const { nivel } = req.body;
+
+    const modData = {
+        id : Number(id),
+        nivel,
+        id_escuela : Number(req.usuario?.id_escuela)     
+    };
+
+    const modResult = await servicioNiveles.modNivel( modData );
+    
+   const config = MAPA_MOD_NIVEL[ modResult.code ]   || ERROR_INTERNO_SERVIDOR; 
+
+    if (config.status === CodigoEstadoHTTP.OK){
+     
+        return enviarResponse(
+            res,
+            config.status,
+            modResult.message || config.msg,
+            modResult.data,
+            undefined,
+            modResult.code
+        );
+    }else {
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.OK,
-            "No hay niveles activos",
+            config.status,
+            modResult.message || config.msg,
+            modResult.code
         );
     };
-    return enviarResponse(
-        res,
-        CodigoEstadoHTTP.OK,    
-        `NIVEL listados activos`,
-        dataListado.data,
-        undefined,
-        dataListado.code
-    );
 
+};
+
+
+/**
+ * Actualiza el estado de un nivel de la escuela del usuario autenticado.
+ *
+ * Obtiene el identificador y el nuevo estado desde los parámetros
+ * de la petición, ejecuta la actualización y devuelve una respuesta
+ * estandarizada con el resultado de la operación.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con el id y el estado.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la operación.
+ *
+ * @property {number} req.params.id - Identificador del nivel.
+ * @property {string} req.params.estado - Nuevo estado del nivel.
+ * @property {string} req.body.nivel - Nombre del nivel.
+ */
+const estadoNivel = async(req : Request , res : Response )=> {
+
+    const { id  , estado  } = req.params;
+    const { nivel } = req.body ;
+
+    
+    const estadoData = {
+        id : Number(id), 
+        id_escuela : Number(req.usuario?.id_escuela),
+        estado : estado,
+        nivel : nivel        
+    };
+
+
+    const estadoResult = await servicioNiveles.estadoNivel( estadoData );
+
+    const config = MAPA_ESTADO_NIVEL[ estadoResult.code ] || ERROR_INTERNO_SERVIDOR; 
+
+    if (config.status === CodigoEstadoHTTP.OK){
+  
+        return enviarResponse(
+            res,
+            config.status,
+            estadoResult.message || config.msg,
+            estadoResult.data,
+            undefined,
+            estadoResult.code
+        );
+    }else {
+        return enviarResponseError(
+            res,
+            config.status,
+            estadoResult.message || config.msg,
+            estadoResult.code
+        );
+    };
+};
+
+
+/**
+ * Obtiene un listado paginado de niveles.
+ *
+ * Permite filtrar los resultados por nivel y estado,
+ * aplicando además los parámetros de paginación recibidos.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con filtros y paginación.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la consulta.
+ *
+ * @property {string} req.query.nivel - Nombre del nivel utilizado como filtro.
+ * @property {string} req.query.estado - Estado utilizado como filtro.
+ * @property {number} req.query.limite - Cantidad de registros por página.
+ * @property {number} req.query.pagina - Página solicitada.
+ */
+const listadoNivel = async( req : Request , res : Response ) =>{
+    const { nivel , estado, limite, pagina} = req.query;
+    const offset = ( Number(pagina) -1 ) * Number(limite) ;
+
+   const dataListado = {
+        nivel : nivel,
+        estado : estado,
+        id_escuela : Number( req.usuario?.id_escuela ),
+        limite : Number( limite ),
+        offset  : Number( offset ),
+        pagina : Number( pagina )    
+   };
+
+   const listaResult = await servicioNiveles.listadoNivel( dataListado );
+
+   const config = MAPA_LISTADO_NIVEL[ listaResult.code ] || ERROR_INTERNO_SERVIDOR; 
+
+    if (config.status === CodigoEstadoHTTP.OK){
+  
+        return enviarResponse(
+            res,
+            config.status,
+            listaResult.message || config.msg,
+            listaResult.data,
+            listaResult.paginacion,
+            listaResult.code
+        );
+    }else {
+        return enviarResponseError(
+            res,
+            config.status,
+            listaResult.message || config.msg,
+            listaResult.code
+        );
+    };   
+
+};
+
+
+/**
+ * Obtiene un listado de niveles sin aplicar paginación.
+ *
+ * Permite filtrar los resultados por nombre de nivel y estado,
+ * devolviendo todos los registros que coincidan con los criterios.
+ *
+ * @async
+ * @param {Request} req - Petición HTTP con los filtros de búsqueda.
+ * @param {Response} res - Respuesta HTTP.
+ * @returns {Promise<Response>} Resultado de la consulta.
+ *
+ * @property {string} req.query.nivel - Nombre del nivel utilizado como filtro.
+ * @property {string} req.query.estado - Estado utilizado como filtro.
+ */
+const listadoNivelSinPag = async( req : Request , res : Response ) =>{
+    const { nivel , estado } = req.query;
+
+    const dataListado = {
+        nivel : nivel,
+        estado : estado,
+        id_escuela : Number( req.usuario?.id_escuela )          
+    };
+
+    const listaResult = await servicioNiveles.listadoNivelSinPag( dataListado );
+
+   const config = MAPA_LISTADO_NIVEL[ listaResult.code ] || ERROR_INTERNO_SERVIDOR; 
+
+    if (config.status === CodigoEstadoHTTP.OK){
+  
+        return enviarResponse(
+            res,
+            config.status,
+            listaResult.message || config.msg,
+            listaResult.data,
+            undefined,
+            listaResult.code
+        );
+    }else {
+        return enviarResponseError(
+            res,
+            config.status,
+            listaResult.message || config.msg,
+            listaResult.code
+        );
+    };     
 };
 
 export const method = {
