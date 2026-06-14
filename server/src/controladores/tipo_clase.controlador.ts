@@ -1,9 +1,9 @@
 import { Request , Response } from "express";
 // ──────────────────────────────────────────────────────────────
-// Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
+// Capa de acceso a serbivios para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
-import { method as dataTipo } from "../data/tipo_clases.data";
 
+import { method as servicioTipo}  from "../Servicio/tipo.clase.servicio";
 // ──────────────────────────────────────────────────────────────
 // Sección de Hooks
 // ──────────────────────────────────────────────────────────────
@@ -14,262 +14,268 @@ import { fechaHoy } from "../hooks/fecha";
 // ──────────────────────────────────────────────────────────────
 // Sección de Typado
 // ──────────────────────────────────────────────────────────────
-import { CrearTipoSchema , CrearTipoInput , ModTipoInput , ModTipoSchema ,
-         EstadoTipoInput , EstadoTipoSchema, ListaTipoUsuariosSchema, ListadoTipoInput,
-         ListaTipoUsuarioSinPagSchema, ListadoTipoSinPagInput
-        } from "../squemas/tipo.usuarios";
+import { MAPA_ALTA_TIPO_CLASE, ERROR_INTERNO_SERVIDOR, MAPA_MOD_TIPO_CLASE,
+         MAPA_ESTADO_TIPO_CLASE, MAPA_LISTADO_TIPO_CLASE
+ } from "../respuestas/tipo.clase";        
 import { CodigoEstadoHTTP } from "../tipados/generico";
 
 
+
 /**
+ * Controlador para el alta de un nuevo tipo de clase.
+ * * Extrae el nombre del tipo desde el cuerpo de la petición, le asigna la 
+ * fecha actual y la escuela del usuario autenticado, y delega la lógica 
+ * al servicio correspondiente.
+ *
  * @async
  * @function altaTipo
- * @description Manejador de ruta para registrar un nuevo tipo de clase. Realiza la validación de los datos 
- * de entrada, verifica si ya existe un tipo de clase con el mismo nombre para la 'id_escuela' dada, 
- * y si no existe, procede con la inserción en la base de datos.
- * * @param {Request} req - Objeto de solicitud de Express. Se espera que el body contenga 'tipo' e 'id_escuela'.
- * @param {Response} res - Objeto de respuesta de Express. Utilizado para enviar la respuesta HTTP.
- * * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada falla contra el esquema 'CrearTipoSchema'.
- * * @body {string} tipo - El nombre del nuevo tipo de clase a crear.
- * @body {number} id_escuela - El ID de la escuela a la que pertenecerá el tipo de clase.
- * * @response 200 OK: 
- * Si el tipo de clase se crea exitosamente (Aunque el código HTTP estándar para creación es 201). Mensaje: "Se agrego Tipo correctante".
- * @response 403 Prohibido: 
- * Si un tipo de clase con el mismo nombre ya existe para la escuela dada. Mensaje: "Este Tipo :[nombre_tipo] ya existe".
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.body - Datos recibidos.
+ * @param {string} req.body.tipo - Nombre del tipo de clase a registrar.
+ * @param {number} req.usuario.id_escuela - ID de la escuela extraído del token.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta estandarizada basada en MAPA_ALTA_TIPO_CLASE.
  */
-
 const altaTipo = async( req : Request, res : Response) =>{
-   const { tipo , id_escuela}  = req.body;
+   const { tipo }  = req.body;
 
-   const data : CrearTipoInput = CrearTipoSchema.parse({
+    const dataAlta = {
         tipo : tipo,
         fecha_creacion : fechaHoy(),
-        id_escuela : Number(id_escuela)
-   }); 
-
-   const existeTipo =await dataTipo.verificar( tipo , id_escuela);
-
-   if (existeTipo.code === 'TIPO_NO_EXISTE'){
-        const alta = await dataTipo.altaTipo(data);
-        if (alta.code === "TIPO_CREAR"){
-            return enviarResponse(
-                res, 
-                CodigoEstadoHTTP.OK,
-                `Se agrego Tipo correctante`,
-                alta.data,
-                undefined,
-                alta.code
-            );
-        }
-   }else{
-        return enviarResponseError(
-            res,
-            CodigoEstadoHTTP.PROHIBIDO,
-            `Este Tipo :${tipo} ya existe`
-        );
-   };
-};
-
-/**
- * @async
- * @function modTipo
- * @description Manejador de ruta para modificar la descripción de un tipo de clase existente.
- * Obtiene el nuevo nombre del tipo de clase de `req.body` y los identificadores (ID del tipo y ID de la escuela) de `req.params`.
- * Realiza la validación de los datos y llama al servicio para ejecutar la modificación.
- * * @param {Request} req - Objeto de solicitud de Express. 
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada falla contra el esquema 'ModTipoSchema'.
- * * @path /tipos/:id/:id_escuela
- * @method PUT
- * * @body {string} tipo - La nueva descripción del tipo de clase.
- * @params {string} id - El ID del tipo de clase a modificar.
- * @params {string} id_escuela - El ID de la escuela a la que pertenece el tipo.
- * * @response 200 OK: 
- * Si el tipo de clase se modifica exitosamente. Mensaje: "El Tipo : [nuevo_tipo] ,Se modifico".
- */
-
-const modTipo = async( req : Request, res : Response ) => {
-    const { tipo } = req.body;
-    const { id_escuela , id } = req.params;
-
-    const data : ModTipoInput = ModTipoSchema.parse({
-        tipo : tipo,
-        id   : Number(id),
-        id_escuela : Number(id_escuela)
-    });
-  
-    const mod = await dataTipo.modficarTipo(data);
-
-    if ( mod.code === 'TIPO_MODIFICAR' ){
-        return enviarResponse(
-            res,
-            CodigoEstadoHTTP.OK,
-            `El Tipo : ${tipo} ,Se modifico `,
-            mod.data,
-            undefined,
-            mod.code
-        );
-    }
-};
-
-/**
- * @async
- * @function estadoTipo
- * @description Manejador de ruta para cambiar el estado (activo/inactivo) de un tipo de clase específico.
- * Obtiene el ID del tipo, el ID de la escuela y el nuevo estado de los parámetros de la URL.
- * Realiza la validación de los datos y llama al servicio para ejecutar el cambio de estado en la base de datos.
- * * @param {Request} req - Objeto de solicitud de Express.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * @throws {ZodError} Si la validación de los datos de entrada falla contra el esquema 'EstadoTipoSchema'.
- * * @path /tipos/estado/:id/:id_escuela/:estado
- * @method PUT o PATCH
- * * @params {string} id - El ID del tipo de clase cuyo estado será modificado.
- * @params {string} id_escuela - El ID de la escuela a la que pertenece el tipo.
- * @params {string} estado - El nuevo estado a aplicar (ej: 'activos' o 'inactivos').
- * * @response 200 OK: 
- * Si el estado del tipo de clase se modifica exitosamente. El cuerpo de la respuesta contiene los datos de confirmación (estadoTipo.data). Mensaje de respuesta vacío.
- */
-
-const estadoTipo = async( req : Request, res : Response ) =>{
-    const { id_escuela , id , estado} = req.params;
-  //  console.log( id , estado , id_escuela)
-    const data : EstadoTipoInput = EstadoTipoSchema.parse({
-        estado : estado,  id : Number(id) , id_escuela : Number(id_escuela)
-    });
-   
-    const estadoTipo = await dataTipo.estadoTipo(data);
-
-    if ( estadoTipo.code === 'TIPO_MODIFICAR') {
-        return enviarResponse(
-            res, 
-            CodigoEstadoHTTP.OK,
-            ``,
-            estadoTipo.data,
-            undefined,
-            estadoTipo.code
-        );
+        id_escuela : Number(req.usuario?.id_escuela)        
     };
-};
 
-/**
- * @async
- * @function listadoTipo
- * @description Manejador de ruta para obtener un listado paginado de tipos de clase. 
- * Obtiene los parámetros de filtro ('tipo', 'estado', 'id_escuela') y paginación ('pagina', 'limite') de `req.query`.
- * Calcula el 'offset' necesario para la consulta, valida los datos y llama al servicio para obtener la lista.
- * * @param {Request} req - Objeto de solicitud de Express. Los parámetros de paginación y filtro se esperan en 'req.query'.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Retorna una Promesa que resuelve en el objeto de respuesta de Express.
- * * @throws {ZodError} Si la validación de los datos de entrada falla contra el esquema 'ListaTipoUsuariosSchema'.
- * * @path /tipos/listado
- * @method GET
- * * @query {string} tipo - (Opcional) Filtro por la descripción del tipo de clase.
- * @query {string} estado - Filtro por estado ('activos'/'inactivos').
- * @query {string} id_escuela - El ID de la escuela para filtrar los tipos.
- * @query {string} limite - El número máximo de registros a devolver por página.
- * @query {string} pagina - El número de página solicitada (usada para calcular el offset).
- * * @response 200 OK: 
- * Si la operación es exitosa (ya sea que devuelva datos o un mensaje de lista vacía). El cuerpo incluye los datos y la información de paginación.
- */
+    const altaResult = await servicioTipo.altaTipoClase(dataAlta);
+    
+    const config = MAPA_ALTA_TIPO_CLASE[ altaResult.code]  || ERROR_INTERNO_SERVIDOR;
 
-const listadoTipo = async( req : Request, res : Response ) =>{
-    const { tipo , estado , id_escuela , pagina , limite } = req.query;
-
-    const offset = ( Number(pagina) -1 ) * Number(limite) ;
-
-    const data : ListadoTipoInput = ListaTipoUsuariosSchema.parse({
-        tipo : tipo,
-        estado : estado,
-        id_escuela : Number(id_escuela),
-        limite     : Number(limite),
-        offset : offset
-    });
-
-    const dataListado = await dataTipo.listado(data , pagina);
-
-    if (dataListado.code === "TIPO_LISTED"){
+    if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
             res,
-            CodigoEstadoHTTP.OK,
-            dataListado.message,
-            dataListado.data ,
-            dataListado.paginacion,
-            dataListado.code
+            config.status,
+            altaResult.message || config.msg,
+            altaResult.data,
+            undefined,
+            altaResult.code
         );
     }else{
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.OK,
-            dataListado.message,
-
+            config.status,
+            altaResult.message || config.msg,
+            altaResult.code
         );
     };
+
 };
 
+
+
 /**
- * listadoTipoSinPaginacion
- * ------------------------
- * Controlador que obtiene un listado de tipos de clase sin paginación,
- * filtrando por nombre, estado e institución (escuela).
+ * Controlador para la modificación de un tipo de clase existente.
+ * * Extrae el ID del tipo desde los parámetros de la URL y el nuevo nombre
+ * desde el cuerpo de la petición. Utiliza el `id_escuela` del usuario autenticado
+ * para asegurar que la operación se realice dentro del contexto correcto.
  *
- * Este endpoint está pensado para:
- *  - Selectores / autocompletados
- *  - Formularios de alta o edición
- *  - Búsquedas rápidas sin paginación
- *
- * Flujo:
- *  1. Lee los parámetros desde `req.query`
- *  2. Valida y normaliza los datos con Zod
- *  3. Ejecuta la consulta al servicio de datos
- *  4. Devuelve el listado o un mensaje de error controlado
- *
- * @param {Request} req
- *        Objeto de petición HTTP.
- *        Espera en `query`:
- *        - tipo {string} Texto de búsqueda parcial
- *        - estado {string} Estado del tipo ('activos' | 'inactivos' | 'todos')
- *        - id_escuela {number} Identificador de la escuela
- *
- * @param {Response} res
- *        Objeto de respuesta HTTP.
- *
- * @returns {Promise<Response>}
- *          Respuesta JSON con:
- *          - Código 200 y listado de tipos si existen
- *          - Código 200 con mensaje informativo si no hay tipos activos
+ * @async
+ * @function modTipo
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.params - Parámetros de ruta.
+ * @param {string|number} req.params.id - ID único del tipo de clase a modificar.
+ * @param {Object} req.body - Cuerpo de la petición.
+ * @param {string} req.body.tipo - Nuevo nombre del tipo de clase.
+ * @param {number} req.usuario.id_escuela - ID de la escuela extraído del token.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta estandarizada basada en MAPA_MOD_TIPO_CLASE.
  */
+const modTipo = async( req : Request, res : Response ) => {
+    const { tipo } = req.body;
+    const { id } = req.params;
 
-const listadoTipoSinPaginacion = async( req : Request , res : Response)=>{
-
-    const { tipo , estado , id_escuela } = req.query;
-    const data = {
+    const tipoMod = {
         tipo : tipo,
-        estado : estado,
-        id_escuela : Number(id_escuela)
+        id   : Number(id),
+        id_escuela : Number(req.usuario?.id_escuela)
     };
-    const dataParseada : ListadoTipoSinPagInput = ListaTipoUsuarioSinPagSchema.parse(data);
-    
-    const listado = await dataTipo.listadoSinPaginacion(dataParseada);
 
-    if (listado.code === "NO_ACTIVE_TIPO"){
+    const modResult = await servicioTipo.modTipoClase(tipoMod);
+
+    const config = MAPA_MOD_TIPO_CLASE[ modResult.code] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            modResult.message || config.msg,
+            modResult.data,
+            undefined,
+            modResult.code
+        );
+    }else{
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.OK,
-            listado.message
+            config.status,
+            modResult.message || config.msg,
+            modResult.code
         );
-    }
+    };    
 
-    return enviarResponse(
-        res,
-        CodigoEstadoHTTP.OK,
-        "TIPO listados activos",
-        listado.data,
-        undefined,
-        listado.code
-    );
+};
+
+
+/**
+ * Controlador para la actualización del estado (activo/inactivo) de un tipo de clase.
+ * * Extrae el ID y el nuevo estado desde los parámetros de la URL, e inyecta 
+ * el `id_escuela` del usuario autenticado para garantizar la seguridad 
+ * y el aislamiento de datos.
+ *
+ * @async
+ * @function estadoTipo
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.params - Parámetros de ruta.
+ * @param {string|number} req.params.id - ID único del tipo de clase.
+ * @param {string} req.params.estado - Nuevo estado a asignar ('activos' o 'inactivos').
+ * @param {number} req.usuario.id_escuela - ID de la escuela extraído del token.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta estandarizada basada en MAPA_ESTADO_TIPO_CLASE.
+ */
+const estadoTipo = async( req : Request, res : Response ) =>{
+    const { id , estado} = req.params;
+
+    const estadoData = {
+         estado : estado,  id : Number(id) , id_escuela : Number(req.usuario?.id_escuela)
+    };
+
+    const estadoResult = await servicioTipo.estadoTipo( estadoData );
+
+    const config = MAPA_ESTADO_TIPO_CLASE[ estadoResult.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            estadoResult.message || config.msg,
+            estadoResult.data,
+            undefined,
+            estadoResult.code
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            estadoResult.message || config.msg,
+            estadoResult.code
+        );
+    }; 
+
+};
+
+
+/**
+ * Controlador para la obtención de un listado paginado de tipos de clase.
+ * * Extrae los filtros y parámetros de paginación desde el query de la URL,
+ * calcula el desplazamiento (offset) y delega la consulta al servicio,
+ * asegurando que los resultados estén filtrados por la escuela del usuario.
+ *
+ * @async
+ * @function listadoTipo
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.query - Parámetros de consulta (filtros y paginación).
+ * @param {string} [req.query.tipo] - Nombre del tipo para filtrar.
+ * @param {string} [req.query.estado] - Estado del tipo para filtrar.
+ * @param {number|string} req.query.pagina - Número de página actual.
+ * @param {number|string} req.query.limite - Registros por página.
+ * @param {number} req.usuario.id_escuela - ID de la escuela extraído del token.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta estandarizada basada en MAPA_LISTADO_TIPO_CLASE.
+ */
+const listadoTipo = async( req : Request, res : Response ) =>{
+    const { tipo , estado , pagina , limite } = req.query;
+
+    const offset = ( Number(pagina) -1 ) * Number(limite) ;
+
+    const dataListado = {
+        tipo : tipo,
+        estado : estado,
+        id_escuela : Number(req.usuario?.id_escuela),
+        limite     : Number(limite),
+        offset : offset,
+        pagina : Number(pagina)    
+    };
+
+    const listadoResult = await servicioTipo.listadoTipoClases( dataListado);
+
+    const config = MAPA_LISTADO_TIPO_CLASE[ listadoResult.code] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.data,
+            listadoResult.paginacion,
+            listadoResult.code
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.code
+        );
+    }; 
+
+};
+
+
+/**
+ * Controlador para la obtención de un listado completo de tipos de clase (sin paginación).
+ * * Extrae los filtros desde el query de la URL e inyecta el `id_escuela`
+ * del usuario autenticado para asegurar que los resultados pertenezcan 
+ * exclusivamente a la institución actual.
+ *
+ * @async
+ * @function listadoTipoSinPaginacion
+ * @param {Request} req - Objeto de petición de Express.
+ * @param {Object} req.query - Parámetros de consulta (filtros).
+ * @param {string} [req.query.tipo] - Nombre del tipo para filtrar.
+ * @param {string} [req.query.estado] - Estado del tipo para filtrar.
+ * @param {number} req.usuario.id_escuela - ID de la escuela extraído del token.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<Response>} Respuesta estandarizada basada en MAPA_LISTADO_TIPO_CLASE.
+ */
+const listadoTipoSinPaginacion = async( req : Request , res : Response)=>{
+
+    const { tipo , estado } = req.query;
+
+    const dataListado = {
+        tipo : tipo,
+        estado : estado,
+        id_escuela : Number(req.usuario?.id_escuela)      
+    };
+
+    const listadoResult = await servicioTipo.listadoTipoClasesSinPag( dataListado );
+    
+    const config = MAPA_LISTADO_TIPO_CLASE[ listadoResult.code] || ERROR_INTERNO_SERVIDOR;
+    console.log("resultado", listadoResult, "config", config);
+    if ( config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.data,
+            undefined,
+            listadoResult.code
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            listadoResult.message || config.msg,
+            listadoResult.code
+        );
+    }; 
+
 };
 
 export const method = {

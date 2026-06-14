@@ -65,7 +65,13 @@ export const ListaTipoUsuariosSchema = z.object({
 
         offset: z.coerce.number({ message: "Offset debe ser un número válido." })
                      .int({ message: "Offset debe ser un entero." })
-                     .min(0, { message: "El offset debe ser 0 o positivo." }),    
+                     .min(0, { message: "El offset debe ser 0 o positivo." }),   
+
+        pagina  :    z.number({message : "Ident. pagina debe ser numerico"})
+                    .int({message : "Ident. pagina debe ser entero"})
+                    .positive({ message : "Ident. pagina debe ser positivo"}),             
+                     
+                     
 });
 
 export const ListaTipoUsuarioSinPagSchema = z.object({

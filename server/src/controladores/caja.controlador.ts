@@ -284,7 +284,7 @@ const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
 
      const config  = MAPA_METRICA_PRINCIPAL[metricasResult.code]  || ERROR_INTERNO_SERVIDOR;
      
-     if ( config.status = CodigoEstadoHTTP.OK){
+     if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
             res, 
             config.status,

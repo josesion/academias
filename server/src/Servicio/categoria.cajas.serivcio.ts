@@ -38,7 +38,7 @@ const verificacionInscripcionCategoria = async ( data : CategoriaCajaInscripcion
 
     const dataCatInscripcion : CategoriaCajaInscripcionInputs = CategoriaCajaInscripcionSchema.parse( data )
     const dataCatInscripcionResult = await categoriaCajaData.localizarIncripcionCategortia(dataCatInscripcion);
-    //    console.log( dataCatInscripcionResult)
+
     if ( dataCatInscripcionResult.code === "ID_INSCRIPCION_CATCAJA_NO_EXISTE"){
         return{
             error : true,
@@ -58,7 +58,7 @@ const verificacionInscripcionCategoria = async ( data : CategoriaCajaInscripcion
     return {
         error: true,
         message: `Se produjo un error en la veridicacion de categoria Inscripcion`,
-        code: "ERROR_CATEGORIA_CAJA_INSCRIPCION"
+        code: "ERROR_SERVIDOR"
     };
 };
 
@@ -109,35 +109,46 @@ const altaCategoriaCajaServicio = async (data: CategoriaCajaInpurts)
     return {
         error: true,
         message: `No se pudo completar el alta de: ${dataCategoriaCaja.nombre_categoria}`,
-        code: "ERROR_ALTA_CATEGORIA_CAJA"
+        code: "ERROR_SERVIDOR"
     };
 };
 
 /**
- * Servicio de lógica de negocio para la actualización de categorías de caja.
- * * El proceso sigue este flujo de integridad:
- * 1. Validación de esquema: Asegura que los datos recibidos cumplen el contrato técnico.
- * 2. Validación de unicidad: Verifica que el nuevo nombre no colisione con otra categoría existente 
- * (considerando escuela y tipo de movimiento).
- * 3. Persistencia: Ejecuta la modificación en la base de datos si las validaciones previas son exitosas.
- * * @async
- * @function modCategoriaCaja
- * @param {ModCategoriaCajaInputs} data - Objeto con los datos actualizados y el ID del registro.
- * @returns {Promise<TipadoData<{id_categoria : number}>>} Objeto de respuesta estandarizado para la UI.
- * * @example
- * const respuesta = await modCategoriaCaja({
- * id_categoria: 15,
- * nombre_categoria: "Materiales Didácticos",
- * tipo_movimiento: "egreso",
- * id_escuela: 1
- * });
+ * Modifica una categoría de caja.
+ *
+ * Flujo de validación:
+ * 1. Valida los datos de entrada mediante Zod.
+ * 2. Verifica si existe una categoría del sistema asociada a la operación.
+ *    Las categorías marcadas como `categoria_sistema = 1` no pueden ser
+ *    modificadas por usuarios.
+ * 3. Verifica que no exista otra categoría con el mismo nombre y tipo de
+ *    movimiento dentro de la misma escuela.
+ * 4. Ejecuta la modificación de la categoría.
+ *
+ * Posibles respuestas:
+ * - SIN_PERMISOS: Se intentó modificar una categoría protegida del sistema.
+ * - CATEGORIA_CAJA_EXISTENTE: Ya existe una categoría con los mismos datos.
+ * - CATEGORIA_CAJA_MODIFICAR: Modificación realizada correctamente.
+ * - ERROR_SERVIDOR: Error al realizar la modificación.
+ *
+ * @param {ModCategoriaCajaInputs} data Datos de la categoría a modificar.
+ * @returns {Promise<TipadoData<{ id_categoria: number }>>}
+ * Resultado de la operación con el id de la categoría modificada.
  */
 const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
 : Promise<TipadoData<{id_categoria : number}>>  => {
     const dataMod : ModCategoriaCajaInputs = ModCategoriaCajaSchema.parse(data);
-   
+
     const verificarCategoriaExistente = await categoriaCajaData.verificarCategoriaExistente( dataMod );
-   
+
+    if( verificarCategoriaExistente.data?.categoria_sistema){
+  
+        return {
+            error : true,
+            message : "Sin permisos campo de sistema",
+            code : "SIN_PERMISOS" 
+        };
+    };
 
     if ( verificarCategoriaExistente.code === "CATEGORIA_CAJA_EXISTE"){
         return{
@@ -146,8 +157,9 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
             code : "CATEGORIA_CAJA_EXISTENTE"
         };
     };
+  
     const modResultado = await categoriaCajaData.modCategoriaCaja(dataMod);
-
+  
     if ( modResultado.code === "CATEGORIA_CAJA_MODIFICAR"){
         return {
             error : false,
@@ -159,27 +171,42 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
    return {
         error : true,
         message : `No se pudo completar la modificacion : ${dataMod.nombre_categoria}`,
-        code :"ERROR_MOD_CATEGORIA_CAJA"
+        code :"ERROR_SERVIDOR"
    };
 };
 
 /**
- * Servicio de lógica de negocio para la gestión del estado (alta/baja lógica) de una categoría.
- * * Esta función actúa como un puente que valida el esquema de entrada y personaliza 
- * la respuesta basada en el nuevo estado asignado, facilitando el feedback en la interfaz.
- * * @async
+ * Realiza el cambio de estado (baja o activación) de una categoría de caja.
+ * * Valida primero que la categoría no sea una categoría de sistema. Si la operación
+ * es exitosa, retorna un mensaje descriptivo basado en el nuevo estado.
+ *
+ * @async
  * @function bajaCategoriaCaja
- * @param {BajaCategoriCajaInputs} data - Objeto que contiene el ID de la categoría, la escuela y el nuevo estado.
- * @returns {Promise<TipadoData<BajaCategoriCajaInputs>>} Promesa que resuelve a un objeto de respuesta 
- * con mensajes personalizados según si la categoría fue activada o desactivada.
- * * @example
- * // Para desactivar una categoría
- * const respuesta = await bajaCategoriaCaja({ id_categoria: 1, id_escuela: 10, estado: 'inactivos' });
- * // respuesta.message -> "La Categoria esta inactiva"
+ * @param {BajaCategoriCajaInputs} data - Objeto con los datos necesarios para la baja/cambio de estado.
+ * @param {string} data.id_categoria - Identificador único de la categoría.
+ * @param {string} data.estado - Nuevo estado a asignar ('activos' o 'inactivos').
+ * * @returns {Promise<TipadoData<BajaCategoriCajaInputs>>} Promesa que resuelve un objeto con:
+ * - error (boolean): Indica si hubo un fallo.
+ * - message (string): Mensaje informativo o de error.
+ * - data (any|null): Datos de la categoría afectada (si tuvo éxito).
+ * - code (string): Código de estado de la operación (ej: 'CATEGORIA_CAJA_ESTADO_OK', 'SIN_PERMISOS', 'ERROR_SERVIDOR').
+ * * @throws {ZodError} Si la validación de `BajaCategoriaCajaSchema` falla.
  */
 const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs ) 
 : Promise<TipadoData<BajaCategoriCajaInputs>>=>{
+   
     const  dataCategoriaCaja : BajaCategoriCajaInputs = BajaCategoriaCajaSchema.parse( data );
+   
+    const verificarCategoriaExistente = await categoriaCajaData.verificarCategoriaExistente2( data );
+    
+    if( verificarCategoriaExistente.data?.categoria_sistema){
+  
+        return {
+            error : true,
+            message : "Sin permisos campo de sistema",
+            code : "SIN_PERMISOS" 
+        };
+    };
 
     const bajaCategoria = await categoriaCajaData.bajaCategoriaCaja(dataCategoriaCaja);
 
@@ -203,27 +230,36 @@ const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs )
     return{
         error : true,
         message : `No se pudo completar la modificacion de estado : ${dataCategoriaCaja.id_categoria}`,
-        code :"ERROR_ESTADO_CATEGORIA_CAJA"   
+        code :"ERROR_SERVIDOR"   
     };  
 
 };
 
 /**
- * Orquestador del listado de categorías. Se encarga de la lógica de paginación y validación de filtros.
- * * * Realiza las siguientes tareas:
- * 1. Calcula el `offset` dinámico basado en la página y el límite de registros.
- * 2. Normaliza y valida los datos de entrada con `ListaCategoriaCajaSchema`.
- * 3. Solicita los datos a la capa de persistencia y estandariza la respuesta de éxito o error.
- * * @async
+ * Obtiene un listado paginado de las categorías de caja basado en filtros opcionales.
+ * 
+ * Calcula el desplazamiento (offset) a partir del número de página y el límite,
+ * valida los datos de entrada mediante un esquema y gestiona las respuestas 
+ * de la capa de datos.
+ *
+ * @async
  * @function listadoCategoriaCaja
- * @param {ListadoCategoriaCajaInputs} data - Parámetros crudos recibidos desde el controlador/query.
- * @param {number|string} data.pagina - Número de página actual (1-based).
- * @param {number|string} data.limit - Cantidad de registros por página.
- * @returns {Promise<TipadoData<ResultListadoCategoriaCaja[]>>} Objeto de respuesta que incluye los datos, 
- * metadatos de paginación y códigos de estado para la UI.
- * * @example
- * const res = await listadoCategoriaCaja({ pagina: 2, limit: 10, id_escuela: 1, estado: 'activos' });
- * // Si pagina=2 y limit=10, el offset será 10.
+ * @param {ListadoCategoriaCajaInputs} data - Objeto con los parámetros de filtrado y paginación.
+ * @param {string|number} data.pagina - Número de la página actual.
+ * @param {string|number} data.limit - Cantidad de registros por página.
+ * @param {string} [data.nombre_categoria] - Filtro opcional por nombre de categoría.
+ * @param {string} [data.tipo_movimiento] - Filtro opcional por tipo de movimiento.
+ * @param {string} [data.estado] - Filtro opcional por estado de la categoría.
+ * @param {string} data.id_escuela - Identificador de la escuela asociada.
+ * 
+ * @returns {Promise<TipadoData<ResultListadoCategoriaCaja[]>>} Promesa que resuelve con:
+ * - error (boolean): Indica si la operación falló.
+ * - message (string): Mensaje explicativo del resultado.
+ * - data (ResultListadoCategoriaCaja[] | undefined): Listado de categorías obtenidas.
+ * - paginacion (any | undefined): Información sobre la paginación (si aplica).
+ * - code (string): Código de respuesta ('LISTADO_CATEGORIA_CAJA', 'SIN_LISTADO_CATEGORIA_CAJA', 'ERROR_SERVIDOR').
+ * 
+ * @throws {ZodError} Si la validación de `ListaCategoriaCajaSchema` falla.
  */
 const listadoCategoriaCaja = async( data : ListadoCategoriaCajaInputs )
 :Promise<TipadoData<ResultListadoCategoriaCaja[]>> =>{
@@ -243,7 +279,7 @@ const listadoCategoriaCaja = async( data : ListadoCategoriaCajaInputs )
 
     const resultadoListado = await categoriaCajaData.listadoCategoriaCaja(dataListado);
 
-    if (resultadoListado.error === false){
+   if ( resultadoListado.code === 'CATEGORIA_CAJA_LISTED'){
         return {
             error : false,
             message : resultadoListado.message,
@@ -251,14 +287,22 @@ const listadoCategoriaCaja = async( data : ListadoCategoriaCajaInputs )
             paginacion : resultadoListado.paginacion,
             code  : "LISTADO_CATEGORIA_CAJA"
         };
-    }else{
+   };
+
+   if ( resultadoListado.code === 'NO_ACTIVE_CATEGORIA_CAJA'){
         return {
             error : true,
-            message : resultadoListado.message,
-            code : "SIN_LISTADO_CATEGORIA_CAJA"
-        };
-    };
-    
+            message : "Sin listado, modifar el filtrado.",
+            code  : "SIN_LISTADO_CATEGORIA_CAJA"
+        };    
+   };
+
+    return{
+        error : true,
+        message : `Error en el servidor en obtener el listado`,
+        code :"ERROR_SERVIDOR"   
+    };  
+
 };
 
 export const method = {

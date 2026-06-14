@@ -32,14 +32,31 @@ import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categ
  * tipo_movimiento: 'ingreso' 
  * });
  */
-const verificarCategoriaExistente = async(  data : CategoriaCajaInpurts ) => {
+const verificarCategoriaExistente = async(  data : CategoriaCajaInpurts ) 
+: Promise<TipadoData<any>> => {
     const { nombre_categoria, id_escuela , tipo_movimiento} = data;
-    const sql : string =   `select categorias_caja.nombre_categoria 
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
                             from categorias_caja
                             where nombre_categoria = ? 
                                     and id_escuela = ?
                                     and tipo_movimiento = ?;`;
     const valor : unknown[] = [ nombre_categoria , id_escuela, tipo_movimiento];
+    return buscarExistenteEntidad({
+      slqEntidad : sql,
+      valores : valor,
+      entidad : "Categoria_Caja",
+    });
+};
+
+
+const verificarCategoriaExistente2 = async(  data : CategoriaCajaInpurts ) 
+: Promise<TipadoData<any>> => {
+    const { nombre_categoria, id_escuela } = data;
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
+                            from categorias_caja
+                            where nombre_categoria = ? 
+                                    and id_escuela = ?;`;
+    const valor : unknown[] = [ nombre_categoria , id_escuela];
     return buscarExistenteEntidad({
       slqEntidad : sql,
       valores : valor,
@@ -166,7 +183,7 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
  */
 const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs) 
 : Promise<TipadoData<BajaCategoriCajaInputs>> => {
-    const {id_escuela, id_categoria , estado} = data ;
+    const {id_escuela, id_categoria , estado, nombre_categoria} = data ;
     const sql : string = `UPDATE categorias_caja 
                             SET 
                                 estado = ?
@@ -178,7 +195,7 @@ const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs)
         valores,
         entidad : "Categoria_Caja",
         metodo  : "ELIMINAR",
-        datosRetorno : { id_categoria , id_escuela, estado}
+        datosRetorno : { id_categoria , id_escuela, estado, nombre_categoria}
     });
 };
 
@@ -240,6 +257,7 @@ const listadoCategoriaCaja = async( data  : ListadoCategoriaCajaInputs)
 
 export const method = {
     verificarCategoriaExistente : tryCatchDatos(verificarCategoriaExistente),
+    verificarCategoriaExistente2 : tryCatchDatos(verificarCategoriaExistente2),
     altaCategoriaCaja : tryCatchDatos(altaCategoriaCaja),
     modCategoriaCaja  : tryCatchDatos( modCategoriaCaja),
     bajaCategoriaCaja : tryCatchDatos( bajaCategoriaCaja ),

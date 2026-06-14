@@ -178,7 +178,7 @@ const listadoCuentas = async ( params : ListadoCuentasInputs) =>{
     const validarData : ListadoCuentasInputs = ListadoCuentasSchema.parse(dataParceada);
    
     const listadoCuentas = await cuentasData.listdoCuentasDatos(validarData);
-    console.log(listadoCuentas)
+
    if ( listadoCuentas.code === 'TIPO_CUENTAS_LISTED' ){
         return {
             error : false, 

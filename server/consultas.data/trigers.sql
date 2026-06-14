@@ -7,16 +7,16 @@ AFTER INSERT ON escuelas
 FOR EACH ROW
 BEGIN
 		-- Se ejecuta automáticamente para cada escuela nueva
-		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado) 
-		VALUES (NEW.id_escuela, 'Inscripcion', 'ingreso', 'activos');
+		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado,  categoria_sistema) 
+		VALUES (NEW.id_escuela, 'Inscripcion', 'ingreso', 'activos', 1);
 
 		-- Categoría para anular inscripciones (Nueva)
-		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado) 
-		VALUES (NEW.id_escuela, 'Anulacion Inscripcion', 'egreso', 'activos');
+		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado,  categoria_sistema) 
+		VALUES (NEW.id_escuela, 'Anulacion Inscripcion', 'egreso', 'activos', 1);
 
 		--  Categoría para el Saldo Inicial de apertura
-		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado) 
-		VALUES (NEW.id_escuela, 'Saldo Inicial', 'ingreso', 'activos');
+		INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento, estado,  categoria_sistema) 
+		VALUES (NEW.id_escuela, 'Saldo Inicial', 'ingreso', 'activos' , 1);
     
 	    -- Niveles base con is_default en 1
 		INSERT INTO niveles (nivel, fecha_creacion, estado, is_default, id_escuela) 

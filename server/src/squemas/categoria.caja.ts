@@ -26,6 +26,7 @@ export const ModCategoriaCajaSchema = z.object({
 export const  BajaCategoriaCajaSchema = z.object({
     id_escuela : z.number().int().positive(), 
     id_categoria : z.number().int().positive(),
+    nombre_categoria: z.string().min(1),
     estado: EstadoEnum,
 });
 

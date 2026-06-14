@@ -4,7 +4,8 @@ CREATE TABLE categorias_caja (
     nombre_categoria VARCHAR(50) NOT NULL,
     tipo_movimiento ENUM('ingreso', 'egreso') NOT NULL,
     estado ENUM('activos', 'inactivos') DEFAULT 'activos' NOT NULL,
-    
+    categoria_sistema TINYINT(1) NOT NULL DEFAULT 0,
+
     -- UNIQUE KEY actualizada incluyendo el tipo de movimiento
     UNIQUE KEY uq_nombre_escuela_movimiento (id_escuela, nombre_categoria, tipo_movimiento),
     

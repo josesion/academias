@@ -30,7 +30,7 @@ import { MAPA_CUENTAS_MODIFICACION, MAPA_CUENTAS_CREACCION,MAPA_CUENTAS_ESTADO,
 const crearCuentaEscuela = async ( req : Request, res : Response) => {
 
     const dataCuenta = {
-        id_escuela : req.body.id_escuela,
+        id_escuela : Number(req.usuario?.id_escuela),
         nombre_cuenta : req.body.nombre_cuenta,
         tipo_cuenta : req.body.tipo_cuenta,
         estado : "activos"
@@ -82,7 +82,7 @@ const modCuentaEscuela = async ( req : Request, res : Response) => {
 
     const dataMod = {
         id_cuenta : Number(req.params.id_cuenta),
-        id_escuela : Number(req.params.id_escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         nuevo_nombre_cuenta : req.body.nuevo_nombre_cuenta,
         nuevo_tipo_cuenta : req.body.nuevo_tipo_cuenta,
     };
@@ -130,7 +130,7 @@ const estadoCuentasEscuela = async ( req : Request , res : Response) =>{
        
         const data = {
             estado : req.params.estado,
-            id_escuela : Number(req.params.id_escuela),
+            id_escuela : Number(req.usuario?.id_escuela),
             id_cuenta : Number(req.params.id_cuenta)
         };
 
@@ -177,7 +177,7 @@ const listaCuentas =  async ( req : Request, res : Response) =>{
     const data = {
         limite : Number(req.query.limit),
         pagina : Number(req.query.pagina),
-        id_escuela : Number(req.query.id_escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         estado : req.query.estado,
         nombre_cuenta : req.query.nombre_cuenta,
         tipo_cuenta  : req.query.tipo_cuenta,
