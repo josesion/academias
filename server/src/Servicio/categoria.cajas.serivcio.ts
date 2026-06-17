@@ -35,10 +35,11 @@ import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categ
  */
 const verificacionInscripcionCategoria = async ( data : CategoriaCajaInscripcionInputs)
 : Promise<TipadoData<{id_categoria : number}>> => {
-
+  
     const dataCatInscripcion : CategoriaCajaInscripcionInputs = CategoriaCajaInscripcionSchema.parse( data )
+   
     const dataCatInscripcionResult = await categoriaCajaData.localizarIncripcionCategortia(dataCatInscripcion);
-
+    
     if ( dataCatInscripcionResult.code === "ID_INSCRIPCION_CATCAJA_NO_EXISTE"){
         return{
             error : true,

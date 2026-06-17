@@ -1,6 +1,5 @@
 interface TipoData {
     tipo : string ,
-    id_escuela : string
 };
 
 export interface altaTipo extends TipoData {} ;
@@ -21,6 +20,5 @@ export interface Paginacion {
 
 export interface listadoTipoSinPaginacion{
     tipo : string,
-    id_escuela : number
     estado : string
 };

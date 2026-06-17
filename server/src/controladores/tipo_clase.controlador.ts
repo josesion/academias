@@ -206,7 +206,7 @@ const listadoTipo = async( req : Request, res : Response ) =>{
     const listadoResult = await servicioTipo.listadoTipoClases( dataListado);
 
     const config = MAPA_LISTADO_TIPO_CLASE[ listadoResult.code] || ERROR_INTERNO_SERVIDOR;
-
+  
     if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
             res,
@@ -257,7 +257,7 @@ const listadoTipoSinPaginacion = async( req : Request , res : Response)=>{
     const listadoResult = await servicioTipo.listadoTipoClasesSinPag( dataListado );
     
     const config = MAPA_LISTADO_TIPO_CLASE[ listadoResult.code] || ERROR_INTERNO_SERVIDOR;
-    console.log("resultado", listadoResult, "config", config);
+
     if ( config.status === CodigoEstadoHTTP.OK){
         return enviarResponse(
             res,

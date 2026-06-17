@@ -35,7 +35,7 @@ const buscarInscripcionCategoria = async ( req : Request, res : Response ) =>{
     const data = { id_escuela : Number( req.usuario?.id_escuela)};
 
     const inscripcionCategoriaResult = await categoriaCajaServicio.verificacionInscripcionCategoria(data);
-
+  
     const config = MAPA_LOCALIZAR_INSCRIPCION_CATEGORIA_CAJA[ inscripcionCategoriaResult.code ]  || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK){
@@ -247,7 +247,7 @@ const listadoCategoriaCaja = async( req : Request, res : Response) =>{
 
 
     const config = MAPA_LISTADO_CATEGORIA_CAJA[  resultadoListado.code ]  || ERROR_INTERNO_SERVIDOR;
-
+  
      if ( config.status === CodigoEstadoHTTP.OK){
 
          return enviarResponse(

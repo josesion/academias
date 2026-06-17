@@ -1,8 +1,3 @@
-import { useContext } from "react";
-
-//Seccion de contexto---------------------------------------
-import { RutasProtegidasContext } from "../contexto/protectRutas";
-
 //Seccion de tipado-----------------------------------------
 import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
 import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
@@ -86,12 +81,9 @@ const mapTextoEliminar = (dataE: any) => ` El estado del Profesor : ${dataE.dni}
 
 export const useAbmProfesoresUsuarios = () => {
 
-    const { rol } = useContext( RutasProtegidasContext );
-
     const config ={
         recursoSingular : "Profesor",
 
-        idEscuela: rol?.escuela || 1 ,
 
          servicios : {
                 registro    : altaProfesor,

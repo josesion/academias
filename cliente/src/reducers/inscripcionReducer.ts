@@ -20,8 +20,7 @@ export interface MetodoPagoInput {
 
 export interface InscripcionTipado {
     inscripcionData : {
-        id_usuario : number,
-        id_escuela : number,
+
         usuario    : string,
         filtrosIniciales : {  
             inicialFiltroAlumno : { dni : string , apellido : string },
@@ -76,8 +75,7 @@ export interface InscripcionTipado {
 // ==========================================
 
 export const inicialState = ( config: { 
-    id_escuela: number, 
-    id_usuario: number , 
+
     usuario : string, 
     
     inicialFiltros : {
@@ -90,8 +88,7 @@ export const inicialState = ( config: {
 }) : InscripcionTipado => ({
 
     inscripcionData : {
-        id_escuela : config.id_escuela,
-        id_usuario : config.id_usuario,
+
         usuario    : config.usuario,
         filtrosIniciales : {
             inicialFiltroAlumno : config.inicialFiltros.inicialFiltroAlumno,
@@ -104,7 +101,6 @@ export const inicialState = ( config: {
         filtroBusquedaAlumno : {
            ... config.inicialFiltros.inicialFiltroAlumno,
            estado : "activos",
-           id_escuela : config.id_escuela,
            pagina     : config.paginacion.pagina,
            limite     : config.paginacion.limite 
         },
@@ -112,7 +108,6 @@ export const inicialState = ( config: {
         filtroBusquedaPlan   : {
            ... config.inicialFiltros.inicialFiltroPlan,
            estado : "activos",
-           id_escuela : config.id_escuela,
            pagina     : config.paginacion.pagina,
            limite     : config.paginacion.limite 
         }
@@ -285,7 +280,6 @@ export const InscripcionReducer = (state: ReturnType<typeof inicialState>, actio
                     filtroBusquedaAlumno: {     
                         ...state.inscripcionData.filtrosIniciales.inicialFiltroAlumno,
                         estado: "activos",
-                        id_escuela: state.inscripcionData.id_escuela,
                         pagina: 1, 
                         limite: state.filtrosBusqueda.filtroBusquedaAlumno.limite 
                     }
@@ -306,7 +300,6 @@ export const InscripcionReducer = (state: ReturnType<typeof inicialState>, actio
                     filtroBusquedaPlan: {     
                         ...state.inscripcionData.filtrosIniciales.inicialFiltroPlan,
                         estado: "activos",
-                        id_escuela: state.inscripcionData.id_escuela,
                         pagina: 1, 
                         limite: state.filtrosBusqueda.filtroBusquedaPlan.limite 
                     }

@@ -223,11 +223,11 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 
             const data = {
                 id_caja       : state.dataCaja.id_caja,
-                id_escuela    : Number(state.dataCaja.id_escuela), 
+        
                 id_categoria  : Number(state.movimientoExtraordinario.id_categoria),
                 monto         : Number(state.movimientoExtraordinario.monto),
                 id_cuenta     : Number(state.movimientoExtraordinario.id_cuenta),
-                id_usuario    : Number(state.movimientoExtraordinario.id_usuario),
+
                 descripcion   : state.movimientoExtraordinario.descripcion,
                 referencia_id : 0       
             };

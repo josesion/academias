@@ -44,6 +44,9 @@ function App() {
         <div className="esfera esfera-1"></div>
         <div className="esfera esfera-2"></div>
         <div className="esfera esfera-3"></div>
+        <div className="esfera esfera-4"></div>
+        <div className="esfera esfera-5"></div>
+        <div className="esfera esfera-6"></div>
       </div>
       <ProtectRutasProv>
         <BrowserRouter>

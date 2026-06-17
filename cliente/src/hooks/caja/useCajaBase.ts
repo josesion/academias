@@ -11,8 +11,7 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 
 interface CajaBaseConfig {
-   id_escuela: number;
-   id_usuario: number;
+ 
    usuario: string;
 
    servicios: {
@@ -25,8 +24,6 @@ interface CajaBaseConfig {
 export const useCajaBase = ( config : CajaBaseConfig) => {
 
     const [ state , dispatch] = useReducer( cajaReducer, initialState({
-        id_escuela: config.id_escuela,
-        id_usuario : config.id_usuario,
         usuario    : config.usuario,
     }));
 
@@ -94,9 +91,7 @@ const handleAbrirCaja = async() =>{
         });
         
         const data = {
-            id_escuela : state.dataCaja.id_escuela,
             estado : "abierta",    
-            id_usuario_apertura : state.dataCaja.id_usuario,    
             detalle : detalleLimpiado // a modificar mas a delante
         };
 
@@ -108,14 +103,6 @@ const handleAbrirCaja = async() =>{
         if (aperturaCajaResult.code === "CAJA_ABIERTA_OK"){
             dispatch({ type : "CERRAR_MODALES"});
             dispatch({ type : "ABRIR_MODAL_ANIMACION_APERTURA"});    
-
-            // setScrollState({
-            //     loading: false,
-            //     hasMore: true,
-            //     offset: 0,
-            //     limite: 5
-            // });
-            // setMovimientos([]); 
 
             dispatch({
                 type : "SET_CAJA_ACTIVA",
@@ -186,12 +173,10 @@ const handleCerrarCaja =async () =>{
        return; 
     }
     
-    if ( state.panelPrincipal &&  state.dataCaja.id_caja && state.dataCaja.id_escuela && config.id_usuario){
+    if ( state.panelPrincipal &&  state.dataCaja.id_caja ){
     
         dataCierreCaja = {
                 id_caja: state.dataCaja.id_caja,
-                id_escuela: config.id_escuela,
-                id_usuario_cierre: config.id_usuario,
             
                 monto_final_real: Number(state.montoRealFinal), 
                 monto_sistema: state.panelPrincipal[0].balance_neto ?? 0,
@@ -235,9 +220,9 @@ const handleCerrarCaja =async () =>{
 // ────────────────────────────────────────────────────────────── 
 
 const sincronizarEstadoCaja = async () => {
-    if (!config?.id_escuela) return;
+   // if (!config?.id_escuela) return;
     try {
-      const idCajaResult = await idCajaFuntion(config.id_escuela);
+      const idCajaResult = await idCajaFuntion();
       if (idCajaResult) {
         dispatch({ type: "SET_CAJA_ACTIVA", payload: { id_caja: idCajaResult, estado: "abierta" } });
         // ... tus otros dispatch de éxito
@@ -252,7 +237,7 @@ const sincronizarEstadoCaja = async () => {
 
 useEffect(() => {
     sincronizarEstadoCaja();
-  }, [config?.id_escuela]);  
+  }, []); // colocar un resfrescador 
 
 
 // ──────────────────────────────────────────────────────────────
@@ -262,7 +247,7 @@ useEffect(() => {
 useEffect( ()=> {
     const idCaja = async () => {
     
-        const idCajaResult = await idCajaFuntion(config.id_escuela);
+        const idCajaResult = await idCajaFuntion();
         
         if ( idCajaResult){
            

@@ -1,7 +1,3 @@
-import { useContext } from "react";
-
-//Seccion de contexto---------------------------------------
-import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 //Sericios ---------------------------------------------------
 import { listadoInscripciones, anularInscripcion } from "../servicio/inscripciones.fetch";
@@ -34,9 +30,9 @@ const inputsFiltro: InputsPropsBuscador[] = [
 
 
 export const setListadoInscripcion = () => {
- const { rol } = useContext( RutasProtegidasContext ); 
+
  const config = {
-    idEscuela: rol?.escuela || 1,
+
 
     servicios :{
       listado : listadoInscripciones,  

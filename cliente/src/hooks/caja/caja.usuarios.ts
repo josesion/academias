@@ -9,8 +9,7 @@ import { useEntidadesExternasCaja } from "./useEntidadesExternasCaja";
 import { useIuCaja } from "./useIUCaja";
 
 interface DataCajaUsuariosConfig {
-    id_escuela : number, 
-    id_usuario : number,
+
     usuario    : string,
     
     servicios : {
@@ -33,8 +32,7 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     // ─────────────────────────────
 
     const cajaBase = useCajaBase({
-        id_escuela : config.id_escuela,
-        id_usuario : config.id_usuario,
+
         usuario    : config.usuario,
 
         servicios : {

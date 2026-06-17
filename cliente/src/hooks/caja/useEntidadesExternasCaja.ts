@@ -23,7 +23,6 @@ export const useEntidadesExternasCaja = ( config : EntidadesExternasCajaConfig) 
     const { state ,dispatch} = config;
 
    const filtroCuentasEstatica = {
-        id_escuela : state.dataCaja.id_escuela,
         estado : "activos"
    }; 
 

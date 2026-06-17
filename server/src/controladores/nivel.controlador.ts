@@ -48,7 +48,7 @@ const altaNivel = async ( req : Request , res : Response ) => {
     };
 
     const altaResult = await servicioNiveles.altaNivel(dataNivel);
-
+    console.log(altaResult)
     const config = MAPA_ALTA_NIVEL[ altaResult.code ] || ERROR_INTERNO_SERVIDOR; 
 
     if (config.status === CodigoEstadoHTTP.OK){

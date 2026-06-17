@@ -37,7 +37,7 @@ import { MAPA_METRICAS_PANEL, ERROR_INTERNO_SERVIDOR, MAPA_CAJA_ABIERTA,
  * * @returns {Promise<Response>} Respuesta formateada basada en MAPRA_DETALLE_MOVIMIENTOS.
  */
 const detalleCaja = async ( req : Request, res : Response ) => {
-
+    
     const dataDetalle = {
         id_caja : Number(req.body.id_caja),
         id_escuela : Number(req.usuario?.id_escuela),
@@ -50,7 +50,7 @@ const detalleCaja = async ( req : Request, res : Response ) => {
     };
     
     const detalleCajaResult = await cajaServicio.detalleCaja(dataDetalle);
-    
+
     const config =  MAPA_DETALLE_MOVIMIENTOS[ detalleCajaResult.code]  || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK) {
@@ -145,11 +145,11 @@ const cierreCaja = async( req : Request, res : Response) =>{
  * * @returns {Promise<Response>} Respuesta con el ID de la caja abierta o error controlado según MAPA_CAJA_ABIERTA.
  */
 const idCajaAbierta =async ( req : Request, res : Response) =>{
-   
+  
     const id_escuela    = req.usuario?.id_escuela;
    
     const idCajaAbiertaResult = await cajaServicio.idCajaAbiertaServicio({id_escuela});
-
+   
     const config = MAPA_CAJA_ABIERTA[ idCajaAbiertaResult.code] || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK) {
@@ -426,7 +426,7 @@ const listaTipoCuentas = async ( req : Request , res : Response) => {
  * // - ERROR_SERVIDOR (500): Fallo inesperado en la transacción o base de datos.
  */
 const abrirCajaTransaccion =async (req : Request , res : Response) => {
-    console.log(req.usuario)
+  
     const dataCaja = {
         id_escuela : Number( req.usuario?.id_escuela),
         estado     : req.body.estado,

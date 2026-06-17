@@ -52,17 +52,13 @@ export interface CajaTipado {
 // ==========================================
 // 2. VALORES INICIALES (ESTADO CERO)
 // ==========================================
-export const initialState = (config: { id_escuela: number, id_usuario: number , usuario : string}): CajaTipado => ({
+export const initialState = (config: { usuario : string}): CajaTipado => ({
     dataCaja: { 
         id_caja: null, 
-        id_usuario: config.id_usuario,
-        id_escuela: config.id_escuela ,
         usuario   : config.usuario,
     },
     apertura: {
-        id_escuela: config.id_escuela,
         estado: "abierta",
-        id_usuario_apertura: config.id_usuario
     },
     estadoCaja: "cerrada",
     modalesCaja: { apertura: false, cierre: false },
@@ -82,11 +78,9 @@ export const initialState = (config: { id_escuela: number, id_usuario: number , 
         id_caja: null,
         id_categoria: null,
         id_cuenta: null,
-        id_usuario: config.id_usuario,
         monto: "",
         descripcion: "",
         referencia_id: 0,
-        id_escuela: config.id_escuela,
         tipo: ""
     },
     listadoCuentasActivas: [],
@@ -329,8 +323,6 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 ...state,
                 movimientoExtraordinario: {
                     id_caja: state.dataCaja.id_caja,
-                    id_usuario: state.dataCaja.id_usuario,
-                    id_escuela: state.dataCaja.id_escuela,
                     id_categoria: null,
                     id_cuenta: null,
                     monto: "",
@@ -360,11 +352,11 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                     id_caja: null,
                     id_categoria: null,
                     id_cuenta: null,
-                    id_usuario: state.dataCaja.id_usuario, // Mantenemos los IDs de config
+
                     monto: "",
                     descripcion: "",
                     referencia_id: 0,
-                    id_escuela: state.dataCaja.id_escuela,
+      
                     tipo: ""
                 }
             };  

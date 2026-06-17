@@ -23,7 +23,6 @@ export const calendarioEscuela = async(
 
     const parametrosQuery = {
         estado: data.estado || "activos",
-        id_escuela: data.id_escuela.toString(),
     };
 
     const ruta  = `${PAGINA}api/lista_horario?${new URLSearchParams(parametrosQuery as Record<string, string>).toString()}`;      
@@ -53,7 +52,6 @@ export const altaHorario = async(
     return await apiFetch( ruta , {
         method : "POST",
         body   :{
-            id_escuela : data.id_escuela,
             dni_profesor : data.dni_profesor,
             id_nivel : data.id_nivel,
             id_tipo_clase  : data.id_tipo_clase,
@@ -86,7 +84,6 @@ export const modHorario = async (
  return await apiFetch( ruta , {
     method : "PUT",
     body : {
-        id_escuela : data.id_escuela,
         dni_profesor : data.dni_profesor,
         id_nivel : data.id_nivel,
         id_tipo_clase : data.id_tipo_clase,
@@ -117,7 +114,6 @@ export const eliminarHorario = async(
  return await apiFetch( ruta, {
     method : "DELETE",
     body   : {
-        id_escuela : data.id_escuela,
         id : data.id,
         estado : data.estado,
         vigente : data.vigente       

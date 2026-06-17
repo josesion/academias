@@ -21,7 +21,6 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
  */
 interface AbmConfig {
     recursoSingular: string; // Nombre singular del recurso (ej: "Alumno", "Curso") para mensajes.
-    idEscuela : number  ,     // ID de la escuela, esencial para el scope de las operaciones.
     
     // Funciones tipadas para interactuar con la API (CRUD).
     servicios: {
@@ -75,14 +74,12 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
   
 // --- Estados del Formulario y Filtros ---
     const [ formData , setFormData ] = useState<any>({   // Datos del formulario de alta/modificación.
-        ...config.inicialFormData,
-        id_escuela : config.idEscuela
+        ...config.inicialFormData
     });
     const [ barraPaginacion , setBarraPaginacion ] = useState<PaginacionProps>(config.paginacion); // Datos de la paginación (total de páginas, etc.).
     const [filtroData , setFiltroData] =  useState<any>({ // Datos del filtro de búsqueda (incluye paginación y estado).
         ... config.inicialFiltros ,
         estado : "activos" ,
-        id_escuela : config.idEscuela,
         pagina : config.paginacion.pagina,
         limite : config.paginacion.limite
         } );
@@ -95,7 +92,6 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
     const handleAgragar = ( ) =>{
             setFormData({            
                 ... config.inicialFormData,
-                id_escuela : config.idEscuela
             });
             setModal( true );
             setTipoFormulario("alta");
@@ -108,7 +104,6 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
    
         setFormData({
             ...mapData,
-            id_escuela : config.idEscuela
         })
         setTipoFormulario("modificar");
         setModal( true );
@@ -117,10 +112,10 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
 /** Manejador para abrir el modal de Eliminación/Restauración. Mapea y setea el texto de confirmación. */
     const handleEliminar = ( data : TData ) =>{
+       
         const mapData = config.mapDataEliminar(data);     
         setAccionEliminar(config.mapTextoEliminar(data));
         setFormData({   ... mapData,
-                        id_escuela : config.idEscuela,
                         estado : estadoUrl });
         setModalEliminar(true);
     } 
@@ -174,7 +169,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             });
     }; 
 /** Maneja el cambio del estado de listado (items genericos), ajustando el botón de acción. */
-
+    console.log(filtroData)
    const handleItems = (e: React.ChangeEvent<HTMLSelectElement>)  => { 
    
         if (e.target.value === "todos"){
@@ -219,7 +214,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             : config.servicios.modificar
 
         const resultado = await servicioApiFetch( formData );
-            
+  
         // Manejo de errores de vole.log(resultado)alidación de campos (Zod/Backend)
         if ( resultado.error === true && resultado.code === "VALIDATION_ERROR" && resultado.errorsDetails) {
             const erroresTransformados = transformErrores( resultado.errorsDetails  as ErrorBackend[]);
@@ -240,8 +235,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         setErrorsZod({null : null });
         setActualizarListado( actualizarListado + 1 );
         setFormData({
-            ... config.inicialFormData,
-            id_escuela : config.idEscuela
+            ... config.inicialFormData
         });
         
         return setModal(false)

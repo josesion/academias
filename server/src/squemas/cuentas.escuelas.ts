@@ -43,7 +43,7 @@ export const ListadoCuentasSchema = z.object ({
                     .trim()
                     .max( 20 , { message: "El nivel debe tener al menos 15 caracteres." }),
 
-    tipo_cuenta: z.enum(['fisico', 'virtual', "todos"]),
+    tipo_cuenta: z.enum(['fisico', 'virtual', "todos", "%"]),
 
     pagina : z.coerce.number().int().min(1).default(1), 
 

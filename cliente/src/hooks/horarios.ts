@@ -20,7 +20,7 @@ import { type ResultHoras } from "./setHora";
 
 
 interface HorarioConfig {
-    idEscuela : number,
+    //idEscuela : number,
 
     servicios : {
         listadoProfesores : ServicioCrud,
@@ -83,7 +83,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
 // Estados el alta del Horario
 // ──────────────────────────────────────────────────────────────  
     const [dataFormHorario , setDataFormHorario] = useState<TipadoHorario.DataHorario >({ 
-            id_escuela : config.idEscuela,
+           
             dni_profesor : null,
             id_nivel :  null,
             id_tipo_clase  :  null,
@@ -95,7 +95,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
     });
 
     const [ dataModHorario, setDataModHorario] = useState<TipadoHorario.ModHorario>({
-        id_escuela : config.idEscuela,
+    
         dni_profesor : null,
         id_nivel     : null,
         id_tipo_clase: null,
@@ -103,7 +103,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
     });
 
     const [dataEliminarHorario , setDataEliminarHorario] =useState<TipadoHorario.EliminarHorario>({
-        id_escuela : config.idEscuela,
+      
         id : null,
         estado : "inactivos",
         vigente : false
@@ -139,7 +139,7 @@ const resetFormulario = () => {
         id_horario : null
     });
   setDataFormHorario({ 
-        id_escuela : config.idEscuela,
+      
         dni_profesor : null,
         id_nivel :  null,
         id_tipo_clase  :  null,
@@ -150,14 +150,14 @@ const resetFormulario = () => {
         estado : "activos"
     });
   setDataModHorario({
-        id_escuela : config.idEscuela,
+    
         dni_profesor : null,
         id_nivel     : null,
         id_tipo_clase: null,
         id           : null
     });
   setDataEliminarHorario({
-        id_escuela : config.idEscuela,
+
         id : null,
         estado : "inactivos",
         vigente : false
@@ -182,24 +182,24 @@ const resetFormulario = () => {
 // ──────────────────────────────────────────────────────────────  
     const [filtroCalendario , setFiltroCalendario] = useState<TipadoHorario.Calendario >({
         estado : "activos",
-        id_escuela : config.idEscuela
+
     });
 
 
     const [filtroBusquedaProfesor , setFiltroBusquedaProfesor] = useState<TipadoHorario.FiltroProfesor>({
         ...config.inicialFiltroProfesor ,
         estado : "activos" ,
-        id_escuela : config.idEscuela
+
     });
     const [filtroBusquedaNivel , setFiltroBusquedaNivel] = useState<TipadoHorario.FiltroNivel>({
         ...config.inicialFiltroNivel,
         estado : "activos",
-        id_escuela : config.idEscuela,
+
     });
     const [ filtroBusquedaTipo , setFiltroBusquedaTipo ] = useState<TipadoHorario.FiltroTipo>({
         ...config.inicialFiltroTipo,
         estado : "activos",
-        id_escuela : config.idEscuela,
+
     });
 
 // ──────────────────────────────────────────────────────────────

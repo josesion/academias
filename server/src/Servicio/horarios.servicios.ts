@@ -60,11 +60,20 @@ const servicioCalendarioHorario = async( data : TipadoHorario.HorarioCalendarioI
         }
     };
 
+    if ( calendario.code === 'HORARIOS_CLASES_LISTED'){
+        return {
+            error: false,
+            message: "Calendario de la escuela obtenido correctamente",
+            data: calendario.data,
+            code: "CALENDARIO_ESCUELA_LISTADO"
+        }
+    };
+
+
     return {
-        error: false,
-        message: "Calendario de la escuela obtenido correctamente",
-        data: calendario.data,
-        code: "CALENDARIO_ESCUELA_LISTADO"
+        error: true,
+        message: "Error al obtener el calendario",
+        code: "ERROR_SERVIDOR"
     };
 };
 
@@ -149,7 +158,7 @@ const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput)
     return {
         error : true ,
         message : `No se pudo crear el horario de clase`,
-        code : "HORARIOS_PROBLEMAS" 
+        code : "ERROR_SERVIDOR" 
     };
 };
 
@@ -208,7 +217,7 @@ const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
     return {
         error : true ,
         message : `No se logro modificar el horario de clase`,
-        code : "HORARIOS_PROBLEMAS"        
+        code : "ERROR_SERVIDOR"        
     }
 };
 
@@ -269,7 +278,7 @@ const servicioEliminarHorario = async ( data : TipadoHorario.EliminarHorarioInpu
     return {
         error : true ,
         message : `No se logro borrar el horario de clase`,
-        code : "HORARIOS_PROBLEMAS"        
+        code : "ERROR_SERVIDOR"        
     }
 
 };

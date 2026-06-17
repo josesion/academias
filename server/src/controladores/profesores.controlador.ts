@@ -198,7 +198,7 @@ const estadoProfesor = async ( req : Request , res : Response ) => {
 
 
 const listadoProfesores = async( req : Request , res : Response ) => {
-  
+    
 
     const { dni , apellido , estado , limit , pagina} = req.query;  
 
@@ -214,7 +214,6 @@ const listadoProfesores = async( req : Request , res : Response ) => {
         pagina : Number(pagina)
     };
    
-
     const listadoResult = await servicioProfesor.listadoProfesor( dataListado );
 
     const config = MAPA_LISTADO_PROFESORES[ listadoResult.code ]   ||  ERROR_INTERNO_SERVIDOR;

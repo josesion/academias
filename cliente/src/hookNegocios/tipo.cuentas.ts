@@ -1,7 +1,3 @@
-import { useContext } from "react";
-
-//Seccion de contexto---------------------------------------
-import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 //Seccion de tipado-----------------------------------------
 import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
@@ -68,14 +64,11 @@ const mapEstadoTipoCuenta = ( dataE : any) => ({
 const mapTextoEliminar = (dataE: any) => ` El estado Tipo Cuenta : ${dataE.id_cuenta} cambiara`;
 
 export const setAbmTipoCuentas = () => {
-  
-    const { rol } = useContext( RutasProtegidasContext );   
+   
 
     const config = {
         recursoSingular : "Tipos Cuenta", 
-        
-        idEscuela: rol?.escuela || 1 ,  
-
+          
         servicios : {
             registro : altaTipoCuenta,
             modificar : modTipoCuenta,

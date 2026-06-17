@@ -144,9 +144,9 @@ const listadoCuentas = async ( paramListado : ListadoCuentasInputs)
     
     const nombreFiltro =  `%${nombre_cuenta}%`;
     let tipoFiltro = `%${tipo_cuenta}%`;
+    if (tipo_cuenta === `todos`){
+         tipoFiltro = "%%" };
   
-    if (tipo_cuenta === `todos`){ tipoFiltro = "%%" };
-    
     const sql : string = `select
                                 id_cuenta,
                                 nombre_cuenta,

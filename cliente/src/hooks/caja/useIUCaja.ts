@@ -27,7 +27,6 @@ export const useIuCaja = ( config : IuCajaConfig) => {
 
         const servicioApiFetch = config.servicios.listadoCategoriaCaja;
         const listadoIngresos = await servicioApiFetch({
-            id_escuela : state.dataCaja.id_escuela,
             tipo : "ingreso",
             estado : "activos"
         });
@@ -130,7 +129,7 @@ const hanldeCerrarInforme = () =>{
         
         const servicioApiFetch = config.servicios.listadoCategoriaCaja;
         const listadoEgresos = await servicioApiFetch({
-            id_escuela :  state.dataCaja.id_escuela,
+        
             tipo : "egreso",
             estado : "activos"
         });

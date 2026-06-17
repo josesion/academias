@@ -1,8 +1,7 @@
 
 export interface listadoPlanUsuario {
     descripcion : string,
-    estado     :  string,
-    id_escuela: number
+    estado     :  string
 }   
 
 
@@ -31,7 +30,6 @@ export interface PlanesUsuariosBase {
 
 export interface CrearPlanesUsuarios  {
     id? : number // Opcional, puede ser autogenerado por la BD
-    id_escuela : number,
     fecha_creacion : string,
     estado : string,
     descripcion : string,
@@ -42,7 +40,6 @@ export interface CrearPlanesUsuarios  {
 
 export interface ModPlanesUsuarios {
     id : number,
-    id_escuela : number,
     descripcion : string,
     cantidad_clases : number,
     cantidad_meses  : number,
@@ -51,14 +48,12 @@ export interface ModPlanesUsuarios {
 
 export interface EliminarPlanUsuario {
     id : number ,
-    id_escuela : number ,
     estado  : string
 }
 
 export interface  EliminarPlanUsuariosResponse {
     descripcion : string,
     fecha_creacion : string,
-    id_escuela : number,
     id_plan : number,
     
 }

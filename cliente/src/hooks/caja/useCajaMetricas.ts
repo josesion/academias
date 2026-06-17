@@ -58,7 +58,6 @@ useEffect( ()=> {
 
         const data = {
             id_caja : state.dataCaja.id_caja,
-            id_escuela : state.dataCaja.id_escuela
         };
 
         const metricasCajaResult = await servicioApiFetch(data);

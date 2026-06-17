@@ -7,9 +7,9 @@ const ruta = Router();
 // al terminar las rutas agregar verificaciond de token
 ruta.post("/api/registro_alumno",permisos.validarPermiso ,controladorAlumnos.altaAlumno);
 ruta.get("/api/listar_alumno"  ,permisos.validarPermiso ,controladorAlumnos.listarAlumno);
-ruta.put("/api/mod_alumno/:dni/:id_escuela" ,permisos.validarPermiso , controladorAlumnos.modAlumno);
+ruta.put("/api/mod_alumno/:dni" ,permisos.validarPermiso , controladorAlumnos.modAlumno);
 ruta.get("/api/listar_alumno_sin_pag" ,permisos.validarPermiso , controladorAlumnos.listaAlumnoSinPag);
-ruta.delete("/api/borrar_alumno/:dni/:id_escuela/:estado" ,permisos.validarPermiso , controladorAlumnos.borrarAlumno);
+ruta.delete("/api/borrar_alumno/:dni/:estado" ,permisos.validarPermiso , controladorAlumnos.borrarAlumno);
 
 
 

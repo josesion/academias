@@ -23,8 +23,7 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 
 interface InscripcionConfig {
-    idEscuela : number,
-    id_usuario : number,
+
     usuario    : string,
 
     servicios :{
@@ -53,8 +52,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
      const navegar = useNavigate();
 
      const [ state , dispatch] = useReducer( InscripcionReducer, inicialState({
-            id_escuela : config.idEscuela,
-            id_usuario : config.id_usuario,
+
             usuario    : config.usuario,
 
             inicialFiltros :  {
@@ -164,7 +162,7 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                 const servicioApiFetch = config.servicios.metodoInscripcion;
                 
                 const datosInscpDetalle = {
-                    id_escuela : state.inscripcionData.id_escuela,
+                    //id_escuela : state.inscripcionData.id_escuela,
                     id_plan    : state.plan.id,
                     dni_alumno : Number(state.alumno.Dni),
                     fecha_inicio :fechaHoy(),
@@ -176,11 +174,10 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                     id_caja : state.detalleMovimientoIds.id_caja,
                     id_categoria : state.detalleMovimientoIds.id_categoria,
                     id_cuenta : state.cuenta , // aca iria el ID del metodo de pago 
-                    id_usuario : state.inscripcionData.id_usuario,    
+                    //id_usuario : state.inscripcionData.id_usuario,    
                     descripcion : state.notas, 
                 };
 
-        
                 const subcripcionInsc = await servicioApiFetch( datosInscpDetalle );
                     
                 if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
@@ -197,7 +194,6 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
             dispatch({type : "FINALIZAR_OPERACION_INSCRIPCION"});
         };  
 };
-
 
 
 const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
@@ -219,6 +215,5 @@ const handleCancelar = (e : React.MouseEvent<HTMLButtonElement>) =>{
         handleCancelar,
 
         state,
-
     };    
 };

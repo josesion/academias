@@ -47,6 +47,15 @@
 }
 
 .esfera-3 {
+    width: 900px;
+    height: 300px;
+    background: rgba(168, 85, 247, 0.2); /* Morado */
+    top: 40%;
+    left: 30%;
+    animation-duration: 25s;
+}
+
+.esfera-4 {
     width: 300px;
     height: 300px;
     background: rgba(168, 85, 247, 0.2); /* Morado */
@@ -54,6 +63,25 @@
     left: 30%;
     animation-duration: 25s;
 }
+
+.esfera-5 {
+    width: 300px;
+    height: 300px;
+    background: rgba(167, 167, 168, 0.2); /* Morado */
+    top: 20%;
+    left: 10%;
+    animation-duration: 25s;
+}
+
+.esfera-6 {
+    width: 600px;
+    height: 300px;
+    background: rgba(72, 7, 128, 0.2); /* Morado */
+    top: 90%;
+    left: 10%;
+    animation-duration: 25s;
+}
+
 
 @keyframes moverLuces {
     0% { transform: translate(0, 0) scale(1); }

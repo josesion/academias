@@ -52,7 +52,7 @@ export const useHorariosUsuarios = () => {
     const { rol } = useContext( RutasProtegidasContext );
 
     const config = {
-        idEscuela:  rol?.escuela || 1 ,
+       //  idEscuela:  rol?.escuela || 1 ,
 
         servicios : {
             listadoTipo : listadoTipoSinPaginacion,

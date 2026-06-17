@@ -1,4 +1,4 @@
-type id_escuela = number;
+
 type estadoProfesor = "activos" | "inactivos";
 
 
@@ -9,15 +9,12 @@ export interface ProfesoresData {
     celular: string,
 };
 
-export interface RegistroProfesores extends ProfesoresData {
-    id_escuela: id_escuela
-};
+export interface RegistroProfesores extends ProfesoresData {};
 
 export interface ModProfesores extends ProfesoresData {};
 
 export interface BajaProfesores {
     dni: string,
-    id_escuela: id_escuela,
     estado: estadoProfesor
 }
 
@@ -31,13 +28,12 @@ export interface ListadoProfesores  extends Paginacion {
     dni: string | number,
     apellido: string,
     estado: estadoProfesor,
-    id_escuela: id_escuela
+
 }
 
 export interface ListadoProfeSinPag {
     dni: string | number,
     estado: estadoProfesor,
-    id_escuela: id_escuela
 };
 
 export interface ProfesoresDataResponse { 

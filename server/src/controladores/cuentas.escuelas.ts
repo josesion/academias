@@ -182,9 +182,11 @@ const listaCuentas =  async ( req : Request, res : Response) =>{
         nombre_cuenta : req.query.nombre_cuenta,
         tipo_cuenta  : req.query.tipo_cuenta,
     };
+
+  
     
     const resultadoLista = await cuentaServicio.listadoCuentasServicio(data);
-  
+
     const config = MAPA_CUENTAS_LISTADO[resultadoLista.code] || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK){

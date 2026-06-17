@@ -4,12 +4,10 @@ export interface NivelData {
 };
 
 export interface RegistroNivel extends NivelData {
-    id_escuela: number;
 };
 
 export interface ModNivel {
     id : number,
-    id_escuela : number,
     nivel : string
 };
 
@@ -31,5 +29,4 @@ export interface Paginacion {
 export interface ListadoNivel {
     nivel : string, 
     estado : string,
-    id_escuela : number,
 };

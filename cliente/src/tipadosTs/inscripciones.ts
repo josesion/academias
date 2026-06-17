@@ -5,7 +5,7 @@ interface Paginacion {
 
 export interface inscripcionData{
     id_plan                     : number ,
-    id_escuela                  : number,
+    
     dni_alumno                  : number,
     fecha_inicio                : string,
     fecha_fin                   : string,
@@ -37,15 +37,13 @@ export  interface DataPlan {
 export interface FiltroAlumno extends Paginacion {
     dni: string;
     estado: string;
-    id_escuela: number;
+
 
 };
 
 export interface FiltroPlan extends Paginacion {
     descripcion: string;
     estado: string;
-    id_escuela: number;
-
 };
 
 export interface FiltroBusqueda {
@@ -53,7 +51,6 @@ export interface FiltroBusqueda {
     nombre_alumno : string,
     fecha_desde : string,
     fecha_hasta : string,
-    id_escuela?: number,
     estado : "activos" | "vencidos"| "todos",
     pagina : number | 1 ,
     limit : number | 10
@@ -75,7 +72,6 @@ export interface InscripcionListadoResult {
 
 
 export interface AnulacionInscripcion {
-    id_escuela: number;
     id_inscripcion: number;
     estadoInsc: 'activos' | 'vencidos' | 'anulados'; // Esto se llama Literal Type, para que no entre cualquier fruta
     monto: number;

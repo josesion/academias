@@ -23,10 +23,10 @@ export const registrarMovimientoCaja = async ( data : TipadoCaja.DataDetalleCaja
         method : "POST",
         body  : {
             id_caja : data.id_caja,
-            id_escuela : data.id_escuela,
+  
             id_categoria : data.id_categoria,
             id_cuenta : data.id_cuenta,
-            id_usuario : data.id_usuario,
+        
             monto : data.monto,
             descripcion : data.descripcion,
             referencia_id : data.referencia_id
@@ -35,7 +35,7 @@ export const registrarMovimientoCaja = async ( data : TipadoCaja.DataDetalleCaja
 };
 
 
-export const obtenerIdCaja = async ( id_escuela : TipadoCaja.idCajaAbierta)
+export const obtenerIdCaja = async ( )
 : Promise<ApiResponse<{ id_caja : number}>> =>{
   const verificarUser= await verificarAutenticacion();
 
@@ -48,7 +48,7 @@ export const obtenerIdCaja = async ( id_escuela : TipadoCaja.idCajaAbierta)
             errorsDetails: undefined
         };
     };    
-    const ruta = `${PAGINA}api/id_caja/${id_escuela}`;
+    const ruta = `${PAGINA}api/id_caja`;
     return await apiFetch( ruta , {
         method : "GET"
     });
@@ -67,9 +67,9 @@ export const metricasPanelCaja = async ( data : TipadoCaja.MetricasCaja)
             errorsDetails: undefined
         };
     };  
-    const {id_caja , id_escuela} = data ;
+    const {id_caja } = data ;
   
-    const ruta = `${PAGINA}api/metricas_caja/${id_caja}/${id_escuela}`;   
+    const ruta = `${PAGINA}api/metricas_caja/${id_caja}`;   
     return await apiFetch(ruta, {
         method : "GET"
     });
@@ -89,14 +89,12 @@ export const abrirCaja = async (data : TipadoCaja.AperturaCajaInputs ,)
             errorsDetails: undefined
         };
     };
-    const { id_escuela, estado , id_usuario_apertura , detalle } = data ;
+    const {  estado  , detalle } = data ;
     const ruta = `${PAGINA}api/caja_apertura`;  
     return await apiFetch( ruta,  {
         method : "POST",
         body : {
-            id_escuela : id_escuela,
             estado     : estado,
-            id_usuario_apertura : id_usuario_apertura,
             detalle : detalle
         }
     });
@@ -116,8 +114,8 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
             errorsDetails: undefined
         };
     }; 
-    const { id_caja , id_escuela , 
-            id_usuario_cierre, monto_sistema, 
+    const { id_caja , 
+            monto_sistema, 
             monto_final_real, diferencia_total,
             observaciones_cierre, arqueo_detalle
         } = data ; 
@@ -128,8 +126,6 @@ export const cerrarCaja = async ( data : TipadoCaja.CierreCajaData)
         method : "POST",
         body : {
             id_caja : id_caja,
-            id_escuela : id_escuela,
-            id_usuario_cierre :  id_usuario_cierre,
             monto_final_real : monto_final_real,
             monto_sistema : monto_sistema,
             diferencia_total : diferencia_total,
@@ -152,8 +148,8 @@ export const listadoCategoriaCaja = async ( data : TipadoCaja.listadoCategoriaCa
             errorsDetails: undefined
         };
     };   
-    const { id_escuela , tipo , estado}  = data; 
-    const ruta = `${PAGINA}api/lista_categoria_caja_tipos/${id_escuela}/${tipo}/${estado}`;
+    const { tipo , estado}  = data; 
+    const ruta = `${PAGINA}api/lista_categoria_caja_tipos/${tipo}/${estado}`;
     return apiFetch( ruta , {
         method : "GET"
     });
@@ -201,9 +197,9 @@ export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta)
             errorsDetails: undefined
         };
     }; 
-    const { id_escuela, estado } = data ;
+    const { estado } = data ;
 
-    const ruta = `${PAGINA}api/lista_tipos_cuentas/${id_escuela}/${estado}`;
+    const ruta = `${PAGINA}api/lista_tipos_cuentas/${estado}`;
     
     return await apiFetch( ruta , {
        method : "GET"  
@@ -212,7 +208,7 @@ export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta)
 };
 
 export const metricasPanelPrincipal = async (data : TipadoCaja.CierreCajaData) =>{
-    const {id_caja , id_escuela } = data;
+    const {id_caja  } = data;
     const verificarUser= await verificarAutenticacion();
 
     if (verificarUser.autenticado === false) {
@@ -225,7 +221,7 @@ export const metricasPanelPrincipal = async (data : TipadoCaja.CierreCajaData) =
         };
     };    
     
-    const ruta = `${PAGINA}api/metricas_panel/${id_caja}/${id_escuela}`;   
+    const ruta = `${PAGINA}api/metricas_panel/${id_caja}`;   
 
     return apiFetch( ruta , {
         method : "GET"

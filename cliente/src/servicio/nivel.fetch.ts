@@ -26,7 +26,6 @@ export const registroNivel = async( data : TipadoNivel.RegistroNivel)
         method : "POST",
         body   : {
             nivel           : data.nivel,
-            id_escuela      : data.id_escuela 
         }
      });   
 };
@@ -44,7 +43,7 @@ export const modNivel = async( data : TipadoNivel.ModNivel )
         };
     }
 
-    const ruta = `${PAGINA}api/nivel_usu_modificar/${data.id}/${data.id_escuela}`;
+    const ruta = `${PAGINA}api/nivel_usu_modificar/${data.id}`;
     return await apiFetch( ruta , {
         method : "PUT",
         body   : {
@@ -67,7 +66,7 @@ export const estadoNivel = async( data : TipadoNivel.estadoNivel )
         };
     }
 
-    const ruta = `${PAGINA}api/nivel_usu_estado/${data.id}/${data.id_escuela}/${data.estado}`;
+    const ruta = `${PAGINA}api/nivel_usu_estado/${data.id}/${data.estado}`;
     return await apiFetch( ruta , {
         method : "PUT",
         body   : {
@@ -95,8 +94,7 @@ export const listadoNivel = async( dataQuery : TipadoNivel.ListadoNivel & Tipado
         nivel : dataQuery.nivel, 
         estado : dataQuery.estado,
         limite : dataQuery.limite.toString(),
-        pagina : dataQuery.pagina.toString(),
-        id_escuela : dataQuery.id_escuela.toString()
+        pagina : dataQuery.pagina.toString()
     };
 
   const rutaCompleta = `${PAGINA}api/listaNivel_usu?${new URLSearchParams(parametrosConvertidos).toString()}`;  
@@ -122,8 +120,7 @@ export const listadoNivelSinPaginacion = async( dataQuery : TipadoNivel.ListadoN
 
     const parametrosConvertidos = {
         nivel : dataQuery.nivel || "%" , 
-        estado : dataQuery.estado || "activos",
-        id_escuela : dataQuery.id_escuela.toString()
+        estado : dataQuery.estado || "activos"
     };
 
     const rutaCompleta = `${PAGINA}api/listaNivel_usu_sin_pag?${new URLSearchParams(parametrosConvertidos).toString()}`;

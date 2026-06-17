@@ -19,8 +19,7 @@ export const useIncripcionesUsuarios = () =>{
     const { rol } = useContext( RutasProtegidasContext );
 
     const config = {
-        idEscuela: rol?.escuela || 1 ,
-        id_usuario : rol?.id_usuario || 0,
+
         usuario    : rol?.usuario || "Usuario",
       
         servicios : {

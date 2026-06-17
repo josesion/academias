@@ -18,12 +18,11 @@ export interface InformeDetalle {
 
 
 export interface idCajaAbierta{
-    id_escuela : number
+  
 };
 
-export interface DataTipoCuenta {
-    id_escuela : number,
-    estado : "activos" | "inactivos"
+export interface DataTipoCuenta { 
+        estado : "activos" | "inactivos"
 };
 
  export  interface metricasTipoCuentas {
@@ -44,8 +43,6 @@ export  interface JsonDataCierre {
 
   export interface  DataCierreCaja {
         id_caja : number,
-        id_escuela : number,
-        id_usuario_cierre : number,
         monto_final_real : number,
         monto_sistema : number,
         diferencia_total : number,
@@ -55,34 +52,30 @@ export  interface JsonDataCierre {
 
 
 export interface DetalleApertura {
-  id_cuenta: number;
-  nombre_cuenta: string;
-  monto: number  ;
+        id_cuenta: number;
+        nombre_cuenta: string;
+        monto: number  ;
 }
 export interface ListadoTipoCuentas{
-   id_cuenta : number,
-   nombre_cuenta : string,
-   tipo_cuenta : "fisico"  | "virtual",
+        id_cuenta : number,
+        nombre_cuenta : string,
+        tipo_cuenta : "fisico"  | "virtual",
 };
 
 export interface DataDetalleCaja{
-    id_caja : number  | null,
-    id_escuela : number,
-    id_categoria : number  | null,
-    id_cuenta : number | null,
-    id_usuario : number | null,
-    monto  : number | null,
-    descripcion : string  | null,
-    referencia_id : number  | null,  
+        id_caja : number  | null,
+        id_categoria : number  | null,
+        id_cuenta : number | null,
+        monto  : number | null,
+        descripcion : string  | null,
+        referencia_id : number  | null,  
 
 }; 
 
 export interface RegistroDetalleCaja {
     tipo: string,
-    id_escuela: number | null,
     id_caja : number  | null,
     id_categoria : number  | null,
-    id_usuario : number  | null,
     id_cuenta  : number  | null,
     monto  : string ,
     descripcion : string  | null,
@@ -135,16 +128,13 @@ export interface MetricasCajaPanelPrincipal{
 };
 
 export interface AperturaCajaInputs {
-    id_escuela: number;
-    estado: 'abierta' | 'cerrada'; // Lo tipamos como literal para evitar errores de escritura
-    id_usuario_apertura: number | null;   
+    estado: 'abierta' | 'cerrada'; // Lo tipamos como literal para evitar errores de escritura   
     detalle :  DetalleApertura[]// Permitimos null por si aún no se asignó
 };
 
 
 
 export interface AperturaCajaRespuesta {
-    id_escuela: number;
     id : number;
     id_usuario: number | null;     // Permitimos null por si aún no se asignó
     monto_inicial: number;
@@ -154,8 +144,6 @@ export interface AperturaCajaRespuesta {
 
 export interface CierreCajaData{
     id_caja: number,
-    id_escuela : number,
-    id_usuario_cierre: number,
     monto_final_real: number,
     monto_sistema : number,
     diferencia_total:  number,
@@ -201,8 +189,6 @@ export interface DetalleCajaMovimientoResult {
 
     export interface DataCaja{
         id_caja : number | null,
-        id_escuela : number | null,
-        id_usuario : number | null,
         usuario    : string  | null,
     };
 
@@ -219,9 +205,7 @@ export interface DetalleCajaMovimientoResult {
     };
 
     export interface DataAperturaCaja{
-       id_escuela : number | null,
        estado : EstadoCaja
-       id_usuario_apertura : null | number// es por el momento 
     };
 
     export interface scrollStateData {
@@ -241,7 +225,6 @@ export interface DetalleCajaMovimientoResult {
 
 export interface CategoríaCaja  {
     id_categoria : number,
-    id_escuela : number,
     nombre_categoria : string,
     tipo_movimiento : Estado,
     estado : "activos" | "inactivos",

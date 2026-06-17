@@ -22,8 +22,7 @@ export const registroTipo = async( data : tipadoTipoUsuarios.altaTipo)
     return await apiFetch( rutaCompleta , {
         method : "POST" ,
         body   :{
-            tipo        : data.tipo , 
-            id_escuela  : data.id_escuela
+            tipo        : data.tipo 
         }
     });
 };
@@ -42,7 +41,7 @@ export const modTipo =async( data : tipadoTipoUsuarios.modTipo)
             };
         }    
 
-        const rutaCompleta = `${PAGINA}api/mod_tipo_usu/${data.id}/${data.id_escuela}`;  
+        const rutaCompleta = `${PAGINA}api/mod_tipo_usu/${data.id}`;  
         return await apiFetch( rutaCompleta , {
             method : "PUT",
             body   :{
@@ -66,7 +65,7 @@ export const estadoTipo = async( data : tipadoTipoUsuarios.estadoTipo)
             };
         }
 
-      const ruta = `${PAGINA}api/estado_tipo_usu/${data.id}/${data.id_escuela}/${data.estado}`;
+      const ruta = `${PAGINA}api/estado_tipo_usu/${data.id}/${data.estado}`;
       return await apiFetch( ruta , {
         method : "PUT"
       });
@@ -91,8 +90,7 @@ export const listado =async( dataQuery : tipadoTipoUsuarios.estadoTipo & tipadoT
         tipo : dataQuery.tipo, 
         estado : dataQuery.estado,
         limite : dataQuery.limite.toString(),
-        pagina : dataQuery.pagina.toString(),
-        id_escuela : dataQuery.id_escuela.toString()
+        pagina : dataQuery.pagina.toString()
     };
  const rutaCompleta = `${PAGINA}api/lista_tipo_usu?${new URLSearchParams(parametrosConvertidos).toString()}`;  
 
@@ -117,7 +115,6 @@ export const listadoTipoSinPaginacion =async( dataQuery : tipadoTipoUsuarios.lis
             };
         }
     const parametrosConvertidos = {
-        id_escuela : dataQuery.id_escuela.toString(),
         nivel : dataQuery.tipo || "", 
         estado : dataQuery.estado  || "activos"
     };    

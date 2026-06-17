@@ -53,7 +53,6 @@ useEffect( ()=> {
         nombre_cuenta : "",
         tipo_cuenta : "todos",
         estado : "activos",
-        id_escuela : state.inscripcionData.id_escuela,
         limite :10,
         pagina : 1
     };    

@@ -25,8 +25,7 @@ export const altaCategoriaCaja = async (
         body  : {
             nombre_categoria : data.nombre_categoria,
             tipo_movimiento  : data.tipo_movimiento,
-            estado           : "activos", 
-            id_escuela       : data.id_escuela    
+            estado           : "activos"    
         }
     });
 };
@@ -46,8 +45,8 @@ export const modCategoriaCaja = async (
         };
     };
 
-   const { id_categoria, nombre_categoria, tipo_movimiento, id_escuela} = data; 
-   const ruta = `${PAGINA}api/mod_categoria_caja/${id_categoria}/${nombre_categoria}/${tipo_movimiento}/activos/${id_escuela}`;
+   const { id_categoria, nombre_categoria, tipo_movimiento} = data; 
+   const ruta = `${PAGINA}api/mod_categoria_caja/${id_categoria}/${nombre_categoria}/${tipo_movimiento}/activos`;
   
    return await apiFetch( ruta ,{
     method : "PUT"
@@ -68,11 +67,14 @@ export const bajaCategoriaCaja = async(
             errorsDetails: undefined
         };
     }; 
-    const {id_categoria, estado, id_escuela} = data;
-    const ruta = `${PAGINA}api/baja_categoria_caja/${id_categoria}/${estado}/${id_escuela}`;
+    const {id_categoria, estado,  nombre_categoria} = data;
+
+    console.log(data)
+
+    const ruta = `${PAGINA}api/baja_categoria_caja/${id_categoria}/${estado}/${nombre_categoria}`;
 
     return await apiFetch( ruta , {
-        method : "DELETE"
+        method : "PUT"
     });
 
 };
@@ -97,8 +99,6 @@ export const listadoCategoriaCaja = async(
         categoria : data.nombre_categoria,
         tipo : data.tipo_movimiento,
         estado : data.estado,
-
-        id_escuela : data.id_escuela.toString(),
         limite : data.limite.toString(),
         pagina : data.pagina.toString(),
 
@@ -112,7 +112,7 @@ export const listadoCategoriaCaja = async(
 
 };
 
-export const buscarInscripcionCategoria = async( id_escuela : number)
+export const buscarInscripcionCategoria = async()
 : Promise<ApiResponse<{id_categoria : number}>> => {
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
@@ -125,7 +125,7 @@ export const buscarInscripcionCategoria = async( id_escuela : number)
         };
     }; 
     
-    const ruta = `${PAGINA}api/id_inscripcion/${id_escuela}`;
+    const ruta = `${PAGINA}api/id_inscripcion`;
    
     return await apiFetch( ruta , {
         method : "GET"

@@ -3,14 +3,12 @@ type tipo_cuenta =  "fisico" | "virtual" | "todos" ;
 type estado_cuenta = "activos" | "inactivos" | "todos";
 
 export interface DataTipoCuentas {
-    id_escuela : number,
     nombre_cuenta : string,
     tipo_cuenta : tipo_cuenta,
     estado : estado_cuenta
 };
 
 export interface TipoCuentas {
-    id_escuela : number,
     nombre_cuenta : string,
     tipo_cuenta : tipo_cuenta,
 }; 
@@ -25,7 +23,6 @@ export interface TipoCuentasMod {
    nombre_cuenta : string,
    tipo_cuenta : tipo_cuenta,
    id_cuenta : number,
-   id_escuela : number 
 };
 
 export interface ResultTipoCuentaMod {
@@ -36,7 +33,6 @@ export interface ResultTipoCuentaMod {
 
 export interface EstadoTipoCuenta {
     id_cuenta : number,
-    id_escuela : number,
     estado : estado_cuenta     
 };
 

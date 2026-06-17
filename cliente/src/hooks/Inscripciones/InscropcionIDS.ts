@@ -5,6 +5,7 @@ import { useEffect } from "react";
 //Reducer
 import type { InscripcionTipado, InscripcionAcciones } from "../../reducers/inscripcionReducer";
 import type { DataCajaDetalleIDs } from "../../tipadosTs/caja.typado";
+import { idCajaFuntion } from "../../utils/idCaja";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -26,11 +27,12 @@ export const InscripcionIDS = ( config : IDsInscripciones) => {
   // Obtencion del id de Inscripcion predeterminado
   // ──────────────────────────────────────────────────────────────
     
+
   useEffect( () => {
       const obtenerIdInscipcion = async () => {
           const servicioApiFetch = config.servicios.inscripcionCategoriaCaja;
-          const idCategoriaInscripcion = await servicioApiFetch( state.inscripcionData.id_escuela);   
-              
+          const idCategoriaInscripcion = await servicioApiFetch( {} );   
+        
           if ( idCategoriaInscripcion.code === "CATEGORIA_INSCRIPCION_OK" && idCategoriaInscripcion.data){
   
               dispatch({
@@ -53,7 +55,7 @@ export const InscripcionIDS = ( config : IDsInscripciones) => {
     useEffect( () => {
         const obtenerIdCaja = async () =>{
             const servicioApiFetch = config.servicios.obtenerIdCaja;
-            const idCajaAbierta = await servicioApiFetch(state.inscripcionData.id_escuela);
+            const idCajaAbierta = await servicioApiFetch({});
         
             if ( idCajaAbierta.code === "ID_CAJA_OK" && idCajaAbierta.data){
                 dispatch({
@@ -68,6 +70,6 @@ export const InscripcionIDS = ( config : IDsInscripciones) => {
             };
         }; 
         obtenerIdCaja();
-    }, [state.modalInsc, state.inscripcionData.id_escuela]);
+    }, [state.modalInsc, state.actualizarListado]);
 
 };

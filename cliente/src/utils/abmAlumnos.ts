@@ -1,7 +1,7 @@
-import {  useContext} from "react";
+//import {  useContext} from "react";
 
 //Seccion de contexto---------------------------------------
-import { RutasProtegidasContext } from "../contexto/protectRutas";
+//import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 //Seccion de tipado-----------------------------------------
 import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
@@ -86,15 +86,11 @@ const mapTextoEliminar = (dataE: any) =>
 // Inicio del hook para logia abm alumnos
 export const useAbmAlumnos = () =>{ 
 // contexto
-const { rol } = useContext( RutasProtegidasContext );
+//const { rol } = useContext( RutasProtegidasContext );
   
 
 const config = {
     recursoSingular : "Alumno",
-
-    
-
-    idEscuela : rol?.escuela || 1 ,
 
     servicios : {
         registro : registroAlumno,

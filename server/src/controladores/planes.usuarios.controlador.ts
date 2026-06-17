@@ -194,7 +194,7 @@ const estadoPlanes_usuarios = async( req : Request , res : Response ) =>{
  * @returns {Promise<Response>} Respuesta HTTP estructurada con `enviarResponse` (incluyendo paginación) o `enviarResponseError`.
  */
 const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
-	const {descripcion , estado ,limit , pagina, escuela} = req.query;
+	const {descripcion , estado ,limit , pagina} = req.query;
     
 	// Calcular el offset para la consulta SQL, necesario para la paginación.
 	const offset = ( Number(pagina) -1 ) * Number(limit) ;
@@ -204,12 +204,13 @@ const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 		estado : String(estado) as 'activos' | 'inactivos' | 'todos',
 		limite : Number(limit),
 		offset : Number(offset),
-		id_escuela : Number(escuela),
+		id_escuela : Number(req.usuario?.id_escuela),
 		pagina 	
 	};
 
-	const resultadoLista = await planesServicio.listadoPlanes( dataListado );
 
+	const resultadoLista = await planesServicio.listadoPlanes( dataListado );
+	
 	const config = MAPA_LISTADO_PLAN[ resultadoLista.code ] || ERROR_INTERNO_SERVIDOR;
 
 	if ( config.status === CodigoEstadoHTTP.OK){

@@ -41,8 +41,10 @@ import { InscripcionInputs } from "../squemas/inscripciones";
  */
 
 const inscripcion = async( req : Request , res : Response ) =>{
+
     const dataRecivida = req.body;
     const id_escuela = req.usuario?.id_escuela;
+    const id_usuario = req.usuario?.id;
 
     //  campos para la Inscripción
     const dataInscrip: InscripcionInputs = {
@@ -63,10 +65,11 @@ const inscripcion = async( req : Request , res : Response ) =>{
         id_caja: dataRecivida.id_caja,
         id_categoria: dataRecivida.id_categoria,
         id_cuenta   : dataRecivida.id_cuenta,
-        id_usuario  : dataRecivida.id_usuario,
+        id_usuario  : Number(id_usuario),
         monto: dataRecivida.monto, // Usamos el mismo monto
         descripcion: dataRecivida.descripcion
     };
+
 
 
    const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
@@ -106,12 +109,12 @@ const inscripcion = async( req : Request , res : Response ) =>{
  */
 const listadoInscripciones = async ( req : Request, res : Response ) => {
         
-    const id_usuario = req.usuario?.id_escuela;
+    const id_esccuela = req.usuario?.id_escuela;
   
     const dataListado = {
         limit : Number(req.query.limit),
         pagina : Number(req.query.pagina),
-        id_escuela : Number(id_usuario),
+        id_escuela : Number(id_esccuela),
         fecha_desde : req.query.fecha_desde as string,
         fecha_hasta : req.query.fecha_hasta as string,
         estado  : req.query.estado as string,

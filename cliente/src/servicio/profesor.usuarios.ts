@@ -20,7 +20,7 @@ export const altaProfesor = async( data : TipadoProfesores.RegistroProfesores )
     }
 
 
-    const { dni , nombre , apellido , celular , id_escuela } = data;
+    const { dni , nombre , apellido , celular  } = data;
  
     const ruta  = `${PAGINA}api/registro_profesor`;
     return await apiFetch( ruta , {
@@ -30,7 +30,6 @@ export const altaProfesor = async( data : TipadoProfesores.RegistroProfesores )
             nombre      : nombre,
             apellido    : apellido,
             celular     : celular,
-            id_escuela  : id_escuela
         }
     });
 };
@@ -77,9 +76,9 @@ export const bajaProfesor = async( data : TipadoProfesores.BajaProfesores ) => {
         };
     }
    
-    const { dni , id_escuela , estado } = data;
+    const { dni , estado } = data;
 
-    const ruta  = `${PAGINA}api/usu_estado_profesor/${dni}/${id_escuela}/${estado}`;
+    const ruta  = `${PAGINA}api/usu_estado_profesor/${dni}/${estado}`;
    
 
     return await apiFetch( ruta , {
@@ -107,7 +106,6 @@ export const listadoProfesores = async(
 
     const parametrosConvertidos = {
             estado: data.estado || "activos",
-            escuela: data.id_escuela.toString(),
             dni: data.dni || "%",
             apellido: data.apellido || "%",
             limit: data.limite.toString() || "10",
@@ -140,7 +138,6 @@ export const listadoProfesoresSinPag = async( data : TipadoProfesores.ListadoPro
     const dataConvertida = {
         dni: data.dni ,
         estado: data.estado || "activos",
-        id_escuela: data.id_escuela.toString(),
     }
 
     const rutaCompleta = `${PAGINA}api/usu_listado_profesores_sin_paginacion?${new URLSearchParams(dataConvertida as Record<string, string>).toString()}`;

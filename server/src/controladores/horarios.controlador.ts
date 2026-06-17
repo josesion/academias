@@ -9,7 +9,9 @@ import { method as horarioServicio} from "../Servicio/horarios.servicios"
 
 // Typados
 import { CodigoEstadoHTTP } from "../tipados/generico"; 
-
+import { MAPA_LISTADO_HORARIO, ERROR_INTERNO_SERVIDOR,
+         MAPA_ALTA_HORARIO, MAPA_ELIMINAR_HORARIO , MAPA_MOD_HORARIO,
+ } from "../respuestas/horarios";
 
 
 
@@ -48,45 +50,40 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
  */
 
 const altaHorario = async( req : Request , res : Response) =>{
-    const dataRecivida = req.body;
+
+    const dataRecivida = {
+        id_escuela: Number(req.usuario?.id_escuela),
+        dni_profesor:  req.body.dni_profesor,
+        id_nivel: Number(req.body.id_nivel),
+        id_tipo_clase: Number(req.body.id_tipo_clase),
+        hora_inicio: req.body.hora_inicio,
+        hora_fin: req.body.hora_fin,
+        dia_semana: req.body.dia_semana,
+        fecha_creacion:  req.body.fecha_creacion,
+        estado: req.body.estado
+     };
 
     const dataHorario  = await horarioServicio.alta( dataRecivida );
-    
-    switch (dataHorario.code) {
-        case "HORARIO_OCUPADO":
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.CONFLICTO,
-                dataHorario.message,
-                dataHorario.code
-            );
 
-        case "PROFESOR_OCUPADO":
-            return enviarResponseError(
-                res,
-                CodigoEstadoHTTP.CONFLICTO,
-                dataHorario.message,
-                dataHorario.code
-            );
+    const config = MAPA_ALTA_HORARIO[ dataHorario.code ] || ERROR_INTERNO_SERVIDOR;
 
-        case "HORARIO_CREADO_EXITOSAMENTE":
+     if ( config.status === CodigoEstadoHTTP.OK ){
             return enviarResponse(
                 res,
-                CodigoEstadoHTTP.CREADO,
-                dataHorario.message,
+                config.status,
+                dataHorario.message  || config.msg ,
                 dataHorario.data,
                 undefined,
                 dataHorario.code
             );
-
-        default:
+     }else{
             return enviarResponseError(
                 res,
-                CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-                "Ocurrió un error inesperado en el alta del horario",
+                config.status,
+                dataHorario.message || config.msg ,
                 dataHorario.code
             );
-    }
+     };
 
 }; 
 
@@ -130,28 +127,31 @@ const altaHorario = async( req : Request , res : Response) =>{
 const listadoHorarioEscuela = async( req : Request , res : Response ) =>{
    
     const data = {
-        id_escuela: Number(req.query.id_escuela),
+        id_escuela: Number(req.usuario?.id_escuela),
         estado: req.query.estado as string | undefined
     };
 
     const resultadoCalendario = await horarioServicio.calendario( data );
-    if ( resultadoCalendario.code === "CALENDARIO_VACIO"){
+
+    const config = MAPA_LISTADO_HORARIO[ resultadoCalendario.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK){
+            return enviarResponse(
+                res,
+                config.status,
+                resultadoCalendario.message || config.msg,
+                resultadoCalendario.data,
+                undefined,
+                resultadoCalendario.code
+            );
+    }else{
         return enviarResponseError(
             res,
-            CodigoEstadoHTTP.NO_ENCONTRADO,
-            resultadoCalendario.message,
+            config.status,
+            resultadoCalendario.message || config.msg  ,
             resultadoCalendario.code
         )    
     };
-
-    return enviarResponse(
-        res,
-        CodigoEstadoHTTP.OK,
-        resultadoCalendario.message,
-        resultadoCalendario.data,
-        undefined,
-        resultadoCalendario.code
-    );
   
 };
 
@@ -190,32 +190,34 @@ const modHorario = async( req : Request, res : Response) => {
   
     const data = {
         id : Number(req.body.id),
-        id_escuela: Number(req.body.id_escuela),
+        id_escuela: Number(req.usuario?.id_escuela),
         id_nivel : Number(req.body.id_nivel),
         id_tipo_clase :  Number(req.body.id_tipo_clase),
         dni_profesor  : req.body.dni_profesor as string
     };
 
     const resultado = await horarioServicio.mod(data);
- 
-    if (resultado.code === "HORARIO_MODIFICADO_EXITOSAMENTE"){
+
+    const config = MAPA_MOD_HORARIO[ resultado.code] || ERROR_INTERNO_SERVIDOR;
+
+    if (config.status ===  CodigoEstadoHTTP.OK){
         return enviarResponse(
             res,
-            CodigoEstadoHTTP.OK,
-            resultado.message,
+            config.status,
+            resultado.message || config.msg ,
             resultado.data,
             undefined,
             resultado.code
-        );
+        );     
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            resultado.message || config.msg ,
+            resultado.code
+        );        
     };
 
-
-    return enviarResponseError(
-        res,
-        CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-        resultado.message,
-        resultado.code
-    );
     
 };
 
@@ -256,7 +258,7 @@ const modHorario = async( req : Request, res : Response) => {
 const elimnarHorario = async ( req : Request , res: Response) => {
     
     const  data = {
-        id_escuela : Number(req.body.id_escuela),
+        id_escuela : Number(req.usuario?.id_escuela),
         id         : Number(req.body.id),
         estado     : req.body.estado as string,
         vigente    : req.body.vigente as boolean
@@ -264,23 +266,27 @@ const elimnarHorario = async ( req : Request , res: Response) => {
 
     const resultadoEliminar = await horarioServicio.eliminar(data);
 
-    if (resultadoEliminar.code === "HORARIO_ELIMINADO"){
+    const config = MAPA_ELIMINAR_HORARIO[ resultadoEliminar.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if ( config.status === CodigoEstadoHTTP.OK ){
         return enviarResponse(
             res,
-            CodigoEstadoHTTP.OK,
-            resultadoEliminar.message,
+            config.status,
+            resultadoEliminar.message || config.msg,
             resultadoEliminar.data,
             undefined,
             resultadoEliminar.code
-        );
+        );      
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            resultadoEliminar.message || config.msg ,
+            resultadoEliminar.code
+        );  
     };
 
-    return enviarResponseError(
-        res,
-        CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-        resultadoEliminar.message,
-        resultadoEliminar.code
-    );   
+ 
 
 };
 

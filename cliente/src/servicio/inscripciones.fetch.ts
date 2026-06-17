@@ -13,7 +13,6 @@ type PayloadInscripcionCompleto = TipadoInscripcion.inscripcionData & Omit<DataD
 export const incripcion =async ( datos : PayloadInscripcionCompleto )
 : Promise<ApiResponse<TipadoInscripcion.ResultInscripcion>> =>{
 
-
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
         return {
@@ -30,7 +29,6 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
         method : "POST",
         body   :{
             id_plan                     : datos.id_plan ,
-            id_escuela                  : datos.id_escuela,
             dni_alumno                  : datos.dni_alumno,
             fecha_inicio                : datos.fecha_inicio,
             fecha_fin                   : datos.fecha_fin,
@@ -41,7 +39,7 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
             monto   : datos.monto,
             id_caja : datos.id_caja,
             id_categoria : datos.id_categoria,
-            id_usuario  : datos.id_usuario,
+            
             id_cuenta   : datos.id_cuenta, 
             descripcion : datos.descripcion,
         }

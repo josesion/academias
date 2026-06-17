@@ -5,8 +5,8 @@ import { method as permisos} from "../utils/permisos";
 const ruta = Router();
 
 ruta.post("/api/alta_tipo_usu", permisos.validarPermiso ,controladorTipo.registro);
-ruta.put("/api/mod_tipo_usu/:id/:id_escuela",permisos.validarPermiso ,controladorTipo.modTipo);
-ruta.put("/api/estado_tipo_usu/:id/:id_escuela/:estado",permisos.validarPermiso ,controladorTipo.estado);
+ruta.put("/api/mod_tipo_usu/:id",permisos.validarPermiso ,controladorTipo.modTipo);
+ruta.put("/api/estado_tipo_usu/:id/:estado",permisos.validarPermiso ,controladorTipo.estado);
 ruta.get("/api/lista_tipo_usu",permisos.validarPermiso ,controladorTipo.listado);
 ruta.get("/api/lista_tipo_usu_sin_pag",permisos.validarPermiso ,controladorTipo.listadoSinPaginacion);
 

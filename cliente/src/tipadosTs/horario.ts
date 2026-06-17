@@ -1,19 +1,16 @@
 export interface FiltroProfesor {
     dni: string;
-    estado: string;
-    id_escuela: number;
+    estado: string
 };
 
 export interface FiltroNivel {
     nivel : string ,
     estado : string,
-    id_escuela : number,
 };
 
 export interface FiltroTipo {
     tipo : string ,
     estado : string,
-    id_escuela : number,
 };
 
 
@@ -53,7 +50,6 @@ export type DiaSemana =
 export type metodo = "ALTA" | "MOD";
 
 export interface DataHorario {
-    id_escuela : number | null,
     dni_profesor : string | null,
     id_nivel : number | null,
     id_tipo_clase  : number | null,
@@ -84,7 +80,6 @@ export interface ClaseHorarioData {
  type estadoHorario = "activos" | "inactivos" | "suspendido";
 
 export interface ModHorario{
-    id_escuela : number,
     dni_profesor : string | null,
     id_nivel : number | null,
     id_tipo_clase : number | null,
@@ -92,7 +87,6 @@ export interface ModHorario{
 };
 
 export interface EliminarHorario{
-    id_escuela : number,
     id         : number | null,
     estado     : estadoHorario,
     vigente    : boolean
@@ -103,14 +97,12 @@ export interface DataHorarioSet {
 };
 
 export interface Calendario{
-   id_escuela : number,
    estado     : estadoHorario 
 };
 
 export interface ResultCalendarioHorario {
    // Identificadores
         id_horario: number;
-        id_escuela: number;
         escuela_nombre: string;
 
         // Información del Profesor

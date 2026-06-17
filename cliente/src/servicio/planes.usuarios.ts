@@ -30,8 +30,7 @@ export const registroPlanesUsuario = async ( parametros : TipadoPlanesUsuarios.C
                 monto           : parametros.monto,
 
                 fecha_creacion  : parametros.fecha_creacion,
-                estado          : parametros.estado,
-                id_escuela      : parametros.id_escuela
+                estado          : parametros.estado
         }
    });
 
@@ -52,7 +51,7 @@ export const eliminarPlanUsuario = async ( parametros : TipadoPlanesUsuarios.Eli
             };
     }
 
-    const rutaCompleta = `${PAGINA}api/usu_estado_planes/${parametros.id}/${parametros.id_escuela}/${parametros.estado}`;
+    const rutaCompleta = `${PAGINA}api/usu_estado_planes/${parametros.id}/${parametros.estado}`;
 
     return await apiFetch( rutaCompleta , { 
         method : "PUT"
@@ -73,7 +72,7 @@ export const  modPlanUsuario= async ( parametros : TipadoPlanesUsuarios.ModPlane
                 errorsDetails: undefined
             };
     }
-    const rutaCompleta = `${PAGINA}api/usu_mod_planes/${parametros.id}/${parametros.id_escuela}`;
+    const rutaCompleta = `${PAGINA}api/usu_mod_planes/${parametros.id}`;
 
     return await apiFetch( rutaCompleta , {
         method :  "PUT",
@@ -106,10 +105,8 @@ export const listadoPlanesUsuarios = async( parametros : TipadoPlanesUsuarios.li
         const parametrosConvertidos = {
             descripcion : parametros.descripcion,
             estado      : parametros.estado,
-
             limit : parametros.limite.toString(),
-            pagina : parametros.pagina.toString(),
-            escuela : parametros.id_escuela.toString()
+            pagina : parametros.pagina.toString()
        };
 
 const rutaCompleta = `${PAGINA}api/usu_listado_planes?${new URLSearchParams(parametrosConvertidos).toString()}`;
@@ -127,8 +124,7 @@ export const listadoPlaneSinPag = async ( parametros : TipadoPlanesUsuarios.list
 
        const parametrosConvertidos = {
             descripcion : parametros.descripcion,
-            estado      : parametros.estado,
-            id_escuela : parametros.id_escuela.toString()
+            estado      : parametros.estado
        };
        const rutaCompleta = `${PAGINA}api/listado_planes_sinpag?${new URLSearchParams(parametrosConvertidos).toString()}`;
 

@@ -27,8 +27,7 @@ export const registroAlumno = async( parametro : TipadoAlumnos.RegistroResquest 
             dni         : parametro.dni,
             nombre      : parametro.nombre,
             apellido    : parametro.apellido,
-            celular     : parametro.celular,
-            id_escuela  : parametro.id_escuela
+            celular     : parametro.celular
         }
     });
 }
@@ -47,7 +46,7 @@ export const modAlumno = async(parametros : TipadoAlumnos.RegistroResquest )
         };
     }
 
-    const ruta = `${PAGINA}api/mod_alumno/${parametros.dni}/${parametros.id_escuela}`;
+    const ruta = `${PAGINA}api/mod_alumno/${parametros.dni}`;
     return await apiFetch( ruta ,{
         method : "PUT" ,
         body   :{
@@ -73,8 +72,8 @@ export const eliminarAlumno = async( parametro : TipadoAlumnos.bajaAlumno )
     }
 
 
-    const { dni, id_escuela  , estado} = parametro;
-    const ruta = `${PAGINA}api/borrar_alumno/${dni}/${id_escuela}/${estado}`;
+    const { dni, estado} = parametro;
+    const ruta = `${PAGINA}api/borrar_alumno/${dni}/${estado}`;
     return await apiFetch( ruta , {
         method : "DELETE"
     });
@@ -89,8 +88,7 @@ export const listadoAlumnos = async( parametrosQuery : TipadoAlumnos.DataAlumnos
         dni : parametrosQuery.dni.toString(),
         apellido : parametrosQuery.apellido,
         limit : parametrosQuery.limite.toString(),
-        pagina : parametrosQuery.pagina.toString(),
-        escuela : parametrosQuery.id_escuela.toString()
+        pagina : parametrosQuery.pagina.toString()
     };
 
 const rutaCompleta = `${PAGINA}api/listar_alumno?${new URLSearchParams(parametrosConvertidos).toString()}`;
@@ -116,8 +114,7 @@ export const listadoAlumnoSinPag = async ( parametros : TipadoAlumnos.DataAlumno
 : Promise<ApiResponse<TipadoAlumnos.AlumnosResponse[]>> =>{
      const parametrosFormateado = {
         estado      : parametros.estado,
-        dni         : parametros.dni.toString(),
-        id_escuela  : parametros.id_escuela.toString()
+        dni         : parametros.dni.toString()
      };
      const rutaCompleta = `${PAGINA}api/listar_alumno_sin_pag?${ new URLSearchParams(parametrosFormateado).toString() }`; 
 
