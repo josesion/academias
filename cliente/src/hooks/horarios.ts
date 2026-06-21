@@ -1,10 +1,11 @@
-import { useState , useEffect} from "react";
+import { useEffect, useReducer} from "react";
 import { useNavigate } from "react-router-dom";
 
 import { peticiones } from "../utils/peticiones";
 import { generarRangoUnaHora } from "./setHora";
-import { fechaHoy } from "../utils/fecha"; 
+
 import { mensajeErrorTemporal } from "./mensajeTemporales";
+import { initialState, horarioReducer } from "../reducers/horariosReducers";
 
 /**
  * @typedef {function(data: any, signal?: AbortSignal): Promise<any>} ServicioCrud
@@ -14,13 +15,9 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 import type * as TipadoHorario from "../tipadosTs/horario";
 import { type ClaseHorario  } from "../componentes/ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../componentes/CeldaVacia/CeldaVacia";
-import { type ResultHoras } from "./setHora";
-
-
 
 
 interface HorarioConfig {
-    //idEscuela : number,
 
     servicios : {
         listadoProfesores : ServicioCrud,
@@ -44,163 +41,21 @@ interface HorarioConfig {
 export const useHorarioHook = ( config : HorarioConfig ) =>{
 
     const irA = useNavigate();
+    const [ state , dispatch] = useReducer( horarioReducer, initialState());
 
-    const [errorGenericoHorario , setErrorGenerico] =  useState< string | null >("Completar los campos Profesor , Nivel y Tipo");
-    const [listoEnviar , setListoEnviar]  = useState<boolean>(false);
-    const [actualizar , setActualizar]  = useState<boolean>(false);
-    const [carga , setCarga] = useState<boolean>(true);
+    const setErrorGenericoAdapter = (error: string | null) => {
+        dispatch({ type: 'SET_ERROR', payload: error });
+    };    
 
-    const [ modalInterno , setModalInterno ] = useState<boolean>(false);
-    const [modalHorario, setModalHorario] = useState<boolean>(false);
-   
-    const [ metodo , setMetodo] = useState<TipadoHorario.metodo | null>(null);
-// ──────────────────────────────────────────────────────────────
-// Seccion para el filtrado de Profesores , Tipos y Niveles
-// ──────────────────────────────────────────────────────────────  
-    const [profesores , setProfesores] = useState<TipadoHorario.DataProfesor | null>(null);
-    const [listaProfe , setListaProfe ] = useState<TipadoHorario.DataProfesor[]>([]);
-   
-    const [niveles , setNiveles ] = useState<TipadoHorario.DataNivel | null>( null);
-    const [listaNiveles , setListaNiveles ] = useState<TipadoHorario.DataNivel[]>([]);
-
-    const [tipo , setTipo ] = useState<TipadoHorario.DataTipo | null>( null);
-    const [listaTipo , setListaTipo ] = useState<TipadoHorario.DataTipo[]>([]);
+    const setCargaAdapter = ( valor : boolean) => {
+        dispatch({ type: 'SET_CARGA', payload: valor });
+    };
 
 // ──────────────────────────────────────────────────────────────
-//  Estados q usa el  Calendarrio
+//  Parametros que se  usa el  Calendarrio
 // ──────────────────────────────────────────────────────────────  
     const horarios : TipadoHorario.Horas[] = config.servicios.HORARIOS;
     const diasSemana : TipadoHorario.DiaSemana[] = config.servicios.DIAS_SEMANA;
-    const [calendario , setCalendario] = useState<TipadoHorario.ClaseHorarioData[]>();
-   
-// ──────────────────────────────────────────────────────────────
-// Estados para la Tarjeta que muestra la ingo del nuevo horaro
-// ──────────────────────────────────────────────────────────────  
-    const [ horaInicioFin , setHoraInicioFin] = useState<ResultHoras | null >(null);
-    const [ diaHorario , setDiaHorario] = useState<TipadoHorario.DiaSemana | null >(null);
-    
-// ──────────────────────────────────────────────────────────────
-// Estados el alta del Horario
-// ──────────────────────────────────────────────────────────────  
-    const [dataFormHorario , setDataFormHorario] = useState<TipadoHorario.DataHorario >({ 
-           
-            dni_profesor : null,
-            id_nivel :  null,
-            id_tipo_clase  :  null,
-            hora_inicio : null,
-            hora_fin   : null,
-            dia_semana : null,
-            fecha_creacion : fechaHoy(),
-            estado : "activos"
-    });
-
-    const [ dataModHorario, setDataModHorario] = useState<TipadoHorario.ModHorario>({
-    
-        dni_profesor : null,
-        id_nivel     : null,
-        id_tipo_clase: null,
-        id           : null
-    });
-
-    const [dataEliminarHorario , setDataEliminarHorario] =useState<TipadoHorario.EliminarHorario>({
-      
-        id : null,
-        estado : "inactivos",
-        vigente : false
-    });
-
-    const [conjuntoIDHorario  , setConjuntoIDHorario ] = useState<TipadoHorario.ConjuntoIDHorario >({
-        dni_profe : null ,
-        id_tipo_clase  : null,
-        id_nivel  : null,
-        id_horario : null
-    }); 
-    
-
-// ──────────────────────────────────────────────────────────────
-//Reseteo de los estados luego de Atla y modificacion
-// ────────────────────────────────────────────────────────────── 
-
-const resetFormulario = () => {
-  // Selectores
-  setProfesores(null);
-  setTipo(null);
-  setNiveles(null);
-
-  // Calendario / tarjeta
-  setHoraInicioFin(null);
-  setDiaHorario(null);
-
-  // Estados de datos
-  setConjuntoIDHorario({
-        dni_profe : null ,
-        id_tipo_clase  : null,
-        id_nivel  : null,
-        id_horario : null
-    });
-  setDataFormHorario({ 
-      
-        dni_profesor : null,
-        id_nivel :  null,
-        id_tipo_clase  :  null,
-        hora_inicio : null,
-        hora_fin   : null,
-        dia_semana : null,
-        fecha_creacion : fechaHoy(),
-        estado : "activos"
-    });
-  setDataModHorario({
-    
-        dni_profesor : null,
-        id_nivel     : null,
-        id_tipo_clase: null,
-        id           : null
-    });
-  setDataEliminarHorario({
-
-        id : null,
-        estado : "inactivos",
-        vigente : false
-    }); 
-    
-
-  // Filtros de búsqueda
-  setFiltroBusquedaProfesor(prev => ({ ...prev, dni: "" }));
-  setFiltroBusquedaNivel(prev => ({ ...prev, nivel: "" }));
-  setFiltroBusquedaTipo(prev => ({ ...prev, tipo: "" }));
-
-  // Mensaje base
-  setErrorGenerico("Completar los campos Profesor , Nivel y Tipo");
-
-  // Estado de envío
-  setListoEnviar(false);
-};
-
-
-// ──────────────────────────────────────────────────────────────
-// Estados de Filtros en general 
-// ──────────────────────────────────────────────────────────────  
-    const [filtroCalendario , setFiltroCalendario] = useState<TipadoHorario.Calendario >({
-        estado : "activos",
-
-    });
-
-
-    const [filtroBusquedaProfesor , setFiltroBusquedaProfesor] = useState<TipadoHorario.FiltroProfesor>({
-        ...config.inicialFiltroProfesor ,
-        estado : "activos" ,
-
-    });
-    const [filtroBusquedaNivel , setFiltroBusquedaNivel] = useState<TipadoHorario.FiltroNivel>({
-        ...config.inicialFiltroNivel,
-        estado : "activos",
-
-    });
-    const [ filtroBusquedaTipo , setFiltroBusquedaTipo ] = useState<TipadoHorario.FiltroTipo>({
-        ...config.inicialFiltroTipo,
-        estado : "activos",
-
-    });
 
 // ──────────────────────────────────────────────────────────────
 // Funciones Handle para la Seccion de Horarios de las escuelas
@@ -208,115 +63,63 @@ const resetFormulario = () => {
 
     const handleCachearProfesores = ( e: React.ChangeEvent<HTMLInputElement> ) =>{
 
-       setFiltroBusquedaProfesor({
-            ...filtroBusquedaProfesor,
-            [ e.target.name ] : e.target.value
-       });
+       dispatch({ type : "SET_FILTRO_BUSQUEDA_PROFESOR", payload : { ...state.filtroBusquedaProfesor, [ e.target.name ] : e.target.value }}); 
+
        const dniProfesor = e.target.value;
-       const profeSeleccionado = listaProfe.find( profe => profe.Dni === dniProfesor);
+       const profeSeleccionado = state.listaProfe.find( profe => profe.Dni === dniProfesor);
        if( profeSeleccionado ){
-            setProfesores( profeSeleccionado );
-            setConjuntoIDHorario( prev => ({...prev , dni_profe : profeSeleccionado.Dni}));
-            setDataFormHorario({
-                ...dataFormHorario,
-                dni_profesor : profeSeleccionado.Dni
-            });
-
-           // seteo para la modificacion del horario     
-           setDataModHorario({
-                ...dataModHorario,
-                dni_profesor : profeSeleccionado.Dni
-           }); 
-
+ 
+            dispatch({ type : "SET_PROFESORES", payload : profeSeleccionado });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, dni_profe : profeSeleccionado.Dni } });
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario, dni_profesor : profeSeleccionado.Dni }});
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, dni_profesor : profeSeleccionado.Dni }});
        } else {
-            setProfesores( null );
-            setConjuntoIDHorario({
-                ...conjuntoIDHorario,
-                dni_profe : null
-            });     
-            setDataFormHorario({
-                ...dataFormHorario,
-                dni_profesor : null
-            });     
-            
-            setDataModHorario({
-                ...dataModHorario,
-                dni_profesor : null
-            });
+    
+            dispatch({ type : "SET_PROFESORES", payload : null }); 
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, dni_profe : null } });                 
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , dni_profesor : null} });
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, dni_profesor : null }});            
        }
     };
-
-
+    
     const handleCachearNiveles = ( e: React.ChangeEvent<HTMLInputElement> ) =>{
-        setFiltroBusquedaNivel({
-             ...filtroBusquedaNivel,
-             [ e.target.name ] : e.target.value 
-        });
-        const nivelSeleccionado = listaNiveles.find( nivel => nivel.nivel === e.target.value);
-        console.log(nivelSeleccionado)
+
+        dispatch({ type : "SET_FILTRO_BUSQUEDA_NIVEL", payload : { ...state.filtroBusquedaNivel, [ e.target.name ] : e.target.value  }});
+        const nivelSeleccionado = state.listaNiveles.find( nivel => nivel.nivel === e.target.value);
+    
         if( nivelSeleccionado ){
-             setNiveles( nivelSeleccionado );
-             setConjuntoIDHorario( prev => ({...prev, id_nivel : nivelSeleccionado.id}));     
-             setDataFormHorario({
-                ...dataFormHorario,
-                id_nivel : nivelSeleccionado.id
-             });   
-             
-             setDataModHorario({
-                ...dataModHorario,
-                id_nivel : nivelSeleccionado.id
-             });
-             
+
+            dispatch({ type : "SET_NIVELES", payload : nivelSeleccionado });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_nivel : nivelSeleccionado.id} });   
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_nivel : nivelSeleccionado.id } });           
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, id_nivel : nivelSeleccionado.id }});             
         } else {
-            setNiveles( null );
-            setConjuntoIDHorario({
-                ...conjuntoIDHorario,
-                id_nivel  : null
-            });  
-            setDataFormHorario({
-                ...dataFormHorario,
-                id_nivel : null
-             });
-            setDataModHorario({
-                ...dataModHorario,
-                id_nivel : null
-            });              
+  
+            dispatch({ type : "SET_NIVELES", payload : null });            
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_nivel : null }} );   
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_nivel : null } });                     
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, dni_profesor : null }});                    
         };
     };
     
    const handleCachearTipos = (e :  React.ChangeEvent<HTMLInputElement> ) =>{
-        setFiltroBusquedaTipo({
-            ...filtroBusquedaTipo,
-            [ e.target.name ] : e.target.value  
-         });
-         
-         const tipoSeleccionado = listaTipo.find( tipo => tipo.tipo === e.target.value);   
+
+         dispatch({ type : "SET_FILTRO_BUSQUEDA_TIPO", payload : { ...state.filtroBusquedaTipo,  [ e.target.name ] : e.target.value } }); 
+        
+         const tipoSeleccionado = state.listaTipo.find( tipo => tipo.tipo === e.target.value);   
          if( tipoSeleccionado ){
-            setTipo( tipoSeleccionado );
-            setConjuntoIDHorario( prev => ({...prev , id_tipo_clase : tipoSeleccionado.id}));
-            setDataFormHorario({
-                ...dataFormHorario,
-                id_tipo_clase : tipoSeleccionado.id
-            }); 
-            setDataModHorario({
-                ...dataModHorario,
-                id_tipo_clase : tipoSeleccionado.id
-            });
+           
+            dispatch({ type : "SET_TIPO", payload : tipoSeleccionado });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_tipo_clase : tipoSeleccionado.id } }); 
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_tipo_clase : tipoSeleccionado.id } });     
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, id_tipo_clase : tipoSeleccionado.id }});
 
          } else {
-            setTipo( null );
-            setConjuntoIDHorario({
-                ...conjuntoIDHorario,
-                id_tipo_clase  : null
-            }); 
-            setDataFormHorario({
-                ...dataFormHorario,
-                id_tipo_clase : null
-            }); 
-            setDataModHorario({
-                ...dataModHorario,
-                id_tipo_clase : null
-            });            
+          
+            dispatch({ type : "SET_TIPO", payload : null });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_tipo_clase : null} }); 
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_tipo_clase : null } });              
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, id_tipo_clase : null }});                   
          };      
    };
 
@@ -325,122 +128,125 @@ const resetFormulario = () => {
 // ────────────────────────────────────────────────────────────── 
 
    const handleAbrirModificarHorario = ( clase : ClaseHorario) =>{
-        setModalInterno(true);
-        setMetodo("MOD");
-        setTipo({id: clase.id_clase ,tipo : clase.tipo_clase});
-        setNiveles({id : clase.id_nivel , nivel : clase.nivel});
-        setProfesores({Dni : clase.dni_profe, Apellido : clase.profesor , Nombre : clase.nombre });
-        setHoraInicioFin({ hora_inicio : clase.hora_inicio as TipadoHorario.Horas , 
-                            hora_fin : clase.hora_fin as TipadoHorario.Horas });
-        setDiaHorario(clase.dia);    
-        setDataModHorario({
-            ... dataModHorario,
+      
+        dispatch({ type : "SET_MODAL_INTERNO", payload : true });
+        dispatch({ type : "SET_METODO", payload : "MOD" });
+        dispatch({ type : "SET_TIPO", payload : {id: clase.id_clase ,tipo : clase.tipo_clase} });
+        dispatch({ type : "SET_NIVELES", payload : {id : clase.id_nivel , nivel : clase.nivel} });
+        dispatch({ type : "SET_PROFESORES", payload : {Dni : clase.dni_profe, Apellido : clase.profesor , Nombre : clase.nombre } });
+        dispatch({ type : "SET_HORARIOFIN" , payload :{ hora_inicio : clase.hora_inicio as TipadoHorario.Horas , 
+                                                        hora_fin : clase.hora_fin as TipadoHorario.Horas } });                    
+        dispatch({ type : "SET_DIA_HORARIO", payload : clase.dia });    
+        dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { 
+               ...state.dataModHorario, 
                 id : clase.id_horario,
                 dni_profesor : clase.dni_profe,
                 id_nivel     : clase.id_nivel,
                 id_tipo_clase: clase.id_clase 
-        });
-        setDataEliminarHorario({
-            ...dataEliminarHorario, id : clase.id_horario
-        });
+         }});
+         dispatch({ type : "SET_DATA_ELIMINAR_HORARIO" , payload : { ...state.dataEliminarHorario, id : clase.id_horario  } });
+
    };
 
    const handleAbirModalHoarios = ( mensaje : MensajeCelda) =>{
         
         if (mensaje.mensaje === "+"){
            const {hora_fin , hora_inicio} = generarRangoUnaHora(mensaje.hora);
-           setModalInterno(true)
-           setHoraInicioFin(generarRangoUnaHora(mensaje.hora));
-           setDiaHorario( mensaje.dia )
-           setMetodo("ALTA");
-           setDataFormHorario({
-            ...dataFormHorario,
-            dia_semana : mensaje.dia,
-            hora_inicio : hora_inicio,
-            hora_fin    : hora_fin
-           });
+           dispatch({ type : "SET_MODAL_INTERNO", payload : true });    
+           dispatch({ type : "SET_HORARIOFIN", payload : generarRangoUnaHora(mensaje.hora) }); 
+           dispatch({ type : "SET_DIA_HORARIO", payload : mensaje.dia });
+           dispatch({ type : "SET_METODO", payload : "ALTA" }); 
+           dispatch({ type    : "SET_DATA_FORM_HORARIO", 
+                      payload : { ...state.dataFormHorario , 
+                                 dia_semana : mensaje.dia,
+                                 hora_inicio : hora_inicio,
+                                 hora_fin    : hora_fin    }});            
         };   
    };
    
    const handleCerrarModalHoarios =  () =>{
-        setModalInterno(false);
-        setProfesores(null);
-        setTipo(null);
-        setNiveles(null);
-        setConjuntoIDHorario({
+
+        dispatch({ type : "SET_MODAL_INTERNO", payload : false });   
+        dispatch({ type : "SET_PROFESORES", payload : null });
+        dispatch({ type : "SET_TIPO", payload : null });
+        dispatch({ type : "SET_NIVELES", payload : null });
+        dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { 
             dni_profe : null,
             id_tipo_clase  : null,
             id_nivel  : null,
-            id_horario : null
-        });
+            id_horario : null  
+         } }); 
    };   
    
    const hanldeVolver = () =>{
-     setModalHorario(false);
+     dispatch({ type : "SET_MODAL_HORARIO", payload : false });
      irA("/user_manager_priv");
    };
    
 // ──────────────────────────────────────────────────────────────
 // Handles de supcripciones Alta, Modificacion y Eliminar Horarios
-// ──────────────────────────────────────────────────────────────   
+// ────────────────────────────────────────────────────────────── 
    const handleAltaHorario = async() =>{
-        if (!listoEnviar){
-            const mensajeBase = errorGenericoHorario as string;
+
+        if (!state.listoEnviar){
+               console.log("s") 
+            const mensajeBase = state.errorGenericoHorario as string;
             return    mensajeErrorTemporal({ 
                         tiempo : 3 ,
                         mensajeError:"Faltan campos verificar",
                         mensajeEspera: mensajeBase , 
-                        setErrorGenerico});
+                        setErrorGenerico : setErrorGenericoAdapter});
         };
 
         const servicioApiFetch =   config.servicios.altaHorario;
-        const resultadoAlta  = await servicioApiFetch(dataFormHorario);
-       // console.log( resultadoAlta )
+        const resultadoAlta  = await servicioApiFetch(state.dataFormHorario);
+     
         if (resultadoAlta.error === true){
-            setErrorGenerico(resultadoAlta.message)
-           // console.log(resultadoAlta.message)
+  
+           dispatch({ type : "SET_ERROR" , payload : resultadoAlta.message });
+      
            return;
         };
-
-        setActualizar(!actualizar);
-        resetFormulario();
-        setModalInterno(false);
+        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });
+        dispatch({ type : "RESET_FORMULARIO" });
+        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
 
    };
 
    const handleModHorario =async( ) =>{
     
-        if (!listoEnviar){
-            const mensajeBase = errorGenericoHorario as string;
+        if (!state.listoEnviar){
+            const mensajeBase = state.errorGenericoHorario as string;
             return  mensajeErrorTemporal({ 
                     tiempo : 3 ,
                     mensajeError:"Faltan campos verificar",
                     mensajeEspera: mensajeBase , 
-                    setErrorGenerico});
+                    setErrorGenerico : setErrorGenericoAdapter});
         };
         const servicioApiFetch = config.servicios.modHorario;
-        const resultadoMod   = await servicioApiFetch(dataModHorario);
+        const resultadoMod   = await servicioApiFetch(state.dataModHorario);
         if ( resultadoMod.error === true){
-            setErrorGenerico(resultadoMod.message);
+            dispatch({ type : "SET_ERROR" , payload : resultadoMod.message });
             return;
-        }; 
-        setActualizar(!actualizar); 
-        resetFormulario();
-        setModalInterno(false);
- 
+        };  
+        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
+        dispatch({ type : "RESET_FORMULARIO" });
+        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
    }; 
    
 
    const handleEliminarHorario = async() =>{
         const servicioApiFetch = config.servicios.eliminarHorario;
-        const resultadoEliminar = await servicioApiFetch(dataEliminarHorario);
+        const resultadoEliminar = await servicioApiFetch(state.dataEliminarHorario);
+       
         if (resultadoEliminar.error === true) {
-            setErrorGenerico(resultadoEliminar.message);
+            dispatch({ type : "SET_ERROR", payload : resultadoEliminar.message });
             return;
         };
-        setActualizar(!actualizar);
-        resetFormulario();
-        setModalInterno(false);
+
+        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
+        dispatch({ type : "RESET_FORMULARIO" });
+        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
    };
 
 
@@ -450,23 +256,23 @@ const resetFormulario = () => {
 useEffect(()=>{
     const {controlador , signal , timeoutId} = peticiones({
         tiempo : 5,
-         setErrorGenerico,
-        setCarga
+        setErrorGenerico : setErrorGenericoAdapter,
+        setCarga : setCargaAdapter
     });
 
     const listadoProfesoreCompleto = async () => {
         const servicioApiFetch = config.servicios.listadoProfesores;
         try {
-            const respuesta = await servicioApiFetch( filtroBusquedaProfesor , signal );
+            const respuesta = await servicioApiFetch( state.filtroBusquedaProfesor , signal );
     
             if ( respuesta.error === false ) {
-                setListaProfe( respuesta.data );
+                dispatch({ type : "SET_LISTADO_PROFESORES", payload : respuesta.data });
             };
         }catch(error) {
-            setErrorGenerico('Ocurrió un error inesperado al cargar los datos Profesores.');  
+            dispatch({ type : "SET_ERROR", payload : 'Ocurrió un error inesperado al cargar los datos Profesores.' });  
         }finally{
             clearTimeout( timeoutId );
-            setCarga( false );
+            dispatch({ type : "SET_CARGA", payload : false });
         };
 
     };
@@ -477,7 +283,7 @@ useEffect(()=>{
         clearTimeout( timeoutId );
         controlador.abort();
     };
-}, [filtroBusquedaProfesor] );
+}, [state.filtroBusquedaProfesor] );
 
 // ──────────────────────────────────────────────────────────────
 // Listado de niveles sin paginacion
@@ -486,23 +292,23 @@ useEffect(()=>{
 
     const {controlador , signal , timeoutId} = peticiones({
         tiempo : 5,
-        setErrorGenerico,
-        setCarga
+        setErrorGenerico : setErrorGenericoAdapter,
+        setCarga : setCargaAdapter
     });
 
     const listadoNivelCompleto = async () => {
         const servicioApiFetch = config.servicios.listadoNivel;
         try {
-            const respuesta = await servicioApiFetch( filtroBusquedaNivel , signal );
+            const respuesta = await servicioApiFetch( state.filtroBusquedaNivel , signal );
 
             if ( respuesta.error === false ) {
-                setListaNiveles( respuesta.data );
+                dispatch({ type : "SET_LISTADO_NIVELES", payload : respuesta.data });
             };
         }catch(error) {
-            setErrorGenerico('Ocurrió un error inesperado al cargar los datos Profesores.');  
+            dispatch({ type : "SET_ERROR", payload :'Ocurrió un error inesperado al cargar los datos Niveles.' });    
         }finally{
             clearTimeout( timeoutId );
-            setCarga( false );
+            dispatch({ type : "SET_CARGA", payload : false });  
         };
 
     };
@@ -513,7 +319,7 @@ useEffect(()=>{
         clearTimeout( timeoutId );
         controlador.abort();
     };
-}, [filtroBusquedaNivel] );
+}, [state.filtroBusquedaNivel] );
 
 // ──────────────────────────────────────────────────────────────
 // Listado de Tipos sin paginacion
@@ -522,23 +328,23 @@ useEffect(()=>{
 
     const {controlador , signal , timeoutId} = peticiones({
         tiempo : 5,
-         setErrorGenerico,
-        setCarga
+        setErrorGenerico : setErrorGenericoAdapter,
+        setCarga : setCargaAdapter
     });
 
     const listadoTiposCompleto = async () => {
         const servicioApiFetch = config.servicios.listadoTipo;
         try {
-            const respuesta = await servicioApiFetch( filtroBusquedaTipo , signal );
+            const respuesta = await servicioApiFetch( state.filtroBusquedaTipo , signal );
         
             if ( respuesta.error === false ) {
-                setListaTipo( respuesta.data );
+                dispatch({ type : "SET_LISTADO_TIPO", payload : respuesta.data });
             };
-        }catch(error) {
-            setErrorGenerico('Ocurrió un error inesperado al cargar los datos Profesores.');  
+        }catch(error) { 
+            dispatch({ type : "SET_ERROR", payload :'Ocurrió un error inesperado al cargar los datos Tipos.' });            
         }finally{
             clearTimeout( timeoutId );
-            setCarga( false );
+            dispatch({ type : "SET_CARGA", payload : false }); 
         };
 
     };
@@ -549,7 +355,7 @@ useEffect(()=>{
         clearTimeout( timeoutId );
         controlador.abort();
     };
-}, [filtroBusquedaTipo] );
+}, [ state.filtroBusquedaTipo] );
 
 // ──────────────────────────────────────────────────────────────
 // Listado de Calendario sin paginacion
@@ -557,22 +363,22 @@ useEffect(()=>{
 useEffect( ()=>{
     const {controlador , signal , timeoutId} = peticiones({
         tiempo : 5,
-        setErrorGenerico,
-        setCarga
+        setErrorGenerico : setErrorGenericoAdapter,
+        setCarga : setCargaAdapter
     });
     const calendario = async() =>{
         try{
             const servicioApiFetch = config.servicios.horarioEscuela;
-            const listadoCalendario = await servicioApiFetch( filtroCalendario, signal )
+            const listadoCalendario = await servicioApiFetch( state.filtroCalendario, signal )
             
             if (listadoCalendario.error === false) {
-                setCalendario(listadoCalendario.data);
+                dispatch({ type : "SET_CALENDARIO", payload : listadoCalendario.data });
             };
         }catch(error){
             console.error('Ocurrió un error inesperado al cargar los datos del Calendario.')
         }finally{
             clearTimeout( timeoutId );
-            setCarga( false );
+            dispatch({ type : "SET_CARGA", payload : false }); 
         }
     };
   
@@ -583,63 +389,53 @@ useEffect( ()=>{
         controlador.abort();
     };
 
-},[actualizar]);
+},[state.actualizar]);
+
 // ──────────────────────────────────────────────────────────────
 // Para manejar el estado q el cliente
 // ──────────────────────────────────────────────────────────────  
+
 useEffect(() => {
 
+  if (state.metodo === "MOD") {
 
-  if (metodo === "MOD") {
-    setErrorGenerico("Puede modificar los datos o guardar");
-    setListoEnviar(true);
+    dispatch({ type : "SET_ERROR", payload :"Puede modificar los datos o guardar" });  
+    dispatch({ type : "SET_ENVIAR", payload : true });
+
     return;
   }
 
-
   if (
-    !conjuntoIDHorario.dni_profe ||
-    !conjuntoIDHorario.id_tipo_clase ||
-    !conjuntoIDHorario.id_nivel
+    !state.conjuntoIDHorario.dni_profe ||
+    !state.conjuntoIDHorario.id_tipo_clase ||
+    !state.conjuntoIDHorario.id_nivel
   ) {
     const faltantes: string[] = [];
 
-    if (!conjuntoIDHorario.dni_profe) faltantes.push("Profesor");
-    if (!conjuntoIDHorario.id_nivel) faltantes.push("Nivel");
-    if (!conjuntoIDHorario.id_tipo_clase) faltantes.push("Tipo");
+    if (!state.conjuntoIDHorario.dni_profe) faltantes.push("Profesor");
+    if (!state.conjuntoIDHorario.id_nivel) faltantes.push("Nivel");
+    if (!state.conjuntoIDHorario.id_tipo_clase) faltantes.push("Tipo");
 
-    setErrorGenerico(
-      `Falta seleccionar: ${faltantes.join(" , ")}`
-    );
-    setListoEnviar(false);
+    dispatch({ type : "SET_ERROR", payload : `Falta seleccionar: ${faltantes.join(" , ")}` });  
+    dispatch({ type : "SET_ENVIAR", payload : false });  
+
   } else {
-    setErrorGenerico("Listo para Guardar");
-    setListoEnviar(true);
-  }
+   
+    dispatch({ type : "SET_ERROR", payload : "Listo para Guardar." })
+    dispatch({ type : "SET_ENVIAR", payload : true });  
+  
+}
 
-}, [conjuntoIDHorario, metodo]);
-
-
+}, [state.conjuntoIDHorario, state.metodo]);
 
 return {
-    profesores,
-    niveles,
-    tipo,
-
-    metodo,
-
-    listaProfe,
-    listaNiveles,
-    listaTipo,
-    calendario,
-    
-    horarios, diasSemana, horaInicioFin, diaHorario,
-
-
+    state,
+   
+    horarios, 
+    diasSemana, 
     handleCachearProfesores,
     handleCachearNiveles,
     handleCachearTipos,
-
     handleModHorario,
     handleAbirModalHoarios,
     handleAbrirModificarHorario,
@@ -648,10 +444,6 @@ return {
     handleEliminarHorario,
     hanldeVolver,
 
-    modalInterno,
-    modalHorario,setModalHorario,
-
-    errorGenericoHorario
 };
 
 };

@@ -4,18 +4,6 @@ import { useHorariosUsuarios } from "../../../hookNegocios/horarios";
 export const HorarioPagina = () => {
   // Hooks de horarios
   const {
-    profesores,
-    niveles,
-    tipo,
-    horaInicioFin,
-    diaHorario,
-    metodo,
-    modalInterno,
-    errorGenericoHorario,
-    listaProfe,
-    listaNiveles,
-    listaTipo,
-    calendario,
     handleCachearProfesores,
     handleCachearNiveles,
     handleCachearTipos,
@@ -28,27 +16,28 @@ export const HorarioPagina = () => {
     hanldeVolver,
     horarios,
     diasSemana,
+    state,
   } = useHorariosUsuarios();
 
   return (
     <FormHorario
-      metodo={metodo}
-      mensajeEstado={errorGenericoHorario as string}
-      horaInicioFin={horaInicioFin}
+      metodo={state.metodo}
+      mensajeEstado={state.errorGenericoHorario as string}
+      horaInicioFin={state.horaInicioFin}
       diasSemana={diasSemana}
       horarios={horarios}
-      diaHorario={diaHorario}
-      calendario={calendario}
-      modalInterno={modalInterno}
-      listaProfe={listaProfe}
+      diaHorario={state.diaHorario}
+      calendario={state.calendario}
+      modalInterno={state.modales.modalInterno}
+      listaProfe={state.listaProfe}
       handleCachearProfesores={handleCachearProfesores}
-      profesores={profesores}
-      listaNiveles={listaNiveles}
+      profesores={state.profesores}
+      listaNiveles={state.listaNiveles}
       handleCachearNiveles={handleCachearNiveles}
-      nilveles={niveles}
-      listaTipo={listaTipo}
+      nilveles={state.niveles}
+      listaTipo={state.listaTipo}
       handleCachearTipos={handleCachearTipos}
-      tipo={tipo}
+      tipo={state.tipo}
       handleModificarData={handleAbrirModificarHorario}
       handleAbrirModal={handleAbirModalHoarios}
       handleCancelar={handleCerrarModalHoarios}
