@@ -152,7 +152,7 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
             return {
                 error : true,
                 message : "No se Logro generar la asistencia",
-                code   :"ERROR_ASISTENCIA"
+                code   :"ERROR_SERVIDOR"
             };        
       };    
     };
@@ -227,6 +227,7 @@ const fechaAsistencia = async( data : ClasesActualInputs)
         case 'CLASE_EN_CURSO_EXISTE'    : {
             if (clase_en_curso.data) clase_actual  = clase_en_curso.data  ;
         };
+
     };
    
   const verificaionFechas_proxima_clase : ClasesProximaInputs = ClaseProximaSchema.parse({ id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy }); 
@@ -245,6 +246,8 @@ const fechaAsistencia = async( data : ClasesActualInputs)
     };
     
   };
+
+
  
   return{
     error: false,
@@ -329,8 +332,8 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
     
     return {
         error : true,
-        message : "Funcionalidad en desarrollo",
-        code : "DATA_ASISTENCIA_EN_DESARROLLO"
+        message : "Error en el servidor durante el proceso se asistencia ",
+        code : "ERROR_SERVIDOR"
     };
 
 };
