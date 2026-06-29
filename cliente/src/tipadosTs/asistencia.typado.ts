@@ -1,6 +1,36 @@
 export interface AsistenciaFechas {
-    id_escuela : number,
     estado     : "activos" | "inactivos"
+};
+
+export  interface dataAnular {
+    modalAnular: boolean;
+    id_cuenta? : number | null;
+    idInscripcion?: number | null;
+    metodo_pago : string,
+    monto_pagado : string,
+    carga: boolean  ;
+    texto: string  ;
+}
+
+export interface DataDetalle {
+    nombre_completo: string ;
+    dni_alumno: number ;
+    clases_totales: number;
+    clases_tomadas: number ;
+    vigencia: string ;
+    monto_pagado: string ;
+    metodo_pago_descrip: string;     // con la descripcion chacheo el metodo de pago existente 
+};
+
+export interface ListadoCuentas {
+    id_cuenta : number,
+    nombre_cuenta :string
+};
+
+export interface RetornoListadoCuentas {
+    id_cuenta : number,
+    nombre_cuenta  : string,
+    tipo_cuenta : string
 };
 
 export interface ResultadoClaseEnCruso {
@@ -42,13 +72,10 @@ export interface BusquedaAlumno extends AsistenciaFechas{
 };
 
 
-
 export interface ResultRegistroAsistencia{
   idAsistencia: number,
   clasesRestantes: number   
 };
-
-
 
 
 export type DataInscripcionVigente ={
@@ -76,7 +103,6 @@ export interface ResultDataAsistencia{
 }
 
 export interface DataAsistencia{
-     id_escuela : number,
      dni_alumno : string,
      estado : "activos" | "inactivos",
 };

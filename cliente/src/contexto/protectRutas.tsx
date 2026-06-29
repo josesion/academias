@@ -21,8 +21,8 @@ type UsuarioInfo = {
 };
 
 type UsuarioEscuelaInfo = {
-  id_usuario: number;
-  escuela: number | null;
+  // id_usuario: number;
+  //escuela: number | null;
   rol: string;
   usuario: string;
 };
@@ -39,8 +39,8 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
     return estadoGuardado
       ? JSON.parse(estadoGuardado)
       : {
-          id_usuario: 0,
-          escuela: null,
+          //          id_usuario: 0,
+          //          escuela: null,
           rol: "visita",
           usuario: "visita",
         };

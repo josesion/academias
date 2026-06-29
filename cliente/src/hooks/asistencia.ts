@@ -1,130 +1,89 @@
-import { useState , useEffect } from "react";
-
-import  type * as TipadoAsistencia  from "../tipadosTs/asistencia.typado";
-
+import {  useEffect , useReducer} from "react";
+import { initialState, asistenciaReducer} from "../reducers/asistenciaReducer";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 
 interface DataUseAsistenciaConfig{
-    id_escuela : number,
     servicios : {
         asistenciaHorarios : ServicioCrud,
         registroAsistencia : ServicioCrud,
-        obtenerDataAsistencia : ServicioCrud
+        obtenerDataAsistencia : ServicioCrud,
     },
 
      inicalFiltroAlumno :{ dni_alumno  : string }
 };
 
 export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
-// ──────────────────────────────────────────────────────────────
-//Estados Asistencia
-// ────────────────────────────────────────────────────────────── 
-    const [errorGenerico , setErrorGenerico] = useState<string | null>(null);
-    const [ exitoAsistencia , setExitoAsistencia ] = useState<boolean>( false );
-    const [claseEnCurso , setClaseEnCurso] = useState<TipadoAsistencia.ResultadoClase_en_cursos>({ error : null , message: null , code : null});
-    const [claseProxima , setClaseProxima ]= useState<TipadoAsistencia.ResultadoClase_proxima>({ error : null , message: null , code : null});
-    const [dataInscripcion , setDataInscripcion] = useState<TipadoAsistencia.DataInscripcionVigente | null>(null);
-    const [dataAsistencia , setDataAsistencia ] = useState<TipadoAsistencia.ResultDataAsistencia>( { 
-        dataHorario : { error : null , message: null , code : null},
-        dataInscripcion : { error : null , message: null , code : null}
-    } );
 
-    const [ registroAsistencia , setRegistroAsistencia] = useState<TipadoAsistencia.BusquedaAlumno>({
-        ...config.inicalFiltroAlumno,
-        estado : "activos",
-        id_escuela : config.id_escuela
-    });
-// ──────────────────────────────────────────────────────────────
-//Reseteo de los estados 
-// ────────────────────────────────────────────────────────────── 
-    const resetFormulario = () => {
-        setRegistroAsistencia({
-            ...config.inicalFiltroAlumno,
-            estado : "activos",
-            id_escuela : config.id_escuela
-        });
-        setDataAsistencia({
-         dataHorario : { error : null , message: null , code : null},
-         dataInscripcion : { error : null , message: null , code : null}           
-        });
-        setErrorGenerico(null);
-        setDataInscripcion(null);
-    } ;
+    const [ state , dispatch] = useReducer( asistenciaReducer, initialState());
 
 // ──────────────────────────────────────────────────────────────
 //Handles asistencia 
 // ────────────────────────────────────────────────────────────── 
+
     const handleCachearAlumno = async(e: React.ChangeEvent<HTMLInputElement>) =>{
         const { name, value } = e.target;
-        setRegistroAsistencia({
-            ...registroAsistencia,
-            [name] : value
-        });
+
+        dispatch({ type : "SET_REGISTRO_ASISTENCIA", payload : { ...state.registroAsistencia, [name] : value }})
 
         if (name === "dni_alumno") {
                 // El "Peaje": Solo si tiene entre 8 y 9 caracteres buscamos en la DB
             if (value.length >= 8 && value.length <= 9) {
-                    const dataAsistenciafetch = config.servicios.obtenerDataAsistencia;
-                    const resultado = await dataAsistenciafetch({id_escuela : config.id_escuela , dni_alumno : value, estado : registroAsistencia.estado});
-                
-                    setDataAsistencia(resultado.data);
-                    if (resultado.code === "ASISTENCIA_OK"){
-                        setDataAsistencia(resultado.data);
-                        setDataInscripcion(resultado.data.dataInscripcion);
+                   const dataAsistenciafetch = config.servicios.obtenerDataAsistencia;
+                   const resultado = await dataAsistenciafetch({  dni_alumno : value, estado : state.registroAsistencia.estado});
+
+                   if (resultado.code === "ASISTENCIA_OK"){
+            
+                        dispatch({ type : "SET_ASISTENCIA_OK", payload : { 
+                            dataAsistencia : resultado.data , 
+                            dataInscripcion : resultado.data.dataInscripcion, 
+                            errorGenerico : null} });
+
                     }else{
-                        setDataAsistencia({
-                            dataHorario : { error : true, message : resultado.message || "Error desconocido", code : resultado.code || "UNKNOWN_ERROR" },
-                            dataInscripcion : { error : true, message : resultado.message || "Error desconocido", code : resultado.code || "UNKNOWN_ERROR" }
-                        });
-                        setErrorGenerico(resultado.message || "Error desconocido");
-                        setDataInscripcion(null);
-                    }
+                        dispatch({ type : "SET_ASISTENCIA_FALLO", payload : {
+                             dataAsistencia : {
+                                    dataHorario : { error : true, message : resultado.message || "Error desconocido", code : resultado.code || "UNKNOWN_ERROR" },
+                                    dataInscripcion : { error : true, message : resultado.message || "Error desconocido", code : resultado.code || "UNKNOWN_ERROR" }
+                             },
+                             erroGenerico : resultado.message || "Error desconocido" ,
+                             dataInscripcion : null
+                        }}); 
+                    };
             } else {
                     // Si el DNI es muy corto (porque está borrando), limpiamos la info vieja
-                   //console.log("no busco :", value);
-                    setErrorGenerico(null);
-                    setDataInscripcion(null);
-                    setDataAsistencia({
-                    dataHorario : { error : null , message: null , code : null},
-                    dataInscripcion : { error : null , message: null , code : null}           
-                    });
+
+                    dispatch({ type : "SET_PEAJE_RESET" });
             };
       };
     };
 
     const handleResgistrarAsistencia = async() => {
 // Verificamos que existan las propiedades antes de usarlas
-        if ("id_horario_clase" in dataAsistencia.dataHorario && 
-            "id_inscripcion" in dataAsistencia.dataInscripcion) {
+        if ("id_horario_clase" in state.dataAsistencia.dataHorario && 
+            "id_inscripcion" in state.dataAsistencia.dataInscripcion) {
 
             const registrarAsistenciaFetch = config.servicios.registroAsistencia;
             const dataAsistenciaData = {
-                id_escuela : config.id_escuela,
-                dni_alumno : registroAsistencia.dni_alumno,
-                estado     : registroAsistencia.estado,
-                id_horario_clase : dataAsistencia.dataHorario.id_horario_clase,
-                id_inscripcion   : dataAsistencia.dataInscripcion.id_inscripcion                
+                dni_alumno : state.registroAsistencia.dni_alumno,
+                estado     : state.registroAsistencia.estado,
+                id_horario_clase : state.dataAsistencia.dataHorario.id_horario_clase,
+                id_inscripcion   : state.dataAsistencia.dataInscripcion.id_inscripcion                
             };
-            console.log("Datos para registrar asistencia :", dataAsistenciaData);
   
             const registroAsistenciaResultado =  await registrarAsistenciaFetch( dataAsistenciaData );
 
-            console.log(registroAsistenciaResultado);
             if ( registroAsistenciaResultado.code === "ASISTENCIA_OK"){
-                resetFormulario();
-                setExitoAsistencia( true );
+                dispatch({ type : "SET_REGISTRO_ASISTENCIA_OK" });   
                 setTimeout(() => {
-                    setExitoAsistencia( false );
+                         dispatch({ type : "SET_EXITOSA_ASISTENCIA" , payload : false });
                 }, 3000);
             }else{
-                setErrorGenerico(registroAsistenciaResultado.message || "Error desconocido");
+                dispatch({ type : "SET_ERROR_GENERICO", payload : registroAsistenciaResultado.message || "Error desconocido" });
             };
 
         } else {
-           // console.error("No se puede registrar: Datos incompletos o error presente");
-            setErrorGenerico("No se puede registrar: Datos incompletos");
+           dispatch({ type : "SET_ERROR_GENERICO", payload : "No se puede registrar: Datos incompletos" }); 
         }
     };
 // ──────────────────────────────────────────────────────────────
@@ -134,13 +93,16 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
 useEffect(()=>{
 
     const asistenciaFechas = async() =>{
-        const data = { id_escuela : config.id_escuela , estado : "activos"};
+        const data = {  estado : "activos"};
         const servicioApiFetch = config.servicios.asistenciaHorarios;
         const asistenciaFechasRespuesta = await servicioApiFetch( data); 
-       
+    
         if (asistenciaFechasRespuesta.error === false){
-            setClaseEnCurso(asistenciaFechasRespuesta.data.enCursoClase);
-            setClaseProxima(asistenciaFechasRespuesta.data.proximaClase);
+
+            dispatch({ type : "SET_CARTELES_OK", payload : {
+                claseEnCurso : asistenciaFechasRespuesta.data.enCursoClase,
+                claseProxima : asistenciaFechasRespuesta.data.proximaClase
+            } });
         };
     }
 
@@ -159,13 +121,10 @@ useEffect(()=>{
 },[]);
 
 
+
+
     return{
-        errorGenerico,   
-        exitoAsistencia, 
-        claseEnCurso,
-        claseProxima,
-        registroAsistencia,
-        dataInscripcion,
+        state,
         handleCachearAlumno,
         handleResgistrarAsistencia
     }

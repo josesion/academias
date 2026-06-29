@@ -1,7 +1,7 @@
 
 //Sericios ---------------------------------------------------
 import { listadoInscripciones, anularInscripcion } from "../servicio/inscripciones.fetch";
-
+import { listadoTipoCuentas } from "../servicio/caja.fetch";
 
 // Logica -----------------------------------------------------
 import { listaInscripcionLogica } from "../hooks/listadoInscrip";
@@ -37,6 +37,7 @@ export const setListadoInscripcion = () => {
     servicios :{
       listado : listadoInscripciones,  
       anulacion : anularInscripcion,
+      listadoCuentas : listadoTipoCuentas
     },
     
     inputsFiltros : inputsFiltro,

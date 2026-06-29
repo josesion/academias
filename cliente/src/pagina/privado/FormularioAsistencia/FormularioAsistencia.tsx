@@ -15,22 +15,14 @@ import "./formularioAsistencia.css";
 export const FormularioAsistencia = () => {
   const inputDniRef = useRef<HTMLInputElement>(null);
 
-  const {
-    errorGenerico,
-    exitoAsistencia,
-    claseEnCurso,
-    claseProxima,
-    registroAsistencia,
-    dataInscripcion,
-    handleCachearAlumno,
-    handleResgistrarAsistencia,
-  } = useAsistenciaSet();
+  const { handleCachearAlumno, handleResgistrarAsistencia, state } =
+    useAsistenciaSet();
 
   useEffect(() => {
-    if (!exitoAsistencia) {
+    if (!state.exitoAsistencia) {
       inputDniRef.current?.focus();
     }
-  }, [exitoAsistencia]);
+  }, [state.exitoAsistencia]);
 
   return (
     <div className="asistencia_kiosco">
@@ -43,17 +35,17 @@ export const FormularioAsistencia = () => {
         <div className="clase_card actual">
           <span className="badge">EN CURSO</span>
           <h2>
-            {claseEnCurso && "nombre_clase" in claseEnCurso
-              ? claseEnCurso.nombre_clase
+            {state.claseEnCurso && "nombre_clase" in state.claseEnCurso
+              ? state.claseEnCurso.nombre_clase
               : "Sin clase en curso"}
           </h2>
           <p>
-            {claseEnCurso && "hora_inicio" in claseEnCurso
-              ? claseEnCurso.hora_inicio
+            {state.claseEnCurso && "hora_inicio" in state.claseEnCurso
+              ? state.claseEnCurso.hora_inicio
               : "00:00"}{" "}
             →{" "}
-            {claseEnCurso && "hora_fin" in claseEnCurso
-              ? claseEnCurso.hora_fin
+            {state.claseEnCurso && "hora_fin" in state.claseEnCurso
+              ? state.claseEnCurso.hora_fin
               : "00:00"}
           </p>
         </div>
@@ -61,18 +53,18 @@ export const FormularioAsistencia = () => {
         <div className="clase_card proxima">
           <span className="badge">PRÓXIMA</span>
           <h2>
-            {claseProxima && "nombre_clase" in claseProxima
-              ? claseProxima.nombre_clase
+            {state.claseProxima && "nombre_clase" in state.claseProxima
+              ? state.claseProxima.nombre_clase
               : "Sin mas clases por hoy"}
           </h2>
           <p>
             {" "}
-            {claseProxima && "hora_inicio" in claseProxima
-              ? claseProxima.hora_inicio
+            {state.claseProxima && "hora_inicio" in state.claseProxima
+              ? state.claseProxima.hora_inicio
               : "00:00"}{" "}
             →{" "}
-            {claseProxima && "hora_fin" in claseProxima
-              ? claseProxima.hora_fin
+            {state.claseProxima && "hora_fin" in state.claseProxima
+              ? state.claseProxima.hora_fin
               : "00:00"}
           </p>
         </div>
@@ -85,7 +77,7 @@ export const FormularioAsistencia = () => {
           name="dni_alumno"
           type="number"
           ref={inputDniRef}
-          value={registroAsistencia.dni_alumno}
+          value={state.registroAsistencia.dni_alumno}
           readonly={false}
           onChange={handleCachearAlumno}
         />
@@ -93,11 +85,13 @@ export const FormularioAsistencia = () => {
         <div className="estado_inscripcion">
           <div>
             <span>Vencimiento : </span>
-            <strong>{dataInscripcion?.vencimiento || "----/--/--"}</strong>
+            <strong>
+              {state.dataInscripcion?.vencimiento || "----/--/--"}
+            </strong>
           </div>
           <div>
             <span>Clases restantes : </span>
-            <strong>{dataInscripcion?.clases_restantes || "-"}</strong>
+            <strong>{state.dataInscripcion?.clases_restantes || "-"}</strong>
           </div>
         </div>
 
@@ -107,8 +101,8 @@ export const FormularioAsistencia = () => {
           logo="Go"
           onClick={handleResgistrarAsistencia}
         />
-        {errorGenerico && <CompoError mensaje={errorGenerico} />}
-        {exitoAsistencia &&
+        {state.errorGenerico && <CompoError mensaje={state.errorGenerico} />}
+        {state.exitoAsistencia &&
           createPortal(
             <div className="overlay-exito">
               <div className="card-exito">

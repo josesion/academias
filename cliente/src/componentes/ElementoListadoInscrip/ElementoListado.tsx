@@ -24,6 +24,11 @@ interface ElementoListaProps {
     id: number,
     metodo_pago: string,
     monto_pagado: string,
+    nombre_completo: string,
+    dni_alumno: number,
+    clases_tomadas: number,
+    clases_totales: number,
+    vigencia: string,
   ) => void;
 }
 
@@ -44,6 +49,11 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
           inscripcion.id_inscripcion,
           inscripcion.metodo_pago,
           inscripcion.monto_pagado,
+          inscripcion.nombre_completo,
+          inscripcion.clases_totales,
+          inscripcion.clases_usadas,
+          inscripcion.dni_alumno,
+          inscripcion.vigencia,
         )
       }
     >

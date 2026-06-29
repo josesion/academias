@@ -95,6 +95,8 @@ export const anularInscripcion  =async ( data : TipadoInscripcion.AnulacionInscr
         method : "POST",
         body : {
             id_inscripcion : data.id_inscripcion,
+            id_cuenta : data.id_cuenta
+            // aca va el id de metodo de pago para la devolucion
         }
     });
 };

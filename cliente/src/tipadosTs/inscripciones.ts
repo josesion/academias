@@ -72,6 +72,7 @@ export interface InscripcionListadoResult {
 
 
 export interface AnulacionInscripcion {
+    id_cuenta: number;
     id_inscripcion: number;
     estadoInsc: 'activos' | 'vencidos' | 'anulados'; // Esto se llama Literal Type, para que no entre cualquier fruta
     monto: number;

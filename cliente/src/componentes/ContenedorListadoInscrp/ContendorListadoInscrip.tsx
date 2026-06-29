@@ -15,6 +15,11 @@ interface Props {
     id: number,
     metodo_pago: string,
     monto_pagado: string,
+    nombre_completo: string,
+    clases_totales: number,
+    clases_tomadas: number,
+    dni_alumno: number,
+    vigencia: string,
   ) => void;
 }
 
@@ -59,8 +64,26 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
               <ElementoLista
                 key={inscripcion.id_inscripcion}
                 inscripcion={inscripcion}
-                onSeleccionar={(id, metodo_pago, monto_pagado) => {
-                  onSeleccionarInscripcion(id, metodo_pago, monto_pagado);
+                onSeleccionar={(
+                  id,
+                  metodo_pago,
+                  monto_pagado,
+                  nombre_completo,
+                  clases_totales,
+                  clases_tomadas,
+                  dni_alumno,
+                  vigencia,
+                ) => {
+                  onSeleccionarInscripcion(
+                    id,
+                    metodo_pago,
+                    monto_pagado,
+                    nombre_completo,
+                    clases_totales,
+                    clases_tomadas,
+                    dni_alumno,
+                    vigencia,
+                  );
                 }}
                 vigencia={obtenerEstadoVigencia(
                   inscripcion.vigencia,

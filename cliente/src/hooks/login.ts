@@ -77,9 +77,9 @@ export const loginLogica = () : LoginLogicaReturn =>{
         }
         if (respuesta.error === false) {
           setRol({
-            escuela: respuesta.data.id_escuela,
+           // escuela: respuesta.data.id_escuela,
             rol: respuesta.data.rol,
-            id_usuario: respuesta.data.id_usuario,
+           // id_usuario: respuesta.data.id_usuario,
             usuario : respuesta.data.usuario
           });
     

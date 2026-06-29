@@ -1,26 +1,31 @@
 import { SelectorOpt } from "../CompSelecObt/SelectorOpt";
 import { Boton } from "../Boton/Boton";
+import { CompoError } from "../Error/Error";
 
 import "./paneldetalleinsc.css";
 
-interface DataDetalle {
+interface ListadoCuentas {
+  id_cuenta: number;
+  nombre_cuenta: string;
+}
+
+export interface DataDetalle {
   infoDetalle?: {
     nombre_completo: string;
     dni_alumno: number;
     clases_totales: number;
     clases_tomadas: number;
     vigencia: string;
-    monto_pagado: number;
+    monto_pagado: string;
     metodo_pago_descrip: string;
   };
+  errorAnulacion: string | null;
+  carga: boolean;
+  listaMetodoPago: ListadoCuentas[];
+  onChangeMetodo: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   anularInscripcion?: () => void;
   cancelarPanel?: () => void;
 }
-
-const metodotopagoprueba = [
-  { id: 1, metodo: "transferencia" },
-  { id: 2, metodo: "efectivo" },
-];
 
 export const PanelDetalleInscrip = (props: DataDetalle) => {
   return (
@@ -40,12 +45,11 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
 
       <div className="contenedor_panel_anular">
         <SelectorOpt
-          categorias={metodotopagoprueba}
-          itemKey="id"
-          itemLabel="id"
-          onChangeSelector={() => {}}
+          categorias={props.listaMetodoPago ?? []}
+          itemKey="id_cuenta"
+          itemLabel="nombre_cuenta"
+          onChangeSelector={props.onChangeMetodo}
           name="metodo_pago"
-          labelDefault="Metodo pago"
         />
         <div className="contenedor_panel_botones">
           <Boton
@@ -53,8 +57,11 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
             logo="Delete"
             texto="Anular"
             onClick={props.anularInscripcion}
+            disable={props.carga}
           />
         </div>
+
+        {props.errorAnulacion && <CompoError mensaje={props.errorAnulacion} />}
       </div>
 
       <div className="contenedor_panel_botones">

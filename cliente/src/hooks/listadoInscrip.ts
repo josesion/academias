@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ListadoInscripcionReducer, inicialState } from "../reducers/ListadoInscripcion";
 
 
-
 import { peticiones } from "../utils/peticiones";
 
 import { type FiltroBusqueda } from "../tipadosTs/inscripciones"; 
 import { type PaginacionProps } from "../tipadosTs/genericos";
+
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -16,6 +16,7 @@ interface InscripcionConfig{
     servicios : {
         listado : ServicioCrud,
         anulacion : ServicioCrud,
+        listadoCuentas : ServicioCrud
     },
 
     estados: string[] ; 
@@ -24,10 +25,15 @@ interface InscripcionConfig{
     paginacion :  PaginacionProps
 };
 
+interface RetornoListadoCuentas {
+    id_cuenta : number,
+    nombre_cuenta  : string,
+    tipo_cuenta : string
+};
 
 
 export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
-
+ 
  const irA = useNavigate();   
 
  const [ state , dispatch] = useReducer(ListadoInscripcionReducer, inicialState({
@@ -103,125 +109,110 @@ export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
 //  Anular la inscripcion
 //
 /////////////////////////////////////////////////////////////////////////////// 
-  interface dataAnular {
-    modalAnular: boolean;
-    idInscripcion: number | null;
-    metodo_pago : string,
-    monto_pagado : string,
-    carga: boolean  ;
-    texto: string  ;
-    mensajeError : string
-  }
 
-const [ dataAnularInscripcion , setDataAnularInscripcion ] = useState<dataAnular>({
-    modalAnular : false,
-    idInscripcion : null,
-    metodo_pago : "",
-    monto_pagado : "",
-    carga : false,
-    texto : "",
-    mensajeError : ""
-});
 
-//const [ actualizarListado , setActualizarListado] = useState<number>(0);
-
-const setearDataosAnulacion = () =>{
-    setDataAnularInscripcion( prev => ({
-        ...prev,
-        idInscripcion : null, 
-        monto_pagado : "",
-        metodo_pago : "",
-        modalAnular : false , 
-        texto : "",
-        mensajeError : "",
-        carga : false, 
-    }));
-};
-
-const manejarSeleccionInscripcion = ( id : number , metodo_pago : string, monto_pagado : string) => {
+const manejarSeleccionInscripcion = ( 
+    id: number,
+    metodo_pago: string,
+    monto_pagado: string,
+    nombre_completo: string,
+    clases_totales: number,
+    clases_tomadas: number,
+    dni_alumno: number,
+    vigencia: string,
+) => {
 
  if (!id) {  
-    setearDataosAnulacion();
+     dispatch({ type : "SET_FORMATEAR_ANULACION" });
  }else{
-    setDataAnularInscripcion( prev => ({
-        ...prev,
+
+    dispatch({ type : "SET_INFO_DETALLE", payload : {
+        metodo_pago_descrip : String(metodo_pago),
+        monto_pagado :  monto_pagado,
+        nombre_completo : nombre_completo,
+        dni_alumno : dni_alumno,
+        clases_totales : clases_totales,
+        clases_tomadas : clases_tomadas, 
+        vigencia: vigencia       
+    }});
+
+ };
+    dispatch({ type : "SET_INFO_ANULAR", payload : {
+        ...state.dataAnularInscripcion,
         idInscripcion : id , 
         modalAnular : true , 
         metodo_pago : metodo_pago,
         monto_pagado : monto_pagado,
         texto : `Se anulara la inscripcion de : ${id},
-                 metodo de pago : ${metodo_pago} `,
-        mensajeError : ""
-    }));
- };
-
+                 metodo de pago : ${metodo_pago} `       
+    }});
+ 
 };
+
 
 const handleCancelarAnulacion = () =>{
-    setearDataosAnulacion();
+    //setearDataosAnulacion();
+    dispatch({ type : "SET_FORMATEAR_ANULACION"});
 };
 
+const handleCachearMetodoPago = (e: React.ChangeEvent<HTMLSelectElement>) =>{
+   
+    if ( e.target.value){
+        dispatch({ 
+            type: "SET_CACHEAR_METODO_PAGO", 
+            payload: { 
+                listoAnular: true, 
+                dataAnularInscripcion: {
+                    ...state.dataAnularInscripcion,
+                    id_cuenta: Number(e.target.value)
+                }
+            }
+        });
+    }else{
+        dispatch({ 
+            type: "SET_CACHEAR_METODO_PAGO", 
+            payload: { 
+                listoAnular: false, 
+                dataAnularInscripcion: {
+                    ...state.dataAnularInscripcion,
+                    id_cuenta: null
+                }
+            }
+        });
+    }
+}; 
+
 const handleAnularInscripcion = async () =>{
-    setDataAnularInscripcion( prev => ({ ...prev , carga : true}));
+
+
+    if ( state.listoAnular === false ) {
+        dispatch({ type : "SET_ERROR_ANULAR", payload : "Seleccione metodo de pago" });
+        return;
+    };
+
+    dispatch({ type : "SET_ERROR_ANULAR", payload : null });
+    dispatch({ type : "SET_ANULAR_CARGAR", payload : { ...state.dataAnularInscripcion, carga : true} });
+
     try {
+       
        const servicioApiFetch  = config.servicios.anulacion;
        const respuestaAnulacion = await  servicioApiFetch({
-            id_inscripcion : dataAnularInscripcion.idInscripcion as number,
+            id_inscripcion : state.dataAnularInscripcion.idInscripcion as number,
+            id_cuenta : state.dataAnularInscripcion.id_cuenta
        }); 
 
-   
-       switch (respuestaAnulacion.code ){
-            case "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION" :{
-                await new Promise(resolve => setTimeout(resolve, 600));
-                //setActualizarListado( actualizarListado + 1);
-                dispatch({ type : "SET_ACTUALIZAR_LISTADO"});
-                setearDataosAnulacion();
-
-                return;                    
-            };
-
-            case "SIN_PERMISO" : {
-                setDataAnularInscripcion( prev => ({
-                    ...prev , 
-                    mensajeError : respuestaAnulacion.message || "No tienes permiso para anular esta inscripción.",
-                }));
-                return;
-            };
-
-            case "NO_EXISTE_CAJA" : {
-                setDataAnularInscripcion( prev => ({
-                    ...prev , 
-                    mensajeError : respuestaAnulacion.message || "No se encontró una caja abierta para esta escuela, Abra una caja para poder anular la inscripción.",
-                }));
-                return;           
-            };
-
-            case "TRANSACCION_FALLIDA_ANULAR_INCRIPCION" : {
-                setDataAnularInscripcion( prev => ({
-                    ...prev , 
-                    mensajeError : respuestaAnulacion.message || "Error al anular la inscripción, por favor intente nuevamente.",
-                }));
-                return;           
-            };
-
-            case "SIN_CATEGORIA_ANULACION" : {
-                setDataAnularInscripcion( prev => ({
-                    ...prev , 
-                    mensajeError : respuestaAnulacion.message || "Error en el seteo de la categoría de anulación.",
-                }));
-                return;           
-            };
-
-            default : {
-                setDataAnularInscripcion( prev => ({...prev , mensajeError : "Ocurrio un error al intentar anular la inscripcion, por favor intente nuevamente."}));
-                return;
-            };
+       if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){
+            await new Promise(resolve => setTimeout(resolve, 600));
+            dispatch({ type : "SET_ACTUALIZAR_LISTADO"});
+            dispatch({ type : "SET_FORMATEAR_ANULACION" });
+       }else{
+             dispatch({ type : "SET_ERROR_ANULAR", payload : respuestaAnulacion.message });
        };
 
     }catch ( error) {
-       setDataAnularInscripcion( prev => ({ ...prev , mensajeError : "Ocurrió un error inesperado al anular la inscripción."}));
+       dispatch({ type : "SET_ERROR_ANULAR", payload  : "Ocurrió un error inesperado al anular la inscripción." });
     }finally{
-       setDataAnularInscripcion( prev => ({ ...prev , carga : false})); 
+       dispatch({ type : "SET_ANULAR_CARGAR", payload : { ...state.dataAnularInscripcion, carga : false} });
     };
 };
 
@@ -291,7 +282,27 @@ const listadoInscrip = async () => {
     };    
 },[ state.filtroData, state.actualizarListado]);
 
+useEffect( ()=> {
 
+    const listadoMetodosPago = async() =>{
+        const data = { estado : "activos"}
+        const servicioApifetch = config.servicios.listadoCuentas;
+        const listaCuentasResult = await servicioApifetch( data );
+       // console.log(listaCuentasResult)
+        if ( listaCuentasResult.code === 'LISTA_TIPOS_CUENTAS_OK' ){
+            const listadoRefacto =    listaCuentasResult.data.map( (item : RetornoListadoCuentas) =>({
+                    id_cuenta: item.id_cuenta,
+                    nombre_cuenta: `${item.nombre_cuenta} : (${item.tipo_cuenta})`
+            }));    
+            dispatch({ type : "SET_LISTADO_CUENTAS",payload : listadoRefacto });
+        }else{
+            dispatch({ type : "SET_LISTADO_CUENTAS",payload : [] });  
+        }
+    };      
+
+    listadoMetodosPago();
+
+}, [] );
 
     return{
         //carga,
@@ -299,21 +310,17 @@ const listadoInscrip = async () => {
     //--- EXPORT DE FILTROS DE BUSQUEDA ----   
         inputsFiltro: config.inputsFiltros,
         estado : config.estados,
-     //   filtroData,
-     //   barraPaginacion,
         handleChangaValue,
         handleChangeEstado,
         handleChangeFechaDesde,
         handleChangeFechaHasta,
-        handlePaginaCambiada,
-    //-------------------------------------    
-        //dataListado,
+        handlePaginaCambiada,   
     //-------------------------------------      
         abrirInscribir,
     //-------------------------------------  
-        dataAnularInscripcion,
         manejarSeleccionInscripcion,
         handleCancelarAnulacion,
         handleAnularInscripcion,
+        handleCachearMetodoPago,
     };
 };
