@@ -306,6 +306,8 @@ const listadoCategoriaCaja = async( data : ListadoCategoriaCajaInputs )
 
 };
 
+
+
 export const method = {
     altaCategoriaCajaServicio : tryCatchDatos(altaCategoriaCajaServicio),
     modCategoriaCaja          : tryCatchDatos( modCategoriaCaja ),

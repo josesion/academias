@@ -1,5 +1,10 @@
 
 import { method as dataCaja} from "../data/caja.data";
+import { method as dataCategoria } from "../data/categoria.cajas.data";
+import { method as dataInscripcion} from "../data/inscripciones.data";
+
+const { verificarEgreso } = dataCategoria;
+const { saldoMetodoPago } = dataInscripcion;
 // ──────────────────────────────────────────────────────────────
 // Sección de  hooks
 // ──────────────────────────────────────────────────────────────
@@ -26,23 +31,19 @@ import {
 
 
 /**
- * Servicio para registrar un nuevo movimiento (ingreso o egreso) en el detalle de una caja activa.
- * * Este proceso garantiza la integridad del flujo de caja mediante los siguientes pasos:
- * 1. Valida los datos de entrada (monto, cuenta, categoría, etc.) usando DetalleCajaSchema.
- * 2. Verifica que la escuela tenga una sesión de caja actualmente 'abierta'.
- * 3. Si la caja existe, delega la inserción a la capa de datos (detalleCajaAlta).
- * 4. Retorna el ID de la caja y de la categoría del movimiento creado.
- *
- * @async
- * @param {DetalleCajaInputs} data - Objeto con los datos del movimiento (id_escuela, id_cuenta, id_categoria, monto, etc.).
- * @returns {Promise<TipadoData<ResultDetalleCaja>>} 
- * Promesa con el resultado de la operación y datos del registro creado.
- * * @throws {ZodError} Si los datos del movimiento no cumplen con el esquema de validación.
- * * @example
- * // Códigos de retorno:
- * // - DETALLE_CAJA_OK: Registro exitoso.
- * // - SIN_CAJA_ABIERTA: No se puede registrar movimientos si la caja está cerrada.
- * // - ERROR_ABRIR_CAJA_DETALLE: Error inesperado en la base de datos.
+ * @function detalleCaja
+ * @description Procesa el alta de un nuevo movimiento (detalle) en la caja.
+ * Realiza una secuencia de validaciones críticas antes de persistir la información:
+ * 1. Valida el esquema de datos de entrada.
+ * 2. Verifica la existencia de una caja abierta para la escuela.
+ * 3. Si la categoría es de tipo 'egreso', valida la disponibilidad de saldo en la cuenta seleccionada.
+ * 4. Ejecuta el registro del detalle en caso de que todas las validaciones sean exitosas.
+ * * @param {DetalleCajaInputs} data - Objeto con la información del movimiento a registrar.
+ * @returns {Promise<TipadoData<ResultDetalleCaja>>} Retorna un objeto con el resultado de la operación:
+ * - `code: "DETALLE_CAJA_OK"` en caso de éxito.
+ * - `code: "SIN_CAJA_ABIERTA"` si no hay una caja operativa.
+ * - `code: "SIN_SALDO"` si se intenta realizar un egreso sin fondos suficientes.
+ * - `code: "ERROR_ABRIR_CAJA_DETALLE"` para errores genéricos de persistencia.
  */
 
 const detalleCaja = async ( data : DetalleCajaInputs) 
@@ -56,6 +57,45 @@ const detalleCaja = async ( data : DetalleCajaInputs)
         estado     : "abierta",
     });
 
+    if ( vericarCajaResult.code === "CAJA_ABIERTA_NO_EXISTE" ){
+        return {
+            error : true,
+            message : "No hay caja abierta",
+            code : "SIN_CAJA_ABIERTA"
+        };
+    };
+
+    let saldoExiste : boolean = true;
+
+    const verificacionEgreso = await verificarEgreso( verificarDetalle.id_categoria );
+   
+    // veifico si es de el tipo de categoria es de egreso 
+    if ( verificacionEgreso.code === 'CATEGORIA_EXISTE' ){
+        // si es de tipo egreso entra aca y entemos q ver si hay monto para realizar el egreso
+        const verificarSaldo = await saldoMetodoPago( verificarDetalle.id_caja, verificarDetalle.id_cuenta );
+
+        if (verificarSaldo.code === 'SALDO_EXISTE' && verificarSaldo.data !== undefined ){
+
+            const saldoActual = Number(verificarSaldo.data.saldo_actual);
+            const monto = Number(verificarDetalle.monto);
+
+            if (saldoActual < monto) {
+                saldoExiste = false;
+            };
+        };  
+    };
+
+
+
+    if ( saldoExiste === false){
+        return{
+            error : true, 
+            message : "No cuentas con saldo para realizar esta accion",
+            code : "SIN_SALDO"
+        };
+    };    
+
+// aca es si pasa 
     if ( vericarCajaResult.code === "CAJA_ABIERTA_EXISTE" ){
         const detalleCajaResult = await dataCaja.detalleCajaAlta(verificarDetalle);
 
@@ -70,15 +110,6 @@ const detalleCaja = async ( data : DetalleCajaInputs)
         };
 
     };
-
-    if ( vericarCajaResult.code === "CAJA_ABIERTA_NO_EXISTE" ){
-        return {
-            error : true,
-            message : "No hay caja abierta",
-            code : "SIN_CAJA_ABIERTA"
-        };
-    };
-
     
     return {
         error : true,

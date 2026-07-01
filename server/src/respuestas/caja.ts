@@ -49,6 +49,8 @@ export const MAPA_DETALLE_MOVIMIENTOS : Record< string , { status : CodigoEstado
 
   "SIN_CAJA_ABIERTA" : { status :CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
 
+  "SIN_SALDO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Sin saldo para realizar esta operacion"},
+
   "ERROR_ABRIR_CAJA_DETALLE" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error al crear el detalle, intente nuevamente"}
 
 };

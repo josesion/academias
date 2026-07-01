@@ -474,31 +474,18 @@ const dataHorarioAsistencia = async( data : DataHorarioAsistenciaInputs )
                                 hc.hora_inicio,
                                 hc.hora_fin,
                                 tc.tipo AS nombre_clase
-                                
                             FROM horarios_clases hc
-                            INNER JOIN tipo_clase tc 
-                                ON tc.id = hc.id_tipo_clase
-                            WHERE
-                                hc.id_escuela = ?
+                            INNER JOIN tipo_clase tc ON tc.id = hc.id_tipo_clase
+                            WHERE hc.id_escuela = ?
                                 AND hc.estado = ?
                                 AND hc.vigente = 1
                                 AND hc.dia_semana = ?
+                                -- Convertimos todo a segundos o usamos la diferencia
+                                -- La lógica: ¿La diferencia entre 'ahora' y 'inicio' está en el rango [-15min, +30min]?
                                 AND (
-                                    -- CASO A: Horario estándar (no cruza medianoche)
-                                    (
-                                        hc.hora_inicio < hc.hora_fin
-                                        AND CAST(NOW() AS TIME) BETWEEN SUBTIME(hc.hora_inicio, '00:15:00') 
-                                                                AND ADDTIME(hc.hora_inicio, '00:30:00')
-                                    )
-                                    OR
-                                    -- CASO B: La clase empieza cerca de medianoche (ej: 00:05)
-                                    (
-                                        hc.hora_inicio > hc.hora_fin
-                                        AND (
-                                            CAST(NOW() AS TIME) >= SUBTIME(hc.hora_inicio, '00:15:00')
-                                            OR CAST(NOW() AS TIME) <= ADDTIME(hc.hora_inicio, '00:30:00')
-                                        )
-                                    )
+                                    TIME_TO_SEC(TIMEDIFF(CAST(NOW() AS TIME), hc.hora_inicio)) BETWEEN -900 AND 1800
+                                    -- -900 segundos = -15 minutos
+                                    -- 1800 segundos = 30 minutos
                                 );`;
     const valores : unknown[] = [ id_escuela, estado , dia ];
     return await buscarExistenteEntidad<ResultadoDataHorarioAsitencia>({

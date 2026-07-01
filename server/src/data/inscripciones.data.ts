@@ -180,7 +180,7 @@ export const inscripcionConPagoAlta = async (
             const resultado = await iudEntidadTransaction(async (conn) => {
 
                 const  [resInsc] =await conn.execute(sqlInsc, valoresInsc);
-                console.log(resInsc)
+              
                 const  idGenerado = (resInsc as any).insertId;   
 
       // 3: Crear el detalle de caja usando el ID de la inscripción
@@ -511,9 +511,17 @@ const buscarMetodoPago =async ( id_inscripcion : number)
 const saldoMetodoPago =async ( id_caja : number , id_cuenta : number)
 : Promise<TipadoData<{saldo_actual : number}>> => {
     const slq : string = `SELECT 
-                                CAST(COALESCE(SUM(monto), 0) AS SIGNED) AS saldo_actual
-                            FROM detalle_caja
-                            WHERE id_caja = ? AND id_cuenta = ?;`;
+                            CAST(COALESCE(
+                                SUM(
+                                    CASE 
+                                        WHEN cat.tipo_movimiento = 'egreso' THEN -dc.monto 
+                                        ELSE dc.monto 
+                                    END
+                                ), 0
+                            ) AS SIGNED) AS saldo_actual
+                        FROM detalle_caja dc
+                        INNER JOIN categorias_caja cat ON dc.id_categoria = cat.id_categoria
+                        WHERE dc.id_caja = ? AND dc.id_cuenta = ? ;`;
 
     const valores : unknown[] = [ id_caja, id_cuenta];
     

@@ -89,9 +89,11 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
    
     const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse(verificacion);
     const dataAsistencia : AsistenciaInputs = AsistenciaSchema.parse(asistencia);
-    
+    // console.log(dataAsistencia)
+    // console.log(dataVerificacionInsc)
+
     const verificarInsc  = await asistenciaData.verificarInscripcion( dataVerificacionInsc );
-    
+   // console.log(verificarInsc)
 
     switch (verificarInsc.code){
         case  'INSCRIPCION_NO_EXISTE' : {
@@ -106,7 +108,7 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
         case  'INSCRIPCION_EXISTE' : {
               //logica de ventana de horario
             const ventanaTiempo = await asistenciaData.ventanaAsistencia( dataAsistencia.id_horario_clase);
-            
+            //console.log("ventana",ventanaTiempo)
             if( ventanaTiempo.code === 'HORARIO_NO_EXISTE' ){
                 // se esta queirendo inscribir  en un horario q no existe o fuera de la ventana de tiempo permitida 
                 return {
@@ -299,10 +301,10 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
         };
     }; 
     if ( planResult.code === 'INSCRIPCION_EXISTE' ){
-       
+ 
         // segundo veo si exsite una horario justo en el momento actual
         const dataAsisntenciaResult = await horarioData.dataHorarioAsistencia(verificardata);
-       
+
         if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_EXISTE"){
             return {
                 error : false,

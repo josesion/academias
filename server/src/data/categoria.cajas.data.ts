@@ -255,6 +255,33 @@ const listadoCategoriaCaja = async( data  : ListadoCategoriaCajaInputs)
   });
 };
 
+/**
+ * @function verificarEgreso
+ * @description Consulta en la base de datos si una categoría específica está clasificada como 'egreso'.
+ * Utiliza una función auxiliar para validar la existencia de la entidad bajo condiciones específicas.
+ * * @param {number} id - El ID único de la categoría de caja a verificar.
+ * @returns {Promise<TipadoData<{id_categoria: number}>>} Retorna una promesa que resuelve en un objeto `TipadoData`:
+ * - `code: "CATEGORIA_EXISTE"` si la categoría existe y corresponde a un tipo 'egreso'.
+ * - `code: "CATEGORIA_NO_EXISTE"` (o similar según `buscarExistenteEntidad`) si no cumple la condición.
+ */
+const verificarEgreso = async ( id : number)
+: Promise<TipadoData<{id_categoria : number }>> => {
+
+    const sql : string = `select 
+                                id_categoria 
+                            from 
+                                categorias_caja 
+                                where id_categoria = ? and tipo_movimiento = "egreso";`;
+   const valor : unknown[] = [ id ];
+
+   return buscarExistenteEntidad({
+        entidad : "Categoria",
+        slqEntidad : sql,
+        valores    : valor
+   });
+
+};
+
 export const method = {
     verificarCategoriaExistente : tryCatchDatos(verificarCategoriaExistente),
     verificarCategoriaExistente2 : tryCatchDatos(verificarCategoriaExistente2),
@@ -264,4 +291,5 @@ export const method = {
     listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja ),
     localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia ),
     localizarAnulacionCategortia : tryCatchDatos( localizarAnulacionCategortia ),
+    verificarEgreso : tryCatchDatos(verificarEgreso)
 };
