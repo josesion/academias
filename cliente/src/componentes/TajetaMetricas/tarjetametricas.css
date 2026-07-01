@@ -1,0 +1,146 @@
+/* ==========================================================================
+   TARJETA MÉTRICA - CYBER GLASS (SIN LÍNEAS LATERALES)
+   ========================================================================== */
+
+.tarjeta_metrica_contenedor {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    width: 100%;
+    min-height: 120px;
+    padding: 22px 24px;
+    overflow: hidden;
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(15,23,42,.95), rgba(2,6,23,.98));
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,.06);
+    box-shadow: 0 14px 35px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.04);
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+
+/* Glow superior */
+.tarjeta_metrica_contenedor::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+    opacity: .35;
+}
+
+.tarjeta_metrica_contenedor:hover {
+    transform: translateY(-4px) scale(1.01);
+    border-color: rgba(255,255,255,.10);
+    box-shadow: 0 24px 55px rgba(0,0,0,.55), 0 0 25px rgba(6,182,212,.10), inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* ==========================================================================
+   LOGO
+   ========================================================================== */
+.tarjeta_metrica_logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 68px;
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.10), 0 10px 24px rgba(0,0,0,.30);
+    z-index: 2;
+}
+
+.tarjeta_metrica_logo svg {
+    width: 34px;
+    height: 34px;
+}
+
+/* ==========================================================================
+   INFORMACIÓN
+   ========================================================================== */
+.tarjeta_metrica_info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    gap: 6px;
+}
+
+.tarjeta_metrica_titulo {
+    margin: 0;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.tarjeta_metrica_valor {
+    margin: 0;
+    color: white;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -.5px;
+    text-shadow: 0 0 12px rgba(255,255,255,.05);
+    font-variant-numeric: tabular-nums;
+}
+
+.tarjeta_metrica_porcentaje {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: .83rem;
+    font-weight: 700;
+}
+
+.tarjeta_metrica_porcentaje.positivo { color: #2dd36f; }
+.tarjeta_metrica_porcentaje.negativo { color: #ff5d5d; }
+.tarjeta_metrica_porcentaje.neutro { color: #94a3b8; }
+
+/* ==========================================================================
+   VARIANTES DE COLOR
+   ========================================================================== */
+
+.tarjeta_metrica_contenedor.activos {
+    background: radial-gradient(circle at top right,rgba(34,197,94,.14),transparent 35%), linear-gradient(145deg, rgba(15,23,42,.95), rgba(2,6,23,.98));
+}
+.tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
+    background: linear-gradient(135deg, #22c55e, #10b981);
+}
+
+.tarjeta_metrica_contenedor.nuevos {
+    background: radial-gradient(circle at top right,rgba(59,130,246,.15),transparent 35%), linear-gradient(145deg, rgba(15,23,42,.95), rgba(2,6,23,.98));
+}
+.tarjeta_metrica_contenedor.nuevos .tarjeta_metrica_logo {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.tarjeta_metrica_contenedor.vencidos {
+    background: radial-gradient(circle at top right,rgba(239,68,68,.14),transparent 35%), linear-gradient(145deg, rgba(15,23,42,.95), rgba(2,6,23,.98));
+}
+.tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.tarjeta_metrica_contenedor.por_vencer {
+    background: radial-gradient(circle at top right,rgba(245,158,11,.16),transparent 35%), linear-gradient(145deg, rgba(15,23,42,.95), rgba(2,6,23,.98));
+}
+.tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media(max-width:768px){
+    .tarjeta_metrica_contenedor { padding: 20px; gap: 16px; min-height: 105px; }
+    .tarjeta_metrica_logo { width: 58px; height: 58px; min-width: 58px; }
+    .tarjeta_metrica_logo svg { width: 28px; height: 28px; }
+    .tarjeta_metrica_valor { font-size: 1.6rem; }
+}
