@@ -6,16 +6,21 @@ import {
   LuUserRoundPlus,
   LuTriangleAlert,
   LuClock3,
+  LuWallet,
   LuArrowUp,
   LuArrowDown,
   LuMinus,
 } from "react-icons/lu";
 
+import { SpinnerTarjeta } from "../SipinnerMetricas/SpinnerTajetas";
+
 export interface MetricasProps {
+  carga: boolean;
   titulo: string;
   valor: number;
   porcentaje?: number;
-  tipo: "activos" | "nuevos" | "vencidos" | "por_vencer";
+  tipo: "activos" | "nuevos" | "vencidos" | "por_vencer" | "caja";
+  leyenda?: string;
 }
 
 const iconos = {
@@ -23,15 +28,19 @@ const iconos = {
   nuevos: <LuUserRoundPlus size={34} />,
   vencidos: <LuTriangleAlert size={34} />,
   por_vencer: <LuClock3 size={34} />,
+  caja: <LuWallet size={34} />,
 };
 
 export const TarjetaMetrica = ({
+  carga,
   titulo,
   valor,
-  porcentaje, // Si no viene, será undefined
+  porcentaje,
   tipo,
+  leyenda,
 }: MetricasProps) => {
-  // Solo calculamos si porcentaje existe
+  const tieneDetalle = porcentaje !== undefined || leyenda !== undefined;
+
   const iconoPorcentaje =
     porcentaje !== undefined ? (
       porcentaje > 0 ? (
@@ -54,29 +63,44 @@ export const TarjetaMetrica = ({
 
   return (
     <div className={`tarjeta_metrica_contenedor ${tipo}`}>
-      <div className="tarjeta_metrica_logo">{iconos[tipo]}</div>
+      {carga ? (
+        <SpinnerTarjeta />
+      ) : (
+        <div
+          className={`tarjeta_metrica_contenido ${
+            !tieneDetalle ? "centrado" : ""
+          }`}
+        >
+          <div className="tarjeta_metrica_logo">{iconos[tipo]}</div>
 
-      <div className="tarjeta_metrica_info">
-        <p className="tarjeta_metrica_titulo">{titulo}</p>
-        <p className="tarjeta_metrica_valor">
-          {" "}
-          <CountUp
-            end={valor}
-            duration={1.5} // Cuánto tarda en subir (segundos)
-            separator="." // Separador de miles
-            decimal="," // Separador de decimales
-            preserveValue={true} // Para que si cambia de 100 a 150, empiece desde el 100
-          />
-        </p>
+          <div
+            className={`tarjeta_metrica_info ${
+              !tieneDetalle ? "centrado" : ""
+            }`}
+          >
+            <p className="tarjeta_metrica_titulo">{titulo}</p>
 
-        {/* Renderizado condicional: solo muestra el párrafo si porcentaje existe */}
-        {porcentaje !== undefined && (
-          <p className={`tarjeta_metrica_porcentaje ${clasePorcentaje}`}>
-            {iconoPorcentaje}
-            {Math.abs(porcentaje)}% vs mes pasado
-          </p>
-        )}
-      </div>
+            <p className="tarjeta_metrica_valor">
+              <CountUp
+                end={valor}
+                duration={1.5}
+                separator="."
+                decimal=","
+                preserveValue
+              />
+            </p>
+
+            {porcentaje !== undefined && (
+              <p className={`tarjeta_metrica_porcentaje ${clasePorcentaje}`}>
+                {iconoPorcentaje}
+                {Math.abs(porcentaje)}% vs mes pasado
+              </p>
+            )}
+
+            {leyenda && <p className="tarjeta_metrica_leyenda">{leyenda}</p>}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

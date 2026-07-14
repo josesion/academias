@@ -3,29 +3,48 @@ import "./usuario.css";
 import { TarjetaMetrica } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
 import { type MetricasProps } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
 
-const data: MetricasProps = {
-  valor: 150,
-  titulo: "total de alumnos",
-  porcentaje: -10,
-  tipo: "vencidos",
-};
-
 const metricasData: MetricasProps[] = [
-  { titulo: "Total Alumnos", valor: 150, porcentaje: 5, tipo: "activos" },
-  { titulo: "Nuevos Inscritos", valor: 30, porcentaje: 12, tipo: "nuevos" },
-  { titulo: "Vencidos", valor: 12, tipo: "vencidos" },
-  { titulo: "Por vencer", valor: 8, tipo: "por_vencer" },
+  {
+    titulo: "Total Alumnos",
+    valor: 150,
+    porcentaje: 5,
+    tipo: "activos",
+    carga: true,
+  },
+  {
+    titulo: "Nuevos Inscritos",
+    valor: 30,
+    porcentaje: 12,
+    tipo: "nuevos",
+    carga: false,
+  },
+  { titulo: "Vencidos", valor: 12, tipo: "vencidos", carga: false },
+  { titulo: "Por vencer", valor: 8, tipo: "por_vencer", carga: false },
+  {
+    titulo: "Total caja",
+    valor: 210.3,
+    tipo: "caja",
+    carga: false,
+    leyenda: "Flujo caja",
+  },
 ];
 
 export const UsuarioPage = () => {
   return (
     <div className="usuario_contenedor">
-      {/* SECCIÓN DE METRICAS Y BOTONES */}
+      {/* =======================
+          MÉTRICAS SUPERIORES
+      ======================== */}
+      <section className="usuario_metricas">
+        {metricasData.map((metrica) => (
+          <TarjetaMetrica key={metrica.titulo} {...metrica} />
+        ))}
+      </section>
 
-      <TarjetaMetrica {...metricasData[0]} />
-      <TarjetaMetrica {...metricasData[1]} />
-      <TarjetaMetrica {...metricasData[2]} />
-      <TarjetaMetrica {...metricasData[3]} />
+      {/* =======================
+          CONTENIDO PRINCIPAL
+      ======================== */}
+      <section className="usuario_contenido"></section>
     </div>
   );
 };
