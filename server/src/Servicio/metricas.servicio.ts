@@ -3,17 +3,12 @@ import { method as dataMetricas } from  "../data/metricas.data";
 import { method as dataCaja } from "../data/caja.data";
 
 import { TipadoData } from "../tipados/tipado.data";
+import { ResultClase , ReultTarjetasInscripcion, ReultTarjetasVencimientos,  ResultAsistencia } from "../data/metricas.data";
 import { MetricaInputs,MetricasSchema } from "../squemas/metricas";
 
 
-interface ReultTarjetas{
-    total_activos: number,
-    nuevos_este_mes:  number,
-    porcentaje_nuevos:  number,
-             
-    vencen_proximos:  number,
-    vencidos_este_mes:  number,
-            
+
+export  interface ResultTarjetas extends ReultTarjetasInscripcion, ReultTarjetasVencimientos{            
     total_caja : number,
 };
 
@@ -37,7 +32,7 @@ interface ReultTarjetas{
  * }
  */
 const metricasInscripcion = async ( data : MetricaInputs )
-:Promise<TipadoData<ReultTarjetas>> => {
+:Promise<TipadoData<ResultTarjetas>> => {
 
     const validarInfo : MetricaInputs = MetricasSchema.parse( data ); 
  
@@ -127,14 +122,18 @@ const metricasInscripcion = async ( data : MetricaInputs )
 };
 
 
-interface ResultClase {
-    nombre_clase: string,
-    horario: string,
-    nombre_profesor: string,
-    id_clase : number
-};
 
-
+/**
+ * Procesa la obtención de los datos del encabezado de la clase actual.
+ * * Valida los datos de entrada usando un esquema de Zod, interactúa con la capa 
+ * de persistencia (`dataMetricas`) y transforma los códigos de respuesta internos 
+ * en una estructura estandarizada para la UI.
+ * * @param {MetricaInputs} data - Objeto que contiene el `id_escuela` necesario para la consulta.
+ * * @returns {Promise<TipadoData<ResultClase>>} Una promesa que resuelve con un objeto de resultado 
+ * que indica si la operación fue exitosa, contiene los datos de la clase, o reporta un error específico 
+ * (servidor o ausencia de clases activas).
+ * * @throws {ZodError} Si los datos de entrada (`data`) no cumplen con el `MetricasSchema`.
+ */
 const encabezadoClases = async( data : MetricaInputs )
 :Promise<TipadoData<ResultClase>> =>{
 
@@ -151,7 +150,7 @@ const encabezadoClases = async( data : MetricaInputs )
     if ( resultClases.code === 'METRICAS_ENCABEZADO_CLASES_EXISTE'  ){
         return {
             error : false,
-            message : "Encabezado de las clase correcto.",
+            message : "Encabezado de las clase la correcto.",
             data : resultClases.data,
             code : "CLASES_OK"
         };
@@ -165,7 +164,19 @@ const encabezadoClases = async( data : MetricaInputs )
 };
 
 
-const asistenciaClases = async ( data : MetricaInputs ) =>{
+
+/**
+ * Orquesta la obtención del listado de asistencia para la clase que está ocurriendo actualmente.
+ * * Primero identifica la clase activa mediante el `id_escuela`, y si existe, 
+ * procede a consultar las asistencias registradas para ese horario específico.
+ * * @param {MetricaInputs} data - Objeto que contiene el `id_escuela` validado para la consulta.
+ * * @returns {Promise<TipadoData<any>>} Una promesa que resuelve con el listado de alumnos 
+ * asistentes si la operación fue exitosa, o un objeto con el error correspondiente 
+ * (sin clase activa, sin alumnos encontrados o error de servidor).
+ * * @throws {ZodError} Si la validación de `data` falla según `MetricasSchema`.
+ */
+const asistenciaClases = async ( data : MetricaInputs )
+:Promise<TipadoData< ResultAsistencia[]>> =>{
     
     const validarInfo : MetricaInputs = MetricasSchema.parse( data ); 
     const idHorario = await dataMetricas.encabezadoClases( validarInfo.id_escuela );
@@ -174,11 +185,35 @@ const asistenciaClases = async ( data : MetricaInputs ) =>{
         return{
             error : true, 
             message : "Sin datos de clase actual.",
-            code : "SIN_METRICAS_CLASES"
+            code : "SIN_HORARIO_CLASES"
         };
     };
 
     const id_horario = idHorario.data?.id_clase;
+
+    if (!id_horario) {
+        return { error: true, message: "No se pudo obtener el ID de la clase.", code: "ERROR_DATOS" };
+    }
+
+    const asitenciaResult = await dataMetricas.asistenciaClases( id_horario );
+   
+
+    if ( asitenciaResult.code === 'NO_ACTIVE_ASISTENCIAS'  ){
+        return{
+            error : true, 
+            message : "No se encontraron alumnos en esta clase.",
+            code : "SIN_ALUMNOS_ASISTENCIA"
+        };
+    };
+
+    if ( asitenciaResult.code === 'ASISTENCIAS_LISTED'  ){
+        return {
+            error : false,
+            message : "Listado de asistencia.",
+            data : asitenciaResult.data,
+            code : "ASISTENCIA_OK"
+        };
+    };
 
     return {
         error : true,
