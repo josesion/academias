@@ -25,6 +25,7 @@ import cajasRutas from "./rutas/caja.rutas"
 import inscripciones from "./rutas/inscripciones";
 import horarios from "./rutas/horarios.ruta";
 import asistencias  from "./rutas/asistencias";
+import metricas  from "./rutas/metricas.ruta";
 
 import protectRutas from "./rutas/protegida.rutas";
 import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
@@ -61,7 +62,7 @@ app.use(cajasRutas);
 
 app.use(inscripciones);
 app.use(horarios);
-
+app.use(metricas);
 app.use(protectRutas);
 
 

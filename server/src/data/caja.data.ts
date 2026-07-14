@@ -473,7 +473,7 @@ const listaMetricasCaja = async ( data : CierreCajaInputs)
  * Monto Inicial + Σ(Ingresos) - Σ(Egresos).
  */
 const metricasPrincipal = async (  data : CierreCajaInputs ) 
-: Promise<TipadoData<{
+:Promise<TipadoData<{
             monto_inicial : number,
             total_ingresos : number,
             total_egresos  : number,
