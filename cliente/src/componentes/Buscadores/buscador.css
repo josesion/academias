@@ -3,32 +3,92 @@
    ============================================================ */
 
 .buscador_contenedor_comp {
+    position: relative;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 10px;
+
+    gap: 14px;
+
     width: fit-content;
     max-width: 98%;
+
     margin: 20px auto;
-    padding: 15px 30px;
-    background: rgba(10, 10, 15, 0.9);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 100px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+    padding: 18px 30px;
+
+    overflow: hidden;
+
+    border-radius: 26px;
+
+    background:
+        radial-gradient(circle at top right,
+            rgba(99,102,241,.14),
+            transparent 35%),
+        linear-gradient(
+            145deg,
+            rgba(15,23,42,.95),
+            rgba(2,6,23,.98));
+
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+
+.buscador_contenedor_comp::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:70%;
+    height:2px;
+
+    border-radius:999px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.7),
+        transparent);
+
+    opacity:.35;
 }
 
 /* TÍTULO (Opcional, se mantiene sutil arriba) */
-.buscador_titulo {
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    background: linear-gradient(90deg, #4f46e5, #06b6d4);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin: 0 0 10px 0;
+.buscador_titulo{
+
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    margin:0;
+
+    color:#cbd5e1;
+
+    font-size:.72rem;
+
+    font-weight:800;
+
+    letter-spacing:1.5px;
+
+    text-transform:uppercase;
+}
+
+.buscador_titulo svg{
+
+    color:#6366f1;
 }
 
 /* CUERPO - LA LÍNEA DE HORIZONTE */
@@ -155,6 +215,24 @@
 /* Hover en las opciones (funciona principalmente en Windows/Chrome) */
 .buscador_input_base option:hover {
     background-color: #4f46e5 !important;
+}
+
+
+.buscador_contenedor_comp{
+
+    transition:
+        transform .25s,
+        border-color .25s,
+        box-shadow .25s;
+}
+
+.buscador_contenedor_comp:hover{
+
+    border-color:rgba(255,255,255,.12);
+
+    box-shadow:
+        0 22px 55px rgba(0,0,0,.55),
+        0 0 25px rgba(99,102,241,.10);
 }
 
 /* --- TABLETS Y PANTALLAS INTERMEDIAS (Evita que se salgan los bordes) --- */

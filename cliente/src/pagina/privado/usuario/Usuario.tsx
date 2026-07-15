@@ -1,6 +1,8 @@
 import "./usuario.css";
 
 import { TarjetaMetrica } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
+import { InfoClases } from "../../../componentes/Clases/Clases";
+import { Asistencia } from "../../../componentes/Asistencias/Asistencias";
 import { type MetricasProps } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
 
 const metricasData: MetricasProps[] = [
@@ -9,7 +11,7 @@ const metricasData: MetricasProps[] = [
     valor: 150,
     porcentaje: 5,
     tipo: "activos",
-    carga: true,
+    carga: false,
   },
   {
     titulo: "Nuevos Inscritos",
@@ -29,6 +31,63 @@ const metricasData: MetricasProps[] = [
   },
 ];
 
+interface DataClases {
+  nombre_clase: string;
+  horario: string;
+  nombre_profesor: string;
+  estado: "EN CURSO" | "SIN CURSO";
+}
+
+const clases: DataClases = {
+  nombre_clase: "Bachata",
+  horario: "10;00 -- 11:00",
+  nombre_profesor: "jose lopez",
+  estado: "EN CURSO",
+};
+
+const alumnosPrueba = [
+  {
+    nombre: "Sofía",
+    apellido: "Gómez",
+  },
+  {
+    nombre: "Mateo",
+    apellido: "Fernández",
+  },
+  {
+    nombre: "Valentina",
+    apellido: "Rodríguez",
+  },
+  {
+    nombre: "Thiago",
+    apellido: "Martínez",
+  },
+  {
+    nombre: "Camila",
+    apellido: "López",
+  },
+  {
+    nombre: "Benjamín",
+    apellido: "Sánchez",
+  },
+  {
+    nombre: "Martina",
+    apellido: "Pérez",
+  },
+  {
+    nombre: "Joaquín",
+    apellido: "Díaz",
+  },
+  {
+    nombre: "Mía",
+    apellido: "Torres",
+  },
+  {
+    nombre: "Franco",
+    apellido: "Ramírez",
+  },
+];
+
 export const UsuarioPage = () => {
   return (
     <div className="usuario_contenedor">
@@ -44,7 +103,16 @@ export const UsuarioPage = () => {
       {/* =======================
           CONTENIDO PRINCIPAL
       ======================== */}
-      <section className="usuario_contenido"></section>
+      <section className="usuario_contenido">
+        <InfoClases
+          estado={clases.estado}
+          horario={clases.horario}
+          nombre_clase={clases.nombre_clase}
+          nombre_profesor={clases.nombre_profesor}
+        />
+
+        <Asistencia alumnos={alumnosPrueba} />
+      </section>
     </div>
   );
 };

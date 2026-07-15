@@ -3,16 +3,17 @@ import "./informes.css";
 import { Boton } from "../Boton/Boton";
 
 import {
-  FcDownLeft,
-  FcUpRight,
-  FcClock,
-  FcCalendar,
-  FcManager,
-  FcCurrencyExchange,
-  FcInfo,
-  FcElectricity,
-  FcContacts, // Nuevo icono para el alumno
-} from "react-icons/fc";
+  ArrowDownLeft,
+  ArrowUpRight,
+  Clock,
+  Calendar,
+  User,
+  Landmark,
+  Wallet,
+  Info,
+  Hash,
+  UserRound,
+} from "lucide-react";
 
 export const InformeDetalleCaja = ({
   id_movimiento,
@@ -26,85 +27,102 @@ export const InformeDetalleCaja = ({
   metodo,
   nombre_alumno_vinculado,
   onCerrarModal,
-  // Recibimos la nueva prop
 }: any) => {
   const esIngreso = tipo === "ingreso";
 
   return (
-    <div className={`cyber_ticket ${tipo.toLowerCase()}`}>
-      <div className="scanline"></div>
-
-      <header className="ticket_top">
-        <div className="ticket_id">
-          <FcElectricity />
-          <span className="label">TX_ID: {id_movimiento}</span>
+    <div className={`recibo_ticket ${tipo.toLowerCase()}`}>
+      <header className="recibo_header">
+        <div className="recibo_marca">
+          <Hash size={14} />
+          <span>MOV {id_movimiento}</span>
         </div>
 
         <div
-          className={`monto_principal ${esIngreso ? "glitch_green" : "glitch_red"}`}
+          className={`recibo_stamp ${esIngreso ? "stamp_verde" : "stamp_rojo"}`}
         >
-          {esIngreso ? <FcDownLeft size={40} /> : <FcUpRight size={40} />}
-          <span className="currency">$</span>
-          {Number(monto).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+          {tipo.toUpperCase()}
         </div>
       </header>
 
-      <div className="glass_body">
-        <section className="main_info">
-          <div className="data_group">
-            <label>FLUJO</label>
-            <div className="tipo_badge">{tipo.toUpperCase()}</div>
-          </div>
-          <div className="data_group">
-            <label>CANAL</label>
-            <div className="metodo_badge">
-              {metodo === "virtual" ? "🌐 VIRTUAL" : "💵 FÍSICO"}
-            </div>
-          </div>
-        </section>
+      <div className="recibo_total">
+        <span className="recibo_total_label">
+          Total {esIngreso ? "recibido" : "pagado"}
+        </span>
 
-        {/* --- NUEVA SECCIÓN: NOMBRE DEL ALUMNO --- */}
+        <div
+          className={`recibo_monto ${esIngreso ? "monto_verde" : "monto_rojo"}`}
+        >
+          {esIngreso ? <ArrowDownLeft size={26} /> : <ArrowUpRight size={26} />}
+          <span>
+            $
+            {Number(monto).toLocaleString("es-AR", {
+              minimumFractionDigits: 2,
+            })}
+          </span>
+        </div>
+      </div>
+
+      <div className="recibo_perforado" />
+
+      <div className="recibo_body">
+        <div className="recibo_fila">
+          <span className="recibo_fila_label">
+            <Landmark size={14} /> Canal
+          </span>
+          <span className="recibo_fila_valor">
+            {metodo === "virtual" ? "Virtual" : "Físico"}
+          </span>
+        </div>
+
+        <div className="recibo_fila">
+          <span className="recibo_fila_label">
+            <Wallet size={14} /> Destino
+          </span>
+          <span className="recibo_fila_valor">{metodo_pago.toUpperCase()}</span>
+        </div>
+
         {nombre_alumno_vinculado && (
-          <div className="vinculo_alumno_box">
-            <div className="terminal_prefix">
-              <FcContacts /> <span>Inscripcion de :</span>
-            </div>
-            <div className="alumno_nombre_text">
+          <div className="recibo_fila">
+            <span className="recibo_fila_label">
+              <UserRound size={14} /> Alumno
+            </span>
+            <span className="recibo_fila_valor">
               {nombre_alumno_vinculado.toUpperCase()}
-            </div>
+            </span>
           </div>
         )}
 
-        <div className="destino_terminal">
-          <div className="terminal_prefix">
-            <FcCurrencyExchange /> <span>DESTINO_CUENTA:</span>
-          </div>
-          <div className="terminal_text">{metodo_pago.toUpperCase()}</div>
+        <div className="recibo_linea_punteada" />
+
+        <div className="recibo_meta">
+          <span>
+            <User size={12} /> {usuario}
+          </span>
+          <span>
+            <Calendar size={12} /> {fecha}
+          </span>
+          <span>
+            <Clock size={12} /> {hora}
+          </span>
         </div>
 
-        <footer className="metadata_grid">
-          <div className="meta_item">
-            <FcManager /> <strong>USR:</strong> <span>{usuario}</span>
-          </div>
-          <div className="meta_item">
-            <FcCalendar /> <strong>FECHA:</strong> <span>{fecha}</span>
-          </div>
-          <div className="meta_item">
-            <FcClock /> <strong>HORA:</strong> <span>{hora}</span>
-          </div>
-        </footer>
-
         {observaciones && (
-          <div className="obs_box">
-            <div className="obs_header">
-              <FcInfo /> OBSERVACIONES_LOG
-            </div>
+          <div className="recibo_obs">
+            <span className="recibo_obs_label">
+              <Info size={12} /> Nota
+            </span>
             <p>"{observaciones}"</p>
           </div>
         )}
       </div>
 
-      <div className="boton_cerrar">
+      <div className="recibo_barcode" aria-hidden="true">
+        <div className="recibo_barcode_bars" />
+        <span className="recibo_barcode_id">{id_movimiento}</span>
+      </div>
+
+      <div className="recibo_footer">
         <Boton
           clase="cancelar"
           focus={true}

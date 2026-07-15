@@ -1,497 +1,378 @@
 /* ==========================================================================
-   CYBER TICKET — GLASSMORPHISM PREMIUM
+   RECIBO — TICKETERA TÉRMICA
    ========================================================================== */
 
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+
 :root {
-  --neon-green: #22c55e;
-  --neon-red: #ef4444;
+  --papel: #2b2b29;
+  --papel_linea: #e2ded0;
+  --tinta: #eae6de;
+  --tinta_media: #8a8578;
+  --verde: #2f7d4f;
+  --rojo: #ca1e0e;
+  --ambar: #a6791f;
 
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --border-glass: rgba(255, 255, 255, 0.08);
-
-  --bg-primary: #0f172a;
-  --bg-secondary: #111827;
-
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-
-  --cyan: #06b6d4;
-  --purple: #a855f7;
-  --indigo: #4f46e5;
+  /* color del "fondo" contra el que se recorta el perforado — ajustar si el modal usa otro fondo */
+  --notch-color: #0f172a;
 }
 
 /* ==========================================================================
    CONTENEDOR PRINCIPAL
    ========================================================================== */
 
-.cyber_ticket {
+.recibo_ticket {
   position: relative;
 
   width: 100%;
-  max-width: 520px;
+  max-width: 420px;
   max-height: 85dvh;
 
   margin: 0 auto;
 
+  display: flex;
+  flex-direction: column;
+
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
 
-  border-radius: 24px;
+  background: var(--papel);
+  color: var(--tinta);
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(15, 23, 42, 0.96),
-      rgba(17, 24, 39, 0.92)
-    );
+  font-family: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
 
-  border: 1px solid var(--border-glass);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  border-radius: 6px;
 
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.02),
-    0 20px 60px rgba(0,0,0,0.6),
-    0 8px 30px rgba(79,70,229,0.12);
+    0 24px 60px rgba(0,0,0,0.45),
+    0 2px 0 rgba(0,0,0,0.06);
 
-  animation: cyberFade 0.25s ease;
+  animation: reciboAparece 0.22s ease;
 }
 
-/* Glow superior */
-.cyber_ticket::before {
-  content: "";
-
-  position: absolute;
-  top: -140px;
-  right: -120px;
-
-  width: 260px;
-  height: 260px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(99,102,241,0.22),
-      transparent 70%
-    );
-
-  pointer-events: none;
+.recibo_ticket::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Glow inferior */
-.cyber_ticket::after {
-  content: "";
-
-  position: absolute;
-  bottom: -120px;
-  left: -120px;
-
-  width: 240px;
-  height: 240px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(6,182,212,0.14),
-      transparent 70%
-    );
-
-  pointer-events: none;
+.recibo_ticket::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* ==========================================================================
-   SCROLLBAR
-   ========================================================================== */
-
-.cyber_ticket::-webkit-scrollbar {
-  width: 8px;
-}
-
-.cyber_ticket::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.03);
+.recibo_ticket::-webkit-scrollbar-thumb {
+  background: var(--papel_linea);
   border-radius: 999px;
-}
-
-.cyber_ticket::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-
-  background:
-    linear-gradient(
-      180deg,
-      #4f46e5,
-      #06b6d4,
-      #a855f7
-    );
-}
-
-.cyber_ticket::-webkit-scrollbar-thumb:hover {
-  filter: brightness(1.15);
-}
-
-/* ==========================================================================
-   SCANLINE
-   ========================================================================== */
-
-.scanline {
-  position: absolute;
-  inset: 0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(255,255,255,0.02),
-      transparent
-    );
-
-  pointer-events: none;
 }
 
 /* ==========================================================================
    HEADER
    ========================================================================== */
 
-.ticket_top {
-  position: relative;
+.recibo_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 
+  padding: 18px 22px 0;
+}
+
+.recibo_marca {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+
+  color: var(--tinta_media);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* sello de goma rotado — el elemento distintivo del ticket */
+.recibo_stamp {
+  flex-shrink: 0;
+
+  padding: 4px 10px;
+
+  border: 2px solid currentColor;
+  border-radius: 3px;
+
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+
+  transform: rotate(-6deg);
+
+  opacity: 0.85;
+}
+
+.stamp_verde { color: var(--verde); }
+.stamp_rojo { color: var(--rojo); }
+
+/* ==========================================================================
+   TOTAL
+   ========================================================================== */
+
+.recibo_total {
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  padding: 34px 24px;
-
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,0.05),
-      rgba(255,255,255,0.01)
-    );
+  padding: 14px 22px 4px;
+  text-align: center;
 }
 
-.monto_principal {
-  margin: 14px 0;
-
-  font-size: 3.4rem;
-  font-weight: 900;
-
-  letter-spacing: -2px;
-  line-height: 1;
-
-  text-shadow:
-    0 0 20px rgba(255,255,255,0.08);
+.recibo_total_label {
+  color: var(--tinta_media);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.glitch_green {
-  color: var(--neon-green);
+.recibo_monto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
 
-  filter:
-    drop-shadow(0 0 12px rgba(34,197,94,0.35));
+  margin-top: 6px;
+  max-width: 100%;
+
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+
+  word-break: break-word;
 }
 
-.glitch_red {
-  color: var(--neon-red);
+.monto_verde { color: var(--verde); }
+.monto_rojo { color: var(--rojo); }
 
-  filter:
-    drop-shadow(0 0 12px rgba(239,68,68,0.35));
+/* ==========================================================================
+   PERFORADO (borde de ticket con muescas laterales)
+   ========================================================================== */
+
+.recibo_perforado {
+  position: relative;
+
+  height: 0;
+  margin: 18px 0;
+
+  border-top: 2px dashed var(--papel_linea);
 }
+
+.recibo_perforado::before,
+.recibo_perforado::after {
+  content: "";
+
+  position: absolute;
+  top: -9px;
+
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+
+  background: var(--notch-color);
+}
+
+.recibo_perforado::before { left: -9px; }
+.recibo_perforado::after { right: -9px; }
 
 /* ==========================================================================
    BODY
    ========================================================================== */
 
-.glass_body {
-  padding: 24px;
-
-  backdrop-filter: blur(8px);
+.recibo_body {
+  padding: 0 22px;
 }
 
-/* ==========================================================================
-   INFO PRINCIPAL
-   ========================================================================== */
-
-.main_info {
+.recibo_fila {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
 
-  margin-bottom: 24px;
-}
-
-.data_group {
-  flex: 1;
-
-  padding: 16px;
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,0.04),
-      rgba(255,255,255,0.015)
-    );
-
-  border: 1px solid rgba(255,255,255,0.06);
-
-  text-align: center;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 6px 18px rgba(0,0,0,0.2);
-}
-
-.data_group label {
-  display: block;
-
-  margin-bottom: 10px;
-
-  font-size: 0.68rem;
-  font-weight: 700;
-
-  color: var(--text-secondary);
-
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.tipo_badge,
-.metodo_badge {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-
-  min-height: 38px;
-
-  padding: 8px 16px;
-
-  border-radius: 12px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,0.05),
-      rgba(255,255,255,0.02)
-    );
-
-  border: 1px solid rgba(255,255,255,0.08);
-
-  color: var(--text-primary);
+  padding: 7px 0;
 
   font-size: 0.85rem;
-  font-weight: 700;
+}
 
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03);
+.recibo_fila_label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  color: var(--tinta_media);
+}
+
+.recibo_fila_valor {
+  min-width: 0;
+
+  font-weight: 700;
+  text-align: right;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recibo_linea_punteada {
+  margin: 12px 0;
+  border-top: 1px dashed var(--papel_linea);
+}
+
+.recibo_meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+
+  margin-bottom: 12px;
+
+  color: var(--tinta_media);
+  font-size: 0.75rem;
+}
+
+.recibo_meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ==========================================================================
-   TERMINAL
+   NOTA / OBSERVACIONES
    ========================================================================== */
 
-.destino_terminal {
-  margin-bottom: 24px;
-  padding: 18px;
+.recibo_obs {
+  margin-bottom: 14px;
+  padding: 10px 12px;
 
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(0,0,0,0.55),
-      rgba(15,23,42,0.85)
-    );
-
-  border: 1px solid rgba(79,172,254,0.14);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.02),
-    0 8px 24px rgba(0,0,0,0.35);
+  border-left: 2px solid var(--ambar);
+  background: rgba(166,121,31,0.06);
 }
 
-.terminal_prefix {
-  color: #38bdf8;
+.recibo_obs_label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 
-  font-size: 0.72rem;
+  color: var(--ambar);
+  font-size: 0.68rem;
   font-weight: 700;
-
-  text-transform: uppercase;
   letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.terminal_text {
-  margin-top: 8px;
+.recibo_obs p {
+  margin: 4px 0 0;
 
-  color: var(--text-primary);
+  color: var(--tinta);
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.5;
 
-  font-size: 1.1rem;
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 600;
-
+  overflow-wrap: break-word;
   word-break: break-word;
 }
 
 /* ==========================================================================
-   METADATA
+   CÓDIGO DE BARRAS (decorativo, refleja el id del movimiento en texto)
    ========================================================================== */
 
-.metadata_grid {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-
-  padding-top: 22px;
-
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
-
-.meta_item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  padding: 10px 12px;
-
-  border-radius: 12px;
-
-  background:
-    rgba(255,255,255,0.025);
-
-  border: 1px solid rgba(255,255,255,0.04);
-
-  color: var(--text-secondary);
-
-  font-size: 0.75rem;
-}
-
-/* ==========================================================================
-   OBSERVACIONES
-   ========================================================================== */
-
-.obs_box {
-  margin-top: 22px;
-  padding: 18px;
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(6,182,212,0.08),
-      rgba(168,85,247,0.08)
-    );
-
-  border: 1px solid rgba(34,211,238,0.12);
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.03),
-    0 0 18px rgba(6,182,212,0.05);
-}
-
-.obs_header {
-  margin-bottom: 10px;
-
-  color: #67e8f9;
-
-  font-size: 0.7rem;
-  font-weight: 800;
-
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-/* ==========================================================================
-   ALUMNO VINCULADO
-   ========================================================================== */
-
-.vinculo_alumno_box {
+.recibo_barcode {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
 
-  margin: 18px 0;
-  padding: 16px;
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,0.03),
-      rgba(255,255,255,0.015)
-    );
-
-  border: 1px solid rgba(255,255,255,0.06);
+  margin-top: 10px;
+  padding: 0 22px 6px;
 }
 
-.alumno_nombre_text {
-  color: var(--text-primary);
+.recibo_barcode_bars {
+  width: 100%;
+  max-width: 220px;
+  height: 34px;
 
-  font-family: "JetBrains Mono", monospace;
-  font-size: 1rem;
-  font-weight: 700;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--tinta) 0px,
+    var(--tinta) 2px,
+    transparent 2px,
+    transparent 4px,
+    var(--tinta) 4px,
+    var(--tinta) 5px,
+    transparent 5px,
+    transparent 9px,
+    var(--tinta) 9px,
+    var(--tinta) 12px,
+    transparent 12px,
+    transparent 14px
+  );
+  background-repeat: repeat-x;
+  background-size: 14px 100%;
 
-  letter-spacing: 0.03em;
+  opacity: 0.85;
+}
+
+.recibo_barcode_id {
+  color: var(--tinta_media);
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
 }
 
 /* ==========================================================================
-   BOTÓN
+   FOOTER
    ========================================================================== */
 
-.boton_cerrar {
+.recibo_footer {
   display: flex;
   justify-content: center;
-  align-items: center;
 
-  margin-top: 10px;
-  margin-bottom: 6px;
+  padding: 16px 22px 20px;
 }
 
-.boton_cerrar button {
-  width: 50%;
+.recibo_footer button {
+  width: 100%;
+  min-height: 46px;
 
-  min-height: 48px;
-
-  border-radius: 16px;
-
+  border-radius: 4px;
   font-weight: 700;
 
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.boton_cerrar button:hover {
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 10px 25px rgba(0,0,0,0.25);
+.recibo_footer button:hover {
+  opacity: 0.85;
 }
 
-.boton_cerrar button:active {
+.recibo_footer button:active {
   transform: scale(0.98);
-  
 }
 
 /* ==========================================================================
    ANIMACIÓN
    ========================================================================== */
 
-@keyframes cyberFade {
+@keyframes reciboAparece {
   from {
     opacity: 0;
-    transform: scale(0.96);
+    transform: translateY(6px);
   }
-
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -499,45 +380,45 @@
    RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 480px) {
-  .cyber_ticket {
-    max-height: 88dvh;
-    border-radius: 20px;
+@media (max-width: 420px) {
+  .recibo_ticket {
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: 0;
   }
 
-  .ticket_top {
-    padding: 28px 18px;
+  .recibo_header,
+  .recibo_body,
+  .recibo_barcode,
+  .recibo_footer {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
-  .monto_principal {
-    font-size: 2.4rem;
+  .recibo_monto {
+    font-size: 2rem;
   }
 
-  .glass_body {
-    padding: 18px;
-  }
-
-  .main_info {
+  .recibo_meta {
     flex-direction: column;
-  }
-
-  .metadata_grid {
-    flex-direction: column;
-  }
-
-  .meta_item {
-    justify-content: center;
+    gap: 6px;
   }
 }
 
-@media (min-width: 481px) and (max-width: 1024px) {
-  .cyber_ticket {
-    max-width: 460px;
+@media (max-height: 700px) {
+  .recibo_ticket {
+    max-height: 94dvh;
   }
-}
 
-@media (min-width: 1025px) {
-  .cyber_ticket {
-    max-width: 520px;
+  .recibo_total {
+    padding-top: 10px;
+  }
+
+  .recibo_monto {
+    font-size: 2.1rem;
+  }
+
+  .recibo_perforado {
+    margin: 12px 0;
   }
 }

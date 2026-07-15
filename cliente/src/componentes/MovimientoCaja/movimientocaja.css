@@ -1,5 +1,5 @@
-/* ========================================================================== 
-   MOVIMIENTOS DETALLE — CYBER GLASS TABLE
+/* ==========================================================================
+   MOVIMIENTOS DETALLE — CYBER GLASS GRID
    ========================================================================== */
 
 .movimiento_detalle_contenedor {
@@ -7,19 +7,55 @@
   margin-top: 20px;
 }
 
+/* columnas compartidas entre header y filas */
+.movimiento_header,
+.movimiento_fila {
+  display: grid;
+  grid-template-columns: 96px 64px 1fr 84px 1fr 130px;
+  align-items: center;
+  gap: 6px 14px;
+}
+
 /* ===========================
-   TABLA BASE (glass system)
+   HEADER
    =========================== */
 
-.tabla-finanzas {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 12px;
+.movimiento_header {
+  padding: 0 20px 10px;
+
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.movimiento_header span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.movimiento_header .header_monto {
+  justify-content: flex-end;
+}
+
+/* ===========================
+   LISTA
+   =========================== */
+
+.movimiento_lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 /* FILA estilo tarjeta */
-.tabla-finanzas tr {
+.movimiento_fila {
   position: relative;
+  cursor: pointer;
+
+  padding: 14px 20px;
 
   background: linear-gradient(
     145deg,
@@ -28,180 +64,171 @@
   );
 
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 14px;
+  border-left: 4px solid transparent;
 
   box-shadow:
     0 10px 30px rgba(0, 0, 0, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
-  border-radius: 14px;
-
-  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-/* glow superior suave */
-.tabla-finanzas tr::after {
-  content: "";
-
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 60%;
-  height: 2px;
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.6),
-    transparent
-  );
-
-  opacity: 0.25;
+.movimiento_fila:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.045);
 }
 
-/* hover igual sistema cards */
-.tabla-finanzas tr:hover {
-  transform: scale(1.01);
+.fila-ingreso {
+  border-left-color: #10b981;
+}
 
-  background: rgba(255, 255, 255, 0.04);
-
+.fila-ingreso:hover {
   box-shadow:
     0 18px 45px rgba(0, 0, 0, 0.55),
-    0 0 20px rgba(6, 182, 212, 0.08);
+    0 0 20px rgba(16, 185, 129, 0.12);
+}
+
+.fila-egreso {
+  border-left-color: #ef4444;
+}
+
+.fila-egreso:hover {
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, 0.55),
+    0 0 20px rgba(239, 68, 68, 0.12);
 }
 
 /* ===========================
-   CELDAS
+   CAMPOS
    =========================== */
 
-.tabla-finanzas td {
-  padding: 14px 20px;
+.campo {
+  min-width: 0;
 
-  color: var(--color-letra);
-
+  color: #e2e8f0;
   font-size: 0.9rem;
 
-  border: none;
-
   font-variant-numeric: tabular-nums;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* extremos con look limpio */
-.tabla-finanzas td:first-child {
-  opacity: 0.55;
+.campo_fecha,
+.campo_hora {
+  color: #94a3b8;
+  font-size: 0.82rem;
 }
 
-.tabla-finanzas td:last-child {
+.campo_tipo_cuenta {
+  text-transform: capitalize;
+  color: #94a3b8;
+}
+
+/* la etiqueta solo se ve en mobile (ver media query) */
+.campo_label {
+  display: none;
+  align-items: center;
+  gap: 5px;
+
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.campo_monto {
   text-align: right;
   font-weight: 700;
 }
 
-/* ===========================
-   INDICADORES SEMÁNTICOS
-   =========================== */
-
 .monto-positivo {
-  color: #10b981 !important;
-  font-weight: 700;
+  color: #10b981;
 }
 
 .monto-negativo {
-  color: #ef4444 !important;
-  font-weight: 700;
+  color: #ef4444;
 }
 
-/* línea lateral tipo tarjeta métrica */
-.fila-ingreso {
-  border-left: 4px solid #10b981;
-}
-
-.fila-egreso {
-  border-left: 4px solid #ef4444;
-}
-
-/* ========================================================================== 
-   RESPONSIVE — SIN MODIFICAR BREAKPOINTS
+/* ==========================================================================
+   RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
+  .movimiento_header,
+  .movimiento_fila {
+    grid-template-columns: 84px 56px 1fr 74px 1fr 110px;
+  }
+}
 
-  .tabla-finanzas, 
-  .tabla-finanzas tbody, 
-  .tabla-finanzas tr, 
-  .tabla-finanzas td {
-    display: block;
-    width: 100%;
+@media (max-width: 768px) {
+  .movimiento_header {
+    display: none;
   }
 
-  .tabla-finanzas tr {
-    margin-bottom: 15px;
-    padding: 10px;
+  .movimiento_fila {
+    grid-template-columns: 1fr;
+    gap: 6px;
 
-    border-radius: 14px;
-
+    padding: 14px 16px;
     border-left-width: 5px;
   }
 
-  .tabla-finanzas td {
-    border: none;
-    padding: 5px 10px;
-
-    text-align: left;
-
-    font-size: 0.85rem;
-
+  .campo {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 10px;
+
+    white-space: normal;
   }
 
-  .tabla-finanzas td:nth-child(1),
-  .tabla-finanzas td:nth-child(2) {
-    display: inline-block;
+  .campo_label {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .campo_fecha,
+  .campo_hora {
+    display: inline-flex;
     width: auto;
-    opacity: 0.6;
-    font-size: 0.75rem;
   }
 
-  .tabla-finanzas td:nth-child(3)::before {
-    content: "Cuenta: ";
-    opacity: 0.5;
-    font-size: 0.7rem;
+  /* fecha y hora comparten una línea */
+  .campo_fecha {
+    padding-right: 10px;
   }
 
-  .tabla-finanzas td:nth-child(5)::before {
-    content: "Cat: ";
-    opacity: 0.5;
-    font-size: 0.7rem;
-  }
-
-  .tabla-finanzas td:last-child {
-    text-align: right;
-    font-size: 1.1rem;
-
-    margin-top: 5px;
+  .campo_monto {
+    justify-content: flex-end;
+    margin-top: 6px;
     padding-top: 10px;
 
-    justify-content: flex-end;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+
+    font-size: 1.05rem;
   }
 
-  .tabla-finanzas td:first-child,
-  .tabla-finanzas td:last-child {
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+  .campo_monto .campo_label {
+    display: none;
   }
 }
 
 @media (max-width: 400px) {
-
-  .tabla-finanzas td {
-    font-size: 0.8rem;
+  .campo {
+    font-size: 0.82rem;
   }
 
-  .tabla-finanzas td:last-child {
+  .campo_monto {
     font-size: 1rem;
+  }
+
+  .campo_label {
+    font-size: 0.62rem;
   }
 }

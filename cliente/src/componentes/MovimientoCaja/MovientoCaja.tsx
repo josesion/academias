@@ -1,4 +1,5 @@
 import "./movimientocaja.css";
+import { Calendar, Clock, Wallet, Landmark, Tag } from "lucide-react";
 
 // Definimos qué datos necesita cada fila
 export interface Movimiento {
@@ -42,54 +43,97 @@ export const MovientoCaja = ({
 }: MovimientoCajaProps) => {
   return (
     <div className="movimiento_detalle_contenedor">
-      <table className="tabla-finanzas">
-        <tbody>
-          {movimientos
-            .filter((mov) => mov.nombre_categoria !== "Saldo Inicial") // Filtro para no mostrar saldos iniciales
-            .map((mov) => (
-              <tr
-                onClick={() => {
-                  infoDetalle(
-                    mov.id_movimiento,
-                    mov.tipo_movimiento,
-                    mov.tipo_cuenta,
-                    mov.monto,
-                    mov.nombre_cuenta,
-                    mov.descripcion,
-                    mov.fecha_grupo,
-                    mov.hora_formateada,
-                    mov.nombre_categoria,
-                    mov.nombre_alumno_vinculado,
-                  );
-                }}
-                key={mov.id_movimiento}
+      <div className="movimiento_header" role="row" aria-hidden="true">
+        <span>
+          <Calendar size={13} /> Fecha
+        </span>
+        <span>
+          <Clock size={13} /> Hora
+        </span>
+        <span>
+          <Wallet size={13} /> Cuenta
+        </span>
+        <span>Tipo</span>
+        <span>
+          <Landmark size={13} /> Categoría
+        </span>
+        <span className="header_monto">Monto</span>
+      </div>
+
+      <div className="movimiento_lista" role="table">
+        {movimientos
+          .filter((mov) => mov.nombre_categoria !== "Saldo Inicial") // Filtro para no mostrar saldos iniciales
+          .map((mov) => (
+            <div
+              onClick={() => {
+                infoDetalle(
+                  mov.id_movimiento,
+                  mov.tipo_movimiento,
+                  mov.tipo_cuenta,
+                  mov.monto,
+                  mov.nombre_cuenta,
+                  mov.descripcion,
+                  mov.fecha_grupo,
+                  mov.hora_formateada,
+                  mov.nombre_categoria,
+                  mov.nombre_alumno_vinculado,
+                );
+              }}
+              key={mov.id_movimiento}
+              role="row"
+              className={
+                mov.tipo_movimiento === "ingreso"
+                  ? "movimiento_fila fila-ingreso"
+                  : "movimiento_fila fila-egreso"
+              }
+            >
+              <span className="campo campo_fecha" role="cell">
+                <span className="campo_label">
+                  <Calendar size={12} /> Fecha
+                </span>
+                {mov.fecha_grupo}
+              </span>
+
+              <span className="campo campo_hora" role="cell">
+                <span className="campo_label">
+                  <Clock size={12} /> Hora
+                </span>
+                {mov.hora_formateada}
+              </span>
+
+              <span className="campo campo_cuenta" role="cell">
+                <span className="campo_label">
+                  <Wallet size={12} /> Cuenta
+                </span>
+                {mov.nombre_cuenta}
+              </span>
+
+              <span className="campo campo_tipo_cuenta" role="cell">
+                <span className="campo_label">Tipo</span>
+                {mov.tipo_cuenta}
+              </span>
+
+              <span className="campo campo_categoria" role="cell">
+                <span className="campo_label">
+                  <Landmark size={12} /> Categoría
+                </span>
+                {mov.nombre_categoria}
+              </span>
+
+              <span
                 className={
                   mov.tipo_movimiento === "ingreso"
-                    ? "fila-ingreso"
-                    : "fila-egreso"
+                    ? "campo campo_monto monto-positivo"
+                    : "campo campo_monto monto-negativo"
                 }
+                role="cell"
               >
-                <td>{mov.fecha_grupo}</td>
-
-                <td>{mov.hora_formateada}</td>
-                <td>{mov.nombre_cuenta}</td>
-                <td>{mov.tipo_cuenta}</td>
-                <td>{mov.nombre_categoria}</td>
-
-                <td
-                  className={
-                    mov.tipo_movimiento === "ingreso"
-                      ? "monto-positivo"
-                      : "monto-negativo"
-                  }
-                >
-                  {mov.tipo_movimiento === "ingreso" ? "+" : "-"} $
-                  {mov.monto.toLocaleString("es-AR")}
-                </td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+                {mov.tipo_movimiento === "ingreso" ? "+" : "-"} $
+                {mov.monto.toLocaleString("es-AR")}
+              </span>
+            </div>
+          ))}
+      </div>
     </div>
   );
 };

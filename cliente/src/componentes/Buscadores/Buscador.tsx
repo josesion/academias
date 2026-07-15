@@ -1,5 +1,6 @@
 import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
+import { Search } from "lucide-react";
 import "./buscador.css";
 
 export type InputsPropsBuscador = {
@@ -36,7 +37,10 @@ export const Buscadores = (p: BuscadorProps) => {
   return (
     <div className="buscador_contenedor_comp">
       {p.tituloBuscador && (
-        <p className="buscador_titulo">{p.tituloBuscador}</p>
+        <p className="buscador_titulo">
+          <Search size={13} />
+          {p.tituloBuscador}
+        </p>
       )}
 
       <div className="buscador_cuerpo">

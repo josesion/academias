@@ -1,0 +1,347 @@
+/* ==========================================================================
+   ASISTENCIA - CYBER GLASS
+   ========================================================================== */
+
+.asistencia_contenedor{
+
+    position:relative;
+
+    width:100%;
+
+    padding:25px;
+
+    overflow:hidden;
+
+    border-radius:24px;
+
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(59,130,246,.18),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(15,23,42,.96),
+            rgba(2,6,23,.98)
+        );
+
+    border:1px solid rgba(255,255,255,.07);
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+.asistencia_bg_icon{
+
+    position:absolute;
+
+    right:-30px;
+    top:-30px;
+
+    color:rgba(59,130,246,.12);
+
+    transform:rotate(-15deg);
+
+    pointer-events:none;
+}
+
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.asistencia_header{
+
+    position:relative;
+    z-index:1;
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    margin-bottom:25px;
+}
+
+.asistencia_header svg{
+    color:#60a5fa;
+}
+
+.asistencia_header h2{
+    margin:0;
+    color:white;
+    font-size:1.3rem;
+    font-weight:900;
+}
+
+.asistencia_header span{
+
+    margin-left:auto;
+
+    padding:7px 14px;
+    border-radius:999px;
+
+    color:#bfdbfe;
+    background:rgba(59,130,246,.15);
+    border:1px solid rgba(59,130,246,.35);
+
+    font-size:.8rem;
+    font-weight:800;
+
+    /* toque "terminal" para los datos numéricos */
+    font-variant-numeric:tabular-nums;
+    letter-spacing:.02em;
+}
+
+
+/* ==========================================================================
+   LISTA
+   ========================================================================== */
+
+.asistencia_lista {
+
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+
+    max-height:350px;
+
+    overflow-y:auto;
+    overflow-x:hidden;
+
+    padding-right:8px;
+}
+
+.asistencia_lista::-webkit-scrollbar {
+    width: 6px;
+}
+
+.asistencia_lista::-webkit-scrollbar-track {
+    background: rgba(255,255,255,.05);
+    border-radius: 20px;
+}
+
+.asistencia_lista::-webkit-scrollbar-thumb {
+    background: rgba(168,85,247,.55);
+    border-radius:20px;
+}
+
+.asistencia_lista::-webkit-scrollbar-thumb:hover {
+    background: rgba(168,85,247,.8);
+}
+
+.asistencia_item{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    padding:12px 16px;
+
+    border-radius:18px;
+
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+
+    transition:.25s ease;
+}
+
+.asistencia_item:hover{
+    transform:translateX(5px);
+    background: rgba(255,255,255,.08);
+}
+
+
+/* ==========================================================================
+   AVATAR (iniciales con gradiente, reemplaza el ícono genérico)
+   ========================================================================== */
+
+.asistencia_icono{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-shrink:0;
+
+    width:42px;
+    height:42px;
+
+    border-radius:14px;
+
+    color:white;
+    font-weight:800;
+    font-size:.9rem;
+
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.asistencia_icono.variante_1{
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+
+.asistencia_icono.variante_2{
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+}
+
+
+/* nombre */
+
+.asistencia_nombre{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+    flex:1;
+    min-width:0;
+}
+
+.asistencia_nombre p{
+    margin:0;
+    color:white;
+    font-weight:800;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.asistencia_nombre span{
+    color:#94a3b8;
+    font-size:.85rem;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/* ==========================================================================
+   ESTADO (con ecualizador animado para "Presente")
+   ========================================================================== */
+
+.asistencia_estado{
+
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-shrink:0;
+
+    padding:6px 14px;
+    border-radius:999px;
+
+    font-size:.75rem;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.asistencia_estado.presente{
+    color:#86efac;
+    background:rgba(34,197,94,.15);
+    border:1px solid rgba(34,197,94,.35);
+}
+
+.asistencia_estado.tardanza{
+    color:#fcd34d;
+    background:rgba(245,158,11,.15);
+    border:1px solid rgba(245,158,11,.35);
+}
+
+.asistencia_estado.ausente{
+    color:#fca5a5;
+    background:rgba(239,68,68,.15);
+    border:1px solid rgba(239,68,68,.35);
+}
+
+/* mini ecualizador — solo suena cuando el alumno está presente */
+.asistencia_ecualizador{
+    display:flex;
+    align-items:flex-end;
+    gap:2px;
+    height:11px;
+}
+
+.asistencia_ecualizador span{
+    width:3px;
+    border-radius:2px;
+    background:#4ade80;
+    animation: ecualizar 1s ease-in-out infinite;
+}
+
+.asistencia_ecualizador span:nth-child(1){ animation-delay:-0.6s; }
+.asistencia_ecualizador span:nth-child(2){ animation-delay:-0.3s; }
+.asistencia_ecualizador span:nth-child(3){ animation-delay:0s; }
+
+@keyframes ecualizar{
+    0%, 100%{ height:3px; }
+    50%{ height:11px; }
+}
+
+.asistencia_estado.tardanza .asistencia_punto,
+.asistencia_estado.ausente .asistencia_punto{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:currentColor;
+}
+
+@media (prefers-reduced-motion: reduce){
+    .asistencia_ecualizador span{
+        animation:none;
+        height:7px;
+    }
+}
+
+
+/* ==========================================================================
+   ESTADO VACÍO
+   ========================================================================== */
+
+.asistencia_vacio{
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    padding:40px 20px;
+
+    color:#64748b;
+    text-align:center;
+}
+
+.asistencia_vacio svg{
+    color:#334155;
+    margin-bottom:4px;
+}
+
+.asistencia_vacio p{
+    margin:0;
+    color:#94a3b8;
+    font-weight:700;
+    font-size:.95rem;
+}
+
+.asistencia_vacio span{
+    font-size:.8rem;
+}
+
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media(max-width:600px){
+
+    .asistencia_header h2{
+        font-size:1.1rem;
+    }
+
+    .asistencia_item{
+        padding:10px 12px;
+    }
+
+    .asistencia_nombre span{
+        display:none;
+    }
+}

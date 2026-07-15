@@ -17,7 +17,7 @@ import { CompoIngEgr } from "../../../componentes/CompoIngEgr/CompoIngEgr";
 import { cajasCongif } from "../../../hookNegocios/caja.usuario";
 
 // estilos -----
-import { FcStatistics } from "react-icons/fc";
+import { ChartColumn } from "lucide-react";
 import "./caja.css";
 
 export const CajaArqueo = () => {
@@ -142,11 +142,31 @@ export const CajaArqueo = () => {
         </div>
       )}
 
+      {state.modalInformeDetalle && (
+        <div className="formulario_overlay">
+          <InformeDetalleCaja
+            id_movimiento={state.informeDetalle.id_movimiento}
+            tipo={state.informeDetalle.tipo}
+            monto={state.informeDetalle.monto}
+            usuario={state.informeDetalle.usuario}
+            fecha={state.informeDetalle.fecha}
+            hora={state.informeDetalle.hora}
+            metodo_pago={state.informeDetalle.metodo_pago}
+            observaciones={state.informeDetalle.observaciones}
+            metodo={state.informeDetalle.metodo}
+            nombre_alumno_vinculado={
+              state.informeDetalle.nombre_alumno_vinculado
+            }
+            onCerrarModal={hanldeCerrarInforme}
+          />
+        </div>
+      )}
+
       {/* 2. CABECERA */}
       <header className="caja_header">
         <div className="titulo_grupo">
           <h1>
-            Gestión de Caja <FcStatistics />
+            Gestión de Caja <ChartColumn size={26} />
           </h1>
           <span className={`status_pill ${state.estadoCaja}`}>
             {state.estadoCaja === "abierta" ? "Caja Activa" : "Caja Cerrada"}
@@ -191,9 +211,8 @@ export const CajaArqueo = () => {
           claseColor="negro"
         />
       </section>
-      {/* 4. SIDEBAR: METODOS DE PAGO */}
 
-      {/* 5. HISTORIAL DE MOVIMIENTOS */}
+      {/* 4 y 5. HISTORIAL DE MOVIMIENTOS + SIDEBAR DE MÉTODOS DE PAGO, en un mismo grid */}
       <main className="caja_historial">
         <div className="historial_header">
           <h3>Movimientos del Turno</h3>
@@ -211,41 +230,22 @@ export const CajaArqueo = () => {
           </div>
         </div>
 
-        {state.modalInformeDetalle && (
-          <div className="formulario_overlay">
-            <InformeDetalleCaja
-              id_movimiento={state.informeDetalle.id_movimiento}
-              tipo={state.informeDetalle.tipo}
-              monto={state.informeDetalle.monto}
-              usuario={state.informeDetalle.usuario}
-              fecha={state.informeDetalle.fecha}
-              hora={state.informeDetalle.hora}
-              metodo_pago={state.informeDetalle.metodo_pago}
-              observaciones={state.informeDetalle.observaciones}
-              metodo={state.informeDetalle.metodo}
-              // Nueva prop sumada:
-              nombre_alumno_vinculado={
-                state.informeDetalle.nombre_alumno_vinculado
-              }
-              onCerrarModal={hanldeCerrarInforme}
+        <div className="historial_contenido">
+          <div className="scroll_movimientos">
+            <MovientoCaja
+              movimientos={movimientos}
+              infoDetalle={handleCachearDetalle}
             />
+            {movimientos.length > 0 && (
+              <div ref={lastElementRef} className="scroll_sensor">
+                {scrollState?.loading && <p>Cargando...</p>}
+                {!scrollState?.hasMore}
+              </div>
+            )}
+            {movimientos.length === 0 && !scrollState?.loading && (
+              <CajaVaciaAnimation />
+            )}
           </div>
-        )}
-
-        <div className="scroll_movimientos">
-          <MovientoCaja
-            movimientos={movimientos}
-            infoDetalle={handleCachearDetalle}
-          />
-          {movimientos.length > 0 && (
-            <div ref={lastElementRef} className="scroll_sensor">
-              {scrollState?.loading && <p>Cargando...</p>}
-              {!scrollState?.hasMore}
-            </div>
-          )}
-          {movimientos.length === 0 && !scrollState?.loading && (
-            <CajaVaciaAnimation />
-          )}
         </div>
 
         <aside className="caja_sidebar_pagos">
