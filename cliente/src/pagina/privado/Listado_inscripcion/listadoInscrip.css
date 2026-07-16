@@ -8,20 +8,11 @@
     padding: 10px;
     width: 100%;
     height: 95vh;           /* Ocupa casi todo el alto de la pantalla */
-    overflow-y: auto;       /* Habilita scroll si el contenido supera el alto */
-    overflow-x: hidden;
+          /* Habilita scroll si el contenido supera el alto */
+  
     margin: 0 auto;
     box-sizing: border-box;
     background:  rgba(255, 255, 255, 0.05);    /* Color de fondo para que el scroll no se vea raro */
-}
-
-/* Personalización de la barra de scroll global (opcional) */
-.contenedor_listado::-webkit-scrollbar {
-    width: 6px;
-}
-.contenedor_listado::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
 }
 
 /* ============================================================

@@ -2,6 +2,13 @@ import { SelectorPlegable } from "../Selector/Selector";
 import { Calendario } from "../Calendario/Calendario";
 import { TarjetaHorario } from "../TarjetaHorario/TarjetaHorario";
 import { Boton } from "../Boton/Boton";
+import {
+  SlidersHorizontal,
+  User,
+  Layers,
+  Tag,
+  CalendarDays,
+} from "lucide-react";
 
 import type * as TipadoHorario from "../../tipadosTs/horario";
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
@@ -83,36 +90,58 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
         <div className="formulario_overlay">
           <div className="formulario_horario">
             <div className="formulario_horario_filtro_primario">
-              <SelectorPlegable<TipadoHorario.DataProfesor>
-                titulo="Profesores"
-                objetoListado={listaProfe}
-                onChange={handleCachearProfesores}
-                input_list="list_profesores"
-                valueKey="dni"
-                tipo="text"
-                name="dni"
-                displayKey="persona"
-              />
+              <div className="filtro_primario_titulo">
+                <SlidersHorizontal size={13} />
+                <span>Filtros</span>
+              </div>
 
-              <SelectorPlegable<TipadoHorario.DataNivel>
-                titulo="Niveles"
-                objetoListado={listaNiveles}
-                onChange={handleCachearNiveles}
-                input_list="list_niveles"
-                valueKey="nivel"
-                tipo="text"
-                name="nivel"
-              />
+              <div className="filtro_primario_campos">
+                <div className="filtro_campo">
+                  <span className="filtro_campo_icono">
+                    <User size={12} />
+                  </span>
+                  <SelectorPlegable<TipadoHorario.DataProfesor>
+                    titulo="Profesores"
+                    objetoListado={listaProfe}
+                    onChange={handleCachearProfesores}
+                    input_list="list_profesores"
+                    valueKey="dni"
+                    tipo="text"
+                    name="dni"
+                    displayKey="persona"
+                  />
+                </div>
 
-              <SelectorPlegable<TipadoHorario.DataTipo>
-                titulo="Tipos"
-                objetoListado={listaTipo}
-                onChange={handleCachearTipos}
-                input_list="list_tipos"
-                valueKey="tipo"
-                tipo="text"
-                name="tipo"
-              />
+                <div className="filtro_campo">
+                  <span className="filtro_campo_icono">
+                    <Layers size={12} />
+                  </span>
+                  <SelectorPlegable<TipadoHorario.DataNivel>
+                    titulo="Niveles"
+                    objetoListado={listaNiveles}
+                    onChange={handleCachearNiveles}
+                    input_list="list_niveles"
+                    valueKey="nivel"
+                    tipo="text"
+                    name="nivel"
+                  />
+                </div>
+
+                <div className="filtro_campo">
+                  <span className="filtro_campo_icono">
+                    <Tag size={12} />
+                  </span>
+                  <SelectorPlegable<TipadoHorario.DataTipo>
+                    titulo="Tipos"
+                    objetoListado={listaTipo}
+                    onChange={handleCachearTipos}
+                    input_list="list_tipos"
+                    valueKey="tipo"
+                    tipo="text"
+                    name="tipo"
+                  />
+                </div>
+              </div>
             </div>
 
             <TarjetaHorario
@@ -160,6 +189,11 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
       )}
 
       <div className="formulario_horario_filtro_secundario">
+        <div className="calendario_header">
+          <CalendarDays size={14} />
+          <span>Horario semanal</span>
+        </div>
+
         <Calendario
           diasSemana={diasSemana}
           horarios={horarios}

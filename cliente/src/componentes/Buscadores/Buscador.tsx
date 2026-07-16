@@ -1,6 +1,7 @@
 import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
-import { Search } from "lucide-react";
+import { Search, Music } from "lucide-react";
+
 import "./buscador.css";
 
 export type InputsPropsBuscador = {
@@ -44,10 +45,8 @@ export const Buscadores = (p: BuscadorProps) => {
       )}
 
       <div className="buscador_cuerpo">
-        {/* Renderizado de Inputs y Selects dinámicos */}
         {p.intputBuscador.map((input) => {
           const isSelect = input.options && input.options.length > 0;
-
           return (
             <div className="buscador_columna" key={input.name}>
               {isSelect ? (
@@ -83,7 +82,6 @@ export const Buscadores = (p: BuscadorProps) => {
           );
         })}
 
-        {/* Selector de Estado */}
         <div className="buscador_columna">
           <label className="buscador_label_generico">Estado</label>
           <select
@@ -99,7 +97,6 @@ export const Buscadores = (p: BuscadorProps) => {
           </select>
         </div>
 
-        {/* Botón Agregar - Con label vacío para nivelar */}
         <div className="buscador_columna">
           <label className="buscador_label_generico">&nbsp;</label>
           <Boton

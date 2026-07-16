@@ -2,6 +2,8 @@
 import { Outlet } from "react-router-dom";
 import { MenuNav } from "../componentes/MenuNav/MenuNav";
 
+import "../app.css";
+
 export const LayoutConMenu = () => {
   return (
     <div className="layout_principal">

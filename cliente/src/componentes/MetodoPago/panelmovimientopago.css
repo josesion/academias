@@ -38,9 +38,13 @@
     0 12px 35px rgba(0, 0, 0, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
-  overflow: hidden;
 
   transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
+
+
+    height: 480px;          /* altura fija */
+    width: 100%;
+    overflow: hidden;       /* importante */
 }
 
 /* Glow superior como tarjetas */
@@ -125,6 +129,40 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding-right: 4px;  
+}
+
+
+.panel_lista::-webkit-scrollbar{
+    width:6px;
+}
+
+.panel_lista::-webkit-scrollbar-track{
+    background:rgba(255,255,255,.05);
+    border-radius:10px;
+}
+
+.panel_lista::-webkit-scrollbar-thumb{
+    background:linear-gradient(
+        180deg,
+        #4f46e5,
+        #06b6d4,
+        #a855f7
+    );
+    border-radius:10px;
+}
+
+.panel_lista::-webkit-scrollbar-thumb:hover{
+    background:linear-gradient(
+        180deg,
+        #6366f1,
+        #22d3ee,
+        #c084fc
+    );
 }
 
 .metodo_item_completo {
