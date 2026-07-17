@@ -183,7 +183,7 @@ export const movimientoCajaDetalle = async ( data : TipadoCaja.DetalleMovimiento
    });
 };
 
-export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta)
+export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta,signal? : AbortSignal )
 : Promise<ApiResponse<TipadoCaja.ListadoTipoCuentas[]>> => {
 
     const verificarUser= await verificarAutenticacion();
@@ -202,7 +202,8 @@ export const listadoTipoCuentas = async ( data : TipadoCaja.DataTipoCuenta)
     const ruta = `${PAGINA}api/lista_tipos_cuentas/${estado}`;
     
     return await apiFetch( ruta , {
-       method : "GET"  
+       method : "GET"  ,
+       signal : signal
     });
  
 };

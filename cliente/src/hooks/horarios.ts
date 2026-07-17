@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import { peticiones } from "../utils/peticiones";
 import { generarRangoUnaHora } from "./setHora";
+import {  useEffectServicio } from "../utils/useEfectServicio"
 
 import { mensajeErrorTemporal } from "./mensajeTemporales";
-import { initialState, horarioReducer } from "../reducers/horariosReducers";
+import { initialState, horarioReducer, type HorarioAction } from "../reducers/horariosReducers";
 
 /**
  * @typedef {function(data: any, signal?: AbortSignal): Promise<any>} ServicioCrud
@@ -250,146 +251,63 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
    };
 
 
+
+
 // ──────────────────────────────────────────────────────────────
 // Listado de profesores sin paginacion
-// ──────────────────────────────────────────────────────────────    
-useEffect(()=>{
-    const {controlador , signal , timeoutId} = peticiones({
-        tiempo : 5,
-        setErrorGenerico : setErrorGenericoAdapter,
-        setCarga : setCargaAdapter
-    });
-
-    const listadoProfesoreCompleto = async () => {
-        const servicioApiFetch = config.servicios.listadoProfesores;
-        try {
-            const respuesta = await servicioApiFetch( state.filtroBusquedaProfesor , signal );
-    
-            if ( respuesta.error === false ) {
-                dispatch({ type : "SET_LISTADO_PROFESORES", payload : respuesta.data });
-            };
-        }catch(error) {
-            dispatch({ type : "SET_ERROR", payload : 'Ocurrió un error inesperado al cargar los datos Profesores.' });  
-        }finally{
-            clearTimeout( timeoutId );
-            dispatch({ type : "SET_CARGA", payload : false });
-        };
-
-    };
-
-    listadoProfesoreCompleto();
-
-    return () => {
-        clearTimeout( timeoutId );
-        controlador.abort();
-    };
-}, [state.filtroBusquedaProfesor] );
+// ──────────────────────────────────────────────────────────────  
+   useEffectServicio<any,TipadoHorario.DataProfesor[],HorarioAction >({
+      valores : state.filtroBusquedaProfesor,
+      servicios : config.servicios.listadoProfesores,
+      dispatch : dispatch,
+      accionResultado : (data)=>({type : "SET_LISTADO_PROFESORES", payload : data || []}),
+      accionError : ( mensaje ) =>({type : "SET_ERROR", payload : mensaje}),
+      accionCarga : ( estado ) =>({ type : "SET_CARGA", payload : estado}),
+      useAbort : true,
+      dependencias : [state.filtroBusquedaProfesor]
+   });
 
 // ──────────────────────────────────────────────────────────────
 // Listado de niveles sin paginacion
-// ──────────────────────────────────────────────────────────────    
-useEffect(()=>{
-
-    const {controlador , signal , timeoutId} = peticiones({
-        tiempo : 5,
-        setErrorGenerico : setErrorGenericoAdapter,
-        setCarga : setCargaAdapter
-    });
-
-    const listadoNivelCompleto = async () => {
-        const servicioApiFetch = config.servicios.listadoNivel;
-        try {
-            const respuesta = await servicioApiFetch( state.filtroBusquedaNivel , signal );
-
-            if ( respuesta.error === false ) {
-                dispatch({ type : "SET_LISTADO_NIVELES", payload : respuesta.data });
-            };
-        }catch(error) {
-            dispatch({ type : "SET_ERROR", payload :'Ocurrió un error inesperado al cargar los datos Niveles.' });    
-        }finally{
-            clearTimeout( timeoutId );
-            dispatch({ type : "SET_CARGA", payload : false });  
-        };
-
-    };
-
-    listadoNivelCompleto();
-
-    return () => {
-        clearTimeout( timeoutId );
-        controlador.abort();
-    };
-}, [state.filtroBusquedaNivel] );
+// ──────────────────────────────────────────────────────────────  
+   useEffectServicio<any,TipadoHorario.DataNivel[], HorarioAction>({
+        valores : state.filtroBusquedaNivel,
+        servicios : config.servicios.listadoNivel,
+        dispatch : dispatch,
+        accionResultado :( data ) => ({ type : "SET_LISTADO_NIVELES", payload : data || []}),
+        accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        useAbort : true, 
+        dependencias : [state.filtroBusquedaNivel]
+   });
 
 // ──────────────────────────────────────────────────────────────
 // Listado de Tipos sin paginacion
-// ──────────────────────────────────────────────────────────────    
-useEffect(()=>{
-
-    const {controlador , signal , timeoutId} = peticiones({
-        tiempo : 5,
-        setErrorGenerico : setErrorGenericoAdapter,
-        setCarga : setCargaAdapter
-    });
-
-    const listadoTiposCompleto = async () => {
-        const servicioApiFetch = config.servicios.listadoTipo;
-        try {
-            const respuesta = await servicioApiFetch( state.filtroBusquedaTipo , signal );
-        
-            if ( respuesta.error === false ) {
-                dispatch({ type : "SET_LISTADO_TIPO", payload : respuesta.data });
-            };
-        }catch(error) { 
-            dispatch({ type : "SET_ERROR", payload :'Ocurrió un error inesperado al cargar los datos Tipos.' });            
-        }finally{
-            clearTimeout( timeoutId );
-            dispatch({ type : "SET_CARGA", payload : false }); 
-        };
-
-    };
-
-    listadoTiposCompleto();
-
-    return () => {
-        clearTimeout( timeoutId );
-        controlador.abort();
-    };
-}, [ state.filtroBusquedaTipo] );
+// ──────────────────────────────────────────────────────────────  
+   useEffectServicio<any,TipadoHorario.DataTipo[], HorarioAction>({
+        valores : state.filtroBusquedaTipo,
+        servicios : config.servicios.listadoTipo,
+        dispatch : dispatch,
+        accionResultado :( data ) => ({ type : "SET_LISTADO_TIPO", payload : data || []}),
+        accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        useAbort : true, 
+        dependencias : [state.filtroBusquedaTipo]
+   });
 
 // ──────────────────────────────────────────────────────────────
 // Listado de Calendario sin paginacion
 // ──────────────────────────────────────────────────────────────  
-useEffect( ()=>{
-    const {controlador , signal , timeoutId} = peticiones({
-        tiempo : 5,
-        setErrorGenerico : setErrorGenericoAdapter,
-        setCarga : setCargaAdapter
-    });
-    const calendario = async() =>{
-        try{
-            const servicioApiFetch = config.servicios.horarioEscuela;
-            const listadoCalendario = await servicioApiFetch( state.filtroCalendario, signal )
-            
-            if (listadoCalendario.error === false) {
-                dispatch({ type : "SET_CALENDARIO", payload : listadoCalendario.data });
-            };
-        }catch(error){
-            console.error('Ocurrió un error inesperado al cargar los datos del Calendario.')
-        }finally{
-            clearTimeout( timeoutId );
-            dispatch({ type : "SET_CARGA", payload : false }); 
-        }
-    };
-  
-    calendario();
-
-    return () => {
-        clearTimeout( timeoutId );
-        controlador.abort();
-    };
-
-},[state.actualizar]);
+   useEffectServicio<any,TipadoHorario.ClaseHorarioData[], HorarioAction>({
+        valores : config.servicios.horarioEscuela,
+        servicios : config.servicios.horarioEscuela,
+        dispatch : dispatch,
+        accionResultado :( data ) => ({ type : "SET_CALENDARIO" , payload : data || []}),
+        accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        useAbort : true, 
+        dependencias : [state.actualizar]
+   });
 
 // ──────────────────────────────────────────────────────────────
 // Para manejar el estado q el cliente

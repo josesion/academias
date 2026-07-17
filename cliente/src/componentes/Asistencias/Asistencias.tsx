@@ -1,7 +1,8 @@
 import "./asistencia.css";
 import { Users, UserPlus } from "lucide-react";
+import { ComponenteCargando } from "../Cargando/Cargando";
 
-type EstadoAsistencia = "Presente" | "Tardanza" | "Ausente";
+type EstadoAsistencia = "presente" | "Tardanza" | "Ausente";
 
 interface DataAsistencia {
   nombre: string;
@@ -9,8 +10,8 @@ interface DataAsistencia {
   estado?: EstadoAsistencia;
 }
 
-interface PropsAsistencia {
-  alumnos: DataAsistencia[];
+interface AsistenciaProps {
+  asistencia: DataAsistencia[]; // Aquí le dices que espera una propiedad llamada "data"
 }
 
 const variantesAvatar = ["", "variante_1", "variante_2"];
@@ -19,11 +20,11 @@ const obtenerIniciales = (nombre: string, apellido: string) =>
   `${nombre.charAt(0)}${apellido.charAt(0)}`.toUpperCase();
 
 const EstadoBadge = ({
-  estado = "Presente",
+  estado = "presente",
 }: {
   estado?: EstadoAsistencia;
 }) => {
-  if (estado === "Presente") {
+  if (estado === "presente") {
     return (
       <div className="asistencia_estado presente">
         <div className="asistencia_ecualizador">
@@ -31,7 +32,7 @@ const EstadoBadge = ({
           <span />
           <span />
         </div>
-        Presente
+        presente
       </div>
     );
   }
@@ -53,9 +54,9 @@ const EstadoBadge = ({
   );
 };
 
-export const Asistencia = ({ alumnos }: PropsAsistencia) => {
-  const presentes = alumnos.filter(
-    (a) => (a.estado ?? "Presente") === "Presente",
+export const Asistencia = ({ asistencia }: AsistenciaProps) => {
+  const presentes = asistencia.filter(
+    (a) => (a.estado ?? "presente") === "presente",
   ).length;
 
   return (
@@ -70,7 +71,7 @@ export const Asistencia = ({ alumnos }: PropsAsistencia) => {
         <span>{presentes} presentes</span>
       </div>
 
-      {alumnos.length === 0 ? (
+      {asistencia.length === 0 ? (
         <div className="asistencia_vacio">
           <UserPlus size={40} />
           <p>Todavía no hay alumnos anotados</p>
@@ -78,7 +79,7 @@ export const Asistencia = ({ alumnos }: PropsAsistencia) => {
         </div>
       ) : (
         <div className="asistencia_lista">
-          {alumnos.map((alumno, index) => (
+          {asistencia.map((alumno, index) => (
             <div className="asistencia_item" key={index}>
               <div
                 className={`asistencia_icono ${variantesAvatar[index % variantesAvatar.length]}`}

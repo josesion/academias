@@ -283,11 +283,12 @@ const listadoInscrip = async () => {
 },[ state.filtroData, state.actualizarListado]);
 
 useEffect( ()=> {
-
+    const controller = new AbortController();
     const listadoMetodosPago = async() =>{
         const data = { estado : "activos"}
         const servicioApifetch = config.servicios.listadoCuentas;
-        const listaCuentasResult = await servicioApifetch( data );
+    
+        const listaCuentasResult = await servicioApifetch( data, controller.signal );
        // console.log(listaCuentasResult)
         if ( listaCuentasResult.code === 'LISTA_TIPOS_CUENTAS_OK' ){
             const listadoRefacto =    listaCuentasResult.data.map( (item : RetornoListadoCuentas) =>({
@@ -302,7 +303,15 @@ useEffect( ()=> {
 
     listadoMetodosPago();
 
+    return () => {
+        controller.abort();
+    };
+
 }, [] );
+
+
+
+
 
     return{
         //carga,

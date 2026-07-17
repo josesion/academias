@@ -1,11 +1,13 @@
 import "./infoclases.css";
 import { Music } from "lucide-react";
+import { SpinnerTarjeta } from "../SipinnerMetricas/SpinnerTajetas";
 
 interface DataClases {
   nombre_clase: string;
   horario: string;
   nombre_profesor: string;
   estado: "EN CURSO" | "SIN CURSO";
+  carga: boolean;
 }
 
 export const InfoClases = ({
@@ -13,6 +15,7 @@ export const InfoClases = ({
   horario,
   nombre_profesor,
   estado,
+  carga,
 }: DataClases) => {
   return (
     <header className="info_clases_contenedor">
@@ -24,17 +27,25 @@ export const InfoClases = ({
       <div className="info_clases_datos">
         <div className="info_clases_item">
           <span className="info_clases_label">Clase</span>
-          <h2 title={nombre_clase}>{nombre_clase}</h2>
+          {carga ? (
+            <SpinnerTarjeta />
+          ) : (
+            <h2 title={nombre_clase}>{nombre_clase}</h2>
+          )}
         </div>
 
         <div className="info_clases_item">
           <span className="info_clases_label">Horario</span>
-          <p title={horario}>{horario}</p>
+          {carga ? <SpinnerTarjeta /> : <p title={horario}>{horario}</p>}
         </div>
 
         <div className="info_clases_item">
           <span className="info_clases_label">Profesor</span>
-          <p title={nombre_profesor}>{nombre_profesor}</p>
+          {carga ? (
+            <SpinnerTarjeta />
+          ) : (
+            <p title={nombre_profesor}>{nombre_profesor}</p>
+          )}
         </div>
       </div>
 

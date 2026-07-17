@@ -200,9 +200,7 @@ export type HorarioAction =
 | { type: "RESET_PROFESOR" }
 
 
-// ==========================================
-// 4. EL CEREBRO (REDUCER)
-// ==========================================
+
 
 export const horarioReducer = (state: ReturnType<typeof initialState>, action: HorarioAction)
 : ReturnType<typeof initialState> =>{

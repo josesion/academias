@@ -13,7 +13,7 @@ export  interface ResultTarjeta{
 
 
 
-export const metricasTajertas = async ()
+export const metricasTajertas = async ( signal? : AbortSignal)
 :Promise<ApiResponse<ResultTarjeta>> =>{
 
     const verificarUser= await verificarAutenticacion();
@@ -29,7 +29,7 @@ export const metricasTajertas = async ()
    
     const ruta  = `${PAGINA}api/metricas_tarjetas`;  
 
-    return apiFetch( ruta , { method : "GET" } );
+    return apiFetch( ruta , { method : "GET" , signal : signal } );
 };
 
 
@@ -62,7 +62,7 @@ export const metricasClase = async ()
 
 
 export interface ResultAsistencia {
-   nombre : string , apellido : string , estado : string 
+   nombre : string , apellido : string , estado :  "presente" | "Tardanza" | "Ausente";
 };
 
 export const metricasAsistencia = async ()

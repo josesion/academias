@@ -3,101 +3,55 @@ import "./usuario.css";
 import { TarjetaMetrica } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
 import { InfoClases } from "../../../componentes/Clases/Clases";
 import { Asistencia } from "../../../componentes/Asistencias/Asistencias";
-import { type MetricasProps } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
 
-const metricasData: MetricasProps[] = [
-  {
-    titulo: "Total Alumnos",
-    valor: 150,
-    porcentaje: 5,
-    tipo: "activos",
-    carga: false,
-  },
-  {
-    titulo: "Nuevos Inscritos",
-    valor: 30,
-    porcentaje: 12,
-    tipo: "nuevos",
-    carga: false,
-  },
-  { titulo: "Vencidos", valor: 12, tipo: "vencidos", carga: false },
-  { titulo: "Por vencer", valor: 8, tipo: "por_vencer", carga: false },
-  {
-    titulo: "Total caja",
-    valor: 210.3,
-    tipo: "caja",
-    carga: false,
-    leyenda: "Flujo caja",
-  },
-];
-
-interface DataClases {
-  nombre_clase: string;
-  horario: string;
-  nombre_profesor: string;
-  estado: "EN CURSO" | "SIN CURSO";
-}
-
-const clases: DataClases = {
-  nombre_clase: "Bachata",
-  horario: "10;00 -- 11:00",
-  nombre_profesor: "jose lopez",
-  estado: "EN CURSO",
-};
-
-const alumnosPrueba = [
-  {
-    nombre: "Sofía",
-    apellido: "Gómez",
-  },
-  {
-    nombre: "Mateo",
-    apellido: "Fernández",
-  },
-  {
-    nombre: "Valentina",
-    apellido: "Rodríguez",
-  },
-  {
-    nombre: "Thiago",
-    apellido: "Martínez",
-  },
-  {
-    nombre: "Camila",
-    apellido: "López",
-  },
-  {
-    nombre: "Benjamín",
-    apellido: "Sánchez",
-  },
-  {
-    nombre: "Martina",
-    apellido: "Pérez",
-  },
-  {
-    nombre: "Joaquín",
-    apellido: "Díaz",
-  },
-  {
-    nombre: "Mía",
-    apellido: "Torres",
-  },
-  {
-    nombre: "Franco",
-    apellido: "Ramírez",
-  },
-];
+import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 
 export const UsuarioPage = () => {
+  const { state } = metricasUsuarioSeting();
+  console.log(state);
+
   return (
     <div className="usuario_contenedor">
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
       <section className="usuario_metricas">
-        {metricasData.map((metrica) => (
-          <TarjetaMetrica key={metrica.titulo} {...metrica} />
-        ))}
+        <TarjetaMetrica
+          carga={state.carga.tarjeta}
+          tipo="activos"
+          titulo="Alumnos"
+          valor={state.tarjetas?.total_activos || 0}
+          leyenda="Con planes activos."
+        />
+        <TarjetaMetrica
+          carga={state.carga.tarjeta}
+          tipo="nuevos"
+          titulo="Alumnos Nuevos"
+          valor={state.tarjetas?.nuevos_este_mes || 0}
+          porcentaje={state.tarjetas?.porcentaje_nuevos}
+        />
+        <TarjetaMetrica
+          carga={state.carga.tarjeta}
+          tipo="por_vencer"
+          titulo="Prox. vencimientos"
+          valor={state.tarjetas?.vencen_proximos || 0}
+          leyenda="En 7 dias"
+        />
+        <TarjetaMetrica
+          carga={state.carga.tarjeta}
+          tipo="vencidos"
+          titulo="Vencidos"
+          valor={state.tarjetas?.vencidos_este_mes || 0}
+          leyenda="De este mes"
+        />
+
+        <TarjetaMetrica
+          carga={state.carga.tarjeta}
+          tipo="caja"
+          titulo="Total caja"
+          valor={state.tarjetas?.total_caja || 0}
+          leyenda="En esta sesion"
+        />
       </section>
 
       {/* =======================
@@ -105,13 +59,24 @@ export const UsuarioPage = () => {
       ======================== */}
       <section className="usuario_contenido">
         <InfoClases
-          estado={clases.estado}
-          horario={clases.horario}
-          nombre_clase={clases.nombre_clase}
-          nombre_profesor={clases.nombre_profesor}
+          estado={state.clases ? "EN CURSO" : "SIN CURSO"}
+          horario={
+            state.clases?.horario ? state.clases.horario : "Sin Horario."
+          }
+          nombre_clase={
+            state.clases?.nombre_clase
+              ? state.clases.nombre_clase
+              : "Sin Clase."
+          }
+          nombre_profesor={
+            state.clases?.nombre_clase
+              ? state.clases.nombre_profesor
+              : "Sin Profesor."
+          }
+          carga={state.carga.clases}
         />
 
-        <Asistencia alumnos={alumnosPrueba} />
+        <Asistencia asistencia={state.asistencias ? state.asistencias : []} />
       </section>
     </div>
   );
