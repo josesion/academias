@@ -1,4 +1,5 @@
 import type{  ResultClase, ResultTarjeta, ResultAsistencia } from "../servicio/metrica.fetch";
+import { type ResultHistorial } from "../servicio/historial.fetch";
 // ==========================================
 // 1. DEFINICIÓN DEL ESTADO (MOLDE)
 // ==========================================
@@ -7,17 +8,20 @@ export interface MetricaUsuario {
     carga : {
         tarjeta : boolean,
         clases   : boolean,
-        asistencia:boolean
+        asistencia:boolean,
+        historial : boolean,
     },
     error  : {
         tarjeta : string | null,
         clases   : string | null,
-        asistencia: string| null,
+        asistencia: string | null,
+        historial : string | null
     },
 
     tarjetas : ResultTarjeta | null,
     clases   : ResultClase   | null,
     asistencias : ResultAsistencia[] | null,
+    historial   : ResultHistorial[] | null,
 };
 
 // ==========================================
@@ -29,18 +33,22 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
     carga : {
         tarjeta : false,
         clases   : false,
-        asistencia : false
+        asistencia : false,
+        historial : false, 
     },
 
     error : {
         tarjeta : null,
         clases   : null,
-        asistencia : null 
+        asistencia : null,
+        historial  : null,
     },
 
     tarjetas : null,
     clases   : null,
     asistencias : null,
+    historial   : null,
+
 
 });
 
@@ -57,6 +65,10 @@ export type MetricaAction =
       | { type: 'SET_ERROR_ASISTENCIA' , payload : string | null}
       | { type: 'SET_CARGA_ASISNTECIA', payload : boolean }
       | { type: 'SET_ASISTENCIA',  payload : ResultAsistencia[] | null }  
+
+      | { type: 'SET_ERROR_HISTORIAL' , payload : string | null}
+      | { type: 'SET_CARGA_HISTORIAL', payload : boolean }
+      | { type: 'SET_HISTORIAL',  payload : ResultHistorial[] | null } 
 
 
 // ==========================================
@@ -127,6 +139,26 @@ export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, 
       case  "SET_ASISTENCIA" :
         return {...state, asistencias : action.payload };
 
+//------------------------------------- PARA HISTORIAL
+      case "SET_ERROR_HISTORIAL" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    historial : action.payload 
+                }
+          };
+
+        case "SET_CARGA_HISTORIAL":
+            return { 
+                ...state,
+                carga: {
+                    ...state.carga, 
+                    historial : action.payload 
+                }
+            };
+
+      case  "SET_HISTORIAL" :
+        return {...state, historial : action.payload };
  
         default:
                 return state;       

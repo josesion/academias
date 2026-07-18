@@ -3,13 +3,16 @@ import { initialStateMetricas, metricasReducer,type MetricaAction } from "../../
 import { useEffectServicio } from "../../utils/useEfectServicio";
 
 import type { ResultTarjeta, ResultClase, ResultAsistencia } from "../../servicio/metrica.fetch";
+import { type ResultHistorial } from "../../servicio/historial.fetch";
+
 type ServicioCrud = (data?: any, signal?: AbortSignal) => Promise<any>;
 
 interface MetricasConfig {
     servicios : {
         tarjetas : ServicioCrud,
         clases   : ServicioCrud,
-        asistencia : ServicioCrud
+        asistencia : ServicioCrud,
+        historial  : ServicioCrud,
     },
 };
  
@@ -20,6 +23,8 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
     const tarjetas = config.servicios.tarjetas; // Serivicio que obtiene las metricas de las tarjetas
     const clases   = config.servicios.clases;
     const asistencia = config.servicios.asistencia;
+    const historial  = config.servicios.historial;
+
     //---- metricas de tarjeras 
     useEffectServicio<undefined,ResultTarjeta,MetricaAction >({
         servicios : tarjetas,
@@ -63,7 +68,7 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         //YA SE VERAN LAS DEPENDECINAS
     }); 
     // ---- listado de los alumnos q se encuentran tomando clases
-    useEffectServicio<undefined, ResultAsistencia, MetricaAction>({
+    useEffectServicio<undefined, ResultAsistencia[], MetricaAction>({
         servicios : asistencia,
         dispatch  : dispatch,
         accionResultado: (data) => ({
@@ -83,6 +88,27 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         useAbort : true
         //YA SE VERAN LAS DEPENDECINAS
     }); 
+
+    useEffectServicio<undefined, ResultHistorial[], MetricaAction>({
+        servicios : historial,
+        dispatch  : dispatch,
+        accionResultado: (data) => ({
+            type: "SET_HISTORIAL",
+            payload: data,
+        }),
+
+        accionCarga: (estado) => ({
+            type: "SET_CARGA_HISTORIAL",
+            payload: estado,
+        }),
+
+        accionError: (mensaje) => ({
+            type: "SET_ERROR_HISTORIAL",
+            payload: mensaje,
+        }),
+        useAbort : true
+        //YA SE VERAN LAS DEPENDECINAS
+    });     
 
     return{
         state

@@ -1,0 +1,273 @@
+/* ==========================================================================
+   HISTORIAL — LINEA DE TIEMPO (glass)
+   ========================================================================== */
+
+:root {
+  --hist-bg: rgba(15, 23, 42, 0.7);
+  --hist-border: rgba(255, 255, 255, 0.08);
+
+  --hist-text: #f1f5f9;
+  --hist-text-soft: #94a3b8;
+  --hist-text-muted: #64748b;
+
+  --hist-verde: #22c55e;
+  --hist-verde-soft: rgba(34, 197, 94, 0.14);
+
+  --hist-rojo: #ef4444;
+  --hist-rojo-soft: rgba(239, 68, 68, 0.14);
+
+  --hist-azul: #3b82f6;
+  --hist-azul-soft: rgba(59, 130, 246, 0.14);
+
+  --hist-violeta: #8b5cf6;
+  --hist-violeta-soft: rgba(139, 92, 246, 0.14);
+
+  --hist-gris: #64748b;
+  --hist-gris-soft: rgba(100, 116, 139, 0.14);
+}
+
+.metrica_historial_contenedor {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   VACIO
+   ========================================================================== */
+
+.historial_vacio {
+  padding: 40px 20px;
+  text-align: center;
+
+  border-radius: 16px;
+  border: 1px dashed var(--hist-border);
+  background: var(--hist-bg);
+
+  color: var(--hist-text-muted);
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   SEPARADOR DE DIA
+   ========================================================================== */
+
+.historial_grupo_dia {
+  margin-bottom: 26px;
+}
+
+.historial_separador_dia {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-bottom: 16px;
+}
+
+.historial_separador_dia span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+
+  color: var(--hist-text-muted);
+  white-space: nowrap;
+}
+
+.historial_separador_dia::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--hist-border);
+}
+
+/* ==========================================================================
+   LINEA DE TIEMPO
+   ========================================================================== */
+
+.historial_linea_tiempo {
+  position: relative;
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* riel vertical */
+
+.historial_linea_tiempo::before {
+  content: "";
+
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 5px;
+
+  width: 2px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(139, 92, 246, 0.4),
+    rgba(255, 255, 255, 0.05)
+  );
+}
+
+.historial_item {
+  position: relative;
+
+  display: flex;
+  gap: 16px;
+
+  padding-left: 28px;
+  padding-bottom: 18px;
+}
+
+.historial_item:last-child {
+  padding-bottom: 0;
+}
+
+/* ==========================================================================
+   PUNTO
+   ========================================================================== */
+
+.historial_punto {
+  position: absolute;
+  top: 4px;
+  left: 0;
+
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+
+  border: 2px solid var(--hist-bg);
+  box-shadow: 0 0 0 2px currentColor;
+}
+
+.punto_verde {
+  background: var(--hist-verde);
+  color: var(--hist-verde);
+}
+.punto_rojo {
+  background: var(--hist-rojo);
+  color: var(--hist-rojo);
+}
+.punto_azul {
+  background: var(--hist-azul);
+  color: var(--hist-azul);
+}
+.punto_violeta {
+  background: var(--hist-violeta);
+  color: var(--hist-violeta);
+}
+.punto_gris {
+  background: var(--hist-gris);
+  color: var(--hist-gris);
+}
+
+/* ==========================================================================
+   TARJETA
+   ========================================================================== */
+
+.historial_tarjeta {
+  flex: 1;
+
+  padding: 14px 16px;
+
+  border-radius: 14px;
+  border: 1px solid var(--hist-border);
+  background: var(--hist-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.historial_item:hover .historial_tarjeta {
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateX(2px);
+}
+
+.historial_tarjeta_encabezado {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-bottom: 8px;
+}
+
+.historial_pill {
+  padding: 3px 10px;
+  border-radius: 999px;
+
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.pill_verde {
+  color: var(--hist-verde);
+  background: var(--hist-verde-soft);
+}
+.pill_rojo {
+  color: var(--hist-rojo);
+  background: var(--hist-rojo-soft);
+}
+.pill_azul {
+  color: var(--hist-azul);
+  background: var(--hist-azul-soft);
+}
+.pill_violeta {
+  color: var(--hist-violeta);
+  background: var(--hist-violeta-soft);
+}
+.pill_gris {
+  color: var(--hist-gris);
+  background: var(--hist-gris-soft);
+}
+
+.historial_modulo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--hist-text-soft);
+}
+
+.historial_hora {
+  margin-left: auto;
+
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--hist-text-muted);
+}
+
+.historial_descripcion {
+  margin: 0 0 6px 0;
+
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--hist-text);
+}
+
+.historial_autor {
+  margin: 0;
+
+  font-size: 0.74rem;
+  color: var(--hist-text-muted);
+}
+
+.historial_autor::before {
+  content: "— ";
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .historial_hora {
+    margin-left: 0;
+    width: 100%;
+  }
+}
