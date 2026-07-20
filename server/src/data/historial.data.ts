@@ -26,6 +26,7 @@ export type AccionHistorial =
     | "MODIFICAR"
     | "ELIMINAR"
     | "RESTAURAR"
+| "ANULACION"    
     | "ABRIR"
     | "CERRAR"
     | "INGRESO"

@@ -32,7 +32,8 @@ export const handleControladores = async<T, R> (
     const config = map[result.code] ||  ERROR_INTERNO_SERVIDOR;
 
     if (config.status === CodigoEstadoHTTP.OK) {
-        return enviarResponse(res, config.status, result.message || config.msg, result.data, undefined, result.code);
+        return enviarResponse(res, config.status, result.message || config.msg, result.data, 
+                              result.paginacion ? result.paginacion : undefined , result.code);
     } else {
         return enviarResponseError(res, config.status, result.message || config.msg, result.code);
     }

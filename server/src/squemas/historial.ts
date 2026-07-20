@@ -38,6 +38,7 @@ export const historialSchema = z.object({
         "MODIFICAR",
         "ELIMINAR",
         "RESTAURAR",
+        "ANULACION",  
         "ABRIR",
         "CERRAR",
         "INGRESO",

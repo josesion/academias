@@ -5,28 +5,42 @@
  * Utiliza validación de esquemas (Zod) y wrappers de manejo de errores (`tryCatch`).
  */
 import  { Response , Request } from "express";
-
+import { handleControladores } from "../utils/handleControladores";
 import { tryCatch } from "../utils/tryCatch";
 import { method as servicioAlumno } from "../Servicio/alumnos.servicios";
-import { enviarResponse } from "../utils/response";
-import { enviarResponseError } from "../utils/responseError";
 
 
-import { MAPA_ALTA_ALUMNO, MAPA_MOD_ALUMNO ,ERROR_INTERNO_SERVIDOR,
-         MAPA_ESTADO_ALUMNO,   MAPA_LISTAR_ALUMNOS,  MAPA_LISTAR_SIN_PAGINACION_ALUMNOS
+import {  AlumnosInputs, EliminarAlumnoInputs ,ListaAlumnoInputs,  ListaAlumnoSinPaginacionInputs } from "../squemas/alumno";
+import type { RetornoRegistroAlumno , RetornoModAlumno, DataAlumnosListado ,DataAlumnosListadoSinPag} from "../tipados/alumno.data";
+
+import { MAPA_ALTA_ALUMNO, MAPA_MOD_ALUMNO , MAPA_LISTAR_SIN_PAGINACION_ALUMNOS,
+         MAPA_ESTADO_ALUMNO,   MAPA_LISTAR_ALUMNOS,  
 } from "../respuestas/alumnos";
 
-import { CodigoEstadoHTTP } from "../tipados/generico";
 
 
 /**
- * Controlador para procesar el alta de un nuevo alumno.
- * Extrae los datos del cuerpo de la petición y el ID de la escuela desde la sesión del usuario.
- * * @async
+ * Controlador encargado de procesar la solicitud para registrar un nuevo alumno en el sistema,
+ * extrayendo los datos desde el cuerpo de la petición (`req.body`) y combinándolos 
+ * con la información de contexto del usuario y la escuela autenticados.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los campos obligatorios del alumno (`dni`, `nombre`, `apellido`, `celular`) directamente desde `req.body`.
+ * 2. Asocia automáticamente el `id_escuela` y el `id_usuario` a partir de la sesión o token del usuario autenticado (`req.usuario`), asegurando su conversión a número.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto `dataAlumno`, el servicio correspondiente (`servicioAlumno.altaAlumno`) y el mapa de códigos de la operación.
+ *
+ * @async
  * @function altaAlumno
- * @param {Request} req - Objeto de petición de Express. Contiene los datos del alumno en `req.body`.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP con el resultado de la creación.
+ * @param {Request} req - Objeto de petición de Express, que contiene los datos del nuevo alumno en el `body` 
+ * y la información del usuario autenticado en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado del alta.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante el flujo de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP POST esperada:
+ * // /api/alumnos
+ * // Body: { "dni": "35123456", "nombre": "Maria", "apellido": "Gomez", "celular": "3874998877" }
  */
 const altaAlumno = async( req :  Request , res : Response) =>{
 
@@ -35,42 +49,41 @@ const altaAlumno = async( req :  Request , res : Response) =>{
         nombre : req.body.nombre,
         apellido : req.body.apellido,
         celular  : req.body.celular,
-        id_escuela : req.usuario?.id_escuela
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id),
     };
 
-    const altaAlumno = await servicioAlumno.altaAlumno(dataAlumno);
-
-    const config = MAPA_ALTA_ALUMNO[altaAlumno.code] || ERROR_INTERNO_SERVIDOR; 
-
-    if ( config.status === CodigoEstadoHTTP.OK){
-        return enviarResponse(
-            res, 
-            config.status,
-            altaAlumno.message  || config.msg,
-            altaAlumno.data,
-            undefined,
-            altaAlumno.code
-        );
-    }else{
-        return enviarResponseError(
-            res, 
-            config.status,
-            altaAlumno.message || config.msg,
-            altaAlumno.code
-        );
-    };
+    await handleControladores<AlumnosInputs,RetornoRegistroAlumno >(
+        res, dataAlumno, servicioAlumno.altaAlumno, MAPA_ALTA_ALUMNO
+    );
   
 };
 
 
 /**
- * Controlador para modificar los datos de un alumno existente.
- * Toma el DNI desde los parámetros de la URL y los datos actualizados desde el cuerpo de la petición.
- * * @async
+ * Controlador encargado de procesar la solicitud para modificar los datos de un alumno,
+ * combinando los parámetros de la ruta (`dni`) con el cuerpo de la petición (`req.body`)
+ * y delegando la ejecución al manejador genérico.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae el `dni` de los parámetros de la ruta (`req.params`) y los campos editables (`nombre`, `apellido`, `celular`) del cuerpo de la petición.
+ * 2. Construye el objeto `datoAlumno`, asegurando el casting de los campos numéricos requeridos 
+ *    (ID de escuela y de usuario) y convirtiendo el celular a string.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioAlumno.modAlumno`) y el mapa de códigos de la operación.
+ *
+ * @async
  * @function modAlumno
- * @param {Request} req - Objeto de petición de Express. Contiene `req.params.dni` y los campos a actualizar en `req.body`.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP indicando el éxito o fallo de la modificación.
+ * @param {Request} req - Objeto de petición de Express, que contiene el `dni` en los parámetros de ruta, 
+ * los nuevos datos en el `body`, y la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la modificación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP a través de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP PUT esperada:
+ * // /api/alumnos/12345678
+ * // Body: { "nombre": "Carlos", "apellido": "Gomez", "celular": "3874123456" }
  */
 const modAlumno = async( req : Request, res : Response) =>{
     
@@ -83,168 +96,144 @@ const modAlumno = async( req : Request, res : Response) =>{
         nombre : nombre ,
         apellido : apellido ,
         celular  : String(celular),
-        id_escuela : Number(req.usuario?.id_escuela)
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)
     };
 
-     const modAlumno = await servicioAlumno.modAlumno( datoAlumno);
-
-     const config = MAPA_MOD_ALUMNO[modAlumno.code] || ERROR_INTERNO_SERVIDOR; 
-
-     if (config.status === CodigoEstadoHTTP.OK){
-        return enviarResponse(
-            res, 
-            config.status,
-            modAlumno.message || config.msg,
-            modAlumno.data,
-            undefined,
-            modAlumno.code
-        );
-     }else{
-        return enviarResponseError(
-            res, 
-            config.status,
-            modAlumno.message || config.msg,
-            modAlumno.code
-        );
-     };
-
+    await handleControladores<AlumnosInputs, RetornoModAlumno>(
+        res, datoAlumno, servicioAlumno.modAlumno, MAPA_MOD_ALUMNO
+    );
 };
 
 
 /**
- * Controlador para realizar una baja lógica o cambiar el estado de un alumno en la escuela.
- * Extrae el DNI y el nuevo estado desde la URL, asegurando la escuela mediante el token de sesión.
- * * @async
+ * Controlador encargado de procesar la solicitud para cambiar el estado (eliminar/desactivar o activar) 
+ * de un alumno, extrayendo los parámetros de la ruta (route params) y delegando la ejecución.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae `dni` y `estado` directamente desde los parámetros de la URL (`req.params`).
+ * 2. Construye el objeto `alumnoData` tipado como `EliminarAlumnoInputs`, casteando los tipos necesarios 
+ *    como el ID de escuela, ID de usuario y asegurando el tipado estricto del estado.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioAlumno.estadoAlumno`) y el mapa de códigos de la operación.
+ *
+ * @async
  * @function borrarAlumno
- * @param {Request} req - Objeto de petición de Express. Contiene `req.params.dni` y `req.params.estado`.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP con el estado final del alumno.
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de ruta (`dni`, `estado`) 
+ * y la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la operación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP DELETE o PATCH esperada:
+ * // /api/alumnos/12345678/inactivos
  */
 const borrarAlumno = async( req : Request , res : Response) =>{
 
     const { dni , estado  } = req.params;
-    const id_escuela = Number(req.usuario?.id_escuela);
+     
 
-    const alumnoData = {
+    const alumnoData : EliminarAlumnoInputs = {
         dni : dni,
-        id_escuela : id_escuela,
-        estado : estado
+        id_escuela :  Number(req.usuario?.id_escuela),
+        estado : estado as "activos" | "inactivos",
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const respuesta = await servicioAlumno.estadoAlumno(alumnoData);
-
-    const config = MAPA_ESTADO_ALUMNO[ respuesta.code] || ERROR_INTERNO_SERVIDOR; 
-
-    if ( config.status === CodigoEstadoHTTP.OK ){
-        return enviarResponse(
-            res, 
-            config.status,
-            respuesta.message || config.msg,
-            respuesta.data,
-            undefined,
-            respuesta.code
-        );
-    }else{
-        return enviarResponseError(
-            res, 
-            config.status,
-            respuesta.message || config.msg,
-            respuesta.code
-        );
-    };
-
+    await handleControladores<EliminarAlumnoInputs,{dni : string} >(
+        res, alumnoData, servicioAlumno.estadoAlumno , MAPA_ESTADO_ALUMNO 
+    );
 };
 
 
 /**
- * Controlador para obtener el listado de alumnos de forma paginada.
- * Lee los filtros de búsqueda, límite y página desde los Query Parameters de la URL.
- * * @async
+ * Controlador encargado de procesar la solicitud para obtener el listado paginado de alumnos,
+ * calculando los parámetros de paginación (offset) y delegando la ejecución al manejador genérico.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros de la consulta (`limit`, `pagina`, `estado`, `dni`, `apellido`) desde `req.query`.
+ * 2. Realiza el casting y sanitización de los valores (strings para filtros y números para paginación/usuario/escuela).
+ * 3. Calcula matemáticamente el `offset` basado en la página actual y el límite por página.
+ * 4. Construye el objeto `dataListado` tipado como `ListaAlumnoInputs`.
+ * 5. Ejecuta `handleControladores` pasando la respuesta (`res`), los datos, el servicio correspondiente 
+ *    (`servicioAlumno.listaAlumnos`) y el mapa de códigos de error/éxito.
+ *
+ * @async
  * @function listarAlumno
- * @param {Request} req - Objeto de petición de Express. Contiene los filtros y datos de paginación en `req.query`.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP con la lista paginada y la metadata de paginación.
+ * @param {Request} req - Objeto de petición de Express, que contiene los query params de filtrado/paginación 
+ * y la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar los datos devueltos por el manejador.
+ * 
+ * @returns {Promise<void>} No retorna valor directo; gestiona la respuesta HTTP a través de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP GET esperada:
+ * // /api/alumnos?pagina=1&limit=10&estado=activo&dni=&apellido=Perez
  */
 const listarAlumno = async( req: Request  , res : Response) =>{
-    const { estado , dni , apellido , limit , pagina } = req.query;
-
+    const {  limit , pagina  } = req.query;
+    const estado = String(req.query.estado ?? "");
+    const dni = String(req.query.dni ?? "");
+    const apellido = String(req.query.apellido ?? "");
     const offset = ( Number(pagina) -1 ) * Number(limit) ;
 
-    const dataListado = {
+    const dataListado : ListaAlumnoInputs = {
         estado , 
         dni , 
         apellido , 
         escuela : Number(req.usuario?.id_escuela) ,
+        id_usuario : Number(req.usuario?.id),
         limit : Number(limit) , 
         offset : Number(offset),
         pagina : Number(pagina)
     };
-    
 
-   const resultadoListado = await servicioAlumno.listaAlumnos(dataListado);
-   
-   const config = MAPA_LISTAR_ALUMNOS[ resultadoListado.code ] || ERROR_INTERNO_SERVIDOR;
-
-   if ( config.status === CodigoEstadoHTTP.OK  ){
-        return enviarResponse(
-            res, 
-            config.status,
-            resultadoListado.message || config.msg,
-            resultadoListado.data,
-            resultadoListado.paginacion,
-            resultadoListado.code
-        );
-   }else{
-        return enviarResponseError(
-            res, 
-            config.status,
-            resultadoListado.message || config.msg,
-            resultadoListado.code
-        );
-   };
-   
+    await handleControladores<ListaAlumnoInputs, DataAlumnosListado[]>(
+        res, dataListado, servicioAlumno.listaAlumnos , MAPA_LISTAR_ALUMNOS
+    );
 };
 
 
 /**
- * Controlador para obtener el listado completo de alumnos sin paginación.
- * Útil para selectores del frontend, filtrando por los Query Parameters provistos.
- * * @async
+ * Controlador encargado de procesar la solicitud para obtener el listado de alumnos 
+ * sin paginación, extrayendo los parámetros de la consulta (query params) 
+ * y delegando la ejecución al manejador genérico de controladores.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae `dni` y `estado` de los query parameters de la petición (`req.query`).
+ * 2. Construye el objeto `data` tipado como `ListaAlumnoSinPaginacionInputs`, 
+ *    asegurando las conversiones correctas de tipo (strings y números para escuela/usuario).
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), los datos procesados, 
+ *    el servicio correspondiente (`servicioAlumno.listadoSinPaginacion`) y el mapa de códigos.
+ *
+ * @async
  * @function listaAlumnoSinPag
- * @param {Request} req - Objeto de petición de Express. Contiene filtros opcionales en `req.query`.
- * @param {Response} res - Objeto de respuesta de Express.
- * @returns {Promise<Response>} Respuesta HTTP con el listado completo de alumnos.
+ * @param {Request} req - Objeto de petición de Express, que incluye los query parameters (`dni`, `estado`) 
+ * y los datos del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado al cliente.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; responde a través del objeto `res` 
+ * mediante el flujo de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP GET esperada:
+ * // /api/alumnos/sin-paginacion?dni=12345678&estado=activo
  */
 const listaAlumnoSinPag = async ( req : Request , res : Response) =>{
     const { dni , estado} = req.query ;
 
-    const data = {
+    const data : ListaAlumnoSinPaginacionInputs = {
         dni : String(dni) ,
         estado : String(estado) ,
-        escuela : Number(req.usuario?.id_escuela)
+        escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const resultadoListado = await servicioAlumno.listadoSinPaginacion(data);
+    await handleControladores< ListaAlumnoSinPaginacionInputs,DataAlumnosListadoSinPag[] >(
+        res, data, servicioAlumno.listadoSinPaginacion, MAPA_LISTAR_SIN_PAGINACION_ALUMNOS
+    );
 
-    const config = MAPA_LISTAR_SIN_PAGINACION_ALUMNOS[ resultadoListado.code ] || ERROR_INTERNO_SERVIDOR;
-
-    if ( config.status === CodigoEstadoHTTP.OK  ){
-        return enviarResponse(
-            res, 
-            config.status,
-            resultadoListado.message || config.msg, 
-            resultadoListado.data,
-            undefined,
-            resultadoListado.code
-        );
-    }else{
-        return enviarResponseError(
-            res, 
-            config.status,
-            resultadoListado.message || config.msg,
-            resultadoListado.code
-        );
-    };
 };
 
 export const  method ={

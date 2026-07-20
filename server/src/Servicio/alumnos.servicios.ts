@@ -1,5 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataAlumno } from "../data/alumno.data";
+import { registroHistorial } from "../utils/postHistorial";
 
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
@@ -8,15 +9,40 @@ import {CrearAlumnoSchema, AlumnosInputs,
 } from "../squemas/alumno";
 
 import type { RetornoRegistroAlumno , RetornoModAlumno, DataAlumnosListado ,DataAlumnosListadoSinPag} from "../tipados/alumno.data";
+import { type HistorialInputs } from "../squemas/historial";
 import { TipadoData } from "../tipados/tipado.data";
 
 /**
- * Registra un alumno en el sistema global (si no existe) y lo vincula a una escuela específica.
- * * @async
+ * Servicio encargado de gestionar el alta de un alumno en el sistema.
+ * 
+ * La lógica sigue un flujo jerárquico:
+ * 1. Valida los datos recibidos con `CrearAlumnoSchema`.
+ * 2. Verifica si el alumno existe de forma global en la base de datos; si no, lo registra.
+ * 3. Verifica si el alumno ya está inscrito en la escuela actual para evitar duplicados.
+ * 4. Si el alumno es nuevo en la escuela, realiza la inscripción (`registroAlumnoEscuela`).
+ * 5. Si la inscripción es exitosa, registra la creación en el historial de auditoría.
+ *
+ * @async
  * @function altaAlumno
- * @param {AlumnosInputs} data - Datos de entrada del alumno enviados por el cliente.
- * @returns {Promise<TipadoData<RetornoRegistroAlumno>>} Objeto de respuesta unificado con el estado de la operación y los datos del alumno registrado.
- * @throws {ZodError} Si los datos de entrada no cumplen con las reglas de `CrearAlumnoSchema`.
+ * @param {AlumnosInputs} data - Objeto con los datos completos del alumno, ID de escuela y ID de usuario.
+ * 
+ * @returns {Promise<TipadoData<RetornoRegistroAlumno>>} Promesa que resuelve con:
+ * - `REGISTRO_ALUMNO_OK`: Alta exitosa.
+ * - `ALUMNO_YA_REGISTRADO`: El alumno ya pertenece a la escuela.
+ * - `ERROR_ALTA_PRIMARIA`: Fallo al crear el registro global del alumno.
+ * - `ERROR_SERVIDOR`: Fallo inesperado en el proceso.
+ * 
+ * @throws {ZodError} Si la validación de `CrearAlumnoSchema` falla.
+ * 
+ * @example
+ * const resultado = await altaAlumno({
+ *    dni: "35123456",
+ *    nombre: "Ana",
+ *    apellido: "Lopez",
+ *    id_escuela: 1,
+ *    id_usuario: 5,
+ *    ...
+ * });
  */
 const altaAlumno = async( data : AlumnosInputs)
 : Promise<TipadoData<RetornoRegistroAlumno>> =>{
@@ -52,6 +78,19 @@ const altaAlumno = async( data : AlumnosInputs)
    const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(alumnoData.dni) , id_escuela : Number(alumnoData.id_escuela) });
    
    if ( inscripcionAlumno.code === "ALUMNO_ALTA"){
+
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  alumnoData.id_escuela ,
+                id_usuario :  alumnoData.id_usuario,
+                modulo : "ALUMNOS",
+                accion : "CREAR",
+                id_registro: Number(alumnoData.dni),
+                descripcion: `Registro Alumno ${alumnoData.apellido} ${alumnoData.nombre}`,
+                datos: alumnoData // datos del alumno
+            }; 
+            
+    await registroHistorial( dataHistorial);   
+
         return {
             error : false,
             message : "Se registro correctamente el alumno",
@@ -69,12 +108,35 @@ const altaAlumno = async( data : AlumnosInputs)
 
 
 /**
- * Modifica la información personal de un alumno existente en el sistema.
- * * @async
+ * Servicio encargado de actualizar los datos de un alumno existente 
+ * y registrar la modificación en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos recibidos utilizando `CrearAlumnoSchema`.
+ * 2. Persiste la modificación en la base de datos mediante `dataAlumno.modAlumno`.
+ * 3. Si la operación es exitosa (código 'ALUMNO_MODIFICAR'), genera un registro
+ *    en el historial de auditoría vinculado al usuario y escuela correspondientes.
+ * 4. Retorna el resultado estandarizado de la operación.
+ *
+ * @async
  * @function modAlumno
- * @param {AlumnosInputs} data - Datos actualizados del alumno.
- * @returns {Promise<TipadoData<RetornoModAlumno>>} Objeto de respuesta unificado que indica si la modificación fue exitosa.
- * @throws {ZodError} Si los datos de entrada no cumplen con las reglas de `CrearAlumnoSchema`.
+ * @param {AlumnosInputs} data - Objeto que contiene todos los campos necesarios para actualizar al alumno 
+ * (incluyendo DNI, nombre, apellido, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<RetornoModAlumno>>} Promesa que resuelve con el estado de la operación 
+ * (error, mensaje y código interno).
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `CrearAlumnoSchema`.
+ * 
+ * @example
+ * const resultado = await modAlumno({
+ *    id_escuela: 1,
+ *    id_usuario: 5,
+ *    dni: "12345678",
+ *    nombre: "Juan",
+ *    apellido: "Perez",
+ *    ...
+ * });
  */
 const modAlumno = async( data : AlumnosInputs ) 
 : Promise<TipadoData<RetornoModAlumno>> =>{
@@ -84,6 +146,20 @@ const modAlumno = async( data : AlumnosInputs )
     const resultado  = await dataAlumno.modAlumno( alumnoData ); 
  
     if (resultado.code === "ALUMNO_MODIFICAR" ){
+        
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  alumnoData.id_escuela ,
+            id_usuario :  alumnoData.id_usuario,
+            modulo : "ALUMNOS",
+            accion : "MODIFICAR",
+            id_registro: Number(alumnoData.dni),
+            descripcion: `Modificacion de ${alumnoData.apellido} ${alumnoData.nombre}`,
+            datos: alumnoData // datos del alumno
+        }; 
+            
+        await registroHistorial( dataHistorial);          
+
+
         return {
             error: false,
             message : "Se modifico Correctamente",
@@ -100,22 +176,62 @@ const modAlumno = async( data : AlumnosInputs )
 };
 
 /**
- * Modifica el estado activo/inactivo (baja lógica o alta) de un alumno dentro de una escuela específica.
- * * @async
+ * Servicio encargado de modificar el estado de un alumno en la escuela 
+ * y registrar la acción correspondiente en el historial de auditoría de forma dinámica.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante `EliminarAlumnoEscuelaSchema`.
+ * 2. Ejecuta el cambio de estado en la capa de datos (`dataAlumno.eliminarAlumno`).
+ * 3. Determina de forma dinámica el estado final ("activo" / "inactivo") y la acción de auditoría ("RESTAURAR" / "ELIMINAR") 
+ *    dependiendo del valor recibido en el parámetro.
+ * 4. Si la operación es exitosa, construye y registra el evento de auditoría en el historial 
+ *    utilizando `registroHistorial`.
+ * 5. Retorna el resultado estandarizado para la capa de controladores.
+ *
+ * @async
  * @function estadoAlumno
- * @param {EliminarAlumnoInputs} data - Contiene el DNI, ID de la escuela y el nuevo estado.
- * @returns {Promise<TipadoData<{dni : string}>>} Objeto de respuesta con el DNI del alumno afectado.
- * @throws {ZodError} Si los datos de entrada no cumplen con las reglas de `EliminarAlumnoEscuelaSchema`.
+ * @param {EliminarAlumnoInputs} data - Objeto con los datos de entrada (DNI del alumno, ID de escuela, estado e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<{dni: string}>>} Promesa que resuelve con una respuesta exitosa si el cambio se aplicó, 
+ * o un objeto de error si ocurrió un fallo en el servidor.
+ * 
+ * @throws {ZodError} Si los datos de entrada no cumplen con las validaciones del esquema.
+ * 
+ * @example
+ * const resultado = await estadoAlumno({
+ *    dni: "12345678",
+ *    id_escuela: 1,
+ *    id_usuario: 5,
+ *    estado: "activos"
+ * });
+ * 
+ * if (!resultado.error) {
+ *    console.log(resultado.message);
+ * }
  */
 const estadoAlumno =async ( data : EliminarAlumnoInputs )
 :Promise<TipadoData<{dni : string}>> => {
 
-   const alumnoData : EliminarAlumnoInputs = EliminarAlumnoEscuelaSchema.parse({ dni : data.dni, 
-                                                                                 id_escuela : data.id_escuela, 
-                                                                                 estado :  data.estado});
+   const alumnoData : EliminarAlumnoInputs = EliminarAlumnoEscuelaSchema.parse(data);
    const respuesta  = await dataAlumno.eliminarAlumno(alumnoData);  
+   const estadoFinal  = alumnoData.estado === "activos" ? "activo" : "inactivo";
+   const accionFinal  = alumnoData.estado === "activos" ? "RESTAURAR" : "ELIMINAR"
+    
 
   if ( respuesta.code === 'ALUMNO_ELIMINAR'){
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  alumnoData.id_escuela ,
+            id_usuario :  alumnoData.id_usuario,
+            modulo : "ALUMNOS",
+            accion : accionFinal,
+            id_registro: Number(alumnoData.dni),
+            descripcion: `Estado de ${alumnoData.dni} cambio a  ${estadoFinal}`,
+            datos: alumnoData // datos del alumno
+        }; 
+            
+        await registroHistorial( dataHistorial);   
+
      return {
         error : false, 
         message : "Se modifico el estado del alumno correctamente",

@@ -23,7 +23,11 @@ celular :   z.string()
 
 id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
                         .min(0 , {message : "El id debe ser mayor de 0"})
-                        .positive({ message: 'El limite debe ser un número positivo.' })
+                        .positive({ message: 'El limite debe ser un número positivo.' }),
+                   
+id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                        
                 
 });
 
@@ -47,9 +51,12 @@ export const EliminarAlumnoEscuelaSchema = z.object({
                 .int({ message: 'El id escuela debe ser un número entero.' })
                 .min(0, { message: 'El id escuela debe ser un número  mayor a 0.' }),      
                         
-        estado: z.string()
-                .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
-                .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),  
+        estado:z.enum([ "activos", "inactivos"]), 
+                
+                
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                 
 
 });
 
@@ -78,7 +85,11 @@ escuela : z.number({message:"id escuela debe ser de tipo numerico"})
                 
         pagina : z.number({message:"Pagina debe ser de tipo numerico"})
                 .int({ message: 'La pagina debe ser un número entero.' })
-                .min(1, { message: 'La pagina debe ser un número  mayor a 0.' })                
+                .min(1, { message: 'La pagina debe ser un número  mayor a 0.' }),
+                
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })   
 
 });
 
@@ -94,6 +105,10 @@ escuela : z.number({message:"Limit debe ser de tipo numerico"})
 estado: z.string()
                 .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
                 .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),
+
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })   
 
 });
 

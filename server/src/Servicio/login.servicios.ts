@@ -1,9 +1,12 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataLogin  } from "../data/login.data";
 import { LoginInputs, loginSchema } from "../squemas/login";
+import { method as servicioHistorial} from "../Servicio/historial.servicio";
+
 import bcrypt from 'bcryptjs';
 import { generateToken } from "../utils/jwt";
 import { TipadoData } from "../tipados/tipado.data";
+import { type HistorialInputs } from "../squemas/historial";
 
 interface LoginDataResult {
     id_usuario : number,
@@ -36,6 +39,9 @@ const loginUsuario =  async ( data : LoginInputs)
    
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
 
+
+
+
         // validamos que la contraseña sea  la correcta  
         //  data.contrasena = "130788" es la contraseña q viene del usuario
         //  loginResult.data.contrasena = "asafshk21234bkja1289"  es la constraseña encripatada en la bd
@@ -52,6 +58,25 @@ const loginUsuario =  async ( data : LoginInputs)
             };
 
             const token = generateToken(tokenData);
+
+         const dataHistorial : HistorialInputs = {
+              id_escuela :  loginResult.data.id_escuela ,
+              id_usuario :  loginResult.data.id_usuario,
+              modulo : "USUARIOS",
+              accion : "LOGIN",
+              id_registro: loginResult.data.id_usuario,
+              descripcion: `${loginResult.data.usuario} ingreso al sistema`,
+              datos: {
+                  "usuario":  loginResult.data.usuario,
+                  "id_escuela" : loginResult.data.id_usuario,
+              }
+          };    
+          
+           const historial = await  servicioHistorial.postHistorialServicio( dataHistorial);
+
+           if ( historial.code !== "HISTORIAL_OK" ) {
+                console.error("Error registrando historial de login:", historial.message);
+           }; 
 
             return{
                 error: false,
