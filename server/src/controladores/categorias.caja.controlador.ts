@@ -6,11 +6,19 @@ import { Request, Response } from "express";
 import { tryCatch } from "../utils/tryCatch";
 import { method as categoriaCajaServicio } from "../Servicio/categoria.cajas.serivcio";
 import { enviarResponse } from "../utils/response";
+import { handleControladores } from "../utils/handleControladores";
 import { enviarResponseError } from "../utils/responseError";
 
 import { MAPA_LOCALIZAR_INSCRIPCION_CATEGORIA_CAJA, ERROR_INTERNO_SERVIDOR, MAPA_ALTA_CATEGORIA_CAJA,
          MAPA_MOD_CATEGORIA_CAJA,  MAPA_ESTADO_CATEGORIA_CAJA, MAPA_LISTADO_CATEGORIA_CAJA
  } from "../respuestas/categoria.cajas";
+
+ import { CategoriaCajaInpurts, ModCategoriaCajaInputs ,  
+          BajaCategoriCajaInputs, ListadoCategoriaCajaInputs, 
+ }  from "../squemas/categoria.caja";
+
+
+import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de tipados
@@ -35,7 +43,7 @@ const buscarInscripcionCategoria = async ( req : Request, res : Response ) =>{
     const data = { id_escuela : Number( req.usuario?.id_escuela)};
 
     const inscripcionCategoriaResult = await categoriaCajaServicio.verificacionInscripcionCategoria(data);
-  
+
     const config = MAPA_LOCALIZAR_INSCRIPCION_CATEGORIA_CAJA[ inscripcionCategoriaResult.code ]  || ERROR_INTERNO_SERVIDOR;
 
     if ( config.status === CodigoEstadoHTTP.OK){
@@ -60,154 +68,123 @@ const buscarInscripcionCategoria = async ( req : Request, res : Response ) =>{
 
 
 /**
- * Controlador para el alta de una nueva categoría de caja.
- * * Recibe los datos de la nueva categoría a través del cuerpo de la petición,
- * los procesa mediante el servicio correspondiente y retorna una respuesta
- * estandarizada basada en el mapa de configuración de estados.
+ * Controlador encargado de procesar la solicitud para registrar una nueva categoría de caja,
+ * extrayendo los datos desde el cuerpo de la petición (`req.body`) y combinándolos 
+ * con la información de contexto del usuario y la escuela autenticados.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los campos requeridos (`nombre_categoria`, `tipo_movimiento`, `estado`) directamente desde `req.body`.
+ * 2. Asocia automáticamente el `id_escuela` y el `id_usuario` a partir de la sesión del usuario autenticado (`req.usuario`), asegurando su conversión a número.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto `data`, el servicio correspondiente (`categoriaCajaServicio.altaCategoriaCajaServicio`) y el mapa de códigos de la operación.
  *
  * @async
  * @function altaCategoriaCaja
- * @param {import('express').Request} req - Objeto de petición de Express.
- * @param {Object} req.body - Cuerpo de la petición con los datos de la categoría.
- * @param {string} req.body.nombre_categoria - Nombre de la nueva categoría.
- * @param {string} req.body.tipo_movimiento - Tipo de movimiento ('ingreso' o 'egreso').
- * @param {string} req.body.estado - Estado inicial de la categoría.
- * @param {string|number} req.body.id_escuela - Identificador de la escuela asociada.
- * @param {import('express').Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<void>} No retorna valor; envía la respuesta HTTP mediante los helpers estandarizados `enviarResponse` o `enviarResponseError`.
+ * @param {Request} req - Objeto de petición de Express, que contiene los datos de la nueva categoría en el `body` 
+ * y la información del usuario autenticado en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado del alta.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante el flujo de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP POST esperada:
+ * // /api/categorias-caja
+ * // Body: { "nombre_categoria": "Cuotas Mensuales", "tipo_movimiento": "ingreso", "estado": "activos" }
  */
 const altaCategoriaCaja = async( req : Request, res : Response) => {
     const data = {
         nombre_categoria: req.body.nombre_categoria,
         tipo_movimiento: req.body.tipo_movimiento,
         estado: req.body.estado,
-        id_escuela : Number(req.usuario?.id_escuela)
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)
     };
     
-    const resutadoCategoriaCaja = await categoriaCajaServicio.altaCategoriaCajaServicio(data);
-
-    const config = MAPA_ALTA_CATEGORIA_CAJA[ resutadoCategoriaCaja.code ]  || ERROR_INTERNO_SERVIDOR;
-
-     if ( config.status === CodigoEstadoHTTP.OK){
-         return enviarResponse(
-            res,
-            config.status,
-            resutadoCategoriaCaja.message || config.msg ,
-            resutadoCategoriaCaja.data,
-            undefined,
-            resutadoCategoriaCaja.code
-        );       
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            resutadoCategoriaCaja.message || config.msg ,
-            resutadoCategoriaCaja.code
-        );
-    };  
+    await handleControladores<CategoriaCajaInpurts,DataCategoriaCajas>(
+        res, data , categoriaCajaServicio.altaCategoriaCajaServicio, MAPA_ALTA_CATEGORIA_CAJA
+    );
 
 };
 
 /**
- * Controlador para la modificación de los datos de una categoría de caja existente.
- * * Extrae los identificadores y atributos de la categoría desde los parámetros de la URL
- * y la información del usuario desde el middleware de sesión, delegando la lógica
- * de actualización al servicio correspondiente.
+ * Controlador encargado de procesar la solicitud para modificar una categoría de caja,
+ * extrayendo los datos desde los parámetros de la ruta (`req.params`) y combinándolos 
+ * con la información del usuario y escuela autenticados.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros de la URL (`id`, `nombre`, `movimiento`, `estado`) desde `req.params`.
+ * 2. Construye el objeto `data` tipado como `ModCategoriaCajaInputs`, asegurando la conversión de IDs a números 
+ *    y aplicando el casting correspondiente para los tipos de movimiento y estado.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`categoriaCajaServicio.modCategoriaCaja`) y el mapa de códigos de la operación.
  *
  * @async
  * @function modCategoriaCaja
- * @param {import('express').Request} req - Objeto de petición de Express.
- * @param {Object} req.params - Parámetros dinámicos de la ruta.
- * @param {string|number} req.params.id - ID único de la categoría a modificar.
- * @param {string} req.params.nombre - Nuevo nombre para la categoría.
- * @param {string} req.params.movimiento - Tipo de movimiento asociado (ingreso/egreso).
- * @param {string} req.params.estado - Estado actual de la categoría.
- * @param {Object} [req.usuario] - Objeto de usuario inyectado por el middleware de autenticación.
- * @param {string|number} req.usuario.id_escuela - Identificador de la escuela del usuario autenticado.
- * @param {import('express').Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<void>} No retorna valor; envía la respuesta HTTP mediante los helpers estandarizados `enviarResponse` o `enviarResponseError`.
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de ruta con la información 
+ * de la categoría a modificar y los datos de sesión en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la modificación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP a través de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP PUT esperada:
+ * // /api/categorias-caja/2/Gastos/egreso/activos
  */
 const modCategoriaCaja = async( req : Request, res : Response) =>{
-    const data = {
+
+    const data : ModCategoriaCajaInputs = {
         id_categoria    : Number(req.params.id),
         nombre_categoria: req.params.nombre,
-        tipo_movimiento : req.params.movimiento,
-        estado          : req.params.estado,
-        id_escuela : Number(req.usuario?.id_escuela)
+        tipo_movimiento : req.params.movimiento as "ingreso" | "egreso",
+        estado          : req.params.estado as "activos" | "inactivos",
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)
     };
 
-   
-   const modCategoria = await categoriaCajaServicio.modCategoriaCaja(data);
-
-    const config = MAPA_MOD_CATEGORIA_CAJA[  modCategoria.code ]  || ERROR_INTERNO_SERVIDOR;
-
-     if ( config.status === CodigoEstadoHTTP.OK){
-         return enviarResponse(
-            res,
-            config.status,
-             modCategoria.message || config.msg ,
-             modCategoria.data,
-             undefined,
-             modCategoria.code
-        );       
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-             modCategoria.message || config.msg ,
-             modCategoria.code
-        );
-    };  
+   await handleControladores<ModCategoriaCajaInputs,{id_categoria : number} >(
+        res, data, categoriaCajaServicio.modCategoriaCaja, MAPA_MOD_CATEGORIA_CAJA 
+   ); 
+    
 };
 
 /**
- * Controlador para gestionar el cambio de estado (baja o activación) de una categoría de caja.
- * * Extrae los datos de la petición, llama al servicio correspondiente para procesar la lógica 
- * de negocio y utiliza un mapa de configuración para determinar la respuesta HTTP adecuada.
+ * Controlador encargado de procesar la solicitud para cambiar el estado (baja o activación) 
+ * de una categoría de caja, extrayendo los parámetros de la ruta (`req.params`) 
+ * y delegando la ejecución al manejador genérico.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros de ruta necesarios (`id`, `estado`, `nombre_categoria`) y los combina 
+ *    con la información del usuario autenticado (`req.usuario`) para construir el objeto `dataBaja`.
+ * 2. Asegura el casting correcto de los tipos (convirtiendo ID de escuela, ID de categoría e ID de usuario a número, 
+ *    y tipando explícitamente el estado).
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`categoriaCajaServicio.bajaCategoriaCaja`) y el mapa de códigos de la operación.
  *
  * @async
  * @function bajaCategoriaCaja
- * @param {import('express').Request} req - Objeto de petición de Express.
- * @param {Object} req.params - Parámetros de la ruta.
- * @param {string} req.params.id - Identificador de la categoría.
- * @param {string} req.params.estado - Nuevo estado deseado (ej: 'activos', 'inactivos').
- * @param {string} [req.params.nombre_categoria] - Nombre de la categoría a modificar.
- * @param {Object} [req.usuario] - Objeto de usuario inyectado por el middleware de autenticación.
- * @param {string|number} req.usuario.id_escuela - Identificador de la escuela del usuario autenticado.
- * @param {import('express').Response} res - Objeto de respuesta de Express.
- * * @returns {Promise<void>} No retorna un valor directo; envía la respuesta final mediante `enviarResponse` o `enviarResponseError`.
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de ruta (`id`, `estado`, `nombre_categoria`) 
+ * y la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la operación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP PATCH o DELETE esperada:
+ * // /api/categorias-caja/3/inactivos/Ventas
  */
 const bajaCategoriaCaja = async( req : Request, res : Response ) => {
 
-    const dataBaja = {
+    const dataBaja : BajaCategoriCajaInputs = {
         id_escuela : Number(req.usuario?.id_escuela),
         id_categoria : Number(req.params.id),
-        estado : req.params.estado as string,
-        nombre_categoria : req.params.nombre_categoria
+        estado : req.params.estado as "activos" | "inactivos",
+        nombre_categoria : req.params.nombre_categoria,
+        id_usuario : Number(req.usuario?.id)
     };
 
-  
-    const bajaCategoria = await categoriaCajaServicio.bajaCategoriaCaja( dataBaja );
+    await handleControladores<BajaCategoriCajaInputs,BajaCategoriCajaInputs >(
+        res, dataBaja, categoriaCajaServicio.bajaCategoriaCaja, MAPA_ESTADO_CATEGORIA_CAJA
+    );
     
-    const config = MAPA_ESTADO_CATEGORIA_CAJA[  bajaCategoria.code ]  || ERROR_INTERNO_SERVIDOR;
-
-     if ( config.status === CodigoEstadoHTTP.OK){
-         return enviarResponse(
-            res,
-            config.status,
-             bajaCategoria.message || config.msg ,
-             bajaCategoria.data,
-             undefined,
-             bajaCategoria.code
-        );       
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            bajaCategoria.message || config.msg ,
-            bajaCategoria.code
-        );
-    };  
 
 };
 
@@ -233,39 +210,18 @@ const bajaCategoriaCaja = async( req : Request, res : Response ) => {
  */
 const listadoCategoriaCaja = async( req : Request, res : Response) =>{
     
-    const data = {
-        nombre_categoria : req.query.categoria,
-        tipo_movimiento  : req.query.tipo,
-        estado           : req.query.estado,
+    const data : ListadoCategoriaCajaInputs = {
+        nombre_categoria : req.query.categoria as string,
+        tipo_movimiento  : req.query.tipo as "ingreso" | "egreso" | "%",
+        estado           : req.query.estado as "activos" | "inactivos",
         id_escuela       : Number(req.usuario?.id_escuela),
         limit            : Number(req.query.limite),
         pagina : Number(req.query.pagina)
     };
     
-
-    const resultadoListado = await categoriaCajaServicio.listadoCategoriaCaja(data);
-
-
-    const config = MAPA_LISTADO_CATEGORIA_CAJA[  resultadoListado.code ]  || ERROR_INTERNO_SERVIDOR;
-  
-     if ( config.status === CodigoEstadoHTTP.OK){
-
-         return enviarResponse(
-             res,
-             config.status,
-             resultadoListado.message || config.msg ,
-             resultadoListado.data,
-             resultadoListado.paginacion,
-             resultadoListado.code
-        );       
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            resultadoListado.message || config.msg ,
-            resultadoListado.code
-        );
-    }; 
+    await handleControladores<ListadoCategoriaCajaInputs,ResultListadoCategoriaCaja[]>(
+        res, data ,categoriaCajaServicio.listadoCategoriaCaja, MAPA_LISTADO_CATEGORIA_CAJA
+    );
 
 };
 

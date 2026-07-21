@@ -4,7 +4,7 @@
 // ──────────────────────────────────────────────────────────────
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as categoriaCajaData } from "../data/categoria.cajas.data";
-
+import { registroHistorial } from "../utils/postHistorial";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -14,9 +14,10 @@ import { CategoriaCajaInpurts , CategoriaCajaSchema,
          ListadoCategoriaCajaInputs, ListaCategoriaCajaSchema,
          CategoriaCajaInscripcionInputs, CategoriaCajaInscripcionSchema,
  }  from "../squemas/categoria.caja";
-
+import { type HistorialInputs } from "../squemas/historial";
 import { TipadoData } from "../tipados/tipado.data";
 import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
+import { Tipo_movimiento } from "../squemas/cajas";
 
 
 /**
@@ -65,26 +66,40 @@ const verificacionInscripcionCategoria = async ( data : CategoriaCajaInscripcion
 
 
 /**
- * Servicio de lógica de negocio para el registro de nuevas categorías de caja.
- * * Realiza tres pasos críticos:
- * 1. Valida la estructura de los datos mediante `CategoriaCajaSchema`.
- * 2. Verifica la existencia previa de la categoría para evitar duplicados.
- * 3. Ejecuta el alta en la base de datos si las validaciones son exitosas.
- * * @async
+ * Servicio encargado de gestionar el alta de una nueva categoría de caja,
+ * validando que no existan duplicados y registrando la acción en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `CategoriaCajaSchema`.
+ * 2. Comprueba si la categoría ya existe en el sistema (`CATEGORIA_CAJA_EXISTE`); de ser así, deniega el registro.
+ * 3. Ejecuta la inserción en la capa de datos (`categoriaCajaData.altaCategoriaCaja`).
+ * 4. Si la operación es exitosa (código 'CATEGORIA_CAJA_CREAR'):
+ *    - Construye el objeto con los detalles de la categoría recién creada para el historial.
+ *    - Registra el evento de auditoría en el sistema mediante `registroHistorial`.
+ * 5. Retorna el resultado estandarizado con el mensaje de éxito, los datos devueltos y su código correspondiente.
+ *
+ * @async
  * @function altaCategoriaCajaServicio
- * @param {CategoriaCajaInpurts} data - Datos brutos de la categoría a registrar.
- * @returns {Promise<TipadoData<DataCategoriaCajas>>} Objeto de respuesta estandarizado con el resultado de la operación.
- * * @example
- * const respuesta = await altaCategoriaCajaServicio({
- * nombre_categoria: "Venta de Uniformes",
- * id_escuela: 1,
- * tipo_movimiento: "ingreso"
+ * @param {CategoriaCajaInpurts} data - Objeto con los datos necesarios para dar de alta la categoría 
+ * (incluyendo nombre, tipo de movimiento, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<DataCategoriaCajas>>} Promesa que resuelve con el estado de la alta,
+ * incluyendo mensajes descriptivos, datos de respuesta y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `CategoriaCajaSchema`.
+ * 
+ * @example
+ * const resultado = await altaCategoriaCajaServicio({
+ *    nombre_categoria: "Inscripciones",
+ *    tipo_movimiento: "INGRESO",
+ *    id_escuela: 1,
+ *    id_usuario: 5
  * });
  */
 const altaCategoriaCajaServicio = async (data: CategoriaCajaInpurts)
 : Promise<TipadoData<DataCategoriaCajas>> => {
     
-    const dataCategoriaCaja = CategoriaCajaSchema.parse(data);
+    const dataCategoriaCaja : CategoriaCajaInpurts = CategoriaCajaSchema.parse(data);
     
    const categoriaExistente = await categoriaCajaData.verificarCategoriaExistente(dataCategoriaCaja);
     
@@ -97,8 +112,25 @@ const altaCategoriaCajaServicio = async (data: CategoriaCajaInpurts)
     };
 
     const resultado = await categoriaCajaData.altaCategoriaCaja(dataCategoriaCaja);
+  
+    if (resultado.code === "CATEGORIA_CAJA_CREAR") {
 
-    if (resultado.code === "CATEGORIA_CAJA_ALTA") {
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  dataCategoriaCaja.id_escuela ,
+            id_usuario :  dataCategoriaCaja.id_usuario,
+            modulo : "CATEGORIAS_CAJA",
+            accion : "CREAR",
+            id_registro: Number(resultado.data?.id),
+            descripcion: `Alta cat. caja :${dataCategoriaCaja.nombre_categoria}`,
+            datos: {
+                nombre_categoria : resultado.data?.nombre_categoria,
+                Tipo_movimiento  : resultado.data?.tipo_movimiento,
+                id_categoria_caja : resultado.data?.id
+            }
+         }; 
+
+        await registroHistorial( dataHistorial);           
+
         return {
             error: false,
             message: `La categoría: ${dataCategoriaCaja.nombre_categoria} se ha dado de alta con éxito`,
@@ -114,27 +146,39 @@ const altaCategoriaCajaServicio = async (data: CategoriaCajaInpurts)
     };
 };
 
+
 /**
- * Modifica una categoría de caja.
+ * Servicio encargado de gestionar la modificación de una categoría de caja,
+ * validando restricciones del sistema, duplicados y registrando la acción en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `ModCategoriaCajaSchema`.
+ * 2. Verifica la existencia de la categoría y comprueba si es de tipo sistema (`categoria_sistema`); de ser así, deniega la operación con un error de permisos.
+ * 3. Valida que el nuevo nombre o datos no generen un conflicto de duplicidad (`CATEGORIA_CAJA_EXISTE`).
+ * 4. Ejecuta la modificación en la capa de datos (`categoriaCajaData.modCategoriaCaja`).
+ * 5. Si la operación es exitosa (código 'CATEGORIA_CAJA_MODIFICAR'):
+ *    - Construye el objeto con los detalles de los cambios realizados.
+ *    - Registra el evento de auditoría en el sistema mediante `registroHistorial`.
+ * 6. Retorna el resultado estandarizado con el mensaje de éxito, los datos devueltos y su código correspondiente.
  *
- * Flujo de validación:
- * 1. Valida los datos de entrada mediante Zod.
- * 2. Verifica si existe una categoría del sistema asociada a la operación.
- *    Las categorías marcadas como `categoria_sistema = 1` no pueden ser
- *    modificadas por usuarios.
- * 3. Verifica que no exista otra categoría con el mismo nombre y tipo de
- *    movimiento dentro de la misma escuela.
- * 4. Ejecuta la modificación de la categoría.
- *
- * Posibles respuestas:
- * - SIN_PERMISOS: Se intentó modificar una categoría protegida del sistema.
- * - CATEGORIA_CAJA_EXISTENTE: Ya existe una categoría con los mismos datos.
- * - CATEGORIA_CAJA_MODIFICAR: Modificación realizada correctamente.
- * - ERROR_SERVIDOR: Error al realizar la modificación.
- *
- * @param {ModCategoriaCajaInputs} data Datos de la categoría a modificar.
- * @returns {Promise<TipadoData<{ id_categoria: number }>>}
- * Resultado de la operación con el id de la categoría modificada.
+ * @async
+ * @function modCategoriaCaja
+ * @param {ModCategoriaCajaInputs} data - Objeto con los datos necesarios para modificar la categoría 
+ * (incluyendo ID de categoría, nuevo nombre, tipo de movimiento, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<{id_categoria: number}>>} Promesa que resuelve con el estado de la modificación,
+ * incluyendo mensajes descriptivos, datos de respuesta y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `ModCategoriaCajaSchema`.
+ * 
+ * @example
+ * const resultado = await modCategoriaCaja({
+ *    id_categoria: 2,
+ *    nombre_categoria: "Gastos Operativos",
+ *    tipo_movimiento: "EGRESO",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
 : Promise<TipadoData<{id_categoria : number}>>  => {
@@ -162,6 +206,23 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
     const modResultado = await categoriaCajaData.modCategoriaCaja(dataMod);
   
     if ( modResultado.code === "CATEGORIA_CAJA_MODIFICAR"){
+      
+         const dataHistorial  : HistorialInputs = {
+            id_escuela :  dataMod.id_escuela ,
+            id_usuario :  dataMod.id_usuario,
+            modulo : "CATEGORIAS_CAJA",
+            accion : "MODIFICAR",
+            id_registro: Number(modResultado.data?.id_categoria),
+            descripcion: `Modificacion cat. caja :${dataMod.nombre_categoria}`,
+            datos: {
+                nombre_categoria : dataMod.nombre_categoria,
+                Tipo_movimiento  : dataMod.tipo_movimiento,
+                id_categoria_caja : dataMod.id_categoria
+            }
+         }; 
+
+        await registroHistorial( dataHistorial);     
+
         return {
             error : false,
             message : modResultado.message,
@@ -176,22 +237,39 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
    };
 };
 
+
 /**
- * Realiza el cambio de estado (baja o activación) de una categoría de caja.
- * * Valida primero que la categoría no sea una categoría de sistema. Si la operación
- * es exitosa, retorna un mensaje descriptivo basado en el nuevo estado.
+ * Servicio encargado de gestionar la baja o activación (cambio de estado) de una categoría de caja,
+ * validando restricciones del sistema y registrando la acción en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada utilizando el esquema `BajaCategoriaCajaSchema`.
+ * 2. Verifica si la categoría es de tipo sistema (`categoria_sistema`); de ser así, deniega la operación.
+ * 3. Ejecuta la modificación de estado en la capa de datos (`categoriaCajaData.bajaCategoriaCaja`).
+ * 4. Si la operación es exitosa (código 'CATEGORIA_CAJA_ELIMINAR'):
+ *    - Determina dinámicamente la acción de auditoría ('RESTAURAR' o 'ELIMINAR').
+ *    - Construye el mensaje descriptivo y el objeto de datos para el historial.
+ *    - Registra el evento en el sistema de auditoría mediante `registroHistorial`.
+ * 5. Retorna el resultado estandarizado con el mensaje y código correspondiente.
  *
  * @async
  * @function bajaCategoriaCaja
- * @param {BajaCategoriCajaInputs} data - Objeto con los datos necesarios para la baja/cambio de estado.
- * @param {string} data.id_categoria - Identificador único de la categoría.
- * @param {string} data.estado - Nuevo estado a asignar ('activos' o 'inactivos').
- * * @returns {Promise<TipadoData<BajaCategoriCajaInputs>>} Promesa que resuelve un objeto con:
- * - error (boolean): Indica si hubo un fallo.
- * - message (string): Mensaje informativo o de error.
- * - data (any|null): Datos de la categoría afectada (si tuvo éxito).
- * - code (string): Código de estado de la operación (ej: 'CATEGORIA_CAJA_ESTADO_OK', 'SIN_PERMISOS', 'ERROR_SERVIDOR').
- * * @throws {ZodError} Si la validación de `BajaCategoriaCajaSchema` falla.
+ * @param {BajaCategoriCajaInputs} data - Objeto con los datos necesarios para cambiar el estado 
+ * (incluyendo ID de categoría, estado deseado, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<BajaCategoriCajaInputs>>} Promesa que resuelve con el estado de la operación,
+ * incluyendo mensajes personalizados, datos de respuesta y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `BajaCategoriaCajaSchema`.
+ * 
+ * @example
+ * const resultado = await bajaCategoriaCaja({
+ *    id_categoria: 3,
+ *    estado: "inactivos",
+ *    id_escuela: 1,
+ *    id_usuario: 5,
+ *    nombre_categoria: "Ventas"
+ * });
  */
 const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs ) 
 : Promise<TipadoData<BajaCategoriCajaInputs>>=>{
@@ -212,13 +290,32 @@ const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs )
     const bajaCategoria = await categoriaCajaData.bajaCategoriaCaja(dataCategoriaCaja);
 
     if ( bajaCategoria.code === "CATEGORIA_CAJA_ELIMINAR"){// quiere decir q cambio el estado correctamente 
+        
         let setEstadoMensaje : string = dataCategoriaCaja.estado;
+        const accionFinal = dataCategoriaCaja.estado === 'activos' ? "RESTAURAR" : "ELIMINAR" ;
+        const estadoFinal  = dataCategoriaCaja.estado === "activos" ? "activo" : "inactivo";
 
         if ( dataCategoriaCaja.estado === "activos"){
             setEstadoMensaje = "La Categoria esta activa"
+           
         }else {
             setEstadoMensaje = "La Categoria esta inactiva"
         };
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  dataCategoriaCaja.id_escuela ,
+            id_usuario :  dataCategoriaCaja.id_usuario || 0,
+            modulo : "CATEGORIAS_CAJA",
+            accion : accionFinal,
+            id_registro: Number(dataCategoriaCaja.id_categoria),
+            descripcion: `Estado de ${dataCategoriaCaja.nombre_categoria} cambio a  ${estadoFinal}`,
+            datos: {
+                id_categoria : dataCategoriaCaja.id_categoria,
+                estado : dataCategoriaCaja.estado,
+            }
+        }; 
+           
+        await registroHistorial( dataHistorial);  
 
         return{
             error : false,

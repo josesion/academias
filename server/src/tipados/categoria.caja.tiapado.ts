@@ -3,6 +3,7 @@ type  EstadoEnum = "activos" | "inactivos" | "suspendido";
 type  TipoMovimientoEnum = "ingreso" | "egreso";
 
 export interface DataCategoriaCajas{
+    id? : number,
     id_escuela : number;
     nombre_categoria: string;
     tipo_movimiento: TipoMovimientoEnum;

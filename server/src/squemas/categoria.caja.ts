@@ -8,6 +8,9 @@ export const CategoriaCajaSchema = z.object({
     nombre_categoria: z.string().min(1),
     tipo_movimiento: TipoMovimientoEnum,
     estado: EstadoEnum.default("activos"),
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })      
 });
 
 export const CategoriaCajaInscripcionSchema = z.object({
@@ -20,7 +23,10 @@ export const ModCategoriaCajaSchema = z.object({
     id_categoria : z.number().int().positive(),
     nombre_categoria: z.string().min(1),
     tipo_movimiento: TipoMovimientoEnum,
-    estado: EstadoEnum
+    estado: EstadoEnum,
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })      
 });
 
 export const  BajaCategoriaCajaSchema = z.object({
@@ -28,6 +34,10 @@ export const  BajaCategoriaCajaSchema = z.object({
     id_categoria : z.number().int().positive(),
     nombre_categoria: z.string().min(1),
     estado: EstadoEnum,
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })  
+                        .optional()    
 });
 
 export const ListaCategoriaCajaSchema = z.object({
@@ -42,7 +52,7 @@ export const ListaCategoriaCajaSchema = z.object({
 
         limit: z.coerce.number().int().min(1).default(10), 
         pagina : z.coerce.number().int().min(1).default(10), 
-        offset: z.coerce.number().int().min(0).default(0),     
+        offset: z.coerce.number().int().min(0).default(0).optional(),     
 });
 
 

@@ -117,7 +117,7 @@ const altaCategoriaCaja = async( data : CategoriaCajaInpurts )
       slqEntidad : sql,
       valores : valores,
       entidad : "Categoria_Caja",
-      metodo : "ALTA",
+      metodo : "CREAR",
       datosRetorno : datosADevolver
     });
 };
