@@ -17,6 +17,11 @@ import { MAPA_ALTA_TIPO_CLASE,MAPA_MOD_TIPO_CLASE,
          MAPA_ESTADO_TIPO_CLASE, MAPA_LISTADO_TIPO_CLASE
  } from "../respuestas/tipo.clase";     
 
+import { ModificarNivelSchema, CrearNivelInput ,  ModificarNivelInput, EstadoNivelInput, ListadoNivelInput,
+         ListadoNivelSinPagInput,
+        } from "../squemas/nivel";
+
+
  import { ResulListadoTipoUsuarios } from "../tipados/tipo.data";
  
  import {  CrearTipoInput , ModTipoInput , 

@@ -1,4 +1,5 @@
 import { Request , Response } from "express";
+import { handleControladores } from "../utils/handleControladores";
 // ──────────────────────────────────────────────────────────────
 // Capa de acceso a servicios para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
@@ -10,277 +11,235 @@ import { method as servicioNiveles } from "../Servicio/niveles.servicio";
 // ──────────────────────────────────────────────────────────────
 
 import { tryCatch } from "../utils/tryCatch"; 
-import { enviarResponseError } from "../utils/responseError";
-import { enviarResponse } from "../utils/response";
+
 import { fechaHoy } from "../hooks/fecha"; 
 
-import { MAPA_ALTA_NIVEL, ERROR_INTERNO_SERVIDOR , MAPA_MOD_NIVEL,
+import { MAPA_ALTA_NIVEL,  MAPA_MOD_NIVEL,
          MAPA_ESTADO_NIVEL, MAPA_LISTADO_NIVEL,
  } from "../respuestas/niveles";
+import { ResulListadoNivelUsuarios } from "../tipados/nivel.data";
+import { CrearNivelInput ,  ModificarNivelInput, 
+          EstadoNivelInput, ListadoNivelInput, ListadoNivelSinPagInput
+        } from "../squemas/nivel";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
 
-import {  CodigoEstadoHTTP } from "../tipados/generico";
+
 
 /**
- * Da de alta un nuevo nivel para la escuela del usuario autenticado.
- *
- * Obtiene los datos desde el body de la petición, construye
- * la información necesaria para el alta y devuelve una respuesta
- * estandarizada con el resultado de la operación.
+ * Controlador encargado de procesar la solicitud para registrar un nuevo nivel,
+ * extrayendo el nombre desde el cuerpo de la petición (`req.body`), asignando la fecha actual, 
+ * un valor por defecto para `is_default` y combinando los datos con la información de contexto 
+ * de la escuela y el usuario autenticado.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae el campo `nivel` directamente desde `req.body`.
+ * 2. Construye el objeto `dataNivel` tipado como `CrearNivelInput`, asignando la fecha actual mediante `fechaHoy()`, 
+ *    estableciendo `is_default` en falso, y convirtiendo el `id_escuela` y el `id_usuario` de la sesión a números.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioNiveles.altaNivel`) y el mapa de códigos de la operación.
  *
  * @async
- * @param {Request} req - Petición HTTP con los datos del nivel.
- * @param {Response} res - Respuesta HTTP.
- * @returns {Promise<Response>} Resultado de la operación.
- *
- * @property {string} req.body.nivel - Nombre del nivel a crear.
+ * @function altaNivel
+ * @param {Request} req - Objeto de petición de Express, que contiene los datos del nuevo nivel en el `body` 
+ * y la información del usuario autenticado en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado del alta.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante el flujo de `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP POST esperada:
+ * // /api/niveles
+ * // Body: { "nivel": "Principiante" }
  */
 const altaNivel = async ( req : Request , res : Response ) => {
-    const  { nivel } = ( req.body );
 
-    const dataNivel = {
+    const  { nivel} = ( req.body );
+
+    const dataNivel : CrearNivelInput = {
         nivel,
         fecha_creacion : fechaHoy(),
-        id_escuela : Number(req.usuario?.id_escuela)
+        id_escuela : Number(req.usuario?.id_escuela),
+        is_default : false,
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const altaResult = await servicioNiveles.altaNivel(dataNivel);
-    console.log(altaResult)
-    const config = MAPA_ALTA_NIVEL[ altaResult.code ] || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK){
-  
-        return enviarResponse(
-            res,
-            config.status,
-            altaResult.message || config.msg,
-            altaResult.data,
-            undefined,
-            altaResult.code
-        );
-    }else {
-        return enviarResponseError(
-            res,
-            config.status,
-            altaResult.message || config.msg,
-            altaResult.code
-        );
-    }
-
-
+    await handleControladores< CrearNivelInput, { nivel : string }>(
+        res, dataNivel, servicioNiveles.altaNivel, MAPA_ALTA_NIVEL
+    );
 };
 
 
 /**
- * Modifica un nivel existente de la escuela del usuario autenticado.
- *
- * Obtiene el identificador del nivel desde los parámetros de la petición
- * y los nuevos datos desde el body. Luego ejecuta la modificación y
- * devuelve una respuesta estandarizada.
+ * Controlador encargado de procesar la solicitud para modificar un nivel existente,
+ * extrayendo el ID desde los parámetros de la ruta (`req.params`) y el nuevo nombre 
+ * desde el cuerpo de la petición (`req.body`), para luego delegar la ejecución al manejador genérico.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae el `id` desde `req.params` y el campo `nivel` desde `req.body`.
+ * 2. Construye el objeto `modData` tipado como `ModificarNivelInput`, convirtiendo el ID del nivel, 
+ *    el ID de la escuela y el ID del usuario de la sesión a números.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioNiveles.modNivel`) y el mapa de códigos de la operación.
  *
  * @async
- * @param {Request} req - Petición HTTP con el id y los datos a modificar.
- * @param {Response} res - Respuesta HTTP.
- * @returns {Promise<Response>} Resultado de la operación.
- *
- * @property {number} req.params.id - Identificador del nivel.
- * @property {string} req.body.nivel - Nuevo nombre del nivel.
+ * @function modNivel
+ * @param {Request} req - Objeto de petición de Express, que contiene el ID en los parámetros de ruta (`req.params`), 
+ * el nuevo nivel en el `body` (`req.body`) y la información de sesión en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la modificación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP PUT o PATCH esperada:
+ * // /api/niveles/1
+ * // Body: { "nivel": "Intermedio-Avanzado" }
  */
 const modNivel = async ( req : Request , res : Response ) => {
    
     const { id } = req.params;
     const { nivel } = req.body;
 
-    const modData = {
+    const modData : ModificarNivelInput = {
         id : Number(id),
         nivel,
-        id_escuela : Number(req.usuario?.id_escuela)     
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)   
     };
 
-    const modResult = await servicioNiveles.modNivel( modData );
-    
-   const config = MAPA_MOD_NIVEL[ modResult.code ]   || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK){
-     
-        return enviarResponse(
-            res,
-            config.status,
-            modResult.message || config.msg,
-            modResult.data,
-            undefined,
-            modResult.code
-        );
-    }else {
-        return enviarResponseError(
-            res,
-            config.status,
-            modResult.message || config.msg,
-            modResult.code
-        );
-    };
-
+    await handleControladores<ModificarNivelInput, { nivel : string}>(
+        res, modData, servicioNiveles.modNivel, MAPA_MOD_NIVEL
+    );
 };
 
 
 /**
- * Actualiza el estado de un nivel de la escuela del usuario autenticado.
- *
- * Obtiene el identificador y el nuevo estado desde los parámetros
- * de la petición, ejecuta la actualización y devuelve una respuesta
- * estandarizada con el resultado de la operación.
+ * Controlador encargado de procesar la solicitud para cambiar el estado (activación o baja lógica) 
+ * de un nivel, extrayendo el ID y el estado de los parámetros de la ruta (`req.params`), 
+ * el nivel del cuerpo (`req.body`), y delegando la ejecución al manejador genérico.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros de ruta (`id`, `estado`) desde `req.params` y el campo `nivel` desde `req.body`.
+ * 2. Construye el objeto `estadoData` tipado como `EstadoNivelInput`, realizando el casting del estado 
+ *    y convirtiendo el ID del nivel, el ID de la escuela y el ID del usuario a números.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioNiveles.estadoNivel`) y el mapa de códigos de la operación.
  *
  * @async
- * @param {Request} req - Petición HTTP con el id y el estado.
- * @param {Response} res - Respuesta HTTP.
- * @returns {Promise<Response>} Resultado de la operación.
- *
- * @property {number} req.params.id - Identificador del nivel.
- * @property {string} req.params.estado - Nuevo estado del nivel.
- * @property {string} req.body.nivel - Nombre del nivel.
+ * @function estadoNivel
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de ruta (`id`, `estado`), 
+ * el cuerpo de la petición (`req.body`) y la información del usuario autenticado en `req.usuario`.
+ * @param {Response} res - Objeto de respuesta de Express para enviar el resultado de la operación.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP PATCH esperada:
+ * // /api/niveles/1/inactivos
+ * // Body: { "nivel": "Avanzado" }
  */
 const estadoNivel = async(req : Request , res : Response )=> {
 
     const { id  , estado  } = req.params;
     const { nivel } = req.body ;
-
-    
-    const estadoData = {
+ 
+    const estadoData : EstadoNivelInput = {
         id : Number(id), 
         id_escuela : Number(req.usuario?.id_escuela),
-        estado : estado,
-        nivel : nivel        
+        estado : estado as "activos" | "inactivos",
+        nivel : nivel,
+        id_usuario : Number(req.usuario?.id)     
     };
 
-
-    const estadoResult = await servicioNiveles.estadoNivel( estadoData );
-
-    const config = MAPA_ESTADO_NIVEL[ estadoResult.code ] || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK){
-  
-        return enviarResponse(
-            res,
-            config.status,
-            estadoResult.message || config.msg,
-            estadoResult.data,
-            undefined,
-            estadoResult.code
-        );
-    }else {
-        return enviarResponseError(
-            res,
-            config.status,
-            estadoResult.message || config.msg,
-            estadoResult.code
-        );
-    };
+    await handleControladores< EstadoNivelInput ,{ id : number }>(
+        res, estadoData, servicioNiveles.estadoNivel, MAPA_ESTADO_NIVEL
+    );
 };
 
-
 /**
- * Obtiene un listado paginado de niveles.
- *
- * Permite filtrar los resultados por nivel y estado,
- * aplicando además los parámetros de paginación recibidos.
+ * Controlador encargado de procesar la solicitud para obtener el listado paginado de niveles,
+ * calculando el offset a partir de la página y el límite, y combinando los filtros con la escuela del usuario.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros de consulta (`nivel`, `estado`, `limite`, `pagina`) desde `req.query`.
+ * 2. Calcula el valor del `offset` para la paginación usando la fórmula: `(pagina - 1) * limite`.
+ * 3. Construye el objeto `dataListado` tipado como `ListadoNivelInput`, realizando la conversión numérica de los campos 
+ *    requeridos y el casting de los filtros.
+ * 4. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioNiveles.listadoNivel`) y el mapa de códigos de la operación.
  *
  * @async
- * @param {Request} req - Petición HTTP con filtros y paginación.
- * @param {Response} res - Respuesta HTTP.
- * @returns {Promise<Response>} Resultado de la consulta.
- *
- * @property {string} req.query.nivel - Nombre del nivel utilizado como filtro.
- * @property {string} req.query.estado - Estado utilizado como filtro.
- * @property {number} req.query.limite - Cantidad de registros por página.
- * @property {number} req.query.pagina - Página solicitada.
+ * @function listadoNivel
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de consulta (`req.query`) 
+ * con la paginación y filtros, además de la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el listado paginado.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP GET esperada:
+ * // /api/niveles?pagina=1&limite=10&estado=activos
  */
 const listadoNivel = async( req : Request , res : Response ) =>{
+   
     const { nivel , estado, limite, pagina} = req.query;
     const offset = ( Number(pagina) -1 ) * Number(limite) ;
 
-   const dataListado = {
-        nivel : nivel,
-        estado : estado,
+   const dataListado : ListadoNivelInput  = {
+        nivel : nivel as string,
+        estado : estado as "activos" | "inactivos" | "todos",
         id_escuela : Number( req.usuario?.id_escuela ),
         limite : Number( limite ),
         offset  : Number( offset ),
         pagina : Number( pagina )    
    };
 
-   const listaResult = await servicioNiveles.listadoNivel( dataListado );
-
-   const config = MAPA_LISTADO_NIVEL[ listaResult.code ] || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK){
-  
-        return enviarResponse(
-            res,
-            config.status,
-            listaResult.message || config.msg,
-            listaResult.data,
-            listaResult.paginacion,
-            listaResult.code
-        );
-    }else {
-        return enviarResponseError(
-            res,
-            config.status,
-            listaResult.message || config.msg,
-            listaResult.code
-        );
-    };   
+   await handleControladores< ListadoNivelInput  , ResulListadoNivelUsuarios[]>(
+        res, dataListado, servicioNiveles.listadoNivel, MAPA_LISTADO_NIVEL
+   );
 
 };
 
 
 /**
- * Obtiene un listado de niveles sin aplicar paginación.
- *
- * Permite filtrar los resultados por nombre de nivel y estado,
- * devolviendo todos los registros que coincidan con los criterios.
+ * Controlador encargado de procesar la solicitud para obtener el listado de niveles sin paginación,
+ * extrayendo los filtros desde los parámetros de consulta (`req.query`) y combinándolos 
+ * con la información de la escuela del usuario autenticado.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los filtros opcionales de consulta (`nivel`, `estado`) desde `req.query`.
+ * 2. Construye el objeto `dataListado` tipado como `ListadoNivelSinPagInput`, asegurando el casting del estado 
+ *    y convirtiendo el `id_escuela` del usuario a número.
+ * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
+ *    correspondiente (`servicioNiveles.listadoNivelSinPag`) y el mapa de códigos de la operación.
  *
  * @async
- * @param {Request} req - Petición HTTP con los filtros de búsqueda.
- * @param {Response} res - Respuesta HTTP.
- * @returns {Promise<Response>} Resultado de la consulta.
- *
- * @property {string} req.query.nivel - Nombre del nivel utilizado como filtro.
- * @property {string} req.query.estado - Estado utilizado como filtro.
+ * @function listadoNivelSinPag
+ * @param {Request} req - Objeto de petición de Express, que contiene los parámetros de consulta (`req.query`) 
+ * y la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta de Express para enviar el listado obtenido.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo; gestiona la respuesta HTTP mediante `handleControladores`.
+ * 
+ * @example
+ * // Petición HTTP GET esperada:
+ * // /api/niveles/listado?estado=activos
  */
 const listadoNivelSinPag = async( req : Request , res : Response ) =>{
     const { nivel , estado } = req.query;
 
-    const dataListado = {
-        nivel : nivel,
-        estado : estado,
+    const dataListado : ListadoNivelSinPagInput = {
+        nivel : nivel as string,
+        estado : estado as "activos" | "inactivos" | "todos",
         id_escuela : Number( req.usuario?.id_escuela )          
     };
 
-    const listaResult = await servicioNiveles.listadoNivelSinPag( dataListado );
-
-   const config = MAPA_LISTADO_NIVEL[ listaResult.code ] || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK){
-  
-        return enviarResponse(
-            res,
-            config.status,
-            listaResult.message || config.msg,
-            listaResult.data,
-            undefined,
-            listaResult.code
-        );
-    }else {
-        return enviarResponseError(
-            res,
-            config.status,
-            listaResult.message || config.msg,
-            listaResult.code
-        );
-    };     
+    await handleControladores<ListadoNivelSinPagInput,{}>(
+        res, dataListado, servicioNiveles.listadoNivelSinPag, MAPA_LISTADO_NIVEL
+    );
+     
 };
 
 export const method = {

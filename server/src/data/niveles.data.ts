@@ -67,7 +67,7 @@ const nivelExiste  = async ( nivel: string  , id_escuela : number)
  */
 
 const altaNivelGlobal = async ( data : NivelData )
-: Promise<TipadoData<{ nivel : string }>> => {
+: Promise<TipadoData<{ nivel : string, id?: number }>> => {
     const { nivel , fecha_creacion , id_escuela } = data;
 
     const sql : string = `INSERT INTO niveles (nivel, fecha_creacion, id_escuela)
@@ -77,7 +77,7 @@ const altaNivelGlobal = async ( data : NivelData )
     const valores : unknown[] = [ nivel , fecha_creacion , id_escuela];
     const datosADevolver = { nivel };
 
-    return iudEntidad<{ nivel : string}>({
+    return iudEntidad<{ nivel : string, id?: number}>({
         slqEntidad : sql,
         valores,
         entidad   : "Nivel",

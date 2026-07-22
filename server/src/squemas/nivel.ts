@@ -15,7 +15,12 @@ export const CrearNivelSchema = z.object({
     
     id_escuela : z.number({message : "Ident. Escuela debe ser numerico"})
                  .int({message : "Ident. Escuela debe ser entero"})
-                 .positive({ message : "Ident. Escuela debe ser positivo"}),                
+                 .positive({ message : "Ident. Escuela debe ser positivo"}),  
+                 
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                   
+
 });
 
 export const ModificarNivelSchema = z.object({
@@ -32,6 +37,12 @@ export const ModificarNivelSchema = z.object({
     id_escuela : z.number({message : "Ident. Escuela debe ser numerico"})
                  .int({message : "Ident. Escuela debe ser entero"})
                  .positive({ message : "Ident. Escuela debe ser positivo"}),
+                 
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })      
+
+
 });
 
 
