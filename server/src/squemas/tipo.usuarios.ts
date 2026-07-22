@@ -13,7 +13,12 @@ export const CrearTipoSchema = z.object({
   
     id_escuela : z.number({message : "Ident. Escuela debe ser numerico"})
                  .int({message : "Ident. Escuela debe ser entero"})
-                 .positive({ message : "Ident. Escuela debe ser positivo"}),                
+                 .positive({ message : "Ident. Escuela debe ser positivo"}),  
+                 
+          id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                
+
 });
 
 export const ModTipoSchema = z.object({
@@ -29,7 +34,11 @@ export const ModTipoSchema = z.object({
                  
     id : z.number({message : "Ident. Tipo debe ser numerico"})
                  .int({message : "Ident. Tipo debe ser entero"})
-                 .positive({ message : "Ident. Tipo debe ser positivo"}),               
+                 .positive({ message : "Ident. Tipo debe ser positivo"}),  
+
+           id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                                 
 });
 
 const EstadoEnum = z.enum(['activos', 'inactivos', 'todos']).default('activos');
@@ -45,7 +54,12 @@ export const EstadoTipoSchema = z.object({
                  
     id : z.number({message : "Ident. Tipo debe ser numerico"})
                  .int({message : "Ident. Tipo debe ser entero"})
-                 .positive({ message : "Ident. Tipo debe ser positivo"}),               
+                 .positive({ message : "Ident. Tipo debe ser positivo"}),   
+                 
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                    
+
 })
 
 

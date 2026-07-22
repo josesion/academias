@@ -63,20 +63,21 @@ const verificarTipo = async( tipo : string, id_escuela : number)
  */
 
 const altaTipo = async( data : CrearTipoInput)
-: Promise<TipadoData<{tipo : string}>> => {
+: Promise<TipadoData<{tipo : string,  id? : number,}>> => {
     const {tipo , fecha_creacion , id_escuela} = data;
     
     const sql : string = `INSERT INTO tipo_clase (tipo, fecha_creacion, estado, id_escuela)
                           VALUES ( ? , ? , 'activos', ? );`;
                           
     const valores : unknown[] = [tipo , fecha_creacion , id_escuela];
+    const retorno = { tipo  }
 
-    return iudEntidad<{tipo :string}>({
+    return iudEntidad<{tipo :string, id? : number,}>({
         slqEntidad : sql,
         valores ,
         entidad : "Tipo",
         metodo  : "CREAR",
-        datosRetorno : { tipo }
+        datosRetorno : retorno
     });
 
 };

@@ -1,4 +1,5 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
+import { registroHistorial } from "../utils/postHistorial";
 // ──────────────────────────────────────────────────────────────
 // Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
@@ -7,6 +8,7 @@ import { method as dataTipo } from "../data/tipo_clases.data";
 // Sección de Typado
 // ──────────────────────────────────────────────────────────────
 import { TipadoData } from "../tipados/tipado.data";
+import { type HistorialInputs } from "../squemas/historial";
 import { ResulListadoTipoUsuarios } from "../tipados/tipo.data";
 import { CrearTipoSchema , CrearTipoInput , ModTipoInput , ModTipoSchema ,
          EstadoTipoInput , EstadoTipoSchema, ListaTipoUsuariosSchema, ListadoTipoInput,
@@ -15,19 +17,34 @@ import { CrearTipoSchema , CrearTipoInput , ModTipoInput , ModTipoSchema ,
 
 
 /**
- * Servicio encargado del alta de un nuevo tipo de clase para la escuela.
- * * Realiza la validación de los datos mediante el esquema `CrearTipoSchema`,
- * verifica la existencia previa del tipo en la base de datos para evitar duplicados
- * y procede con el registro si la validación es exitosa.
+ * Servicio encargado de gestionar el alta de un nuevo tipo de clase (baile),
+ * validando duplicados en la escuela y registrando la acción en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `CrearTipoSchema`.
+ * 2. Comprueba si el tipo de clase ya existe en la escuela (`TIPO_EXISTE`); de ser así, deniega el registro.
+ * 3. Ejecuta la inserción en la capa de datos (`dataTipo.altaTipo`).
+ * 4. Si la operación es exitosa (código 'TIPO_CREAR'):
+ *    - Construye el objeto con los detalles del tipo de clase recién creado para el historial.
+ *    - Registra el evento de auditoría en el sistema mediante `registroHistorial`.
+ * 5. Retorna el resultado estandarizado con el mensaje de éxito, o un error de servidor en caso de fallo.
  *
  * @async
  * @function altaTipoClase
- * @param {CrearTipoInput} alta - Datos del nuevo tipo de clase (nombre del tipo e id_escuela).
- * @returns {Promise<TipadoData<{tipo: string}>>} Objeto de respuesta tipado:
- * - TIPO_CLASE_OK: El tipo se registró correctamente.
- * - TIPO_CLASE_EXISTE: El nombre del tipo ya se encuentra registrado para esta escuela.
- * - ERROR_SERVIDOR: Fallo inesperado en la capa de datos.
- * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ * @param {CrearTipoInput} alta - Objeto con los datos necesarios para dar de alta el tipo de clase 
+ * (incluyendo nombre del tipo, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<{tipo: string}>>} Promesa que resuelve con el estado de la alta,
+ * incluyendo mensajes descriptivos y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `CrearTipoSchema`.
+ * 
+ * @example
+ * const resultado = await altaTipoClase({
+ *    tipo: "Salsa",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const altaTipoClase =  async ( alta : CrearTipoInput)
 : Promise<TipadoData<{tipo : string}>> => {
@@ -47,6 +64,23 @@ const altaTipoClase =  async ( alta : CrearTipoInput)
     const altaResult = await dataTipo.altaTipo(dataAlta);
 
      if (altaResult.code === "TIPO_CREAR"){
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  dataAlta.id_escuela ,
+            id_usuario :  dataAlta.id_usuario,
+            modulo : "TIPOS_BAILE",
+            accion : "CREAR",
+            id_registro: Number(altaResult.data?.id),
+            descripcion: `Registro Tipo : ${altaResult.data?.tipo } `,
+            datos:{
+                id_tipo : altaResult.data?.id,
+                tipo_baile : altaResult.data?.tipo
+            }
+        }; 
+            
+        await registroHistorial( dataHistorial);   
+
+
         return{
             error : false,
             message : "Tipo de clase agregada correctamente.",
@@ -63,19 +97,35 @@ const altaTipoClase =  async ( alta : CrearTipoInput)
 };
 
 /**
- * Servicio encargado de la modificación de un tipo de clase existente.
- * * Realiza la validación de los datos mediante `ModTipoSchema`, verifica
- * si el nuevo nombre del tipo de clase ya se encuentra registrado para evitar
- * colisiones (exceptuando el registro actual) y aplica los cambios en la base de datos.
+ * Servicio encargado de gestionar la modificación de un tipo de clase (baile existente),
+ * validando duplicados en la escuela y registrando la acción en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `ModTipoSchema`.
+ * 2. Comprueba si el nuevo nombre del tipo de clase ya existe en la escuela (`TIPO_EXISTE`); de ser así, deniega la modificación.
+ * 3. Ejecuta la actualización en la capa de datos (`dataTipo.modficarTipo`).
+ * 4. Si la operación es exitosa (código 'TIPO_MODIFICAR'):
+ *    - Construye el objeto con los detalles de la modificación para el historial de auditoría.
+ *    - Registra el evento en el sistema mediante `registroHistorial`.
+ * 5. Retorna el resultado estandarizado con el mensaje de éxito, o un error de servidor en caso de fallo.
  *
  * @async
  * @function modTipoClase
- * @param {ModTipoInput} mod - Datos a modificar, incluyendo el ID del tipo, el nuevo nombre y el id_escuela.
- * @returns {Promise<TipadoData<{id: number, tipo: string}>>} Objeto de respuesta tipado:
- * - TIPO_CLASE_MOD_OK: Modificación realizada exitosamente.
- * - TIPO_CLASE_EXISTE: El nuevo nombre del tipo ya está en uso por otro registro.
- * - ERROR_SERVIDOR: Fallo inesperado en la capa de datos.
- * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ * @param {ModTipoInput} mod - Objeto con los datos necesarios para modificar el tipo de clase 
+ * (incluyendo ID del tipo, nuevo nombre, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<{id: number, tipo: string}>>} Promesa que resuelve con el estado de la modificación,
+ * incluyendo mensajes descriptivos y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `ModTipoSchema`.
+ * 
+ * @example
+ * const resultado = await modTipoClase({
+ *    id: 1,
+ *    tipo: "Bachata",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const modTipoClase = async ( mod : ModTipoInput )
 : Promise<TipadoData<{id: number , tipo : string}>> => {
@@ -94,7 +144,23 @@ const modTipoClase = async ( mod : ModTipoInput )
 
     const modResult = await dataTipo.modficarTipo(dataMod);
     
+    
     if ( modResult.code === 'TIPO_MODIFICAR' ) {
+
+        const dataHistorial  : HistorialInputs = {
+                id_escuela :  dataMod.id_escuela ,
+                id_usuario :  dataMod.id_usuario,
+                modulo : "TIPOS_BAILE",
+                accion : "MODIFICAR",
+                id_registro: Number(dataMod.id),
+                descripcion: `Se modifico tipo : ${dataMod.tipo}`,
+                datos: {
+
+                }
+        }; 
+            
+        await registroHistorial( dataHistorial);
+
         return {
             error : false, 
             message : "El tipo de clase se modifico",
@@ -112,17 +178,35 @@ const modTipoClase = async ( mod : ModTipoInput )
 
 
 /**
- * Servicio encargado de actualizar el estado (activo/inactivo) de un tipo de clase.
- * * Valida los datos de entrada mediante `EstadoTipoSchema`, y delega 
- * la actualización a la capa de datos.
+ * Servicio encargado de gestionar el cambio de estado (activación o baja lógica) de un tipo de clase (baile),
+ * validando los datos de entrada y registrando la acción correspondiente en el historial de auditoría.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `EstadoTipoSchema`.
+ * 2. Ejecuta la actualización del estado en la capa de datos (`dataTipo.estadoTipo`).
+ * 3. Si la operación es exitosa (código 'TIPO_MODIFICAR'):
+ *    - Determina dinámicamente el estado final ("activo" / "inactivo") y la acción de auditoría ("RESTAURAR" / "ELIMINAR").
+ *    - Construye el objeto con los detalles del cambio para el historial de auditoría.
+ *    - Registra el evento en el sistema mediante `registroHistorial`.
+ * 4. Retorna el resultado estandarizado con el mensaje de éxito, o un error de servidor en caso de fallo.
  *
  * @async
  * @function estadoTipo
- * @param {EstadoTipoInput} estado - Objeto con el ID del tipo de clase y el nuevo estado a asignar.
- * @returns {Promise<TipadoData<{id: number}>>} Objeto de respuesta tipado:
- * - TIPO_CLASE_ESTADO_OK: Cambio de estado realizado correctamente.
- * - ERROR_SERVIDOR: Fallo inesperado en la capa de datos al procesar el cambio.
- * @throws {ZodError} Si los datos de entrada no cumplen con el esquema de validación.
+ * @param {EstadoTipoInput} estado - Objeto con los datos necesarios para cambiar el estado del tipo 
+ * (incluyendo ID del tipo, estado deseado, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<TipadoData<{id: number}>>} Promesa que resuelve con el estado de la operación,
+ * incluyendo mensajes descriptivos y códigos internos de éxito o error.
+ * 
+ * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `EstadoTipoSchema`.
+ * 
+ * @example
+ * const resultado = await estadoTipo({
+ *    id: 1,
+ *    estado: "inactivos",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const estadoTipo = async ( estado : EstadoTipoInput) 
 : Promise<TipadoData<{ id: number }>> => {
@@ -132,6 +216,23 @@ const estadoTipo = async ( estado : EstadoTipoInput)
     const estadoTipo = await dataTipo.estadoTipo(data); 
 
     if ( estadoTipo.code === 'TIPO_MODIFICAR'){
+        const estadoFinal  = data.estado === "activos" ? "activo" : "inactivo";
+        const accionFinal  = data.estado === "activos" ? "RESTAURAR" : "ELIMINAR"
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  data.id_escuela ,
+            id_usuario :  data.id_usuario,
+            modulo : "TIPOS_BAILE",
+            accion : accionFinal,
+            id_registro: Number(data.id),
+            descripcion: `Estado Tipo baile : ${data.id} cambio a  ${estadoFinal}`,
+            datos: {
+                id_tipo_baile : data.id,
+            }
+        }; 
+
+        await registroHistorial( dataHistorial);           
+
         return {
             error : false,
             message : "El estado cambio correctamente.",

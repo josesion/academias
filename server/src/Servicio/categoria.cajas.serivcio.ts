@@ -17,7 +17,7 @@ import { CategoriaCajaInpurts , CategoriaCajaSchema,
 import { type HistorialInputs } from "../squemas/historial";
 import { TipadoData } from "../tipados/tipado.data";
 import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
-import { Tipo_movimiento } from "../squemas/cajas";
+
 
 
 /**
