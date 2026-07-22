@@ -32,14 +32,14 @@ import { CuentaEscuelaInput, ModificarCuentaEscuelaUnputs,
  * });
  */
 const crearCuentaEscuela = async (cuentaData: CuentaEscuelaInput) 
-: Promise<TipadoData<{nombre_cuenta: string, tipo_cuenta: string}>> =>{
+: Promise<TipadoData<{nombre_cuenta: string, tipo_cuenta: string, id? : number}>> =>{
     const sql  : string  =`INSERT INTO cuentas_escuela (id_escuela, nombre_cuenta, tipo_cuenta, estado) 
                                 VALUES 
                                 ( ?, ?, ?, ? )`;
     const { id_escuela, nombre_cuenta, tipo_cuenta, estado} = cuentaData ;                            
     const parametros : unknown[] = [ id_escuela, nombre_cuenta, tipo_cuenta, estado];
     const retorno  = { nombre_cuenta, tipo_cuenta};
-    return await iudEntidad<{nombre_cuenta: string, tipo_cuenta: string}>({
+    return await iudEntidad<{nombre_cuenta: string, tipo_cuenta: string, id? : number}>({
         slqEntidad : sql,
         valores : parametros,
         entidad : "CUENTAS",

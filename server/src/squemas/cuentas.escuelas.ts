@@ -15,6 +15,11 @@ export const CuentaEscuelaSchema = z.object({
   
   // Tu regla de oro: 'activos' o 'inactivos'
   estado: z.enum(['activos', 'inactivos']).default('activos'),
+
+  id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' })     
+
 });
 
 export const ModificarCuentaEscuelaSchema = z.object({
@@ -25,7 +30,11 @@ export const ModificarCuentaEscuelaSchema = z.object({
   nuevo_nombre_cuenta: z.string().min(4, "Mínimo 4 caracteres"),
 
   // Enums limpios para MySQL
-  nuevo_tipo_cuenta: z.enum(['fisico', 'virtual']),    
+  nuevo_tipo_cuenta: z.enum(['fisico', 'virtual']),  
+
+  id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' })         
 });
 
 export const EstadoCuentasSchema = z.object({
@@ -35,7 +44,10 @@ export const EstadoCuentasSchema = z.object({
    id_cuenta: z.number().positive("ID inválido"),
 
    id_escuela: z.number().positive("ID de escuela requerido"),
-
+   
+   id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) 
 });
 
 export const ListadoCuentasSchema = z.object ({

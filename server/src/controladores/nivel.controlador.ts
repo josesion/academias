@@ -17,7 +17,9 @@ import { fechaHoy } from "../hooks/fecha";
 import { MAPA_ALTA_NIVEL,  MAPA_MOD_NIVEL,
          MAPA_ESTADO_NIVEL, MAPA_LISTADO_NIVEL,
  } from "../respuestas/niveles";
+
 import { ResulListadoNivelUsuarios } from "../tipados/nivel.data";
+
 import { CrearNivelInput ,  ModificarNivelInput, 
           EstadoNivelInput, ListadoNivelInput, ListadoNivelSinPagInput
         } from "../squemas/nivel";
