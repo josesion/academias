@@ -1,28 +1,33 @@
 import "./movimientocaja.css";
-import { Calendar, Clock, Wallet, Landmark, Tag } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  Wallet,
+  Landmark,
+  ArrowDownLeft,
+  ArrowUpRight,
+} from "lucide-react";
 
-// Definimos qué datos necesita cada fila
 export interface Movimiento {
   id_movimiento: number;
   monto: number;
   descripcion: string | null;
-  referencia_id: number | null; // Lo agregamos porque está en tu SQL
+  referencia_id: number | null;
   nombre_categoria: string;
-  tipo_movimiento: "ingreso" | "egreso"; // Refleja el tipo de movimiento de la categoría
+  tipo_movimiento: "ingreso" | "egreso";
 
-  // Nuevos campos de la tabla cuentas_escuela
-  nombre_cuenta: string; // Ej: "Efectivo", "Mercado Pago"
+  nombre_cuenta: string;
   tipo_cuenta: "fisico" | "virtual";
 
-  // Campos formateados por MySQL
-  fecha_grupo: string; // Formato 'YYYY-MM-DD'
-  hora_formateada: string; // Formato 'HH:mm'
+  fecha_grupo: string;
+  hora_formateada: string;
   observaciones: string;
   nombre_alumno_vinculado: string | null;
 }
 
 interface MovimientoCajaProps {
   movimientos: Movimiento[];
+
   infoDetalle: (
     id_movimiento: number,
     tipo: "ingreso" | "egreso",
@@ -43,29 +48,48 @@ export const MovientoCaja = ({
 }: MovimientoCajaProps) => {
   return (
     <div className="movimiento_detalle_contenedor">
-      <div className="movimiento_header" role="row" aria-hidden="true">
+      {/* =========================
+            HEADER DESKTOP
+      ========================== */}
+
+      <div className="movimiento_header">
         <span>
-          <Calendar size={13} /> Fecha
+          <Calendar size={14} />
+          Fecha
         </span>
+
         <span>
-          <Clock size={13} /> Hora
+          <Clock size={14} />
+          Hora
         </span>
+
         <span>
-          <Wallet size={13} /> Cuenta
+          <Wallet size={14} />
+          Cuenta
         </span>
-        <span>Tipo</span>
+
+        <span>Estado</span>
+
         <span>
-          <Landmark size={13} /> Categoría
+          <Landmark size={14} />
+          Categoría
         </span>
+
         <span className="header_monto">Monto</span>
       </div>
 
-      <div className="movimiento_lista" role="table">
+      {/* =========================
+                LISTADO
+      ========================== */}
+
+      <div className="movimiento_lista">
         {movimientos
-          .filter((mov) => mov.nombre_categoria !== "Saldo Inicial") // Filtro para no mostrar saldos iniciales
+          .filter((mov) => mov.nombre_categoria !== "Saldo Inicial")
           .map((mov) => (
             <div
-              onClick={() => {
+              key={mov.id_movimiento}
+              className={`movimiento_fila ${mov.tipo_movimiento}`}
+              onClick={() =>
                 infoDetalle(
                   mov.id_movimiento,
                   mov.tipo_movimiento,
@@ -77,60 +101,79 @@ export const MovientoCaja = ({
                   mov.hora_formateada,
                   mov.nombre_categoria,
                   mov.nombre_alumno_vinculado,
-                );
-              }}
-              key={mov.id_movimiento}
-              role="row"
-              className={
-                mov.tipo_movimiento === "ingreso"
-                  ? "movimiento_fila fila-ingreso"
-                  : "movimiento_fila fila-egreso"
+                )
               }
             >
-              <span className="campo campo_fecha" role="cell">
+              {/* Fecha */}
+
+              <div className="campo campo_fecha">
                 <span className="campo_label">
-                  <Calendar size={12} /> Fecha
+                  <Calendar size={12} />
+                  Fecha
                 </span>
-                {mov.fecha_grupo}
-              </span>
 
-              <span className="campo campo_hora" role="cell">
+                <span>{mov.fecha_grupo}</span>
+              </div>
+
+              {/* Hora */}
+
+              <div className="campo campo_hora">
                 <span className="campo_label">
-                  <Clock size={12} /> Hora
+                  <Clock size={12} />
+                  Hora
                 </span>
-                {mov.hora_formateada}
-              </span>
 
-              <span className="campo campo_cuenta" role="cell">
+                <span>{mov.hora_formateada}</span>
+              </div>
+
+              {/* Cuenta */}
+
+              <div className="campo campo_cuenta">
                 <span className="campo_label">
-                  <Wallet size={12} /> Cuenta
+                  <Wallet size={12} />
+                  Cuenta
                 </span>
-                {mov.nombre_cuenta}
-              </span>
 
-              <span className="campo campo_tipo_cuenta" role="cell">
-                <span className="campo_label">Tipo</span>
-                {mov.tipo_cuenta}
-              </span>
+                <span>{mov.nombre_cuenta}</span>
+              </div>
 
-              <span className="campo campo_categoria" role="cell">
+              {/* Badge */}
+
+              <div className="campo campo_estado">
+                <span className="campo_label">Estado</span>
+
+                <div className={`badge_estado ${mov.tipo_movimiento}`}>
+                  {mov.tipo_movimiento === "ingreso" ? (
+                    <>
+                      <ArrowDownLeft size={14} />
+                      Ingreso
+                    </>
+                  ) : (
+                    <>
+                      <ArrowUpRight size={14} />
+                      Egreso
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Categoría */}
+
+              <div className="campo campo_categoria">
                 <span className="campo_label">
-                  <Landmark size={12} /> Categoría
+                  <Landmark size={12} />
+                  Categoría
                 </span>
-                {mov.nombre_categoria}
-              </span>
 
-              <span
-                className={
-                  mov.tipo_movimiento === "ingreso"
-                    ? "campo campo_monto monto-positivo"
-                    : "campo campo_monto monto-negativo"
-                }
-                role="cell"
-              >
+                <span>{mov.nombre_categoria}</span>
+              </div>
+
+              {/* Monto */}
+
+              <div className={`campo campo_monto ${mov.tipo_movimiento}`}>
                 {mov.tipo_movimiento === "ingreso" ? "+" : "-"} $
                 {mov.monto.toLocaleString("es-AR")}
-              </span>
+              </div>
             </div>
           ))}
       </div>

@@ -6,12 +6,17 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
 export const useMenuNav = () => {
   const navegar = useNavigate();
   const { rol } = useContext(RutasProtegidasContext);
-
+ 
   // Estado para el menú en dispositivos móviles (abierto/cerrado)
   const [menuMobileAbierto, setMenuMobileAbierto] = useState(false);
-  
+
+
   // Estado para el acordeón: guarda el nombre de la sección desplegada (ej: 'operaciones')
   const [seccionAbierta, setSeccionAbierta] = useState<string | null>(null);
+
+
+
+
 
   /**
    * Cambia el estado de una sección del menú.
@@ -41,6 +46,6 @@ export const useMenuNav = () => {
     seccionAbierta,
     alternarSeccion,
     alternarMenuMobile,
-    irA
+    irA,
   };
 };

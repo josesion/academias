@@ -1,85 +1,42 @@
 /* ==========================================================================
-   PANEL METODOS DE PAGO — CYBER GLASS PREMIUM
+   PANEL MÉTODOS DE PAGO — TOKENS DE MARCA
    ========================================================================== */
 
 .panel_metodo_pago_contenedor {
   position: relative;
   box-sizing: border-box;
 
-  /* antes: min-width:280px sin box-sizing → desbordaba el sidebar de 300px */
   width: 100%;
   max-width: 100%;
 
-  /* habilita las container queries de acá abajo, basadas en el ancho real
-     disponible del panel (por ej. el sidebar de 300px) y no en la ventana */
   container-type: inline-size;
   container-name: panel-pagos;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(15, 23, 42, 0.92),
-      rgba(2, 6, 23, 0.96)
-    );
-
+  background: var(--fondo-principal);
   backdrop-filter: blur(18px);
 
-  border-radius: 24px;
+  border-radius: var(--radio-lg);
 
   padding: 20px;
 
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--borde);
 
   display: flex;
   flex-direction: column;
   gap: 12px;
 
-  box-shadow:
-    0 12px 35px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow: var(--sombra-md);
 
+  transition: var(--transicion);
 
-  transition: transform .28s ease, box-shadow .28s ease, border-color .28s ease;
-
-
-    height: 480px;          /* altura fija */
-    width: 100%;
-    overflow: hidden;       /* importante */
-}
-
-/* Glow superior como tarjetas */
-.panel_metodo_pago_contenedor::after {
-  content: "";
-
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  width: 70%;
-  height: 2px;
-
-  border-radius: 999px;
-
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.7),
-    transparent
-  );
-
-  opacity: 0.25;
+  height: 480px;
+  overflow: hidden;
 }
 
 .panel_metodo_pago_contenedor:hover {
   transform: translateY(-3px);
-
-  border-color: rgba(255,255,255,0.10);
-
-  box-shadow:
-    0 22px 50px rgba(0,0,0,0.58),
-    0 0 25px rgba(6,182,212,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-lg);
 }
 
 /* ==========================================================================
@@ -91,9 +48,9 @@
   align-items: center;
   gap: 8px;
 
-  color: #94a3b8;
+  color: var(--texto-secundario);
 
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid var(--borde);
   padding-bottom: 10px;
   margin-bottom: 4px;
 }
@@ -101,12 +58,12 @@
 .panel_titulo {
   margin: 0;
 
-  font-size: 0.8rem;
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
   text-transform: uppercase;
   letter-spacing: 1.6px;
 
-  color: #94a3b8;
-  opacity: 0.9;
+  color: var(--texto-secundario);
 }
 
 /* ==========================================================================
@@ -116,8 +73,9 @@
 .panel_vacio {
   padding: 18px 6px;
 
-  color: #64748b;
-  font-size: 0.82rem;
+  color: var(--texto-deshabilitado);
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
   text-align: center;
 }
 
@@ -129,90 +87,74 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
 
-    padding-right: 4px;  
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 4px;
 }
 
-
-.panel_lista::-webkit-scrollbar{
-    width:6px;
+.panel_lista::-webkit-scrollbar {
+  width: 6px;
 }
 
-.panel_lista::-webkit-scrollbar-track{
-    background:rgba(255,255,255,.05);
-    border-radius:10px;
+.panel_lista::-webkit-scrollbar-track {
+  background: var(--fondo-hover);
+  border-radius: 10px;
 }
 
-.panel_lista::-webkit-scrollbar-thumb{
-    background:linear-gradient(
-        180deg,
-        #4f46e5,
-        #06b6d4,
-        #a855f7
-    );
-    border-radius:10px;
+.panel_lista::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+  border-radius: 10px;
 }
 
-.panel_lista::-webkit-scrollbar-thumb:hover{
-    background:linear-gradient(
-        180deg,
-        #6366f1,
-        #22d3ee,
-        #c084fc
-    );
+.panel_lista::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-primario) 85%, white),
+    color-mix(in srgb, var(--color-secundario) 85%, white)
+  );
 }
 
 .metodo_item_completo {
   position: relative;
   box-sizing: border-box;
 
-  padding: 14px 16px 14px 38px;
+  padding: 14px 16px 14px 30px;
 
   display: flex;
   flex-direction: column;
   gap: 4px;
-
   justify-content: center;
 
-  border-radius: 18px;
+  border-radius: var(--radio-md);
 
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--fondo-hover);
 
-  transition: all 0.25s ease;
+  transition: var(--transicion);
 
   overflow: hidden;
 }
 
-/* línea lateral cyber */
+/* línea lateral de acento */
 .metodo_item_completo::before {
   content: "";
 
   position: absolute;
-
-  left: 14px;
+  left: 12px;
   top: 12px;
   bottom: 12px;
 
-  width: 6px;
-
+  width: 4px;
   border-radius: 999px;
 
-  background: linear-gradient(180deg, #4f46e5, #06b6d4);
-
-  box-shadow:
-    0 0 16px rgba(79, 70, 229, 0.55),
-    0 0 20px rgba(6, 182, 212, 0.25);
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
 }
 
 .metodo_item_completo:hover {
   transform: translateX(6px);
-
-  background: rgba(255,255,255,0.05);
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  background: color-mix(in srgb, var(--texto-principal) 6%, var(--fondo-hover));
 }
 
 /* ==========================================================================
@@ -230,13 +172,12 @@
 .metodo_nombre {
   min-width: 0;
 
+  font-family: var(--fuente-codigo);
   font-size: 0.65rem;
   letter-spacing: 1.4px;
   text-transform: uppercase;
 
-  opacity: 0.7;
-
-  color: #94a3b8;
+  color: var(--texto-deshabilitado);
 
   overflow: hidden;
   text-overflow: ellipsis;
@@ -246,14 +187,13 @@
 .metodo_monto_total {
   flex-shrink: 0;
 
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-xl);
+  font-weight: var(--peso-negrita);
 
-  color: var(--color-letra);
+  color: var(--texto-principal);
 
   font-variant-numeric: tabular-nums;
-
-  text-shadow: 0 0 12px rgba(255,255,255,0.04);
 }
 
 .metodo_desglose {
@@ -262,8 +202,6 @@
   gap: 4px 12px;
 
   margin-top: 2px;
-
-  opacity: 0.85;
 }
 
 .desglose_dato {
@@ -271,13 +209,13 @@
   gap: 4px;
   min-width: 0;
 
-  font-size: 0.75rem;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
 }
 
 .dato_label {
   flex-shrink: 0;
-  opacity: 0.4;
-  color: var(--color-letra);
+  color: var(--texto-deshabilitado);
 }
 
 .dato_valor {
@@ -285,7 +223,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  color: var(--color-letra);
+  color: var(--texto-secundario);
 }
 
 /* ==========================================================================
@@ -293,32 +231,31 @@
    ========================================================================== */
 
 .positivo {
-  color: #10b981 !important;
-  font-weight: 700;
+  color: var(--color-exito) !important;
+  font-weight: var(--peso-negrita);
 }
 
 .negativo {
-  color: #ef4444 !important;
-  font-weight: 700;
+  color: var(--color-error) !important;
+  font-weight: var(--peso-negrita);
 }
 
 /* ==========================================================================
-   RESPONSIVE — container queries: reaccionan al ancho real del panel,
-   sirva dentro de un sidebar angosto o a lo ancho de toda la pantalla
+   RESPONSIVE — container queries
    ========================================================================== */
 
 @container panel-pagos (max-width: 320px) {
   .metodo_item_completo {
-    padding: 12px 14px 12px 30px;
+    padding: 12px 14px 12px 26px;
   }
 
   .metodo_item_completo::before {
     left: 10px;
-    width: 4px;
+    width: 3px;
   }
 
   .metodo_monto_total {
-    font-size: 1rem;
+    font-size: var(--texto-lg);
   }
 
   .metodo_desglose {
@@ -339,8 +276,7 @@
   }
 }
 
-/* navegadores sin soporte de container queries: se mantiene el comportamiento
-   anterior basado en el ancho de la ventana como red de contención */
+/* fallback sin soporte de container queries */
 @supports not (container-type: inline-size) {
   @media (max-width: 1024px) {
     .panel_metodo_pago_contenedor {
@@ -350,16 +286,16 @@
 
   @media (max-width: 480px) {
     .metodo_item_completo {
-      padding: 12px 14px 12px 30px;
+      padding: 12px 14px 12px 26px;
     }
 
     .metodo_item_completo::before {
       left: 10px;
-      width: 4px;
+      width: 3px;
     }
 
     .metodo_monto_total {
-      font-size: 1rem;
+      font-size: var(--texto-lg);
     }
 
     .metodo_desglose {

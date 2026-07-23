@@ -75,16 +75,14 @@
 
     0%,100%{
 
-        transform:scale(.95);
-        opacity:.45;
-
+        opacity:.35;
+        transform:scale(1);
     }
 
     50%{
 
-        transform:scale(1.08);
-        opacity:.9;
-
+        opacity:.55;
+        transform:scale(1.03);
     }
 
 }

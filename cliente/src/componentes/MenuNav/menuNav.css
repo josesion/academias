@@ -51,6 +51,41 @@
 }
 
 /* ============================================================
+   USUARIO EN NAVBAR
+   ============================================================ */
+
+.app-name-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.app-user-label {
+    font-family: var(--fuente-principal);
+    font-size: 9px;
+    font-weight: var(--peso-regular);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    user-select: none;
+}
+
+.app-user-name {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    letter-spacing: .02em;
+    user-select: none;
+}
+
+/* ============================================================
    LISTA
    ============================================================ */
 

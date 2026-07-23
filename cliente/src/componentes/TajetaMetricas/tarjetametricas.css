@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TARJETA MÉTRICA - CYBER GLASS
+   TARJETA MÉTRICA — TOKENS DE MARCA
    ========================================================================== */
 
 .tarjeta_metrica_contenedor {
@@ -15,394 +15,275 @@
 
     overflow: hidden;
 
-    border-radius: 24px;
+    border-radius: var(--radio-lg);
 
-    background:
-        radial-gradient(circle at top right,
-        rgba(99,102,241,.10),
-        transparent 35%),
-        linear-gradient(145deg,
-        rgba(15,23,42,.95),
-        rgba(2,6,23,.98));
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
 
-    backdrop-filter: blur(18px);
+    box-shadow: var(--sombra-md);
 
-    border: 1px solid rgba(255,255,255,.06);
-
-    box-shadow:
-        0 14px 35px rgba(0,0,0,.45),
-        inset 0 1px 0 rgba(255,255,255,.04);
-
-    transition:
-        transform .25s ease,
-        box-shadow .25s ease,
-        border-color .25s ease;
+    transition: var(--transicion);
 }
 
-.tarjeta_metrica_contenedor:hover{
+.tarjeta_metrica_contenedor:hover {
     transform: translateY(-4px);
-
-    border-color: rgba(255,255,255,.10);
-
-    box-shadow:
-        0 24px 55px rgba(0,0,0,.55),
-        0 0 25px rgba(99,102,241,.18);
-}
-
-.tarjeta_metrica_contenedor::after{
-    content:"";
-
-    position:absolute;
-
-    left:50%;
-    top:0;
-
-    transform:translateX(-50%);
-
-    width:70%;
-    height:2px;
-
-    border-radius:999px;
-
-    background:linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.7),
-        transparent
-    );
-
-    opacity:.35;
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-lg);
 }
 
 /* ==========================================================================
    CONTENIDO
    ========================================================================== */
 
-.tarjeta_metrica_contenido{
-    display:flex;
-    align-items:center;
-    gap:22px;
+.tarjeta_metrica_contenido {
+    display: flex;
+    align-items: center;
+    gap: 22px;
 
-    width:100%;
+    width: 100%;
 }
 
-/* Cuando no hay porcentaje ni leyenda */
-
-.tarjeta_metrica_contenido.centrado{
-    justify-content:center;
-    text-align:center;
+.tarjeta_metrica_contenido.centrado {
+    justify-content: center;
+    text-align: center;
 }
 
 /* ==========================================================================
    LOGO
    ========================================================================== */
 
-.tarjeta_metrica_logo{
-    display:flex;
-    justify-content:center;
-    align-items:center;
+.tarjeta_metrica_logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    width:68px;
-    min-width:68px;
-    height:68px;
+    width: 68px;
+    min-width: 68px;
+    height: 68px;
 
-    border-radius:20px;
+    border-radius: var(--radio-md);
 
-    color:#fff;
+    color: var(--texto-principal);
 
-    box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.10),
-        0 10px 24px rgba(0,0,0,.30);
+    box-shadow: var(--sombra-sm);
 }
 
-.tarjeta_metrica_logo svg{
-    width:34px;
-    height:34px;
+.tarjeta_metrica_logo svg {
+    width: 34px;
+    height: 34px;
 }
 
 /* ==========================================================================
    INFORMACIÓN
    ========================================================================== */
 
-.tarjeta_metrica_info{
-    display:flex;
-    flex-direction:column;
-
-    gap:6px;
+.tarjeta_metrica_info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-.tarjeta_metrica_info.centrado{
-    justify-content:center;
-    align-items:center;
+.tarjeta_metrica_info.centrado {
+    justify-content: center;
+    align-items: center;
 }
 
-.tarjeta_metrica_titulo{
-    margin:0;
+.tarjeta_metrica_titulo {
+    margin: 0;
 
-    color:#94a3b8;
-
-    font-size:.72rem;
-
-    font-weight:800;
-
-    letter-spacing:1.4px;
-
-    text-transform:uppercase;
+    font-family: var(--fuente-codigo);
+    color: var(--texto-secundario);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
 }
 
-.tarjeta_metrica_valor{
-    margin:0;
+.tarjeta_metrica_valor {
+    margin: 0;
 
-    color:#fff;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
 
-    font-size:2rem;
-
-    font-weight:900;
-
-    letter-spacing:-.5px;
-
-    text-shadow:0 0 12px rgba(255,255,255,.08);
-
-    font-variant-numeric:tabular-nums;
+    font-variant-numeric: tabular-nums;
 }
 
 .tarjeta_metrica_porcentaje,
-.tarjeta_metrica_leyenda{
-    display:flex;
-    align-items:center;
+.tarjeta_metrica_leyenda {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 
-    gap:6px;
+    margin: 0;
 
-    margin:0;
-
-    font-size:.82rem;
-
-    font-weight:700;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
 }
 
-.tarjeta_metrica_leyenda{
-    color:#94a3b8;
+.tarjeta_metrica_leyenda {
+    color: var(--texto-secundario);
 }
 
-.positivo{
-    color:#22c55e;
+.positivo {
+    color: var(--color-exito);
 }
 
-.negativo{
-    color:#ef4444;
+.negativo {
+    color: var(--color-error);
 }
 
-.neutro{
-    color:#94a3b8;
+.neutro {
+    color: var(--texto-secundario);
 }
 
 /* ==========================================================================
-   COLORES
+   COLORES POR TIPO
    ========================================================================== */
 
-.tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo{
-    background:linear-gradient(135deg,#22c55e,#10b981);
+.tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
+    background: var(--color-exito);
 }
 
-.tarjeta_metrica_contenedor.nuevos .tarjeta_metrica_logo{
-    background:linear-gradient(135deg,#3b82f6,#2563eb);
+.tarjeta_metrica_contenedor.nuevos .tarjeta_metrica_logo {
+    background: var(--color-secundario);
 }
 
-.tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo{
-    background:linear-gradient(135deg,#ef4444,#dc2626);
+.tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
+    background: var(--color-error);
 }
 
-.tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo{
-    background:linear-gradient(135deg,#f59e0b,#d97706);
+.tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
+    background: var(--color-advertencia);
 }
 
-.tarjeta_metrica_contenedor.caja .tarjeta_metrica_logo{
-    background:linear-gradient(135deg,#a855f7,#7c3aed);
+.tarjeta_metrica_contenedor.caja .tarjeta_metrica_logo {
+    background: var(--color-primario);
 }
 
-/* Glow del fondo */
 
-.tarjeta_metrica_contenedor.activos{
-    background:
-        radial-gradient(circle at top right,rgba(34,197,94,.15),transparent 35%),
-        linear-gradient(145deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
-}
-
-.tarjeta_metrica_contenedor.nuevos{
-    background:
-        radial-gradient(circle at top right,rgba(59,130,246,.15),transparent 35%),
-        linear-gradient(145deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
-}
-
-.tarjeta_metrica_contenedor.vencidos{
-    background:
-        radial-gradient(circle at top right,rgba(239,68,68,.15),transparent 35%),
-        linear-gradient(145deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
-}
-
-.tarjeta_metrica_contenedor.por_vencer{
-    background:
-        radial-gradient(circle at top right,rgba(245,158,11,.18),transparent 35%),
-        linear-gradient(145deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
-}
-
-.tarjeta_metrica_contenedor.caja{
-    background:
-        radial-gradient(circle at top right,rgba(168,85,247,.18),transparent 35%),
-        linear-gradient(145deg,rgba(15,23,42,.95),rgba(2,6,23,.98));
-}
 
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
-
-@media (max-width:1200px){
-
-    .tarjeta_metrica_contenedor{
-        padding:20px;
-        min-height:115px;
+@media (max-width: 1200px) {
+    .tarjeta_metrica_contenedor {
+        padding: 20px;
+        min-height: 115px;
     }
-
-    .tarjeta_metrica_contenido{
-        gap:18px;
+    .tarjeta_metrica_contenido {
+        gap: 18px;
     }
-
-    .tarjeta_metrica_logo{
-        width:62px;
-        min-width:62px;
-        height:62px;
+    .tarjeta_metrica_logo {
+        width: 62px;
+        min-width: 62px;
+        height: 62px;
     }
-
-    .tarjeta_metrica_logo svg{
-        width:30px;
-        height:30px;
+    .tarjeta_metrica_logo svg {
+        width: 30px;
+        height: 30px;
     }
-
-    .tarjeta_metrica_valor{
-        font-size:1.8rem;
+    .tarjeta_metrica_valor {
+        font-size: 1.7rem;
     }
-
 }
 
-@media (max-width:992px){
-
-    .tarjeta_metrica_contenedor{
-        padding:18px;
-        min-height:110px;
+@media (max-width: 992px) {
+    .tarjeta_metrica_contenedor {
+        padding: 18px;
+        min-height: 110px;
     }
-
-    .tarjeta_metrica_contenido{
-        justify-content:center;
-        align-items:center;
-        gap:16px;
+    .tarjeta_metrica_contenido {
+        justify-content: center;
+        align-items: center;
+        gap: 16px;
     }
-
-    .tarjeta_metrica_logo{
-        width:58px;
-        min-width:58px;
-        height:58px;
-        border-radius:18px;
+    .tarjeta_metrica_logo {
+        width: 58px;
+        min-width: 58px;
+        height: 58px;
+        border-radius: var(--radio-sm);
     }
-
-    .tarjeta_metrica_logo svg{
-        width:28px;
-        height:28px;
+    .tarjeta_metrica_logo svg {
+        width: 28px;
+        height: 28px;
     }
-
-    .tarjeta_metrica_info{
-        justify-content:center;
+    .tarjeta_metrica_info {
+        justify-content: center;
     }
-
-    .tarjeta_metrica_valor{
-        font-size:1.6rem;
+    .tarjeta_metrica_valor {
+        font-size: 1.5rem;
     }
-
 }
 
-@media (max-width:768px){
-
-    .tarjeta_metrica_contenedor{
-        padding:18px;
-        min-height:100px;
+@media (max-width: 768px) {
+    .tarjeta_metrica_contenedor {
+        padding: 18px;
+        min-height: 100px;
     }
-
-    .tarjeta_metrica_contenido{
-        justify-content:center;
-        align-items:center;
-        text-align:center;
-        gap:14px;
+    .tarjeta_metrica_contenido {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 14px;
     }
-
-    .tarjeta_metrica_info{
-        align-items:center;
-        text-align:center;
+    .tarjeta_metrica_info {
+        align-items: center;
+        text-align: center;
     }
-
-    .tarjeta_metrica_titulo{
-        font-size:.70rem;
+    .tarjeta_metrica_titulo {
+        font-size: 0.66rem;
     }
-
-    .tarjeta_metrica_valor{
-        font-size:1.45rem;
+    .tarjeta_metrica_valor {
+        font-size: 1.35rem;
     }
-
     .tarjeta_metrica_porcentaje,
-    .tarjeta_metrica_leyenda{
-        justify-content:center;
-        font-size:.78rem;
+    .tarjeta_metrica_leyenda {
+        justify-content: center;
+        font-size: var(--texto-xs);
     }
-
 }
 
-@media (max-width:480px){
-
-    .tarjeta_metrica_contenedor{
-        padding:16px;
-        min-height:95px;
+@media (max-width: 480px) {
+    .tarjeta_metrica_contenedor {
+        padding: 16px;
+        min-height: 95px;
     }
-
-    .tarjeta_metrica_contenido{
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-        text-align:center;
-        gap:12px;
+    .tarjeta_metrica_contenido {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
     }
-
-    .tarjeta_metrica_logo{
-        width:54px;
-        min-width:54px;
-        height:54px;
-        border-radius:16px;
+    .tarjeta_metrica_logo {
+        width: 54px;
+        min-width: 54px;
+        height: 54px;
+        border-radius: var(--radio-sm);
     }
-
-    .tarjeta_metrica_logo svg{
-        width:26px;
-        height:26px;
+    .tarjeta_metrica_logo svg {
+        width: 26px;
+        height: 26px;
     }
-
-    .tarjeta_metrica_info{
-        align-items:center;
-        text-align:center;
-        width:100%;
+    .tarjeta_metrica_info {
+        align-items: center;
+        text-align: center;
+        width: 100%;
     }
-
-    .tarjeta_metrica_titulo{
-        font-size:.68rem;
+    .tarjeta_metrica_titulo {
+        font-size: 0.64rem;
     }
-
-    .tarjeta_metrica_valor{
-        font-size:1.35rem;
+    .tarjeta_metrica_valor {
+        font-size: 1.25rem;
     }
-
     .tarjeta_metrica_porcentaje,
-    .tarjeta_metrica_leyenda{
-        justify-content:center;
-        font-size:.75rem;
+    .tarjeta_metrica_leyenda {
+        justify-content: center;
+        font-size: 0.72rem;
     }
-
 }

@@ -56,7 +56,13 @@ export const MenuNav = () => {
   return (
     <nav className="menu_nav">
       <div className="app-name-container">
-        <Logo size={65} />
+        <Logo size={60} />
+        <div className="app-user-info">
+          <span className="app-user-label">Usuario</span>
+          <span className="app-user-name">
+            {rol?.usuario ? rol.usuario : "---"}
+          </span>
+        </div>
       </div>
 
       <ul
