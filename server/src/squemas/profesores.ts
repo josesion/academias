@@ -41,6 +41,9 @@ celular: z
         "El estado 'baja' debe ser uno de: activos, inactivos, baja o suspendido",
     }),
 
+  id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }),   
 
   id_escuela: z
     .number({
@@ -72,6 +75,7 @@ celular: z
 
 
 export const CrearProfesorEscuelaSchema = z.object({
+
   dni: z
     .string()
     .min(1, { message: "El DNI del profesor es obligatorio" })
@@ -120,6 +124,17 @@ export const CrearProfesorEscuelaSchema = z.object({
 });
 
 export const  ModProfesoresSchema = z.object({
+  id_escuela: z
+    .number({
+       message : "El ID de la escuela debe ser un número",
+    })
+    .int({ message: "El ID de la escuela debe ser un número entero" })
+    .nonnegative({ message: "El ID de la escuela no puede ser negativo" }),
+
+  id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }),   
+
 dni: z
     .string()
     .min(8, { message: "El DNI debe tener 8 digitos" })
@@ -159,6 +174,11 @@ export const EstadoProfesorSchema = z.object({
       message: "El DNI solo puede contener números",
     }),
 
+
+   id_usuario : z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }),       
+
    id_escuela: z
     .number({
        message : "El ID de la escuela debe ser un número",
@@ -192,6 +212,7 @@ export const ListaProfeUsuariosSchema = z.object({
         id_escuela  :    z.number({message : "Ident. Escuela debe ser numerico"})
                     .int({message : "Ident. Escuela debe ser entero"})
                     .positive({ message : "Ident. Escuela debe ser positivo"}),
+
 
         limit: z.coerce.number().int().min(1).default(10), 
         offset: z.coerce.number().int().min(0).default(0),  

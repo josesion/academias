@@ -1,6 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataProfesores } from "../data/profesores.data";
-
+import { registroHistorial } from "../utils/postHistorial";
 
 import { TipadoData } from "../tipados/tipado.data";
 import { CrearProfesorSchema , ModProfesoresSchema, EstadoProfesorSchema, ListaProfeUsuariosSchema,
@@ -9,21 +9,41 @@ import { CrearProfesorSchema , ModProfesoresSchema, EstadoProfesorSchema, ListaP
 } from "../squemas/profesores"; 
 
 import { ProfesoresGlobales , FiltroProfeEscuelaBaja, ResulListadoProfesoresUsuarios, ListadoProfeResults } from "../tipados/profesores.data";
+import { type HistorialInputs } from "../squemas/historial";
+
 
 /**
- * Registra un nuevo profesor en el sistema global (si no existe) y lo vincula a una escuela específica.
+ * Servicio encargado de gestionar el alta de un profesor (tanto a nivel global del sistema como asociado a una escuela específica),
+ * validando los datos con Zod, verificando si ya existe previamente, registrando la acción en el historial de auditoría
+ * y retornando la respuesta estructurada correspondiente.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `CrearProfesorSchema`.
+ * 2. Verifica si el profesor ya existe globalmente en el sistema (`dataProfesores.verProfesor`). Si no existe (`PROFESOR_NO_EXISTE`), procede a crearlo globalmente (`dataProfesores.altaProfesores`).
+ * 3. Comprueba si el profesor ya se encuentra asociado a la escuela (`dataProfesores.verProfesorEscuela`).
+ * 4. Si ya existe en la escuela (`PROFESORESCUELA_EXISTE`), retorna un error indicando que el profesor ya está registrado allí.
+ * 5. Si no existe en la escuela (`PROFESORESCUELA_NO_EXISTE`), realiza la vinculación mediante `dataProfesores.altaProfesoresEscuela`.
+ * 6. Si la vinculación es exitosa (`PROFESORESCUELA_ALTA`), construye y registra un evento de auditoría con la acción "CREAR" en el módulo "PROFESORES".
+ * 7. Retorna la respuesta de éxito o los distintos códigos de error según las validaciones o fallos en el servidor.
  *
  * @async
  * @function altaProfesor
- * @param {ProfesorInputs} profe - Objeto con los datos de entrada del profesor a registrar.
- * @returns {Promise<TipadoData<{ dni: string }>>} Promesa que resuelve con el resultado de la operación:
- * * **Respuestas de Éxito:**
- * - `ALTA_PROFE_OK`: El profesor fue vinculado a la escuela correctamente.
- * * **Respuestas de Error:**
- * - `ERROR_ALTA_PROFESPOR_MAESTRO`: Falló la creación del profesor en la base de datos global.
- * - `PROFESOR_EXISTE`: El profesor ya estaba vinculado a la escuela especificada.
- * - `ERROR_SERVIDOR`: Error genérico si no se cumple ninguna de las condiciones controladas.
- * * @throws {ZodError} Si los datos de entrada `profe` no cumplen con la validación de `CrearProfesorSchema`.
+ * @param {Object} profe - Objeto con los datos necesarios para dar de alta al profesor 
+ * (incluyendo DNI, nombre, apellido, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<Object>} Promesa que resuelve con el estado de la operación,
+ * incluyendo mensajes descriptivos, datos del DNI registrado y códigos internos de éxito o error.
+ * 
+ * @throws {Error} Si la estructura de los datos de entrada no cumple con `CrearProfesorSchema`.
+ * 
+ * @example
+ * const resultado = await altaProfesor({
+ *    dni: "35123456",
+ *    nombre: "Juan",
+ *    apellido: "Pérez",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const altaProfesor = async ( profe : ProfesorInputs )
 : Promise<TipadoData<{ dni : string}>> =>  {
@@ -59,9 +79,25 @@ const altaProfesor = async ( profe : ProfesorInputs )
     if ( existeProfesorEscuela.code === "PROFESORESCUELA_NO_EXISTE") {
 
         const crearProfesorEscuela = await dataProfesores.altaProfesoresEscuela( dataProfe );
-        console.log("servicio", crearProfesorEscuela)
         
         if ( crearProfesorEscuela.code === "PROFESORESCUELA_ALTA" ) {
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  dataProfe.id_escuela ,
+            id_usuario :  dataProfe.id_usuario,
+            modulo : "PROFESORES",
+            accion : "CREAR",
+            id_registro: Number(dataProfe.dni),
+            descripcion: `Registro Profesor : ${dataProfe.apellido } ${dataProfe.nombre}`,
+            datos: {
+                dni : dataProfe.dni,
+                apellido : dataProfe.apellido,
+                nombre   : dataProfe.nombre,
+            }
+        }; 
+                
+        await registroHistorial( dataHistorial); 
+
             return{
                 error : false, 
                 message : "Se creo anoto correctamente",
@@ -82,15 +118,34 @@ const altaProfesor = async ( profe : ProfesorInputs )
 
 
 /**
- * Modifica los datos de un profesor en el sistema.
- * * Valida los datos de entrada mediante un esquema de Zod (`ModProfesoresSchema`)
- * y luego realiza la actualización en la base de datos o servicio correspondiente.
+ * Servicio encargado de gestionar la modificación de los datos de un profesor existente,
+ * validando la información con Zod, ejecutando la actualización en la base de datos, registrando
+ * el evento en el historial de auditoría y retornando el resultado estructurado.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `ModProfesoresSchema`.
+ * 2. Ejecuta la actualización de los datos del profesor en la capa de datos (`dataProfesores.modProfesores`).
+ * 3. Si la modificación es exitosa (`PROFESORESCUELA_MODIFICAR`), construye y registra un evento de auditoría con la acción "MODIFICAR" en el módulo "PROFESORES".
+ * 4. Retorna la respuesta de éxito correspondiente o un error de servidor en caso de fallar la operación.
  *
- * @param {ModProfesorInputs} inputDatos - Objeto con los datos del profesor que se van a modificar.
- * @returns {Promise<TipadoData<ProfesoresGlobales>>} Promesa que resuelve con el estado de la operación:
- * - En caso de éxito (`error: false`): Confirma la modificación correcta.
- * - En caso de fallo (`error: true`): Indica un error en el servidor o en el proceso.
- * * @throws {ZodError} Si los datos de entrada no cumplen con las reglas de `ModProfesoresSchema`.
+ * @async
+ * @function modProfesor
+ * @param {Object} inputDatos - Objeto con los datos necesarios para modificar al profesor 
+ * (incluyendo DNI, nombre, apellido, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<Object>} Promesa que resuelve con el estado de la operación,
+ * incluyendo mensajes descriptivos, datos actualizados y códigos internos de éxito o error.
+ * 
+ * @throws {Error} Si la estructura de los datos de entrada no cumple con `ModProfesoresSchema`.
+ * 
+ * @example
+ * const resultado = await modProfesor({
+ *    dni: 35123456,
+ *    nombre: "Juan",
+ *    apellido: "Pérez",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const modProfesor = async (inputDatos:  ModProfesorInputs)
 : Promise<TipadoData<ProfesoresGlobales>> => {
@@ -100,6 +155,23 @@ const modProfesor = async (inputDatos:  ModProfesorInputs)
     const resultadoMod = await dataProfesores.modProfesores( datosValidados );
 
     if (resultadoMod.code === "PROFESORESCUELA_MODIFICAR" ) {
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  datosValidados.id_escuela ,
+            id_usuario :  datosValidados.id_usuario,
+            modulo : "PROFESORES",
+            accion : "MODIFICAR",
+            id_registro: Number(datosValidados.dni),
+            descripcion: `Modificaron los datos  : ${datosValidados.apellido } ${datosValidados.nombre}`,
+            datos: {
+                dni : datosValidados.dni,
+                apellido : datosValidados.apellido,
+                nombre   : datosValidados.nombre,
+            }
+        }; 
+                
+        await registroHistorial( dataHistorial);         
+
         return {
             error: false,
             message: "Se modificó correctamente",
@@ -116,17 +188,34 @@ const modProfesor = async (inputDatos:  ModProfesorInputs)
 
 
 /**
- * Cambia el estado (Alta/Baja) de un profesor en el sistema.
- * * Valida los datos de entrada con `EstadoProfesorSchema` y procesa el cambio.
- * Dependiendo del resultado del servicio, confirma si el profesor fue dado de alta 
- * o eliminado (baja lógica).
+ * Servicio encargado de gestionar el cambio de estado (alta o baja / activar o inactivar) de un profesor,
+ * validando los datos con Zod, ejecutando la modificación en la base de datos, registrando
+ * la acción correspondiente en el historial de auditoría y retornando el resultado estructurado.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Valida los datos de entrada mediante el esquema `EstadoProfesorSchema`.
+ * 2. Ejecuta la modificación del estado del profesor en la capa de datos (`dataProfesores.estadoProfesor`).
+ * 3. Si el código de resultado es `PROFESORESCUELA_ELIMINAR`, registra un evento de auditoría con la acción "RESTAURAR" en el módulo "PROFESORES".
+ * 4. Si el código de resultado es `PROFESORESCUELA_ALTA`, registra un evento de auditoría con la acción "ELIMINAR" en el módulo "PROFESORES".
+ * 5. Retorna la respuesta de éxito correspondiente o un error de servidor en caso de fallar la operación.
  *
- * @param {EstadoProfesorInputs} estado - Objeto con los datos necesarios para cambiar el estado del profesor (ej. ID, nuevo estado).
- * @returns {Promise<TipadoData<FiltroProfeEscuelaBaja>>} Promesa que resuelve con el resultado de la operación:
- * - Si `code` es "MODIFICACION_PROFE_ELIMINAR_OK": Se procesó la baja correctamente.
- * - Si `code` es "MODIFICACION_PROFE_ALTA_OK": Se procesó el alta correctamente.
- * - Si `error` es `true`: Hubo un problema en el servidor.
- * * @throws {ZodError} Si el parámetro `estado` no pasa la validación del esquema `EstadoProfesorSchema`.
+ * @async
+ * @function estadoProfesor
+ * @param {Object} estado - Objeto con los datos necesarios para modificar el estado del profesor 
+ * (incluyendo DNI, estado, ID de escuela e ID de usuario).
+ * 
+ * @returns {Promise<Object>} Promesa que resuelve con el estado de la operación,
+ * incluyendo mensajes descriptivos, datos del filtro de baja y códigos internos de éxito o error.
+ * 
+ * @throws {Error} Si la estructura de los datos de entrada no cumple con `EstadoProfesorSchema`.
+ * 
+ * @example
+ * const resultado = await estadoProfesor({
+ *    dni: 35123456,
+ *    estado: "inactivo",
+ *    id_escuela: 1,
+ *    id_usuario: 5
+ * });
  */
 const estadoProfesor = async ( estado :  EstadoProfesorInputs)
 : Promise<TipadoData<FiltroProfeEscuelaBaja>> => {
@@ -136,6 +225,21 @@ const estadoProfesor = async ( estado :  EstadoProfesorInputs)
      const estadoResult  = await dataProfesores.estadoProfesor( estadoProfesorData); 
 
      if ( estadoResult.code ===  "PROFESORESCUELA_ELIMINAR" ) {
+
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  estadoProfesorData.id_escuela ,
+            id_usuario :  estadoProfesorData.id_usuario,
+            modulo : "PROFESORES",
+            accion : "RESTAURAR",
+            id_registro: Number(estadoProfesorData.dni),
+            descripcion: `Estado esta activo de : ${estadoProfesorData.dni}`,
+            datos: {
+                dni : estadoProfesorData.dni,
+            }
+        }; 
+                
+        await registroHistorial( dataHistorial)        
+
         return {
             error : false,
             message : "Se elimino correctamente.",
@@ -144,6 +248,21 @@ const estadoProfesor = async ( estado :  EstadoProfesorInputs)
      };
 
      if ( estadoResult.code ===  "PROFESORESCUELA_ALTA" ) {
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  estadoProfesorData.id_escuela ,
+            id_usuario :  estadoProfesorData.id_usuario,
+            modulo : "PROFESORES",
+            accion : "ELIMINAR",
+            id_registro: Number(estadoProfesorData.dni),
+            descripcion: `Estado paso a incativo  de : ${estadoProfesorData.dni}`,
+            datos: {
+                dni : estadoProfesorData.dni,
+            }
+        }; 
+
+                
+        await registroHistorial( dataHistorial)           
+        
         return {
             error : false,
             message : "Se dio de alta correctamente.",
@@ -158,6 +277,8 @@ const estadoProfesor = async ( estado :  EstadoProfesorInputs)
     };    
 
 };
+
+
 
 /**
  * Obtiene el listado paginado de profesores asignados a una escuela.
