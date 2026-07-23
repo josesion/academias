@@ -1,8 +1,6 @@
 import {  useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListadoInscripcionReducer, inicialState } from "../reducers/ListadoInscripcion";
-
-
 import { peticiones } from "../utils/peticiones";
 
 import { type FiltroBusqueda } from "../tipadosTs/inscripciones"; 
@@ -200,8 +198,8 @@ const handleAnularInscripcion = async () =>{
             id_inscripcion : state.dataAnularInscripcion.idInscripcion as number,
             id_cuenta : state.dataAnularInscripcion.id_cuenta
        }); 
-
-       if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){
+       console.log(respuestaAnulacion)
+       if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){        
             await new Promise(resolve => setTimeout(resolve, 600));
             dispatch({ type : "SET_ACTUALIZAR_LISTADO"});
             dispatch({ type : "SET_FORMATEAR_ANULACION" });

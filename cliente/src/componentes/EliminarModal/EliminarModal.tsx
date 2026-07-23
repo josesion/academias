@@ -3,6 +3,8 @@ import { CompoError } from "../Error/Error";
 
 import "./eliminarModal.css";
 
+import { MdWarningAmber } from "react-icons/md";
+
 /**
  * @typedef {Object} ComponenteEliminar
  * @template T - El tipo de dato de la entidad que se va a manipular (debe extender de un objeto).
@@ -38,11 +40,10 @@ export function EliminarVentana<T extends object>({
   onCancelar,
   accion,
   mensaje,
-  cargando, // Por defecto no carga
+  cargando,
 }: ComponenteEliminar<T>) {
   return (
     <div className={`componente_eliminar ${cargando ? "estado_cargando" : ""}`}>
-      {/* SPINNER TECNOLÓGICO */}
       {cargando && (
         <div className="spinner_container_eliminar">
           <div className="spinner_neon_circle"></div>
@@ -50,20 +51,25 @@ export function EliminarVentana<T extends object>({
         </div>
       )}
 
+      <div className="icono_alerta_eliminar" aria-hidden="true">
+        <MdWarningAmber size={26} />
+      </div>
+
       <div className="datos_eliminar">
-        <p>¿Estás seguro de eliminar ?</p>
-        <p>{accion}</p>
+        <p>¿Estás seguro de eliminar o Restaurar?</p>
+        <p className="datos_eliminar">{accion}</p>
+        <span className="nota_eliminar">Esta acción no se puede deshacer.</span>
       </div>
 
       <div className="botonera_eliminar">
         <Boton
           texto={cargando ? "Eliminando..." : "Sí"}
-          logo={cargando ? null : "Delete"} // Ocultar logo si carga
+          logo={cargando ? null : "Delete"}
           size={20}
           clase="eliminar"
           onClick={() => onSi && data && onSi(data)}
           focus={!cargando}
-          disable={cargando} // Desactivar si carga
+          disable={cargando}
         />
 
         <Boton
@@ -72,7 +78,7 @@ export function EliminarVentana<T extends object>({
           size={20}
           clase="editar"
           onClick={onCancelar}
-          disable={cargando} // No dejar cancelar si ya está borrando
+          disable={cargando}
         />
       </div>
 

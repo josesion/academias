@@ -8,8 +8,6 @@ import { MetricasHistorial } from "../../../componentes/Historial/Historial.metr
 
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 
-import type { ResultHistorial } from "../../../servicio/historial.fetch";
-
 export const UsuarioPage = () => {
   const refGrupo1 = useRef<HTMLElement>(null);
   const [altoGrupo1, setAltoGrupo1] = useState<number>();
@@ -28,98 +26,6 @@ export const UsuarioPage = () => {
   const { state } = metricasUsuarioSeting();
   console.log(state);
 
-  const historialFicticio: ResultHistorial[] = [
-    {
-      id_historial: 10,
-      modulo: "ALUMNOS",
-      accion: "CREAR",
-      descripcion: "Se creó un nuevo alumno en la academia",
-      fecha: new Date("2026-07-18T14:12:00.000Z"),
-      nombre: "jose manuel",
-      apellido: "lopez",
-    },
-    {
-      id_historial: 9,
-      modulo: "CAJA",
-      accion: "CERRAR",
-      descripcion: "Se cerró la caja con un faltante de $350",
-      fecha: new Date("2026-07-18T13:40:00.000Z"),
-      nombre: "maria",
-      apellido: "gonzalez",
-    },
-    {
-      id_historial: 8,
-      modulo: "CAJA",
-      accion: "EGRESO",
-      descripcion: "Se registró un egreso por compra de insumos de limpieza",
-      fecha: new Date("2026-07-18T11:05:00.000Z"),
-      nombre: "maria",
-      apellido: "gonzalez",
-    },
-    {
-      id_historial: 7,
-      modulo: "USUARIOS",
-      accion: "LOGIN",
-      descripcion: "Inicio de sesión exitoso",
-      fecha: new Date("2026-07-18T09:02:00.000Z"),
-      nombre: "maria",
-      apellido: "gonzalez",
-    },
-    {
-      id_historial: 6,
-      modulo: "INSCRIPCIONES",
-      accion: "MODIFICAR",
-      descripcion: "Se modificó la inscripción de un alumno a otro horario",
-      fecha: new Date("2026-07-17T22:44:17.000Z"),
-      nombre: "jose manuel",
-      apellido: "lopez",
-    },
-    {
-      id_historial: 5,
-      modulo: "ALUMNOS",
-      accion: "ELIMINAR",
-      descripcion: "Se eliminó un alumno de la academia",
-      fecha: new Date("2026-07-17T20:15:00.000Z"),
-      nombre: "carlos",
-      apellido: "perez",
-    },
-    {
-      id_historial: 4,
-      modulo: "PROFESORES",
-      accion: "RESTAURAR",
-      descripcion: "Se restauró un profesor eliminado previamente",
-      fecha: new Date("2026-07-17T18:30:00.000Z"),
-      nombre: "carlos",
-      apellido: "perez",
-    },
-    {
-      id_historial: 3,
-      modulo: "ALUMNOS",
-      accion: "CREAR",
-      descripcion: "Se creó un nuevo alumno en la academia",
-      fecha: new Date("2026-07-17T22:44:17.000Z"),
-      nombre: "jose manuel",
-      apellido: "lopez",
-    },
-    {
-      id_historial: 2,
-      modulo: "ALUMNOS",
-      accion: "CREAR",
-      descripcion: "Se creó un nuevo alumno en la academia",
-      fecha: new Date("2026-07-17T22:34:22.000Z"),
-      nombre: "jose manuel",
-      apellido: "lopez",
-    },
-    {
-      id_historial: 1,
-      modulo: "USUARIOS",
-      accion: "LOGOUT",
-      descripcion: "Cierre de sesión",
-      fecha: new Date("2026-07-17T08:00:00.000Z"),
-      nombre: "carlos",
-      apellido: "perez",
-    },
-  ];
   return (
     <div className="usuario_contenedor_metricas">
       {/* =======================

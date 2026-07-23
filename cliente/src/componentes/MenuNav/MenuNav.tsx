@@ -1,3 +1,4 @@
+import { Logo } from "../Logo/logo";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import {
   MdOutlineAnalytics,
@@ -55,7 +56,7 @@ export const MenuNav = () => {
   return (
     <nav className="menu_nav">
       <div className="app-name-container">
-        <p className="app-name">StudioPro</p>
+        <Logo size={65} />
       </div>
 
       <ul

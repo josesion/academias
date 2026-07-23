@@ -1,137 +1,141 @@
-/* ===== CONTENEDOR GENERAL DEL CALENDARIO ===== */
+/* ============================================================
+   CALENDARIO SEMANAL — Calendario.tsx
+   ============================================================ */
+
+.contenedor_calendario_completo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* ================= TABLA / GRILLA ================= */
+
 .contenedor_calendario {
-    width: 100%;
-    max-height: 80dvh;       
-    overflow: auto;
-    /* Usamos tu gradiente de fondo de tarjeta */
-    background: linear-gradient(180deg, rgba(20, 20, 35, 0.95), rgba(10, 10, 20, 0.95));
-    border-radius: 28px; /* Igual a tu tarjeta_card_body */
-    padding: 12px;
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+  flex: 1;
+  min-height: 0;
+
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  border-radius: var(--radio-md);
+  border: 1px solid var(--borde);
+  background: var(--fondo-hover);
 }
 
-/* Tabla con espaciado para que las clases floten */
+.contenedor_calendario::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.contenedor_calendario::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.contenedor_calendario::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+  border-radius: 10px;
+}
+
 .tabla_calendario {
-    width: 100%;
-    border-collapse: separate; 
-    border-spacing: 12px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+
+  font-family: var(--fuente-principal);
 }
 
-/* Cabecera con tu estilo de Título Gradiente */
+/* Encabezado pegajoso — días de la semana */
 .cabecera_calendario th {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    padding: 16px;
-    background: #141423; /* Fondo sólido oscuro para que no se transparente el scroll */
-    color: #06b6d4; /* Color Cyan de tu gradiente */
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    border-radius: 12px;
-    border-bottom: 2px solid rgb(37, 21, 74);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+
+  background: var(--fondo-principal);
+  padding: 12px 10px;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+  text-align: center;
+
+  border-bottom: 1px solid var(--borde);
 }
 
-/* Columna de hora lateral (estilo tarjeta_key) */
-.celda_hora_lateral {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #e5e7eb;
-    opacity: 0.9; /* Más opaco para que se lea bien */
-    font-weight: 700;
-    text-align: center;
-    
-    position: sticky;
-    left: 0;
-    z-index: 90;
+/* Esquina superior izquierda: doble sticky (fila + columna) */
+.th_hora_label {
+  position: sticky;
+  left: 0;
+  z-index: 4;
 
-    /* Fondo sólido y borde derecho para separar de las clases */
-    background-color: #0f111a; 
-    border-right: 2px solid rgba(79, 70, 229, 0.3); /* Usamos el Índigo de tu gradiente */
-    padding: 0 10px;
+  min-width: 64px;
+  background: var(--fondo-principal);
+  border-right: 1px solid var(--borde);
+}
+
+/* Columna de horas — pegajosa a la izquierda */
+.celda_hora_lateral {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+
+  min-width: 64px;
+  padding: 10px 8px;
+
+  background: var(--fondo-principal);
+  border-right: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* Celdas de la grilla */
 .celda_interactiva {
-    min-width: 160px;
-    height: 110px;
-    vertical-align: top;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.01);
+  min-width: 140px;
+  height: 64px;
+  padding: 6px;
+
+  border-bottom: 1px solid var(--borde);
+  border-right: 1px solid var(--borde);
+
+  vertical-align: middle;
 }
 
-/* CLASE ASIGNADA: El "Post-it" con tu línea de color lateral */
-.wrapper_clase_postit {
-    position: relative;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 15px 15px 15px 25px; /* Espacio para la línea de la izquierda */
-    height: 100%;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    
-    transform: rotate(-1deg);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.celda_interactiva:last-child {
+  border-right: none;
 }
 
-/* La línea de color idéntica a la de tu componente */
-.wrapper_clase_postit::before {
-    content: "";
-    position: absolute;
-    left: 8px;
-    top: 12px;
-    bottom: 12px;
-    width: 4px;
-    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
-    border-radius: 6px;
-}
+/* ================= WRAPPERS DE CELDA ================= */
 
-.wrapper_clase_postit:hover {
-    transform: scale(1.05) rotate(0deg);
-    background: rgba(255, 255, 255, 0.07);
-    border-color: #06b6d4;
-    z-index: 50;
-}
-
-/* Celda vacía (discreta) */
+.wrapper_clase_postit,
 .wrapper_celda_vacia {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.2;
-    font-size: 1.5rem;
-    color: #4f46e5;
-    transition: 0.3s;
+  width: 100%;
+  height: 100%;
 }
 
-.wrapper_celda_vacia:hover {
-    opacity: 1;
-    transform: scale(1.2);
-}
+/* ================= FOOTER ================= */
 
-/* Footer y Botón */
 .seccion_footer_calendario {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 4px;
 }
 
-/* Personalización del Scroll */
-.contenedor_calendario::-webkit-scrollbar { width: 6px; height: 6px; }
-.contenedor_calendario::-webkit-scrollbar-thumb { 
-    background: #4f46e5; 
-    border-radius: 10px; 
-}
+/* ================= RESPONSIVE ================= */
 
-.th_hora_label {
-    z-index: 110 !important; /* La celda más importante para que no desaparezca */
-    border-right: 2px solid rgba(79, 70, 229, 0.3);
+@media (max-width: 768px) {
+  .celda_interactiva {
+    min-width: 120px;
+    height: 56px;
+  }
 }

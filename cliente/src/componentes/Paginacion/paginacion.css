@@ -1,172 +1,256 @@
 /* ============================================================
-   PAGINACIÓN STUDIO PRO - FULL DESIGN & ANIMATIONS
+   PAGINACIÓN - ELPIS DESIGN SYSTEM
    ============================================================ */
 
-/* --- CONTENEDOR EXTERIOR --- */
-.paginacion_contenedor {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 30px 0;
-    margin-top: auto;
-    perspective: 1000px; /* Para efectos 3D sutiles */
+.paginacion_contenedor{
+
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:30px 0;
+
 }
 
-/* --- CUERPO DE LA CÁPSULA --- */
-.paginacion_componente {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    background: linear-gradient(180deg, rgba(20, 20, 35, 0.85), rgba(10, 10, 20, 0.95));
-    backdrop-filter: blur(15px);
-    border-radius: 100px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.6),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    animation: aparecer-suave 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+
+.paginacion_componente{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:10px 14px;
+
+    background:rgba(255,255,255,.02);
+
+    border:1px solid var(--borde);
+
+    border-radius:var(--radio-lg);
+
+    transition:var(--transicion);
+
 }
 
-/* --- BOTONES DE NAVEGACIÓN (Flechas) --- */
-.btn_nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    color: #06b6d4;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.paginacion_componente:hover{
+
+    border-color:var(--borde-hover);
+
 }
 
-.btn_nav:hover:not(:disabled) {
-    color: #fff;
-    background: rgba(6, 182, 212, 0.2);
-    border-color: #06b6d4;
-    transform: scale(1.15);
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+/* ============================================================
+   CENTRO
+   ============================================================ */
+
+.paginacion_centro{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
 }
 
-.btn_nav:disabled {
-    color: rgba(255, 255, 255, 0.1);
-    background: transparent;
-    cursor: not-allowed;
-    filter: grayscale(1);
+/* ============================================================
+   BOTONES
+   ============================================================ */
+
+.btn_nav,
+.btn_generico,
+.btn_seleccionado{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    min-width:40px;
+    height:40px;
+
+    padding:0 14px;
+
+    border-radius:var(--radio-sm);
+
+    font-family:var(--fuente-principal);
+    font-size:var(--texto-sm);
+    font-weight:var(--peso-semi-negrita);
+
+    cursor:pointer;
+
+    transition:var(--transicion);
+
 }
 
-/* --- BOTONES NUMÉRICOS --- */
-.paginacion_centro {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* ============================================================
+   BOTONES NORMALES
+   ============================================================ */
+
+.btn_generico{
+
+    background:transparent;
+
+    border:1px solid transparent;
+
+    color:var(--texto-secundario);
+
 }
 
-.btn_generico, .btn_seleccionado {
-    min-width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+.btn_generico:hover{
+
+    background:var(--fondo-hover);
+
+    border-color:var(--borde);
+
+    color:var(--texto-principal);
+
+    transform:translateY(-2px);
+
 }
 
-/* Botón inactivo */
-.btn_generico {
-    background: rgba(255, 255, 255, 0.03);
-    color: rgba(255, 255, 255, 0.5);
-    border: 1px solid transparent;
+/* ============================================================
+   BOTÓN ACTIVO
+   ============================================================ */
+
+.btn_seleccionado{
+
+    background:var(--color-primario);
+
+    color:var(--texto-principal);
+
+    border:1px solid var(--color-primario);
+
 }
 
-.btn_generico:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px);
+.btn_seleccionado:hover{
+
+    filter:brightness(1.08);
+
+    transform:translateY(-2px);
+
 }
 
-/* --- BOTÓN SELECCIONADO (EL NÚCLEO) --- */
-.btn_seleccionado {
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
-    color: #fff;
-    border: none;
-    box-shadow: 0 0 20px rgba(79, 70, 229, 0.5);
-    z-index: 1;
-    animation: entrada-seleccionado 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* ============================================================
+   FLECHAS
+   ============================================================ */
+
+.btn_nav{
+
+    background:transparent;
+
+    border:1px solid transparent;
+
+    color:var(--texto-secundario);
+
 }
 
-/* Brillo de Cristal Superior */
-.btn_seleccionado::before {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    right: 2px;
-    height: 40%;
-    background: linear-gradient(rgba(255, 255, 255, 0.4), transparent);
-    border-radius: 50% 50% 10px 10px;
-    pointer-events: none;
+.btn_nav:hover:not(:disabled){
+
+    background:var(--fondo-hover);
+
+    border-color:var(--borde);
+
+    color:var(--texto-principal);
+
+    transform:translateY(-2px);
+
 }
 
-/* Aura de Neón que Respira */
-.btn_seleccionado::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #4f46e5, #06b6d4);
-    z-index: -1;
-    filter: blur(10px);
-    opacity: 0.6;
-    animation: pulso-neon 2s infinite ease-in-out;
+.btn_nav:disabled{
+
+    opacity:.35;
+
+    cursor:not-allowed;
+
+    transform:none;
+
 }
 
-/* Puntos suspensivos */
-.puntos_suspensivos {
-    color: rgba(255, 255, 255, 0.3);
-    font-weight: 800;
-    padding: 0 5px;
-    letter-spacing: 2px;
+/* ============================================================
+   PUNTOS SUSPENSIVOS
+   ============================================================ */
+
+.puntos_suspensivos{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    min-width:22px;
+
+    color:var(--texto-deshabilitado);
+
+    font-family:var(--fuente-codigo);
+
+    font-size:var(--texto-sm);
+
+    user-select:none;
+
 }
 
-/* ================= KEYFRAMES (ANIMACIONES) ================= */
+/* ============================================================
+   ANIMACIÓN DE ENTRADA
+   ============================================================ */
 
-@keyframes pulso-neon {
-    0%, 100% { transform: scale(1); opacity: 0.6; }
-    50% { transform: scale(1.35); opacity: 0.2; }
+.paginacion_componente{
+
+    animation:entradaPaginacion .35s ease;
+
 }
 
-@keyframes entrada-seleccionado {
-    0% { transform: scale(0.4); filter: brightness(3); }
-    100% { transform: scale(1); filter: brightness(1); }
-}
+@keyframes entradaPaginacion{
 
-@keyframes aparecer-suave {
-    from { opacity: 0; transform: translateY(15px) rotateX(-10deg); }
-    to { opacity: 1; transform: translateY(0) rotateX(0); }
-}
+    from{
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 600px) {
-    .paginacion_componente {
-        gap: 8px;
-        padding: 8px 12px;
+        opacity:0;
+
+        transform:translateY(10px);
+
     }
 
-    .btn_nav, .btn_generico, .btn_seleccionado {
-        min-width: 32px;
-        height: 32px;
-        font-size: 0.8rem;
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
     }
+
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media(max-width:700px){
+
+    .paginacion_componente{
+
+        gap:8px;
+
+        padding:8px 10px;
+
+    }
+
+    .paginacion_centro{
+
+        gap:6px;
+
+    }
+
+    .btn_nav,
+    .btn_generico,
+    .btn_seleccionado{
+
+        min-width:34px;
+
+        height:34px;
+
+        padding:0 10px;
+
+        font-size:var(--texto-xs);
+
+    }
+
 }

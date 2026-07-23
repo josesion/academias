@@ -1,7 +1,7 @@
 import type React from "react";
 
 import { type Horas, type DiaSemana } from "../../tipadosTs/horario";
-
+import "./claseasignar.css";
 /**
  * Componente ClaseAsignada.
  *
@@ -59,7 +59,7 @@ export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
 }) => {
   // Busca la clase correspondiente al día y hora actual
   const clase = Horarios_Clases?.find(
-    (horario) => horario.dia === dia && horario.hora_inicio === hora
+    (horario) => horario.dia === dia && horario.hora_inicio === hora,
   );
 
   if (!clase) return null;

@@ -1,0 +1,204 @@
+/* ============================================================
+   TARJETA HORARIO — resumen en vivo del formulario
+   ============================================================ */
+
+.info_horario {
+  position: relative;
+
+  padding: 24px 26px 22px 42px;
+  margin-top: 1rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+
+  color: var(--texto-principal);
+
+  box-shadow: var(--sombra-lg);
+
+  animation: infoFadeSlide 0.25s ease-out;
+  background-color: var(--);
+}
+
+/* línea de acento a la izquierda */
+.info_horario::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  bottom: 18px;
+  width: 4px;
+
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+  border-radius: 6px;
+}
+
+/* ================= TÍTULO ================= */
+
+.info_horario_titulo {
+  text-align: center;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  margin: 0 0 8px;
+
+  color: var(--texto-secundario);
+}
+
+/* ================= BLOQUES / ITEMS ================= */
+
+.info_horario_bloque {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  row-gap: 10px;
+}
+
+.info_item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info_label {
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+}
+
+.info_valor {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+}
+
+/* ================= DIVISOR ================= */
+
+.info_divisor {
+  grid-column: span 2;
+  border: none;
+  border-top: 1px solid var(--borde);
+  margin: 6px 0;
+}
+
+/* ================= ESTADO ================= */
+
+.info_estado {
+  grid-column: span 2;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 8px;
+  padding-top: 12px;
+
+  border-top: 1px solid var(--borde);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+}
+
+.info_estado_label {
+  color: var(--texto-deshabilitado);
+}
+
+.info_estado_valor {
+  font-weight: var(--peso-negrita);
+}
+
+.info_estado_valor.listo {
+  color: var(--color-exito);
+}
+
+.info_estado_valor.incompleto {
+  color: var(--color-advertencia);
+}
+
+.info_estado_valor.error {
+  color: var(--color-error);
+}
+
+/* ================= ANIMACIÓN ================= */
+
+@keyframes infoFadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .info_horario {
+    padding: 14px 16px 14px 26px;
+    border-radius: var(--radio-md);
+    gap: 10px;
+  }
+
+  .info_horario_titulo {
+    font-size: 0.62rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+
+  .info_horario_bloque {
+    grid-template-columns: 1fr;
+    row-gap: 6px;
+  }
+
+  .info_item {
+    gap: 2px;
+  }
+
+  .info_label {
+    font-size: 0.6rem;
+  }
+
+  .info_valor {
+    font-size: var(--texto-sm);
+  }
+
+  .info_divisor,
+  .info_estado {
+    grid-column: span 1;
+    margin: 4px 0;
+  }
+
+  .info_estado {
+    padding-top: 8px;
+    margin-top: 4px;
+    font-size: var(--texto-xs);
+  }
+}
+
+@media (max-width: 420px) {
+  .info_horario {
+    padding: 12px 14px 12px 22px;
+    border-radius: var(--radio-sm);
+  }
+
+  .info_valor {
+    font-size: 0.8rem;
+  }
+
+  .info_estado {
+    font-size: 0.7rem;
+  }
+}

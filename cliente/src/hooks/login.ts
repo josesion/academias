@@ -9,6 +9,7 @@ import { transformErrores } from "./erroresZod";
 import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
 import type { ErrorBackend } from "./erroresZod";
 
+
 interface LoginLogicaReturn {
     errorGenerico: string | null;
     errorsZod: Record<string, string | null>;
@@ -38,7 +39,10 @@ const inputsLogin: InputsPropsFormulario[] = [
   },
 ];
 
+
+
 export const loginLogica = () : LoginLogicaReturn =>{
+
     const navegar = useNavigate();      
     const { setRol } = useContext(RutasProtegidasContext);
 
@@ -76,10 +80,10 @@ export const loginLogica = () : LoginLogicaReturn =>{
           return;
         }
         if (respuesta.error === false) {
+
+
           setRol({
-           // escuela: respuesta.data.id_escuela,
             rol: respuesta.data.rol,
-           // id_usuario: respuesta.data.id_usuario,
             usuario : respuesta.data.usuario
           });
     

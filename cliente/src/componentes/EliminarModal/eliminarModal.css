@@ -1,161 +1,177 @@
-/* ================= CONTENEDOR PRINCIPAL DEL MODAL ================= */
+/* ============================================================
+   VENTANA DE CONFIRMACIÓN — ELIMINAR (tokens de marca)
+   ============================================================ */
+
 .componente_eliminar {
     position: relative;
-    padding: 30px;
-    background: linear-gradient(
-        180deg,
-        rgba(25, 20, 35, 0.95), /* Un tono un poco más rojizo/oscuro por ser eliminar */
-        rgba(10, 10, 20, 0.98)
-    );
-    border-radius: 28px;
-    border: 1px solid rgba(56, 51, 51, 0.2); /* Borde sutil rojizo de advertencia */
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.6),
-        inset 0 1px 1px rgba(255, 255, 255, 0.05);
-    
+
+    width: 100%;
+    max-width: 400px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-    max-width: 450px;
-    margin: 20px auto;
+    gap: 18px;
     text-align: center;
-    backdrop-filter: blur(15px);
-    animation: modalSlideIn 0.3s ease-out;
+
+    padding: 32px;
+
+    background: color-mix(in srgb, var(--fondo-secundario) 92%, transparent);
+    backdrop-filter: blur(18px);
+
+    border: 1px solid var(--borde);
+    border-top: 3px solid var(--color-primario);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-lg);
+
+    transition: var(--transicion);
+    animation: eliminar_entrada 0.3s ease;
 }
 
-/* --- Decoración lateral (Línea de color) --- */
-.componente_eliminar::before {
-    content: "";
-    position: absolute;
-    left: 12px;
-    top: 25px;
-    bottom: 25px;
-    width: 4px;
-    /* Gradiente que vira hacia el rojo/fucsia por ser acción de eliminar */
-    background: linear-gradient(180deg, #ef4444, #a855f7, #4f46e5);
-    border-radius: 10px;
+@keyframes eliminar_entrada {
+    from { opacity: 0; transform: translateY(10px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ================= ÁREA DE TEXTO ================= */
+/* ============================================================
+   ICONO DE ALERTA
+   ============================================================ */
+
+.icono_alerta_eliminar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+
+    background: color-mix(in srgb, var(--color-error) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
+    color: var(--color-error);
+
+    transition: var(--transicion);
+}
+
+/* ============================================================
+   MENSAJE
+   ============================================================ */
+
 .datos_eliminar {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    transition: var(--transicion);
+}
+
+.datos_eliminar ,p {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-md);
+    color: var(--texto-secundario);
 }
 
 .datos_eliminar p:first-child {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    color: rgba(229, 231, 235, 0.6);
     margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-md);
+    color: var(--texto-secundario);
 }
+
+
 
 .datos_eliminar p:last-child {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.4;
     margin: 0;
-    /* Resalte suave en el texto de la acción */
-    text-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    font-family: var(--fuente-titulos);
+    font-weight: var(--peso-semi-negrita);
+    font-size: var(--titulo-sm);
+    color: var(--texto-principal);
+    word-break: break-word;
 }
 
-/* ================= BOTONERA ================= */
+.nota_eliminar {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+}
+
+/* ============================================================
+   BOTONERA
+   ============================================================ */
+
 .botonera_eliminar {
     display: flex;
-    gap: 1.2rem;
+    gap: 12px;
     width: 100%;
-    justify-content: center;
-    margin-top: 10px;
+    transition: var(--transicion);
 }
 
-/* Estilo específico para cuando el botón tiene la clase "eliminar" o "editar" (No) */
-.botonera_eliminar .boton_eliminar {
-    /* Tu componente Boton debería aplicar estos estilos según la prop 'clase' */
+.botonera_eliminar > * {
     flex: 1;
-    min-width: 120px;
 }
 
-/* ================= MENSAJE DE ERROR ================= */
-/* Si CompoError devuelve un div, esto le da espacio */
-.componente_eliminar > div:last-child {
-    width: 100%;
-    margin-top: 10px;
+/* ============================================================
+   ESTADO CARGANDO
+   ============================================================ */
+
+.componente_eliminar.estado_cargando .icono_alerta_eliminar,
+.componente_eliminar.estado_cargando .datos_eliminar,
+.componente_eliminar.estado_cargando .botonera_eliminar {
+    opacity: 0.3;
+    pointer-events: none;
+    filter: blur(1px);
 }
 
-/* ================= ANIMACIÓN ================= */
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 480px) {
-    .componente_eliminar {
-        width: 90%;
-        padding: 25px 20px 25px 35px;
-    }
-    
-    .botonera_eliminar {
-        flex-direction: column; /* Botones uno arriba del otro en móvil */
-    }
-}
-
-/* --- Contenedor del Spinner --- */
 .spinner_container_eliminar {
     position: absolute;
     inset: 0;
-    background: rgba(10, 10, 20, 0.8); /* Oscurece el modal interno */
-    backdrop-filter: blur(4px);
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    z-index: 20;
-    border-radius: 28px;
+    justify-content: center;
+    gap: 14px;
+
+    background: color-mix(in srgb, var(--fondo-secundario) 78%, transparent);
+    border-radius: var(--radio-lg);
+    backdrop-filter: blur(3px);
+
+    z-index: 2;
 }
 
-/* --- El círculo neón --- */
 .spinner_neon_circle {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(239, 68, 68, 0.1);
-    border-top: 3px solid #ef4444; /* Rojo fuerte */
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-    animation: spin_neon 0.8s linear infinite;
+
+    border: 3px solid var(--borde);
+    border-top-color: var(--color-primario);
+
+    animation: girar_spinner 0.8s linear infinite;
+}
+
+@keyframes girar_spinner {
+    to { transform: rotate(360deg); }
 }
 
 .texto_cargando {
-    margin-top: 15px;
-    font-size: 0.7rem;
+    margin: 0;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    letter-spacing: 1.5px;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    color: #ef4444;
-    font-weight: bold;
-    animation: pulse_text 1.5s ease-in-out infinite;
+    color: var(--texto-secundario);
 }
 
-/* --- Animaciones --- */
-@keyframes spin_neon {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
-@keyframes pulse_text {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; text-shadow: 0 0 10px rgba(239, 68, 68, 0.8); }
-}
-
-/* Bloquear el modal cuando carga */
-.estado_cargando {
-    pointer-events: none; /* No permite clicks accidentales */
+@media (max-width: 480px) {
+    .componente_eliminar {
+        max-width: 92%;
+        padding: 24px 22px;
+        gap: 16px;
+    }
 }

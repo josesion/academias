@@ -7,17 +7,17 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
     
     /* Estilo Cápsula Studio Pro */
     width: fit-content;
     padding: 10px 25px;
-    background: rgba(10, 10, 15, 0.9);
+    background: var(--fondo-principal);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 100px;
+    border-radius: 20px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    margin: 0; /* Para que el contenedor padre lo maneje */
+    margin: 0px ; /* Para que el contenedor padre lo maneje */
 }
 
 .filtro_input_group {

@@ -1,152 +1,337 @@
-.app {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #050508; /* Negro ultra profundo */
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+:root{
+
+    /* =====================================
+       FONDOS
+    ===================================== */
+
+    --fondo-principal:#17181D;
+    --fondo-secundario:#20232B;
+    --fondo-superficie:#2A2E38;
+    --fondo-hover:rgba(255,255,255,.05);
+
+    /* =====================================
+       TEXTO
+    ===================================== */
+
+    --texto-principal:#F5F7FA;
+    --texto-secundario:#A7AFBF;
+    --texto-deshabilitado:#7A8498;
+
+    /* =====================================
+       COLORES
+    ===================================== */
+
+    --color-primario:#6D5DF6;
+    --color-secundario:#66A9E8;
+
+    --color-exito:#22C55E;
+    --color-advertencia:#F59E0B;
+    --color-error:#EF4444;
+
+    /* =====================================
+       BORDES
+    ===================================== */
+
+    --borde:rgba(255,255,255,.08);
+    --borde-hover:rgba(255,255,255,.15);
+
+    /* =====================================
+       TIPOGRAFÍAS
+    ===================================== */
+
+    --fuente-principal:"Inter",sans-serif;
+    --fuente-titulos:"Space Grotesk",sans-serif;
+    --fuente-codigo:"JetBrains Mono",monospace;
+
+    /* =====================================
+       TAMAÑOS
+    ===================================== */
+
+    --texto-xs:.68rem;
+    --texto-sm:.80rem;
+    --texto-md:.92rem;
+    --texto-lg:1rem;
+    --texto-xl:1.08rem;
+
+    --titulo-sm:1.15rem;
+    --titulo-md:1.2rem;
+    --titulo-lg:2.35rem;
+
+    /* =====================================
+       PESOS
+    ===================================== */
+
+    --peso-normal:400;
+    --peso-medio:500;
+    --peso-semi-negrita:600;
+    --peso-negrita:700;
+
+    /* =====================================
+       ALTURA DE LÍNEA
+    ===================================== */
+
+    --linea-texto:1.5;
+    --linea-titulo:1.2;
+
+    /* =====================================
+       RADIOS
+    ===================================== */
+
+    --radio-sm:10px;
+    --radio-md:16px;
+    --radio-lg:22px;
+
+    /* =====================================
+       SOMBRAS
+    ===================================== */
+
+    --sombra-sm:0 6px 16px rgba(0,0,0,.18);
+    --sombra-md:0 12px 28px rgba(0,0,0,.28);
+    --sombra-lg:0 18px 42px rgba(0,0,0,.35);
+
+    /* =====================================
+       TRANSICIONES
+    ===================================== */
+
+    --transicion:all .25s ease;
+
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 
-.layout_principal {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-    overflow-x: hidden;  
-}
+/* =======================================================
+   APP
+======================================================= */
 
-.contenido_derecha {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    
-}
+.app{
 
-.contenido_derecha {
-    flex: 1;
-    min-height: 0;
+    width:100%;
+    min-height:100vh;
 
-    overflow-y: auto;
-    overflow-x: hidden;
+    position:relative;
 
-    scrollbar-width: thin;
-    scrollbar-color: #4f46e5 rgba(255,255,255,0.05);
-}
+    overflow:hidden;
 
-/* Chrome, Edge y Safari */
-.contenido_derecha::-webkit-scrollbar {
-    width: 10px;
-}
-
-.contenido_derecha::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-    border-radius: 999px;
-    margin: 8px 0;
-}
-
-.contenido_derecha::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    border: 2px solid transparent;
-    background-clip: padding-box;
-    background: linear-gradient(
-        180deg,
-        #4f46e5,
-        #06b6d4,
-        #a855f7
-    );
-}
-
-.contenido_derecha::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(
-        180deg,
-        #6366f1,
-        #22d3ee,
-        #c084fc
-    );
+    display:flex;
+    flex-direction:column;
+    background: var(--fondo-principal)
 }
 
 
-/* El contenedor de las luces animadas */
-.fondo-animado {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    filter: blur(80px); /* Esto suaviza los colores para que parezcan humo */
-    opacity: 0.6;
+/* =======================================================
+   LAYOUT
+======================================================= */
+
+.layout_principal{
+
+    display:flex;
+    flex-direction:column;
+
+    height:100vh;
+
+    overflow:hidden;
+
 }
 
-/* Las esferas de luz */
-.esfera {
-    position: absolute;
-    border-radius: 50%;
-    animation: moverLuces 20s infinite alternate;
-    will-change: transform;
-}
+.contenido_derecha{
 
-.esfera-1 {
-    width: 500px;
-    height: 500px;
-    background: rgba(79, 70, 229, 0.2); /* Azul */
-    top: -10%;
-    left: -10%;
-}
+    flex:1;
 
-.esfera-2 {
-    width: 400px;
-    height: 400px;
-    background: rgba(6, 182, 212, 0.15); /* Cian */
-    bottom: 10%;
-    right: -5%;
-    animation-duration: 15s;
-    animation-delay: -2s;
-}
+    min-height:0;
 
-.esfera-3 {
-    width: 900px;
-    height: 300px;
-    background: rgba(168, 85, 247, 0.2); /* Morado */
-    top: 40%;
-    left: 30%;
-    animation-duration: 25s;
-}
+    overflow-y:auto;
+    overflow-x:hidden;
 
-.esfera-4 {
-    width: 300px;
-    height: 300px;
-    background: rgba(168, 85, 247, 0.2); /* Morado */
-    top: 40%;
-    left: 30%;
-    animation-duration: 25s;
-}
+    scrollbar-width:thin;
+    scrollbar-color:
+        var(--color-primario)
+        rgba(255,255,255,.05);
 
-.esfera-5 {
-    width: 300px;
-    height: 300px;
-    background: rgba(167, 167, 168, 0.2); /* Morado */
-    top: 20%;
-    left: 10%;
-    animation-duration: 25s;
-}
-
-.esfera-6 {
-    width: 600px;
-    height: 300px;
-    background: rgba(72, 7, 128, 0.2); /* Morado */
-    top: 90%;
-    left: 10%;
-    animation-duration: 25s;
 }
 
 
-@keyframes moverLuces {
-    0% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(100px, 50px) scale(1.1); }
-    66% { transform: translate(-50px, 100px) scale(0.9); }
-    100% { transform: translate(0, 0) scale(1); }
+/* Chrome */
+
+.contenido_derecha::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+.contenido_derecha::-webkit-scrollbar-track{
+
+    background:var(--fondo-principal);
+    border-radius:999px;
+
+}
+
+.contenido_derecha::-webkit-scrollbar-thumb{
+
+    border-radius:999px;
+
+    background:var(--fondo-secundario)
+
+}
+
+.contenido_derecha::-webkit-scrollbar-thumb:hover{
+
+    background: var(--fondo-principal)
+}
+
+
+/* =======================================================
+   FONDO ANIMADO
+======================================================= */
+
+.fondo-animado{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:0;
+
+    pointer-events:none;
+
+    overflow:hidden;
+
+    filter:blur(90px);
+
+    opacity:.55;
+
+}
+
+
+/* =======================================================
+   ESFERAS
+======================================================= */
+
+.esfera{
+
+    position:absolute;
+
+    border-radius:50%;
+
+    animation:moverLuces 24s ease-in-out infinite alternate;
+
+    will-change:transform;
+
+}
+
+
+
+.esfera-2{
+
+    width:420px;
+    height:420px;
+
+    right:-8%;
+    bottom:5%;
+
+    background:rgba(102,169,232,.14);
+
+    animation-duration:18s;
+
+}
+
+.esfera-3{
+
+    width:850px;
+    height:280px;
+
+    top:35%;
+    left:28%;
+
+    background:rgba(109,93,246,.10);
+
+    animation-duration:30s;
+
+}
+
+.esfera-4{
+
+    width:260px;
+    height:260px;
+
+    top:55%;
+    left:12%;
+
+    background:rgba(102,169,232,.08);
+
+    animation-duration:26s;
+
+}
+
+.esfera-5{
+
+    width:220px;
+    height:220px;
+
+    top:15%;
+    right:25%;
+
+    background:rgba(255,255,255,.04);
+
+    animation-duration:28s;
+
+}
+
+.esfera-6{
+
+    width:500px;
+    height:260px;
+
+    bottom:-8%;
+    left:8%;
+
+    background:rgba(109,93,246,.08);
+
+    animation-duration:32s;
+
+}
+
+
+/* =======================================================
+   ANIMACIÓN
+======================================================= */
+
+@keyframes moverLuces{
+
+    0%{
+
+        transform:
+            translate(0,0)
+            scale(1);
+
+    }
+
+    33%{
+
+        transform:
+            translate(80px,40px)
+            scale(1.08);
+
+    }
+
+    66%{
+
+        transform:
+            translate(-60px,90px)
+            scale(.92);
+
+    }
+
+    100%{
+
+        transform:
+            translate(0,0)
+            scale(1);
+
+    }
+
 }

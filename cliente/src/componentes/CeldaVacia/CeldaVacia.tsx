@@ -1,5 +1,5 @@
 import type { DiaSemana, Horas } from "../../tipadosTs/horario";
-
+import "./celdavacia.css";
 /**
  * Componente CeldaVacia.
  *

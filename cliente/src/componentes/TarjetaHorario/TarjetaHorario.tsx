@@ -6,6 +6,7 @@ import {
   type Horas,
 } from "../../tipadosTs/horario";
 
+import "./tarjetahorario.css";
 /**
  * Componente TarjetaHorario.
  *

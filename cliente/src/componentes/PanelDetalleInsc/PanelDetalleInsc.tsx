@@ -30,16 +30,31 @@ export interface DataDetalle {
 export const PanelDetalleInscrip = (props: DataDetalle) => {
   return (
     <div className="contenedor_panel">
-      {/* Bloque de Información */}
       <div className="contendor_panel_info">
         <h3>{props.infoDetalle?.nombre_completo}</h3>
-        <p>DNI: {props.infoDetalle?.dni_alumno}</p>
-        <p>Vence: {props.infoDetalle?.vigencia}</p>
-        <p>Monto: ${props.infoDetalle?.monto_pagado}</p>
-        <p>Pago original: {props.infoDetalle?.metodo_pago_descrip}</p>
+
         <p>
-          Consumo: {props.infoDetalle?.clases_tomadas} /{" "}
-          {props.infoDetalle?.clases_totales}
+          <span>DNI</span>
+          <strong>{props.infoDetalle?.dni_alumno}</strong>
+        </p>
+        <p>
+          <span>Vence</span>
+          <strong>{props.infoDetalle?.vigencia}</strong>
+        </p>
+        <p className="dato_destacado">
+          <span>Monto</span>
+          <strong>${props.infoDetalle?.monto_pagado}</strong>
+        </p>
+        <p>
+          <span>Pago original</span>
+          <strong>{props.infoDetalle?.metodo_pago_descrip}</strong>
+        </p>
+        <p>
+          <span>Consumo</span>
+          <strong>
+            {props.infoDetalle?.clases_tomadas} /{" "}
+            {props.infoDetalle?.clases_totales}
+          </strong>
         </p>
       </div>
 

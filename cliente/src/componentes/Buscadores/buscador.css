@@ -1,5 +1,5 @@
 /* ============================================================
-   BUSCADOR STUDIO PRO - ALINEACIÓN QUIRÚRGICA
+   BUSCADOR STUDIO PRO — ALINEACIÓN QUIRÚRGICA (tokens de marca)
    ============================================================ */
 
 .buscador_contenedor_comp {
@@ -22,80 +22,47 @@
 
     border-radius: 26px;
 
-    background:
-        radial-gradient(circle at top right,
-            rgba(99,102,241,.14),
-            transparent 35%),
-        linear-gradient(
-            145deg,
-            rgba(15,23,42,.95),
-            rgba(2,6,23,.98));
+    background:var(--fondo-principal);
 
     backdrop-filter: blur(18px);
 
-    border: 1px solid rgba(255,255,255,.08);
+    border: 1px solid var(--borde);
 
     box-shadow:
-        0 18px 45px rgba(0,0,0,.45),
-        inset 0 1px 0 rgba(255,255,255,.05);
+        0 18px 45px rgba(0, 0, 0, .45),
+        inset 0 1px 0 var(--fondo-hover);
 }
 
 
-.buscador_contenedor_comp::after{
 
-    content:"";
+/* TÍTULO */
+.buscador_titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-    position:absolute;
+    margin: 0;
 
-    top:0;
-    left:50%;
+    color: var(--texto-secundario);
 
-    transform:translateX(-50%);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
 
-    width:70%;
-    height:2px;
+    letter-spacing: 1.5px;
 
-    border-radius:999px;
-
-    background:linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.7),
-        transparent);
-
-    opacity:.35;
+    text-transform: uppercase;
 }
 
-/* TÍTULO (Opcional, se mantiene sutil arriba) */
-.buscador_titulo{
-
-    display:flex;
-    align-items:center;
-    gap:8px;
-
-    margin:0;
-
-    color:#cbd5e1;
-
-    font-size:.72rem;
-
-    font-weight:800;
-
-    letter-spacing:1.5px;
-
-    text-transform:uppercase;
+.buscador_titulo svg {
+    color: var(--color-primario);
 }
 
-.buscador_titulo svg{
-
-    color:#6366f1;
-}
-
-/* CUERPO - LA LÍNEA DE HORIZONTE */
+/* CUERPO — LA LÍNEA DE HORIZONTE */
 .buscador_cuerpo {
     display: flex;
     flex-direction: row;
-    align-items: flex-start; /* Alineamos todos los labels al techo */
+    align-items: flex-start;
     gap: 15px;
     flex-wrap: nowrap;
 }
@@ -104,13 +71,12 @@
 .buscador_columna {
     display: flex;
     flex-direction: column;
-    gap: 6px; /* Espacio entre Label y Campo */
+    gap: 6px;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* RESET ESPECÍFICO PARA EL COMPONENTE <INPUTS /> */
-/* Esto quita el margen que suele traer el wrapper del input */
+/* RESET para el wrapper que trae <Inputs /> */
 .buscador_columna .inputs_contenedor {
     margin: 0 !important;
     padding: 0 !important;
@@ -119,13 +85,14 @@
     gap: 6px !important;
 }
 
-/* LABELS (p, label y el vacío del botón) */
-.buscador_label_generico, 
+/* LABELS */
+.buscador_label_generico,
 .buscador_columna label,
 .buscador_columna .inputs_contenedor label {
-    font-size: 0.7rem !important;
-    font-weight: 700 !important;
-    color: #64748b !important;
+    font-family: var(--fuente-principal) !important;
+    font-size: var(--texto-xs) !important;
+    font-weight: var(--peso-negrita) !important;
+    color: var(--texto-secundario) !important;
     text-transform: uppercase !important;
     margin: 0 0 0 12px !important;
     height: 14px !important;
@@ -133,121 +100,114 @@
     display: block !important;
 }
 
-/* ESTILO DE LOS CAMPOS (INPUTS Y SELECTS) */
-.buscador_input_base, 
+/* CAMPOS (inputs y selects) */
+.buscador_input_base,
 .buscador_columna input {
     height: 38px !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    background: var(--fondo-hover) !important;
+    border: 1px solid var(--borde) !important;
     border-radius: 50px !important;
     padding: 0 15px !important;
-    color: white !important;
-    font-size: 0.85rem !important;
+    color: var(--texto-principal) !important;
+    font-family: var(--fuente-principal) !important;
+    font-size: var(--texto-sm) !important;
     outline: none !important;
-    width: 170px !important; /* Ancho fijo para mantener la cápsula */
+    width: 170px !important;
     box-sizing: border-box !important;
     transition: all 0.3s ease;
 }
 
-.buscador_input_base:focus, 
+.buscador_input_base:focus,
 .buscador_columna input:focus {
-    border-color: #06b6d4 !important;
-    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--color-primario) !important;
+    background: var(--fondo-superficie) !important;
 }
 
-/* EL BOTÓN (Matcheado a la altura de los campos) */
+/* BOTÓN */
 .buscador_columna .boton_personalizado {
     height: 38px !important;
     margin: 0 !important;
     border-radius: 50px !important;
     padding: 0 25px !important;
-    font-size: 0.85rem !important;
-    font-weight: 600 !important;
+    font-family: var(--fuente-principal) !important;
+    font-size: var(--texto-sm) !important;
+    font-weight: var(--peso-semi-negrita) !important;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* ELIMINACIÓN DEL ESPACIO DE ERROR QUE DESALINEA TODO */
+/* SIN espacio de error en esta vista compacta */
 .buscador_columna .error_espacio,
 .buscador_columna .input_error_message,
-.buscador_columna .inputs_contenedor span { /* Si el error es un span */
+.buscador_columna .inputs_contenedor span {
     display: none !important;
 }
 
+/* --- SELECTS CON FLECHA PROPIA --- */
 
-
-/* --- ESTILO DE LOS SELECTS CON FLECHA PERSONALIZADA --- */
-
-.buscador_input_base, 
+.buscador_input_base,
 .buscador_estado,
 .buscador_columna select {
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    
-    /* Fondo del select */
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    
-    /* NUEVA FLECHA: Un Chevron moderno en color gris azulado */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
+
+    background-color: var(--fondo-hover) !important;
+
+    /* nota: el fill del SVG va harcodeado a propósito — un data-URI es un string
+       literal, no puede leer variables CSS por dentro. Es el hex real de
+       --texto-secundario (#A7AFBF), no un color inventado. */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7AFBF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
     background-repeat: no-repeat !important;
-    
-    /* Posición de la flecha: a 15px de la derecha y centrada verticalmente */
+
     background-position: right 15px center !important;
     background-size: 12px !important;
-    
-    /* Padding derecho para que el texto no pise la flecha */
-    padding-right: 40px !important; 
-    
+
+    padding-right: 40px !important;
+
     cursor: pointer;
 }
 
-/* Estilo para las opciones cuando el select se abre */
-.buscador_input_base option, 
+.buscador_input_base option,
 .buscador_estado option,
 .buscador_columna select option {
-    background-color: #0f172a !important; /* Azul petróleo oscuro */
-    color: #ffffff !important;
+    background-color: var(--fondo-principal) !important;
+    color: var(--texto-principal) !important;
     padding: 12px;
 }
 
-/* Hover en las opciones (funciona principalmente en Windows/Chrome) */
 .buscador_input_base option:hover {
-    background-color: #4f46e5 !important;
+    background-color: var(--color-primario) !important;
 }
 
-
-.buscador_contenedor_comp{
-
+.buscador_contenedor_comp {
     transition:
         transform .25s,
         border-color .25s,
         box-shadow .25s;
 }
 
-.buscador_contenedor_comp:hover{
-
-    border-color:rgba(255,255,255,.12);
+.buscador_contenedor_comp:hover {
+    border-color: var(--borde-hover);
 
     box-shadow:
-        0 22px 55px rgba(0,0,0,.55),
-        0 0 25px rgba(99,102,241,.10);
+        0 22px 55px rgba(0, 0, 0, .55),
+        0 0 25px color-mix(in srgb, var(--color-primario) 10%, transparent);
 }
 
-/* --- TABLETS Y PANTALLAS INTERMEDIAS (Evita que se salgan los bordes) --- */
+/* --- TABLETS Y PANTALLAS INTERMEDIAS --- */
 @media (max-width: 1100px) and (min-width: 701px) {
     .buscador_contenedor_comp {
         width: 90%;
-        border-radius: 40px; /* Menos redondeado para que no "coma" espacio en las esquinas */
+        border-radius: 40px;
         padding: 20px;
         height: auto;
     }
 
     .buscador_cuerpo {
         display: grid;
-        /* Tres columnas iguales para pantallas medianas */
-        grid-template-columns: repeat(3, 1fr); 
+        grid-template-columns: repeat(3, 1fr);
         gap: 15px;
         width: 100%;
         justify-items: center;
@@ -255,58 +215,55 @@
 
     .buscador_columna {
         width: 100% !important;
-        max-width: 220px; /* Limitamos el ancho para que no se estiren feo */
+        max-width: 220px;
     }
 
-    /* El botón y el selector de estado al final se acomodan solos en la grilla */
-    .buscador_input_base, 
+    .buscador_input_base,
     .buscador_columna input {
-        width: 100% !important; /* Que ocupen el ancho de su columna de la grilla */
+        width: 100% !important;
     }
 }
 
-
-/* --- RESPONSIVE OPTIMIZADO PARA MÓVIL (Compacto) --- */
+/* --- MÓVIL (compacto) --- */
 @media (max-width: 700px) {
     .buscador_contenedor_comp {
         border-radius: 20px;
         width: 95%;
-        padding: 12px 15px; /* Padding mucho más ajustado */
+        padding: 12px 15px;
         margin: 10px auto;
         gap: 8px;
     }
 
     .buscador_cuerpo {
         display: grid;
-        /* Creamos dos columnas iguales para que los inputs vayan de a pares */
-        grid-template-columns: 1fr 1fr; 
+        grid-template-columns: 1fr 1fr;
         gap: 10px;
         width: 100%;
     }
 
     .buscador_columna {
         width: 100% !important;
-        min-width: 0; /* Permite que el grid maneje el ancho */
+        min-width: 0;
     }
 
-    /* Reducimos los labels al mínimo para ganar espacio vertical */
-    .buscador_label_generico, 
+    /* por debajo de --texto-xs a propósito: en mobile compacto ni el
+       paso más chico de tu escala entra cómodo */
+    .buscador_label_generico,
     .buscador_columna label {
         font-size: 0.65rem !important;
         margin: 0 0 2px 8px !important;
         height: auto !important;
     }
 
-    .buscador_input_base, 
+    .buscador_input_base,
     .buscador_columna input {
-        height: 34px !important; /* Más petisos en móvil */
+        height: 34px !important;
         width: 100% !important;
         font-size: 0.8rem !important;
     }
 
-    /* El botón lo hacemos ocupar las dos columnas abajo de todo */
     .buscador_columna:last-child {
-        grid-column: span 2; 
+        grid-column: span 2;
         margin-top: 5px !important;
     }
 
@@ -315,7 +272,6 @@
         width: 100%;
     }
 
-    /* Ocultamos el título en móvil sí o sí para ganar espacio */
     .buscador_titulo {
         display: none;
     }

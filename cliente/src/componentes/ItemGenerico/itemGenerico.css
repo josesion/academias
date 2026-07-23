@@ -11,23 +11,29 @@
     
     width: 100%;
     min-height: 70px;
-    background: rgba(15, 15, 25, 0.7);
+    background:
+        linear-gradient(
+            180deg,
+            var(--fondo-secundario),
+            var(--fondo-principal)
+        );
+
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 15px;
+    border:1px solid var(--borde);
+    border-radius:20px;
     padding: 12px 25px 12px 50px; /* Espacio extra a la izq para la línea */
     
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    box-shadow:0 8px 25px rgba(0,0,0,.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
+
 }
 
 /* Efecto Glow al pasar el mouse */
 .item_card:hover {
-    transform: scale(1.01);
-    border-color: rgba(6, 182, 212, 0.4);
-    background: rgba(20, 20, 35, 0.85);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-3px);
+    border-color: var(--borde-hover);
+    box-shadow: 0 12px 35px rgba(79,70,229,.15);
 }
 
 /* LA LÍNEA VERTICAL (EL INDICADOR DE FÁBRICA) */
@@ -69,18 +75,39 @@
 }
 
 .item_key {
-    font-size: 0.65rem;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family:
+    var(--fuente-principal);
+
+    font-size:
+    var(--texto-xs);
+
+    color:
+    var(--texto-deshabilitado);
+
+    font-weight:
+    var(--peso-semi-negrita);
+
+    letter-spacing:
+    1.5px;
+
+    text-transform:
+    uppercase;
 }
 
 .item_value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #e2e8f0;
-    word-break: break-all;
+
+    font-family:
+    var(--fuente-principal);
+
+    font-size:
+    var(--texto-lg);
+
+    font-weight:
+    var(--peso-semi-negrita);
+
+    color:
+    var(--texto-principal);
+
 }
 
 /* BOTONES DE ACCIÓN */
@@ -103,7 +130,7 @@
         flex-direction: column; /* Cambia a modo Tarjeta */
         align-items: flex-start;
         padding: 20px 20px 20px 45px;
-        border-radius: 25px;
+        border-radius: 20px;
     }
 
     .item_card::before {

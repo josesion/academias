@@ -1,0 +1,68 @@
+/* ============================================================
+   CLASE ASIGNADA — ClasesAsiganadas.tsx
+   ============================================================ */
+
+.clase_asignada {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+
+  padding: 8px 10px;
+
+  border-radius: var(--radio-sm);
+  border-left: 3px solid var(--color-primario);
+  background: color-mix(in srgb, var(--color-primario) 12%, var(--fondo-superficie));
+
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.clase_asignada:hover {
+  background: color-mix(in srgb, var(--color-primario) 20%, var(--fondo-superficie));
+  transform: translateY(-1px);
+}
+
+.clase_asignada:active {
+  transform: scale(0.98);
+}
+
+.clase_tipo {
+  margin: 0;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.clase_profesor {
+  margin: 0;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .clase_tipo {
+    font-size: var(--texto-xs);
+  }
+
+  .clase_profesor {
+    font-size: 0.62rem;
+  }
+}

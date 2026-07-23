@@ -17,6 +17,7 @@ const ESTILO_ACCION: Record<
   CERRAR: { color: "rojo", etiqueta: "Cerró" },
   INGRESO: { color: "verde", etiqueta: "Ingreso" },
   EGRESO: { color: "rojo", etiqueta: "Egreso" },
+  ANULACION: { color: "rojo", etiqueta: "Anulacion" },
   LOGIN: { color: "azul", etiqueta: "Inició sesión" },
   LOGOUT: { color: "gris", etiqueta: "Cerró sesión" },
 };

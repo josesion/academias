@@ -27,6 +27,9 @@
 /* ==========================================================================
    FORMULARIO PRINCIPAL
    ========================================================================== */
+/* ==========================================================================
+   FORMULARIO — usa los tokens globales de la app
+   ========================================================================== */
 
 .formulario {
     display: flex;
@@ -39,21 +42,15 @@
 
     padding: 2.5rem;
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(15, 23, 42, 0.96),
-            rgba(2, 6, 23, 0.98)
-        );
-
+    background: color-mix(in srgb, var(--fondo-secundario) 92%, transparent);
     backdrop-filter: blur(18px);
 
-    border: 1px solid var(--border-primary);
+    border: 1px solid var(--borde);
     border-radius: 24px;
 
     box-shadow:
-        var(--shadow-main),
-        inset 0 1px 0 rgba(255,255,255,0.04);
+        0 25px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
 
     max-height: calc(100dvh - 70px);
 
@@ -65,27 +62,7 @@
     animation: fadeInForm 0.45s ease;
 }
 
-/* Glow superior */
-.formulario::before {
-    content: "";
-    position: absolute;
-    top: -120px;
-    left: 50%;
-    transform: translateX(-50%);
 
-    width: 320px;
-    height: 320px;
-
-    background: radial-gradient(
-        circle,
-        rgba(6, 182, 212, 0.18) 0%,
-        rgba(139, 92, 246, 0.12) 30%,
-        transparent 70%
-    );
-
-    pointer-events: none;
-    z-index: 0;
-}
 
 /* ==========================================================================
    TITULO
@@ -105,37 +82,30 @@
 
     overflow: hidden;
 
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--borde);
 }
 
 .formulario_titulo {
     position: relative;
     z-index: 5;
 
-    font-size: 2rem;
-    font-weight: 900;
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    line-height: var(--linea-titulo);
 
-    letter-spacing: 1.5px;
+    letter-spacing: 0.4px;
 
-    background: linear-gradient(
-        90deg,
-        #ffffff,
-        #cbd5e1,
-        #67e8f9,
-        #c084fc
-    );
+    background: var(--color-secundario);
 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-
-    text-shadow:
-        0 0 20px rgba(6,182,212,0.15);
 
     margin: 0;
 }
 
 /* ==========================================================================
-   PARTICULAS / LUCES
+   PARTICULAS — misma animación, paleta de marca en vez de neón
    ========================================================================== */
 
 .particula_titulo {
@@ -154,72 +124,48 @@
     filter: blur(2px);
 }
 
-/* Colores neon actualizados */
-
 .tp-1 {
     left: 10%;
     width: 12px;
     height: 12px;
-    background: #22d3ee;
+    background: var(--color-primario);
     box-shadow:
-        0 0 12px #22d3ee,
-        0 0 25px rgba(34,211,238,0.8);
+        0 0 12px var(--color-primario),
+        0 0 25px color-mix(in srgb, var(--color-primario) 70%, transparent);
     animation-delay: 0s;
 }
 
 .tp-2 {
-    left: 25%;
+    left: 32%;
     width: 10px;
     height: 10px;
-    background: #c084fc;
+    background: var(--color-secundario);
     box-shadow:
-        0 0 10px #c084fc,
-        0 0 22px rgba(192,132,252,0.7);
+        0 0 10px var(--color-secundario),
+        0 0 22px color-mix(in srgb, var(--color-secundario) 65%, transparent);
     animation-delay: 0.8s;
 }
 
 .tp-3 {
-    left: 45%;
-    width: 15px;
-    height: 15px;
-    background: #06b6d4;
+    left: 62%;
+    width: 14px;
+    height: 14px;
+    background: var(--color-primario);
     box-shadow:
-        0 0 18px #06b6d4,
-        0 0 35px rgba(6,182,212,0.8);
+        0 0 16px var(--color-primario),
+        0 0 30px color-mix(in srgb, var(--color-primario) 75%, transparent);
     animation-delay: 1.5s;
 }
 
 .tp-4 {
-    left: 65%;
+    left: 85%;
     width: 9px;
     height: 9px;
-    background: #8b5cf6;
+    background: var(--color-secundario);
     box-shadow:
-        0 0 10px #8b5cf6,
-        0 0 20px rgba(139,92,246,0.7);
+        0 0 10px var(--color-secundario),
+        0 0 20px color-mix(in srgb, var(--color-secundario) 65%, transparent);
     animation-delay: 0.4s;
-}
-
-.tp-5 {
-    left: 80%;
-    width: 14px;
-    height: 14px;
-    background: #22d3ee;
-    box-shadow:
-        0 0 15px #22d3ee,
-        0 0 30px rgba(34,211,238,0.8);
-    animation-delay: 2.1s;
-}
-
-.tp-6 {
-    left: 90%;
-    width: 11px;
-    height: 11px;
-    background: #c084fc;
-    box-shadow:
-        0 0 12px #c084fc,
-        0 0 25px rgba(192,132,252,0.8);
-    animation-delay: 1.2s;
 }
 
 @keyframes fluirHaciaArriba {
@@ -257,39 +203,32 @@
 }
 
 .label_select {
-    color: var(--text-secondary);
+    color: var(--texto-secundario);
 
-    font-size: 0.78rem;
-    font-weight: 800;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
 
     text-transform: uppercase;
-
-    letter-spacing: 1.3px;
+    letter-spacing: 1.2px;
 
     margin-left: 4px;
 }
-
-/* INPUT / SELECT */
 
 .buscador_estado {
     width: 100%;
 
     padding: 14px 15px;
 
-    background:
-        linear-gradient(
-            145deg,
-            rgba(15, 23, 42, 0.9),
-            rgba(17, 24, 39, 0.95)
-        );
-
-    border: 1px solid rgba(255,255,255,0.06);
-
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
     border-radius: 14px;
 
-    color: var(--text-primary);
+    color: var(--texto-principal);
 
-    font-size: 0.92rem;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-md);
+    line-height: var(--linea-texto);
 
     transition: all 0.25s ease;
 
@@ -297,18 +236,16 @@
 }
 
 .buscador_estado:hover {
-    border-color: rgba(34,211,238,0.35);
-
-    box-shadow:
-        0 0 0 1px rgba(34,211,238,0.08);
+    border-color: var(--borde-hover);
+    background: var(--fondo-hover);
 }
 
 .buscador_estado:focus {
-    border-color: var(--cyan);
+    border-color: var(--color-primario);
 
     box-shadow:
-        0 0 0 1px rgba(34,211,238,0.2),
-        0 0 20px rgba(34,211,238,0.15);
+        0 0 0 1px color-mix(in srgb, var(--color-primario) 25%, transparent),
+        0 0 20px color-mix(in srgb, var(--color-primario) 18%, transparent);
 
     transform: translateY(-1px);
 }
@@ -329,7 +266,18 @@
     margin-top: 22px;
     padding-top: 10px;
 
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   ERRORES
+   ========================================================================== */
+
+.errores_genericos {
+    width: 100%;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--color-error);
 }
 
 /* ==========================================================================
@@ -341,16 +289,15 @@
 }
 
 .formulario::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.04);
+    background: var(--fondo-hover);
     border-radius: 10px;
 }
 
 .formulario::-webkit-scrollbar-thumb {
     background: linear-gradient(
         180deg,
-        #4f46e5,
-        #06b6d4,
-        #a855f7
+        var(--color-primario),
+        var(--color-secundario)
     );
 
     border-radius: 10px;
@@ -359,9 +306,8 @@
 .formulario::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(
         180deg,
-        #6366f1,
-        #22d3ee,
-        #c084fc
+        var(--color-secundario),
+        var(--color-primario)
     );
 }
 
@@ -381,6 +327,17 @@
     }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .formulario,
+    .particula_titulo {
+        animation: none !important;
+    }
+    .particula_titulo {
+        opacity: 0;
+        display: none;
+    }
+}
+
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
@@ -394,7 +351,7 @@
     }
 
     .formulario_titulo {
-        font-size: 1.5rem;
+        font-size: var(--titulo-sm);
         text-align: center;
     }
 

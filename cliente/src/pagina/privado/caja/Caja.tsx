@@ -175,6 +175,7 @@ export const CajaArqueo = () => {
         <div className="acciones_principales">
           <Boton
             clase={state.estadoCaja === "abierta" ? "cancelar" : "agregar"}
+            logo={state.estadoCaja === "abierta" ? "Edit" : "Add"}
             texto={
               state.estadoCaja === "abierta" ? "Cerrar Caja" : "Abrir Caja"
             }
@@ -221,11 +222,13 @@ export const CajaArqueo = () => {
               clase="agregar"
               texto="+ Ingreso"
               onClick={handleAbrirIngreso}
+              logo={"Add"}
             />
             <Boton
               clase="eliminar"
               texto="- Egreso"
               onClick={handleAbrirEgreso}
+              logo={"Delete"}
             />
           </div>
         </div>

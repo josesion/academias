@@ -1,147 +1,359 @@
-/* ------------------- NAVBAR PRINCIPAL ------------------- */
-.menu_nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 14px 24px;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 6px 24px rgba(0,0,0,0.55), inset 0 -1px 0 rgba(255,255,255,0.06);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+/* ============================================================
+   MENÚ DE NAVEGACIÓN - ELPIS DESIGN SYSTEM
+   ============================================================ */
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.menu_nav{
+
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    width:100%;
+
+    padding:9px 28px;
+
+    background:var(--fondo-secundario);
+
+    border-bottom:1px solid var(--borde);
+
+    box-shadow:var(--sombra-sm);
+
 }
 
-.app-name {
-    font-size: 1.35rem;
-    font-weight: 800;
-    background: linear-gradient(90deg, #60a5fa, #38bdf8, #a78bfa);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+/* ============================================================
+   LOGO
+   ============================================================ */
+
+.app-name{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:var(--titulo-sm);
+
+    font-weight:var(--peso-negrita);
+
+    color:var(--texto-principal);
+
+    letter-spacing:.03em;
+
+    user-select:none;
+
 }
 
-/* ------------------- LISTA DE MENÚ ------------------- */
-.menu_nav_lista {
-    display: flex;
-    flex-direction: row;
-    margin: 0;
-    padding: 0;
-    gap: 10px;
-    list-style: none;
+/* ============================================================
+   LISTA
+   ============================================================ */
+
+.menu_nav_lista{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin:0;
+
+    padding:0;
+
+    list-style:none;
+
 }
 
-/* Items Principales */
-.menu_nav_lista .alinear {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 16px;
-    border-radius: 12px;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.25s ease;
-    position: relative; /* Para que el submenú se pegue acá */
+/* ============================================================
+   ITEMS
+   ============================================================ */
+
+.menu_nav_lista .alinear{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:10px 14px;
+
+    border-radius:var(--radio-sm);
+
+    cursor:pointer;
+
+    color:var(--texto-secundario);
+
+    font-family:var(--fuente-principal);
+
+    font-size:var(--texto-sm);
+
+    font-weight:var(--peso-medio);
+
+    transition:var(--transicion);
+
+    position:relative;
+
 }
 
-/* Hover solo en PC */
-@media (hover: hover) {
-    .menu_nav_lista .alinear:hover {
-        background: rgba(255, 255, 255, 0.1);
-        transform: translateY(-2px);
+.menu_nav_lista .alinear:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+.menu-item{
+
+    min-width:170px;
+
+}
+
+/* ============================================================
+   ICONOS
+   ============================================================ */
+
+.menu_nav_lista svg{
+
+    flex-shrink:0;
+
+    transition:var(--transicion);
+
+}
+
+.menu_nav_lista .alinear:hover svg{
+
+    color:var(--color-primario);
+
+}
+
+/* ============================================================
+   SUBMENÚ
+   ============================================================ */
+
+.submenu{
+
+    position:absolute;
+
+    top:calc(100% + 8px);
+
+    left:0;
+
+    min-width:240px;
+
+    padding:8px;
+
+    margin:0;
+
+    list-style:none;
+
+    background:var(--fondo-secundario);
+
+    border:1px solid var(--borde);
+
+    border-radius:var(--radio-md);
+
+    box-shadow:var(--sombra-md);
+
+    animation:submenuEntrada .2s ease;
+
+}
+
+.submenu li{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:10px 12px;
+
+    border-radius:var(--radio-sm);
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-sm);
+
+    transition:var(--transicion);
+
+}
+
+.submenu li:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+.submenu li:hover svg{
+
+    color:var(--color-primario) !important;
+
+}
+
+/* ============================================================
+   BOTÓN MENÚ
+   ============================================================ */
+
+.btn_menu{
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:40px;
+
+    height:40px;
+
+    cursor:pointer;
+
+    border:none;
+
+    background:transparent;
+
+    border-radius:var(--radio-sm);
+
+    color:var(--texto-secundario);
+
+    transition:var(--transicion);
+
+}
+
+.btn_menu:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+/* ============================================================
+   ANIMACIÓN
+   ============================================================ */
+
+@keyframes submenuEntrada{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(8px);
+
     }
-    /* no levantar elementos que contienen submenus */
-    .menu_nav_lista .alinear.menu-item:hover {
-        transform: none;
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
     }
+
 }
 
-/* ------------------- SUBMENÚS (ESCRITORIO) ------------------- */
-.submenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    list-style: none;
-    padding: 8px 0;
-    margin: 5px 0 0 0;
-    background: #0f0f19;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    z-index: 2000; /* poner más arriba para no cortarse */
-    min-width: 200px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
-.submenu li {
-    padding: 10px 16px;
-    font-size: 13px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+@media(max-width:900px){
 
-@media (hover: hover) {
-    .submenu li:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: #38bdf8;
-    }
-}
+    .btn_menu{
 
-/* ------------------- BOTÓN HAMBURGUESA ------------------- */
-.btn_menu {
-    display: none;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 8px;
-    border-radius: 50%;
-    cursor: pointer;
-}
+        display:flex;
 
-/* ------------------- RESPONSIVE MÓVIL ------------------- */
-@media (max-width: 900px) {
-    .btn_menu { display: flex; }
-
-    .menu_nav_lista {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        flex-direction: column;
-        background: rgba(15, 15, 25, 0.98);
-        backdrop-filter: blur(20px);
-        display: none; 
-        padding: 15px 0;
     }
 
-    .menu_nav_lista.abierto { display: flex; }
+    .menu_nav{
 
-    .menu_nav_lista .alinear {
-        width: 100%;
-        border-radius: 0;
-        padding: 15px 24px;
-        flex-wrap: wrap; /* Para que el submenú baje */
-        transform: none !important; /* No salta en el celu */
+        padding:14px 18px;
+
     }
 
-    /* SUBMENÚ EN MÓVIL: Deja de flotar y empuja */
-    .submenu {
-        position: static !important;
-        width: 100% !important;
-        box-shadow: none !important;
-        background: #0f0f19 !important;
-        border: none !important;
-        border-left: 3px solid #38bdf8 !important;
-        margin: 10px 0 0 10px !important;
+    .menu_nav_lista{
+
+        display:none;
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        position:absolute;
+
+        top:100%;
+
+        left:0;
+
+        width:100%;
+
+        padding:12px;
+
+        gap:6px;
+
+        background:var(--fondo-secundario);
+
+        border-bottom:1px solid var(--borde);
+
+        box-shadow:var(--sombra-md);
+
     }
 
-    .submenu li {
-        padding: 12px 20px !important;
-        font-size: 14px !important;
+    .menu_nav_lista.abierto{
+
+        display:flex;
+
     }
+
+    .menu_nav_lista .alinear{
+
+        width:100%;
+
+        padding:12px 14px;
+
+    }
+
+    .menu-item{
+
+        min-width:100%;
+
+    }
+
+    .submenu{
+
+        position:static;
+
+        margin-top:8px;
+
+        width:100%;
+
+        min-width:100%;
+
+        box-shadow:none;
+
+        border:1px solid var(--borde);
+
+        background:var(--fondo-principal);
+
+        animation:none;
+
+    }
+
+    .submenu li{
+
+        padding:12px;
+
+    }
+
 }
