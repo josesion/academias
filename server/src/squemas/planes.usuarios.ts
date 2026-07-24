@@ -9,7 +9,15 @@ export const ExistenciaPlanSchema = z.object({
 });
 
 export const CrearPlanesPagoSchema = z.object({
-    
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }) ,  
+
+      fecha_creacion : z.string({ 
+        message: "La fecha de creación es requerida" 
+    })
+    .trim()
+    .min(10 , { message : "Verificar Formato de fecha (YYYY-MM-DD)" }),  
     // Campo de texto simple
     descripcion: z.string({ 
         message : "La descripción debe ser texto." 
@@ -110,7 +118,9 @@ export const ModPlanesUsuarios = z.object({
                     .int({message : "Ident. Plan debe ser entero"})
                     .positive({ message : "Ident. Plan debe ser positivo"}),
 
-
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }) ,  
                 
     nombre_personalizado : z.string({message : "descripcion debe ser texto" })
                     .trim()
@@ -150,6 +160,11 @@ export const EstadoPlanesUsuariosSchema = z.object({
 
     estado:         EstadosPermitidos
                     .default('activos'), 
+
+    id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }) , 
+
 });
 
 const EstadoPlanEnum = z.enum(['activos', 'inactivos', 'todos']).default('activos');

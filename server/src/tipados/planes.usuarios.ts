@@ -54,7 +54,7 @@ export interface CrearPlanesUsuarios extends PlanesUsuariosBase {
 }
 
 // Interfaz para la creación de una nueva asignación de Plan a Escuela (plan_en_escuela).
-export interface CrearPlanesEscuelasUsuarios extends PlanesEscuelasUsuarios {}
+export interface CrearPlanesEscuelasUsuarios extends PlanesEscuelasUsuarios {id? : number}
 
 // =================================================================================
 // Tipos de Response (Salida de Datos)

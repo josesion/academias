@@ -7,273 +7,244 @@
 
 import { Response , Request } from "express";
 
-// Seccion de Hooks (Utilidades)
-// Importa el wrapper tryCatch para manejar excepciones asíncronas de manera segura.
-import { tryCatch } from "../utils/tryCatch";
 
-// Importa la función estandarizada para enviar respuestas HTTP.
+import { tryCatch } from "../utils/tryCatch";
 import { enviarResponse } from "../utils/response";
 
+
 import { fechaHoy } from "../hooks/fecha";
-
-// Capa de acceso a la logica del servicio
 import { method as planesServicio } from "../Servicio/planes.usuario";
-
+import { handleControladores } from "../utils/handleControladores";
 
 
 import { 
-	    MAPA_ALTA_PLAN, ERROR_INTERNO_SERVIDOR, MAPA_MOD_PLAN,
+	    MAPA_ALTA_PLAN, MAPA_MOD_PLAN,
 	    MAPA_ESTADO_PLAN, MAPA_LISTADO_PLAN
  } from "../respuestas/planes.usuario";	
 
-// Seccion de Typados de Resultados y Códigos
-import { CodigoEstadoHTTP } from "../tipados/generico";
-import { enviarResponseError } from "../utils/responseError";
+// Seccion de Typados 
+
+
+
+// Seccion de Typados de Esquemas (Inputs) - Necesarios para la validación
+import {
+		PlanesPagoInputs, ModPlanesUsuariosInputs,
+		estadoPlanesUsuariosInputs, ListaPlanesUsuariosInputs,
+		ListaPlanesUsuarioSinPagInputs ,
+	} from "../squemas/planes.usuarios";
+import type { ResultBusquedaPlanes, ModPlanesUsuariosResult,estadoPlanesUsuarios,
+    ResulListadoPlanesUsuarios
+ } from "../tipados/planes.usuarios"; 
+
 
 
 /**
- * Controlador para dar de alta un nuevo plan de usuario en la escuela.
- * * Extrae los datos del cuerpo de la petición (`req.body`), los formatea,
- * inyecta valores automáticos (estado activo, fecha actual e `id_escuela` del usuario autenticado)
- * y delega la creación al servicio correspondiente para luego responder al cliente.
+ * Controlador encargado de gestionar la petición HTTP para dar de alta un nuevo plan de pago para la escuela.
+ * Extrae los datos del cuerpo de la petición (`body`), complementa la información con valores predeterminados (como el estado inicial y la fecha actual)
+ * y los datos de la sesión del usuario autenticado, construyendo el objeto de entrada tipado para delegar la ejecución
+ * al manejador genérico de controladores.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae `cantidad_clases`, `cantidad_meses`, `monto` y `descripcion` del cuerpo de la solicitud (`body`).
+ * 2. Construye el objeto de tipo `PlanesPagoInputs` estructurando la descripción, convirtiendo las cantidades y el monto a sus tipos numéricos correspondientes, asignando por defecto el estado "activos", generando la fecha actual con `fechaHoy()`, y extrayendo el ID de escuela y de usuario de la sesión autenticada.
+ * 3. Ejecuta la función `handleControladores` pasando la respuesta (`res`), los datos estructurados, el servicio `planesServicio.altaPlanes` y el mapa de códigos de error/éxito (`MAPA_ALTA_PLAN`).
  *
- * @param {Request} req - Objeto de petición de Express.
- * @param {Request} req.body - Datos recibidos: `cantidad_clases`, `cantidad_meses`, `monto` y `descripcion`.
- * @param {Request} req.usuario - Objeto de usuario autenticado inyectado por el middleware (contiene `id_escuela`).
- * @param {Response} res - Objeto de respuesta de Express encargado de retornar el estado HTTP y los datos.
- * @returns {Promise<Response>} Retorna una respuesta HTTP estructurada usando `enviarResponse` (éxito) o `enviarResponseError` (fallo).
+ * @async
+ * @function altaPlanes_usuarios
+ * @param {import('express').Request} req - Objeto de la petición HTTP de Express, conteniendo el cuerpo de la solicitud y los datos del usuario autenticado.
+ * @param {import('express').Response} res - Objeto de la respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente a través del manejador.
+ * 
+ * @example
+ * // Petición POST esperada:
+ * // /planes
+ * // Body: { "descripcion": "Plan Estándar", "cantidad_clases": 8, "cantidad_meses": 1, "monto": 10000 }
  */
 const altaPlanes_usuarios = async( req : Request , res : Response ) =>{
 
 	const {  cantidad_clases , cantidad_meses , monto , descripcion} = req.body;
-	//let idPlan : number = 0 ;
 
-	const datosEntrada = {
+	const datosEntrada : PlanesPagoInputs = {
 		descripcion  	: descripcion as string,
 		cantidad_clases : Number(cantidad_clases),
 		cantidad_meses :  Number(cantidad_meses),
 		monto          : parseFloat( monto),
 		estado         : "activos", // como es alta siempre sera activos
-		fecha_creacion : fechaHoy(), // funcion q diga la fecha aactual
-		id_escuela     : Number(req.usuario?.id_escuela)
+		fecha_creacion : fechaHoy() , // funcion q diga la fecha aactual
+		id_escuela     : Number(req.usuario?.id_escuela),
+		id_usuario     : Number(req.usuario?.id)
 	};
 
-	const crearPlanResult = await planesServicio.altaPlanes( datosEntrada );
 
-	const config = MAPA_ALTA_PLAN[ crearPlanResult.code ] || ERROR_INTERNO_SERVIDOR;
 
-	if ( config.status === CodigoEstadoHTTP.OK ) {
-		return enviarResponse(
-			res,
-			config.status,
-			crearPlanResult.message  || config.msg,
-			crearPlanResult.data,
-			undefined,
-			crearPlanResult.code
-		);
-	}else{
-		return enviarResponseError(
-			res,
-			config.status,
-			crearPlanResult.message || config.msg,
-			crearPlanResult.code
-		);
-	};
+	await handleControladores<PlanesPagoInputs,ResultBusquedaPlanes >(
+		res, datosEntrada, planesServicio.altaPlanes,  MAPA_ALTA_PLAN
+	);
 	
 };
 
 /**
- * Controlador para modificar los datos de un plan de usuario existente.
- * * Obtiene el identificador del plan desde los parámetros de la URL (`req.params`),
- * extrae los nuevos datos desde el cuerpo de la petición (`req.body`), formatea los tipos,
- * inyecta el `id_escuela` de la sesión y delega la actualización al servicio de planes.
+ * Controlador encargado de gestionar la petición HTTP para modificar los datos de un plan de usuario existente.
+ * Extrae el ID del plan de los parámetros de la ruta, los datos actualizados del cuerpo de la petición (`body`),
+ * y la información del usuario autenticado, construyendo el objeto de entrada tipado para delegar la ejecución
+ * al manejador genérico de controladores.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae el `id_plan` de los parámetros de la ruta (`params`) y `descripcion`, `cantidad_clases`, `cantidad_meses` y `monto` del cuerpo de la solicitud (`body`).
+ * 2. Construye el objeto de tipo `ModPlanesUsuariosInputs` recopilando el ID del plan, nombre personalizado (con la descripción), fecha actual (`fechaHoy()`), cantidades convertidas a número, monto y extrayendo el ID de escuela y de usuario de la sesión autenticada.
+ * 3. Ejecuta la función `handleControladores` pasando la respuesta (`res`), los datos estructurados, el servicio `planesServicio.modPlanesUsuarios` y el mapa de códigos de error/éxito (`MAPA_MOD_PLAN`).
  *
- * @param {Request} req - Objeto de petición de Express.
- * @param {Request} req.params - Contiene el `id_plan` extraído de la ruta.
- * @param {Request} req.body - Contiene la `descripcion`, `cantidad_clases`, `cantidad_meses` y `monto` a modificar.
- * @param {Request} req.usuario - Objeto de usuario autenticado (se extrae `id_escuela`).
- * @param {Response} res - Objeto de respuesta de Express para enviar el resultado.
- * @returns {Promise<Response>} Respuesta HTTP estructurada con `enviarResponse` o `enviarResponseError`.
+ * @async
+ * @function modPlanes_usuarios
+ * @param {import('express').Request} req - Objeto de la petición HTTP de Express, conteniendo los parámetros de ruta, el cuerpo de la solicitud y los datos del usuario autenticado.
+ * @param {import('express').Response} res - Objeto de la respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente a través del manejador.
+ * 
+ * @example
+ * // Petición PUT esperada:
+ * // /planes/3
+ * // Body: { "descripcion": "Plan Promoción", "cantidad_clases": 12, "cantidad_meses": 1, "monto": 15000 }
  */
 const modPlanes_usuarios = async( req : Request , res : Response ) =>{
 
 	const { id_plan  } = req.params;
 	const { descripcion , cantidad_clases, cantidad_meses,  monto } = req.body;
 
-	const dataPlan = {
+	const dataPlan :  ModPlanesUsuariosInputs = {
 		id_plan : Number(id_plan),
 		id_escuela : Number(req.usuario?.id_escuela),
 		nombre_personalizado : descripcion,
 		fecha_creacion : fechaHoy(), // colocar funcion fecha hoy
 		cantidad_clases :Number(cantidad_clases),
 		cantidad_meses  : Number(cantidad_meses),
-		monto  : Number(monto)
-	}
-
-
-	const modResult = await planesServicio.modPlanesUsuarios( dataPlan);
-	
-	const config = MAPA_MOD_PLAN[ modResult.code ] || ERROR_INTERNO_SERVIDOR;
-
-	if ( config.status === CodigoEstadoHTTP.OK ){
-		return enviarResponse(
-			res, 
-			config.status ,
-			modResult.message || config.msg,
-			modResult.data,
-			undefined,
-			modResult.code
-		);
-	}else{
-		return enviarResponseError(
-			res,
-			config.status,
-			modResult.message || config.msg,
-			modResult.code 
-		);
+		monto  : Number(monto),
+		id_usuario : Number(req.usuario?.id)
 	};
+
+	await handleControladores< ModPlanesUsuariosInputs,ModPlanesUsuariosResult >(
+		res, dataPlan, planesServicio.modPlanesUsuarios,  MAPA_MOD_PLAN
+	);
 
 };
 
+
 /**
- * Controlador para cambiar el estado (activar/desactivar) de un plan de usuario.
- * * Extrae el identificador del plan y el nuevo estado desde los parámetros de la URL (`req.params`),
- * estructura los datos junto con el `id_escuela` obtenido de la sesión y delega la actualización
- * al servicio de planes para retornar la respuesta correspondiente.
+ * Controlador encargado de gestionar la petición HTTP para cambiar el estado (activar/inactivar) de un plan de usuario.
+ * Extrae el ID del plan y el nuevo estado de los parámetros de la ruta (`params`) y los datos del usuario autenticado,
+ * construyendo el objeto de entrada tipado para delegar la ejecución al manejador genérico de controladores.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae `id_plan` y `estado` de los parámetros de la ruta (`params`).
+ * 2. Construye el objeto de tipo `estadoPlanesUsuariosInputs` recopilando el ID del plan convertido a número, el estado, y extrayendo el ID de escuela y de usuario de la sesión autenticada.
+ * 3. Ejecuta la función `handleControladores` pasando la respuesta (`res`), los datos estructurados, el servicio `planesServicio.estadoPlan` y el mapa de códigos de error/éxito (`MAPA_ESTADO_PLAN`).
  *
- * @param {Request} req - Objeto de petición de Express.
- * @param {Request} req.params - Contiene el `id_plan` y el nuevo `estado` a aplicar.
- * @param {Request} req.usuario - Objeto de usuario autenticado (se extrae `id_escuela`).
- * @param {Response} res - Objeto de respuesta de Express para enviar el resultado.
- * @returns {Promise<Response>} Respuesta HTTP estructurada con `enviarResponse` o `enviarResponseError`.
+ * @async
+ * @function estadoPlanes_usuarios
+ * @param {import('express').Request} req - Objeto de la petición HTTP de Express, conteniendo los parámetros de ruta y los datos del usuario autenticado.
+ * @param {import('express').Response} res - Objeto de la respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente a través del manejador.
+ * 
+ * @example
+ * // Petición PATCH esperada:
+ * // /planes/3/inactivo
  */
 const estadoPlanes_usuarios = async( req : Request , res : Response ) =>{
 	const { id_plan, estado} = req.params;
 
 
-	const dataEstado = {
+	const dataEstado : estadoPlanesUsuariosInputs = {
 		id_plan : Number(id_plan),
 		id_escuela : Number(req.usuario?.id_escuela),
-		estado		
+		estado : estado as "activos" | "inactivos",
+		id_usuario : Number(req.usuario?.id)			
 	};
 
-	const estadoResult = await planesServicio.estadoPlan( dataEstado );
-
-	const config = MAPA_ESTADO_PLAN[ estadoResult.code ] || ERROR_INTERNO_SERVIDOR;
-
-	if ( config.status === CodigoEstadoHTTP.OK) {
-		return enviarResponse(
-			res, 
-			config.status ,
-			estadoResult.message || config.msg,
-			estadoResult.data,
-			undefined,
-			estadoResult.code
-		);
-	}else{
-		return enviarResponseError(
-			res, 
-			config.status,
-			estadoResult.message || config.msg,
-			estadoResult.code
-		);
-	};	
+	await handleControladores<estadoPlanesUsuariosInputs,estadoPlanesUsuarios >(
+		res, dataEstado, planesServicio.estadoPlan, MAPA_ESTADO_PLAN
+	);	
 
 };
 
 
 /**
- * Controlador para obtener el listado paginado y filtrado de los planes de usuarios.
- * * Extrae los criterios de búsqueda, paginación y escuela desde los query params (`req.query`).
- * Calcula dinámicamente el `offset` para la consulta en la base de datos, estructura el objeto
- * de búsqueda y delega la obtención al servicio correspondiente para retornar los registros y metadatos.
+ * Controlador encargado de gestionar la petición HTTP para listar los planes de usuario con soporte para paginación y filtros.
+ * Extrae los parámetros de la consulta (`query`), calcula el `offset`, construye el objeto de entrada tipado
+ * y delega la ejecución al manejador genérico de controladores junto con el servicio correspondiente.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros `descripcion`, `estado`, `limit` y `pagina` de la query de la petición.
+ * 2. Calcula el desplazamiento (`offset`) utilizando la página y el límite especificados.
+ * 3. Construye el objeto de tipo `ListaPlanesUsuariosInputs` recopilando la descripción, el estado, límite, offset, ID de escuela (extraído del usuario autenticado) y número de página.
+ * 4. Ejecuta la función `handleControladores` pasando la respuesta (`res`), los datos estructurados, el servicio `planesServicio.listadoPlanes` y el mapa de códigos de error/éxito (`MAPA_LISTADO_PLAN`).
  *
- * @param {Request} req - Objeto de petición de Express.
- * @param {Request} req.query - Parámetros de consulta: `descripcion`, `estado`, `limit`, `pagina` y `escuela`.
- * @param {Response} res - Objeto de respuesta de Express para enviar el resultado.
- * @returns {Promise<Response>} Respuesta HTTP estructurada con `enviarResponse` (incluyendo paginación) o `enviarResponseError`.
+ * @async
+ * @function listadoPlanesUsuarios
+ * @param {import('express').Request} req - Objeto de la petición HTTP de Express, conteniendo los parámetros de consulta y los datos del usuario autenticado.
+ * @param {import('express').Response} res - Objeto de la respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente a través del manejador.
+ * 
+ * @example
+ * // Petición GET esperada:
+ * // /planes?pagina=1&limit=10&estado=activos&descripcion=Mensual
  */
 const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 	const {descripcion , estado ,limit , pagina} = req.query;
-    
+
 	// Calcular el offset para la consulta SQL, necesario para la paginación.
 	const offset = ( Number(pagina) -1 ) * Number(limit) ;
     
-	const dataListado = {
+	const dataListado : ListaPlanesUsuariosInputs = {
 		descripcion : String(descripcion) ,
 		estado : String(estado) as 'activos' | 'inactivos' | 'todos',
 		limite : Number(limit),
 		offset : Number(offset),
 		id_escuela : Number(req.usuario?.id_escuela),
-		pagina 	
+		pagina  : Number( pagina )
 	};
 
-
-	const resultadoLista = await planesServicio.listadoPlanes( dataListado );
-	
-	const config = MAPA_LISTADO_PLAN[ resultadoLista.code ] || ERROR_INTERNO_SERVIDOR;
-
-	if ( config.status === CodigoEstadoHTTP.OK){
-
-		return  enviarResponse(
-			res, 
-			config.status,
-			resultadoLista.message || config.msg,
-			resultadoLista.data,
-			resultadoLista.paginacion,
-			resultadoLista.code
-		);
-	}else {
-		return enviarResponseError(
-			res,
-			config.status,
-			resultadoLista.message || config.msg,
-			resultadoLista.code
-		);
-	};
+	await handleControladores<ListaPlanesUsuariosInputs,ResulListadoPlanesUsuarios[] >(
+		res, dataListado, planesServicio.listadoPlanes, MAPA_LISTADO_PLAN
+	);
 
 };
 
 /**
- * Controlador para obtener el listado completo de planes de usuarios sin paginación.
- * * Extrae los criterios de filtrado (`descripcion` y `estado`) desde los query params,
- * inyecta de forma segura el `id_escuela` obtenido de la sesión del usuario autenticado
- * y delega la consulta al servicio para retornar el array completo de registros.
+ * Controlador encargado de gestionar la petición HTTP para listar los planes de usuario sin paginación, aplicando filtros opcionales.
+ * Extrae los parámetros de la consulta (`query`) y los datos de la sesión del usuario, construye el objeto de entrada tipado
+ * y delega la ejecución al manejador genérico de controladores junto con el servicio correspondiente.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Extrae los parámetros `descripcion` y `estado` de la query de la petición.
+ * 2. Construye el objeto de tipo `ListaPlanesUsuarioSinPagInputs` recopilando la descripción, el estado y el ID de escuela extraído del usuario autenticado.
+ * 3. Ejecuta la función `handleControladores` pasando la respuesta (`res`), los datos estructurados, el servicio `planesServicio.listadoPlanesSinPag` y el mapa de códigos de error/éxito (`MAPA_LISTADO_PLAN`).
  *
- * @param {Request} req - Objeto de petición de Express.
- * @param {Request} req.query - Parámetros de consulta opcionales: `descripcion` y `estado`.
- * @param {Request} req.usuario - Objeto de usuario autenticado (se extrae `id_escuela`).
- * @param {Response} res - Objeto de respuesta de Express para enviar el resultado.
- * @returns {Promise<Response>} Respuesta HTTP estructurada con `enviarResponse` (con data limpia) o `enviarResponseError`.
+ * @async
+ * @function listadoPlanesSinPag
+ * @param {import('express').Request} req - Objeto de la petición HTTP de Express, conteniendo los parámetros de consulta y los datos del usuario autenticado.
+ * @param {import('express').Response} res - Objeto de la respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente a través del manejador.
+ * 
+ * @example
+ * // Petición GET esperada:
+ * // /planes/sin-paginacion?estado=activos&descripcion=Mensual
  */
 const listadoPlanesSinPag = async( req : Request , res : Response ) =>{
 	const { descripcion , estado } = req.query;
 
-	const parametrosUrl = {
-		descripcion , estado , id_escuela : Number(req.usuario?.id_escuela)
+	const parametrosUrl : ListaPlanesUsuarioSinPagInputs = {
+		descripcion : descripcion as "activos" | "inactivos" | "todos"  ,
+		estado : estado as "activos" | "inactivos" | "todos" ,
+		id_escuela : Number(req.usuario?.id_escuela)
 	};
 
-	const listadoResult = await planesServicio.listadoPlanesSinPag( parametrosUrl );
-
-	const config = MAPA_LISTADO_PLAN[ listadoResult.code ] || ERROR_INTERNO_SERVIDOR;
-
-	if ( config.status === CodigoEstadoHTTP.OK) {
-		return enviarResponse(
-			res, 
-			config.status,
-			listadoResult.message || config.msg,
-			listadoResult.data,
-			undefined,
-			listadoResult.code
-		);
-	}else{
-		return enviarResponseError(
-			res, 
-			config.status,
-			listadoResult.message || config.msg,
-			listadoResult.code		
-		);
-	};
+	await handleControladores<ListaPlanesUsuarioSinPagInputs, ResulListadoPlanesUsuarios[] >(
+		res, parametrosUrl, planesServicio.listadoPlanesSinPag, MAPA_LISTADO_PLAN
+	);
 
 };
 
