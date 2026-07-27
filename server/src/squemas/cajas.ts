@@ -132,6 +132,9 @@ const ItemDetalleSchema = z.object({
 // 2. Definimos el esquema principal
 export const AperturaCajaSchema = z.object({
   id_escuela: z.number().positive("ID de escuela requerido"),
+  id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,  
   estado: z.enum(["abierta", "cerrada"]).default("abierta"),
   id_usuario_apertura: z.number().positive("ID de usuario requerido"),
   
@@ -180,7 +183,10 @@ export const CierresCajaSchema = z.object({
     // Ya permite negativos por defecto
     diferencia_total: z.coerce.number(),
     
-    id_caja: z.coerce.number().int().positive()
+    id_caja: z.coerce.number().int().positive(),
+    id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,  
 });
 
 export type AperturaCajaInput = z.infer<typeof AperturaCajaSchema>;

@@ -537,7 +537,8 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
  * - TRANSACCION_FALLIDA: Si hubo un error de SQL (activando el ROLLBACK automático).
  * * @throws {Error} Si no se encuentra la categoría configurada para la escuela.
  */
-const aperturaCajaTransaccion = async (datos: AperturaCajaInput) => {
+const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
+:Promise<TipadoData<{ id_caja : number}>> => {
     // 1. Definición de Queries (Consistente con tu estilo)
     const sqlCategoria: string = `SELECT id_categoria FROM categorias_caja 
                                WHERE id_escuela = ? AND nombre_categoria = 'Saldo Inicial' LIMIT 1`;
@@ -593,7 +594,7 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput) => {
         return {
             error: false,
             message: "Apertura de caja registrada correctamente",
-            data: resultado.data,
+            data: resultado.data ,
             code: "TRANSACCION_OK"
         };
     }

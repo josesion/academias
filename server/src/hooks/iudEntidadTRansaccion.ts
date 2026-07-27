@@ -47,6 +47,7 @@ export const iudEntidadTransaction = async <T>(
     const result = await callback(conn);
 
     await conn.commit();
+    
     conn.release();
 
     return {
@@ -68,63 +69,3 @@ export const iudEntidadTransaction = async <T>(
 };
 
 
-/*
-Ejemplo de uso de iudEntidadTransaction:
-
-import { iudEntidadTransaction } from "../hooks/iudEntidadTransaction";
-
-// Supongamos que tenemos estas variables del frontend
-const idEscuela = 107;
-const dniAlumno = 40567890;
-const idInscripcion = 25;
-const idHorarioClase = 12;
-const estadoAsistencia = "presente";
-
-(async () => {
-  const resultado = await iudEntidadTransaction(async (conn) => {
-    // 1️⃣ Insertar la asistencia
-    const [resAsistencia] = await conn.execute(
-      `INSERT INTO asistencias 
-        (id_escuela, dni_alumno, id_inscripcion, id_horario_clase, fecha, estado)
-       VALUES (?, ?, ?, ?, CURDATE(), ?)`,
-      [idEscuela, dniAlumno, idInscripcion, idHorarioClase, estadoAsistencia]
-    );
-
-    // 2️⃣ Calcular cuántas clases le quedan al alumno
-    const [resClases] = await conn.execute(
-      `SELECT (i.clases_asignadas_inscritas * i.meses_asignados_inscritos) 
-              - COUNT(a.id_asistencia) AS clases_restantes
-       FROM inscripciones i
-       LEFT JOIN asistencias a
-         ON a.id_inscripcion = i.id_inscripcion AND a.estado = 'presente'
-       WHERE i.id_inscripcion = ?
-       GROUP BY i.id_inscripcion`,
-      [idInscripcion]
-    );
-
-    const clasesRestantes = (resClases as any)[0]?.clases_restantes ?? 0;
-
-    // 3️⃣ Si se acabaron las clases, marcar la inscripción como vencida
-    if (clasesRestantes <= 0) {
-      await conn.execute(
-        `UPDATE inscripciones 
-         SET estado = 'vencidos'
-         WHERE id_inscripcion = ?`,
-        [idInscripcion]
-      );
-    }
-
-    // Retornar datos útiles
-    return {
-      idAsistencia: (resAsistencia as any).insertId,
-      clasesRestantes
-    };
-  });
-
-  if (!resultado.error) {
-    console.log("Asistencia registrada con éxito:", resultado.data);
-  } else {
-    console.error("Error al registrar asistencia:", resultado.message);
-  }
-})();
-*/

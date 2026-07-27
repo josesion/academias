@@ -9,7 +9,7 @@ const { saldoMetodoPago } = dataInscripcion;
 // Sección de  hooks
 // ──────────────────────────────────────────────────────────────
 import { tryCatchDatos } from "../utils/tryCatchBD";
-
+import { registroHistorial } from "../utils/postHistorial";
 // ──────────────────────────────────────────────────────────────
 // Sección de  typados
 // ──────────────────────────────────────────────────────────────
@@ -28,7 +28,7 @@ import { TipadoData } from "../tipados/tipado.data";
 import { 
          ResultDetalleCaja,DetalleCajaMovimiento, CategoríaCaja
  } from "../tipados/caja.data.tipado"; 
-
+import { type HistorialInputs } from "../squemas/historial"; 
 
 /**
  * @function detalleCaja
@@ -68,7 +68,7 @@ const detalleCaja = async ( data : DetalleCajaInputs)
     let saldoExiste : boolean = true;
 
     const verificacionEgreso = await verificarEgreso( verificarDetalle.id_categoria );
-   
+    console.log(verificacionEgreso)
     // veifico si es de el tipo de categoria es de egreso 
     if ( verificacionEgreso.code === 'CATEGORIA_EXISTE' ){
         // si es de tipo egreso entra aca y entemos q ver si hay monto para realizar el egreso
@@ -119,26 +119,7 @@ const detalleCaja = async ( data : DetalleCajaInputs)
 
 };
 
-/**
- * Servicio encargado de la lógica de negocio para el cierre de caja.
- * * El proceso sigue este flujo:
- * 1. Valida los datos de entrada mediante el esquema de Zod (CierresCajaSchema).
- * 2. Verifica que efectivamente exista una caja abierta para la escuela proporcionada.
- * 3. Ejecuta la persistencia del cierre (UPDATE) en la base de datos.
- * 4. Retorna una respuesta estandarizada según el resultado de la operación.
- *
- * @async
- * @param {CierresCajaInputs} data - Objeto con los datos del cierre (montos, arqueo_detalle, observaciones).
- * @returns {Promise<TipadoData<{ id_caja : number , estado : string }>>} 
- * Promesa que resuelve a un objeto TipadoData con el estado final de la caja y códigos de respuesta.
- * * @throws {ZodError} Si los datos de entrada no cumplen con las validaciones de `CierresCajaSchema`.
- * * @example
- * // Códigos de retorno exitosos:
- * // - CIERRE_CAJA_OK: Caja finalizada correctamente.
- * // Códigos de error manejados:
- * // - NO_HAY_CAJA_ABIERTA: No se encontró sesión activa para cerrar.
- * // - ERROR_SERVIDOR: Error inesperado en la persistencia.
- */
+
 const cierreCajaServicio = async ( data : CierresCajaInputs )
 : Promise<TipadoData<{ id_caja : number , estado : string,}>> =>{
 
@@ -152,7 +133,21 @@ const cierreCajaServicio = async ( data : CierresCajaInputs )
     if ( vericarCajaResult.code === "CAJA_ABIERTA_EXISTE" ){
        
         const cierreCajaResult = await dataCaja.cierreCaja(cierreCajaData);
-             
+        
+        const dataHistorial  : HistorialInputs = {
+            id_escuela :  cierreCajaData.id_escuela ,
+            id_usuario :  cierreCajaData.id_usuario,
+            modulo : "CAJA",
+            accion : "CERRAR",
+            id_registro: Number(cierreCajaResult.data?.id_caja),
+            descripcion: `Cierre de caja.`,
+            datos: {
+                id_caja : cierreCajaResult.data?.id_caja
+            } 
+        }; 
+            
+        await registroHistorial( dataHistorial);  
+
         if ( cierreCajaResult.code === "CIERRE_CAJA_MODIFICAR") {
                 return {
                     error : false,
@@ -197,7 +192,7 @@ const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
     const dataIdCaja : IdCajaAbiertaInputs = IdCajaAbiertaSchema.parse(data);
 
     const dataIdCajaResult = await dataCaja.idCajaAbierta(dataIdCaja);
-        
+   
     if(dataIdCajaResult.code === "ID_CAJA_EXISTE"){
         return{
             error : false,
@@ -243,15 +238,18 @@ const idCajaAbiertaServicio = async ( data : IdCajaAbiertaInputs )
  */
 
 // aca
+export interface ResultMetrica{
+    id_cuenta: number | string;
+    nombre_cuenta: string;
+    tipo_cuenta: "fisico" | "virtual",
+    inicial_cuenta: number;
+    movimiento_sesion: number;
+    saldo_final_cuenta: number;
+};
+
+
 const listaMetricasCaja  = async ( data : PanelMetricasInputs) 
-: Promise<TipadoData<{
-        id_cuenta: number | string;
-        nombre_cuenta: string;
-        tipo_cuenta: "fisico" | "virtual",
-        inicial_cuenta: number;
-        movimiento_sesion: number;
-        saldo_final_cuenta: number;
-}[]>> => {
+: Promise<TipadoData<ResultMetrica[]>> => {
     const metricasData : PanelMetricasInputs = PanelMetricasSchema.parse(data);
     const resultMetricas = await dataCaja.listaMetricasCaja(metricasData);
  
@@ -378,8 +376,15 @@ const listaCategiriaCajaTipos = async ( data : ListaCategoriaCajaTipoInputs)
  * - `data`: (Opcional) Array de cuentas si la operación fue exitosa.
  * - `code`: Código de respuesta interno para el mapeo del controlador.
  */
+export interface ResultListaCuentas{
+    id_cuenta : number,
+    nombre_cuenta : string ,
+    tipo_cuenta : string 
+};
+
+
 const listaTipoCuentas = async ( parametros : ListaTipoCuentasInputs)
-: Promise<TipadoData<{ id_cuenta : number, nombre_cuenta : string , tipo_cuenta : string}[]>> => {
+: Promise<TipadoData<ResultListaCuentas[]>> => {
     const dataLista : ListaTipoCuentasInputs = listaTipoCuentasSchema.parse( parametros );
    
     const listaTipoCuentasResult = await dataCaja.listaTipoCuentas( dataLista );
@@ -429,13 +434,17 @@ const listaTipoCuentas = async ( parametros : ListaTipoCuentasInputs)
  * console.log(resultado.data[0].balence_neto);
  * }
  */
+
+export interface ResultMetricasPrincipal{
+    monto_inicial : number,
+    total_ingresos : number,
+    total_egresos  : number,
+    flujo_dia : number,
+    balance_neto  : number
+};
+
 const metricasPrincipal = async ( parametros : MetricasPrincipalInputs)
-: Promise<TipadoData<{
-            monto_inicial : number,
-            total_ingresos : number,
-            total_egresos  : number,
-            flujo_dia : number,
-            balance_neto  : number }[]>> =>{
+: Promise<TipadoData<ResultMetricasPrincipal[]>> =>{
 
     const metricasData : MetricasPrincipalInputs = MetricasPrincipalSchema.parse(parametros);
   
@@ -465,24 +474,6 @@ const metricasPrincipal = async ( parametros : MetricasPrincipalInputs)
    
 };
 
-/**
- * Servicio de lógica de negocio para la apertura de una nueva caja.
- * * Este servicio coordina el flujo de apertura realizando:
-    * 1. Validación de esquema mediante Zod (AperturaCajaSchema).
-    * 2. Verificación preventiva para evitar duplicidad de cajas abiertas en la misma escuela.
- * 3. Ejecución de la transacción atómica para insertar cabecera y detalles de saldos iniciales.
- * * @async
- * @function aperturaCajaTransaccion
- * @param {AperturaCajaInput} parametros - Datos de apertura validados por el esquema de entrada.
- * @param {number} parametros.id_escuela - ID de la escuela donde se abre la caja.
- * @param {number} parametros.id_usuario_apertura - ID del usuario responsable.
- * @param {Array} parametros.detalle - Array con los saldos iniciales por cuenta.
- * * @returns {Promise<TipadoData>} Objeto de respuesta estandarizado:
- * - Si tiene éxito: { error: false, code: 'CAJA_ABIERTA_OK', data: { id_caja: number } }
- * - Si ya existe caja: { error: true, code: 'CAJA_ABIERTA', message: "..." }
- * - Si falla la DB: { error: true, code: 'ERROR_SERVIDOR', message: "..." }
- * * @throws {ZodError} Si los parámetros no cumplen con el esquema definido.
- */
 
 const aperturaCajaTransaccion = async ( parametros : AperturaCajaInput ) =>{
    
@@ -501,6 +492,21 @@ const aperturaCajaTransaccion = async ( parametros : AperturaCajaInput ) =>{
     const aperturaRestult = await dataCaja.aperturaCajaTransaccion( aperturaValidada);
 
     if ( aperturaRestult.code === 'TRANSACCION_OK'){
+
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  aperturaValidada.id_escuela ,
+                id_usuario :  aperturaValidada.id_usuario,
+                modulo : "CAJA",
+                accion : "ABRIR",
+                id_registro: Number(aperturaRestult.data?.id_caja),
+                descripcion: `Apertua de caja`,
+                datos: {
+                    id_caja : aperturaRestult.data?.id_caja
+                } 
+            }; 
+            
+            await registroHistorial( dataHistorial);   
+
         return{
             error : false, 
             message : "Se abrio Correctamente la caja",
