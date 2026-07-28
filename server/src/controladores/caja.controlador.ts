@@ -12,7 +12,7 @@ import { handleControladores } from "../utils/handleControladores";
 import { MAPA_METRICAS_PANEL, MAPA_CAJA_ABIERTA, 
         MAPA_LISTA_TIPO_CUENTAS, MAPA_ABRIR_CAJA, MAPA_LISTADO_CAJAS,
         MAPA_CERRAR_CAJA, MAPA_DETALLE_MOVIMIENTOS, MAPA_LISTADO_CATEGORIAS,
-        MAPA_METRICA_PRINCIPAL,
+        MAPA_METRICA_PRINCIPAL, MAPA_LISTADO_CATEGORIAS_SESION
 
 } from "../respuestas/caja"; 
 
@@ -21,7 +21,7 @@ import type { ResultMetrica, ResultMetricasPrincipal, ResultListaCuentas} from "
 import { 
          DetalleCajaInputs, CierresCajaInputs, IdCajaAbiertaInputs, PanelMetricasInputs, 
          ListaMovimientosCajaInputs, ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs, 
-         MetricasPrincipalInputs, AperturaCajaInput,
+         MetricasPrincipalInputs, AperturaCajaInput, CuentasSesionInputs
  } from "../squemas/cajas"; 
 
 import { 
@@ -30,7 +30,17 @@ import {
 
 
 
-
+/**
+ * Controlador HTTP encargado de registrar un nuevo movimiento o detalle en la caja (ingreso o egreso),
+ * estructurando los datos enviados en el cuerpo de la petición junto con la información 
+ * del usuario y la escuela autenticados.
+ * 
+ * @async
+ * @function detalleCaja
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el body con los datos del movimiento (id_caja, id_categoria, id_cuenta, monto, descripción, etc.) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const detalleCaja = async ( req : Request, res : Response ) => {
     
     const dataDetalle : DetalleCajaInputs= {
@@ -51,6 +61,17 @@ const detalleCaja = async ( req : Request, res : Response ) => {
 };
 
 
+/**
+ * Controlador HTTP encargado de procesar el cierre de una caja, tomando los datos 
+ * de arqueo, montos reales, del sistema y observaciones desde el cuerpo de la petición, 
+ * junto con la información del usuario y escuela autenticados.
+ * 
+ * @async
+ * @function cierreCaja
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el body con los datos del cierre y arqueo, y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const cierreCaja = async( req : Request, res : Response) =>{
 
     const data : CierresCajaInputs = { 
@@ -72,7 +93,16 @@ const cierreCaja = async( req : Request, res : Response) =>{
 };  
 
 
-
+/**
+ * Controlador HTTP encargado de consultar si existe una caja abierta para la escuela del usuario actual,
+ * extrayendo el identificador de la escuela desde los datos del usuario autenticado.
+ * 
+ * @async
+ * @function idCajaAbierta
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene la información del usuario autenticado.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const idCajaAbierta =async ( req : Request, res : Response) =>{
   
     const id_escuela : IdCajaAbiertaInputs  = { id_escuela : Number( req.usuario?.id_escuela)} ;
@@ -86,6 +116,17 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
 };
 
 
+/**
+ * Controlador HTTP encargado de obtener el panel de métricas detalladas para una caja específica,
+ * extrayendo el identificador de la caja de los parámetros de ruta y el de la escuela
+ * de los datos del usuario autenticado.
+ * 
+ * @async
+ * @function listaMetricasCaja
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el id de la caja en los parámetros y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const listaMetricasCaja = async ( req : Request, res : Response) => {
 
 
@@ -100,7 +141,16 @@ const listaMetricasCaja = async ( req : Request, res : Response) => {
 
 };
 
-
+/**
+ * Controlador HTTP encargado de obtener el listado paginado de los movimientos de una caja,
+ * extrayendo el identificador de la caja, el límite y el offset desde los parámetros de consulta (query params).
+ * 
+ * @async
+ * @function movimientosCaja
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene los query params (id_caja, limite, offset).
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const movimientosCaja = async ( req : Request, res : Response) => {
     const data : ListaMovimientosCajaInputs = {
         id_caja : Number(req.query.id_caja),
@@ -115,7 +165,17 @@ const movimientosCaja = async ( req : Request, res : Response) => {
 };
 
 
-
+/**
+ * Controlador HTTP encargado de obtener las métricas principales de una caja específica,
+ * extrayendo el identificador de la caja desde los parámetros de la ruta y el de la escuela
+ * desde los datos del usuario autenticado.
+ * 
+ * @async
+ * @function metricasCajaPrincipal
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el id de la caja en los parámetros y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
     
     const data : MetricasPrincipalInputs = {
@@ -129,7 +189,17 @@ const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
 };
 
 
-
+/**
+ * Controlador HTTP encargado de obtener el listado de categorías de caja 
+ * filtrado por el tipo de movimiento (ingreso o egreso), su estado (activos o inactivos) 
+ * y asociado a la escuela del usuario autenticado.
+ * 
+ * @async
+ * @function listarCategoriaCajaTipos
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene los parámetros de ruta (tipo, estado) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
    
     const data : ListaCategoriaCajaTipoInputs = {
@@ -144,6 +214,16 @@ const listarCategoriaCajaTipos = async ( req : Request, res : Response) => {
 };
 
 
+/**
+ * Controlador HTTP encargado de obtener el listado general de tipos de cuentas financieras 
+ * (activos o inactivos) filtrados por la escuela del usuario autenticado.
+ * 
+ * @async
+ * @function listaTipoCuentas
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene los parámetros de ruta (estado) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const listaTipoCuentas = async ( req : Request , res : Response) => {
 
   const data : ListaTipoCuentasInputs = {
@@ -156,9 +236,42 @@ const listaTipoCuentas = async ( req : Request , res : Response) => {
   );
 };
 
+/**
+ * Controlador HTTP encargado de obtener las cuentas financieras asociadas a la sesión de caja actual.
+ * Extrae la información de la escuela y del usuario desde la petición y utiliza el manejador 
+ * de controladores para ejecutar el servicio correspondiente.
+ * 
+ * @async
+ * @function cuentasSesion
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene los datos del usuario autenticado.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
+const cuentasSesion = async( req : Request , res : Response) =>{
+
+    const data : CuentasSesionInputs = {
+        id_escuela : Number(req.usuario?.id_escuela),
+        id_usuario : Number(req.usuario?.id)    
+    };
+
+    await handleControladores<CuentasSesionInputs ,{ id_cuenta :number, nombre_cuenta : string , tipo_cuenta : string}[]>(
+        res, data, cajaServicio.serviciosCuentaSesion, MAPA_LISTADO_CATEGORIAS_SESION
+    );
+
+};
 
 
-
+/**
+ * Controlador HTTP encargado de procesar la solicitud de apertura de caja.
+ * Extrae los datos del usuario autenticado y del cuerpo de la petición, 
+ * estructurándolos para pasarlos al servicio de apertura de caja a través del manejador de controladores.
+ * 
+ * @async
+ * @function abrirCajaTransaccion
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene la información del usuario autenticado y el body con el detalle.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const abrirCajaTransaccion =async (req : Request , res : Response) => {
   
     const dataCaja :  AperturaCajaInput = {
@@ -184,5 +297,6 @@ export const method ={
     listarCategoriaCajaTipos : tryCatch( listarCategoriaCajaTipos ),
     listaMetricasCaja : tryCatch( listaMetricasCaja),
     listaTipoCuentas : tryCatch( listaTipoCuentas),
-    abrirCajaTransaccion : tryCatch( abrirCajaTransaccion )
+    abrirCajaTransaccion : tryCatch( abrirCajaTransaccion ),
+    cuentasSesion : tryCatch( cuentasSesion )
 };

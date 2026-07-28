@@ -95,6 +95,18 @@ export const MAPA_LISTADO_CATEGORIAS : Record< string , { status : CodigoEstadoH
   
 };
 
+export const MAPA_LISTADO_CATEGORIAS_SESION : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
+
+ 'LISTA_TIPOS_CUENTAS_OK': { status : CodigoEstadoHTTP.OK , msg : "Listado Categorias obtenidos"},
+
+   "SIN_LISTADO_CUENTAS": { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No se encontraron categorias"},
+
+  "SIN_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "Sin caja abierta."},
+
+  ERROR_SERVIDOR,
+  
+};
+
 
 export const ERROR_INTERNO_SERVIDOR = {
     status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,

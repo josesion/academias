@@ -282,6 +282,56 @@ const verificarEgreso = async ( id : number)
 
 };
 
+export interface ResultCategoria{
+    id_categoria : number, 
+    tipo_movimiento : "ingreso" | "egreso",
+    nombre_categoria : string
+};
+
+
+
+/**
+ * Servicio encargado de verificar la existencia de una categoría de caja en la base de datos 
+ * a partir de su identificador único, retornando los detalles de la categoría si es encontrada.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Define la consulta SQL para seleccionar los campos `id_categoria`, `tipo_movimiento` y `nombre_categoria` de la tabla `categorias_caja`.
+ * 2. Ejecuta la función genérica `buscarExistenteEntidad` pasando la consulta, los parámetros y el nombre de la entidad para estandarizar la respuesta.
+ *
+ * @async
+ * @function verificarCategoria
+ * @param {number} id - Identificador único de la categoría de caja que se desea verificar.
+ * 
+ * @returns {Promise<TipadoData<ResultCategoria>>} Promesa que resuelve con el resultado de la búsqueda,
+ * conteniendo los datos de la categoría si existe, o un indicador de error/código si no se encuentra.
+ * 
+ * @example
+ * const resultado = await verificarCategoria(5);
+ * if (!resultado.error) {
+ *    console.log(resultado.data?.nombre_categoria);
+ * }
+ */
+const verificarCategoria = async ( id : number)
+: Promise<TipadoData<ResultCategoria>> => {
+
+    const sql : string = `select 
+                                id_categoria, 
+                                tipo_movimiento,
+                                nombre_categoria
+                            from 
+                                categorias_caja 
+                            where id_categoria = ? ;`
+
+   const valor : unknown[] = [ id ];
+
+   return buscarExistenteEntidad({
+        entidad : "Categoria",
+        slqEntidad : sql,
+        valores    : valor
+   });
+
+};
+
 export const method = {
     verificarCategoriaExistente : tryCatchDatos(verificarCategoriaExistente),
     verificarCategoriaExistente2 : tryCatchDatos(verificarCategoriaExistente2),
@@ -291,5 +341,6 @@ export const method = {
     listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja ),
     localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia ),
     localizarAnulacionCategortia : tryCatchDatos( localizarAnulacionCategortia ),
-    verificarEgreso : tryCatchDatos(verificarEgreso)
+    verificarEgreso : tryCatchDatos(verificarEgreso),
+    verificarCategoria : tryCatchDatos( verificarCategoria )
 };

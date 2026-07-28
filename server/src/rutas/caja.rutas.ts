@@ -14,5 +14,6 @@ const ruta  =  Router();
  ruta.get("/api/movimientos_caja",  validarPermiso,cajaControlador.movimientosCaja);
  ruta.get("/api/lista_categoria_caja_tipos/:tipo/:estado",  validarPermiso ,cajaControlador.listarCategoriaCajaTipos);
  ruta.get("/api/lista_tipos_cuentas/:estado", validarPermiso , cajaControlador.listaTipoCuentas );
+ ruta.get("/api/cuentas_sesion", validarPermiso, cajaControlador.cuentasSesion);
 
  export default ruta ;           

@@ -14,7 +14,7 @@ import { VerificarCajaInputs, AbrirCajaInputs,
          DetalleCajaInputs, CierreCajaInputs,
          IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
          ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs,
-         AperturaCajaInput, CierresCajaInputs,   
+         AperturaCajaInput, CierresCajaInputs,  CuentasSesionInputs
         } from "../squemas/cajas"; 
 import { ResultAqueoCaja, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
@@ -391,6 +391,36 @@ const listaTipoCuentas =async ( data : ListaTipoCuentasInputs)
 };
 
 
+/**
+ * Obtiene el listado de tipos de cuentas financieras que participan activamente 
+ * en una sesión de caja específica, basándose en los registros de detalles existentes.
+ * 
+ * @async
+ * @function listaTipoCuentasSesion
+ * @param {number} id_caja - Identificador único de la caja de la cual se quieren consultar las cuentas de la sesión.
+ * @returns {Promise<TipadoData<{ id_cuenta: number, nombre_cuenta: string, tipo_cuenta: string }[]>>} Retorna una estructura con el estado de la operación, el mensaje, el código y un array con las cuentas válidas para esa sesión.
+ */
+const listaTipoCuentasSesion =async ( id_caja : number)
+: Promise<TipadoData<{ id_cuenta :number, nombre_cuenta : string , tipo_cuenta : string}[]>> => {
+   const sql : string =`SELECT 
+                            cu.id_cuenta,
+                            cu.nombre_cuenta,
+                            cu.tipo_cuenta
+                        FROM detalle_caja det
+                        INNER JOIN cuentas_escuela cu ON det.id_cuenta = cu.id_cuenta
+                        INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                        WHERE det.id_caja = ? 
+                        GROUP BY det.id_cuenta, cu.nombre_cuenta, cu.tipo_cuenta;`
+    const parametros : unknown[ ] = [ id_caja ];
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores : parametros,
+        entidad : "LISTA_TIPO_CUENTAS",
+        estado :  "SESION"
+    });
+};
+
+
 
 /**
  * Obtiene el desglose financiero detallado por cada cuenta de la escuela para una sesión de caja específica.
@@ -519,27 +549,34 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
     });
 };
 
+
+
+
 /**
- * Ejecuta la persistencia de la apertura de caja en la base de datos mediante una transacción.
- * * Esta función es la encargada de la integridad referencial en la DB:
- * 1. Recupera dinámicamente el ID de la categoría 'Saldo Inicial' para la escuela.
- * 2. Inserta el registro de cabecera en la tabla `cajas`.
- * 3. Itera sobre el array de detalles para insertar cada saldo inicial en `detalle_caja`.
- * * @async
+ * Realiza la transacción para la apertura de una caja, registrando el encabezado,
+ * los detalles por cada cuenta/método de pago y calculando el monto total inicial.
+ * 
+ * @async
  * @function aperturaCajaTransaccion
- * @memberof DataCaja
- * @param {AperturaCajaInput} datos - Objeto con la información necesaria para la apertura.
- * @param {number} datos.id_escuela - ID de la escuela para filtrar la categoría.
- * @param {number} datos.id_usuario_apertura - ID del usuario que abre la caja.
- * @param {Array<ItemDetalle>} datos.detalle - Listado de cuentas y sus montos iniciales.
- * * @returns {Promise<TipadoData<{id_caja: number}>>} Resultado de la transacción:
- * - TRANSACCION_OK: Si se guardó la cabecera y todos los detalles correctamente.
- * - TRANSACCION_FALLIDA: Si hubo un error de SQL (activando el ROLLBACK automático).
- * * @throws {Error} Si no se encuentra la categoría configurada para la escuela.
+ * @param {AperturaCajaInput} datos - Objeto con los datos necesarios para la apertura (id_escuela, id_usuario_apertura y detalle de cuentas/montos).
+ * @returns {Promise<TipadoData<ResultAperturaCajas>>} Retorna una estructura con el estado de la transacción, un mensaje descriptivo, el código de resultado y los datos de la caja abierta (id_caja, montoTotal y categorías).
+ * @throws {Error} Lanza un error si no se encuentra la categoría 'Saldo Inicial' configurada para la escuela.
  */
+interface ListaMetodo {
+    id_cuenta : number,
+    metodo : string,
+    monto  : number
+};
+
+export interface ResultAperturaCajas {
+   id_caja : number, 
+   montoTotal : number,
+   categorias : ListaMetodo[] 
+};
+
 const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
-:Promise<TipadoData<{ id_caja : number}>> => {
-    // 1. Definición de Queries (Consistente con tu estilo)
+:Promise<TipadoData<ResultAperturaCajas>> => {
+    // 1. Definición de Queries 
     const sqlCategoria: string = `SELECT id_categoria FROM categorias_caja 
                                WHERE id_escuela = ? AND nombre_categoria = 'Saldo Inicial' LIMIT 1`;
 
@@ -572,7 +609,19 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
 
         // PASO C: Mapear e insertar detalles
         // Uso for...of para que el await funcione y la transacción sea segura
+        let montoTotal : number = 0;
+        const categorias: ListaMetodo[] = [];
+
         for (const item of detalle) {
+            
+            const respuestaMetodo : ListaMetodo = {
+                id_cuenta : item.id_cuenta,
+                metodo : item.nombre_cuenta,
+                monto : item.monto
+            };
+
+            categorias.push(respuestaMetodo);
+
             const valoresDetalle: unknown[] = [
                 idGenerado,           // id_caja
                 idCatApertura,        // id_categoria
@@ -584,9 +633,11 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
             ];
 
             await conn.execute(sqlCajaDetalle, valoresDetalle);
+            montoTotal += item.monto;
+
         }
 
-        return { id_caja: idGenerado };
+        return { id_caja: idGenerado, montoTotal, categorias};
     });
 
     // 3. Manejo de respuesta final
@@ -594,7 +645,7 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
         return {
             error: false,
             message: "Apertura de caja registrada correctamente",
-            data: resultado.data ,
+            data: resultado.data  as ResultAperturaCajas,
             code: "TRANSACCION_OK"
         };
     }
@@ -619,5 +670,6 @@ export const method = {
     listaMetricasCaja : tryCatchDatos( listaMetricasCaja),
     listaTipoCuentas : tryCatchDatos(listaTipoCuentas),
     metricasPrincipal : tryCatchDatos(metricasPrincipal),
-    aperturaCajaTransaccion : tryCatchDatos( aperturaCajaTransaccion )
+    aperturaCajaTransaccion : tryCatchDatos( aperturaCajaTransaccion ),
+    listaTipoCuentasSesion : tryCatchDatos( listaTipoCuentasSesion ),
 };

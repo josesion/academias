@@ -41,6 +41,8 @@ export const DetalleCajaSchema = z.object({
   descripcion: z.string().optional().default("sin nota"),
   
   referencia_id: z.number().optional().default(0),
+
+  id :  z.number().optional(),
 });
 
 export const CierreCajaSchema = z.object({
@@ -189,6 +191,21 @@ export const CierresCajaSchema = z.object({
                  .positive({ message: 'El limite debe ser un número positivo.' }) ,  
 });
 
+
+export const listaTipoCuentasSesionSchema = z.object({
+      id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+      id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) , 
+      id_caja: z.coerce.number()
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja escuela debe ser positivo (mayor que 0).")
+        .optional(),                 
+});
+
+
 export type AperturaCajaInput = z.infer<typeof AperturaCajaSchema>;
 export type CierresCajaInputs = z.infer<typeof CierresCajaSchema>;
 export type IdCajaAbiertaInputs = z.infer<typeof IdCajaAbiertaSchema>;
@@ -201,3 +218,4 @@ export type ListaMovimientosCajaInputs = z.infer<typeof listaMovimientosCajaSche
 export type ListaCategoriaCajaTipoInputs = z.infer<typeof ListaCategoriaCajaTipoSchema>;
 export type ListaTipoCuentasInputs =z.infer<typeof listaTipoCuentasSchema>;
 export type MetricasPrincipalInputs =z.infer<typeof MetricasPrincipalSchema>;
+export type CuentasSesionInputs =z.infer<typeof listaTipoCuentasSesionSchema>;
