@@ -47,7 +47,11 @@ export const InscripcionSchema = z.object({
         .int("Los meses asignados deben ser un número entero.")
         .nonnegative("Los meses asignados no pueden ser negativas."), 
 
-    estado: z.enum(['activos', 'suspendido', 'vencidos']).optional()      
+    estado: z.enum(['activos', 'suspendido', 'vencidos']).optional()   ,
+    
+      id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) , 
         
 });
 

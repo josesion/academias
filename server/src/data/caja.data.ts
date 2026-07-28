@@ -14,7 +14,7 @@ import { VerificarCajaInputs, AbrirCajaInputs,
          DetalleCajaInputs, CierreCajaInputs,
          IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
          ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs,
-         AperturaCajaInput, CierresCajaInputs,  CuentasSesionInputs
+         AperturaCajaInput, CierresCajaInputs
         } from "../squemas/cajas"; 
 import { ResultAqueoCaja, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";

@@ -4,13 +4,14 @@ import { Request, Response } from "express";
 // Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
 import { method as inscripcionServicios } from "../Servicio/inscripciones.servicios";
+
 // ──────────────────────────────────────────────────────────────
 // Sección de Hooks
 // ──────────────────────────────────────────────────────────────
 import { tryCatch } from "../utils/tryCatch";
 import { enviarResponseError } from "../utils/responseError";
 import { enviarResponse } from "../utils/response";
-
+import { handleControladores } from "../utils/handleControladores";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -56,7 +57,8 @@ const inscripcion = async( req : Request , res : Response ) =>{
         monto: dataRecivida.monto,
         clases_asignadas_inscritas: dataRecivida.clases_asignadas_inscritas,
         meses_asignados_inscritos: dataRecivida.meses_asignados_inscritos,
-        estado :"activos"
+        estado :"activos",
+        id_usuario : Number(req.usuario?.id)
     };
 
     // campos para el Detalle de Caja
@@ -70,7 +72,7 @@ const inscripcion = async( req : Request , res : Response ) =>{
         descripcion: dataRecivida.descripcion
     };
 
-
+    
 
    const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
 
@@ -122,28 +124,9 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
         dni_alumno   : req.query.dni_alumno
     };
   
-    const listadoResultado = await inscripcionServicios.listadoInscripciones(dataListado);
-
-    const config =  MAPA_LISTADO_INSCRIPCIONES[listadoResultado.code]  || ERROR_INTERNO_SERVIDOR; 
-
-    if (config.status === CodigoEstadoHTTP.OK ){
-        return enviarResponse(
-            res, 
-            config.status,
-            listadoResultado.message || config.msg,
-            listadoResultado.data,
-            listadoResultado.paginacion,
-            listadoResultado.code
-        );   
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            listadoResultado.message || config.msg,
-            listadoResultado.code
-        );
-    };
-
+    await handleControladores(
+        res, dataListado, inscripcionServicios.listadoInscripciones,  MAPA_LISTADO_INSCRIPCIONES
+    );
 };
 
 

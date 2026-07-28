@@ -326,7 +326,7 @@ const listaMetricasCaja  = async ( data : PanelMetricasInputs)
 : Promise<TipadoData<ResultMetrica[]>> => {
     const metricasData : PanelMetricasInputs = PanelMetricasSchema.parse(data);
     const resultMetricas = await dataCaja.listaMetricasCaja(metricasData);
-    console.log(resultMetricas)
+
     if ( resultMetricas.code === "METRICAS_CAJA_CUENTAS_LISTED"){ 
         return {
             error : false , 
@@ -463,7 +463,7 @@ const listaTipoCuentas = async ( parametros : ListaTipoCuentasInputs)
     const dataLista : ListaTipoCuentasInputs = listaTipoCuentasSchema.parse( parametros );
 
     const listaTipoCuentasResult = await dataCaja.listaTipoCuentas( dataLista );
-    console.log(listaTipoCuentasResult)
+
     if ( listaTipoCuentasResult.code === "LISTA_TIPO_CUENTAS_LISTED"){
         return{
             error : false,

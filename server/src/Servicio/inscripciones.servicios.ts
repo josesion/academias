@@ -9,6 +9,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as inscripcionesData} from "../data/inscripciones.data";
 import { method as categoriasCajaData } from "../data/categoria.cajas.data";
 import { method as dataCaja } from "../data/caja.data";
+import { registroHistorial } from "../utils/postHistorial";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -20,28 +21,18 @@ import {  InscripcionInputs, InscripcionSchema ,
 import { DetalleCajaInputs, DetalleCajaSchema } from "../squemas/cajas";
 import { InscripcionListado } from "../tipados/inscripciones";
 import { TipadoData } from "../tipados/tipado.data";
-
+import { type HistorialInputs } from "../squemas/historial";
 
 
 /**
- * Servicio de alto nivel para gestionar el proceso de inscripción con pago.
- * * Este servicio actúa como orquestador realizando las siguientes acciones:
- * 1. Valida los esquemas de entrada (Inscripción y Caja) usando Zod.
- * 2. Verifica si el alumno ya posee una inscripción vigente para evitar duplicados.
- * 3. Si no existe, procede a ejecutar la transacción de alta académica y financiera.
- * * @param {InscripcionInputs} dataInscripcion - Información académica del alumno y el plan.
- * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Información del pago para la caja.
- * * @returns {Promise<TipadoData<{ id_inscripcion: number, dni_alumno: number }>>} 
- * Promesa con el resultado de la operación:
- * - `INSCRIPCION_EXITOSA`: El proceso completo terminó correctamente.
- * - `INSCRIPCION_EXISTENTE`: Se detuvo el proceso porque el alumno ya está inscripto.
- * - `INSCRIPCION_FALLIDA`: Error controlado durante la transacción.
- * - `NO_SE_LOGRO_VERIFICAR`: Error inesperado en la etapa de comprobación.
- * * @example
- * const respuesta = await inscripcionServiciosCaja(datosFormulario, datosPago);
- * if (respuesta.code === "INSCRIPCION_EXITOSA") {
- * console.log("Alumno registrado y pago ingresado a caja.");
- * }
+ * Servicio encargado de procesar la inscripción de un alumno con su respectivo pago inicial en caja,
+ * validando previamente que no exista una inscripción vigente y registrando el historial correspondiente si es exitosa.
+ * 
+ * @async
+ * @function inscripcionServiciosCaja
+ * @param {InscripcionInputs} dataInscripcion - Datos necesarios para registrar la inscripción (alumno, escuela, usuario, etc.).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Datos del detalle de caja para el pago asociado, excluyendo el campo de referencia.
+ * @returns {Promise<TipadoData<{ id_inscripcion: number, dni_alumno: number }>>} Retorna una estructura con el estado de la operación, mensaje descriptivo, el código de resultado y los datos de la inscripción si se completa con éxito.
  */
 const inscripcionServiciosCaja = async( 
     dataInscripcion: InscripcionInputs, 
@@ -53,7 +44,7 @@ const inscripcionServiciosCaja = async(
     const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
     
     const inscVigente = await inscripcionesData.verificacion( validInsc );
-    
+
     switch(inscVigente.code ){
 
         case "INSCRIPCION_NO_EXISTE" : {
@@ -61,6 +52,23 @@ const inscripcionServiciosCaja = async(
             const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);
       
             if ( resultadoInscripcion.code === "TRANSACCION_OK" ){
+
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  validInsc.id_escuela ,
+                id_usuario :  validInsc .id_usuario,
+                modulo : "INSCRIPCIONES",
+                accion : "CREAR",
+                id_registro: Number(resultadoInscripcion.data?.id_inscripcion),
+                descripcion: `Inscripcion del alumno, DNI: ${resultadoInscripcion.data?.dni_alumno}`,
+                datos: {
+                    id_inscripcion : resultadoInscripcion.data?.id_inscripcion,
+                    alumno : resultadoInscripcion.data?.dni_alumno
+                }
+            }; 
+            
+            await registroHistorial( dataHistorial);                  
+
+
                 return {
                     error : false,
                     message : `EL alumno : ${ dataInscripcion.dni_alumno }, registro existoso`,
@@ -86,7 +94,9 @@ const inscripcionServiciosCaja = async(
         }; 
 
         case "INSCRIPCION_EXISTE"    :{
-                return {
+            
+            
+            return {
                     error: true,
                     message: `El alumno : ${dataInscripcion.dni_alumno} ya se encuentra inscripto.`,
                     code: "INSCRIPCION_EXISTENTE"
@@ -301,7 +311,20 @@ const anularInscripcionServicio = async (
      // 10. Todo salió espectacular
      const mensajeExito = `Se anuló correctamente, pero se devolvió $${montoOriginal}`
 
-
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  verificacionInsc.id_escuela ,
+                id_usuario :  verificacionInsc.id_usuario,
+                modulo : "INSCRIPCIONES",
+                accion : "ANULACION",
+                id_registro: Number(verificacionInsc.id_inscripcion),
+                descripcion: `Inscripcion anulada Numero :${verificacionInsc.id_inscripcion} con el monto ${montoOriginal}`,
+                datos: {
+                    id_inscripcion : verificacionInsc.id_inscripcion,
+                    monto : montoOriginal
+                }
+            }; 
+            
+            await registroHistorial( dataHistorial);
 
      return {
          error: false,
