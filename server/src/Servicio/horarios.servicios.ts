@@ -2,7 +2,7 @@
 // Sección de Hooks
 // ──────────────────────────────────────────────────────────────
 import { tryCatchDatos } from "../utils/tryCatchBD";
-
+import { registroHistorial } from "../utils/postHistorial";
 // ──────────────────────────────────────────────────────────────
 // Capa de acceso a datos para ejecutar la lógica de planes contra la base de datos.
 // ──────────────────────────────────────────────────────────────
@@ -13,7 +13,7 @@ import { method as HorariosData } from "../data/horarios.data";
 import * as TipadoHorario from "../squemas/horarios_clases";
 import { ResultCalendarioHorario, ResultadoAltaHorario ,ResultModHorario, ResultEliminarHorario} from "../tipados/horarios";
 import { TipadoData } from "../tipados/tipado.data";
-
+import { type HistorialInputs } from "../squemas/historial"; 
 
 /**
  * servicioCalendarioHorario
@@ -79,47 +79,6 @@ const servicioCalendarioHorario = async( data : TipadoHorario.HorarioCalendarioI
 
 
 
-/**
- * servicioAltaCalendario
- * ----------------------
- * Crea un nuevo horario de clase en el calendario de una escuela,
- * validando previamente la disponibilidad del horario y del profesor.
- *
- * Flujo de validaciones:
- *  1. Valida los datos de entrada mediante `HorarioClaseSchema`
- *  2. Verifica que el horario no esté ocupado en la escuela
- *  3. Verifica que el profesor no tenga clases asignadas en el mismo horario
- *     (regla de negocio global, independientemente de la escuela)
- *  4. Si todas las validaciones pasan, crea el horario
- *
- * Reglas de negocio:
- *  - Un horario no puede solaparse con otro horario activo de la misma escuela
- *  - Un profesor no puede dictar dos clases en el mismo día y horario
- *
- * @async
- *
- * @param {TipadoHorario.HorarioClaseInput} data
- * Objeto con la información necesaria para crear un horario de clase.
- *
- * @returns {Promise<TipadoData<ResultadoAltaHorario>>}
- * Retorna un objeto TipadoData con los siguientes casos posibles:
- *
- *  - `error: true` y `code: 'HORARIO_OCUPADO'`
- *    Si el horario ya está asignado en la escuela.
- *
- *  - `error: true` y `code: 'PROFESOR_OCUPADO'`
- *    Si el profesor ya tiene una clase asignada en el mismo horario.
- *
- *  - `error: false` y `code: 'HORARIO_CREADO_EXITOSAMENTE'`
- *    Si el horario se crea correctamente.
- *
- *  - `error: true` y `code: 'HORARIOS_PROBLEMAS'`
- *    Si ocurre un error al intentar crear el horario.
- *
- * @throws {Error}
- * Puede lanzar errores de validación (Zod) o errores inesperados
- * provenientes de la capa de datos.
- */
 const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput) 
 : Promise<TipadoData<ResultadoAltaHorario>> =>{
     
@@ -147,6 +106,29 @@ const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput)
     const dataAlta = await HorariosData.altaHorario( dataClasesHorario);
 
     if ( dataAlta.code === 'HORARIOS_CLASES_CREAR') {
+
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  dataClasesHorario.id_escuela ,
+                id_usuario :  dataClasesHorario.id_usuario,
+                modulo : "HORARIOS",
+                accion : "CREAR",
+                id_registro: Number(dataAlta.data?.id),
+                descripcion: `Se creó el horario de clase para el profesor con DNI: ${dataClasesHorario.dni_profesor} (${dataClasesHorario.hora_inicio} - ${dataClasesHorario.hora_fin}, ${dataClasesHorario.dia_semana})`,
+                datos: {
+                    id_horario: dataAlta.data?.id,
+                    
+                    dni_profesor: dataClasesHorario.dni_profesor,
+                    id_nivel: dataClasesHorario.id_nivel,
+                    id_tipo_clase: dataClasesHorario.id_tipo_clase,
+                    hora_inicio: dataClasesHorario.hora_inicio,
+                    hora_fin: dataClasesHorario.hora_fin,
+                    dia_semana: dataClasesHorario.dia_semana,
+                    fecha_creacion: dataClasesHorario.fecha_creacion,
+                }
+            }; 
+            
+            await registroHistorial( dataHistorial);   
+
         return {
             error : false,
             message : "Horario de clase creado con éxito",
@@ -163,40 +145,7 @@ const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput)
 };
 
 
-/**
- * Servicio para modificar un horario dentro del calendario.
- *
- * Valida los datos de entrada mediante el schema correspondiente,
- * ejecuta la modificación del horario en la capa de datos y
- * retorna un resultado tipado con el estado de la operación.
- *
- * @async
- * @function servcioModCalendario
- *
- * @param {TipadoHorario.ModHorarioInput} data
- * Datos requeridos para la modificación del horario.
- *
- * @returns {Promise<TipadoData<ResultModHorario>>}
- * Promesa que retorna el resultado del servicio de modificación
- * del horario de clase, incluyendo mensaje, código de estado
- * y datos del horario modificado cuando la operación es exitosa.
- *
- * @throws {Error}
- * Lanza un error si la validación del schema falla o si ocurre
- * un problema durante la ejecución de la capa de datos.
- *
- * @example
- * ```ts
- * const resultado = await servcioModCalendario({
- *   id: 5,
- *   id_escuela: 2,
- *   dni_profesor: 30123456,
- *   id_tipo_clase: 1,
- *   id_nivel: 3
- * });
- *
- * ```
- */
+
 
 const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
 : Promise<TipadoData<ResultModHorario>> =>{
@@ -206,6 +155,25 @@ const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
     const horarioMod = await HorariosData.modHorario(dataModHorario);
 
     if (horarioMod.code === 'HORARIOS_CLASES_MODIFICAR'){
+    
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  dataModHorario.id_escuela ,
+                id_usuario :  dataModHorario.id_usuario,
+                modulo : "HORARIOS",
+                accion : "MODIFICAR",
+                id_registro: Number(dataModHorario.id),
+                descripcion: `Se modificó el horario de clase (ID: ${dataModHorario.id}) para el profesor con DNI: ${dataModHorario.dni_profesor}`,
+                datos: {
+                    id: dataModHorario.id, 
+                    dni_profesor: dataModHorario.dni_profesor,
+                    id_nivel: dataModHorario.id_nivel,
+                    id_tipo_clase: dataModHorario.id_tipo_clase,
+                }
+            }; 
+            
+            await registroHistorial( dataHistorial); 
+
+
         return{
             error : false,
             message : `El horario : ${horarioMod.data?.id} se modifico`,
@@ -267,6 +235,23 @@ const servicioEliminarHorario = async ( data : TipadoHorario.EliminarHorarioInpu
     const eliminarHorario = await HorariosData.eliminarHorario(dataElimnar);
    
     if ( eliminarHorario.code === "HORARIOS_CLASES_ELIMINAR"){
+
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  dataElimnar.id_escuela ,
+                id_usuario :  dataElimnar.id_usuario,
+                modulo : "HORARIOS",
+                accion : "ELIMINAR",
+                id_registro: Number(dataElimnar.id),
+                descripcion: `Se actualizó el estado del horario de clase (ID: ${dataElimnar.id}) a estado: ${dataElimnar.estado})`,
+                datos: {
+                    id: dataElimnar.id,
+                    estado: dataElimnar.estado,
+                    vigente: dataElimnar.vigente,
+                }
+            }; 
+            
+            await registroHistorial( dataHistorial); 
+
         return {
             error : false,
             message : `El horario : ${eliminarHorario.data?.id}  se elimino`,

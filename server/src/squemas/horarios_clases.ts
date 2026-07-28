@@ -45,11 +45,19 @@ export const HorarioClaseSchema = z
       .optional(), // puede ser generada por el servidor si no viene
 
     estado: EstadoEnum.default("activos"),
+
+        id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,     
   })
 
 export const CalendarioHorarioSchema = z.object({
   id_escuela: z.number().int().positive(),
   estado: EstadoEnum.default("activos"),
+      id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,   
+
 }); 
 
 export const modHorariosSchema = z.object({
@@ -58,6 +66,9 @@ export const modHorariosSchema = z.object({
    id_nivel: z.number().int().positive(),
    id : z.number().int().positive(),
    id_escuela: z.number().int().positive(),
+      id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,    
 });
 
 export const EliminarHorarioSchema = z.object({
@@ -65,6 +76,9 @@ export const EliminarHorarioSchema = z.object({
      vigente : z.boolean(),
      id : z.number().int().positive(),
      id_escuela: z.number().int().positive(),
+      id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
+                 .min(0 , {message : "El id debe ser mayor de 0"})
+                 .positive({ message: 'El limite debe ser un número positivo.' }) ,      
 });
 
 

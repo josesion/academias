@@ -5,6 +5,7 @@ export interface ResultadoAltaHorario {
     dni_profesor: string;
     id_nivel: number;
     id_tipo_clase: number; 
+    id?: number 
 };
 
 export interface ResultModHorario extends ResultadoAltaHorario {

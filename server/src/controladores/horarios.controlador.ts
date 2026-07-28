@@ -1,57 +1,35 @@
 import { Response , Request } from "express";
 // hooks
 import { tryCatch } from "../utils/tryCatch";
-import { enviarResponse } from "../utils/response";
-import { enviarResponseError } from "../utils/responseError";
-
+import { handleControladores } from "../utils/handleControladores";
 //Servicios Data
 import { method as horarioServicio} from "../Servicio/horarios.servicios"
 
 // Typados
-import { CodigoEstadoHTTP } from "../tipados/generico"; 
-import { MAPA_LISTADO_HORARIO, ERROR_INTERNO_SERVIDOR,
+
+import { MAPA_LISTADO_HORARIO,
          MAPA_ALTA_HORARIO, MAPA_ELIMINAR_HORARIO , MAPA_MOD_HORARIO,
  } from "../respuestas/horarios";
 
+import  { HorarioCalendarioInput, HorarioClaseInput, ModHorarioInput, EliminarHorarioInput  } from "../squemas/horarios_clases";
+import { ResultCalendarioHorario, ResultadoAltaHorario ,ResultModHorario, ResultEliminarHorario} from "../tipados/horarios";
 
 
 
 /**
- * altaHorario
- * -----------
- * Controlador encargado de manejar el alta de un horario de clase.
- *
- * Recibe los datos desde el body del request, delega la lógica de negocio
- * al servicio de horarios y traduce el resultado a una respuesta HTTP adecuada.
- *
- * Responsabilidades:
- *  - No contiene reglas de negocio
- *  - Interpreta los códigos devueltos por el service
- *  - Devuelve el status HTTP correspondiente según el resultado
- *
- * Códigos manejados:
- *  - HORARIO_OCUPADO → 409 CONFLICT
- *  - PROFESOR_OCUPADO → 409 CONFLICT
- *  - HORARIO_CREADO_EXITOSAMENTE → 201 CREATED
- *  - Cualquier otro → 500 INTERNAL SERVER ERROR
- *
+ * Controlador HTTP encargado de procesar la creación o alta de un nuevo horario de clase,
+ * estructurando los datos enviados en el cuerpo de la petición junto con la información 
+ * de la escuela y el usuario autenticados.
+ * 
  * @async
- *
- * @param {Request} req
- * Request de Express. Se espera que el body contenga
- * los datos necesarios para crear un horario de clase.
- *
- * @param {Response} res
- * Response de Express utilizada para devolver la respuesta HTTP.
- *
- * @returns {Promise<Response>}
- * Retorna la respuesta HTTP correspondiente al resultado
- * de la operación de alta del horario.
+ * @function altaHorario
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el body con los datos del horario (dni_profesor, id_nivel, id_tipo_clase, horas, día, etc.) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
  */
-
 const altaHorario = async( req : Request , res : Response) =>{
 
-    const dataRecivida = {
+    const dataRecivida : HorarioClaseInput  = {
         id_escuela: Number(req.usuario?.id_escuela),
         dni_profesor:  req.body.dni_profesor,
         id_nivel: Number(req.body.id_nivel),
@@ -60,234 +38,95 @@ const altaHorario = async( req : Request , res : Response) =>{
         hora_fin: req.body.hora_fin,
         dia_semana: req.body.dia_semana,
         fecha_creacion:  req.body.fecha_creacion,
-        estado: req.body.estado
+        estado: req.body.estado,
+        id_usuario : Number(req.usuario?.id)
      };
 
-    const dataHorario  = await horarioServicio.alta( dataRecivida );
-
-    const config = MAPA_ALTA_HORARIO[ dataHorario.code ] || ERROR_INTERNO_SERVIDOR;
-
-     if ( config.status === CodigoEstadoHTTP.OK ){
-            return enviarResponse(
-                res,
-                config.status,
-                dataHorario.message  || config.msg ,
-                dataHorario.data,
-                undefined,
-                dataHorario.code
-            );
-     }else{
-            return enviarResponseError(
-                res,
-                config.status,
-                dataHorario.message || config.msg ,
-                dataHorario.code
-            );
-     };
+     await handleControladores<HorarioClaseInput, ResultadoAltaHorario>(
+        res, dataRecivida, horarioServicio.alta, MAPA_ALTA_HORARIO
+     );
 
 }; 
 
 
-/**
- * listadoHorarioEscuela
- * ---------------------
- * Controlador encargado de obtener el calendario de horarios de una escuela.
- *
- * Construye el objeto de entrada a partir de los parámetros de query,
- * delega la lógica al servicio de horarios y traduce el resultado
- * a una respuesta HTTP.
- *
- * Responsabilidades:
- *  - Adaptar los parámetros del request (query) al formato esperado por el service
- *  - Interpretar los códigos de negocio devueltos
- *  - Enviar la respuesta HTTP correspondiente
- *
- * Query params esperados:
- *  - id_escuela {number} (obligatorio)
- *  - estado {string} (opcional)
- *
- * Códigos manejados:
- *  - CALENDARIO_VACIO → 404 NOT FOUND
- *  - CALENDARIO_ESCUELA_LISTADO → 200 OK
- *
- * @async
- *
- * @param {Request} req
- * Request de Express. Se utilizan los parámetros de query
- * para obtener el calendario de la escuela.
- *
- * @param {Response} res
- * Response de Express utilizada para devolver la respuesta HTTP.
- *
- * @returns {Promise<Response>}
- * Retorna la respuesta HTTP con el calendario de horarios
- * o un error si no existen clases asignadas.
- */
 
+/**
+ * Controlador HTTP encargado de obtener el listado de horarios de clase de la escuela,
+ * filtrando por estado mediante los parámetros de consulta (query params) y utilizando 
+ * la información del usuario y la escuela autenticados.
+ * 
+ * @async
+ * @function listadoHorarioEscuela
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el query con el filtro de estado y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
+ */
 const listadoHorarioEscuela = async( req : Request , res : Response ) =>{
    
-    const data = {
+    const data : HorarioCalendarioInput = {
         id_escuela: Number(req.usuario?.id_escuela),
-        estado: req.query.estado as string | undefined
+        estado: req.query.estado as "activos" | "inactivos" | "suspendido",
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const resultadoCalendario = await horarioServicio.calendario( data );
-
-    const config = MAPA_LISTADO_HORARIO[ resultadoCalendario.code ] || ERROR_INTERNO_SERVIDOR;
-
-    if ( config.status === CodigoEstadoHTTP.OK){
-            return enviarResponse(
-                res,
-                config.status,
-                resultadoCalendario.message || config.msg,
-                resultadoCalendario.data,
-                undefined,
-                resultadoCalendario.code
-            );
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            resultadoCalendario.message || config.msg  ,
-            resultadoCalendario.code
-        )    
-    };
-  
+    await handleControladores<HorarioCalendarioInput,ResultCalendarioHorario[] >(
+        res, data, horarioServicio.calendario, MAPA_LISTADO_HORARIO
+    );
 };
 
 
+
 /**
- * Controlador para modificar un horario de clase.
- *
- * Recibe los datos desde el cuerpo de la petición HTTP,
- * los normaliza al tipo correspondiente y delega la
- * modificación del horario al servicio de horarios.
- * Retorna una respuesta HTTP estándar según el resultado.
- *
+ * Controlador HTTP encargado de procesar la modificación de un horario de clase existente,
+ * extrayendo los datos del cuerpo de la petición y la información de la escuela y usuario autenticados.
+ * 
  * @async
  * @function modHorario
- *
- * @param {Request} req
- * Objeto Request de Express que contiene los datos del horario
- * a modificar en el cuerpo de la petición.
- *
- * @param {Response} res
- * Objeto Response de Express utilizado para enviar la respuesta
- * al cliente.
- *
- * @returns {Promise<Response | void>}
- * Retorna una respuesta HTTP con estado OK cuando la modificación
- * es exitosa, o un error interno del servidor en caso contrario.
- *
- * @example
- * ```ts
- * // PUT /horarios/modificar
- * app.put('/horarios/modificar', modHorario);
- * ```
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el body con los datos a modificar (id, id_nivel, id_tipo_clase, dni_profesor) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
  */
-
 const modHorario = async( req : Request, res : Response) => {
   
-    const data = {
+    const data : ModHorarioInput = {
         id : Number(req.body.id),
         id_escuela: Number(req.usuario?.id_escuela),
         id_nivel : Number(req.body.id_nivel),
         id_tipo_clase :  Number(req.body.id_tipo_clase),
-        dni_profesor  : req.body.dni_profesor as string
+        dni_profesor  : req.body.dni_profesor as string,
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const resultado = await horarioServicio.mod(data);
-
-    const config = MAPA_MOD_HORARIO[ resultado.code] || ERROR_INTERNO_SERVIDOR;
-
-    if (config.status ===  CodigoEstadoHTTP.OK){
-        return enviarResponse(
-            res,
-            config.status,
-            resultado.message || config.msg ,
-            resultado.data,
-            undefined,
-            resultado.code
-        );     
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            resultado.message || config.msg ,
-            resultado.code
-        );        
-    };
-
+    await handleControladores<ModHorarioInput, ResultModHorario >(
+        res, data, horarioServicio.mod, MAPA_MOD_HORARIO
+    );
     
 };
 
+
 /**
- * Controlador para eliminar lógicamente un horario de clase.
- *
- * Recibe los datos desde el cuerpo de la petición HTTP,
- * construye el objeto de eliminación respetando el contrato
- * de negocio (estado como string) y delega la operación
- * al servicio de horarios.
- *
+ * Controlador HTTP encargado de gestionar la eliminación o cambio de estado de un horario de clase,
+ * extrayendo los datos del cuerpo de la petición y la información de la escuela y usuario autenticados.
+ * 
  * @async
  * @function elimnarHorario
- *
- * @param {Request} req
- * Objeto Request de Express que contiene en el body los datos
- * necesarios para la eliminación lógica del horario.
- *
- * @param {Response} res
- * Objeto Response de Express utilizado para enviar la respuesta
- * al cliente.
- *
- * @returns {Promise<Response | void>}
- * Retorna una respuesta HTTP OK cuando la eliminación es exitosa
- * o un error interno del servidor en caso de falla.
- *
- * @remarks
- * El campo `estado` se maneja como string según el contrato
- * de negocio (por ejemplo: `"ACTIVO"`, `"INACTIVO"`, `"ELIMINADO"`).
- *
- * @example
- * ```ts
- * // DELETE /horarios/eliminar
- * app.delete('/horarios/eliminar', elimnarHorario);
- * ```
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el body con los datos (id, estado, vigente) y los datos del usuario.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
  */
-
 const elimnarHorario = async ( req : Request , res: Response) => {
     
-    const  data = {
+    const  data : EliminarHorarioInput  = {
         id_escuela : Number(req.usuario?.id_escuela),
         id         : Number(req.body.id),
-        estado     : req.body.estado as string,
-        vigente    : req.body.vigente as boolean
+        estado     : req.body.estado as "activos" | "inactivos" | "suspendido",
+        vigente    : req.body.vigente as boolean,
+        id_usuario : Number(req.usuario?.id)
     };
 
-    const resultadoEliminar = await horarioServicio.eliminar(data);
-
-    const config = MAPA_ELIMINAR_HORARIO[ resultadoEliminar.code ] || ERROR_INTERNO_SERVIDOR;
-
-    if ( config.status === CodigoEstadoHTTP.OK ){
-        return enviarResponse(
-            res,
-            config.status,
-            resultadoEliminar.message || config.msg,
-            resultadoEliminar.data,
-            undefined,
-            resultadoEliminar.code
-        );      
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            resultadoEliminar.message || config.msg ,
-            resultadoEliminar.code
-        );  
-    };
-
- 
-
+    await handleControladores<EliminarHorarioInput, ResultEliminarHorario>(
+        res, data, horarioServicio.eliminar, MAPA_ELIMINAR_HORARIO
+    );
 };
 
 
