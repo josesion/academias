@@ -102,7 +102,7 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
                     <p className="historial_descripcion">{item.descripcion}</p>
 
                     <p className="historial_autor">
-                      {item.nombre} {item.apellido}
+                      -- {item.nombre} {item.apellido} --
                     </p>
                   </div>
                 </li>

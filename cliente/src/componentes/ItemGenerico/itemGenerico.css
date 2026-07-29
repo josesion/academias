@@ -11,12 +11,8 @@
     
     width: 100%;
     min-height: 70px;
-    background:
-        linear-gradient(
-            180deg,
-            var(--fondo-secundario),
-            var(--fondo-principal)
-        );
+    background: var( --fondo-secundario);
+
 
     backdrop-filter: blur(12px);
     border:1px solid var(--borde);

@@ -1,115 +1,134 @@
 /* ============================================================
-   ESTILO STUDIO PRO - RESPETANDO TU ESTRUCTURA ORIGINAL
+   FILTRO DE FECHAS — rango desde/hasta
    ============================================================ */
 
 .filtro_fechas_contenedor {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
+    gap: 14px;
+    background: var(--fondo-secundario);
+    flex-wrap: wrap;
+    padding: 8px;
+    max-width: 450px;
+    border-radius: 10px;
+    border-color: var(--borde-hover);
     justify-content: center;
-    gap: 20px;
     
-    /* Estilo Cápsula Studio Pro */
-    width: fit-content;
-    padding: 10px 25px;
-    background: var(--fondo-principal);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    margin: 0px ; /* Para que el contenedor padre lo maneje */
 }
 
 .filtro_input_group {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
+
+    min-width: 160px;
 }
 
 .filtro_input_group label {
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #64748b;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
     text-transform: uppercase;
-    margin-left: 12px;
+    letter-spacing: 1.1px;
+    color: var(--texto-deshabilitado);
 }
+
+/* ============================================================
+   WRAPPER — ícono integrado dentro del campo, no al lado
+   ============================================================ */
 
 .input_wrapper {
     position: relative;
+
     display: flex;
     align-items: center;
 }
 
 .input_icon {
     position: absolute;
-    left: 15px;
-    color: #4f46e5; /* Violeta Studio Pro */
+    left: 12px;
+
+    color: var(--texto-deshabilitado);
     pointer-events: none;
-    z-index: 2;
 }
 
-.filtro_input_group input {
-    height: 38px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50px;
-    padding: 0 15px 0 38px; /* Espacio para el icono */
-    color: white;
-    font-size: 0.85rem;
-    outline: none;
-    width: 160px;
+.input_wrapper input[type="date"] {
+    width: 100%;
     box-sizing: border-box;
-    transition: all 0.3s ease;
+
+    height: 40px;
+    padding: 0 12px 0 36px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    cursor: pointer;
+
+    transition: var(--transicion);
+
+    /* el navegador dibuja los inputs date con su UI nativa;
+       color-scheme le avisa que use la variante oscura, si no,
+       algunos navegadores muestran el ícono de calendario nativo
+       en negro sobre negro, invisible */
+    color-scheme: dark;
 }
 
-.filtro_input_group input:focus {
-    border-color: #06b6d4;
-    background: rgba(255, 255, 255, 0.08);
+.input_wrapper input[type="date"]:hover {
+    border-color: var(--borde-hover);
 }
 
-.filtro_separador {
-    color: rgba(255, 255, 255, 0.2);
-    font-weight: bold;
-    margin-top: 18px; /* Para alinear con los inputs */
+.input_wrapper input[type="date"]:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
 }
 
-/* Icono nativo de fecha (el de la derecha) */
-::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-    opacity: 0.4;
+.input_wrapper input[type="date"]:focus + .input_icon,
+.filtro_input_group:focus-within .input_icon {
+    color: var(--color-primario);
+}
+
+/* el ícono nativo del navegador (el calendario clickeable) —
+   Chrome/Edge permiten estilizarlo, Firefox/Safari lo ignoran */
+.input_wrapper input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.6);
     cursor: pointer;
 }
 
 /* ============================================================
-   RESPONSIVE - PARA PANTALLAS CHICAS (MÓVILES)
+   SEPARADOR
    ============================================================ */
 
-@media (max-width: 640px) {
+.filtro_separador {
+    padding-bottom: 10px;
+
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-principal);
+    font-weight: var(--peso-semi-negrita);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 480px) {
     .filtro_fechas_contenedor {
-        flex-direction: column; /* Cambiamos a columna */
-        align-items: stretch;   /* Para que los inputs ocupen todo el ancho */
-        border-radius: 20px;    /* Cambiamos de cápsula a tarjeta redondeada */
-        width: 100%;            /* Ocupa el ancho disponible */
-        padding: 20px;
+        flex-direction: column;
+        align-items: stretch;
         gap: 10px;
     }
 
-    .filtro_input_group {
-        width: 100%;
-    }
-
-    .filtro_input_group input {
-        width: 100%;           /* El input se estira al 100% del contenedor */
-        height: 45px;          /* Un poco más alto para que sea fácil de tocar con el dedo */
-    }
-
     .filtro_separador {
-        display: none;         /* En vertical el guion medio queda feo, mejor lo ocultamos */
+        display: none;
     }
 
-    .filtro_input_group label {
-        margin-left: 5px;
-        margin-bottom: 2px;
-        font-size: 0.75rem;    /* Un poquito más grande para legibilidad */
+    .filtro_input_group {
+        min-width: 0;
+        width: 100%;
     }
 }

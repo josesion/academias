@@ -13,6 +13,7 @@ import type{ListadoTipoCuentas} from "../../tipadosTs/caja.typado";
 interface EntidadesExternasCajaConfig {    
     servicios : {
          listadoTipoCuentas : ServicioCrud,
+         cuentasSesion  : ServicioCrud,
     },
     state: CajaTipado;
     dispatch: React.Dispatch<CajaAction>;    
@@ -35,7 +36,7 @@ useEffect( ()=> {
     const obtenerListadoCuentas = async () => {
         const servicioApiFetch = config.servicios.listadoTipoCuentas;
         const resultListacoCuentas = await servicioApiFetch( filtroCuentasEstatica);
-       
+     
         if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
             dispatch({
                 type : "SET_LISTADO_CUENTAS_ACTIVAS",
@@ -64,6 +65,46 @@ useEffect( ()=> {
     };
 
     obtenerListadoCuentas();
+
+}, []);
+
+// ──────────────────────────────────────────────────────────────
+// Obtener el listado de tipo cuentas de que se asignaron en el momento de la partura de caja
+// ──────────────────────────────────────────────────────────────
+
+useEffect( ()=> {
+
+    const obtenerListadoCuentasSession = async () => {
+        const servicioApiFetch = config.servicios.cuentasSesion;
+        const resultListacoCuentas = await servicioApiFetch({});
+        
+        if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
+            dispatch({
+                type : "SET_LISTADO_CUENTAS_SESION",
+                payload : resultListacoCuentas.data
+            });
+    
+            const detallesIniciales = resultListacoCuentas.data.map((cuenta: ListadoTipoCuentas) => ({
+                id_cuenta: cuenta.id_cuenta,
+                nombre_cuenta: cuenta.nombre_cuenta,
+                monto: "" // Nacen en cero para que no fallen al enviar
+            }));
+
+            dispatch({ type : "SET_APERTURA_DETALLE" , payload : detallesIniciales})
+
+        }else{
+            dispatch({
+                type : "SET_LISTADO_CUENTAS_SESION",
+                payload : []
+            });
+            dispatch({
+                type : "SET_ERROR",
+                payload : resultListacoCuentas.message || "Error sin listado cuentas" 
+            });
+        };
+    };
+
+    obtenerListadoCuentasSession();
 
 }, []);
 

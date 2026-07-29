@@ -1,257 +1,789 @@
-/* Contenedor Principal */
-.contenedor_metodo_pago_input {
-    background: rgba(20, 20, 25, 0.8);
-    border: 1px solid var(--color-borde-cyber); /* Usa tus variables de color */
-    padding: 20px;
-    border-radius: 8px;
-    margin-top: 20px;
+/*==========================================================
+        CONTENEDOR PRINCIPAL
+==========================================================*/
+
+.contenedor_metodo_pago_inputs{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:16px;
+
+    width:100%;
+
 }
 
-.contenedor_metodo_pago_input > p {
-    font-weight: bold;
-    color: #00f2ff; /* Color neón */
-    margin-bottom: 15px;
-    letter-spacing: 1px;
+/*==========================================================
+                    TITULO
+==========================================================*/
+
+.metodo_pago_titulo{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:4px;
+
+    padding-bottom:8px;
+
+    border-bottom:1px solid var(--borde);
+
 }
 
-/* Header de la Tabla */
-.header_arqueo_grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
-    gap: 15px;
-    padding: 10px;
-    border-bottom: 2px solid #333;
-    font-size: 0.85rem;
-    color: #888;
-    text-transform: uppercase;
+.metodo_pago_titulo h3{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:var(--titulo-sm);
+
+    font-weight:var(--peso-semi-negrita);
+
+    color:var(--texto-principal);
+
 }
 
-/* Contenedor de las filas mapeadas */
-.contenedor_metodo_pago_inputs {
-    display: flex;
-    flex-direction: column;
-    gap: 5px; /* Espacio entre filas */
-    margin-top: 10px;
+.metodo_pago_titulo span{
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-sm);
+
+    line-height:var(--linea-texto);
+
 }
 
-/* Fila Individual del Arqueo */
-.fila_metodo_pago {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
-    gap: 15px;
-    align-items: center; /* Alinea verticalmente el icono, inputs y badge */
-    justify-items: center;
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    transition: background 0.3s ease;
+/*==========================================================
+                HEADER ESCRITORIO
+==========================================================*/
+
+.header_arqueo_grid{
+
+    display:grid;
+
+    grid-template-columns:
+        2fr
+        1.2fr
+        1.2fr
+        170px;
+
+    gap:18px;
+
+    padding:0 14px;
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-xs);
+
+    font-family:var(--fuente-codigo);
+
+    text-transform:uppercase;
+
+    letter-spacing:1.3px;
+
 }
 
-.fila_metodo_pago:hover {
-    background: rgba(255, 255, 255, 0.03);
+/*==========================================================
+                TARJETA
+==========================================================*/
+
+.fila_metodo_pago{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items: normal;
+
+
+
+    gap:5px;
+
+    padding:12px;
+
+    border-radius:var(--radio-md);
+
+    background:var(--fondo-secundario);
+
+    border:1px solid var(--borde);
+
+    box-shadow:var(--sombra-sm);
+
+    transition:var(--transicion);
+
+    position:relative;
+
+  
+
 }
 
-/* Columna de Nombre e Icono */
-.columna_nombre {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.fila_metodo_pago::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.03),
+            transparent 45%
+        );
+
+    pointer-events:none;
+
 }
 
-.icon_tipo {
-    font-size: 1.2rem;
+.fila_metodo_pago:hover{
+
+    transform:translateY(-2px);
+
+    border-color:var(--borde-hover);
+
+    box-shadow:var(--sombra-md);
+
 }
 
-.columna_nombre p {
-    margin: 0;
-    font-weight: 500;
+/*==========================================================
+            CABECERA DE LA TARJETA
+==========================================================*/
+
+.fila_superior{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:20px;
+
 }
 
-/* Estilizamos los Inputs dentro de la grilla */
-.columna_sistema, .columna_input {
-    /* Tu componente Inputs tiene un margin-bottom por el espacio de error. 
-       Lo compensamos para que quede centrado en la fila. */
-    margin-top: -10px; 
+/*==========================================================
+            NOMBRE DE LA CUENTA
+==========================================================*/
+
+.columna_nombre{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
 }
 
-/* Badge de Diferencia */
-.columna_diferencia {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.icon_tipo{
+
+    width:46px;
+    height:46px;
+
+    flex-shrink:0;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    border-radius:50%;
+
+    font-size:1.2rem;
+
+    background:
+
+        linear-gradient(
+            135deg,
+            color-mix(in srgb,var(--color-primario) 25%,transparent),
+            color-mix(in srgb,var(--color-secundario) 20%,transparent)
+        );
+
+    border:1px solid var(--borde);
+
+    transition:var(--transicion);
+
 }
 
-.badge_dif {
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 0.9rem;
-    min-width: 80px;
-    text-align: center;
+.fila_metodo_pago:hover .icon_tipo{
+
+    transform:scale(1.08);
+
 }
 
-.badge_dif.ok {
-    background: rgba(0, 255, 0, 0.1);
-    color: #00ff88;
-    border: 1px solid #00ff88;
+.info_cuenta{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:2px;
+
 }
 
-.badge_dif.negativo {
-    background: rgba(255, 0, 0, 0.1);
-    color: #ff4d4d;
-    border: 1px solid #ff4d4d;
+.info_cuenta h4{
+
+    margin:0;
+
+    color:var(--texto-principal);
+
+    font-size:var(--texto-lg);
+
+    font-weight:var(--peso-semi-negrita);
+
 }
 
-.badge_dif.positivo {
-    background: rgba(0, 150, 255, 0.1);
-    color: #00d9ff;
-    border: 1px solid #00d9ff;
+.info_cuenta span{
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-xs);
+
+    font-family:var(--fuente-codigo);
+
+    letter-spacing:.8px;
+
+    text-transform:uppercase;
+
 }
 
-/* Botón Automático */
-.contenedor_boton_accion {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px;
+/*==========================================================
+            BADGE DIFERENCIA
+==========================================================*/
+
+.badge_diferencia{
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    min-width:130px;
+
+    padding:10px 16px;
+
+    border-radius:999px;
+
+    font-size:var(--texto-sm);
+
+    font-weight:var(--peso-negrita);
+
+    transition:var(--transicion);
+
+    border:1px solid transparent;
+
+    white-space:nowrap;
+
 }
 
-.contenedor_boton_accion p {
-    cursor: pointer;
-    background: #333;
-    padding: 5px 12px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    transition: 0.3s;
+.badge_diferencia.ok{
+
+    color:var(--color-exito);
+
+    background:
+        color-mix(in srgb,var(--color-exito) 12%,transparent);
+
+    border-color:
+        color-mix(in srgb,var(--color-exito) 30%,transparent);
+
 }
 
-.contenedor_boton_accion p:hover {
-    background: #00f2ff;
-    color: #000;
+.badge_diferencia.positivo{
+
+    color:var(--color-advertencia);
+
+    background:
+        color-mix(in srgb,var(--color-advertencia) 12%,transparent);
+
+    border-color:
+        color-mix(in srgb,var(--color-advertencia) 30%,transparent);
+
 }
 
-/* Ajuste para la fila completa */
-.fila_metodo_pago {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 0.8fr;
-    gap: 15px;
-    /* Cambiamos center por flex-start y daremos un padding superior 
-       a los elementos de texto para nivelarlos con el input */
-    align-items: flex-start; 
-    padding: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.badge_diferencia.negativo{
+
+    color:var(--color-error);
+
+    background:
+        color-mix(in srgb,var(--color-error) 12%,transparent);
+
+    border-color:
+        color-mix(in srgb,var(--color-error) 30%,transparent);
+
 }
 
-/* Bajamos el nombre de la cuenta */
-.columna_nombre {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding-top: 12px; /* Este padding lo nivela con el centro del input */
+/*==========================================================
+                GRID DE DATOS
+==========================================================*/
+
+.fila_datos{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap:18px;
+
+    align-items:end;
+
 }
 
-/* Bajamos el badge de diferencia */
-.columna_diferencia {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 8px; /* Ajuste fino para el badge */
+.dato{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    min-width:0;
+
 }
 
-/* Opcional: Si los inputs siguen teniendo mucho margen, 
-   podés forzar que el contenedor de error no ocupe espacio si no hay error */
-.inputs_contenedor .error_espacio {
-    min-height: 0px; /* Por si tu CSS de Inputs tiene un min-height */
+.dato_label{
+
+    color:var(--texto-secundario);
+
+    font-family:var(--fuente-codigo);
+
+    font-size:var(--texto-xs);
+
+    text-transform:uppercase;
+
+    letter-spacing:1.2px;
+
 }
 
+/*==========================================================
+            INPUTS
+==========================================================*/
 
+.dato .caja_contenedor{
 
-/* --- RESPONSIVIDAD --- */
+    width:100%;
 
-/* 1. Tablets y Pantallas Medianas (menos de 992px) */
-@media (max-width: 992px) {
-    .coontenedor_cierre_caja {
-        margin: 10px;
-        padding: 20px;
+}
+
+.dato input{
+
+    width:100%;
+
+    box-sizing:border-box;
+
+}
+
+/*==========================================================
+        INPUT SOLO LECTURA
+==========================================================*/
+
+.dato input:read-only{
+
+    background:
+
+        color-mix(
+            in srgb,
+            var(--fondo-superficie) 88%,
+            black
+        );
+
+    color:var(--texto-principal);
+
+    border:1px solid var(--borde);
+
+    cursor:default;
+
+    font-weight:var(--peso-semi-negrita);
+
+}
+
+/*==========================================================
+        INPUT EDITABLE
+==========================================================*/
+
+.dato input:not(:read-only){
+
+    transition:var(--transicion);
+
+}
+
+.dato input:not(:read-only):hover{
+
+    border-color:var(--borde-hover);
+
+}
+
+.dato input:not(:read-only):focus{
+
+    border-color:var(--color-primario);
+
+    box-shadow:
+
+        0 0 0 3px
+        color-mix(
+            in srgb,
+            var(--color-primario) 18%,
+            transparent
+        );
+
+}
+
+/*==========================================================
+        EFECTO TARJETA
+==========================================================*/
+
+.fila_metodo_pago:hover .badge_diferencia{
+
+    transform:scale(1.03);
+
+}
+
+.fila_metodo_pago:hover .info_cuenta h4{
+
+    color:var(--color-primario);
+
+}
+
+/*==========================================================
+            ANIMACION ENTRADA
+==========================================================*/
+
+.fila_metodo_pago{
+
+    animation:entradaMetodo .35s ease;
+
+}
+
+@keyframes entradaMetodo{
+
+    from{
+
+        opacity:0;
+
+        transform:
+
+            translateY(10px);
+
     }
 
-    .contenedor_resumen_general {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* Tarjetas de 2 en 2 */
-        gap: 10px;
+    to{
+
+        opacity:1;
+
+        transform:
+
+            translateY(0);
+
     }
+
 }
 
-/* 2. Pantallas Pequeñas (menos de 768px) - Aquí es donde el Arqueo cambia */
-@media (max-width: 768px) {
+/*==========================================================
+            SCROLL DEL LISTADO
+==========================================================*/
+
+.contenedor_metodo_pago_inputs{
+
+    max-height:520px;
+
+    overflow-y:auto;
+
+    padding-right:6px;
+
+}
+
+.contenedor_metodo_pago_inputs::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.contenedor_metodo_pago_inputs::-webkit-scrollbar-track{
+
+    background:var(--fondo-principal);
+
+    border-radius:999px;
+
+}
+
+.contenedor_metodo_pago_inputs::-webkit-scrollbar-thumb{
+
+    background:
+
+        linear-gradient(
+
+            180deg,
+
+            var(--color-primario),
+
+            var(--color-secundario)
+
+        );
+
+    border-radius:999px;
+
+}
+
+.contenedor_metodo_pago_inputs::-webkit-scrollbar-thumb:hover{
+
+    filter:brightness(1.15);
+
+}
+
+/*==========================================================
+            ESPACIADO ENTRE TARJETAS
+==========================================================*/
+
+.fila_metodo_pago + .fila_metodo_pago{
+
+    margin-top:2px;
+
+}
+
+/*==========================================================
+                    TABLET
+==========================================================*/
+
+@media (max-width:950px){
+
+    .header_arqueo_grid{
+
+        grid-template-columns:
+            1.8fr
+            1fr
+            1fr
+            140px;
+
+        gap:14px;
+
+    }
+
     .fila_metodo_pago{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+
+        padding:16px;
+
     }
 
-    .coontenedor_cierre_caja h2 {
-        font-size: 1.2rem;
+    .fila_datos{
+
+        gap:14px;
+
     }
 
-    /* El Grid del Arqueo necesita más espacio para los inputs */
-    .header_arqueo_grid, 
-    .fila_metodo_pago {
-        grid-template-columns: 1fr 1fr; /* Pasamos de 4 columnas a 2 */
-        gap: 10px;
+    .badge_diferencia{
+
+        min-width:115px;
+
+        padding:8px 14px;
+
+        font-size:var(--texto-xs);
+
     }
 
-    /* Ocultamos el header en móvil porque se rompe el diseño */
-    .header_arqueo_grid {
-        display: none; 
-    }
-
-    .fila_metodo_pago {
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 8px;
-        margin-bottom: 10px;
-        padding: 15px;
-        background: rgba(255, 255, 255, 0.02);
-    }
-
-    /* Forzamos a que el nombre y el resultado ocupen todo el ancho */
-    .columna_nombre, .columna_diferencia {
-        grid-column: span 2;
-        justify-content: flex-start;
-        padding-top: 0;
-    }
-
-    .columna_diferencia {
-        border-top: 1px dashed rgba(255, 255, 255, 0.1);
-        padding-top: 10px;
-        margin-top: 5px;
-    }
-
-    .columna_sistema, .columna_input {
-        margin-top: 5px;
-    }
-
-    /* Botonera en vertical para que entren los dedos */
-    .contenedor_botonera_cierre_caja {
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-
-    .contenedor_botonera_cierre_caja p {
-        text-align: center;
-        width: 100%;
-    }
 }
 
-/* 3. Móviles muy chicos (menos de 480px) */
-@media (max-width: 480px) {
-    .contenedor_resumen_general {
-        grid-template-columns: 1fr; /* Tarjetas una debajo de otra */
+/*==========================================================
+                    CELULAR
+==========================================================*/
+
+@media (max-width:768px){
+
+    .header_arqueo_grid{
+
+        display:none;
+
     }
 
-    .coontenedor_cierre_caja {
-        padding: 15px;
+    .contenedor_metodo_pago_inputs{
+
+        max-height:none;
+
+        overflow:visible;
+
+        padding-right:0;
+
     }
 
-    .badge_dif {
-        width: 100%; /* El badge ocupa todo el ancho abajo */
+    .fila_metodo_pago{
+
+        gap:14px;
+
+        padding:16px;
+
     }
+
+    .fila_superior{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:14px;
+
+    }
+
+    .columna_nombre{
+
+        width:100%;
+
+    }
+
+    .badge_diferencia{
+
+        width:100%;
+
+        justify-content:center;
+
+    }
+
+    .fila_datos{
+
+        grid-template-columns:1fr;
+
+        gap:12px;
+
+    }
+
+}
+
+/*==========================================================
+                TELEFONOS PEQUEÑOS
+==========================================================*/
+
+@media (max-width:480px){
+
+    .fila_metodo_pago{
+
+        padding:14px;
+
+        border-radius:var(--radio-sm);
+
+    }
+
+    .icon_tipo{
+
+        width:40px;
+        height:40px;
+
+        font-size:1rem;
+
+    }
+
+    .info_cuenta h4{
+
+        font-size:var(--texto-md);
+
+    }
+
+    .info_cuenta span{
+
+        font-size:.62rem;
+
+    }
+
+    .dato{
+
+        gap:6px;
+
+    }
+
+    .dato_label{
+
+        font-size:.62rem;
+
+    }
+
+    .badge_diferencia{
+
+        min-height:42px;
+
+        font-size:var(--texto-xs);
+
+    }
+
+}
+
+/*==========================================================
+            EFECTOS EXTRA
+==========================================================*/
+
+.fila_metodo_pago{
+
+    position:relative;
+
+}
+
+.fila_metodo_pago::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:inherit;
+
+    pointer-events:none;
+
+    opacity:0;
+
+    transition:var(--transicion);
+
+    background:
+
+        linear-gradient(
+
+            135deg,
+
+            color-mix(
+                in srgb,
+                var(--color-primario) 8%,
+                transparent
+            ),
+
+            transparent 45%
+
+        );
+
+}
+
+.fila_metodo_pago:hover::after{
+
+    opacity:1;
+
+}
+
+.fila_metodo_pago:hover{
+
+    transform:
+        translateY(-2px);
+
+}
+
+.badge_diferencia{
+
+    box-shadow:var(--sombra-sm);
+
+}
+
+.icon_tipo{
+
+    box-shadow:var(--sombra-sm);
+
+}
+
+.info_cuenta h4{
+
+    transition:var(--transicion);
+
+}
+
+.fila_metodo_pago:hover .info_cuenta h4{
+
+    color:var(--color-secundario);
+
 }

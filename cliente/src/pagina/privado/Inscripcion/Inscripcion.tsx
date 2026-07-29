@@ -20,8 +20,6 @@ export const InscripcionPage = () => {
     handleCancelar,
   } = useIncripcionesUsuarios();
 
-  console.log(state.errorGenerico);
-
   return (
     <div className="usuario_contenedor">
       <InscripcionForm

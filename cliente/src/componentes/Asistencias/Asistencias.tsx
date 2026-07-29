@@ -62,27 +62,38 @@ export const Asistencia = ({ asistencia }: AsistenciaProps) => {
   return (
     <section className="asistencia_contenedor">
       <div className="asistencia_bg_icon">
-        <Users size={150} />
+        <Users size={170} />
       </div>
 
-      <div className="asistencia_header">
-        <Users size={28} />
-        <h2>Alumnos en clase</h2>
-        <span>{presentes} presentes</span>
-      </div>
+      <header className="asistencia_header">
+        <div className="asistencia_header_titulo">
+          <div>
+            <p>Control de asistencia</p>
+          </div>
+        </div>
+
+        <span className="asistencia_total">{presentes} presentes</span>
+      </header>
 
       {asistencia.length === 0 ? (
         <div className="asistencia_vacio">
-          <UserPlus size={40} />
-          <p>Todavía no hay alumnos anotados</p>
-          <span>Agregá alumnos a esta clase para ver la asistencia acá</span>
+          <UserPlus size={44} />
+
+          <h3>Sin alumnos registrados</h3>
+
+          <p>
+            Agregá alumnos a esta clase para comenzar a visualizar la
+            asistencia.
+          </p>
         </div>
       ) : (
         <div className="asistencia_lista">
           {asistencia.map((alumno, index) => (
-            <div className="asistencia_item" key={index}>
+            <article className="asistencia_item" key={index}>
               <div
-                className={`asistencia_icono ${variantesAvatar[index % variantesAvatar.length]}`}
+                className={`asistencia_icono ${
+                  variantesAvatar[index % variantesAvatar.length]
+                }`}
               >
                 {obtenerIniciales(alumno.nombre, alumno.apellido)}
               </div>
@@ -92,8 +103,10 @@ export const Asistencia = ({ asistencia }: AsistenciaProps) => {
                 <span>{alumno.apellido}</span>
               </div>
 
-              <EstadoBadge estado={alumno.estado} />
-            </div>
+              <div className="asistencia_estado">
+                <EstadoBadge estado={alumno.estado} />
+              </div>
+            </article>
           ))}
         </div>
       )}

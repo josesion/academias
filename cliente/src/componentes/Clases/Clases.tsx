@@ -19,14 +19,14 @@ export const InfoClases = ({
 }: DataClases) => {
   return (
     <header className="info_clases_contenedor">
-      {/* Icono temático de fondo */}
       <div className="info_clases_bg_icon">
-        <Music size={120} />
+        <Music size={150} />
       </div>
 
       <div className="info_clases_datos">
         <div className="info_clases_item">
           <span className="info_clases_label">Clase</span>
+
           {carga ? (
             <SpinnerTarjeta />
           ) : (
@@ -34,13 +34,19 @@ export const InfoClases = ({
           )}
         </div>
 
+        <div className="info_clases_divisor"></div>
+
         <div className="info_clases_item">
           <span className="info_clases_label">Horario</span>
+
           {carga ? <SpinnerTarjeta /> : <p title={horario}>{horario}</p>}
         </div>
 
+        <div className="info_clases_divisor"></div>
+
         <div className="info_clases_item">
           <span className="info_clases_label">Profesor</span>
+
           {carga ? (
             <SpinnerTarjeta />
           ) : (
@@ -50,8 +56,12 @@ export const InfoClases = ({
       </div>
 
       <div
-        className={`info_clases_estado ${estado === "EN CURSO" ? "curso" : "sin_curso"}`}
+        className={`info_clases_estado ${
+          estado === "EN CURSO" ? "curso" : "sin_curso"
+        }`}
       >
+        <span className="estado_punto"></span>
+
         {estado}
       </div>
     </header>

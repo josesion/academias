@@ -1,105 +1,797 @@
-.asistencia_kiosco {
-  min-height: 100vh;
-  background: var(--color-gradiente-multicolor);
-  color: var(--color-letra);
+/* ==========================================================
+   KIOSCO DE ASISTENCIA - ELPIS
+   PARTE 1
+   Fondo - Header - Panel - Tarjetas de clases
+   ========================================================== */
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+/* ===========================
+   CONTENEDOR PRINCIPAL
+   =========================== */
 
-  font-family: var(--fuente-principal);
-  padding: 24px;
+.asistencia_kiosco{
+
+    position:relative;
+
+    min-height:100dvh;
+    width:100%;
+
+    overflow:hidden;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    padding:40px 20px;
+
+    box-sizing:border-box;
+
+    background:var(--fondo-principal);
+
+    font-family:var(--fuente-principal);
+
+    color:var(--texto-principal);
+
 }
 
-/* HEADER */
-.asistencia_header {
-  text-align: center;
-  margin-bottom: 28px;
+/* ===========================
+   LUCES DECORATIVAS
+   =========================== */
+
+.asistencia_kiosco::before,
+.asistencia_kiosco::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:420px;
+    height:420px;
+
+    border-radius:50%;
+
+    filter:blur(110px);
+
+    pointer-events:none;
+
+    animation:flotarLuz 10s ease-in-out infinite;
+
 }
 
-.asistencia_header h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
+.asistencia_kiosco::before{
+
+    top:-140px;
+    left:-120px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(109,93,246,.28),
+            transparent 70%
+        );
+
 }
 
-.asistencia_header p {
-  opacity: 0.75;
+.asistencia_kiosco::after{
+
+    right:-150px;
+    bottom:-120px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(102,169,232,.20),
+            transparent 70%
+        );
+
+    animation-delay:5s;
+
 }
 
-/* CLASES */
-.asistencia_clases {
-  width: 100%;
-  max-width: 520px;
-  display: grid;
-  gap: 16px;
-  margin-bottom: 24px;
+@keyframes flotarLuz{
+
+    0%,100%{
+
+        transform:translateY(0) scale(1);
+
+    }
+
+    50%{
+
+        transform:translateY(-25px) scale(1.08);
+
+    }
+
 }
 
-.clase_card {
-  background: rgba(0, 0, 0, 0.45);
-  border-radius: 18px;
-  padding: 18px 22px;
+/* ===========================
+   HEADER
+   =========================== */
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+.asistencia_header{
+
+    position:relative;
+    z-index:2;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+
+    gap:10px;
+
+    margin-bottom:34px;
+
+    text-align:center;
+
 }
 
-.clase_card.actual {
-  border-left: 4px solid #22c55e;
+.asistencia_header h1{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:clamp(2rem,4vw,2.8rem);
+
+    font-weight:var(--peso-negrita);
+
+    letter-spacing:.04em;
+
+    color:var(--texto-principal);
+
 }
 
-.clase_card.proxima {
-  border-left: 4px solid #6366f1;
+.asistencia_header p{
+
+    margin:0;
+
+    font-size:var(--texto-md);
+
+    letter-spacing:2px;
+
+    text-transform:uppercase;
+
+    color:var(--texto-secundario);
+
 }
 
-.clase_card h2 {
-  margin: 6px 0 2px;
-  font-size: 1.4rem;
+.asistencia_header::after{
+
+    content:"";
+
+    width:120px;
+    height:4px;
+
+    margin-top:6px;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--color-primario),
+            var(--color-secundario)
+        );
+
+    box-shadow:
+        0 0 16px rgba(109,93,246,.35);
+
 }
 
-.clase_card p {
-  opacity: 0.85;
+/* ===========================
+   PANEL CENTRAL
+   =========================== */
+
+.asistencia_panel{
+
+    position:relative;
+    z-index:2;
+
+    width:100%;
+    max-width:650px;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:22px;
+
 }
 
-.badge {
-  font-size: 0.65rem;
-  letter-spacing: 1px;
-  opacity: 0.7;
+/* ===========================
+   LISTADO DE CLASES
+   =========================== */
+
+.asistencia_clases{
+
+    display:grid;
+
+    gap:18px;
+
 }
 
-/* ACCIÓN */
-.asistencia_accion {
-  width: 100%;
-  max-width: 520px;
+/* ===========================
+   TARJETAS
+   =========================== */
 
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(14px);
-  border-radius: 22px;
+.clase_card{
 
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+    position:relative;
+
+    display:flex;
+    flex-direction:column;
+
+    gap:18px;
+
+    padding:24px;
+
+    overflow:hidden;
+
+    border-radius:var(--radio-lg);
+
+    background:
+        linear-gradient(
+            160deg,
+            rgba(255,255,255,.04),
+            rgba(255,255,255,.015)
+        );
+
+    backdrop-filter:blur(16px);
+
+    border:1px solid var(--borde);
+
+    box-shadow:var(--sombra-lg);
+
+    transition:var(--transicion);
+
 }
 
-/* ESTADO */
-.estado_inscripcion {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
+.clase_card:hover{
 
-  background: rgba(255,255,255,0.05);
-  border-radius: 14px;
-  padding: 14px 18px;
+    transform:translateY(-4px);
+
+    border-color:var(--borde-hover);
+
 }
 
-.estado_inscripcion span {
-  font-size: 0.7rem;
-  opacity: 0.7;
+/* brillo */
+
+.clase_card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+        linear-gradient(
+            120deg,
+            transparent 30%,
+            rgba(255,255,255,.05),
+            transparent 70%
+        );
+
+    opacity:0;
+
+    transition:.45s;
+
 }
 
-.estado_inscripcion strong {
-  font-size: 1.2rem;
-  color: var(--color-primario);
+.clase_card:hover::before{
+
+    opacity:1;
+
 }
 
+/* ===========================
+   VARIANTES
+   =========================== */
+
+.clase_card.actual{
+
+    border-left:5px solid var(--color-exito);
+
+}
+
+.clase_card.proxima{
+
+    border-left:5px solid var(--color-primario);
+
+}
+
+/* ===========================
+   BADGES
+   =========================== */
+
+.clase_badge{
+
+    display:flex;
+    justify-content:flex-start;
+
+}
+
+.badge{
+
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+
+    padding:7px 14px;
+
+    border-radius:999px;
+
+    font-size:.72rem;
+
+    font-weight:var(--peso-negrita);
+
+    letter-spacing:1.2px;
+
+    text-transform:uppercase;
+
+}
+
+.badge.actual{
+
+    background:rgba(34,197,94,.14);
+
+    color:var(--color-exito);
+
+    border:1px solid rgba(34,197,94,.25);
+
+}
+
+.badge.proxima{
+
+    background:rgba(109,93,246,.14);
+
+    color:var(--color-primario);
+
+    border:1px solid rgba(109,93,246,.25);
+
+}
+
+/* ===========================
+   CONTENIDO TARJETA
+   =========================== */
+
+.clase_contenido{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:10px;
+
+}
+
+.clase_contenido h2{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:1.45rem;
+
+    font-weight:var(--peso-semi-negrita);
+
+    color:var(--texto-principal);
+
+}
+
+.clase_contenido p{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin:0;
+
+    font-size:var(--texto-lg);
+
+    color:var(--texto-secundario);
+
+}
+
+.separador_hora{
+
+    margin-inline:4px;
+
+    color:var(--color-secundario);
+
+    font-weight:700;
+
+}
+
+
+
+/* ===========================
+   PANEL DEL FORMULARIO
+   =========================== */
+
+.asistencia_accion{
+
+    display:flex;
+    flex-direction:column;
+
+    gap:22px;
+
+    padding:28px;
+
+    border-radius:var(--radio-lg);
+
+    background:
+        linear-gradient(
+            160deg,
+            rgba(255,255,255,.04),
+            rgba(255,255,255,.015)
+        );
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid var(--borde);
+
+    box-shadow:var(--sombra-lg);
+
+}
+
+/* ===========================
+   TITULO
+   =========================== */
+
+.titulo_accion{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    color:var(--color-primario);
+
+}
+
+.titulo_accion span{
+
+    font-family:var(--fuente-codigo);
+
+    font-size:var(--texto-sm);
+
+    font-weight:var(--peso-negrita);
+
+    letter-spacing:1.6px;
+
+    text-transform:uppercase;
+
+    color:var(--texto-secundario);
+
+}
+
+/* ===========================
+   ESTADO INSCRIPCIÓN
+   =========================== */
+
+.estado_inscripcion{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:16px;
+
+}
+
+.estado_card{
+
+    display:flex;
+    flex-direction:column;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:10px;
+
+    min-height:95px;
+
+    padding:18px;
+
+    border-radius:var(--radio-md);
+
+    background:var(--fondo-superficie);
+
+    border:1px solid var(--borde);
+
+    transition:var(--transicion);
+
+}
+
+.estado_card:hover{
+
+    transform:translateY(-3px);
+
+    border-color:var(--borde-hover);
+
+    box-shadow:var(--sombra-sm);
+
+}
+
+.estado_card span{
+
+    font-size:var(--texto-xs);
+
+    font-family:var(--fuente-codigo);
+
+    letter-spacing:1.2px;
+
+    text-transform:uppercase;
+
+    color:var(--texto-secundario);
+
+}
+
+.estado_card strong{
+
+    font-size:1.45rem;
+
+    font-weight:var(--peso-negrita);
+
+    color:var(--texto-principal);
+
+}
+
+/* ===========================
+   BOTÓN
+   =========================== */
+
+.asistencia_accion .boton_contenedor{
+
+    width:100%;
+
+}
+
+.asistencia_accion button{
+
+    width:100%;
+
+}
+
+/* ===========================
+   POPUP ÉXITO
+   =========================== */
+
+.overlay-exito{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    background:rgba(0,0,0,.65);
+
+    backdrop-filter:blur(6px);
+
+    animation:fadeOverlay .25s ease;
+
+}
+
+.card-exito{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:18px;
+
+    min-width:320px;
+
+    padding:34px;
+
+    border-radius:var(--radio-lg);
+
+    background:var(--fondo-secundario);
+
+    border:1px solid var(--borde);
+
+    box-shadow:var(--sombra-lg);
+
+    animation:popupScale .35s ease;
+
+}
+
+.card-exito h2{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:1.7rem;
+
+    color:var(--texto-principal);
+
+}
+
+.card-exito p{
+
+    margin:0;
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-md);
+
+}
+
+/* ===========================
+   ANIMACIONES
+   =========================== */
+
+@keyframes popupScale{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.88);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+@keyframes fadeOverlay{
+
+    from{
+
+        opacity:0;
+
+    }
+
+    to{
+
+        opacity:1;
+
+    }
+
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media (max-width:768px){
+
+    .asistencia_kiosco{
+
+        padding:20px 14px;
+
+    }
+
+    .asistencia_panel{
+
+        gap:16px;
+
+    }
+
+    .clase_card{
+
+        padding:20px;
+
+    }
+
+    .clase_contenido h2{
+
+        font-size:1.2rem;
+
+    }
+
+    .clase_contenido p{
+
+        font-size:var(--texto-md);
+
+    }
+
+    .asistencia_accion{
+
+        padding:20px;
+
+        gap:18px;
+
+    }
+
+    .estado_inscripcion{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .estado_card{
+
+        min-height:80px;
+
+    }
+
+}
+
+@media (max-width:480px){
+
+    .asistencia_header h1{
+
+        font-size:1.7rem;
+
+    }
+
+    .asistencia_header p{
+
+        font-size:var(--texto-xs);
+
+    }
+
+    .clase_card{
+
+        padding:18px;
+
+        gap:14px;
+
+    }
+
+    .badge{
+
+        font-size:.65rem;
+
+        padding:6px 12px;
+
+    }
+
+    .clase_contenido h2{
+
+        font-size:1.05rem;
+
+    }
+
+    .clase_contenido p{
+
+        flex-wrap:wrap;
+
+        gap:6px;
+
+    }
+
+    .asistencia_accion{
+
+        padding:18px;
+
+    }
+
+    .estado_card strong{
+
+        font-size:1.2rem;
+
+    }
+
+    .card-exito{
+
+        min-width:unset;
+
+        width:92%;
+
+        padding:26px;
+
+    }
+
+    .card-exito h2{
+
+        font-size:1.35rem;
+
+    }
+
+}

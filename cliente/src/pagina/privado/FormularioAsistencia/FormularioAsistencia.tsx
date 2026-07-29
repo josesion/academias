@@ -1,15 +1,18 @@
 import { useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 
-// Compontenes
+import { CalendarClock, Clock3, UserCheck, CalendarDays } from "lucide-react";
+
+// Componentes
 import { CompoError } from "../../../componentes/Error/Error";
 import { Boton } from "../../../componentes/Boton/Boton";
 import { Inputs } from "../../../componentes/Inputs/Inputs";
 import { LogoExito } from "../../../componentes/CuadroExito/CuadroExito";
 
+// Hook
 import { useAsistenciaSet } from "../../../hookNegocios/asistencia";
 
-//css
+// CSS
 import "./formularioAsistencia.css";
 
 export const FormularioAsistencia = () => {
@@ -26,95 +29,151 @@ export const FormularioAsistencia = () => {
 
   return (
     <div className="asistencia_kiosco">
+      {/* ================= HEADER ================= */}
+
       <header className="asistencia_header">
         <h1>Academia Fuerza Gigante</h1>
-        <p>Registro de asistencia</p>
+
+        <p>Registro automático de asistencia</p>
       </header>
-      {/* ───────── CLASES ───────── */}
-      <section className="asistencia_clases">
-        <div className="clase_card actual">
-          <span className="badge">EN CURSO</span>
-          <h2>
-            {state.claseEnCurso && "nombre_clase" in state.claseEnCurso
-              ? state.claseEnCurso.nombre_clase
-              : "Sin clase en curso"}
-          </h2>
-          <p>
-            {state.claseEnCurso && "hora_inicio" in state.claseEnCurso
-              ? state.claseEnCurso.hora_inicio
-              : "00:00"}{" "}
-            →{" "}
-            {state.claseEnCurso && "hora_fin" in state.claseEnCurso
-              ? state.claseEnCurso.hora_fin
-              : "00:00"}
-          </p>
-        </div>
 
-        <div className="clase_card proxima">
-          <span className="badge">PRÓXIMA</span>
-          <h2>
-            {state.claseProxima && "nombre_clase" in state.claseProxima
-              ? state.claseProxima.nombre_clase
-              : "Sin mas clases por hoy"}
-          </h2>
-          <p>
-            {" "}
-            {state.claseProxima && "hora_inicio" in state.claseProxima
-              ? state.claseProxima.hora_inicio
-              : "00:00"}{" "}
-            →{" "}
-            {state.claseProxima && "hora_fin" in state.claseProxima
-              ? state.claseProxima.hora_fin
-              : "00:00"}
-          </p>
-        </div>
-      </section>
-      {/* ───────── ACCIÓN ───────── */}
-      <section className="asistencia_accion">
-        <Inputs
-          label="Ingrese su DNI"
-          placeholder="Ej: 30023547"
-          name="dni_alumno"
-          type="number"
-          ref={inputDniRef}
-          value={state.registroAsistencia.dni_alumno}
-          readonly={false}
-          onChange={handleCachearAlumno}
-        />
+      {/* ================= PANEL CENTRAL ================= */}
 
-        <div className="estado_inscripcion">
-          <div>
-            <span>Vencimiento : </span>
-            <strong>
-              {state.dataInscripcion?.vencimiento || "----/--/--"}
-            </strong>
+      <main className="asistencia_panel">
+        {/* ----------- CLASES ----------- */}
+
+        <section className="asistencia_clases">
+          <div className="clase_card actual">
+            <div className="clase_badge">
+              <span className="badge actual">
+                <Clock3 size={13} />
+                EN CURSO
+              </span>
+            </div>
+
+            <div className="clase_contenido">
+              <h2>
+                {state.claseEnCurso && "nombre_clase" in state.claseEnCurso
+                  ? state.claseEnCurso.nombre_clase
+                  : "Sin clase en curso"}
+              </h2>
+
+              <p>
+                <CalendarClock size={16} />
+
+                {state.claseEnCurso && "hora_inicio" in state.claseEnCurso
+                  ? state.claseEnCurso.hora_inicio
+                  : "00:00"}
+
+                <span className="separador_hora">→</span>
+
+                {state.claseEnCurso && "hora_fin" in state.claseEnCurso
+                  ? state.claseEnCurso.hora_fin
+                  : "00:00"}
+              </p>
+            </div>
           </div>
-          <div>
-            <span>Clases restantes : </span>
-            <strong>{state.dataInscripcion?.clases_restantes || "-"}</strong>
-          </div>
-        </div>
 
-        <Boton
-          clase="aceptar"
-          texto="Asistir a clase"
-          logo="Go"
-          onClick={handleResgistrarAsistencia}
-        />
-        {state.errorGenerico && <CompoError mensaje={state.errorGenerico} />}
-        {state.exitoAsistencia &&
-          createPortal(
-            <div className="overlay-exito">
-              <div className="card-exito">
-                <div style={{ width: "80px", height: "80px" }}>
-                  <LogoExito />
+          <div className="clase_card proxima">
+            <div className="clase_badge">
+              <span className="badge proxima">
+                <CalendarDays size={13} />
+                PRÓXIMA
+              </span>
+            </div>
+
+            <div className="clase_contenido">
+              <h2>
+                {state.claseProxima && "nombre_clase" in state.claseProxima
+                  ? state.claseProxima.nombre_clase
+                  : "Sin más clases por hoy"}
+              </h2>
+
+              <p>
+                <CalendarClock size={16} />
+
+                {state.claseProxima && "hora_inicio" in state.claseProxima
+                  ? state.claseProxima.hora_inicio
+                  : "00:00"}
+
+                <span className="separador_hora">→</span>
+
+                {state.claseProxima && "hora_fin" in state.claseProxima
+                  ? state.claseProxima.hora_fin
+                  : "00:00"}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ----------- FORMULARIO ----------- */}
+
+        <section className="asistencia_accion">
+          <div className="titulo_accion">
+            <UserCheck size={18} />
+            <span>Identificación del alumno</span>
+          </div>
+
+          <Inputs
+            label="Ingrese su DNI"
+            placeholder="Ej: 30023547"
+            name="dni_alumno"
+            type="number"
+            ref={inputDniRef}
+            value={state.registroAsistencia.dni_alumno}
+            readonly={false}
+            onChange={handleCachearAlumno}
+          />
+
+          {/* ----------- ESTADO ----------- */}
+
+          <div className="estado_inscripcion">
+            <div className="estado_card">
+              <span>Vencimiento</span>
+
+              <strong>
+                {state.dataInscripcion?.vencimiento || "----/--/--"}
+              </strong>
+            </div>
+
+            <div className="estado_card">
+              <span>Clases restantes</span>
+
+              <strong>{state.dataInscripcion?.clases_restantes || "-"}</strong>
+            </div>
+          </div>
+
+          <Boton
+            clase="aceptar"
+            texto="Registrar asistencia"
+            logo="Go"
+            onClick={handleResgistrarAsistencia}
+          />
+
+          {state.errorGenerico && <CompoError mensaje={state.errorGenerico} />}
+
+          {state.exitoAsistencia &&
+            createPortal(
+              <div className="overlay-exito">
+                <div className="card-exito">
+                  <div
+                    style={{
+                      width: "90px",
+                      height: "90px",
+                    }}
+                  >
+                    <LogoExito />
+                  </div>
+
+                  <h2>¡Asistencia registrada!</h2>
+
+                  <p>Que disfrutes la clase.</p>
                 </div>
-                <h2>¡Asistencia Exitosa!</h2>
-              </div>
-            </div>,
-            document.body, // Esto lo teletransporta fuera del contenedor con animación
-          )}
-      </section>
+              </div>,
+              document.body,
+            )}
+        </section>
+      </main>
     </div>
   );
 };

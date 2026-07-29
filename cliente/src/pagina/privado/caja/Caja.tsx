@@ -105,8 +105,8 @@ export const CajaArqueo = () => {
             metricas={state.metricasCuentasCierre}
             montoRealFinal={state.montoRealFinal}
             onCambioMontos={handleCierreMontos}
-            onCancelar={handleCerrarCaja}
-            onCerrar={handleCerrarModalCerrar}
+            onCancelar={handleCerrarModalCerrar}
+            onCerrar={handleCerrarCaja}
             onCambioObservaciones={hanldeObsevacionesCierre}
           />
         </div>
@@ -126,7 +126,7 @@ export const CajaArqueo = () => {
             name="id_categoria"
             onChangeSelector={handleMovimientoExtraordinarioChange}
             labelDefault="Seleccionar Categoría"
-            tipos_pago={state.listadoCuentasActivas ?? cuentasVacias}
+            tipos_pago={state.listadoCuentasSesion ?? cuentasVacias}
             itemLabelTipo="nombre_cuenta"
             itemKeyTipo="id_cuenta"
             nameTipoPago="id_cuenta"

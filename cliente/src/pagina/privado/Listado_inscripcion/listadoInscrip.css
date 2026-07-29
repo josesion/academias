@@ -25,6 +25,8 @@
     width: 100%;
     padding: 1px;
     border-radius: 12px;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Aseguramos que los componentes internos ocupen todo el ancho */

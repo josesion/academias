@@ -54,7 +54,9 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
 
   return (
     <form className="formulario_inscripcion_contenedor" onSubmit={inscribir}>
-      <p className="tarjeta_titulo">Contratación e Pago Inicial del Plan</p>
+      <p className="tarjeta_titulo_pago">
+        Contratación e Pago Inicial del Plan
+      </p>
       <div className="formulario_inscripcion_filtros">
         <SelectorPlegable<DataPlan>
           titulo="Planes activos"

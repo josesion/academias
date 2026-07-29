@@ -228,3 +228,26 @@ export const metricasPanelPrincipal = async (data : TipadoCaja.CierreCajaData) =
         method : "GET"
     });
 };
+
+
+
+
+export const cuentasSesion = async () => {
+      const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };  
+    
+    const ruta = `${PAGINA}api/cuentas_sesion`;   
+
+    return apiFetch( ruta , {
+        method : "GET"
+    });   
+};

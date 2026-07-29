@@ -36,6 +36,7 @@ export interface CajaTipado {
     panelPrincipal: MetricasCajaPanelPrincipal[] | null;
     listadoExtraordinario: Categoria[] | null;
     listadoCuentasActivas: ListadoTipoCuentas[] | [];
+    listadoCuentasSesion: ListadoTipoCuentas[] | [];
     metricasTipoCuentas: metricasTipoCuentas[] | null;
     metricasCuentasCierre: MetodosPago[] | null;
 
@@ -84,6 +85,7 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
         tipo: ""
     },
     listadoCuentasActivas: [],
+    listadoCuentasSesion :[],
     aperturaDetalle: null,
     informeDetalle :{
         id_movimiento : 0,
@@ -134,6 +136,7 @@ export type CajaAction =
     | { type: 'SET_PANEL_PRINCIPAL'; payload: MetricasCajaPanelPrincipal[] | null }
     | { type: 'SET_LISTADO_EXTRAORDINARIO'; payload: Categoria[] | null } 
     | { type: 'SET_LISTADO_CUENTAS_ACTIVAS'; payload: ListadoTipoCuentas[] } 
+    | { type: 'SET_LISTADO_CUENTAS_SESION'; payload: ListadoTipoCuentas[] }     
     | { type: 'SET_METRICAS_TIPO_CUENTAS'; payload: metricasTipoCuentas[] | null }    
     | { type: 'SET_METRICAS_CIERRE_CUENTAS'; payload: MetodosPago[] | null } 
     | { type: 'SET_APERTURA_DETALLE'; payload: DetalleApertura[] | null } 
@@ -263,6 +266,9 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
         
         case 'SET_LISTADO_CUENTAS_ACTIVAS':
             return { ...state, listadoCuentasActivas: action.payload, enviando: false };
+
+        case 'SET_LISTADO_CUENTAS_SESION':
+            return { ...state, listadoCuentasSesion: action.payload, enviando: false };            
 
         case "SET_METRICAS_TIPO_CUENTAS":
             return { ...state, metricasTipoCuentas: action.payload };

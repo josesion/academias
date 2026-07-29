@@ -1,5 +1,5 @@
 /* ============================================================
-   MÉTODO DE PAGO - ALINEACIÓN CORREGIDA
+   MÉTODO DE PAGO — TOKENS DE MARCA
    ============================================================ */
 
 .contenedor_detalle_caja {
@@ -8,24 +8,22 @@
     flex-direction: column;
 }
 
-/* Creamos un espacio arriba que mida lo mismo que el título de la otra tarjeta */
+/* Título espejo del de TarjetaInscripcion */
 .contenedor_detalle_caja::before {
-    content: "Opciones de Pago"; /* Título para que coincida con el otro */
+    content: "Opciones de Pago";
     text-align: center;
     margin-bottom: 20px;
     padding-bottom: 10px;
-    font-size: 0.8rem;
-    font-weight: 800;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
     letter-spacing: 2px;
     text-transform: uppercase;
-    
-    /* Gradiente de marca para que sea un espejo del otro título */
-    background: linear-gradient(90deg, #4f46e5, #06b6d4, #a855f7);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    /* Línea inferior para igualar la estética */
-    border-bottom: 1px solid rgba(105, 199, 255, 0.1);
+
+    color: var(--texto-secundario);
+
+    border-bottom: 1px solid var(--borde);
 }
 
 .contenedor_detalle_caja_filtros {
@@ -33,57 +31,137 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    
-    /* Padding idéntico al de TarjetaInscripcion */
-    padding: 30px 30px 30px 48px;
-    
-    background: linear-gradient(
-        180deg,
-        rgba(15, 15, 25, 0.98),
-        rgba(10, 10, 18, 0.98)
-    );
-    
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-    
-    /* Altura mínima para emparejar visualmente */
-    min-height: 400px; 
+
+    padding: 30px 30px 30px 42px;
+
+    background: var(--fondo-secundario);
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--borde);
+    box-shadow: var(--sombra-md);
+
+    min-height: 400px;
     box-sizing: border-box;
     flex: 1;
+
+    transition: var(--transicion);
 }
 
-/* Línea lateral alineada */
+.contenedor_detalle_caja_filtros:hover {
+    border-color: var(--borde-hover);
+}
+
+/* Línea lateral de acento — misma que TarjetaInscripcion */
 .contenedor_detalle_caja_filtros::before {
     content: "";
     position: absolute;
-    left: 16px;
+    left: 14px;
     top: 25px;
     bottom: 25px;
-    width: 6px;
-    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
+    width: 4px;
+
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
     border-radius: 6px;
 }
 
-/* El resto de los elementos (textarea, etc) se mantienen igual */
+/* ===== SELECTOR ===== */
+
+.contenedor_selectores {
+    width: 100%;
+}
+
+/* ===== NOTAS / TEXTAREA DESTACADO ===== */
+
 .tarjeta_row.destacado {
     flex: 1;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+
     margin-top: 10px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 18px;
+
+    border-top: 1px solid var(--borde);
+}
+
+.tarjeta_row.destacado .tarjeta_key {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
 }
 
 .tarjeta_textarea {
     flex: 1;
     width: 100%;
     min-height: 150px;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    color: #f1f5f9;
-    padding: 15px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    line-height: var(--linea-texto);
+
+    padding: 14px;
     resize: none;
     outline: none;
+
+    transition: var(--transicion);
+}
+
+.tarjeta_textarea::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.tarjeta_textarea:hover {
+    border-color: var(--borde-hover);
+}
+
+.tarjeta_textarea:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+.tarjeta_contador {
+    align-self: flex-end;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 900px) {
+    .contenedor_detalle_caja_filtros {
+        padding: 20px 20px 20px 32px;
+        border-radius: var(--radio-md);
+        min-height: 0;
+    }
+
+    .contenedor_detalle_caja_filtros::before {
+        left: 10px;
+        top: 20px;
+        bottom: 20px;
+        width: 3px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedor_detalle_caja_filtros {
+        padding: 16px 16px 16px 26px;
+    }
+
+    .contenedor_detalle_caja_filtros::before {
+        left: 8px;
+        width: 3px;
+    }
 }

@@ -1,101 +1,124 @@
 /* ============================================================
-   INPUTS STUDIOPRO - ESTILO DARK LINEAR
+   INPUTS — campo base reutilizable en toda la app
    ============================================================ */
 
 .inputs_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+
     width: 100%;
-    max-width: 450px; /* Ajustado al máximo del formulario */
-    margin: 5px 0;
 }
 
 .inputs_contenedor label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #94a3b8; /* Gris azulado sobrio */
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    margin-left: 4px;
+    color: var(--texto-deshabilitado);
+}
+
+/* label vacío (cuando no se pasa "label") no debe ocupar espacio */
+.inputs_contenedor label:empty {
+    display: none;
 }
 
 .inputs {
-    padding: 12px 16px;
-    /* Fondo casi negro para que se funda con el form */
-    background-color: rgba(0, 0, 0, 0.4); 
-    
-    /* Borde muy sutil */
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    
-    font-size: 0.95rem;
-    color: #f1f5f9;
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
     outline: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: var(--transicion);
 }
 
 .inputs::placeholder {
-    color: #4b5563; /* Gris oscuro para el placeholder */
+    color: var(--texto-deshabilitado);
 }
 
-/* --- ESTADO HOVER --- */
-.inputs:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    background-color: rgba(255, 255, 255, 0.02);
+.inputs:hover:not(:read-only) {
+    border-color: var(--borde-hover);
 }
 
-/* --- ESTADO EN FOCO (EL GLOW) --- */
-.inputs:focus {
-    /* Mantenemos el fondo oscuro en el foco para no romper la estética */
-    background-color: rgba(0, 0, 0, 0.6); 
-    color: white;
-    
-    /* Borde que brilla con tu color de marca (violeta/azul) */
-    border-color: rgba(99, 102, 241, 0.6);
-    
-    /* Sombra difusa para el efecto neón sutil */
-    box-shadow: 
-        0 0 0 4px rgba(99, 102, 241, 0.1),
-        0 0 15px rgba(99, 102, 241, 0.1);
+.inputs:focus:not(:read-only) {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
 }
 
-/* --- ESTADO READONLY --- */
+/* ===== SOLO LECTURA ===== */
+
 .inputs:read-only {
-    background-color: rgba(255, 255, 255, 0.02);
-    border-color: transparent;
-    color: #64748b;
+    background: color-mix(in srgb, var(--fondo-superficie) 88%, black);
+    color: var(--texto-secundario);
     cursor: default;
 }
 
-/* --- SECCIÓN DE ERROR --- */
+/* ===== ESTADO DE ERROR ===== */
+
+.inputs_contenedor:has(.mensaje_error) .inputs {
+    border-color: var(--color-error);
+}
+
+.inputs_contenedor:has(.mensaje_error) .inputs:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 18%, transparent);
+}
+
 .error_espacio {
-    min-height: 22px; 
-    display: flex;
-    align-items: center;
-    padding-top: 4px;
+    min-height: 16px;
 }
 
 .mensaje_error {
-    color: #fb7185; /* Rojo rosado suave, menos agresivo */
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: rgba(251, 113, 133, 0.1); /* Fondo rojizo muy sutil */
-    border-left: 2px solid #fb7185; /* Línea de aviso lateral */
-    
-    animation: mostrarError 0.3s ease-out forwards;
+    margin: 0;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-medio);
+    color: var(--color-error);
 }
 
-/* Animación simplificada para el error (menos "saltarina") */
-@keyframes mostrarError {
-    from {
-        opacity: 0;
-        transform: translateX(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+/* ===== CHECKBOX / RADIO — no deben verse como el input de texto ===== */
+
+.inputs[type="checkbox"],
+.inputs[type="radio"] {
+    width: auto;
+    padding: 0;
+    accent-color: var(--color-primario);
+}
+
+/* ===== FILE ===== */
+
+.inputs[type="file"] {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.inputs[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 6px 12px;
+
+    background: var(--color-primario);
+    color: var(--texto-principal);
+    border: none;
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.inputs[type="file"]::file-selector-button:hover {
+    filter: brightness(1.1);
 }

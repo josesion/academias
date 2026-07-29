@@ -1,150 +1,186 @@
 /* ============================================================
-   BUSCADOR STUDIO PRO — ALINEACIÓN QUIRÚRGICA (tokens de marca)
+   BUSCADOR — TOOLBAR DE FILTROS (rediseño completo)
    ============================================================ */
 
 .buscador_contenedor_comp {
-    position: relative;
-
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 18px;
 
-    gap: 14px;
-
-    width: fit-content;
-    max-width: 98%;
-
+    width: 100%;
+    max-width: 960px;
     margin: 20px auto;
 
-    padding: 18px 30px;
+    padding: 22px 26px;
 
-    overflow: hidden;
-
-    border-radius: 26px;
-
-    background:var(--fondo-principal);
-
-    backdrop-filter: blur(18px);
-
+    background: var(--fondo-secundario);
     border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
 
-    box-shadow:
-        0 18px 45px rgba(0, 0, 0, .45),
-        inset 0 1px 0 var(--fondo-hover);
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+    animation: buscadorEntrada 0.3s ease;
 }
 
+.buscador_contenedor_comp:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-lg);
+}
 
+@keyframes buscadorEntrada {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
 
-/* TÍTULO */
+/* ============================================================
+   TÍTULO — ícono en badge, mismo lenguaje que asistencia_header
+   ============================================================ */
+
 .buscador_titulo {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 
     margin: 0;
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid var(--borde);
 
     color: var(--texto-secundario);
 
-    font-family: var(--fuente-principal);
+    font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
     font-weight: var(--peso-negrita);
-
     letter-spacing: 1.5px;
-
     text-transform: uppercase;
 }
 
 .buscador_titulo svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+    box-sizing: border-box;
+
+    border-radius: var(--radio-sm);
+    background: color-mix(in srgb, var(--color-primario) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
     color: var(--color-primario);
 }
 
-/* CUERPO — LA LÍNEA DE HORIZONTE */
+/* ============================================================
+   CUERPO — grid que se acomoda solo, sin breakpoints manuales
+   ============================================================ */
+
 .buscador_cuerpo {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 15px;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    align-items: end;
 }
 
-/* COLUMNA UNIFICADA */
 .buscador_columna {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin: 0 !important;
-    padding: 0 !important;
 }
 
-/* RESET para el wrapper que trae <Inputs /> */
 .buscador_columna .inputs_contenedor {
-    margin: 0 !important;
-    padding: 0 !important;
     display: flex;
     flex-direction: column;
-    gap: 6px !important;
+    gap: 6px;
 }
 
-/* LABELS */
+/* ============================================================
+   LABELS
+   ============================================================ */
+
 .buscador_label_generico,
 .buscador_columna label,
 .buscador_columna .inputs_contenedor label {
-    font-family: var(--fuente-principal) !important;
-    font-size: var(--texto-xs) !important;
-    font-weight: var(--peso-negrita) !important;
-    color: var(--texto-secundario) !important;
-    text-transform: uppercase !important;
-    margin: 0 0 0 12px !important;
-    height: 14px !important;
-    line-height: 14px !important;
-    display: block !important;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-deshabilitado);
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
 }
 
-/* CAMPOS (inputs y selects) */
+/* label del botón: reserva la misma altura que un label real, sin texto visible */
+.buscador_columna:last-child .buscador_label_generico {
+    color: transparent;
+    user-select: none;
+}
+
+/* ============================================================
+   CAMPOS — mismo lenguaje que .inputs del resto de la app
+   ============================================================ */
+
 .buscador_input_base,
 .buscador_columna input {
-    height: 38px !important;
-    background: var(--fondo-hover) !important;
-    border: 1px solid var(--borde) !important;
-    border-radius: 50px !important;
-    padding: 0 15px !important;
-    color: var(--texto-principal) !important;
-    font-family: var(--fuente-principal) !important;
-    font-size: var(--texto-sm) !important;
-    outline: none !important;
-    width: 170px !important;
-    box-sizing: border-box !important;
-    transition: all 0.3s ease;
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    transition: var(--transicion);
+}
+
+.buscador_input_base:hover,
+.buscador_columna input:hover {
+    border-color: var(--borde-hover);
 }
 
 .buscador_input_base:focus,
 .buscador_columna input:focus {
-    border-color: var(--color-primario) !important;
-    background: var(--fondo-superficie) !important;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
 }
 
-/* BOTÓN */
+/* ============================================================
+   BOTÓN
+   ============================================================ */
+
 .buscador_columna .boton_personalizado {
-    height: 38px !important;
-    margin: 0 !important;
-    border-radius: 50px !important;
-    padding: 0 25px !important;
-    font-family: var(--fuente-principal) !important;
-    font-size: var(--texto-sm) !important;
-    font-weight: var(--peso-semi-negrita) !important;
+    width: 100%;
+    height: 40px;
+    margin: 0;
+
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* SIN espacio de error en esta vista compacta */
+/* sin espacio de error en esta vista compacta */
 .buscador_columna .error_espacio,
 .buscador_columna .input_error_message,
 .buscador_columna .inputs_contenedor span {
-    display: none !important;
+    display: none;
 }
 
-/* --- SELECTS CON FLECHA PROPIA --- */
+/* ============================================================
+   SELECTS CON FLECHA PROPIA
+   ============================================================ */
 
 .buscador_input_base,
 .buscador_estado,
@@ -153,126 +189,38 @@
     -webkit-appearance: none;
     -moz-appearance: none;
 
-    background-color: var(--fondo-hover) !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7AFBF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
 
-    /* nota: el fill del SVG va harcodeado a propósito — un data-URI es un string
-       literal, no puede leer variables CSS por dentro. Es el hex real de
-       --texto-secundario (#A7AFBF), no un color inventado. */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7AFBF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat !important;
-
-    background-position: right 15px center !important;
-    background-size: 12px !important;
-
-    padding-right: 40px !important;
-
+    padding-right: 36px;
     cursor: pointer;
 }
 
 .buscador_input_base option,
 .buscador_estado option,
 .buscador_columna select option {
-    background-color: var(--fondo-principal) !important;
-    color: var(--texto-principal) !important;
+    background-color: var(--fondo-principal);
+    color: var(--texto-principal);
     padding: 12px;
 }
 
 .buscador_input_base option:hover {
-    background-color: var(--color-primario) !important;
+    background-color: var(--color-primario);
 }
 
-.buscador_contenedor_comp {
-    transition:
-        transform .25s,
-        border-color .25s,
-        box-shadow .25s;
-}
+/* ============================================================
+   RESPONSIVE — el botón siempre ocupa el ancho completo
+   cuando el grid colapsa a una sola columna
+   ============================================================ */
 
-.buscador_contenedor_comp:hover {
-    border-color: var(--borde-hover);
-
-    box-shadow:
-        0 22px 55px rgba(0, 0, 0, .55),
-        0 0 25px color-mix(in srgb, var(--color-primario) 10%, transparent);
-}
-
-/* --- TABLETS Y PANTALLAS INTERMEDIAS --- */
-@media (max-width: 1100px) and (min-width: 701px) {
+@media (max-width: 480px) {
     .buscador_contenedor_comp {
-        width: 90%;
-        border-radius: 40px;
-        padding: 20px;
-        height: auto;
-    }
-
-    .buscador_cuerpo {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        width: 100%;
-        justify-items: center;
-    }
-
-    .buscador_columna {
-        width: 100% !important;
-        max-width: 220px;
-    }
-
-    .buscador_input_base,
-    .buscador_columna input {
-        width: 100% !important;
-    }
-}
-
-/* --- MÓVIL (compacto) --- */
-@media (max-width: 700px) {
-    .buscador_contenedor_comp {
-        border-radius: 20px;
-        width: 95%;
-        padding: 12px 15px;
-        margin: 10px auto;
-        gap: 8px;
-    }
-
-    .buscador_cuerpo {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .buscador_columna {
-        width: 100% !important;
-        min-width: 0;
-    }
-
-    /* por debajo de --texto-xs a propósito: en mobile compacto ni el
-       paso más chico de tu escala entra cómodo */
-    .buscador_label_generico,
-    .buscador_columna label {
-        font-size: 0.65rem !important;
-        margin: 0 0 2px 8px !important;
-        height: auto !important;
-    }
-
-    .buscador_input_base,
-    .buscador_columna input {
-        height: 34px !important;
-        width: 100% !important;
-        font-size: 0.8rem !important;
-    }
-
-    .buscador_columna:last-child {
-        grid-column: span 2;
-        margin-top: 5px !important;
-    }
-
-    .buscador_columna .boton_personalizado {
-        height: 36px !important;
-        width: 100%;
+        padding: 18px 16px;
     }
 
     .buscador_titulo {
-        display: none;
+        font-size: 0.65rem;
     }
 }

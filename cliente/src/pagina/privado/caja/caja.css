@@ -1,35 +1,32 @@
+/* ==========================================================================
+   CAJA — ARQUEO (tokens de marca)
+   ========================================================================== */
 
-/* El fondo oscuro que cubre toda la pantalla */
+/* ⚠️ .formulario_overlay se repite en formHorario.css con otros valores.
+   Recomendado: moverlo a un archivo compartido y borrarlo de acá y de ahí.
+   Mientras tanto, unifico con la versión de formHorario para que no compitan. */
 .formulario_overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  z-index: 1000;
+
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+
   padding: 20px;
   box-sizing: border-box;
+
+  background: color-mix(in srgb, var(--fondo-principal) 70%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  animation: overlayFade 0.2s ease;
 }
 
-/* La ventana del modal en sí */
-.formulario_modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-  position: relative;
-  animation: fadeIn 0.3s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* ==========================================================================
@@ -39,16 +36,17 @@
 .caja_arqueo_grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 20px;
+  gap: 20px;
+
+  padding: 24px;
+
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
   box-sizing: border-box;
-  height: 100vh;
 
+  min-height: 100vh;
 }
-
 
 /* ==========================================================================
    CABECERA
@@ -56,22 +54,34 @@
 
 .caja_header {
   width: 100%;
+
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+
+  gap: 12px;
+
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--borde);
 }
 
 .caja_header h1 {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #fff;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+}
+
+.caja_header h1 svg {
+  color: var(--color-primario);
 }
 
 .titulo_grupo {
@@ -85,24 +95,29 @@
 
 .status_pill {
   flex-shrink: 0;
+
   padding: 6px 14px;
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+
+  transition: var(--transicion);
 }
 
 .status_pill.abierta {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: color-mix(in srgb, var(--color-exito) 14%, transparent);
+  color: var(--color-exito);
+  border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
 }
 
 .status_pill.cerrada {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  background: color-mix(in srgb, var(--color-error) 14%, transparent);
+  color: var(--color-error);
+  border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }
 
 .acciones_principales {
@@ -116,45 +131,48 @@
 .caja_resumen_cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  gap: 16px;
+
   width: 100%;
-  border-radius: 15px;
 }
 
 /* ==========================================================================
-   HISTORIAL + SIDEBAR — antes .caja_historial no tenía ningún estilo,
-   por eso el sidebar quedaba apilado sin control de layout real.
+   HISTORIAL + SIDEBAR — tu boceto: tarjetas arriba, detalle/métodos abajo
    ========================================================================== */
 
 .caja_historial {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 320px;
   grid-template-areas:
     "header  header"
     "listado sidebar";
   align-items: start;
-  gap: 16px 24px;
+  gap: 18px 24px;
+
   width: 100%;
 }
 
 .historial_header {
   grid-area: header;
+
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
+
   width: 100%;
 }
 
 .historial_header h3,
 .caja_sidebar_pagos h3 {
   margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.3px;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
 }
 
 .btn_operativos {
@@ -166,23 +184,19 @@
 .historial_contenido {
   grid-area: listado;
   min-width: 0;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 18px;
+
+  box-shadow: var(--sombra-sm);
 }
 
 .scroll_movimientos {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
+  max-height: 600px;
   overflow-y: auto;
-  max-height: min(480px, 55vh);
-  border-radius: 10px;
-
-  background: rgba(15, 16, 16, 0.6);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  padding-right: 6px;
 }
 
 .scroll_movimientos::-webkit-scrollbar {
@@ -190,26 +204,35 @@
 }
 
 .scroll_movimientos::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--fondo-hover);
   border-radius: 10px;
 }
 
 .scroll_movimientos::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
   border-radius: 10px;
 }
 
 .scroll_movimientos::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #6366f1, #22d3ee, #c084fc);
+  filter: brightness(1.15);
+}
+
+.scroll_sensor {
+  padding: 14px;
+  text-align: center;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
 }
 
 .caja_sidebar_pagos {
   grid-area: sidebar;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-
   position: sticky;
   top: 20px;
 }
@@ -218,7 +241,6 @@
    RESPONSIVE
    ========================================================================== */
 
-/* el sidebar de métodos de pago pasa a ocupar el ancho completo, debajo del historial */
 @media (max-width: 960px) {
   .caja_historial {
     grid-template-columns: 1fr;
@@ -236,7 +258,7 @@
 @media (max-width: 600px) {
   .caja_arqueo_grid {
     padding: 14px;
-    gap: 20px;
+    gap: 18px;
   }
 
   .caja_header {
@@ -245,17 +267,14 @@
   }
 
   .caja_header h1 {
-    font-size: 1.4rem;
+    font-size: var(--texto-lg);
   }
 
   .titulo_grupo {
     justify-content: center;
   }
 
-  .acciones_principales {
-    width: 100%;
-  }
-
+  .acciones_principales,
   .acciones_principales button {
     width: 100%;
   }
@@ -278,8 +297,11 @@
     flex: 1;
   }
 
+  .historial_contenido {
+    padding: 14px;
+  }
+
   .scroll_movimientos {
-    padding: 12px;
     max-height: min(420px, 60vh);
   }
 

@@ -1,103 +1,65 @@
 /* ============================================================
-   SELECTOR PLEGABLE - ESTILO ATÓMICO
+   SELECTOR PLEGABLE — input con datalist nativo
    ============================================================ */
 
 .caja_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 16px;
-    border-radius: 20px;
-    
-    /* Fondo muy sutil para que se integre al contenedor padre */
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    
-    /* Importante: Ocupar todo el ancho disponible del Grid padre */
-    width: 100%; 
-    max-width: none; 
-    box-sizing: border-box;
+    gap: 6px;
 
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: fadeInSelector 0.5s ease;
+    width: 100%;
 }
 
-/* Efecto al pasar el mouse */
-.caja_contenedor:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(82, 186, 255, 0.4);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-}
-
-/* Etiqueta del Selector (Título) */
 .caja_contenedor p {
-    margin: 0 0 4px 4px;
-    font-size: 0.75rem;
-    color: #94a3b8; /* Color Slate-400 (gris azulado pro) */
-    font-weight: 700;
-    letter-spacing: 1.2px;
+    margin: 0;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
     text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
 }
 
-/* Input del Selector */
 .caja_contenedor input {
     width: 100%;
-    padding: 12px 16px;
-    border-radius: 12px;
     box-sizing: border-box;
 
-    /* Estilo Glassmorphism para el Input */
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    
-    color: #fff;
-    font-size: 0.95rem;
-    outline: none;
-    transition: all 0.25s ease;
-}
+    padding: 12px 14px;
 
-/* Estados del Input */
-.caja_contenedor input:focus {
-    background: rgba(0, 0, 0, 0.4);
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    transition: var(--transicion);
 }
 
 .caja_contenedor input::placeholder {
-    color: rgba(255, 255, 255, 0.3);
-    font-size: 0.85rem;
+    color: var(--texto-deshabilitado);
 }
 
-/* Estilo del Datalist (Nativo) 
-   Nota: El datalist nativo es difícil de estilar en Chrome, 
-   pero le damos un fallback limpio */
+.caja_contenedor input:hover {
+    border-color: var(--borde-hover);
+}
+
+.caja_contenedor input:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+/* Sin efecto real en la mayoría de los navegadores — ver nota arriba */
 .selector_contenedor {
-    background: #0f172a;
-    color: #fff;
+    background: var(--fondo-principal);
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
 }
 
-/* Animaciones */
-@keyframes fadeInSelector {
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
-}
-
-/* Adaptación para móviles */
-@media (max-width: 480px) {
-    .caja_contenedor {
-        padding: 12px;
-    }
-    
-    .caja_contenedor input {
-        font-size: 16px; /* Evita el zoom automático en iOS */
-        padding: 10px;
-    }
+.selector_item {
+    background: var(--fondo-principal);
+    color: var(--texto-principal);
 }

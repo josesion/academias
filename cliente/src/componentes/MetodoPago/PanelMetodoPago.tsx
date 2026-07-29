@@ -28,46 +28,52 @@ export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
         </div>
       ) : (
         <div className="panel_lista">
-          {cuentas.map((cuenta) => (
+          {cuentas.map((cuenta, index) => (
             <div className="metodo_item_completo" key={cuenta.id_cuenta}>
-              {/* Línea Superior: Nombre y el Total Brillante */}
-              <div className="metodo_fila_principal">
-                <span className="metodo_nombre">{cuenta.nombre_cuenta}</span>
-                <span className="metodo_monto_total">
-                  ${" "}
-                  <CountUp
-                    end={cuenta.saldo_final_cuenta}
-                    duration={1.5}
-                    separator="."
-                    decimal=","
-                    decimals={2}
-                    preserveValue={true}
-                  />
-                </span>
+              <div
+                className={`metodo_avatar ${index % 2 === 0 ? "" : "variante_1"}`}
+              >
+                {cuenta.nombre_cuenta.slice(0, 2).toUpperCase()}
               </div>
 
-              {/* Línea Inferior: El desglose técnico */}
-              <div className="metodo_desglose">
-                <div className="desglose_dato">
-                  <span className="dato_label">Inicial:</span>
-                  <span className="dato_valor">
-                    $
-                    {cuenta.inicial_cuenta.toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                    })}
+              <div className="metodo_contenido">
+                <div className="metodo_fila_principal">
+                  <span className="metodo_nombre">{cuenta.nombre_cuenta}</span>
+                  <span className="metodo_monto_total">
+                    ${" "}
+                    <CountUp
+                      end={cuenta.saldo_final_cuenta}
+                      duration={1.5}
+                      separator="."
+                      decimal=","
+                      decimals={2}
+                      preserveValue={true}
+                    />
                   </span>
                 </div>
 
-                <div className="desglose_dato">
-                  <span className="dato_label">Sesión:</span>
-                  <span
-                    className={`dato_valor ${cuenta.movimiento_sesion >= 0 ? "positivo" : "negativo"}`}
-                  >
-                    {cuenta.movimiento_sesion >= 0 ? "+" : ""}$
-                    {cuenta.movimiento_sesion.toLocaleString("es-AR", {
-                      minimumFractionDigits: 2,
-                    })}
-                  </span>
+                <div className="metodo_desglose">
+                  <div className="desglose_dato">
+                    <span className="dato_label">Inicial</span>
+                    <span className="dato_valor">
+                      $
+                      {cuenta.inicial_cuenta.toLocaleString("es-AR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="desglose_dato">
+                    <span className="dato_label">Sesión</span>
+                    <span
+                      className={`dato_valor ${cuenta.movimiento_sesion >= 0 ? "positivo" : "negativo"}`}
+                    >
+                      {cuenta.movimiento_sesion >= 0 ? "+" : ""}$
+                      {cuenta.movimiento_sesion.toLocaleString("es-AR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

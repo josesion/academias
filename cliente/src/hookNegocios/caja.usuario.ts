@@ -8,7 +8,7 @@ import { useCajaUsuario } from "../hooks/caja/caja.usuarios";
 import { metricasPanelCaja, obtenerIdCaja , abrirCaja , 
          cerrarCaja , movimientoCajaDetalle, listadoCategoriaCaja,
          registrarMovimientoCaja,  listadoTipoCuentas,
-         metricasPanelPrincipal,
+         metricasPanelPrincipal, cuentasSesion,
         } from "../servicio/caja.fetch";
 
 export const  cajasCongif = () =>{
@@ -27,7 +27,8 @@ export const  cajasCongif = () =>{
             movimientoCajaDetalle : movimientoCajaDetalle,
             listadoCategoriaCaja  : listadoCategoriaCaja,
             registrarMovimientoCaja : registrarMovimientoCaja,
-            listadoTipoCuentas : listadoTipoCuentas
+            listadoTipoCuentas : listadoTipoCuentas,
+            cuentasSesion : cuentasSesion,
         }  
     };
     return useCajaUsuario(config)    

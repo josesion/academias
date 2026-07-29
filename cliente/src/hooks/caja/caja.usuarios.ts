@@ -21,7 +21,8 @@ interface DataCajaUsuariosConfig {
          listadoCategoriaCaja : ServicioCrud,
          registrarMovimientoCaja : ServicioCrud,
          listadoTipoCuentas : ServicioCrud,
-         metricasPanelPrincipal :ServicioCrud
+         metricasPanelPrincipal :ServicioCrud,
+         cuentasSesion : ServicioCrud,
     }
 };
 
@@ -73,7 +74,7 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     // LISTADOS EXTRAORDIANRIOS 
     // ─────────────────────────────  
     const entidadesExternasCaja = useEntidadesExternasCaja({
-        servicios : { listadoTipoCuentas : config.servicios.listadoTipoCuentas },
+        servicios : { listadoTipoCuentas : config.servicios.listadoTipoCuentas, cuentasSesion :config.servicios.cuentasSesion },
         state : cajaBase.state,
         dispatch : cajaBase.dispatch
     });

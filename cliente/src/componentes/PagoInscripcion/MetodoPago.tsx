@@ -4,13 +4,6 @@ import { SelectorOpt } from "../CompSelecObt/SelectorOpt";
 
 import "./metodoPago.css";
 
-// export const METODOS_PAGO = [
-//   { id: "efectivo", label: "Efectivo", icono: "💵" },
-//   { id: "transferencia", label: "Transferencia Bancaria", icono: "🏦" },
-//   { id: "debito", label: "Tarjeta de Débito", icono: "💳" },
-//   { id: "credito", label: "Tarjeta de Crédito", icono: "💳" },
-// ];
-
 interface MetodoPago {
   id_metodo: number;
   descripcion_cuenta: string;
