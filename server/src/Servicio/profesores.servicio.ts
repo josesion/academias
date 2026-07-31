@@ -188,94 +188,103 @@ const modProfesor = async (inputDatos:  ModProfesorInputs)
 
 
 /**
- * Servicio encargado de gestionar el cambio de estado (alta o baja / activar o inactivar) de un profesor,
- * validando los datos con Zod, ejecutando la modificación en la base de datos, registrando
- * la acción correspondiente en el historial de auditoría y retornando el resultado estructurado.
+ * Gestiona de forma centralizada el cambio de estado (activo/inactivo) de un profesor 
+ * en una escuela determinada. 
  * 
- * Este proceso realiza los siguientes pasos:
- * 1. Valida los datos de entrada mediante el esquema `EstadoProfesorSchema`.
- * 2. Ejecuta la modificación del estado del profesor en la capa de datos (`dataProfesores.estadoProfesor`).
- * 3. Si el código de resultado es `PROFESORESCUELA_ELIMINAR`, registra un evento de auditoría con la acción "RESTAURAR" en el módulo "PROFESORES".
- * 4. Si el código de resultado es `PROFESORESCUELA_ALTA`, registra un evento de auditoría con la acción "ELIMINAR" en el módulo "PROFESORES".
- * 5. Retorna la respuesta de éxito correspondiente o un error de servidor en caso de fallar la operación.
- *
+ * La función realiza los siguientes procesos lógicos:
+ * 1. **Validación:** Valida los datos de entrada mediante un esquema de Zod (`EstadoProfesorSchema`).
+ * 2. **Baja Lógica (`inactivos`):** Si se solicita desactivar al profesor, ejecuta una transacción para 
+ *    dar de baja lógica tanto su relación en la escuela como todos sus horarios asociados, asegurando 
+ *    la integridad referencial y de historial.
+ * 3. **Restauración (`activos`):** Si se solicita reactivar al profesor, actualiza su estado en la base de datos 
+ *    y registra automáticamente una entrada de auditoría en el historial del sistema (`registroHistorial`).
+ * 
  * @async
  * @function estadoProfesor
- * @param {Object} estado - Objeto con los datos necesarios para modificar el estado del profesor 
- * (incluyendo DNI, estado, ID de escuela e ID de usuario).
+ * @param {EstadoProfesorInputs} estado - Objeto con los datos de entrada requeridos (DNI, ID de escuela, estado deseado y usuario).
+ * @returns {Promise<TipadoData<{}>>} Retorna una estructura estandarizada indicando si hubo error (`true/false`), 
+ * un mensaje descriptivo, los datos resultantes (si aplica) y un código de control interno (ej. `MODIFICACION_PROFE_ALTA_OK`, `MODIFICACION_PROFE_ELIMINAR_OK`, o `ERROR_SERVIDOR`).
  * 
- * @returns {Promise<Object>} Promesa que resuelve con el estado de la operación,
- * incluyendo mensajes descriptivos, datos del filtro de baja y códigos internos de éxito o error.
- * 
- * @throws {Error} Si la estructura de los datos de entrada no cumple con `EstadoProfesorSchema`.
+ * @throws {ZodError} Si los datos de entrada no superan la validación del esquema.
+ * @throws {Error} Si ocurre un fallo crítico durante la transacción o el registro en el historial.
  * 
  * @example
+ * // Ejemplo para dar de baja a un profesor:
  * const resultado = await estadoProfesor({
- *    dni: 35123456,
- *    estado: "inactivo",
- *    id_escuela: 1,
- *    id_usuario: 5
+ *     id_escuela: 1,
+ *     dni: "35123456",
+ *     estado: "inactivos",
+ *     id_usuario: 5
  * });
  */
 const estadoProfesor = async ( estado :  EstadoProfesorInputs)
-: Promise<TipadoData<FiltroProfeEscuelaBaja>> => {
+: Promise<TipadoData<{}>> => {
 
      const estadoProfesorData : EstadoProfesorInputs = EstadoProfesorSchema.parse( estado ); 
 
-     const estadoResult  = await dataProfesores.estadoProfesor( estadoProfesorData); 
+    // de acttivos a inactivos    
+    if (estadoProfesorData.estado === 'inactivos'){
 
-     if ( estadoResult.code ===  "PROFESORESCUELA_ELIMINAR" ) {
+        const  respuesta = await dataProfesores.eliminarProfe_Horario(estadoProfesorData)
+        if ( respuesta.code === 'TRANSACCION_OK' && respuesta.data) {
 
-        const dataHistorial  : HistorialInputs = {
-            id_escuela :  estadoProfesorData.id_escuela ,
-            id_usuario :  estadoProfesorData.id_usuario,
-            modulo : "PROFESORES",
-            accion : "RESTAURAR",
-            id_registro: Number(estadoProfesorData.dni),
-            descripcion: `Estado esta activo de : ${estadoProfesorData.dni}`,
-            datos: {
-                dni : estadoProfesorData.dni,
-            }
-        }; 
-                
-        await registroHistorial( dataHistorial)        
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  estadoProfesorData.id_escuela ,
+                id_usuario :  estadoProfesorData.id_usuario,
+                modulo : "PROFESORES",
+                accion : "ELIMINAR",
+                id_registro: Number(estadoProfesorData.dni),
+                descripcion: `Estado esta inactivo de : ${estadoProfesorData.dni}`,
+                datos: {
+                    dni : estadoProfesorData.dni,
+                }
+            }; 
+                    
+            await registroHistorial( dataHistorial)  
 
-        return {
-            error : false,
-            message : "Se elimino correctamente.",
-            code : "MODIFICACION_PROFE_ELIMINAR_OK"
-        };
-     };
+            return{
+                error : false, 
+                message : "Profesor dado de baja correctamente",
+                data : respuesta.data,
+                code :  "MODIFICACION_PROFE_ALTA_OK"
+            };
+        };   
 
-     if ( estadoResult.code ===  "PROFESORESCUELA_ALTA" ) {
-        const dataHistorial  : HistorialInputs = {
-            id_escuela :  estadoProfesorData.id_escuela ,
-            id_usuario :  estadoProfesorData.id_usuario,
-            modulo : "PROFESORES",
-            accion : "ELIMINAR",
-            id_registro: Number(estadoProfesorData.dni),
-            descripcion: `Estado paso a incativo  de : ${estadoProfesorData.dni}`,
-            datos: {
-                dni : estadoProfesorData.dni,
-            }
-        }; 
+    };
 
-                
-        await registroHistorial( dataHistorial)           
+    // de inactivos a activos
+    if (estadoProfesorData.estado === 'activos'){
+
+        const estadoResult  = await dataProfesores.estadoProfesor( estadoProfesorData); 
+        if ( estadoResult.code ===  "PROFESORESCUELA_ELIMINAR" ) {
         
-        return {
-            error : false,
-            message : "Se dio de alta correctamente.",
-            code : "MODIFICACION_PROFE_ALTA_OK"
-        };
-     };
+            const dataHistorial  : HistorialInputs = {
+                id_escuela :  estadoProfesorData.id_escuela ,
+                id_usuario :  estadoProfesorData.id_usuario,
+                modulo : "PROFESORES",
+                accion : "RESTAURAR",
+                id_registro: Number(estadoProfesorData.dni),
+                descripcion: `Estado esta activo de : ${estadoProfesorData.dni}`,
+                datos: {
+                    dni : estadoProfesorData.dni,
+                }
+            }; 
+                    
+            await registroHistorial( dataHistorial)        
+
+            return {
+                error : false,
+                message : "Se elimino correctamente.",
+                code : "MODIFICACION_PROFE_ELIMINAR_OK"
+            };
+        };           
+    };
 
      return {
         error: true,
         message: "Error en la modificación del profesor",
         code: "ERROR_SERVIDOR"
-    };    
-
+     };     
 };
 
 

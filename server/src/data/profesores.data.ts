@@ -6,6 +6,7 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { listarEntidad } from "../hooks/funcionListar";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
@@ -14,7 +15,8 @@ import { TipadoData } from "../tipados/tipado.data";
 import { 
   ProfesorInputs, 
   ProfesorEscuelaInputs, 
-  ListadoProfeInputs 
+  ListadoProfeInputs,
+  EstadoProfesorInputs, 
 } from "../squemas/profesores";
 
 import { 
@@ -305,6 +307,91 @@ export const listaProfesoresSinPaginacion = async ( datos: ListadoProfeInputs )
 };
 
 
+/**
+ * Da de baja lógica a un profesor en una escuela específica y desactiva todos sus horarios asociados.
+ * Utiliza una transacción para asegurar la atomicidad de la operación.
+ *
+ * @async
+ * @function eliminarProfe_Horario
+ * @param {EstadoProfesorInputs} data - Objeto con los datos de entrada necesarios.
+ * @param {number} data.id_escuela - Identificador único de la escuela.
+ * @param {string} data.dni - DNI del profesor a dar de baja.
+ * @returns {Promise<TipadoData<{}>>} Retorna un objeto estándar con el estado de la transacción, mensaje y datos resultantes.
+ * 
+ * @throws {Error} Si el profesor no se encuentra registrado en la escuela o falla la ejecución de la consulta.
+ * 
+ * @example
+ * const respuesta = await eliminarProfe_Horario({
+ *     id_escuela: 1,
+ *     dni: "35123456"
+ * });
+ */
+const eliminarProfe_Horario = async (data: EstadoProfesorInputs): Promise<TipadoData<{}>> => {
+    const { id_escuela, dni } = data;
+
+    const sqlLocalizarHorarios: string = `SELECT 
+                                            h.id AS id_horario 
+                                        FROM 
+                                            profesores_en_escuela p
+                                        JOIN 
+                                            horarios_clases h ON p.dni_profesor = h.dni_profesor      
+                                        WHERE p.id_escuela = ? AND p.dni_profesor = ?;`;
+                                             
+    const sqlBorrarHorario: string = `UPDATE horarios_clases 
+                                      SET estado = 'inactivos', 
+                                          vigente = FALSE 
+                                      WHERE id = ?;`;
+
+    const sqlBajaProfesor: string = `UPDATE profesores_en_escuela 
+                                     SET estado = 'inactivos'
+                                     WHERE dni_profesor = ? 
+                                       AND id_escuela = ?;`;                            
+         
+    const resultado = await iudEntidadTransaction(async (conn) => {
+        // 1. Buscamos los horarios asociados
+        const [rows] = await conn.execute(sqlLocalizarHorarios, [id_escuela, dni]);
+        const resHorarios = rows as Array<{ id_horario: number }>;
+        
+    
+        // 2. Desactivamos los horarios solo si existen
+        let desactivadosCount = 0;
+        if (resHorarios && resHorarios.length > 0) {
+            for (const horario of resHorarios) {
+                await conn.execute(sqlBorrarHorario, [horario.id_horario]);
+                desactivadosCount++;
+            }
+        }
+
+        // 3. Damos de baja al profesor en la relación con la escuela
+        const [resProfesor]: any = await conn.execute(sqlBajaProfesor, [dni, id_escuela]);
+
+        if (resProfesor.affectedRows === 0) {
+            throw new Error("No se logró dar de baja al profesor en la escuela");
+        } 
+
+        return { 
+            message: "Profesor y horarios dados de baja con éxito", 
+            desactivados: desactivadosCount 
+        };
+    });
+
+    if (resultado.error === false) {
+        return {
+            error: false,
+            message: "Profesor y sus horarios dados de baja",
+            data: resultado.data,
+            code: "TRANSACCION_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "Error en la transacción",
+        code: "TRANSACCION_FALLIDA"
+    };    
+};
+
+
 
 // ──────────────────────────────────────────────────────────────
 // Export de métodos con tryCatchDatos
@@ -317,5 +404,6 @@ export const method = {
   modProfesores: tryCatchDatos(modProfesores),
   estadoProfesor: tryCatchDatos(bajaProfesor),
   listadoProfesores: tryCatchDatos(listadoProfesores),
-  listaProfesoresSinPaginacion: tryCatchDatos( listaProfesoresSinPaginacion )
+  listaProfesoresSinPaginacion: tryCatchDatos( listaProfesoresSinPaginacion ),
+  eliminarProfe_Horario : tryCatchDatos(eliminarProfe_Horario),
 };

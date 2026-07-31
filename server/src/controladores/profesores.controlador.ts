@@ -145,7 +145,7 @@ const estadoProfesor = async ( req : Request , res : Response ) => {
         id_usuario : Number(req.usuario?.id) 
     };
 
-    await handleControladores<EstadoProfesorInputs, FiltroProfeEscuelaBaja>(
+    await handleControladores<EstadoProfesorInputs, {}>(
         res, data, servicioProfesor.estadoProfesor, MAPA_ESTADO_PROFESORES
     );
 
