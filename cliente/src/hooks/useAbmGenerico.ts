@@ -6,6 +6,7 @@ import type { ErrorBackend } from "./erroresZod";
 // Seccion de hooks
 import { transformErrores } from "./erroresZod";
 import { peticiones } from "../utils/peticiones";
+import { verificarAutenticacion } from "./verificacionUsuario";
 
 
 /**
@@ -54,7 +55,8 @@ interface AbmConfig {
  * Este hook es independiente de la entidad (Alumno, Curso, etc.).
  */
 export const useAbmGenerico = <TData>( config : AbmConfig) =>{
-
+// --- Estado para actulizar el estado al entrar en focus
+    const [actualizarGenerico , setActualizarGernerico ] = useState<number>(0);
 // --- Estados de Control de UI (Modales, Carga, Mensajes) ---
     const [ modal , setModal]  = useState<boolean>(false);         // Controla la visibilidad del modal de Alta/Modificar.
     const [ modalEliminar , setModalEliminar] = useState<boolean>(false); // Controla la visibilidad del modal de confirmación de Eliminar.
@@ -169,7 +171,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
             });
     }; 
 /** Maneja el cambio del estado de listado (items genericos), ajustando el botón de acción. */
-    console.log(filtroData)
+   
    const handleItems = (e: React.ChangeEvent<HTMLSelectElement>)  => { 
    
         if (e.target.value === "todos"){
@@ -335,7 +337,34 @@ const handleSubmitEliminar = async () => {
         clearTimeout(timeoutId);
     };
 
-}, [filtroData, actualizarListado ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
+}, [filtroData, actualizarListado, actualizarGenerico ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
+
+
+
+
+    // Efect para poder actualizar los estados al volver a tener el foco
+    // tamb verifica q la sesion siga activa si no manda al login 
+    useEffect( ()=>{
+        const handleFocus = async () =>{
+           
+            setActualizarGernerico( actualizarGenerico + 1);
+            
+            const verificarUser= await verificarAutenticacion();
+            
+            if (verificarUser.autenticado === false) {
+                window.location.href = "/login" // por defecto en esta app es login
+                return;
+            };     
+        };
+
+        window.addEventListener("focus", handleFocus);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+        };       
+
+    },[]);  
+
 
 // ---------------------------------- Retorno de la API del Hook ----------------------------------
      

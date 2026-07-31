@@ -17,11 +17,33 @@ export async function verificarAutenticacion(): Promise<AutenticacionResultado> 
     const token = Cookies.get('token');
 
     if (!token) {
-        return {
-            autenticado: false
-        };
+        return { autenticado: false };
     }
 
+    try {
+        // Un JWT se divide en 3 partes separadas por puntos: header.payload.signature
+        const payloadBase64 = token.split('.')[1];
+        
+        // Decodificamos el payload de Base64 a texto plano JSON
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+
+        // Verificamos si tiene fecha de expiración y si ya pasó
+        if (decodedPayload.exp) {
+            const currentTime = Math.floor(Date.now() / 1000); // Tiempo actual en segundos
+  
+            if (currentTime >= decodedPayload.exp) {
+                // El token expiró: lo borramos de las cookies y devolvemos falso
+                Cookies.remove('token');
+                return { autenticado: false };
+            }
+        }
+    } catch (error) {
+        // Si el token está corrupto o mal formado, lo borramos por seguridad
+        Cookies.remove('token');
+        return { autenticado: false };
+    }
+
+    // Si pasó todas las validaciones, el token existe y sigue vigente
     return {
         autenticado: true,
         token: token,
