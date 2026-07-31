@@ -55,6 +55,9 @@ interface AbmConfig {
  * Este hook es independiente de la entidad (Alumno, Curso, etc.).
  */
 export const useAbmGenerico = <TData>( config : AbmConfig) =>{
+
+    console.log(config.recursoSingular);
+
 // --- Estado para actulizar el estado al entrar en focus
     const [actualizarGenerico , setActualizarGernerico ] = useState<number>(0);
 // --- Estados de Control de UI (Modales, Carga, Mensajes) ---
@@ -239,6 +242,14 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         setFormData({
             ... config.inicialFormData
         });
+
+        try{
+            const canalComunicacion = new BroadcastChannel(`${config.recursoSingular}_canal`);
+            // Mandamos una señal genérica de cambio
+            canalComunicacion.postMessage('actualizar');
+        }catch(error){
+            console.error(`Error en el canal de comunicación para ${config.recursoSingular}`);
+        };
         
         return setModal(false)
     };
@@ -257,6 +268,14 @@ const handleSubmitEliminar = async () => {
 
         // Éxito: Actualiza la lista y cierra el modal.
         if (resultado.error === false) { 
+
+            try{
+                const canalComunicacion = new BroadcastChannel(`${config.recursoSingular}_canal`);
+                // Mandamos una señal genérica de cambio
+                canalComunicacion.postMessage('actualizar');
+            }catch(error){
+                console.error(`Error en el canal de comunicación para ${config.recursoSingular}`);
+            };            
             await new Promise(resolve => setTimeout(resolve, 800));
             setActualizarListado(actualizarListado + 1);
             setModalEliminar(false);
@@ -339,6 +358,25 @@ const handleSubmitEliminar = async () => {
 
 }, [filtroData, actualizarListado, actualizarGenerico ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
 
+
+useEffect(() => {
+    // 1. Creamos e instanciamos el canal de comunicación al montar el componente
+    const canalComunicacion = new BroadcastChannel(`${config.recursoSingular}_canal`);
+    
+    // 2. Escuchamos cuando llegue un mensaje de otra pestaña
+    canalComunicacion.onmessage = (event) => {
+        if (event && event.data !== undefined && event.data !== null) {
+            // Forzamos la actualización de la tabla/listado ejecutando tu state
+            setActualizarGernerico((prev) => prev + 1); 
+        }
+    };
+
+    // 3. Limpieza obligatoria: cerramos el canal cuando el componente se desmonta
+    return () => {
+        canalComunicacion.close();
+    };      
+
+}, []); // Dependencias vacías para que se suscriba una sola vez al cargar el componente
 
 
 
