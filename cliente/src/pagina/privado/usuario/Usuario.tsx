@@ -1,9 +1,9 @@
 import "./usuario.css";
 import { useRef, useState, useEffect } from "react";
 
-import { TarjetaMetrica } from "../../../componentes/TajetaMetricas/TarjetaMetrica";
-import { InfoClases } from "../../../componentes/Clases/Clases";
-import { Asistencia } from "../../../componentes/Asistencias/Asistencias";
+import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/TarjetaMetrica";
+import { InfoClases } from "../../../componentes/Horarios/Clases/Clases";
+import { Asistencia } from "../../../componentes/Horarios/Asistencias/Asistencias";
 import { MetricasHistorial } from "../../../componentes/Historial/Historial.metricas";
 
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
@@ -24,7 +24,7 @@ export const UsuarioPage = () => {
   }, []);
 
   const { state } = metricasUsuarioSeting();
-  console.log(state);
+  //  console.log(state);
 
   return (
     <div className="usuario_contenedor_metricas">

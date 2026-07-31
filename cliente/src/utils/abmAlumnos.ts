@@ -4,8 +4,8 @@
 //import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 //Seccion de tipado-----------------------------------------
-import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
-import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
+import type { InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador";
+import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
 import type { AlumnosResponse } from "../tipadosTs/alumnos";
 
 //Seccion de servicios--------------------------------------

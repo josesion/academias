@@ -1,4 +1,4 @@
-import { FormHorario } from "../../../componentes/FormularioHorario/FormHorario";
+import { FormHorario } from "../../../componentes/Horarios/FormularioHorario/FormHorario";
 import { useHorariosUsuarios } from "../../../hookNegocios/horarios";
 
 export const HorarioPagina = () => {

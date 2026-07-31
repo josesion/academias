@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 
-import { TarjetasNormales } from "../../../componentes/TarjetasNormales/TarjetaNormali";
-import { MovientoCaja } from "../../../componentes/MovimientoCaja/MovientoCaja";
-import { PanelMetodoPago } from "../../../componentes/MetodoPago/PanelMetodoPago";
-import { Boton } from "../../../componentes/Boton/Boton";
-import { AperturaCaja } from "../../../componentes/AperturaCaja/AperturaCaja";
-import { AnimacionAperturaExitosa } from "../../../componentes/animacionAperturaCaja/AnimacionApertura";
-import { AnimacionCierreExitoso } from "../../../componentes/animacionCierreCaja/CierreAnimacionCaja";
-import { CajaVaciaAnimation } from "../../../componentes/animacionDetalle/detalleVacio";
-import { CierreCaja } from "../../../componentes/CierreCaja/cierreCaja";
+import { TarjetasNormales } from "../../../componentes/generales/TarjetasNormales/TarjetaNormali";
+import { MovientoCaja } from "../../../componentes/Caja/MovimientoCaja/MovientoCaja";
+import { PanelMetodoPago } from "../../../componentes/Caja/MetodoPago/PanelMetodoPago";
+import { Boton } from "../../../componentes/generales/Boton/Boton";
+import { AperturaCaja } from "../../../componentes/Caja/AperturaCaja/AperturaCaja";
+import { AnimacionAperturaExitosa } from "../../../componentes/Caja/animacionAperturaCaja/AnimacionApertura";
+import { AnimacionCierreExitoso } from "../../../componentes/Caja/animacionCierreCaja/CierreAnimacionCaja";
+import { CajaVaciaAnimation } from "../../../componentes/Caja/animacionDetalle/detalleVacio";
+import { CierreCaja } from "../../../componentes/Caja/CierreCaja/cierreCaja";
 import { InformeDetalleCaja } from "../../../componentes/Informes/DetallesCaja";
 
-import { CompoIngEgr } from "../../../componentes/CompoIngEgr/CompoIngEgr";
+import { CompoIngEgr } from "../../../componentes/Caja/CompoIngEgr/CompoIngEgr";
 
 // logica -----
 import { cajasCongif } from "../../../hookNegocios/caja.usuario";

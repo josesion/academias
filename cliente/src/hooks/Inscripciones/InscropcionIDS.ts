@@ -5,7 +5,7 @@ import { useEffect } from "react";
 //Reducer
 import type { InscripcionTipado, InscripcionAcciones } from "../../reducers/inscripcionReducer";
 import type { DataCajaDetalleIDs } from "../../tipadosTs/caja.typado";
-import { idCajaFuntion } from "../../utils/idCaja";
+
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 

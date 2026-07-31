@@ -6,7 +6,7 @@ import { LoginFetch } from "../servicio/login.fetch";
 import { transformErrores } from "./erroresZod";
 
 // typados
-import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
+import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
 import type { ErrorBackend } from "./erroresZod";
 
 

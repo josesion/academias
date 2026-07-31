@@ -1,6 +1,6 @@
 import "./informes.css";
 
-import { Boton } from "../Boton/Boton";
+import { Boton } from "../generales/Boton/Boton";
 
 import {
   ArrowDownLeft,

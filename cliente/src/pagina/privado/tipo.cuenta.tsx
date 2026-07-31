@@ -2,7 +2,7 @@
 //  SECCIÓN : IMPORTACIONES
 // (Componentes de UI y Hooks de Lógica)
 // ===================================
-import { AmbVistas } from "../../componentes/AbmVista/AbmVista";
+import { AmbVistas } from "../../componentes/Crud/AbmVista/AbmVista";
 import { setAbmTipoCuentas } from "../../hookNegocios/tipo.cuentas";
 
 // ===================================

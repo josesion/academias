@@ -1,6 +1,6 @@
 //Seccion de tipado-----------------------------------------
-import type { InputsPropsBuscador } from "../componentes/Buscadores/Buscador";
-import type { InputsPropsFormulario } from "../componentes/Formulario/Formulario";
+import type { InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador";
+import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
 import type { ProfesoresData } from "../tipadosTs/profesores";
 
 //Seccion de servicios--------------------------------------

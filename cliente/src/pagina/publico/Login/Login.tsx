@@ -1,5 +1,5 @@
 //Seccion de compónentes
-import { Formulario } from "../../../componentes/Formulario/Formulario";
+import { Formulario } from "../../../componentes/generales/Formulario/Formulario";
 //import { EscudoGray } from "../../../componentes/Animaciones/EscudoGrey";
 
 //seccion de Stilos

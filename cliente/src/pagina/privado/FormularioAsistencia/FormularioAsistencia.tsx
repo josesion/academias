@@ -4,10 +4,10 @@ import { createPortal } from "react-dom";
 import { CalendarClock, Clock3, UserCheck, CalendarDays } from "lucide-react";
 
 // Componentes
-import { CompoError } from "../../../componentes/Error/Error";
-import { Boton } from "../../../componentes/Boton/Boton";
-import { Inputs } from "../../../componentes/Inputs/Inputs";
-import { LogoExito } from "../../../componentes/CuadroExito/CuadroExito";
+import { CompoError } from "../../../componentes/generales/Error/Error";
+import { Boton } from "../../../componentes/generales/Boton/Boton";
+import { Inputs } from "../../../componentes/generales/Inputs/Inputs";
+import { LogoExito } from "../../../componentes/generales/CuadroExito/CuadroExito";
 
 // Hook
 import { useAsistenciaSet } from "../../../hookNegocios/asistencia";

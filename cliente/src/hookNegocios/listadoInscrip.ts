@@ -6,7 +6,7 @@ import { listadoTipoCuentas } from "../servicio/caja.fetch";
 // Logica -----------------------------------------------------
 import { listaInscripcionLogica } from "../hooks/listadoInscrip";
 
-import {  type InputsPropsBuscador } from "../componentes/Buscadores/Buscador"
+import {  type InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador"
 
 // inputs para el buscador por ahora etsan en seteo no son los ioriginales
 

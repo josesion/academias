@@ -1,4 +1,4 @@
-import { InscripcionForm } from "../../../componentes/FormInscripcion/Inscripcion";
+import { InscripcionForm } from "../../../componentes/Inscripciones/FormInscripcion/Inscripcion";
 import { useIncripcionesUsuarios } from "../../../hookNegocios/Inscripciones";
 
 export const InscripcionPage = () => {

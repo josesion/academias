@@ -1,8 +1,8 @@
-import { Buscadores } from "../../../componentes/Buscadores/Buscador";
-import { FiltroFechas } from "../../../componentes/FiltrosFechas/FiltrosFechas";
-import { ContenedorListadoInscripciones } from "../../../componentes/ContenedorListadoInscrp/ContendorListadoInscrip";
-import { Paginacion } from "../../../componentes/Paginacion/Paginacion";
-import { PanelDetalleInscrip } from "../../../componentes/PanelDetalleInsc/PanelDetalleInsc";
+import { Buscadores } from "../../../componentes/generales/Buscadores/Buscador";
+import { FiltroFechas } from "../../../componentes/generales/FiltrosFechas/FiltrosFechas";
+import { ContenedorListadoInscripciones } from "../../../componentes/Inscripciones/ContenedorListadoInscrp/ContendorListadoInscrip";
+import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
+import { PanelDetalleInscrip } from "../../../componentes/Inscripciones/PanelDetalleInsc/PanelDetalleInsc";
 
 import { setListadoInscripcion } from "../../../hookNegocios/listadoInscrip";
 

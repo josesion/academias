@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 // seccion de paginas
 import { Inicio } from "./pagina/publico/inicio/Inicios";
-import { Admin } from "./pagina/privado/Admin/Admin";
+//import { Admin } from "./pagina/privado/Admin/Admin";
 import { Login } from "./pagina/publico/Login/Login";
 import { UsuarioPage } from "./pagina/privado/usuario/Usuario";
 import { AlumnoPage } from "./pagina/publico/alumno/Alumno";
@@ -70,7 +70,6 @@ function App() {
                   <Route path="/" element={<Inicio />} />
                 </Route>
 
-                <Route path="/assistant_manager_priv" element={<Admin />} />
                 <Route path="/user_manager_priv" element={<UsuarioPage />} />
                 <Route path="/user_alumno" element={<AmbAlumnos />} />
                 <Route path="/user_planes" element={<AmbPlanesUsuarios />} />

@@ -3,7 +3,7 @@ import type {
     EstadoCaja, Categoria, ListadoTipoCuentas, metricasTipoCuentas, 
     RegistroDetalleCaja, DetalleApertura , InformeDetalle
 } from "../tipadosTs/caja.typado"; 
-import { type MetodosPago } from "../componentes/metodoPagoInputs/MetodoPagoInputs";
+import { type MetodosPago } from "../componentes/Caja/metodoPagoInputs/MetodoPagoInputs";
 
 
 // ==========================================

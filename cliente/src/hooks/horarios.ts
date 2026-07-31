@@ -15,7 +15,7 @@ import { initialState, horarioReducer, type HorarioAction } from "../reducers/ho
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 import type * as TipadoHorario from "../tipadosTs/horario";
 import { type ClaseHorario  } from "../componentes/ClasesAsignadas/ClasesAsiganadas";
-import { type MensajeCelda } from "../componentes/CeldaVacia/CeldaVacia";
+import { type MensajeCelda } from "../componentes/Horarios/CeldaVacia/CeldaVacia";
 
 
 interface HorarioConfig {
