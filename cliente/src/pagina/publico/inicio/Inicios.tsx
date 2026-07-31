@@ -1,177 +1,254 @@
-
 import "./inicio.css";
 
-export const Inicio = () =>{
+export const Inicio = () => {
+  return (
+    <div className="inicio">
+      {/* ================= HERO ================= */}
 
-    return(
-    <div className="app-container">
-            {/* Sección de bienvenida (Hero) */}
-            <section className="hero-section">
-                <h1 className="hero-title">Automatiza y Controla la Asistencia de Alumnos</h1>
-                <p className="hero-subtitle">
-                    Simplifica la gestión de tus clases, envía notificaciones y comunica eventos importantes a tu comunidad de alumnos.
-                </p>
-                <a href="/login" className="hero-button">
-                    Iniciar Sesión Ahora
-                </a>
-            </section>
+      <section className="hero">
+        <div className="hero_glow hero_glow_1"></div>
+        <div className="hero_glow hero_glow_2"></div>
 
-            {/* Sección de características de la app */}
-            <section className="features-section">
-                <h2 className="features-title">
-                    Funcionalidades Principales
-                </h2>
-                <div className="features-grid">
-                    {/* Característica 1: Registro de Asistencias */}
-                    <div className="feature-card">
-                        {/* Icono SVG de una lista de verificación */}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z"></path>
-                            <path d="M8 12l2 2 4-4"></path>
-                        </svg>
-                        <h3 className="feature-heading">Registro de Asistencias</h3>
-                        <p className="feature-description">
-                            Automatiza el control de asistencia para tus alumnos y accede a reportes detallados en segundos.
-                        </p>
-                    </div>
+        <div className="hero_contenido">
+          <span className="hero_badge">
+            Plataforma Integral para Academias de Danza
+          </span>
 
-                    {/* Característica 2: Comunicación con Alumnos */}
-                    <div className="feature-card">
-                        {/* Icono SVG de un chat de burbuja */}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <h3 className="feature-heading">Comunicación con Alumnos</h3>
-                        <p className="feature-description">
-                            Envía notificaciones, avisos de clases y mensajes personalizados a tus alumnos de forma masiva.
-                        </p>
-                    </div>
+          <h1 className="hero_titulo">
+            Gestioná tu academia
+            <br />
+            desde un solo lugar.
+          </h1>
 
-                    {/* Característica 3: Paneles Intuitivos */}
-                    <div className="feature-card">
-                        {/* Icono SVG de un panel de control */}
-                        <svg xmlns="http://www.w3.org/2000/svg" className="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <rect x="3" y="3" width="7" height="9"></rect>
-                            <rect x="14" y="3" width="7" height="5"></rect>
-                            <rect x="14" y="12" width="7" height="9"></rect>
-                            <rect x="3" y="16" width="7" height="5"></rect>
-                        </svg>
-                        <h3 className="feature-heading">Paneles Intuitivos</h3>
-                        <p className="feature-description">
-                            Visualiza de un vistazo la asistencia, los reportes y los datos más importantes de tu academia.
-                        </p>
-                    </div>
-                </div>
-            </section>
+          <p className="hero_descripcion">
+            ELPIS reúne alumnos, profesores, horarios, caja, asistencias,
+            inscripciones, reportes y mucho más en una plataforma moderna,
+            rápida y fácil de utilizar.
+          </p>
 
-            {/* Sección de Precios */}
-            <section className="pricing-section">
-                <h2 className="pricing-title">
-                    Planes y Precios
-                </h2>
-                <div className="pricing-grid">
-                    {/* Tarjeta de Plan: Básico */}
-                    <div className="plan-card">
-                        <h3 className="plan-heading">Plan Básico</h3>
-                        <p className="plan-description">Ideal para instructores y academias pequeñas.</p>
-                        <div className="plan-price">$19<span className="plan-frequency">/mes</span></div>
-                        <ul className="plan-features">
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Control de asistencias
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Hasta 50 alumnos
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Acceso a reportes básicos
-                            </li>
-                        </ul>
-                        <a href="#" className="plan-button">
-                            Elegir Plan
-                        </a>
-                    </div>
+          <div className="hero_botones">
+            <a href="/login" className="boton_principal">
+              Iniciar Sesión
+            </a>
 
-                    {/* Tarjeta de Plan: Premium (Destacado) */}
-                    <div className="plan-card plan-premium">
-                        <h3 className="plan-heading">Plan Premium</h3>
-                        <p className="plan-description">Para academias en crecimiento.</p>
-                        <div className="plan-price">$49<span className="plan-frequency">/mes</span></div>
-                        <ul className="plan-features">
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Control de asistencias ilimitado
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Acceso a todos los reportes
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Notificaciones personalizadas
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Soporte 24/7
-                            </li>
-                        </ul>
-                        <a href="#" className="plan-button-premium">
-                            Elegir Plan
-                        </a>
-                    </div>
-                    
-                    {/* Tarjeta de Plan: Difusión en Unión */}
-                    <div className="plan-card plan-special">
-                        <h3 className="plan-heading">Plan Difusión</h3>
-                        <p className="plan-description">Para la comunidad y eventos masivos.</p>
-                        <div className="plan-price">$99<span className="plan-frequency">/mes</span></div>
-                        <ul className="plan-features">
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Todo lo del Plan Premium
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Envío de mensajes a todas las academias
-                            </li>
-                            <li>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="feature-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <polyline points="20 6 9 17 4 12"></polyline>
-                                </svg>
-                                Difusión de eventos masivos
-                            </li>
-                        </ul>
-                        <a href="#" className="plan-button">
-                            Elegir Plan
-                        </a>
-                    </div>
-                </div>
-            </section>
+            <a href="#planes" className="boton_secundario">
+              Ver planes
+            </a>
+          </div>
 
-            {/* Pie de página (Footer) */}
-            <footer className="footer-section">
-                &copy; 2025 Asistente de Asistencia. Todos los derechos reservados.
-            </footer>
+          <div className="hero_estadisticas">
+            <div className="estadistica">
+              <strong>100%</strong>
+              <span>Administración Digital</span>
+            </div>
+
+            <div className="estadistica">
+              <strong>24/7</strong>
+              <span>Acceso Online</span>
+            </div>
+
+            <div className="estadistica">
+              <strong>∞</strong>
+              <span>Escalable</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero_dashboard">
+          <div className="dashboard_card">
+            <div className="dashboard_header">
+              <span className="dashboard_dot rojo"></span>
+              <span className="dashboard_dot amarillo"></span>
+              <span className="dashboard_dot verde"></span>
+            </div>
+
+            <div className="dashboard_metricas">
+              <div className="dashboard_item">
+                <span>Alumnos</span>
+                <strong>245</strong>
+              </div>
+
+              <div className="dashboard_item">
+                <span>Clases Hoy</span>
+                <strong>18</strong>
+              </div>
+
+              <div className="dashboard_item">
+                <span>Ingresos</span>
+                <strong>$248.500</strong>
+              </div>
+
+              <div className="dashboard_item">
+                <span>Asistencias</span>
+                <strong>92%</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= FUNCIONALIDADES ================= */}
+
+      <section className="funciones">
+        <div className="titulo_seccion">
+          <span>TODO EN UN SOLO SISTEMA</span>
+          <h2>Funciones principales</h2>
+          <p>Diseñado específicamente para academias de danza.</p>
+        </div>
+
+        <div className="funciones_grid">
+          <article className="funcion_card">
+            <div className="funcion_icono">👨‍🎓</div>
+            <h3>Gestión de Alumnos</h3>
+            <p>
+              Registrá alumnos, inscripciones, vencimientos y clases restantes.
+            </p>
+          </article>
+
+          <article className="funcion_card">
+            <div className="funcion_icono">📅</div>
+            <h3>Horarios Inteligentes</h3>
+            <p>
+              Organizá cursos, profesores y aulas desde un calendario moderno.
+            </p>
+          </article>
+
+          <article className="funcion_card">
+            <div className="funcion_icono">💰</div>
+            <h3>Caja Diaria</h3>
+            <p>Control completo de ingresos, egresos y arqueos de caja.</p>
+          </article>
+
+          <article className="funcion_card">
+            <div className="funcion_icono">✅</div>
+            <h3>Asistencias</h3>
+            <p>Registro rápido de asistencia con estadísticas automáticas.</p>
+          </article>
+
+          <article className="funcion_card">
+            <div className="funcion_icono">📊</div>
+            <h3>Reportes</h3>
+            <p>Visualizá el rendimiento de tu academia en tiempo real.</p>
+          </article>
+
+          <article className="funcion_card">
+            <div className="funcion_icono">🔔</div>
+            <h3>Notificaciones</h3>
+            <p>Comunicaciones rápidas con alumnos y profesores.</p>
+          </article>
+        </div>
+      </section>
+
+      {/* ================= BENEFICIOS ================= */}
+
+      <section className="beneficios">
+        <div className="titulo_seccion">
+          <span>¿POR QUÉ ELPIS?</span>
+          <h2>Trabajá menos y controlá más.</h2>
+        </div>
+
+        <div className="beneficios_grid">
+          <div className="beneficio">✔ Eliminá planillas de Excel.</div>
+
+          <div className="beneficio">
+            ✔ Controlá toda tu academia desde cualquier dispositivo.
+          </div>
+
+          <div className="beneficio">
+            ✔ Ahorrá tiempo en tareas administrativas.
+          </div>
+
+          <div className="beneficio">✔ Información centralizada.</div>
+
+          <div className="beneficio">✔ Plataforma moderna y segura.</div>
+
+          <div className="beneficio">✔ Actualizaciones constantes.</div>
+        </div>
+      </section>
+
+      {/* ================= PLANES ================= */}
+
+      <section className="planes" id="planes">
+        <div className="titulo_seccion">
+          <span>PLANES</span>
+          <h2>Elegí el plan ideal para tu academia.</h2>
+        </div>
+
+        <div className="planes_grid">
+          <article className="plan_card">
+            <span className="plan_tipo">Profesional</span>
+
+            <h3>Plan Mensual</h3>
+
+            <div className="plan_precio">Consultar</div>
+
+            <ul>
+              <li>✔ Gestión de alumnos</li>
+
+              <li>✔ Caja</li>
+
+              <li>✔ Asistencias</li>
+
+              <li>✔ Horarios</li>
+
+              <li>✔ Reportes</li>
+
+              <li>✔ Actualizaciones</li>
+            </ul>
+
+            <a href="/login" className="plan_boton">
+              Comenzar
+            </a>
+          </article>
+
+          <article className="plan_card destacado">
+            <span className="plan_oferta">50% OFF · Primeros 3 meses</span>
+
+            <h3>Lanzamiento ELPIS</h3>
+
+            <div className="plan_precio">Promoción Especial</div>
+
+            <ul>
+              <li>✔ Todas las funciones</li>
+
+              <li>✔ Soporte prioritario</li>
+
+              <li>✔ Actualizaciones</li>
+
+              <li>✔ Sin límite de crecimiento</li>
+            </ul>
+
+            <a href="/login" className="plan_boton">
+              Quiero la promoción
+            </a>
+          </article>
+        </div>
+      </section>
+
+      {/* ================= CTA ================= */}
+
+      <section className="cta">
+        <h2>Comenzá hoy mismo a digitalizar tu academia.</h2>
+
+        <p>
+          Probá ELPIS y descubrí una forma más simple de administrar alumnos,
+          clases y finanzas.
+        </p>
+
+        <a href="/login" className="boton_principal">
+          Comenzar ahora
+        </a>
+      </section>
+
+      {/* ================= FOOTER ================= */}
+
+      <footer className="footer">
+        <h3>ELPIS</h3>
+
+        <p>Sistema integral para academias de danza.</p>
+
+        <small>© 2026 ELPIS · Todos los derechos reservados.</small>
+      </footer>
     </div>
-    );
-}
+  );
+};

@@ -83,22 +83,23 @@ const metricasVencimientos = async ( id_escuela : number)
 :Promise<TipadoData<ReultTarjetasVencimientos>> =>{
 
     const sql = `SELECT 
-                    -- Inscripciones que vencen en los próximos 7 días (a partir de hoy)
+                    -- Los que vencen en los próximos 7 días (estos sí suelen ser 'activos')
                     SUM(CASE 
-                        WHEN fecha_fin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) 
+                        WHEN estado = 'activos' 
+                            AND fecha_fin BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 7 DAY) 
                         THEN 1 ELSE 0 
                     END) AS vencen_proximos,
 
-                    -- Inscripciones que vencieron dentro del mes actual
+                    -- Los que vencieron este mes (pueden estar inactivos o haber vencido recién)
                     SUM(CASE 
                         WHEN fecha_fin < CURDATE() 
-                        AND MONTH(fecha_fin) = MONTH(CURDATE()) 
-                        AND YEAR(fecha_fin) = YEAR(CURDATE()) 
+                            AND MONTH(fecha_fin) = MONTH(CURDATE()) 
+                            AND YEAR(fecha_fin) = YEAR(CURDATE()) 
                         THEN 1 ELSE 0 
                     END) AS vencidos_este_mes
                 FROM inscripciones
-                WHERE estado = 'activos' 
-                AND id_escuela = ? ;`;
+                WHERE (estado = 'activos' OR (fecha_fin < CURDATE() AND MONTH(fecha_fin) = MONTH(CURDATE()) AND YEAR(fecha_fin) = YEAR(CURDATE())))
+                AND id_escuela = ?;`;
 
     const valor : unknown[] = [ id_escuela];
 
@@ -192,7 +193,8 @@ const asistenciaClases = ( id_horario : number)
                     ast.estado
                 FROM asistencias ast
                 INNER JOIN alumnos a ON ast.dni_alumno = a.dni_alumno
-                WHERE ast.id_horario_clase = ?;`;
+                WHERE ast.id_horario_clase = ?
+                AND ast.fecha = CURDATE();`;
 
     const valor : unknown[] = [ id_horario];
 

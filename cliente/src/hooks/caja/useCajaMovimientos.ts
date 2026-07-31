@@ -1,5 +1,6 @@
-import { useState , useEffect , useCallback, useRef} from "react";
-
+import { useState , useEffect , useCallback, useRef, useReducer} from "react";
+import { peticionComunicacion } from "../../utils/canalComunicacion";
+import { initialStateMetricas, metricasReducer } from "../../reducers/metricasReducer";
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 import type {
@@ -23,6 +24,8 @@ interface MovimientosCajaConfig {
 };
 
 export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
+
+    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const { state, dispatch } = config;
 
     //------------------  Estados detalle de caja ------------------
@@ -210,14 +213,14 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
             return   dispatch({
                 type : "SET_ERROR",
                 payload : "Caja esta cerrada"
-        });
+            });
         }; 
         if ( !state.verificadorSelector  || state.movimientoExtraordinario.monto === "" || !state.verificadorSelectorTipo   ) {
             
         return    dispatch({
-                type : "SET_ERROR",
-                payload : "Verificar los campos del formulario"
-        });
+                    type : "SET_ERROR",
+                    payload : "Verificar los campos del formulario"
+                });
 
         }else{
 
@@ -238,6 +241,14 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 
 
             if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
+
+                peticionComunicacion({
+                    nombreCanal : "canal_actualizar_metricas_principal",
+                    mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                    dispatchError : disparchMetricas,
+                    error :  'SET_ERROR_METRICAS_TARJETAS',
+                });
+
 
                 dispatch({ type : "DISPARAR_REFRESCO"});
 

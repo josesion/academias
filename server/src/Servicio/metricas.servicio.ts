@@ -103,7 +103,7 @@ const metricasInscripcion = async ( data : MetricaInputs )
              total_caja : Number(metricaTotalCaja.data[0].balance_neto )
         };
 
-
+   
         return{
             error: false,
             message : "Metricas inscripciones ok.",
@@ -196,7 +196,7 @@ const asistenciaClases = async ( data : MetricaInputs )
     }
 
     const asitenciaResult = await dataMetricas.asistenciaClases( id_horario );
-   
+    
 
     if ( asitenciaResult.code === 'NO_ACTIVE_ASISTENCIAS'  ){
         return{

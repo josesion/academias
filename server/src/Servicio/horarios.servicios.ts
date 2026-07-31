@@ -78,7 +78,16 @@ const servicioCalendarioHorario = async( data : TipadoHorario.HorarioCalendarioI
 };
 
 
-
+/**
+ * Servicio encargado de dar de alta un nuevo horario de clase,
+ * validando que la escuela y el profesor no tengan conflictos de horario,
+ * realizando la inserción en la capa de datos y registrando el historial correspondiente si es exitoso.
+ * 
+ * @async
+ * @function servicioAltaCalendario
+ * @param {TipadoHorario.HorarioClaseInput} data - Datos de entrada que incluyen la escuela, profesor, nivel, tipo de clase, horas, día de la semana y usuario.
+ * @returns {Promise<TipadoData<ResultadoAltaHorario>>} Retorna una estructura con el estado de la operación, mensaje descriptivo, código de resultado y los datos del horario creado.
+ */
 const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput) 
 : Promise<TipadoData<ResultadoAltaHorario>> =>{
     
@@ -145,7 +154,16 @@ const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput)
 };
 
 
-
+/**
+ * Servicio encargado de modificar un horario de clase existente,
+ * validando los datos de entrada, realizando la actualización en la capa de datos
+ * y registrando el historial correspondiente en caso de éxito.
+ * 
+ * @async
+ * @function servcioModCalendario
+ * @param {TipadoHorario.ModHorarioInput} data - Datos de entrada que incluyen el identificador del horario, escuela, usuario, DNI del profesor, nivel y tipo de clase.
+ * @returns {Promise<TipadoData<ResultModHorario>>} Retorna una estructura con el estado de la operación, mensaje descriptivo, código de resultado y los datos del horario modificado.
+ */
 
 const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
 : Promise<TipadoData<ResultModHorario>> =>{
@@ -189,44 +207,18 @@ const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
     }
 };
 
+
+
 /**
- * Servicio para eliminar lógicamente un horario de clase.
- *
- * Valida los datos de entrada mediante el schema correspondiente,
- * ejecuta la eliminación lógica del horario en la capa de datos
- * y retorna un resultado tipado indicando el estado de la operación.
- *
+ * Servicio encargado de gestionar la eliminación o cambio de estado de un horario de clase,
+ * validando los datos de entrada, realizando la operación en la capa de datos y registrando 
+ * el historial correspondiente en caso de éxito.
+ * 
  * @async
  * @function servicioEliminarHorario
- *
- * @param {TipadoHorario.EliminarHorarioInput} data
- * Datos necesarios para eliminar lógicamente el horario de clase.
- *
- * @returns {Promise<TipadoData<ResultEliminarHorario>>}
- * Promesa que retorna el resultado del servicio de eliminación
- * del horario, incluyendo mensaje, código de estado y los datos
- * del horario eliminado cuando la operación es exitosa.
- *
- * @throws {Error}
- * Lanza un error si la validación del schema falla o si ocurre
- * un problema durante la ejecución de la capa de datos.
- *
- * @example
- * ```ts
- * const resultado = await servicioEliminarHorario({
- *   id: 8,
- *   id_escuela: 2,
- *   estado: 0,
- *   vigente: 0
- * });
- *
- * if (!resultado.error) {
- *   console.log(resultado.message);
- * }
- * ```
+ * @param {TipadoHorario.EliminarHorarioInput} data - Datos de entrada que incluyen el identificador del horario, escuela, usuario, nuevo estado y vigencia.
+ * @returns {Promise<TipadoData<ResultEliminarHorario>>} Retorna una estructura con el estado de la operación, mensaje descriptivo, código de resultado y los datos del horario procesado.
  */
-
-
 const servicioEliminarHorario = async ( data : TipadoHorario.EliminarHorarioInput ) 
 : Promise<TipadoData<ResultEliminarHorario>> => {
    

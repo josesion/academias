@@ -151,8 +151,9 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs )
 
     const listadoData : FiltroHistorialInputs = FiltroHistorialSchema.parse( dataSet );
 
-    const listaResultado = await inscripcionesData.listadoInscripciones( listadoData,  pagina)
-    
+    const listaResultado = await inscripcionesData.listadoInscripciones( listadoData,  pagina);
+  
+  
     if ( listaResultado.code === "INSCRIPCIONES_LISTED" ){
        return{
             error : false,

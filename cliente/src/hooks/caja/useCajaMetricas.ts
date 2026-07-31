@@ -89,9 +89,7 @@ useEffect( ()=> {
         const metricasResult = await servicioApiFetch(state.dataCaja);
       
         if (metricasResult.code === 'METRICAS_PRINCIPAL_OK'){   
-           
             dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : metricasResult.data });
-
         }else{
 
             dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : null });

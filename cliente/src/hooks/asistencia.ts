@@ -1,5 +1,8 @@
 import {  useEffect , useReducer} from "react";
 import { initialState, asistenciaReducer} from "../reducers/asistenciaReducer";
+import { initialStateMetricas, metricasReducer } from "../reducers/metricasReducer";
+
+import { peticionComunicacion } from "../utils/canalComunicacion";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -16,6 +19,8 @@ interface DataUseAsistenciaConfig{
 
 export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
 
+
+    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const [ state , dispatch] = useReducer( asistenciaReducer, initialState());
 
 // ──────────────────────────────────────────────────────────────
@@ -74,7 +79,15 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
             const registroAsistenciaResultado =  await registrarAsistenciaFetch( dataAsistenciaData );
 
             if ( registroAsistenciaResultado.code === "ASISTENCIA_OK"){
-                dispatch({ type : "SET_REGISTRO_ASISTENCIA_OK" });   
+                dispatch({ type : "SET_REGISTRO_ASISTENCIA_OK" }); 
+                // mando la senal para otra pestana 
+                peticionComunicacion({
+                    nombreCanal : "canal_actualizar_metricas_asistencia",
+                    mensaje : "ACTUALIZAR",
+                    dispatchError : disparchMetricas,
+                    error :  'SET_ERROR_ACTUALIZAR',
+                });
+
                 setTimeout(() => {
                          dispatch({ type : "SET_EXITOSA_ASISTENCIA" , payload : false });
                 }, 3000);

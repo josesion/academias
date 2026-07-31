@@ -1,5 +1,6 @@
 import {  useEffect , useReducer } from "react";
-
+import { peticionComunicacion } from "../../utils/canalComunicacion";
+import { initialStateMetricas, metricasReducer } from "../../reducers/metricasReducer";
 // utils -------------------------------------------------------------
 import { idCajaFuntion } from "../../utils/idCaja";
 import { cajaReducer, initialState } from  "../../reducers/cajaReducers";
@@ -22,7 +23,7 @@ interface CajaBaseConfig {
 }
 
 export const useCajaBase = ( config : CajaBaseConfig) => {
-
+    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const [ state , dispatch] = useReducer( cajaReducer, initialState({
         usuario    : config.usuario,
     }));
@@ -197,6 +198,13 @@ const handleCerrarCaja =async () =>{
             dispatch({type : "ABRIR_MODAL_ANIMACION" });
             dispatch({type : "SET_CAJA_ACTIVA" , payload : { id_caja : null , estado : "cerrada"}});
             dispatch({type : "CERRAR_MODALES"});
+
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_cierre",
+                mensaje : "ACTUALIZAR_CIERRE",
+                dispatchError : disparchMetricas,
+                error :  'SET_ERROR_METRICAS_CIERRE',
+            });            
         
            setTimeout(() => {  
              dispatch({type : "CERRAR_MODAL_ANIMACION" }); 

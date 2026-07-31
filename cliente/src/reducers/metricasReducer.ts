@@ -10,18 +10,27 @@ export interface MetricaUsuario {
         clases   : boolean,
         asistencia:boolean,
         historial : boolean,
+
     },
     error  : {
         tarjeta : string | null,
         clases   : string | null,
         asistencia: string | null,
-        historial : string | null
+        historial : string | null,
+        actualizar : string | null,
+        metricasTarjetas : string | null,
+        cierreCaja : string | null,
     },
 
     tarjetas : ResultTarjeta | null,
     clases   : ResultClase   | null,
     asistencias : ResultAsistencia[] | null,
     historial   : ResultHistorial[] | null,
+
+    actualizar : number,
+    actualizarTajetas : number,
+    actualizarCierreCaja : number,
+    actualizarGeneral : number,
 };
 
 // ==========================================
@@ -42,6 +51,9 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
         clases   : null,
         asistencia : null,
         historial  : null,
+        actualizar : null,
+        metricasTarjetas : null,
+        cierreCaja : null,
     },
 
     tarjetas : null,
@@ -49,7 +61,10 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
     asistencias : null,
     historial   : null,
 
-
+    actualizar : 0,
+    actualizarTajetas : 0,
+    actualizarCierreCaja : 0,
+    actualizarGeneral : 0,
 });
 
 // ==========================================
@@ -69,6 +84,17 @@ export type MetricaAction =
       | { type: 'SET_ERROR_HISTORIAL' , payload : string | null}
       | { type: 'SET_CARGA_HISTORIAL', payload : boolean }
       | { type: 'SET_HISTORIAL',  payload : ResultHistorial[] | null } 
+      
+      | { type: 'SET_ACTUALIZAR_ASISTENCIA' } 
+      | { type: 'SET_ERROR_ACTUALIZAR' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_METRICAS_TARJETAS' } 
+      | { type: 'SET_ERROR_METRICAS_TARJETAS' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_CIERRE' } 
+      | { type: 'SET_ERROR_METRICAS_CIERRE' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_GENERICO' } 
 
 
 // ==========================================
@@ -127,6 +153,22 @@ export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, 
                 }
           };
 
+      case "SET_ERROR_METRICAS_TARJETAS" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    metricasTarjetas : action.payload 
+                }
+          };    
+          
+      case "SET_ERROR_METRICAS_CIERRE" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    cierreCaja : action.payload 
+                }
+          };            
+
         case "SET_CARGA_ASISNTECIA":
             return { 
                 ...state,
@@ -159,6 +201,19 @@ export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, 
 
       case  "SET_HISTORIAL" :
         return {...state, historial : action.payload };
+
+
+    case "SET_ACTUALIZAR_ASISTENCIA":
+        return { ...state, actualizar: state.actualizar + 1 };
+
+    case "SET_ACTUALIZAR_METRICAS_TARJETAS" :
+        return { ...state, actualizarTajetas : state.actualizarTajetas +1 }    
+
+    case "SET_ACTUALIZAR_CIERRE" :
+        return { ...state, actualizarCierreCaja : state.actualizarCierreCaja +1 }   
+        
+    case "SET_ACTUALIZAR_GENERICO" :
+        return { ...state, actualizarGeneral : state.actualizarGeneral +1 }    
  
         default:
                 return state;       
