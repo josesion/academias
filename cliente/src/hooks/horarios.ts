@@ -1,9 +1,11 @@
 import { useEffect, useReducer} from "react";
 import { useNavigate } from "react-router-dom";
 
-import { peticiones } from "../utils/peticiones";
+
 import { generarRangoUnaHora } from "./setHora";
-import {  useEffectServicio } from "../utils/useEfectServicio"
+import { useEffectServicio } from "../utils/useEfectServicio"
+import { recepcionComunicacion } from "../utils/canalComunicacion"; 
+import { useActualizarAlEnfocar } from "../utils/useActulizarFocus";
 
 import { mensajeErrorTemporal } from "./mensajeTemporales";
 import { initialState, horarioReducer, type HorarioAction } from "../reducers/horariosReducers";
@@ -14,7 +16,7 @@ import { initialState, horarioReducer, type HorarioAction } from "../reducers/ho
  */
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 import type * as TipadoHorario from "../tipadosTs/horario";
-import { type ClaseHorario  } from "../componentes/ClasesAsignadas/ClasesAsiganadas";
+import { type ClaseHorario } from "../componentes/Horarios/ClasesAsignadas/ClasesAsiganadas"; 
 import { type MensajeCelda } from "../componentes/Horarios/CeldaVacia/CeldaVacia";
 
 
@@ -306,7 +308,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
         accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
         useAbort : true, 
-        dependencias : [state.actualizar]
+        dependencias : [state.actualizar, state.actualizarGenerico]
    });
 
 // ──────────────────────────────────────────────────────────────
@@ -345,6 +347,54 @@ useEffect(() => {
 }
 
 }, [state.conjuntoIDHorario, state.metodo]);
+
+// ──────────────────────────────────────────────────────────────
+// Actulizacion del calendario cuando un profesor-Nivel-Tipo es modificado o eliminado
+// ──────────────────────────────────────────────────────────────  
+useEffect( ()=>{
+    
+    const canalProfesor = recepcionComunicacion({
+        nombreCanal : "Profesor_canal",
+        mensaje : "actualizar",
+        dispatchError : dispatch,
+        error : 'SET_ERROR_ACTUALIZAR',
+        dispatchActualizar : dispatch,
+        actualizar : "ACTUALIZAR_GENERICO"
+    });
+
+    const canalNivel = recepcionComunicacion({
+        nombreCanal : "Nivel_canal",
+        mensaje : "actualizar",
+        dispatchError : dispatch,
+        error : 'SET_ERROR_ACTUALIZAR',
+        dispatchActualizar : dispatch,
+        actualizar : "ACTUALIZAR_GENERICO"
+    });  
+    
+    const canalTipo = recepcionComunicacion({
+        nombreCanal : "Tipo_canal",
+        mensaje : "actualizar",
+        dispatchError : dispatch,
+        error : 'SET_ERROR_ACTUALIZAR',
+        dispatchActualizar : dispatch,
+        actualizar : "ACTUALIZAR_GENERICO"
+    });     
+
+    return () =>{
+        if (canalProfesor) canalProfesor();
+        if (canalNivel) canalNivel();
+        if (canalTipo) canalTipo();
+    };
+}, []);
+
+
+// ──────────────────────────────────────────────────────────────
+//  Actualiza el caldendario cuando se enfoca la ventana del navegador 
+//  Tamb verifica si el token del usuario es valido y si no lo redirige al login
+// ──────────────────────────────────────────────────────────────      
+    useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "ACTUALIZAR_GENERICO"});
+
+
 
 return {
     state,

@@ -7,7 +7,7 @@ import { fechaHoy } from "../utils/fecha";
 // 1. DEFINICIÓN DEL ESTADO (MOLDE)
 // ==========================================
 export interface HorarioTipado{
-    
+    errorActualizar : string | null;
     errorGenericoHorario: string | null;
     listoEnviar  : boolean;
     actualizar   : boolean;
@@ -58,6 +58,8 @@ export interface HorarioTipado{
    filtroBusquedaNivel : TipadoHorario.FiltroNivel,
    filtroBusquedaTipo  : TipadoHorario.FiltroTipo,   
 
+   actualizarGenerico :  number,
+
 
 };
 
@@ -65,7 +67,7 @@ export interface HorarioTipado{
 // 2. VALORES INICIALES (ESTADO CERO)
 // ==========================================
 export const initialState = ( ) :HorarioTipado =>({
-
+    errorActualizar : null, 
     errorGenericoHorario : "Completar los campos Profesor , Nivel y Tipo",       
     listoEnviar   : false,
     actualizar    : false, 
@@ -136,13 +138,16 @@ export const initialState = ( ) :HorarioTipado =>({
    filtroBusquedaProfesor : { dni : ""  , estado : "activos"},
    filtroBusquedaNivel    : { nivel: "" , estado : "activos" },
    filtroBusquedaTipo     : { tipo : "" , estado : "activos" },
-   filtroCalendario       : { estado : "activos"}
+   filtroCalendario       : { estado : "activos"},
+
+   actualizarGenerico : 0,
 }); 
 
 // ==========================================
 // 3. ACCIONES (EVENTOS DEL SISTEMA)
 // ==========================================
 export type HorarioAction =  
+      | { type: 'SET_ERROR_ACTUALIZAR' ;  payload: string | null }
       | { type: 'SET_ERROR' ;  payload: string | null }
       | { type: "SET_ENVIAR" ; payload : boolean  }
       | { type: "SET_ACTUALIZAR" ; payload : boolean  }
@@ -200,13 +205,14 @@ export type HorarioAction =
 | { type: "RESET_PROFESOR" }
 
 
-
+| { type: "ACTUALIZAR_GENERICO" }
 
 export const horarioReducer = (state: ReturnType<typeof initialState>, action: HorarioAction)
 : ReturnType<typeof initialState> =>{
 
     switch(action.type){
-
+        case 'SET_ERROR_ACTUALIZAR':
+             return { ...state, errorActualizar: action.payload };
         case 'SET_ERROR':
              return { ...state, errorGenericoHorario: action.payload };
         case 'SET_CARGA':
@@ -326,6 +332,9 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
                               errorGenericoHorario: "Completar los campos Profesor , Nivel y Tipo",
                               listoEnviar: false
                          };
+
+           case "ACTUALIZAR_GENERICO" :
+               return { ...state, actualizarGenerico : state.actualizarGenerico + 1 }              
 
 
     default:
