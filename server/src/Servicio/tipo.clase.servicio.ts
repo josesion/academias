@@ -178,67 +178,82 @@ const modTipoClase = async ( mod : ModTipoInput )
 
 
 /**
- * Servicio encargado de gestionar el cambio de estado (activación o baja lógica) de un tipo de clase (baile),
- * validando los datos de entrada y registrando la acción correspondiente en el historial de auditoría.
+ * Cambia el estado de un tipo de clase (activo/inactivo) y gestiona de forma en cascada 
+ * la baja de sus horarios asociados o el registro en el historial al restaurarlo.
  * 
- * Este proceso realiza los siguientes pasos:
- * 1. Valida los datos de entrada mediante el esquema `EstadoTipoSchema`.
- * 2. Ejecuta la actualización del estado en la capa de datos (`dataTipo.estadoTipo`).
- * 3. Si la operación es exitosa (código 'TIPO_MODIFICAR'):
- *    - Determina dinámicamente el estado final ("activo" / "inactivo") y la acción de auditoría ("RESTAURAR" / "ELIMINAR").
- *    - Construye el objeto con los detalles del cambio para el historial de auditoría.
- *    - Registra el evento en el sistema mediante `registroHistorial`.
- * 4. Retorna el resultado estandarizado con el mensaje de éxito, o un error de servidor en caso de fallo.
- *
  * @async
  * @function estadoTipo
- * @param {EstadoTipoInput} estado - Objeto con los datos necesarios para cambiar el estado del tipo 
- * (incluyendo ID del tipo, estado deseado, ID de escuela e ID de usuario).
+ * @param {EstadoTipoInput} estado - Objeto que contiene los datos de entrada validados por Zod (id, estado, id_escuela, id_usuario, etc.).
+ * @returns {Promise<TipadoData<{ id: number }>>} Retorna un objeto estándar con el resultado de la operación, 
+ * indicando si hubo error, un mensaje descriptivo para el cliente, el código de estado y opcionalmente datos.
  * 
- * @returns {Promise<TipadoData<{id: number}>>} Promesa que resuelve con el estado de la operación,
- * incluyendo mensajes descriptivos y códigos internos de éxito o error.
- * 
- * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `EstadoTipoSchema`.
- * 
- * @example
- * const resultado = await estadoTipo({
- *    id: 1,
- *    estado: "inactivos",
- *    id_escuela: 1,
- *    id_usuario: 5
- * });
+ * @throws {ZodError} Si la validación de los datos de entrada falla mediante `EstadoTipoSchema`.
+ * @throws {Error} Si ocurre un fallo en la capa de persistencia durante la transacción de baja o restauración.
  */
 const estadoTipo = async ( estado : EstadoTipoInput) 
 : Promise<TipadoData<{ id: number }>> => {
 
     const data : EstadoTipoInput = EstadoTipoSchema.parse( estado);
-
-    const estadoTipo = await dataTipo.estadoTipo(data); 
-
-    if ( estadoTipo.code === 'TIPO_MODIFICAR'){
         const estadoFinal  = data.estado === "activos" ? "activo" : "inactivo";
-        const accionFinal  = data.estado === "activos" ? "RESTAURAR" : "ELIMINAR"
 
-        const dataHistorial  : HistorialInputs = {
-            id_escuela :  data.id_escuela ,
-            id_usuario :  data.id_usuario,
-            modulo : "TIPOS_BAILE",
-            accion : accionFinal,
-            id_registro: Number(data.id),
-            descripcion: `Estado Tipo baile : ${data.id} cambio a  ${estadoFinal}`,
-            datos: {
-                id_tipo_baile : data.id,
-            }
-        }; 
+    // ──────────────────────────────────────────────────────────────
+    // CASO 1: Dar de baja el tipo de clase y sus horarios asociados
+    // ──────────────────────────────────────────────────────────────
+        if ( estadoFinal === "inactivo"){
 
-        await registroHistorial( dataHistorial);           
+            const bajaTipoHorario = await dataTipo.eliminarTipos_Horario( data );
 
-        return {
-            error : false,
-            message : "El estado cambio correctamente.",
-            code : "TIPO_CLASE_ESTADO_OK"
+             if ( bajaTipoHorario.code === 'TRANSACCION_OK'){
+                return {
+                    error : false,
+                    message : "El estado cambio correctamente.",
+                    code : "TIPO_CLASE_ESTADO_OK"
+                };
+             };
+
+             if ( bajaTipoHorario.code === "TRANSACCION_FALLIDA"){
+                    return{
+                        error : true, 
+                        message : "Error al realizar los cambios, intente mas tarde.",
+                        code : "TIPO_CLASE_ESTADO_FALLIDO"
+                    };
+             };
+
         };
-    };
+
+    // ──────────────────────────────────────────────────────────────
+    // CASO 2: Restaurar / Activar el tipo de clase y registrar en historial
+    // ──────────────────────────────────────────────────────────────
+       if ( estadoFinal === "activo"){
+          
+            const estadoTipo = await dataTipo.estadoTipo(data); 
+
+            if ( estadoTipo.code === 'TIPO_MODIFICAR'){
+
+                const dataHistorial  : HistorialInputs = {
+                    id_escuela :  data.id_escuela ,
+                    id_usuario :  data.id_usuario,
+                    modulo : "TIPOS_BAILE",
+                    accion : "RESTAURAR",
+                    id_registro: Number(data.id),
+                    descripcion: `Estado Tipo baile : ${data.id} cambio a activo.`,
+                    datos: {
+                        id_tipo_baile : data.id,
+                    }
+                }; 
+
+                await registroHistorial( dataHistorial);           
+
+                return {
+                    error : false,
+                    message : "El estado cambio correctamente.",
+                    code : "TIPO_CLASE_ESTADO_OK"
+                };
+            };
+
+       };
+
+
 
      return{
         error : true, 

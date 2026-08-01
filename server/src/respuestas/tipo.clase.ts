@@ -52,6 +52,11 @@ export const MAPA_ESTADO_TIPO_CLASE : Record<string , { status : CodigoEstadoHTT
             status : CodigoEstadoHTTP.OK,
             msg : "El estado se modifico correctamente."
     },
+
+  "TIPO_CLASE_ESTADO_FALLIDO" : {
+         status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+         msg : "No se logro modificar el estado del tipo de clase completamente, intente nuevamente."
+  }   
   
 };
 

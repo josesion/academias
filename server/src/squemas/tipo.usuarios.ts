@@ -56,7 +56,7 @@ export const EstadoTipoSchema = z.object({
                  .int({message : "Ident. Tipo debe ser entero"})
                  .positive({ message : "Ident. Tipo debe ser positivo"}),   
                  
-       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+   id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
                         .min(0 , {message : "El id debe ser mayor de 0"})
                         .positive({ message: 'El limite debe ser un número positivo.' })                    
 

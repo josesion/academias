@@ -7,6 +7,7 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidad } from "../hooks/funcionListar";
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
@@ -268,6 +269,87 @@ const listadoTipoSinPaginacion = async(data : ListadoTipoInput)
 };
 
 
+/**
+ * Da de baja de forma lógica un tipo de clase y todos los horarios asociados 
+ * a este dentro de una escuela específica mediante una transacción en la base de datos.
+ * 
+ * @async
+ * @function eliminarTipos_Horario
+ * @param {EstadoTipoInput} data - Objeto de entrada que contiene los identificadores necesarios.
+ * @param {number} data.id - Identificador único del tipo de clase a dar de baja.
+ * @param {number} data.id_escuela - Identificador único de la escuela.
+ * @returns {Promise<TipadoData<{}>>} Retorna un objeto con el resultado de la operación, 
+ * indicando si hubo error, un mensaje descriptivo, los datos devueltos y un código de estado.
+ * @throws {Error} Lanza un error si no se logra afectar la tabla de tipo de clase o si falla la transacción.
+ */
+const eliminarTipos_Horario = async (data: EstadoTipoInput): Promise<TipadoData<{}>> => {
+    const { id, id_escuela } = data;
+
+    const sqlLocalizarHorarios: string = `select 
+                                                hc.id as id_horario,
+                                                hc.id_tipo_clase
+                                            from 
+                                                tipo_clase as tc
+                                            join 
+                                                horarios_clases as hc ON tc.id = hc.id_tipo_clase
+                                            where
+                                                hc.id_escuela = ?  and hc.id_tipo_clase = ?;`;
+                                             
+    const sqlBorrarHorario: string = `UPDATE horarios_clases 
+                                      SET estado = 'inactivos', 
+                                          vigente = FALSE 
+                                      WHERE id = ?;`;
+
+    const sqlBajaTipos: string = `UPDATE tipo_clase 
+                                        SET estado = 'inactivos'
+                                        WHERE id = ? 
+                                        AND id_escuela = ?;`;                            
+         
+    const resultado = await iudEntidadTransaction(async (conn) => {
+        // 1. Buscamos los horarios asociados
+        const [rows] = await conn.execute(sqlLocalizarHorarios, [id_escuela, id]);
+        const resHorarios = rows as Array<{ id_horario: number }>;
+        
+    
+        // 2. Desactivamos los horarios solo si existen
+        let desactivadosCount = 0;
+        if (resHorarios && resHorarios.length > 0) {
+            for (const horario of resHorarios) {
+                await conn.execute(sqlBorrarHorario, [horario.id_horario]);
+                desactivadosCount++;
+            }
+        }
+
+        // 3. Damos de baja al profesor en la relación con la escuela
+        const [resProfesor]: any = await conn.execute(sqlBajaTipos, [ id, id_escuela]);
+
+        if (resProfesor.affectedRows === 0) {
+            throw new Error("No se logró dar de baja al tipo de clase  en la escuela");
+        } 
+
+        return { 
+            message: "Tipo de clase  y horarios dados de baja con éxito", 
+            desactivados: desactivadosCount 
+        };
+    });
+
+    if (resultado.error === false) {
+        return {
+            error: false,
+            message: "Tipo de clase y sus horarios dados de baja",
+            data: resultado.data,
+            code: "TRANSACCION_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "Error en la transacción",
+        code: "TRANSACCION_FALLIDA"
+    };    
+};
+
+
 // ──────────────────────────────────────────────────────────────
 // Export de métodos con tryCatchDatos
 // ──────────────────────────────────────────────────────────────
@@ -277,5 +359,6 @@ export const method = {
     modficarTipo  : tryCatchDatos( modTipo ),
     estadoTipo    : tryCatchDatos( estadoTipo ),
     listado       : tryCatchDatos( listadoTipo ),
-    listadoSinPaginacion : tryCatchDatos( listadoTipoSinPaginacion )
+    listadoSinPaginacion : tryCatchDatos( listadoTipoSinPaginacion ),
+    eliminarTipos_Horario : tryCatchDatos( eliminarTipos_Horario ),
 };
