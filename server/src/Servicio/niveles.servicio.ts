@@ -174,42 +174,107 @@ const modificarNivel = async ( dataM : ModificarNivelInput)
 
 
 /**
- * Servicio encargado de gestionar el cambio de estado (activación o baja lógica) de un nivel,
- * validando los datos de entrada mediante Zod y registrando la acción en el historial de auditoría.
- * 
- * Este proceso realiza los siguientes pasos:
- * 1. Valida los datos de entrada mediante el esquema `EstadoNivelSchema`.
- * 2. Ejecuta la actualización del estado en la capa de datos (`dataNiveles.cambioEstado`).
- * 3. Si la operación es exitosa (código 'NIVEL_MODIFICAR'):
- *    - Determina dinámicamente el estado final ("activo" / "inactivo") y la acción de auditoría ("RESTAURAR" / "ELIMINAR").
- *    - Construye el objeto con los detalles del cambio para el historial de auditoría, incluyendo el nombre y ID del nivel.
- *    - Registra el evento en el sistema mediante `registroHistorial`.
- * 4. Retorna el resultado estandarizado con el mensaje de éxito, o un error de servidor en caso de fallo.
+ * Gestiona el cambio de estado (activo / inactivo) de un nivel de baile. 
+ * Valida los datos de entrada, y dependiendo del estado resultante:
+ * - Si pasa a **inactivo**, ejecuta una transacción para dar de baja el nivel y todos sus horarios asociados, registrando la acción en el historial.
+ * - Si pasa a **activo**, restaura únicamente el nivel y registra la acción de restauración en el historial.
  *
  * @async
  * @function estadoNivel
- * @param {EstadoNivelInput} estado - Objeto con los datos necesarios para cambiar el estado del nivel 
- * (incluyendo ID del nivel, nombre, estado deseado, ID de escuela e ID de usuario).
- * 
- * @returns {Promise<TipadoData<{id: number}>>} Promesa que resuelve con el estado de la operación,
- * incluyendo mensajes descriptivos y códigos internos de éxito o error.
- * 
- * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `EstadoNivelSchema`.
+ * @param {EstadoNivelInput} estado - Objeto con la información del nivel y el estado al que se desea cambiar.
+ * @returns {Promise<TipadoData<{ id: number }>>} Retorna una promesa con el resultado de la operación:
+ * - Si es exitoso, devuelve un objeto indicando `error: false` y el código `ESTADO_NIVEL_OK`.
+ * - Si falla la transacción o hay un error de servidor, devuelve `error: true` con su respectivo código de error.
+ *
+ * @throws {ZodError} Lanza un error de validación si el objeto de entrada `estado` no cumple con el esquema `EstadoNivelSchema`.
  * 
  * @example
  * const resultado = await estadoNivel({
- *    id: 1,
- *    nivel: "Principiante",
- *    estado: "inactivos",
- *    id_escuela: 1,
- *    id_usuario: 5
+ *   id: 2,
+ *   id_escuela: 1,
+ *   id_usuario: 5,
+ *   estado: "inactivo",
+ *   nivel: "Avanzado"
  * });
+ * console.log(resultado.message); // "Se modifico el estado correctamente."
  */
 const estadoNivel = async ( estado : EstadoNivelInput)  
 : Promise<TipadoData<{ id : number }>>  => {
+        //console.log("nivel estado")
+        const dataNivel : EstadoNivelInput = EstadoNivelSchema.parse( estado ); 
+        const estadoFinal  =  dataNivel.estado === "activos" ? "activo" : "inactivo";
+        
+        //Si vine inactivo llamamos al a la funcion que elimina el nivel y sus horarios
+        if ( estadoFinal === "inactivo" ) {
+         //console.log("baja nivel y horarios")   
+            const eliminarNilvelHorarios = await dataNiveles.eliminarNivel_Horario( dataNivel );
+         
+            if ( eliminarNilvelHorarios.code === "TRANSACCION_OK" ){
 
-       const dataNivel : EstadoNivelInput = EstadoNivelSchema.parse( estado ); 
+                const dataHistorial  : HistorialInputs = {
+                    id_escuela :  dataNivel.id_escuela ,
+                    id_usuario :  dataNivel.id_usuario,
+                    modulo : "NIVELES_BAILE",
+                                accion : "ELIMINAR",
+                                id_registro: Number( dataNivel.id),
+                                descripcion: `Estado de ${dataNivel.nivel} cambio a inactivo`,
+                                datos: {
+                                    id_nivel : dataNivel.id,
+                                    nivel : dataNivel.nivel
+                                }
+                            }; 
+                                    
+                            await registroHistorial( dataHistorial);    
 
+
+                return {
+                         error : false, 
+                         message : "Se modifico el estado correctamente.",
+                         code : "ESTADO_NIVEL_OK"
+                };
+            };
+
+           if ( eliminarNilvelHorarios.code === "TRANSACCION_FALLIDA" ){
+                return {
+                    error : true, 
+                    message : "Error en el servidor , no se logro dar de baja al nivel.",
+                    code : "ERROR_SERVIDOR_TRANSACCION"
+                };
+           }; 
+
+        };
+
+        //Si vine inactivo llamamos a la funciion que manda a resturar el nivel sin tocar sus horarios
+        if ( estadoFinal === "activo" ) {
+            console.log("se restauro solo el nivel")
+            const estadoNivel = await dataNiveles.cambioEstado(dataNivel);
+    
+            if (estadoNivel.code ===  "NIVEL_MODIFICAR" ){
+
+                            const dataHistorial  : HistorialInputs = {
+                                id_escuela :  dataNivel.id_escuela ,
+                                id_usuario :  dataNivel.id_usuario,
+                                modulo : "NIVELES_BAILE",
+                                accion : "RESTAURAR",
+                                id_registro: Number( dataNivel.id),
+                                descripcion: `Estado de ${dataNivel.nivel} cambio a activo`,
+                                datos: {
+                                    id_nivel : dataNivel.id,
+                                    nivel : dataNivel.nivel
+                                }
+                            }; 
+                                    
+                            await registroHistorial( dataHistorial);         
+
+                        return {
+                                error : false, 
+                                message : "Se modifico el estado correctamente.",
+                                code : "ESTADO_NIVEL_OK"
+                        };
+                    };        
+        };
+
+/** 
        const estadoNivel = await dataNiveles.cambioEstado(dataNivel);
     
        if (estadoNivel.code ===  "NIVEL_MODIFICAR" ){
@@ -239,7 +304,7 @@ const estadoNivel = async ( estado : EstadoNivelInput)
                 code : "ESTADO_NIVEL_OK"
            };
        };
-
+*/
      return{
          error : true,
          message : "Error en el servidor , nivel",

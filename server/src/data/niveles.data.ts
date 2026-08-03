@@ -6,7 +6,7 @@ import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidad } from "../hooks/funcionListar";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
-
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -14,7 +14,8 @@ import { TipadoData } from "../tipados/tipado.data";
 import { NivelData,ModificarNivelData, estadoNivel as estado , ResulListadoNivelUsuarios,
     ResulListSinPagNivelUsuarios
 } from "../tipados/nivel.data"; 
-import { ListadoNivelInput } from "../squemas/nivel";
+import { EstadoNivelInput, ListadoNivelInput } from "../squemas/nivel";
+import { console } from "inspector";
 
 /**
  * @async
@@ -277,11 +278,104 @@ const listadoNivelSinPag = async(  parametros : ListadoNivelInput )
     });
 };
 
+/**
+ * Da de baja un nivel y desactiva de forma masiva todos los horarios de clases 
+ * que se encuentren asociados a dicho nivel dentro de una escuela específica, 
+ * utilizando una transacción de base de datos para garantizar la integridad.
+ *
+ * @async
+ * @function eliminarNivel_Horario
+ * @param {EstadoNivelInput} data - Objeto con los datos necesarios para identificar el nivel.
+ * @param {number} data.id_escuela - Identificador único de la escuela a la que pertenece el nivel.
+ * @param {number} data.id - Identificador único del nivel que se desea dar de baja.
+ * @returns {Promise<TipadoData<{}>>} Retorna una promesa que resuelve con un objeto de tipo TipadoData,
+ * indicando si la transacción fue exitosa (`TRANSACCION_OK`) o si falló (`TRANSACCION_FALLIDA`).
+ * 
+ * @throws {Error} Lanza un error interno dentro de la transacción si el nivel no existe
+ * o no se pudo actualizar en la base de datos para la escuela indicada.
+ *
+ * @example
+ * const respuesta = await eliminarNivel_Horario({
+ *   id_escuela: 1,
+ *   id: 3
+ * });
+ * console.log(respuesta.message); // "Nivel y sus horarios dados de baja"
+ */
+const eliminarNivel_Horario = async (data: EstadoNivelInput ): Promise<TipadoData<{}>> => {
+    const { id_escuela, id } = data;
+
+
+    const sqlLocalizarHorarios: string = `select 
+                                                hc.id as id_horario
+                                            from 
+                                                niveles as n
+                                            join 
+                                                horarios_clases as hc ON n.id = hc.id_nivel
+                                            where
+                                                hc.id_escuela = ? and hc.id_nivel = ? ;`;
+                                             
+    const sqlBorrarHorario: string = `UPDATE horarios_clases 
+                                      SET estado = 'inactivos', 
+                                          vigente = FALSE 
+                                      WHERE id = ?;`;
+
+    const sqlBajaNivel: string = `UPDATE niveles 
+                                        SET estado = 'inactivos'
+                                        WHERE id = ? 
+                                        AND id_escuela = ?;`;                            
+         
+    const resultado = await iudEntidadTransaction(async (conn) => {
+        // 1. Buscamos los horarios asociados
+        const [rows] = await conn.execute(sqlLocalizarHorarios, [id_escuela, id ]);
+        const resHorarios = rows as Array<{ id_horario: number }>;
+        console.log(rows)    
+    
+        // 2. Desactivamos los horarios solo si existen
+        let desactivadosCount = 0;
+        if (resHorarios && resHorarios.length > 0) {
+            for (const horario of resHorarios) {
+                await conn.execute(sqlBorrarHorario, [horario.id_horario]);
+                desactivadosCount++;
+            }
+        }
+
+        // 3. Damos de baja al Nivel en la relación con la escuela
+        const [resNivel]: any = await conn.execute(sqlBajaNivel, [ id, id_escuela]);
+
+        if (resNivel.affectedRows === 0) {
+            throw new Error("No se logró dar de baja al nivel en la escuela");
+        } 
+
+        return { 
+            message: "Nivel y horarios dados de baja con éxito", 
+            desactivados: desactivadosCount 
+        };
+    });
+
+    if (resultado.error === false) {
+        return {
+            error: false,
+            message: "Nivel y sus horarios dados de baja",
+            data: resultado.data,
+            code: "TRANSACCION_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "Error en la transacción",
+        code: "TRANSACCION_FALLIDA"
+    };    
+};
+
+
+
 export const method = {
     nivelExiste : tryCatchDatos( nivelExiste ),
     altaNivelGlobal : tryCatchDatos( altaNivelGlobal ),
     modificarNivel : tryCatchDatos( modificarNivel ),
     cambioEstado  : tryCatchDatos( estadoNivel) ,
     listado       : tryCatchDatos( listadoNivel ),
-    listadoNivelSinPag : tryCatchDatos( listadoNivelSinPag )
+    listadoNivelSinPag : tryCatchDatos( listadoNivelSinPag ),
+    eliminarNivel_Horario : tryCatchDatos( eliminarNivel_Horario ),
 }

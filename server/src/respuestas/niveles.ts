@@ -51,6 +51,11 @@ export const MAPA_ESTADO_NIVEL : Record<string , { status : CodigoEstadoHTTP, ms
         status : CodigoEstadoHTTP.OK,
         msg : "Estado nivel modificado correctamente."
   },
+
+  "ERROR_SERVIDOR_TRANSACCION" : {
+        status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        msg : "No se logro modificar el estado del nivel completamente, intente nuevamente."
+  },
   
 }; 
 

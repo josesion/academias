@@ -19,7 +19,7 @@ import {
 } from "../squemas/profesores"; 
 
 import { 
-         ProfesoresGlobales , FiltroProfeEscuelaBaja, 
+         ProfesoresGlobales , 
          ResulListadoProfesoresUsuarios, ListadoProfeResults 
 } from "../tipados/profesores.data";
 

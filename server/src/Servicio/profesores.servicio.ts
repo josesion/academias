@@ -8,7 +8,7 @@ import { CrearProfesorSchema , ModProfesoresSchema, EstadoProfesorSchema, ListaP
          ListadoProfeInputs , ListaProfeUsuarioSinPagSchema, ListadoProfeSinPagInputs
 } from "../squemas/profesores"; 
 
-import { ProfesoresGlobales , FiltroProfeEscuelaBaja, ResulListadoProfesoresUsuarios, ListadoProfeResults } from "../tipados/profesores.data";
+import { ProfesoresGlobales , ResulListadoProfesoresUsuarios, ListadoProfeResults } from "../tipados/profesores.data";
 import { type HistorialInputs } from "../squemas/historial";
 
 

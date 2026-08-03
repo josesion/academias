@@ -53,7 +53,12 @@ export const EstadoNivelSchema = ModificarNivelSchema.extend({
 
     estado:        EstadosPermitidos
                 .default('activos'),                
-
+    id_escuela : z.number({message : "Ident. Escuela debe ser numerico"})
+                 .int({message : "Ident. Escuela debe ser entero"})
+                 .positive({ message : "Ident. Escuela debe ser positivo"}),
+    id : z.number({ message: "Identificador de nivel debe ser numérico." })
+            .int({ message: "Identificador de nivel debe ser un entero." })
+            .positive({ message: "Identificador de nivel debe ser positivo." }),                     
 });
 
 const EstadoPlanEnum = z.enum(['activos', 'inactivos', 'todos']).default('activos');
