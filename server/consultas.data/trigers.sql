@@ -29,7 +29,18 @@ BEGIN
 		INSERT INTO cuentas_escuela (id_escuela, nombre_cuenta, tipo_cuenta, estado) 
 			VALUES 
 			(NEW.id_escuela, 'efectivo', 'fisico', 'activos'),
-			(NEW.id_escuela, 'mercado pago', 'virtual', 'activos');		
+			(NEW.id_escuela, 'mercado pago', 'virtual', 'activos');	
+
+		INSERT INTO tipo_clase (tipo, fecha_creacion, estado, id_escuela) 
+				VALUES 
+				('Salsa',         CURDATE(), 'activos', NEW.id_escuela),
+				('Bachata',       CURDATE(), 'activos', NEW.id_escuela),
+				('Ritmos Latinos',CURDATE(), 'activos', NEW.id_escuela),
+				('Folklore',      CURDATE(), 'activos', NEW.id_escuela),
+				('Tango',         CURDATE(), 'activos', NEW.id_escuela),
+				('Urbano',        CURDATE(), 'activos', NEW.id_escuela),
+				('Contemporáneo', CURDATE(), 'activos', NEW.id_escuela);			
+
 			
 		END //
 DELIMITER ;
