@@ -128,15 +128,28 @@ const modificarNivel = async ( dataM : ModificarNivelInput)
    
     const dataNivel : ModificarNivelInput = ModificarNivelSchema.parse( dataM );
 
-    const existe = await dataNiveles.nivelExiste( dataNivel.nivel , Number(dataNivel.id_escuela));
+    const existe = await dataNiveles.nivelExiste( dataNivel.id , Number(dataNivel.id_escuela));
 
-    if ( existe.code === "NIVEL_EXISTE"){
+    if ( existe.code === "NIVEL_EXISTE" && existe.data?.is_default){
+
+        if (existe.data.is_default === 1) {
+        
+                return {
+                    error: true,
+                    message: "No se puede modificar este nivel porque es protegido del sistema.",
+                    code:  "SIN_PERMISOS"         
+                };
+        };
+
+
         return{
             error : true,
             message : "Este nivel el mismo o ya existe.",
             code : "NIVEL_EXISTE"
         };
     };
+
+  
 
    const nivelModificado = await dataNiveles.modificarNivel( dataNivel );   
 
@@ -200,13 +213,23 @@ const modificarNivel = async ( dataM : ModificarNivelInput)
  */
 const estadoNivel = async ( estado : EstadoNivelInput)  
 : Promise<TipadoData<{ id : number }>>  => {
-        //console.log("nivel estado")
+       
+    const existe = await dataNiveles.nivelExiste( estado.id , Number(estado.id_escuela));
+
+    if ( existe.code === "NIVEL_EXISTE" && existe.data?.is_default === 1){
+                return {
+                    error: true,
+                    message: "No se puede modificar este nivel porque es protegido del sistema.",
+                    code:  "SIN_PERMISOS"         
+                };
+    };
+
         const dataNivel : EstadoNivelInput = EstadoNivelSchema.parse( estado ); 
         const estadoFinal  =  dataNivel.estado === "activos" ? "activo" : "inactivo";
         
         //Si vine inactivo llamamos al a la funcion que elimina el nivel y sus horarios
         if ( estadoFinal === "inactivo" ) {
-         //console.log("baja nivel y horarios")   
+         
             const eliminarNilvelHorarios = await dataNiveles.eliminarNivel_Horario( dataNivel );
          
             if ( eliminarNilvelHorarios.code === "TRANSACCION_OK" ){

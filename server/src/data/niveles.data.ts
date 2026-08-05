@@ -32,19 +32,15 @@ import { console } from "inspector";
  * // SELECT id, nivel FROM niveles WHERE nivel = ? AND id_escuela = ?;
  */
 
-const nivelExiste  = async ( nivel: string  , id_escuela : number)
-: Promise<TipadoData<{id : number , nivel : string}>> => {
-    const sql : string = `select 
-                                id, 
-                                nivel 
-                          from 
-                                niveles
-                          where 
-                                nivel = ?
-                            and
-                                id_escuela = ? ;`;
-    const valores : unknown[] = [ nivel , id_escuela];
-    return buscarExistenteEntidad<{ id: number , nivel: string }>({
+const nivelExiste  = async ( id: string  , id_escuela : number)
+: Promise<TipadoData<{id : number , nivel : string , is_default : number }>> => {
+    const sql : string = `SELECT id, nivel, is_default 
+                            FROM niveles 
+                            WHERE 
+                            id_escuela = ?
+                            AND id = ?;`;
+    const valores : unknown[] = [ id_escuela, id ];
+    return buscarExistenteEntidad<{ id: number , nivel: string, is_default : number }>({
         slqEntidad : sql,
         valores,
         entidad   : "Nivel"

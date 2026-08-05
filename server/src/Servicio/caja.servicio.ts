@@ -504,12 +504,12 @@ const serviciosCuentaSesion = async( data : CuentasSesionInputs )
     const verifcarData : CuentasSesionInputs = listaTipoCuentasSesionSchema.parse(data);
 
     const dataIdCajaResult = await dataCaja.idCajaAbierta(verifcarData);
-  
+    
     if ( dataIdCajaResult.code ==='ID_CAJA_EXISTE' ) {
 
 
         const cuentaSesionResult = await dataCaja.listaTipoCuentasSesion( dataIdCajaResult.data?.id_caja );
-      //  console.log(cuentaSesionResult)
+     
         if ( cuentaSesionResult.code === 'LISTA_TIPO_CUENTAS_LISTED'){
             return {
                 error : false, 
@@ -642,7 +642,7 @@ const aperturaCajaTransaccion = async ( parametros : AperturaCajaInput )
 :Promise<TipadoData<{ id_caja : number, montoTotal : number}>> =>{
    
     const aperturaValidada : AperturaCajaInput = AperturaCajaSchema.parse(parametros)
-
+ 
     const vericarResult = await dataCaja.verificarCajaAbierta( aperturaValidada);
    
     if ( vericarResult.code === "CAJA_ABIERTA_EXISTE"){
@@ -654,8 +654,6 @@ const aperturaCajaTransaccion = async ( parametros : AperturaCajaInput )
     };
     
     const aperturaRestult = await dataCaja.aperturaCajaTransaccion( aperturaValidada);
-
-//    console.dir(aperturaRestult.data, { depth: null });
  
     if ( aperturaRestult.code === 'TRANSACCION_OK'){
 

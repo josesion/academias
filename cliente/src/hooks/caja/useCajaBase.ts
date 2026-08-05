@@ -23,6 +23,7 @@ interface CajaBaseConfig {
 }
 
 export const useCajaBase = ( config : CajaBaseConfig) => {
+
     const [ stateMetrica, dispatchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const [ state , dispatch] = useReducer( cajaReducer, initialState({
         usuario    : config.usuario,
@@ -97,6 +98,8 @@ const handleAbrirCaja = async() =>{
         };
 
         
+
+
        const servicioApiFetch = config.servicios.abrirCaja;
        const aperturaCajaResult = await servicioApiFetch(data);
 

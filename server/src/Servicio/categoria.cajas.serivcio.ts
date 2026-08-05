@@ -277,7 +277,7 @@ const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs )
     const  dataCategoriaCaja : BajaCategoriCajaInputs = BajaCategoriaCajaSchema.parse( data );
    
     const verificarCategoriaExistente = await categoriaCajaData.verificarCategoriaExistente2( data );
-    
+
     if( verificarCategoriaExistente.data?.categoria_sistema){
   
         return {

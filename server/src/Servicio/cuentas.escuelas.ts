@@ -154,24 +154,31 @@ const crearCuentaEscuelaServicio = async ( dataCuenta : CuentaEscuelaInput)
  */
 const modCuentaEscuelaServicio = async ( dataMod : ModificarCuentaEscuelaUnputs)
 : Promise<TipadoData<{id_cuenta: number, nuevo_nombre_cuenta : string, nuevo_tipo_cuenta : string}>> =>{
-   // console.log("Servicio entrada", dataMod);
+
     const validarDatos : ModificarCuentaEscuelaUnputs= ModificarCuentaEscuelaSchema.parse(dataMod);
-   // console.log("Filtrado y validado", validarDatos);
+
     const verificarCuentaExistente = await cuentasData.verificarCuentaEscuela(
-        validarDatos.nuevo_nombre_cuenta,
+        validarDatos.id_cuenta,
         validarDatos.id_escuela
     );
-    //console.log("verificacion de cuenta existente", verificarCuentaExistente)
+  
+    if ( verificarCuentaExistente.code === "CUENTAS_EXISTE" && verificarCuentaExistente.data?.is_default){
 
-    if ( verificarCuentaExistente.code === "CUENTAS_EXISTE"){
+        if ( verificarCuentaExistente.data.is_default === 1) {
+            return {
+                error : true,
+                message : `No se puede modifcar este metodo de pago, sin permisos.`,
+                code : "SIN_PERMISOS"
+            }
+        };
+        
+
         return {
             error : true,
             message : `La cuenta : ${validarDatos.nuevo_nombre_cuenta} ya existe para esta escuela`,
             code : "CUENTAS_EXISTE"
         };
     };
-
-    if ( verificarCuentaExistente.code === "CUENTAS_NO_EXISTE"){
 
         const modificarCuenta = await cuentasData.modCuentaEscuela(validarDatos);
 
@@ -202,12 +209,7 @@ const modCuentaEscuelaServicio = async ( dataMod : ModificarCuentaEscuelaUnputs)
             };
         };
 
-        return {
-            error : true,
-            message : "No se pudo modificar la cuenta en la base de datos",
-            code : "CUENTAS_ERROR_MODIFICACION"
-        };
-    };    
+
 
     return {
         error : true,
@@ -249,12 +251,30 @@ const modCuentaEscuelaServicio = async ( dataMod : ModificarCuentaEscuelaUnputs)
 const estadoCuentasEscuela = async ( dataEstado : EstadoCuentasInputs)
 : Promise<TipadoData<{ id_cuenta : number , estado : string}>>  =>{
    const validarDatos : EstadoCuentasInputs = EstadoCuentasSchema.parse( dataEstado);
+
+    const verificarCuentaExistente = await cuentasData.verificarCuentaEscuela(
+        validarDatos.id_cuenta,
+        validarDatos.id_escuela
+    );
+  
+    if ( verificarCuentaExistente.code === "CUENTAS_EXISTE" && verificarCuentaExistente.data?.is_default === 1){
+            return {
+                error : true,
+                message : `No se puede dar de baja este metodo de pago, sin permisos.`,
+                code : "SIN_PERMISOS"
+            }
+    };
+
+
+
+
   // console.log( "datos validados", validarDatos)
    const modEstadoCuenta = await cuentasData.estadoCuenta( validarDatos);
 
    if ( modEstadoCuenta.code === "CUENTAS_MODIFICAR"){
         const estadoFinal  = validarDatos.estado === "activos" ? "activo" : "inactivo";
         const accionFinal  = validarDatos.estado === "activos" ? "RESTAURAR" : "ELIMINAR"
+
         const dataHistorial  : HistorialInputs = {
             id_escuela :  validarDatos.id_escuela ,
             id_usuario :  validarDatos.id_usuario,

@@ -1,10 +1,12 @@
+
+
 CREATE TABLE IF NOT EXISTS cuentas_escuela (
     id_cuenta INT AUTO_INCREMENT PRIMARY KEY,
     id_escuela INT NOT NULL,
     nombre_cuenta VARCHAR(50) NOT NULL,
     tipo_cuenta ENUM('fisico', 'virtual') DEFAULT 'virtual',
-    -- Ajustado a tu regla de 'activos' / 'inactivos'
     estado ENUM('activos', 'inactivos') DEFAULT 'activos' NOT NULL, 
+    is_default TINYINT(1) DEFAULT 0 NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_escuela_en_cuentas 

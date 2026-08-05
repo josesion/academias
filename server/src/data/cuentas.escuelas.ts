@@ -12,6 +12,7 @@ import { CuentaEscuelaInput, ModificarCuentaEscuelaUnputs,
          EstadoCuentasInputs, ListadoCuentasInputs,
  } from "../squemas/cuentas.escuelas";
 
+
 /**
  * Registra una nueva cuenta contable o bancaria asociada a una escuela.
  * * @async
@@ -51,18 +52,19 @@ const crearCuentaEscuela = async (cuentaData: CuentaEscuelaInput)
 
 /**
  * Verifica si ya existe una cuenta con el mismo nombre para una escuela específica.
- * * @param {string} nombreCuenta - El nombre de la caja o billetera (ej: 'Mercado Pago').
+ * * @param {number} id_cuenta - El id de la cuenta.
  * @param {number} idEscuela - El ID de la academia a la que pertenece la cuenta.
  * @returns {Promise<"CUENTAS_EXISTE" | "CUENTAS_NO_EXISTE">} 
  * Retorna un código de string según el resultado de la búsqueda en la base de datos.
  */
-const verificarCuentaEscuela = async ( nombreCuenta : string , idEscuela : number) =>{
+const verificarCuentaEscuela = async ( id_cuenta : number , idEscuela : number) 
+:Promise<TipadoData<{id_cuenta : number , is_default : number }>>=> {
 
-     const sql  : string  =`select id_cuenta from cuentas_escuela
-                            where nombre_cuenta = ?    and id_escuela = ? ;`;
-     const parametros : unknown[] = [nombreCuenta,  idEscuela];
+     const sql  : string  =`select id_cuenta, is_default  from cuentas_escuela
+                            where id_cuenta = ?   and id_escuela = ? `;
+     const parametros : unknown[] = [ id_cuenta,  idEscuela];
      
-     return buscarExistenteEntidad<{id_cuenta : number}>({
+     return buscarExistenteEntidad<{id_cuenta : number , is_default : number }>({
         slqEntidad : sql,
         valores : parametros,
         entidad : "CUENTAS"

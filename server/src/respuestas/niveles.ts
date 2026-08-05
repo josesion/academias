@@ -29,6 +29,10 @@ export const MAPA_ALTA_NIVEL : Record<string , { status : CodigoEstadoHTTP, msg 
 export const MAPA_MOD_NIVEL : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
+    "SIN_PERMISOS" : {
+        status : CodigoEstadoHTTP.NO_AUTORIZADO,
+        msg : "No se puede eliminar este Nivel."
+    },
 
     "NIVEL_EXISTE" : {
         status : CodigoEstadoHTTP.CONFLICTO,
@@ -46,6 +50,11 @@ export const MAPA_MOD_NIVEL : Record<string , { status : CodigoEstadoHTTP, msg  
 export const MAPA_ESTADO_NIVEL : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
+    
+    "SIN_PERMISOS" : {
+        status : CodigoEstadoHTTP.NO_AUTORIZADO,
+        msg : "No se puede eliminar este Nivel."
+    },    
     
   "ESTADO_NIVEL_OK" : {
         status : CodigoEstadoHTTP.OK,

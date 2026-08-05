@@ -26,10 +26,10 @@ BEGIN
 		('Intermedio',   CURDATE(), 'activos', 1, NEW.id_escuela),
 		('Avanzado',     CURDATE(), 'activos', 1, NEW.id_escuela);    
 
-		INSERT INTO cuentas_escuela (id_escuela, nombre_cuenta, tipo_cuenta, estado) 
+		INSERT INTO cuentas_escuela (id_escuela, nombre_cuenta, tipo_cuenta, estado, is_default) 
 			VALUES 
-			(NEW.id_escuela, 'efectivo', 'fisico', 'activos'),
-			(NEW.id_escuela, 'mercado pago', 'virtual', 'activos');	
+			(NEW.id_escuela, 'efectivo', 'fisico', 'activos', 1),
+			(NEW.id_escuela, 'mercado pago', 'virtual', 'activos', 1);
 
 		INSERT INTO tipo_clase (tipo, fecha_creacion, estado, id_escuela) 
 				VALUES 
