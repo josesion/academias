@@ -21,6 +21,7 @@ export const HorarioPagina = () => {
 
   return (
     <FormHorario
+      carga={state.cargaAbm}
       metodo={state.metodo}
       mensajeEstado={state.errorGenericoHorario as string}
       horaInicioFin={state.horaInicioFin}

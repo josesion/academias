@@ -11,6 +11,7 @@ export interface HorarioTipado{
     errorGenericoHorario: string | null;
     listoEnviar  : boolean;
     actualizar   : boolean;
+    cargaAbm     : boolean;
     carga        : boolean;
 
     modales :{
@@ -72,6 +73,7 @@ export const initialState = ( ) :HorarioTipado =>({
     listoEnviar   : false,
     actualizar    : false, 
     carga         : false,  
+    cargaAbm      : false,
 
     modales : {
         modalHorario : false,
@@ -152,6 +154,7 @@ export type HorarioAction =
       | { type: "SET_ENVIAR" ; payload : boolean  }
       | { type: "SET_ACTUALIZAR" ; payload : boolean  }
       | { type: "SET_CARGA" ; payload : boolean  }  
+      | { type: "SET_CARGA_ABM" ; payload : boolean  }    
       | { type : "SET_MODAL_HORARIO"  ; payload : boolean }
       | { type : "SET_MODAL_INTERNO"  ; payload : boolean }    
       | { type : "SET_METODO"  ; payload :  TipadoHorario.metodo | null }  
@@ -216,7 +219,9 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
         case 'SET_ERROR':
              return { ...state, errorGenericoHorario: action.payload };
         case 'SET_CARGA':
-             return { ...state, carga : action.payload };             
+             return { ...state, carga : action.payload };     
+        case 'SET_CARGA_ABM':
+             return { ...state, cargaAbm : action.payload };                        
         case 'SET_ACTUALIZAR':
              return { ...state, actualizar: action.payload }; 
         case 'SET_ENVIAR':

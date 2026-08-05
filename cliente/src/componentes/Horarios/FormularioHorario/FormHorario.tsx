@@ -25,6 +25,7 @@ import "./formHorario.css";
 
 interface FormHorarioProps {
   metodo: metodo | null;
+  carga: boolean;
 
   modalInterno?: boolean;
   mensajeEstado: string;
@@ -160,6 +161,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
             <div className="formualrio_horario_botonera">
               <div className="formulario_horario_botonera1">
                 <Boton
+                  disable={props.carga}
                   clase={metodo === "ALTA" ? "aceptar" : "agregar"}
                   logo={metodo === "ALTA" ? "Add" : "Edit"}
                   texto={

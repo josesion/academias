@@ -189,67 +189,98 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
 // ──────────────────────────────────────────────────────────────
 // Handles de supcripciones Alta, Modificacion y Eliminar Horarios
 // ────────────────────────────────────────────────────────────── 
+
+
    const handleAltaHorario = async() =>{
 
-        if (!state.listoEnviar){
-               console.log("s") 
-            const mensajeBase = state.errorGenericoHorario as string;
-            return    mensajeErrorTemporal({ 
-                        tiempo : 3 ,
-                        mensajeError:"Faltan campos verificar",
-                        mensajeEspera: mensajeBase , 
-                        setErrorGenerico : setErrorGenericoAdapter});
-        };
+        try {
+            dispatch({ type : "SET_CARGA_ABM", payload : true });
 
-        const servicioApiFetch =   config.servicios.altaHorario;
-        const resultadoAlta  = await servicioApiFetch(state.dataFormHorario);
-     
-        if (resultadoAlta.error === true){
-  
-           dispatch({ type : "SET_ERROR" , payload : resultadoAlta.message });
-      
-           return;
+            if (!state.listoEnviar){
+                
+                const mensajeBase = state.errorGenericoHorario as string;
+                return    mensajeErrorTemporal({ 
+                            tiempo : 3 ,
+                            mensajeError:"Faltan campos verificar",
+                            mensajeEspera: mensajeBase , 
+                            setErrorGenerico : setErrorGenericoAdapter});
+            };
+
+            const servicioApiFetch =   config.servicios.altaHorario;
+            const resultadoAlta  = await servicioApiFetch(state.dataFormHorario);
+        
+            if (resultadoAlta.error === true){
+    
+            dispatch({ type : "SET_ERROR" , payload : resultadoAlta.message });
+        
+            return;
+            };
+            dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });
+            dispatch({ type : "RESET_FORMULARIO" });
+            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+
+
+        }catch ( error ){
+            dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
+        }finally{
+            dispatch({ type : "SET_CARGA_ABM", payload : false });
         };
-        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });
-        dispatch({ type : "RESET_FORMULARIO" });
-        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
 
    };
 
    const handleModHorario =async( ) =>{
+        try {
+            dispatch({ type : "SET_CARGA_ABM", payload : true });
+
+            if (!state.listoEnviar){
+                const mensajeBase = state.errorGenericoHorario as string;
+                return  mensajeErrorTemporal({ 
+                        tiempo : 3 ,
+                        mensajeError:"Faltan campos verificar",
+                        mensajeEspera: mensajeBase , 
+                        setErrorGenerico : setErrorGenericoAdapter});
+            };
+            const servicioApiFetch = config.servicios.modHorario;
+            const resultadoMod   = await servicioApiFetch(state.dataModHorario);
+            if ( resultadoMod.error === true){
+                dispatch({ type : "SET_ERROR" , payload : resultadoMod.message });
+                return;
+            };  
+            dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
+            dispatch({ type : "RESET_FORMULARIO" });
+            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+
+
+        }catch ( error ){
+            dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
+        }finally{
+            dispatch({ type : "SET_CARGA_ABM", payload : false });
+        };    
     
-        if (!state.listoEnviar){
-            const mensajeBase = state.errorGenericoHorario as string;
-            return  mensajeErrorTemporal({ 
-                    tiempo : 3 ,
-                    mensajeError:"Faltan campos verificar",
-                    mensajeEspera: mensajeBase , 
-                    setErrorGenerico : setErrorGenericoAdapter});
-        };
-        const servicioApiFetch = config.servicios.modHorario;
-        const resultadoMod   = await servicioApiFetch(state.dataModHorario);
-        if ( resultadoMod.error === true){
-            dispatch({ type : "SET_ERROR" , payload : resultadoMod.message });
-            return;
-        };  
-        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
-        dispatch({ type : "RESET_FORMULARIO" });
-        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
    }; 
    
 
    const handleEliminarHorario = async() =>{
-        const servicioApiFetch = config.servicios.eliminarHorario;
-        const resultadoEliminar = await servicioApiFetch(state.dataEliminarHorario);
-       
-        if (resultadoEliminar.error === true) {
-            dispatch({ type : "SET_ERROR", payload : resultadoEliminar.message });
-            return;
-        };
+        try {
+            dispatch({ type : "SET_CARGA_ABM", payload : true });
 
-        dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
-        dispatch({ type : "RESET_FORMULARIO" });
-        dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+            const servicioApiFetch = config.servicios.eliminarHorario;
+            const resultadoEliminar = await servicioApiFetch(state.dataEliminarHorario);
+        
+            if (resultadoEliminar.error === true) {
+                dispatch({ type : "SET_ERROR", payload : resultadoEliminar.message });
+                return;
+            };
+
+            dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
+            dispatch({ type : "RESET_FORMULARIO" });
+            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+
+        }catch ( error ){
+            dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
+        }finally{
+            dispatch({ type : "SET_CARGA_ABM", payload : false });
+        };   
    };
 
 
