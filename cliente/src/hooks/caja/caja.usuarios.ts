@@ -66,7 +66,9 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
             registrarMovimientoCaja : config.servicios.registrarMovimientoCaja,
         },
         state : cajaBase.state,
-        dispatch : cajaBase.dispatch
+        dispatch : cajaBase.dispatch,
+        stateMetrica : cajaBase.stateMetrica,
+        disparchMetricas : cajaBase.dispatchMetricas,
     });
 
   

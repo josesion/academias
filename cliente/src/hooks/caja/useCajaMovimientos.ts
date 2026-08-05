@@ -1,6 +1,7 @@
-import { useState , useEffect , useCallback, useRef, useReducer} from "react";
-import { peticionComunicacion } from "../../utils/canalComunicacion";
-import { initialStateMetricas, metricasReducer } from "../../reducers/metricasReducer";
+import { useState , useEffect , useCallback, useRef } from "react";
+import { peticionComunicacion,  recepcionComunicacion } from "../../utils/canalComunicacion";
+import { useActualizarAlEnfocar } from "../../utils/useActulizarFocus";
+
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 import type {
@@ -21,12 +22,14 @@ interface MovimientosCajaConfig {
     },
     state: CajaTipado;
     dispatch: React.Dispatch<CajaAction>;    
+    stateMetrica: any;
+    disparchMetricas: React.Dispatch<any>;
 };
 
 export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 
-    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
-    const { state, dispatch } = config;
+   
+    const { state, dispatch, disparchMetricas } = config;
 
     //------------------  Estados detalle de caja ------------------
     const observer = useRef<IntersectionObserver | null>(null); 
@@ -42,27 +45,31 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
     //Metodo para cargar los movimientos de caja con scroll infinito
     // ────────────────────────────────────────────────────────────── 
 
-    const cargarMovimientos = useCallback(async () => {
-        // Si no hay ID, o ya está cargando, o no hay más: FRENAMOS
-        if (!state.dataCaja.id_caja || scrollState.loading || !scrollState.hasMore) { return }; 
+    const cargarMovimientos = useCallback(async (reiniciar: boolean = false) => {
+        // Si no hay ID, o ya está cargando, frena (salvo que estemos forzando un reinicio)
+        if (!state.dataCaja.id_caja || scrollState.loading) { return; }
+        if (!reiniciar && !scrollState.hasMore) { return; } 
 
         setScrollState(prev => ({ ...prev, loading: true }));
 
         try {
+            // Si reiniciamos, el offset vuelve a 0
+            const currentOffset = reiniciar ? 0 : scrollState.offset;
+
             const dataDetalle = {
                 id_caja: state.dataCaja.id_caja,
                 limite: scrollState.limite,
-                offset: scrollState.offset
+                offset: currentOffset
             };
 
             const res = await config.servicios.movimientoCajaDetalle(dataDetalle);
             
             if (res.code === "MOVIMIENTOS_CAJA_OK" && Array.isArray(res.data) ) {
-                setMovimientos(prev => [...prev, ...res.data]);
+                setMovimientos(prev => reiniciar ? res.data : [...prev, ...res.data]);
                 setScrollState(prev => ({
                     ...prev,
                     loading: false,
-                    offset: prev.offset + prev.limite,
+                    offset: (reiniciar ? 0 : prev.offset) + prev.limite,
                     hasMore: res.data.length === prev.limite
                 }));
             } else {
@@ -70,8 +77,12 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
             }
         } catch (error) {
             setScrollState(prev => ({ ...prev, loading: false }));
-        };
+        }
     }, [state.dataCaja.id_caja, scrollState.offset, scrollState.limite, scrollState.hasMore, scrollState.loading]);
+
+
+
+
 
 
     // ──────────────────────────────────────────────────────────────
@@ -249,6 +260,13 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                     error :  'SET_ERROR_METRICAS_TARJETAS',
                 });
 
+                // Actualiza los registros del historial para reflejar la nueva actividad generada
+                peticionComunicacion({
+                    nombreCanal : "canal_actualizar_metricas_historial",
+                    mensaje : "ACTUALIZAR_HISTORIAL",
+                    dispatchError : disparchMetricas,
+                    error : 'SET_ERROR_HISTORIAL'
+                });
 
                 dispatch({ type : "DISPARAR_REFRESCO"});
 
@@ -286,13 +304,19 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 // ──────────────────────────────────────────────────────────────
 //Obtener  los movimientos de caja para el detalle
 // ────────────────────────────────────────────────────────────── 
-
-    useEffect(() => {
-
+useEffect(() => {
         if (state.dataCaja.id_caja) {
-            cargarMovimientos();
-        } else {
+            // 1. Reseteamos el scroll state a offset 0 y hasMore true antes de cargar
+            setScrollState(prev => ({
+                ...prev,
+                offset: 0,
+                hasMore: true
+            }));
+            
+            // 2. Llamamos a cargar pasando "true" para que limpie y traiga fresco
+            cargarMovimientos(true);
         
+        } else {
             setMovimientos([]);
             setScrollState({
                 loading: false,
@@ -301,8 +325,35 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                 limite: 5
             });
         }
-    }, [state.dataCaja.id_caja, cargarMovimientos]);
+    }, [state.dataCaja.id_caja, state.actualizarCaja]); 
 
+
+
+// ──────────────────────────────────────────────────────────────
+// Configuración de canales de comunicación para actualizar los movimientos de caja
+// ──────────────────────────────────────────────────────────────  
+
+useEffect( ()=>{
+    
+    const canalInscripcion = recepcionComunicacion({
+        nombreCanal : "canal_inscripcion_caja",
+        mensaje : "actualizar",
+        dispatchError : dispatch,
+        error : 'SET_ERROR_CANAL',
+        dispatchActualizar : dispatch,
+        actualizar : 'ACTUALIZAR_CAJA_GENERICO'
+    });
+
+    return () =>{
+        if (canalInscripcion) canalInscripcion();
+    };
+
+}, []);
+
+// ──────────────────────────────────────────────────────────────
+// Hook para actualizar los movimientos de caja al recueprar el foco , tamb valida si el usuario sigue autenticado
+// ──────────────────────────────────────────────────────────────   
+    useActualizarAlEnfocar({ dispatchActualizar : dispatch , accion :  'ACTUALIZAR_CAJA_GENERICO'});
 
     return{
         lastElementRef,

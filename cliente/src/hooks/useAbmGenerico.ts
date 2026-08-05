@@ -388,7 +388,7 @@ useEffect(() => {
             setActualizarGernerico( actualizarGenerico + 1);
             
             const verificarUser= await verificarAutenticacion();
-            
+
             if (verificarUser.autenticado === false) {
                 window.location.href = "/login" // por defecto en esta app es login
                 return;

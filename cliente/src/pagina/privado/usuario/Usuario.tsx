@@ -9,6 +9,7 @@ import { MetricasHistorial } from "../../../componentes/Historial/Historial.metr
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 
 export const UsuarioPage = () => {
+  const containerRef = useRef<HTMLDivElement>(null); // <-- Referencia principal para el scope de GSAP
   const refGrupo1 = useRef<HTMLElement>(null);
   const [altoGrupo1, setAltoGrupo1] = useState<number>();
 
@@ -24,10 +25,9 @@ export const UsuarioPage = () => {
   }, []);
 
   const { state } = metricasUsuarioSeting();
-  //  console.log(state);
 
   return (
-    <div className="usuario_contenedor_metricas">
+    <div className="usuario_contenedor_metricas" ref={containerRef}>
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}

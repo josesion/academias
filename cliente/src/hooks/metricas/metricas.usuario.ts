@@ -21,7 +21,8 @@ interface MetricasConfig {
 
 export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
 
-    const [ state , dispatch] = useReducer( metricasReducer, initialStateMetricas());    
+    const [ state , dispatch] = useReducer( metricasReducer, initialStateMetricas());   
+     
     const tarjetas = config.servicios.tarjetas; // Serivicio que obtiene las metricas de las tarjetas
     const clases   = config.servicios.clases;
     const asistencia = config.servicios.asistencia;
@@ -193,6 +194,31 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         };
     }, []);
 
+
+/**
+ * Efecto secundario que se suscribe al canal de comunicación para el historial.
+ * Escucha las señales enviadas a "canal_actualizar_metricas_historial" para actualizar 
+ * el estado o refrescar los registros mediante el dispatch correspondiente, manejando 
+ * también posibles errores de comunicación.
+ */
+    useEffect(() => {
+
+        const cierreCaja = recepcionComunicacion({
+            nombreCanal: "canal_actualizar_metricas_historial",
+            mensaje: "ACTUALIZAR_HISTORIAL",
+            dispatchError: dispatch,
+            error: 'SET_ERROR_HISTORIAL',
+            dispatchActualizar: dispatch,
+            actualizar: "SET_ACTUALIZAR_GENERICO"
+        });
+
+
+        return () => {
+            if (cierreCaja) cierreCaja();
+        };
+    }, []); 
+
+    
     //Actualizacion por focus en la pantalla
     useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR_GENERICO"});
     

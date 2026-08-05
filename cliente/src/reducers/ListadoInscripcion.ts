@@ -19,6 +19,7 @@ interface ListadoInscripcionState {
         listadoCuentas : TipadoAsistencia.ListadoCuentas[],
         dataInfoDetalle: TipadoAsistencia.DataDetalle,
         listoAnular : boolean,
+        
 };
 
 export const inicialState = ( config : {
@@ -75,7 +76,7 @@ export const inicialState = ( config : {
         monto_pagado: "",
         metodo_pago_descrip: "",    
     },
-    listoAnular : false 
+    listoAnular : false
 
 });
 

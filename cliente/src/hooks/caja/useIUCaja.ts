@@ -129,7 +129,6 @@ const hanldeCerrarInforme = () =>{
         
         const servicioApiFetch = config.servicios.listadoCategoriaCaja;
         const listadoEgresos = await servicioApiFetch({
-        
             tipo : "egreso",
             estado : "activos"
         });

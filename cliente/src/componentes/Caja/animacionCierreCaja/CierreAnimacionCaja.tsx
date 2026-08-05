@@ -1,29 +1,27 @@
 import { useEffect, useState } from "react";
-import { FaLock, FaCheckCircle } from "react-icons/fa";
+import { FaLock, FaPowerOff } from "react-icons/fa";
 import "./cierreanimacioncaja.css";
 
 interface AnimacionCierreProps {
   onFinished?: () => void;
-  montoFinal?: number;
+  usuario?: string;
 }
 
 export const AnimacionCierreExitoso = ({
   onFinished,
-  montoFinal,
+  usuario,
 }: AnimacionCierreProps) => {
   const [fase, setFase] = useState(1);
 
   useEffect(() => {
-    // Fase 1: Sincronizando (0ms a 700ms)
-    // Fase 2: Encriptando (700ms a 1500ms)
-    // Fase 3: Éxito (1500ms en adelante)
-
-    const timer1 = setTimeout(() => setFase(2), 700); // Antes 1500
-    const timer2 = setTimeout(() => setFase(3), 1500); // Antes 3000
-
+    // Fase 1: Consolidando Movimientos
+    // Fase 2: Generando Arqueo
+    // Fase 3: Caja Cerrada
+    const timer1 = setTimeout(() => setFase(2), 500);
+    const timer2 = setTimeout(() => setFase(3), 1100);
     const timer3 = setTimeout(() => {
       if (onFinished) onFinished();
-    }, 3200); // Antes 5000 (le damos un tiempo para que lean el monto final)
+    }, 2000);
 
     return () => {
       clearTimeout(timer1);
@@ -33,34 +31,39 @@ export const AnimacionCierreExitoso = ({
   }, [onFinished]);
 
   return (
-    <div className="overlay_animacion_cierre">
-      <div className={`contenedor_escudo ${fase === 3 ? "exito" : ""}`}>
-        {fase < 3 ? (
-          <div className={`candado_cyber ${fase === 2 ? "procesando" : ""}`}>
-            <FaLock />
-            <div className="scanner_line"></div>
-          </div>
-        ) : (
-          <div className="check_cyber">
-            <FaCheckCircle />
-          </div>
-        )}
-
-        <div className="textos_animacion">
-          <h2 className={fase === 3 ? "texto_brillante" : ""}>
-            {fase === 1 && "Sincronizando Cuentas..."}
-            {fase === 2 && "Encriptando Cierre..."}
-            {fase === 3 && "¡Caja Cerrada!"}
-          </h2>
-          {fase === 3 && montoFinal !== undefined && (
-            <p className="monto_final_anim">
-              Balance Final: $ {montoFinal.toLocaleString("es-AR")}
-            </p>
+    <div className="overlay_animacion_apertura">
+      <div className={`card_apertura ${fase === 3 ? "finalizada_cierre" : ""}`}>
+        <div className="estado_icono">
+          {fase < 3 ? (
+            <div className="spinner_estado">
+              <FaPowerOff />
+            </div>
+          ) : (
+            <div className="icono_ok icono_cierre_ok">
+              <FaLock />
+            </div>
           )}
         </div>
 
-        {/* Partículas de fondo solo en éxito */}
-        {fase === 3 && <div className="particulas_exito"></div>}
+        <div className="contenido_estado">
+          <span className="estado_pequeño">Sistema de Caja</span>
+
+          <h2>
+            {fase === 1 && "Consolidando turnos..."}
+            {fase === 2 && "Generando arqueo..."}
+            {fase === 3 && "Caja cerrada correctamente"}
+          </h2>
+
+          <p>
+            {fase === 1 && "Procesando cobros y registros pendientes"}
+            {fase === 2 && "Guardando balance y resumen final"}
+            {fase === 3 && `Sesión finalizada, ${usuario ?? "Operador"}`}
+          </p>
+        </div>
+
+        <div className="barra_estado">
+          <div className={`barra_progreso fase_${fase}`} />
+        </div>
       </div>
     </div>
   );

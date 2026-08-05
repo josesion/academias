@@ -1,15 +1,23 @@
 import {  useEffect, useReducer } from "react";
 import { useNavigate } from "react-router-dom";
-import { ListadoInscripcionReducer, inicialState } from "../reducers/ListadoInscripcion";
-import { peticiones } from "../utils/peticiones";
 
-import { type FiltroBusqueda } from "../tipadosTs/inscripciones"; 
-import { type PaginacionProps } from "../tipadosTs/genericos";
+import { ListadoInscripcionReducer, inicialState } from "../../reducers/ListadoInscripcion";
+import { cajaReducer, initialState } from "../../reducers/cajaReducers";
+import { initialStateMetricas, metricasReducer } from "../../reducers/metricasReducer";
+
+import { peticiones } from "../../utils/peticiones";
+import { peticionComunicacion } from "../../utils/canalComunicacion";
+import { useActualizarAlEnfocar } from "../../utils/useActulizarFocus";
+
+
+import { type FiltroBusqueda } from "../../tipadosTs/inscripciones"; 
+import { type PaginacionProps } from "../../tipadosTs/genericos";
 
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 interface InscripcionConfig{
+     usuario    : string,
 
     servicios : {
         listado : ServicioCrud,
@@ -32,17 +40,24 @@ interface RetornoListadoCuentas {
 
 export const listaInscripcionLogica = ( config : InscripcionConfig ) => {
  
- const irA = useNavigate();   
+    const irA = useNavigate();   
 
- const [ state , dispatch] = useReducer(ListadoInscripcionReducer, inicialState({
-     inicialFiltrosBusqueda : config.inicialFiltros,
-     paginacion : config.paginacion
- }));  
+    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
+
+    const [ stateCaja , dispatchCaja] = useReducer( cajaReducer, initialState({
+        usuario    : config.usuario,
+    }));
+
+    const [ state , dispatch] = useReducer(ListadoInscripcionReducer, inicialState({
+        inicialFiltrosBusqueda : config.inicialFiltros,
+        paginacion : config.paginacion,
+
+    }));  
 
 
- const abrirInscribir = () =>{
-    irA("/inscrip_page");
- };
+    const abrirInscribir = () =>{
+        irA("/inscrip_page");
+    };
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -180,6 +195,8 @@ const handleCachearMetodoPago = (e: React.ChangeEvent<HTMLSelectElement>) =>{
     }
 }; 
 
+
+
 const handleAnularInscripcion = async () =>{
 
 
@@ -198,8 +215,37 @@ const handleAnularInscripcion = async () =>{
             id_inscripcion : state.dataAnularInscripcion.idInscripcion as number,
             id_cuenta : state.dataAnularInscripcion.id_cuenta
        }); 
+       
        console.log(respuestaAnulacion)
-       if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){        
+
+
+       if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){    
+        
+            // Notifica al módulo de caja para que actualice su listado de movimientos tras la inscripción
+            peticionComunicacion({
+                nombreCanal : "canal_inscripcion_caja",
+                mensaje : "actualizar",
+                error : 'SET_ERROR_CANAL',
+                dispatchError : dispatchCaja 
+            });
+
+            // Refresca el panel principal para recalcular métricas y tarjetas afectadas
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_principal",
+                mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                dispatchError : disparchMetricas,
+                error : 'SET_ERROR_METRICAS_TARJETAS',
+            });      
+
+            // Actualiza los registros del historial para reflejar la nueva actividad generada
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_historial",
+                mensaje : "ACTUALIZAR_HISTORIAL",
+                dispatchError : disparchMetricas,
+                error : 'SET_ERROR_HISTORIAL'
+            });
+
+
             await new Promise(resolve => setTimeout(resolve, 600));
             dispatch({ type : "SET_ACTUALIZAR_LISTADO"});
             dispatch({ type : "SET_FORMATEAR_ANULACION" });
@@ -280,6 +326,8 @@ const listadoInscrip = async () => {
     };    
 },[ state.filtroData, state.actualizarListado]);
 
+
+
 useEffect( ()=> {
     const controller = new AbortController();
     const listadoMetodosPago = async() =>{
@@ -307,9 +355,7 @@ useEffect( ()=> {
 
 }, [] );
 
-
-
-
+     useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR_LISTADO"});
 
     return{
         //carga,

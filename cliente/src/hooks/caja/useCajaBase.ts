@@ -23,7 +23,7 @@ interface CajaBaseConfig {
 }
 
 export const useCajaBase = ( config : CajaBaseConfig) => {
-    const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
+    const [ stateMetrica, dispatchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const [ state , dispatch] = useReducer( cajaReducer, initialState({
         usuario    : config.usuario,
     }));
@@ -102,6 +102,23 @@ const handleAbrirCaja = async() =>{
 
 
         if (aperturaCajaResult.code === "CAJA_ABIERTA_OK"){
+
+            // Refresca el panel principal para recalcular métricas y tarjetas afectadas
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_principal",
+                mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                dispatchError : dispatchMetricas,
+                error : 'SET_ERROR_METRICAS_TARJETAS',
+            });      
+
+            // Actualiza los registros del historial para reflejar la nueva actividad generada
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_historial",
+                mensaje : "ACTUALIZAR_HISTORIAL",
+                dispatchError : dispatchMetricas,
+                error : 'SET_ERROR_HISTORIAL'
+            });
+
             dispatch({ type : "CERRAR_MODALES"});
             dispatch({ type : "ABRIR_MODAL_ANIMACION_APERTURA"});    
 
@@ -194,6 +211,23 @@ const handleCerrarCaja =async () =>{
          const cierreCajaResult = await servicioApiFetch( dataCierreCaja );
     
         if (cierreCajaResult.code === "CIERRE_CAJA_OK"){
+
+            // Refresca el panel principal para recalcular métricas y tarjetas afectadas
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_principal",
+                mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                dispatchError : dispatchMetricas,
+                error : 'SET_ERROR_METRICAS_TARJETAS',
+            });      
+
+            // Actualiza los registros del historial para reflejar la nueva actividad generada
+            peticionComunicacion({
+                nombreCanal : "canal_actualizar_metricas_historial",
+                mensaje : "ACTUALIZAR_HISTORIAL",
+                dispatchError : dispatchMetricas,
+                error : 'SET_ERROR_HISTORIAL'
+            });
+
            
             dispatch({type : "ABRIR_MODAL_ANIMACION" });
             dispatch({type : "SET_CAJA_ACTIVA" , payload : { id_caja : null , estado : "cerrada"}});
@@ -202,7 +236,7 @@ const handleCerrarCaja =async () =>{
             peticionComunicacion({
                 nombreCanal : "canal_actualizar_metricas_cierre",
                 mensaje : "ACTUALIZAR_CIERRE",
-                dispatchError : disparchMetricas,
+                dispatchError : dispatchMetricas,
                 error :  'SET_ERROR_METRICAS_CIERRE',
             });            
         
@@ -287,9 +321,14 @@ useEffect( ()=> {
     idCaja();
 },[]);  
 
+
+
+
     return {
         state,
+        stateMetrica,
         dispatch,
+        dispatchMetricas,
 
         handleAbrirCaja,
         handleCerrarCaja,

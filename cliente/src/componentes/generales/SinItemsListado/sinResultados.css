@@ -3,111 +3,117 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 40px;
+    padding: 3rem 2rem;
     width: 100%;
+    box-sizing: border-box;
 }
 
 .sin_resultado_card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-width: 400px;
+    max-width: 420px;
+    width: 100%;
     text-align: center;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(10, 15, 30, 0.3) 100%);
+    border: 1px solid var(--borde, rgba(255, 255, 255, 0.05));
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
-/* --- ESCENA DE ANIMACIÓN (LUPA Y RADAR) --- */
+/* --- ESCENA DE ANIMACIÓN (RADAR / LUPA) --- */
 .escena_busqueda {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 1.5rem;
 }
 
 .contenedor_icono_animado {
-    font-size: 60px;
-    color: #00ffff; /* Neón principal */
-    z-index: 2;
-    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.5));
-    animation: flotarLupa 3s ease-in-out infinite;
+    font-size: 42px;
+    color: var(--color-primario, #3b82f6);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: flotarLupa 4s ease-in-out infinite;
 }
 
-/* Anillos de Radar */
+/* Anillos de Radar más limpios y sutiles */
 .radar_anillo {
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 2px solid rgba(0, 255, 255, 0.3);
+    border: 1px solid var(--color-primario, #3b82f6);
     border-radius: 50%;
-    animation: pulsoRadar 2s linear infinite;
+    opacity: 0;
+    animation: pulsoRadar 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    z-index: 1;
 }
 
 .radar_anillo.lento {
-    animation-delay: 1s;
+    animation-delay: 1.5s;
 }
 
-/* --- PARTÍCULAS DE BÚSQUEDA --- */
-.punto_busqueda {
+/* Halo ambiental detrás del icono */
+.halo_ambiental_busqueda {
     position: absolute;
-    width: 6px;
-    height: 6px;
-    background: #00ffff;
+    width: 60px;
+    height: 60px;
+    background: var(--color-primario, #3b82f6);
+    filter: blur(25px);
+    opacity: 0.2;
     border-radius: 50%;
-    opacity: 0;
+    z-index: 2;
 }
 
-.p1 { top: 10%; left: 20%; animation: aparecerPunto 3s infinite 0.5s; }
-.p2 { top: 80%; right: 10%; animation: aparecerPunto 3s infinite 1.2s; }
-.p3 { bottom: 20%; left: 10%; animation: aparecerPunto 3s infinite 2s; }
-
-/* --- TEXTOS (Grisáceos como pediste) --- */
+/* --- TEXTOS --- */
 .texto_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    width: 100%;
 }
 
 .sin_resultado_texto {
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 600;
     margin: 0;
-    color: #ffffff;
-    letter-spacing: 0.5px;
-    /* Gradiente sutil */
-    background: linear-gradient(90deg, #ffffff 0%, #a0a0b0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--texto-principal, #f8fafc);
+    letter-spacing: -0.01em;
 }
 
 .sin_resultado_subtexto {
-    font-size: 0.95rem;
-    color: #a0a0b0; /* Gris azulado suave */
+    font-size: 0.88rem;
+    color: var(--texto-secundario, #94a3b8);
     line-height: 1.4;
-    opacity: 0.8;
+    font-weight: 400;
 }
 
 /* --- KEYFRAMES --- */
 
 @keyframes flotarLupa {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    33% { transform: translateY(-10px) rotate(5deg); }
-    66% { transform: translateY(5px) rotate(-5deg); }
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-6px) rotate(3deg); 
+    }
 }
 
 @keyframes pulsoRadar {
     0% {
-        transform: scale(0.5);
-        opacity: 1;
+        transform: scale(0.6);
+        opacity: 0.6;
     }
     100% {
-        transform: scale(1.5);
+        transform: scale(1.6);
         opacity: 0;
     }
-}
-
-@keyframes aparecerPunto {
-    0%, 100% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 0.8; transform: scale(1.2); filter: blur(1px); }
 }

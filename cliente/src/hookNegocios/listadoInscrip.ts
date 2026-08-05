@@ -1,10 +1,11 @@
-
+import {    useContext } from "react";
+import { RutasProtegidasContext } from "../contexto/protectRutas"; 
 //Sericios ---------------------------------------------------
 import { listadoInscripciones, anularInscripcion } from "../servicio/inscripciones.fetch";
 import { listadoTipoCuentas } from "../servicio/caja.fetch";
 
 // Logica -----------------------------------------------------
-import { listaInscripcionLogica } from "../hooks/listadoInscrip";
+import { listaInscripcionLogica } from "../hooks/Inscripciones/listadoInscrip";
 
 import {  type InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador"
 
@@ -30,9 +31,10 @@ const inputsFiltro: InputsPropsBuscador[] = [
 
 
 export const setListadoInscripcion = () => {
+ const { rol } = useContext( RutasProtegidasContext );
 
  const config = {
-
+    usuario    : rol?.usuario || "Usuario",
 
     servicios :{
       listado : listadoInscripciones,  

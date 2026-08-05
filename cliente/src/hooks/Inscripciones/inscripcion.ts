@@ -1,9 +1,11 @@
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 //hooks
-
+import { peticionComunicacion } from "../../utils/canalComunicacion";
 import { fechaHoy, fechaVencimiento } from "../../utils/fecha";
 import { InscripcionReducer, inicialState} from "../../reducers/inscripcionReducer";
+import { initialStateMetricas, metricasReducer } from "../../reducers/metricasReducer";
+import { cajaReducer, initialState } from "../../reducers/cajaReducers";
 
 import { InscripcionAlumno } from "./InscripcionAlumno";
 import { InscripcionPlan } from "./InscripcionPlan";
@@ -49,7 +51,15 @@ interface InscripcionConfig {
 
 
 export const useInscipcion =( config : InscripcionConfig) =>{
-     const navegar = useNavigate();
+     
+    const navegar = useNavigate();
+
+    const [ sateMetrica, dispatchMetricas] = useReducer( metricasReducer, initialStateMetricas());
+
+    const [ stateCaja , dispatchCaja] = useReducer( cajaReducer, initialState({
+        usuario    : config.usuario,
+    }));
+
 
      const [ state , dispatch] = useReducer( InscripcionReducer, inicialState({
 
@@ -181,15 +191,40 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                 const subcripcionInsc = await servicioApiFetch( datosInscpDetalle );
                     
                 if ( subcripcionInsc.code === "INSCRIPCION_EXITOSA" ){
-                        resetFormulario();
-                        dispatch({type : "MODAL_INSCRIPCION", payload : false});     
-                        dispatch({type : "ACTUALIZAR_INSCRIPCION"});
-                        navegar("/list_inscrip");              
+
+                    // Notifica al módulo de caja para que actualice su listado de movimientos tras la inscripción
+                    peticionComunicacion({
+                        nombreCanal : "canal_inscripcion_caja",
+                        mensaje : "actualizar",
+                        error : 'SET_ERROR_CANAL',
+                        dispatchError : dispatchCaja 
+                    });
+
+                    // Refresca el panel principal para recalcular métricas y tarjetas afectadas
+                    peticionComunicacion({
+                        nombreCanal : "canal_actualizar_metricas_principal",
+                        mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                        dispatchError : dispatchMetricas,
+                        error : 'SET_ERROR_METRICAS_TARJETAS',
+                    });      
+
+                    // Actualiza los registros del historial para reflejar la nueva actividad generada
+                    peticionComunicacion({
+                        nombreCanal : "canal_actualizar_metricas_historial",
+                        mensaje : "ACTUALIZAR_HISTORIAL",
+                        dispatchError : dispatchMetricas,
+                        error : 'SET_ERROR_HISTORIAL'
+                    });
+
+                    resetFormulario();
+                    dispatch({type : "MODAL_INSCRIPCION", payload : false});     
+                    dispatch({type : "ACTUALIZAR_INSCRIPCION"});
+                    navegar("/list_inscrip");              
                 }else{
                    return dispatch({type : "SET_ERROR_GENERICO", payload : subcripcionInsc.message});
                 }
         }catch(error){
-            dispatch({ type : "SET_ERROR_GENERICO", payload : "Errr en conexion, intente nuevamente"})
+            dispatch({ type : "SET_ERROR_GENERICO", payload : "Error en conexion, intente nuevamente"})
         }finally{
             dispatch({type : "FINALIZAR_OPERACION_INSCRIPCION"});
         };  

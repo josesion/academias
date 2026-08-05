@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-//import { useIncripcionesUsuarios } from "../../hookNegocios/Inscripciones";
 
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
@@ -55,7 +54,6 @@ export const useCajaMetricas = ( config : MetricasCajaConfig) => {
 useEffect( ()=> {
     const metricas = async () => {
         const servicioApiFetch = config.servicios.metricasPanelCaja;
-
         const data = {
             id_caja : state.dataCaja.id_caja,
         };
@@ -75,7 +73,7 @@ useEffect( ()=> {
 
     metricas();
 
-},[state.dataCaja.id_caja, state.estadoCaja, state.disparadorRefresco] );  
+},[state.dataCaja.id_caja, state.estadoCaja, state.disparadorRefresco, state.actualizarCaja] );  
 
 
 // ──────────────────────────────────────────────────────────────
@@ -99,8 +97,13 @@ useEffect( ()=> {
 
     metricasPrincipalCaja();
 
-}, [ state.dataCaja.id_caja,  state.movimientoExtraordinario] );
+}, [ state.dataCaja.id_caja,  state.movimientoExtraordinario, state.actualizarCaja] );
+
+
+
 
     return ;
 
 }; 
+
+

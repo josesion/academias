@@ -27,6 +27,8 @@ export interface CajaTipado {
     // Estados de Carga y Errores
     enviando: boolean;
     errorGenerico: string | null;
+    errorCanal : string | null;
+
     
     // Validadores de Formulario
     verificadorSelector: boolean;
@@ -48,6 +50,8 @@ export interface CajaTipado {
     disparadorRefresco: number;
     montoRealFinal: number;
     observaciones : string;
+
+    actualizarCaja : number;
 };
 
 // ==========================================
@@ -69,6 +73,7 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
     modalInformeDetalle : false,
     enviando: false,
     errorGenerico: null,
+    errorCanal : null,
     verificadorSelector: false,
     verificadorSelectorTipo: false,
     panelPrincipal: null,
@@ -103,6 +108,8 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
     disparadorRefresco: 0,
     montoRealFinal: 0,
     observaciones : "",
+
+    actualizarCaja : 0,
 });
 
 // ==========================================
@@ -125,6 +132,7 @@ export type CajaAction =
     | { type: 'INICIAR_OPERACION' }
     | { type: 'FINALIZAR_OPERACION' }   
     | { type: 'SET_ERROR'; payload: string | null }
+    | { type: 'SET_ERROR_CANAL'; payload: string | null }
     | { type: 'DISPARAR_REFRESCO' }
 
     // --- Validadores de Selectores ---
@@ -154,7 +162,10 @@ export type CajaAction =
 
     | { type: 'FORMATEAR_MOV_EXTRAORDINARIOS' }
     | { type: 'RESET_MONTO_APERTURA_DETALLE' ; payload :  DetalleApertura[]  | null}
-    | { type: "RESET_MONTO_CUENTAS_CIERRE" ; payload :  MetodosPago[]  | null}; 
+    | { type: "RESET_MONTO_CUENTAS_CIERRE" ; payload :  MetodosPago[]  | null}
+
+    | { type: 'ACTUALIZAR_CAJA_GENERICO' };
+
 
 // ==========================================
 // 4. EL CEREBRO (REDUCER)
@@ -174,6 +185,9 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
 
         case 'SET_ERROR':
             return { ...state, errorGenerico: action.payload, enviando: false };
+
+        case 'SET_ERROR_CANAL':
+            return { ...state, errorCanal: action.payload };            
 
         case 'ABRIR_MODAL':
             return {
@@ -383,7 +397,10 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                     ...det,
                     monto_real : 0
                 }))
-            };    
+            };  
+            
+        case 'ACTUALIZAR_CAJA_GENERICO': 
+               return { ...state, actualizarCaja : state.actualizarCaja +1 };    
 
         default:
             return state;

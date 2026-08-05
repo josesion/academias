@@ -32,34 +32,42 @@ export const AnimacionAperturaExitosa = ({
 
   return (
     <div className="overlay_animacion_apertura">
-      <div className={`contenedor_apertura ${fase === 3 ? "activa" : ""}`}>
-        <div className="circulo_central">
+      <div className={`card_apertura ${fase === 3 ? "finalizada" : ""}`}>
+        <div className="estado_icono">
           {fase < 3 ? (
-            <div className={`icon_power ${fase === 2 ? "cargando" : ""}`}>
+            <div className="spinner_estado">
               <FaPowerOff />
             </div>
           ) : (
-            <div className="icon_unlock">
+            <div className="icono_ok">
               <FaUnlock />
             </div>
           )}
-          {/* Anillos de energía decorativos */}
-          <div className="ring_aura"></div>
         </div>
 
-        <div className="textos_apertura">
-          <h2 className={fase === 3 ? "texto_neon_verde" : ""}>
-            {fase === 1 && "Inicializando Terminal..."}
-            {fase === 2 && "Verificando Seguridad..."}
-            {fase === 3 && "¡Caja Abierta!"}
+        <div className="contenido_estado">
+          <span className="estado_pequeño">Sistema de Caja</span>
+
+          <h2>
+            {fase === 1 && "Inicializando..."}
+
+            {fase === 2 && "Validando permisos..."}
+
+            {fase === 3 && "Caja abierta correctamente"}
           </h2>
-          {fase === 3 && (
-            <p className="usuario_apertura">Operador: {usuario || "Sistema"}</p>
-          )}
+
+          <p>
+            {fase === 1 && "Preparando el entorno de trabajo"}
+
+            {fase === 2 && "Comprobando credenciales y permisos"}
+
+            {fase === 3 && `Bienvenido ${usuario ?? "Operador"}`}
+          </p>
         </div>
 
-        {/* Efecto de escaneo horizontal */}
-        {fase === 2 && <div className="scanner_apertura"></div>}
+        <div className="barra_estado">
+          <div className={`barra_progreso fase_${fase}`} />
+        </div>
       </div>
     </div>
   );

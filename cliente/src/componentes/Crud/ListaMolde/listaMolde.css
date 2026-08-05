@@ -4,7 +4,7 @@
 
 .listado_molde {
     display: flex;
-    flex-direction: column; /* Apila los elementos hacia abajo */
+    flex-direction: column;
     gap: 15px;
     padding: 20px;
     width: 95%;
@@ -12,14 +12,25 @@
     margin: 0 auto;
     background-color: transparent;
     animation: slideFade 0.4s ease-out;
-    
-    /* Centrado y limpieza */
+
     align-items: center;
     justify-content: flex-start;
     min-height: 400px;
+
+    /* NUEVO — necesario para el tilt 3D del hover */
+    perspective: 1000px;
+
+    /* NUEVO — las tarjetas vuelan desde ±220px fuera de su posición;
+       sin esto, aparece un scroll horizontal fantasma mientras entran */
+    overflow-x: clip;
 }
 
-/* Animación de entrada */
+.listado_molde .item_card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
 @keyframes slideFade {
     0% {
         opacity: 0;
@@ -31,7 +42,6 @@
     }
 }
 
-/* Ajustes para pantallas pequeñas */
 @media (max-width: 600px) {
     .listado_molde {
         width: 100%;
