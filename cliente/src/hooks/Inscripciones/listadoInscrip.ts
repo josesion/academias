@@ -216,8 +216,6 @@ const handleAnularInscripcion = async () =>{
             id_cuenta : state.dataAnularInscripcion.id_cuenta
        }); 
        
-       console.log(respuestaAnulacion)
-
 
        if (respuestaAnulacion.code === "TRANSACCION_EXITOSA_ANULACION_INSCRIPCION"){    
         

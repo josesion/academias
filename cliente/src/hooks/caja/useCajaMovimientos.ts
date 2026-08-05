@@ -218,83 +218,96 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 
 
         // --- Registramos el movimiento INGRESO/EGRESO 
+   
     const handRegistarMovimientoExtraordinario = async () => {
-// AGREGAR ESPINER
-        if (state.dataCaja.id_caja === null){
-            return   dispatch({
-                type : "SET_ERROR",
-                payload : "Caja esta cerrada"
-            });
-        }; 
-        if ( !state.verificadorSelector  || state.movimientoExtraordinario.monto === "" || !state.verificadorSelectorTipo   ) {
-            
-        return    dispatch({
+        try{
+            dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : true });
+            if (state.dataCaja.id_caja === null){
+                return   dispatch({
                     type : "SET_ERROR",
-                    payload : "Verificar los campos del formulario"
+                    payload : "Caja esta cerrada"
                 });
+            }; 
+            if ( !state.verificadorSelector  || state.movimientoExtraordinario.monto === "" || !state.verificadorSelectorTipo   ) {
+                
+            return    dispatch({
+                        type : "SET_ERROR",
+                        payload : "Verificar los campos del formulario"
+                    });
 
-        }else{
-
-            const data = {
-                id_caja       : state.dataCaja.id_caja,
-        
-                id_categoria  : Number(state.movimientoExtraordinario.id_categoria),
-                monto         : Number(state.movimientoExtraordinario.monto),
-                id_cuenta     : Number(state.movimientoExtraordinario.id_cuenta),
-
-                descripcion   : state.movimientoExtraordinario.descripcion,
-                referencia_id : 0       
-            };
-    
-
-            const servicioApiFetch =config.servicios.registrarMovimientoCaja;
-            const registroMovimientoResult = await servicioApiFetch(data); 
-
-
-            if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
-
-                peticionComunicacion({
-                    nombreCanal : "canal_actualizar_metricas_principal",
-                    mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
-                    dispatchError : disparchMetricas,
-                    error :  'SET_ERROR_METRICAS_TARJETAS',
-                });
-
-                // Actualiza los registros del historial para reflejar la nueva actividad generada
-                peticionComunicacion({
-                    nombreCanal : "canal_actualizar_metricas_historial",
-                    mensaje : "ACTUALIZAR_HISTORIAL",
-                    dispatchError : disparchMetricas,
-                    error : 'SET_ERROR_HISTORIAL'
-                });
-
-                dispatch({ type : "DISPARAR_REFRESCO"});
-
-                dispatch({
-                    type : "SET_ERROR",
-                    payload :null
-                });
-
-                setMovimientos([]);
-                setScrollState({
-                    loading: false,
-                    hasMore: true,
-                    offset: 0,
-                    limite: 5
-                });
-                await cargarMovimientos(); 
-
-                dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});           
-
-                dispatch({ type : "CERRAR_MODALES_IE" })
             }else{
+
+                const data = {
+                    id_caja       : state.dataCaja.id_caja,
             
-                dispatch({
-                    type : "SET_ERROR",
-                    payload : registroMovimientoResult.message
-                });
+                    id_categoria  : Number(state.movimientoExtraordinario.id_categoria),
+                    monto         : Number(state.movimientoExtraordinario.monto),
+                    id_cuenta     : Number(state.movimientoExtraordinario.id_cuenta),
+
+                    descripcion   : state.movimientoExtraordinario.descripcion,
+                    referencia_id : 0       
+                };
+        
+
+                const servicioApiFetch =config.servicios.registrarMovimientoCaja;
+                const registroMovimientoResult = await servicioApiFetch(data); 
+
+
+                if (registroMovimientoResult.code === "DETALLE_CAJA_OK") {
+
+                    peticionComunicacion({
+                        nombreCanal : "canal_actualizar_metricas_principal",
+                        mensaje : "ACTUALIZAR_PANEL_PRINCIPAL",
+                        dispatchError : disparchMetricas,
+                        error :  'SET_ERROR_METRICAS_TARJETAS',
+                    });
+
+                    // Actualiza los registros del historial para reflejar la nueva actividad generada
+                    peticionComunicacion({
+                        nombreCanal : "canal_actualizar_metricas_historial",
+                        mensaje : "ACTUALIZAR_HISTORIAL",
+                        dispatchError : disparchMetricas,
+                        error : 'SET_ERROR_HISTORIAL'
+                    });
+
+                    dispatch({ type : "DISPARAR_REFRESCO"});
+
+                    dispatch({
+                        type : "SET_ERROR",
+                        payload :null
+                    });
+
+                    setMovimientos([]);
+                    setScrollState({
+                        loading: false,
+                        hasMore: true,
+                        offset: 0,
+                        limite: 5
+                    });
+                    await cargarMovimientos(); 
+
+                    dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});           
+
+                    dispatch({ type : "CERRAR_MODALES_IE" })
+                }else{
+                
+                    dispatch({
+                        type : "SET_ERROR",
+                        payload : registroMovimientoResult.message
+                    });
+                };
             };
-        };
+
+        }catch( error ){
+            dispatch({
+                type : "SET_ERROR",
+                payload : "Error en la carga en el servidor."
+            });
+        }finally{
+           dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : false });
+        };    
+
+
 
     };
 

@@ -101,6 +101,7 @@ export const CajaArqueo = () => {
       {state.modalesCaja.cierre && (
         <div className="formulario_overlay">
           <CierreCaja
+            carga={state.carga.cierreCaja}
             metricasPanel={state.panelPrincipal}
             metricas={state.metricasCuentasCierre}
             montoRealFinal={state.montoRealFinal}
@@ -115,6 +116,7 @@ export const CajaArqueo = () => {
       {state.modalesEgresoIngreso && (
         <div className="formulario_overlay">
           <CompoIngEgr
+            carga={state.carga.movimientosExtas}
             titulo={state.movimientoExtraordinario.tipo}
             categorias={
               state.listadoExtraordinario

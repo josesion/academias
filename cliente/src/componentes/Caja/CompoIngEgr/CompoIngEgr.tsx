@@ -15,6 +15,7 @@ interface Categoria {
 interface ComporProps {
   titulo: string;
   errorMensaje: string | null;
+  carga: boolean;
   // Lo que nesesita el selector para funcionar, lo hacemos genérico para poder reutilizarlo en otros lados sin atarnos a una estructura específica de datos
 
   categorias: Categoria[];
@@ -95,6 +96,7 @@ export const CompoIngEgr = (props: ComporProps) => {
 
       <div className="botonera_compoIngEgr">
         <Boton
+          disable={props.carga}
           texto="Registrar"
           onClick={props.onClickRegistrar}
           clase="aceptar"

@@ -81,7 +81,7 @@ const handleAbrirCaja = async() =>{
 
     try{
          dispatch({ type : "INICIAR_OPERACION"});
-
+    
         // Si es q un monto es "" lo limpiamos o lo colocamos en  0
         const detalleLimpiado = state.aperturaDetalle?.map((item) => {
             const montoRaw = item.monto as unknown; 
@@ -147,7 +147,7 @@ const handleAbrirCaja = async() =>{
             payload :"Error servidor,  al abrir caja "
         });        
     }finally{
-       dispatch({ type : "CARGADO"})
+       dispatch({ type : "CARGADO"});
     };
 };
 
@@ -156,7 +156,7 @@ const handleAbrirCaja = async() =>{
 //  Handle para Cerrar caja
 // ────────────────────────────────────────────────────────────── 
   
-
+  
 const handleCerrarCaja =async () =>{
   
 
@@ -206,6 +206,7 @@ const handleCerrarCaja =async () =>{
 
     try{
         dispatch({ type : "INICIAR_OPERACION"});
+        dispatch({ type : "CARGA_MOVIEMENTO_CIERRE", payload : true});
 
          const servicioApiFetch = config.servicios.cerrarCaja;
          const cierreCajaResult = await servicioApiFetch( dataCierreCaja );
@@ -255,6 +256,7 @@ const handleCerrarCaja =async () =>{
         dispatch({ type : "SET_ERROR" , payload : "Error en el servidor"});
     }finally{
         dispatch({ type : "FINALIZAR_OPERACION"}); 
+        dispatch({ type : "CARGA_MOVIEMENTO_CIERRE", payload : false});
     };
 };
 // ──────────────────────────────────────────────────────────────

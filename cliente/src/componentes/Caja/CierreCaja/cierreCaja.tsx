@@ -11,6 +11,7 @@ interface PropsCierreCaja {
   metricas: MetodosPago[] | null;
   metricasPanel?: MetricasCajaPanelPrincipal[] | null;
   montoRealFinal: number;
+  carga: boolean;
 
   onCambioObservaciones: (
     event: React.ChangeEvent<HTMLTextAreaElement>,
@@ -154,6 +155,7 @@ export const CierreCaja = (data: PropsCierreCaja) => {
 
       <div className="contenedor_botonera_cierre_caja">
         <Boton
+          disable={data.carga}
           clase="aceptar"
           logo="Add"
           texto="Cerrar Caja"

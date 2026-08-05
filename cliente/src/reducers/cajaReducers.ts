@@ -13,7 +13,11 @@ export interface CajaTipado {
     // Identidad y Sesión
     dataCaja: DataCaja;
     apertura: DataAperturaCaja;
-    
+    carga : {
+        movimientosExtas : boolean,
+        aperturaCaja : boolean,
+        cierreCaja : boolean,
+    };
     // UI y Control de Modales
     estadoCaja: EstadoCaja;
     modalesCaja: {
@@ -65,6 +69,13 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
     apertura: {
         estado: "abierta",
     },
+
+    carga : {
+        aperturaCaja : false,
+        cierreCaja   : false,
+        movimientosExtas : false,
+    },
+
     estadoCaja: "cerrada",
     modalesCaja: { apertura: false, cierre: false },
     modalesEgresoIngreso: false,
@@ -129,6 +140,11 @@ export type CajaAction =
     | { type: 'CERRAR_MODAL_INFORME' }    
          
     | { type: 'CARGADO' }
+
+    | { type : "CARGA_MOVIEMENTO_EXTRAS" ; payload : boolean }
+    | { type : "CARGA_MOVIEMENTO_APERTURA" ; payload : boolean }
+    | { type : "CARGA_MOVIEMENTO_CIERRE" ; payload : boolean }    
+
     | { type: 'INICIAR_OPERACION' }
     | { type: 'FINALIZAR_OPERACION' }   
     | { type: 'SET_ERROR'; payload: string | null }
@@ -178,7 +194,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
             return { ...state, enviando: true, errorGenerico: null };
 
         case 'FINALIZAR_OPERACION':
-            return { ...state, enviando: false, errorGenerico: null };
+            return { ...state, enviando: false , errorGenerico: null };
 
         case 'CARGADO':
             return { ...state, enviando: false };
@@ -400,7 +416,34 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
             };  
             
         case 'ACTUALIZAR_CAJA_GENERICO': 
-               return { ...state, actualizarCaja : state.actualizarCaja +1 };    
+               return { ...state, actualizarCaja : state.actualizarCaja +1 }; 
+               
+       case "CARGA_MOVIEMENTO_APERTURA" : 
+               return { 
+                    ...state, 
+                    carga : {
+                        ...state.carga,
+                        aperturaCaja : action.payload
+                    }
+               };          
+
+       case "CARGA_MOVIEMENTO_CIERRE" : 
+               return { 
+                    ...state, 
+                    carga : {
+                        ...state.carga,
+                        cierreCaja : action.payload
+                    }
+               };     
+
+       case "CARGA_MOVIEMENTO_EXTRAS" : 
+               return { 
+                    ...state, 
+                    carga : {
+                        ...state.carga,
+                        movimientosExtas : action.payload
+                    }
+               };                    
 
         default:
             return state;
