@@ -56,6 +56,7 @@ export interface CajaTipado {
     observaciones : string;
 
     actualizarCaja : number;
+    actualizarMetodoPago : number,
 };
 
 // ==========================================
@@ -121,6 +122,7 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
     observaciones : "",
 
     actualizarCaja : 0,
+    actualizarMetodoPago : 0,
 });
 
 // ==========================================
@@ -180,8 +182,8 @@ export type CajaAction =
     | { type: 'RESET_MONTO_APERTURA_DETALLE' ; payload :  DetalleApertura[]  | null}
     | { type: "RESET_MONTO_CUENTAS_CIERRE" ; payload :  MetodosPago[]  | null}
 
-    | { type: 'ACTUALIZAR_CAJA_GENERICO' };
-
+    | { type: 'ACTUALIZAR_CAJA_GENERICO' }
+    | { type: 'ACTUALIZAR_METODO_PAGO' };
 
 // ==========================================
 // 4. EL CEREBRO (REDUCER)
@@ -443,7 +445,10 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                         ...state.carga,
                         movimientosExtas : action.payload
                     }
-               };                    
+               };    
+               
+         case "ACTUALIZAR_METODO_PAGO" : 
+              return { ...state, actualizarMetodoPago : state.actualizarMetodoPago + 1 }      
 
         default:
             return state;

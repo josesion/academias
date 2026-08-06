@@ -9,7 +9,7 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 interface MetodoPagoInscripciones {
 
      servicios :{
-        litaMetodoPago      : ServicioCrud,
+        cuentasSesion       : ServicioCrud,
      },
      state : InscripcionTipado,
      dispatch :  React.Dispatch<InscripcionAcciones>;
@@ -47,23 +47,18 @@ useEffect( ()=> {
 
     const ListaMetodoPago = async () => {
     
-    const servicioFetch = config.servicios.litaMetodoPago;
-    
-    const data = {
-        nombre_cuenta : "",
-        tipo_cuenta : "todos",
-        estado : "activos",
-        limite :10,
-        pagina : 1
-    };    
+  
+    const metodoPagoSesion = config.servicios.cuentasSesion;
+        
         try{
             dispatch({ type : "SET_CARGANDO_ENTIDAD", payload : { entidad : "metodoPago", bandera : true }});
 
-            const listaMetodoPagoResult = await servicioFetch(data);
 
-            if ( listaMetodoPagoResult.code === "LISTADO_TIPOS_CUENTAS_OK"){
+            const resultListMetodoPago  = await metodoPagoSesion({});
+
+            if ( resultListMetodoPago.code === 'LISTA_TIPOS_CUENTAS_OK'){
     
-                const listaSeteada = listaMetodoPagoResult.data.map((item : MetodoPagoInput ) => {
+                const listaSeteada = resultListMetodoPago.data.map((item : MetodoPagoInput ) => {
                             const metodos = {
                                 descripcion_cuenta :  `${item.nombre_cuenta} : (${item.tipo_cuenta})`,
                                 id_metodo : item.id_cuenta
@@ -73,8 +68,9 @@ useEffect( ()=> {
                 dispatch({ type : "SET_LISTADO_METODO_PAGO" , payload : listaSeteada});
                 return
             };
+            
 
-            if ( listaMetodoPagoResult.code === "SIN_LISTADO_TIPOS_CUENTAS"){
+            if ( resultListMetodoPago.code === "SIN_LISTA_TIPOS_CUENTAS_OK'"){
                 dispatch({ type : "SET_LISTADO_METODO_PAGO" , payload : [] });
                 return;
             };    

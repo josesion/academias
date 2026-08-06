@@ -132,6 +132,8 @@ const handleAbrirCaja = async() =>{
                      estado  : "abierta"
                  }
             });
+            
+            dispatch({ type : "ACTUALIZAR_METODO_PAGO" });
 
             setTimeout(() => {  
                dispatch({ type : "CERRAR_MODAL_ANIMACION_APERTURA"});                

@@ -35,13 +35,14 @@ interface InscripcionConfig {
         listadoAlumnosBusqueda : ServicioCrud,
         listadoPlanesBusqueda  : ServicioCrud,
         listadoCategoriaCaja     : ServicioCrud,    
-        litaMetodoPago : ServicioCrud,
 
         metodoInscripcion   : ServicioCrud,
         registroMovimiento  : ServicioCrud,
 
         inscripcionCategoriaCaja : ServicioCrud,  
-        obtenerIdCaja :  ServicioCrud
+        obtenerIdCaja :  ServicioCrud,
+
+        cuentasSesion : ServicioCrud,
     },
     paginacion : PaginacionProps,
 
@@ -102,7 +103,7 @@ export const useInscipcion =( config : InscripcionConfig) =>{
     // ───────────────────────────── 
     const metedoPago = InscripcionMetodoPago({
         servicios : {
-            litaMetodoPago : config.servicios.litaMetodoPago,
+            cuentasSesion  : config.servicios.cuentasSesion,
         },
         state : state,
         dispatch : dispatch         

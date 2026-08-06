@@ -31,14 +31,14 @@ export const useEntidadesExternasCaja = ( config : EntidadesExternasCajaConfig) 
 // ──────────────────────────────────────────────────────────────
 // Obtener el listado de tipo cuentas activas para el selector de movimiento extraordinario
 // ──────────────────────────────────────────────────────────────
-
+console.log(state)
 
 useEffect( ()=> {
 
     const obtenerListadoCuentas = async () => {
         const servicioApiFetch = config.servicios.listadoTipoCuentas;
         const resultListacoCuentas = await servicioApiFetch( filtroCuentasEstatica);
-    
+
         if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
             dispatch({
                 type : "SET_LISTADO_CUENTAS_ACTIVAS",
@@ -79,7 +79,7 @@ useEffect( ()=> {
     const obtenerListadoCuentasSession = async () => {
         const servicioApiFetch = config.servicios.cuentasSesion;
         const resultListacoCuentas = await servicioApiFetch({});
-            console.log( resultListacoCuentas)
+       
         if ( resultListacoCuentas.code === "LISTA_TIPOS_CUENTAS_OK"){
             dispatch({
                 type : "SET_LISTADO_CUENTAS_SESION",
@@ -108,7 +108,7 @@ useEffect( ()=> {
 
     obtenerListadoCuentasSession();
 
-}, []);
+}, [state.actualizarMetodoPago]);
 
 
 // ──────────────────────────────────────────────────────────────

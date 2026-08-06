@@ -30,6 +30,7 @@ export const useIuCaja = ( config : IuCajaConfig) => {
             tipo : "ingreso",
             estado : "activos"
         });
+
         
         dispatch({ type : "SET_LISTADO_EXTRAORDINARIO", payload : listadoIngresos.data});
     };
