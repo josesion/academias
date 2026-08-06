@@ -284,7 +284,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                         offset: 0,
                         limite: 5
                     });
-                    await cargarMovimientos(); 
+             
 
                     dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});           
 
@@ -338,7 +338,7 @@ useEffect(() => {
                 limite: 5
             });
         }
-    }, [state.dataCaja.id_caja, state.actualizarCaja]); 
+    }, [state.dataCaja.id_caja, state.actualizarCaja, state.disparadorRefresco]); 
 
 
 

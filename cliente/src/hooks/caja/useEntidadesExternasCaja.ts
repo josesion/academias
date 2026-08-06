@@ -31,7 +31,6 @@ export const useEntidadesExternasCaja = ( config : EntidadesExternasCajaConfig) 
 // ──────────────────────────────────────────────────────────────
 // Obtener el listado de tipo cuentas activas para el selector de movimiento extraordinario
 // ──────────────────────────────────────────────────────────────
-console.log(state)
 
 useEffect( ()=> {
 
