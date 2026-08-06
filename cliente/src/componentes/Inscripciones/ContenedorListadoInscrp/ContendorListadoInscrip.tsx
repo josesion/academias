@@ -20,6 +20,7 @@ interface Props {
     clases_tomadas: number,
     dni_alumno: number,
     vigencia: string,
+    estado: string,
   ) => void;
 }
 
@@ -39,13 +40,14 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
             <th>Estado de Consumo</th>
             <th className="text-right">Inicio</th>
             <th className="text-right">Vigencia</th>
+            <th className="text-center">Estado</th>
           </tr>
         </thead>
 
         {carga === true ? (
           <tbody className="tabla_body">
             <tr>
-              <td colSpan={5}>
+              <td colSpan={6}>
                 <ComponenteCargando />
               </td>
             </tr>
@@ -53,7 +55,7 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
         ) : data.length === 0 ? (
           <tbody className="tabla_body">
             <tr>
-              <td colSpan={5} className="sin_datos">
+              <td colSpan={6} className="sin_datos">
                 <SinResultado />
               </td>
             </tr>
@@ -73,6 +75,7 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
                   clases_tomadas,
                   dni_alumno,
                   vigencia,
+                  estado,
                 ) => {
                   onSeleccionarInscripcion(
                     id,
@@ -83,6 +86,7 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
                     clases_tomadas,
                     dni_alumno,
                     vigencia,
+                    estado,
                   );
                 }}
                 vigencia={obtenerEstadoVigencia(

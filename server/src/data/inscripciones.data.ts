@@ -423,6 +423,7 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
   }; 
 
   const sql : string = `SELECT 
+                            i.estado ,
                             i.id_inscripcion,
                             a_alumno.dni_alumno,
                             CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) AS nombre_completo,

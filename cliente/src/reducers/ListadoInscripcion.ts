@@ -74,7 +74,8 @@ export const inicialState = ( config : {
         clases_tomadas: 0,
         vigencia: "",
         monto_pagado: "",
-        metodo_pago_descrip: "",    
+        metodo_pago_descrip: "", 
+        estado : "activos"   
     },
     listoAnular : false
 

@@ -58,6 +58,7 @@ export interface FiltroBusqueda {
 
 
 export interface InscripcionListadoResult {
+  estado :string,  
   id_inscripcion: number;
   dni_alumno: number;
   nombre_completo: string;

@@ -133,6 +133,7 @@ const manejarSeleccionInscripcion = (
     clases_tomadas: number,
     dni_alumno: number,
     vigencia: string,
+    estado : string,
 ) => {
 
  if (!id) {  
@@ -146,7 +147,8 @@ const manejarSeleccionInscripcion = (
         dni_alumno : dni_alumno,
         clases_totales : clases_totales,
         clases_tomadas : clases_tomadas, 
-        vigencia: vigencia       
+        vigencia: vigencia ,
+        estado : estado      
     }});
 
  };

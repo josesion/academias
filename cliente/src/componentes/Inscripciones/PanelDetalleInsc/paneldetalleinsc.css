@@ -1,220 +1,285 @@
 /* ==========================================================================
-   PANEL DETALLE INSCRIPCIÓN — TOKENS DE MARCA
+   PANEL DETALLE INSCRIPCIÓN — TICKETERA TÉRMICA
+   (mismas variables/clases que informes.css — ideal moverlas a un
+   recibo.css compartido, ver nota arriba)
    ========================================================================== */
 
-.contenedor_panel {
-  position: fixed;
-  inset: 50% auto auto 50%;
-  transform: translate(-50%, -50%);
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
 
-  width: min(92%, 520px);
-
-  padding: 24px;
-  overflow-y: hidden;
-  overflow-x: hidden;
-  box-sizing: border-box;
-
-  border-radius: var(--radio-lg);
-
-  background: color-mix(in srgb, var(--fondo-secundario) 94%, transparent);
-  border: 1px solid var(--borde);
-
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-
-  box-shadow: var(--sombra-lg);
-
-  z-index: 1000;
-
-  animation: modalFade 0.25s ease;
+:root {
+  --papel: #2b2b29;
+  --papel_linea: #e2ded0;
+  --tinta: #eae6de;
+  --tinta_media: #8a8578;
+  --verde: #2f7d4f;
+  --rojo: #ca1e0e;
+  --ambar: #a6791f;
+  --notch-color: #0f172a;
 }
 
-/* ==========================================================================
-   SCROLLBAR
-   ========================================================================== */
+.recibo_ticket {
+  position: relative;
 
-.contenedor_panel::-webkit-scrollbar {
-  width: 8px;
-}
+  width: 100%;
+  max-width: 420px;
+  max-height: 85dvh;
 
-.contenedor_panel::-webkit-scrollbar-track {
-  background: var(--fondo-hover);
-  border-radius: 999px;
-}
+  margin: 0 auto;
 
-.contenedor_panel::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-}
-
-.contenedor_panel::-webkit-scrollbar-thumb:hover {
-  filter: brightness(1.15);
-}
-
-/* ==========================================================================
-   INFO PRINCIPAL
-   ========================================================================== */
-
-.contendor_panel_info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
 
-  margin-bottom: 18px;
-  padding: 20px 22px;
+  overflow-x: hidden;
+  overflow-y: auto;
 
-  border-radius: var(--radio-md);
+  background: var(--papel);
+  color: var(--tinta);
 
-  background: var(--fondo-hover);
-  border: 1px solid var(--borde);
+  font-family: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+
+  border-radius: 6px;
+
+  box-shadow:
+    0 24px 60px rgba(0,0,0,0.45),
+    0 2px 0 rgba(0,0,0,0.06);
+
+  animation: reciboAparece 0.22s ease;
 }
 
-.contendor_panel_info h3 {
-  margin: 0 0 12px;
+.recibo_ticket::-webkit-scrollbar {
+  width: 6px;
+}
 
-  font-family: var(--fuente-titulos);
-  font-size: var(--titulo-sm);
-  font-weight: var(--peso-negrita);
+.recibo_ticket::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-  color: var(--texto-principal);
+.recibo_ticket::-webkit-scrollbar-thumb {
+  background: var(--papel_linea);
+  border-radius: 999px;
 }
 
 /* ==========================================================================
-   RENGLONES DE DATO
+   HEADER
    ========================================================================== */
 
-.contendor_panel_info p {
-  margin: 0;
-
+.recibo_header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 
-  padding: 8px 0;
-
-  border-bottom: 1px solid var(--borde);
-
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-sm);
+  padding: 18px 22px 0;
 }
 
-.contendor_panel_info p:last-child {
-  border-bottom: none;
+.recibo_marca {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+
+  color: var(--tinta_media);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.contendor_panel_info p span {
-  color: var(--texto-secundario);
+.recibo_stamp {
+  flex-shrink: 0;
+
+  padding: 4px 10px;
+
+  border: 2px solid currentColor;
+  border-radius: 3px;
+
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+
+  transform: rotate(-6deg);
+
+  opacity: 0.85;
 }
 
-.contendor_panel_info p strong {
-  color: var(--texto-principal);
-  font-weight: var(--peso-semi-negrita);
-}
-
-/* dato que realmente querés que resalte */
-.dato_destacado {
-  margin-top: 6px !important;
-  padding: 10px 12px !important;
-
-  border-bottom: none !important;
-  border-radius: var(--radio-sm);
-
-  background: color-mix(in srgb, var(--color-primario) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
-}
-
-.dato_destacado span {
-  color: color-mix(in srgb, var(--color-primario) 70%, white);
-  font-weight: var(--peso-semi-negrita);
-  text-transform: uppercase;
-  font-size: var(--texto-xs);
-  letter-spacing: 0.5px;
-}
-
-.dato_destacado strong {
-  font-family: var(--fuente-codigo);
-  font-size: var(--texto-lg);
-  color: var(--texto-principal);
+/* estampa neutra — este ticket no tiene ingreso/egreso, solo un dato de identidad */
+.stamp_neutro {
+  color: var(--tinta_media);
 }
 
 /* ==========================================================================
-   BLOQUES DE ACCIÓN
+   TOTAL
    ========================================================================== */
 
-.contenedor_panel_inscripcion_rapida,
-.contenedor_panel_anular {
+.recibo_total {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  align-items: center;
 
-  margin-bottom: 16px;
-  padding: 18px;
-
-  border-radius: var(--radio-md);
-
-  background: var(--fondo-hover);
-  border: 1px solid var(--borde);
+  padding: 14px 22px 4px;
+  text-align: center;
 }
 
-
-/* ==========================================================================
-   SELECTS / INPUTS
-   ========================================================================== */
-
-.contenedor_panel_anular select,
-.contenedor_panel input,
-.contenedor_panel textarea {
-  width: 100%;
-
-  padding: 12px 14px;
-
-  border-radius: var(--radio-sm);
-
-  background: var(--fondo-superficie);
-  border: 1px solid var(--borde);
-
-  color: var(--texto-principal);
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-sm);
-
-  outline: none;
-
-  transition: var(--transicion);
+.recibo_total_label {
+  color: var(--tinta_media);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
 }
 
-.contenedor_panel_anular select:focus,
-.contenedor_panel input:focus,
-.contenedor_panel textarea:focus {
-  border-color: var(--color-primario);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+.recibo_monto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  margin-top: 6px;
+  max-width: 100%;
+
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+
+  word-break: break-word;
+}
+
+.monto_neutro {
+  color: var(--tinta);
 }
 
 /* ==========================================================================
-   BOTONES
+   PERFORADO
    ========================================================================== */
 
-.contenedor_panel_botones {
-  width: 100%;
+.recibo_perforado {
+  position: relative;
+
+  height: 0;
+  margin: 18px 0;
+
+  border-top: 2px dashed var(--papel_linea);
 }
 
-.contenedor_panel_botones button {
-  width: 100% !important;
+.recibo_perforado::before,
+.recibo_perforado::after {
+  content: "";
+
+  position: absolute;
+  top: -9px;
+
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+
+  background: var(--notch-color);
+}
+
+.recibo_perforado::before { left: -9px; }
+.recibo_perforado::after { right: -9px; }
+
+/* ==========================================================================
+   BODY
+   ========================================================================== */
+
+.recibo_body {
+  padding: 0 22px;
+}
+
+.recibo_fila {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 7px 0;
+
+  font-size: 0.85rem;
+}
+
+.recibo_fila_label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+
+  color: var(--tinta_media);
+}
+
+.recibo_fila_valor {
+  min-width: 0;
+
+  font-weight: 700;
+  text-align: right;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recibo_linea_punteada {
+  margin: 12px 0;
+  border-top: 1px dashed var(--papel_linea);
+}
+
+/* ==========================================================================
+   BLOQUE ANULAR — mismo lenguaje que recibo_obs (nota destacada)
+   ========================================================================== */
+
+.panel_anular_bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  margin-bottom: 14px;
+  padding: 14px;
+
+  border-left: 2px solid var(--rojo);
+  background: rgba(202, 30, 14, 0.06);
+}
+
+.panel_anular_label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--rojo);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.recibo_footer {
+  display: flex;
+  justify-content: center;
+
+  padding: 16px 22px 20px;
+}
+
+.recibo_footer button {
+  width: 100%;
   min-height: 46px;
-  border-radius: var(--radio-sm);
 
-  font-family: var(--fuente-principal);
-  font-weight: var(--peso-negrita);
-  letter-spacing: 0.02em;
+  border-radius: 4px;
+  font-weight: 700;
 
-  transition: var(--transicion);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
-.contenedor_panel_botones button:hover {
-  transform: translateY(-2px);
+.recibo_footer button:hover {
+  opacity: 0.85;
 }
 
-.contenedor_panel_botones button:active {
+.recibo_footer button:active {
   transform: scale(0.98);
 }
 
@@ -222,42 +287,30 @@
    ANIMACIÓN
    ========================================================================== */
 
-@keyframes modalFade {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -48%) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
+@keyframes reciboAparece {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
-@media (max-width: 768px) {
-  .contenedor_panel {
-    width: 94%;
-    padding: 18px;
-    border-radius: var(--radio-md);
+@media (max-width: 420px) {
+  .recibo_ticket {
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: 0;
   }
 
-  .contendor_panel_info {
-    padding: 16px 18px;
+  .recibo_header,
+  .recibo_body,
+  .recibo_footer {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
-  .contendor_panel_info h3 {
-    font-size: var(--texto-lg);
-  }
-
-  .contendor_panel_info p {
-    font-size: var(--texto-xs);
-  }
-
-  .contenedor_panel_inscripcion_rapida,
-  .contenedor_panel_anular {
-    padding: 14px;
+  .recibo_monto {
+    font-size: 2rem;
   }
 }

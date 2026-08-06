@@ -13,6 +13,7 @@ export  interface dataAnular {
 }
 
 export interface DataDetalle {
+    estado : string,
     nombre_completo: string ;
     dni_alumno: number ;
     clases_totales: number;

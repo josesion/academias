@@ -3,6 +3,7 @@ import { FiltroFechas } from "../../../componentes/generales/FiltrosFechas/Filtr
 import { ContenedorListadoInscripciones } from "../../../componentes/Inscripciones/ContenedorListadoInscrp/ContendorListadoInscrip";
 import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
 import { PanelDetalleInscrip } from "../../../componentes/Inscripciones/PanelDetalleInsc/PanelDetalleInsc";
+import { PanelDetalleInscripSoloLectura } from "../../../componentes/Inscripciones/InformeSoloLectura/InfoSoloLectura";
 
 import { setListadoInscripcion } from "../../../hookNegocios/listadoInscrip";
 
@@ -32,21 +33,33 @@ export const ListadoInscripcionPage = () => {
     errorAnulacion,
   } = state;
 
+  console.log(state.dataInfoDetalle);
+
   return (
     <div className="contenedor_listado">
       {dataAnularInscripcion.modalAnular && (
         <div className="modal_overlay_fix">
-          (
-          <PanelDetalleInscrip
-            infoDetalle={dataInfoDetalle}
-            cancelarPanel={handleCancelarAnulacion}
-            anularInscripcion={handleAnularInscripcion}
-            listaMetodoPago={listadoCuentas}
-            onChangeMetodo={handleCachearMetodoPago}
-            errorAnulacion={errorAnulacion ?? errorAnulacion}
-            carga={dataAnularInscripcion.carga}
-          />
-          )
+          {state.dataInfoDetalle.estado === "activos" ? (
+            <PanelDetalleInscrip
+              infoDetalle={dataInfoDetalle}
+              cancelarPanel={handleCancelarAnulacion}
+              anularInscripcion={handleAnularInscripcion}
+              listaMetodoPago={listadoCuentas}
+              onChangeMetodo={handleCachearMetodoPago}
+              errorAnulacion={errorAnulacion ?? errorAnulacion}
+              carga={dataAnularInscripcion.carga}
+            />
+          ) : (
+            <div
+              style={{ color: "white", textAlign: "center", padding: "20px" }}
+            >
+              <PanelDetalleInscripSoloLectura
+                infoDetalle={dataInfoDetalle}
+                estado={state.dataInfoDetalle.estado}
+                onCerrar={handleCancelarAnulacion}
+              />
+            </div>
+          )}
         </div>
       )}
 

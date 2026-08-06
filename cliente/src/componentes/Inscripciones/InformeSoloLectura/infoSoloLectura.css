@@ -1,0 +1,39 @@
+/* --- Sello por estado, mismo mapeo que ElementoLista --- */
+
+.sello_verde {
+    color: var(--verde);
+}
+
+.sello_rojo {
+    color: var(--rojo);
+}
+
+.sello_ambar {
+    color: var(--ambar);
+}
+
+.sello_neutro {
+    color: var(--tinta_media);
+}
+
+/* --- Nota de solo lectura --- */
+
+.panel_solo_lectura_nota {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 14px;
+    padding: 10px 12px;
+
+    border-left: 2px solid var(--tinta_media);
+    background: rgba(138, 133, 120, 0.08);
+
+    color: var(--tinta_media);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.panel_solo_lectura_nota svg {
+    flex-shrink: 0;
+}

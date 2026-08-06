@@ -1,5 +1,4 @@
 import React from "react";
-// Importamos los iconos que le dan el toque visual
 import { User, CreditCard, Activity } from "lucide-react";
 
 import "./elementolista.css";
@@ -15,6 +14,7 @@ export interface InscripcionListado {
   vigencia: string;
   monto_pagado: string;
   metodo_pago: "efectivo" | "transferencia" | "debito" | "credito" | string;
+  estado: string;
 }
 
 interface ElementoListaProps {
@@ -29,17 +29,32 @@ interface ElementoListaProps {
     clases_tomadas: number,
     clases_totales: number,
     vigencia: string,
+    estado: string,
   ) => void;
 }
+
+const CLASE_SELLO: Record<string, string> = {
+  activos: "sello_verde",
+  vencidos: "sello_rojo",
+  suspendido: "sello_ambar",
+};
+
+const TEXTO_SELLO: Record<string, string> = {
+  activos: "Activa",
+  vencidos: "Vencida",
+  suspendido: "Suspendida",
+};
 
 export const ElementoLista: React.FC<ElementoListaProps> = ({
   inscripcion,
   vigencia,
   onSeleccionar,
 }) => {
-  // Calculamos el porcentaje de clases para la barra
   const porcentajeUso =
     (inscripcion.clases_usadas / inscripcion.clases_totales) * 100;
+
+  const claseSello = CLASE_SELLO[inscripcion.estado] ?? "sello_neutro";
+  const textoSello = TEXTO_SELLO[inscripcion.estado] ?? inscripcion.estado;
 
   return (
     <tr
@@ -54,6 +69,7 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
           inscripcion.clases_usadas,
           inscripcion.dni_alumno,
           inscripcion.vigencia,
+          inscripcion.estado,
         )
       }
     >
@@ -126,6 +142,11 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
           <span className="vigencia_label">Vence</span>
           <span className="vigencia_fecha">{inscripcion.vigencia}</span>
         </div>
+      </td>
+
+      {/* CELDA ESTADO — sello, mismo lenguaje que recibo_stamp */}
+      <td className="celda_inscripcion celda_sello">
+        <div className={`sello_estado ${claseSello}`}>{textoSello}</div>
       </td>
     </tr>
   );
