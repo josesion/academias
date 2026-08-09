@@ -1,47 +1,98 @@
 /* ============================================================
-   LISTADO MOLDE — efecto mazo de cartas (esquinas limpias)
+   LISTADO MOLDE — rueda / selector físico 3D
    ============================================================ */
 
-.listado_molde {
-    display: flex;
-    flex-direction: column;
-    gap: 0; 
+.rueda_contenedor {
+    --altura-rueda: 62vh;
+    --altura-item-aprox: 150px; /* usado solo para calcular el espaciador */
+    position: relative;
 
-    padding: 20px 20px 220px;
+    height: var(--altura-rueda);
+    max-height: 640px;
 
-    width: 95%;
+    width: 100%;
     max-width: 700px;
     margin: 0 auto;
-    top: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+
+    /* la cámara 3D — sin esto, rotateX/z no producen ninguna
+       sensación de profundidad real, se ven planos */
+    perspective: 1200px;
+
+scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-.item_stack_slot {
-    position: sticky;
-    margin-bottom: 24px;
+.rueda_contenedor::-webkit-scrollbar {
+   display: none;
+}
 
-    /* CLAVE ABSOLUTA: Corta cualquier desborde o sombra cuadrada en las esquinas */
-    border-radius: var(--radio-lg);
-    overflow: hidden;
+.rueda_contenedor::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 10px;
+}
 
-    /* Renderizado nítido y opacidad sólida */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transform: translateZ(0);
-    opacity: 1 !important; 
-    
-    /* Sombra general muy sutil y limpia que respeta los bordes */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
-    transition: box-shadow 0.2s ease;
+/* espaciador: la mitad de la altura del contenedor menos medio ítem —
+   así el primer y el último elemento SÍ pueden llegar al centro real
+   del carrusel, en vez de quedarse pegados al borde superior/inferior */
+.rueda_espaciador {
+    flex: 0 0 auto;
+    height: calc((var(--altura-rueda) - var(--altura-item-aprox)) / 2);
+    min-height: 0;
 }
 
 /* ============================================================
-   ACCESIBILIDAD
+   ÍTEM DE LA RUEDA
+   ============================================================ */
+
+.rueda_item {
+    flex: 0 0 auto;
+    width: 100%;
+
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+
+    padding: 10px 0;
+
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+
+    /* GSAP escribe scale/opacity/rotateX/z inline en cada frame —
+       esto es solo el punto de arranque antes del primer cálculo */
+    transform-origin: center center;
+}
+
+/* la tarjeta activa recibe el borde/sombra con color — única fuente
+   de "esto está enfocado" ahora que no hay blur para reforzarlo */
+.rueda_item--activa .item_card_generico {
+    border-color: color-mix(in srgb, var(--color-primario) 40%, var(--borde));
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* ============================================================
+   ACCESIBILIDAD — sin 3D, la rueda pasa a ser una lista con
+   scroll-snap simple, siempre legible
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
-    .item_stack_slot {
-        position: relative;
-        top: 0 !important;
+    .rueda_contenedor {
+        perspective: none;
+    }
+
+    .rueda_item {
+        scroll-snap-align: start;
     }
 }
 
@@ -50,12 +101,8 @@
    ============================================================ */
 
 @media (max-width: 600px) {
-    .listado_molde {
-        width: 100%;
-        padding: 10px 10px 160px;
-    }
-
-    .item_stack_slot {
-        margin-bottom: 18px;
+    .rueda_contenedor {
+        --altura-rueda: 72vh;
+        --altura-item-aprox: 220px; /* en mobile ItemGenerico es más alto (columna) */
     }
 }
