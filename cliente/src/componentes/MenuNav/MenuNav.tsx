@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import { Logo } from "../Logo/logo";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import {
@@ -7,6 +9,7 @@ import {
   MdOutlineAssignmentInd,
   MdOutlineMusicNote,
   MdOutlineCategory,
+  MdOutlineDashboard,
 } from "react-icons/md";
 import {
   PiStudentBold,
@@ -23,7 +26,12 @@ import { LuClipboardCheck, LuUserPlus, LuLayers } from "react-icons/lu";
 
 // Seccion Contextos / Hooks
 import { useMenuNav } from "../../hooks/navegacion";
+
+import { MenuUsuario } from "../Logout/Logout";
+
 import "../MenuNav/menuNav.css";
+
+console.log();
 
 export const MenuNav = () => {
   const {
@@ -33,7 +41,13 @@ export const MenuNav = () => {
     alternarSeccion,
     alternarMenuMobile,
     irA,
+    cerrarSesion,
+    dataVisualMenu,
+    setDataVisualMenu,
+    setSeccionAbierta,
   } = useMenuNav();
+
+  console.log(dataVisualMenu);
 
   const irInicio = () => irA("/");
   const irLogin = () => irA("/login");
@@ -53,227 +67,268 @@ export const MenuNav = () => {
   // const irInscripciones = () => irA("/inscrip_page");
   const irListInscripciones = () => irA("/list_inscrip");
   const irHorarios = () => irA("/horario_page");
+
+  const irPrincipal = () => irA("/user_manager_priv");
+
+  useEffect(() => {
+    setDataVisualMenu({
+      rol: rol?.rol,
+      usuario: rol?.rol ? rol.usuario : null,
+    });
+  }, [rol]);
+
   return (
-    <nav className="menu_nav">
-      <div className="app-name-container">
-        <Logo size={60} />
-        <div className="app-user-info">
-          <span className="app-user-label">Usuario</span>
-          <span className="app-user-name">
-            {rol?.usuario ? rol.usuario : "---"}
-          </span>
+    <>
+      <nav className="menu_nav">
+        <div className="app-name-container">
+          <Logo size={60} />
+          <div className="app-user-info">
+            <span className="app-user-label">
+              {dataVisualMenu.usuario ? "Usuario" : ""}
+            </span>
+            <span className="app-user-name">
+              {dataVisualMenu.usuario ? dataVisualMenu.usuario : ""}
+            </span>
+          </div>
         </div>
-      </div>
 
-      <ul
-        className={`menu_nav_lista ${menuMobileAbierto ? "abierto" : "menu"}`}
-      >
-        {/* VISTA VISITA */}
-        {rol?.rol === "visita" && (
-          <>
-            <li className="alinear" onClick={irInicio}>
-              <GiBlackBook size={20} /> Inicio
-            </li>
-            <li className="alinear" onClick={irLogin}>
-              <VscAccount size={20} /> Login
-            </li>
-          </>
-        )}
+        <ul
+          className={`menu_nav_lista ${menuMobileAbierto ? "abierto" : "menu"}`}
+        >
+          {/* VISTA VISITA */}
+          {dataVisualMenu?.rol === "visita" && (
+            <>
+              <li className="alinear" onClick={irInicio}>
+                <GiBlackBook size={20} /> Inicio
+              </li>
+              <li className="alinear" onClick={irLogin}>
+                <VscAccount size={20} /> Login
+              </li>
+            </>
+          )}
 
-        {/* VISTA ADMINISTRADOR */}
-        {rol?.rol === "administrador" && (
-          <>
-            <li className="alinear" onClick={irLogin}>
-              <VscAccount size={20} /> Registrar
-            </li>
-            <li className="alinear" onClick={() => irA("/logout")}>
-              <ImExit size={20} /> Cerrar Sesión
-            </li>
-          </>
-        )}
+          {/* VISTA ADMINISTRADOR */}
+          {rol?.rol === "administrador" && (
+            <>
+              <li className="alinear" onClick={irLogin}>
+                <VscAccount size={20} /> Registrar
+              </li>
+              <li className="alinear" onClick={() => irA("/logout")}>
+                <ImExit size={20} /> Cerrar Sesión
+              </li>
+            </>
+          )}
 
-        {/* VISTA USUARIO (OPERATIVO) */}
-        {rol?.rol === "usuario" && (
-          <>
-            {/* SECCIÓN OPERACIONES */}
-            <li
-              className="menu-item alinear"
-              onClick={() => alternarSeccion("operaciones")}
-            >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+          {/* VISTA USUARIO (OPERATIVO) */}
+          {dataVisualMenu?.rol === "usuario" && (
+            <>
+              {/* SECCIÓN Principal */}
+
+              <li
+                className="menu-item alinear menu_principal"
+                onClick={irPrincipal}
               >
-                <MdOutlineAnalytics size={20} />
-                <span>Operaciones</span>
-              </div>
-              {seccionAbierta === "operaciones" ? (
-                <HiChevronUp size={15} />
-              ) : (
-                <HiChevronDown size={15} />
-              )}
+                <div className="menu_principal_contenido">
+                  <MdOutlineDashboard size={20} />
+                  <span>Principal</span>
+                </div>
+              </li>
 
-              {seccionAbierta === "operaciones" && (
-                <ul className="submenu">
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irAsistencia();
-                    }}
-                  >
-                    <LuClipboardCheck size={18} color="#38bdf8" /> Asistencia
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irListInscripciones();
-                    }}
-                  >
-                    <LuUserPlus size={18} color="#38bdf8" /> Inscripciones
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irArqueoCaja();
-                    }}
-                  >
-                    <BsCashStack size={18} color="#38bdf8" /> Arqueo de Caja
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            {/* SECCIÓN GESTIÓN */}
-            <li
-              className="menu-item alinear"
-              onClick={() => alternarSeccion("gestion")}
-            >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              {/* SECCIÓN OPERACIONES */}
+              <li
+                className="menu-item alinear"
+                onClick={() => alternarSeccion("operaciones")}
               >
-                <MdOutlineClass size={20} />
-                <span>Gestión</span>
-              </div>
-              {seccionAbierta === "gestion" ? (
-                <HiChevronUp size={15} />
-              ) : (
-                <HiChevronDown size={15} />
-              )}
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <MdOutlineAnalytics size={20} />
+                  <span>Operaciones</span>
+                </div>
+                {seccionAbierta === "operaciones" ? (
+                  <HiChevronUp size={15} />
+                ) : (
+                  <HiChevronDown size={15} />
+                )}
 
-              {seccionAbierta === "gestion" && (
-                <ul className="submenu">
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irAlumno();
-                    }}
-                  >
-                    <PiStudentBold size={18} color="#a78bfa" /> Alumnos
-                    Inscriptos
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irProfesores();
-                    }}
-                  >
-                    <PiPresentationChartBold size={18} color="#a78bfa" />{" "}
-                    Profesores
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irPlanes();
-                    }}
-                  >
-                    <PiCardsBold size={18} color="#a78bfa" /> Planes Pago
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irHorarios();
-                    }}
-                  >
-                    <PiCalendarCheckBold size={18} color="#a78bfa" /> Horarios
-                  </li>
-                </ul>
-              )}
-            </li>
+                {seccionAbierta === "operaciones" && (
+                  <ul className="submenu">
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irAsistencia();
+                      }}
+                    >
+                      <LuClipboardCheck size={18} color="#38bdf8" /> Asistencia
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irListInscripciones();
+                      }}
+                    >
+                      <LuUserPlus size={18} color="#38bdf8" /> Inscripciones
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irArqueoCaja();
+                      }}
+                    >
+                      <BsCashStack size={18} color="#38bdf8" /> Arqueo de Caja
+                    </li>
+                  </ul>
+                )}
+              </li>
 
-            {/* SECCIÓN CONFIGURACIÓN */}
-            <li
-              className="menu-item alinear"
-              onClick={() => alternarSeccion("niveles")}
-            >
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "8px" }}
+              {/* SECCIÓN GESTIÓN */}
+              <li
+                className="menu-item alinear"
+                onClick={() => alternarSeccion("gestion")}
               >
-                <MdOutlineSettingsSuggest size={20} />
-                <span>Configuración</span>
-              </div>
-              {seccionAbierta === "niveles" ? (
-                <HiChevronUp size={15} />
-              ) : (
-                <HiChevronDown size={15} />
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <MdOutlineClass size={20} />
+                  <span>Gestión</span>
+                </div>
+                {seccionAbierta === "gestion" ? (
+                  <HiChevronUp size={15} />
+                ) : (
+                  <HiChevronDown size={15} />
+                )}
+
+                {seccionAbierta === "gestion" && (
+                  <ul className="submenu">
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irAlumno();
+                      }}
+                    >
+                      <PiStudentBold size={18} color="#a78bfa" /> Alumnos
+                      Inscriptos
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irProfesores();
+                      }}
+                    >
+                      <PiPresentationChartBold size={18} color="#a78bfa" />{" "}
+                      Profesores
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irPlanes();
+                      }}
+                    >
+                      <PiCardsBold size={18} color="#a78bfa" /> Planes Pago
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irHorarios();
+                      }}
+                    >
+                      <PiCalendarCheckBold size={18} color="#a78bfa" /> Horarios
+                    </li>
+                  </ul>
+                )}
+              </li>
+
+              {/* SECCIÓN CONFIGURACIÓN */}
+              <li
+                className="menu-item alinear"
+                onClick={() => alternarSeccion("niveles")}
+              >
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
+                  <MdOutlineSettingsSuggest size={20} />
+                  <span>Configuración</span>
+                </div>
+                {seccionAbierta === "niveles" ? (
+                  <HiChevronUp size={15} />
+                ) : (
+                  <HiChevronDown size={15} />
+                )}
+
+                {seccionAbierta === "niveles" && (
+                  <ul className="submenu">
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irNiveles();
+                      }}
+                    >
+                      <LuLayers size={18} color="#60a5fa" /> Niveles
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irTipos();
+                      }}
+                    >
+                      <MdOutlineMusicNote size={20} color="#60a5fa" /> Géneros
+                      Musicales
+                    </li>
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irCategoriaCajas();
+                      }}
+                    >
+                      <MdOutlineAssignmentInd size={18} color="#60a5fa" />{" "}
+                      Categoría Cajas
+                    </li>
+
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irTipoCuentas();
+                      }}
+                    >
+                      <MdOutlineCategory size={18} color="#60a5fa" /> Tipos
+                      Cuentas
+                    </li>
+                  </ul>
+                )}
+              </li>
+
+              {/* SALIR */}
+              <li
+                className="alinear"
+                onClick={() => {
+                  alternarSeccion("salir");
+                }}
+              >
+                <ImExit size={20} color="#796d6d" />
+                Mi Cuenta
+              </li>
+              {seccionAbierta === "salir" && (
+                <MenuUsuario
+                  usuario={dataVisualMenu.usuario ?? ""}
+                  onCerrar={() => {
+                    setSeccionAbierta(null); // Cerramos el acordeón limpiamente
+                  }}
+                  onLogout={cerrarSesion}
+                />
               )}
+            </>
+          )}
+        </ul>
 
-              {seccionAbierta === "niveles" && (
-                <ul className="submenu">
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irNiveles();
-                    }}
-                  >
-                    <LuLayers size={18} color="#60a5fa" /> Niveles
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irTipos();
-                    }}
-                  >
-                    <MdOutlineMusicNote size={20} color="#60a5fa" /> Géneros
-                    Musicales
-                  </li>
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irCategoriaCajas();
-                    }}
-                  >
-                    <MdOutlineAssignmentInd size={18} color="#60a5fa" />{" "}
-                    Categoría Cajas
-                  </li>
-
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      irTipoCuentas();
-                    }}
-                  >
-                    <MdOutlineCategory size={18} color="#60a5fa" /> Tipos
-                    Cuentas
-                  </li>
-                </ul>
-              )}
-            </li>
-
-            {/* SALIR */}
-            <li className="alinear" onClick={() => irA("/logout")}>
-              <ImExit size={20} color="#796d6d" /> Salir
-            </li>
-          </>
-        )}
-      </ul>
-
-      {/* BOTÓN HAMBURGUESA (SÓLO MÓVIL) */}
-      <button className="btn_menu" onClick={alternarMenuMobile}>
-        {menuMobileAbierto ? (
-          <HiChevronUp size={25} />
-        ) : (
-          <HiChevronDown size={25} />
-        )}
-      </button>
-    </nav>
+        {/* BOTÓN HAMBURGUESA (SÓLO MÓVIL) */}
+        <button className="btn_menu" onClick={alternarMenuMobile}>
+          {menuMobileAbierto ? (
+            <HiChevronUp size={25} />
+          ) : (
+            <HiChevronDown size={25} />
+          )}
+        </button>
+      </nav>
+    </>
   );
 };

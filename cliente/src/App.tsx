@@ -31,6 +31,8 @@ import { ListadoInscripcionPage } from "./pagina/privado/Listado_inscripcion/Lis
 import { RutasPrivadas } from "./Rutas.Protegidas";
 import { LayoutConMenu, LayoutSinMenu } from "./hooks/menuManager";
 
+// Pagina principal Metricas
+
 //Seccion conetxtos
 import { ProtectRutasProv } from "./contexto/protectRutas";
 

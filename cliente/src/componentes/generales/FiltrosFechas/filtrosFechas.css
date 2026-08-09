@@ -2,18 +2,108 @@
    FILTRO DE FECHAS — rango desde/hasta
    ============================================================ */
 
+.filtro_fechas_wrapper {
+    max-width: 450px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+
+    padding: 12px 14px;
+}
+
+/* ============================================================
+   ENCABEZADO — título + toggle (mobile)
+   ============================================================ */
+
+.filtro_fechas_encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.filtro_fechas_titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.filtro_fechas_titulo svg {
+    color: var(--color-primario);
+}
+
+/* toggle — oculto en desktop, el filtro siempre está visible */
+.filtro_fechas_toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    height: 30px;
+    padding: 0 10px;
+    flex-shrink: 0;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-secundario);
+    cursor: pointer;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-medio);
+
+    transition: var(--transicion);
+}
+
+.filtro_fechas_toggle:hover {
+    border-color: var(--borde-hover);
+    color: var(--texto-principal);
+}
+
+.filtro_fechas_wrapper.abierto .filtro_fechas_toggle {
+    color: var(--color-primario);
+    border-color: color-mix(in srgb, var(--color-primario) 35%, transparent);
+    background: color-mix(in srgb, var(--color-primario) 10%, transparent);
+}
+
+/* ============================================================
+   CUERPO COLAPSABLE
+   ============================================================ */
+
+.filtro_fechas_colapsable {
+    display: grid;
+    grid-template-rows: 1fr; /* desktop: siempre expandido */
+    transition: grid-template-rows 0.3s ease;
+}
+
+.filtro_fechas_colapsable > .filtro_fechas_contenedor {
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ============================================================
+   CONTENEDOR DE CAMPOS
+   ============================================================ */
+
 .filtro_fechas_contenedor {
     display: flex;
     align-items: flex-end;
-    gap: 14px;
-    background: var(--fondo-secundario);
     flex-wrap: wrap;
-    padding: 8px;
-    max-width: 450px;
-    border-radius: 10px;
-    border-color: var(--borde-hover);
+    gap: 14px;
+
     justify-content: center;
-    
 }
 
 .filtro_input_group {
@@ -34,12 +124,11 @@
 }
 
 /* ============================================================
-   WRAPPER — ícono integrado dentro del campo, no al lado
+   WRAPPER — ícono integrado dentro del campo
    ============================================================ */
 
 .input_wrapper {
     position: relative;
-
     display: flex;
     align-items: center;
 }
@@ -72,10 +161,6 @@
 
     transition: var(--transicion);
 
-    /* el navegador dibuja los inputs date con su UI nativa;
-       color-scheme le avisa que use la variante oscura, si no,
-       algunos navegadores muestran el ícono de calendario nativo
-       en negro sobre negro, invisible */
     color-scheme: dark;
 }
 
@@ -93,8 +178,6 @@
     color: var(--color-primario);
 }
 
-/* el ícono nativo del navegador (el calendario clickeable) —
-   Chrome/Edge permiten estilizarlo, Firefox/Safari lo ignoran */
 .input_wrapper input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0.6);
     cursor: pointer;
@@ -113,10 +196,38 @@
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE — hamburguesa entra a partir de acá
    ============================================================ */
 
-@media (max-width: 480px) {
+/* ============================================================
+   RESPONSIVE — hamburguesa entra a partir de acá (768px, mismo
+   corte que el resto de la app: FormHorario, ElementoLista, etc.)
+   ============================================================ */
+@media (max-width: 768px) {
+    .filtro_fechas_toggle {
+        display: flex;
+    }
+
+    /* colapsado por defecto en mobile — forzamos alto 0 real */
+    .filtro_fechas_colapsable {
+        grid-template-rows: 0fr;
+        visibility: hidden; /* Oculta los elementos internos para que no reciban clicks ni se asomen */
+    }
+
+    .filtro_fechas_wrapper.abierto .filtro_fechas_colapsable {
+        grid-template-rows: 1fr;
+        visibility: visible;
+    }
+
+    /* El padding pasaselo al contenedor interno solo cuando esté abierto o manejalo con cuidado para que no se escape */
+    .filtro_fechas_wrapper.abierto .filtro_fechas_colapsable > .filtro_fechas_contenedor {
+        padding-top: 12px;
+    }
+
+    .filtro_fechas_colapsable > .filtro_fechas_contenedor {
+        padding-top: 0; /* Cerrado no tiene padding para que no asome nada */
+    }
+
     .filtro_fechas_contenedor {
         flex-direction: column;
         align-items: stretch;

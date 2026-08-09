@@ -1,171 +1,169 @@
 /* ============================================================
-   ITEM GENÉRICO (TRANSFORMER: ROW TO CARD)
+   ITEM GENÉRICO — nítido, esquinas limpias y sin sombras cruzadas
    ============================================================ */
 
-.item_card {
+.item_card_generico {
     position: relative;
     display: flex;
-    flex-direction: row; /* MODO LÍNEA EN PC */
+    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    
+
     width: 100%;
-    min-height: 70px;
-    background: var( --fondo-secundario);
+    min-height: 76px;
 
+    background: var(--fondo-secundario) !important;
 
-    backdrop-filter: blur(12px);
-    border:1px solid var(--borde);
-    border-radius:20px;
-    padding: 12px 25px 12px 50px; /* Espacio extra a la izq para la línea */
-    
-    box-shadow:0 8px 25px rgba(0,0,0,.25);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 14px 22px 14px 34px;
 
+    /* CLAVE PARA LAS ESQUINAS: Corta cualquier desborde o sombra cuadrada en las puntas */
+    overflow: hidden !important; 
+
+    /* Quitamos cualquier sombra propia interna para que no se amontone en el efecto mazo */
+    box-shadow: none !important;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Efecto Glow al pasar el mouse */
-.item_card:hover {
-    transform: translateY(-3px);
+.item_card_generico:hover {
     border-color: var(--borde-hover);
-    box-shadow: 0 12px 35px rgba(79,70,229,.15);
+    background: var(--fondo-secundario, var(--fondo-principal));
 }
 
-/* LA LÍNEA VERTICAL (EL INDICADOR DE FÁBRICA) */
-.item_card::before {
+/* LÍNEA DE ACENTO — fija y limpia */
+.item_card_generico::before {
     content: "";
     position: absolute;
-    left: 15px;
-    top: 15%;
-    height: 70%;
-    width: 6px;
-    background: linear-gradient(180deg, #4f46e5, #06b6d4, #a855f7);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
-    transition: all 0.3s ease;
-}
+    left: 14px;
+    top: 20px;
+    bottom: 20px;
+    width: 3px;
 
-.item_card:hover::before {
-    height: 85%;
-    top: 7.5%;
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.8);
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 10px;
+
+    opacity: 0.7;
 }
 
 /* CONTENEDOR DE DATOS */
 .item_card_body {
     display: flex;
-    flex-direction: row; /* Datos uno al lado del otro en PC */
-    flex-wrap: wrap;    /* Si hay muchos datos, bajan de nivel automáticamente */
-    gap: 30px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 34px;
     flex-grow: 1;
     align-items: center;
 }
 
-/* CADA PAR CLAVE-VALOR */
 .item_row {
     display: flex;
-    flex-direction: column; /* Label arriba, Valor abajo */
-    gap: 2px;
+    flex-direction: column;
+    gap: 4px;
     min-width: 120px;
 }
 
 .item_key {
-    font-family:
-    var(--fuente-principal);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 
-    font-size:
-    var(--texto-xs);
+    font-family: var(--fuente-codigo);
+    font-size: 0.66rem;
+    color: var(--texto-deshabilitado);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
 
-    color:
-    var(--texto-deshabilitado);
-
-    font-weight:
-    var(--peso-semi-negrita);
-
-    letter-spacing:
-    1.5px;
-
-    text-transform:
-    uppercase;
+.item_key::before {
+    content: "";
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--color-primario);
+    opacity: 0.8;
 }
 
 .item_value {
-
-    font-family:
-    var(--fuente-principal);
-
-    font-size:
-    var(--texto-lg);
-
-    font-weight:
-    var(--peso-semi-negrita);
-
-    color:
-    var(--texto-principal);
-
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: -0.01em;
+    color: var(--texto-principal);
 }
 
-/* BOTONES DE ACCIÓN */
+/* ACCIONES — cápsula propia */
 .item_card_actions {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 12px;
-    padding-left: 20px;
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
-    margin-left: 10px;
+    gap: 8px;
+
+    margin-left: 20px;
+    padding: 6px;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+
+    flex-shrink: 0;
 }
 
 /* ============================================================
-   RESPONSIVE: DE LÍNEA A TARJETA (PANTALLAS MEDIANAS/CHICAS)
+   RESPONSIVE: DE LÍNEA A TARJETA
    ============================================================ */
 
 @media (max-width: 1000px) {
-    .item_card {
-        flex-direction: column; /* Cambia a modo Tarjeta */
+    .item_card_generico {
+        flex-direction: column;
         align-items: flex-start;
-        padding: 20px 20px 20px 45px;
-        border-radius: 20px;
+        padding: 22px 22px 22px 30px;
+        border-radius: var(--radio-lg);
     }
 
-    .item_card::before {
+    .item_card_generico::before {
         top: 20px;
         bottom: 20px;
-        height: auto; /* Se estira con la tarjeta */
+        height: auto;
+        opacity: 0.8;
     }
 
     .item_card_body {
-        flex-direction: column; /* Datos hacia abajo */
+        flex-direction: column;
         align-items: flex-start;
-        gap: 15px;
+        gap: 16px;
         width: 100%;
         margin-bottom: 20px;
     }
 
     .item_row {
         width: 100%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 8px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--borde);
+    }
+
+    .item_row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
     }
 
     .item_card_actions {
         width: 100%;
         margin-left: 0;
-        padding-left: 0;
-        border-left: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 15px;
-        justify-content: space-evenly; /* Botones repartidos */
+        justify-content: space-evenly;
     }
 }
 
 @media (max-width: 480px) {
     .item_card_actions {
-        flex-direction: column; /* Botones uno arriba del otro en mini-celus */
-        width: 100%;
+        flex-direction: column;
     }
-    
+
     .item_card_actions button {
         width: 100% !important;
     }

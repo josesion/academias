@@ -89,7 +89,7 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         limite : config.paginacion.limite
         } );
 
-     
+
 
 // -------------------------------- Manejadores de Modales y Acciones Principales ---------------------------------- 
       
@@ -349,14 +349,21 @@ const handleSubmitEliminar = async () => {
         }
     };
         
-    listado();
+        // ==========================================
+        // DEBOUNCE: Espera 400ms antes de disparar la búsqueda
+        // ==========================================
+        const delayDebounce = setTimeout(() => {
+            listado();
+        }, 300);
     return () => {
         // Cleanup: Aborta la petición y limpia el timer si el componente se desmonta o el efecto se re-ejecuta.
+        clearTimeout(delayDebounce);
         controlador.abort(); 
         clearTimeout(timeoutId);
     };
 
 }, [filtroData, actualizarListado, actualizarGenerico ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
+
 
 
 useEffect(() => {

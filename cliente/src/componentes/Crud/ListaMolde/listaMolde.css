@@ -1,51 +1,61 @@
 /* ============================================================
-   CONTENEDOR DEL LISTADO (HÍBRIDO)
+   LISTADO MOLDE — efecto mazo de cartas (esquinas limpias)
    ============================================================ */
 
 .listado_molde {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px;
+    gap: 0; 
+
+    padding: 20px 20px 220px;
+
     width: 95%;
-    max-width: 1400px;
+    max-width: 700px;
     margin: 0 auto;
-    background-color: transparent;
-    animation: slideFade 0.4s ease-out;
-
-    align-items: center;
-    justify-content: flex-start;
-    min-height: 400px;
-
-    /* NUEVO — necesario para el tilt 3D del hover */
-    perspective: 1000px;
-
-    /* NUEVO — las tarjetas vuelan desde ±220px fuera de su posición;
-       sin esto, aparece un scroll horizontal fantasma mientras entran */
-    overflow-x: clip;
+    top: 0;
 }
 
-.listado_molde .item_card {
-    transform-style: preserve-3d;
-    will-change: transform;
-    backface-visibility: hidden;
+.item_stack_slot {
+    position: sticky;
+    margin-bottom: 24px;
+
+    /* CLAVE ABSOLUTA: Corta cualquier desborde o sombra cuadrada en las esquinas */
+    border-radius: var(--radio-lg);
+    overflow: hidden;
+
+    /* Renderizado nítido y opacidad sólida */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translateZ(0);
+    opacity: 1 !important; 
+    
+    /* Sombra general muy sutil y limpia que respeta los bordes */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+    transition: box-shadow 0.2s ease;
 }
 
-@keyframes slideFade {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
+/* ============================================================
+   ACCESIBILIDAD
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .item_stack_slot {
+        position: relative;
+        top: 0 !important;
     }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
 @media (max-width: 600px) {
     .listado_molde {
         width: 100%;
-        padding: 10px;
-        gap: 10px;
+        padding: 10px 10px 160px;
+    }
+
+    .item_stack_slot {
+        margin-bottom: 18px;
     }
 }

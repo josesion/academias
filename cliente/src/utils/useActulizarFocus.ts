@@ -1,5 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { verificarAutenticacion } from "../hooks/verificacionUsuario";
+
+import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 interface PropsActualizarFocus {
 /** Función dispatch del reducer para actualizar el estado */    
@@ -26,16 +28,18 @@ interface PropsActualizarFocus {
  */
 export const useActualizarAlEnfocar = ( props : PropsActualizarFocus) => {
     const { dispatchActualizar, accion} = props;    
-    
+    const { setRol } = useContext(RutasProtegidasContext);
+ 
     useEffect(() => {
         const handleFocus = async() => {
 
             const verificarUser= await verificarAutenticacion();
             if (verificarUser.autenticado === false) {
+                setRol({rol : "visita", usuario :  ""});
                 window.location.href = "/login" // por defecto en esta app es login
                 return;
             };
-
+           
             dispatchActualizar({ type: accion });
         };
 

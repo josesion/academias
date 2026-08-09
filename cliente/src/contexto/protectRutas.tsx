@@ -1,5 +1,7 @@
 import { type ReactNode, createContext, useState, useEffect } from "react";
 
+import Cookies from "js-cookie";
+
 interface AuthContextType {
   autenticado: boolean;
   setAutenticado: (value: boolean) => void;
@@ -49,7 +51,13 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
     useState<UsuarioEscuelaInfo | null>(null);
 
   useEffect(() => {
-    localStorage.setItem("usuarioEscuela", JSON.stringify(rol));
+    const token = Cookies.get("token");
+
+    if (token) {
+      localStorage.setItem("usuarioEscuela", JSON.stringify(rol));
+    } else {
+      localStorage.removeItem("usuarioEscuela");
+    }
   }, [rol]);
 
   const contextValue = {

@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
-import { Search, Music } from "lucide-react";
+import { Search } from "lucide-react";
 
 import "./buscador.css";
 
@@ -35,76 +36,98 @@ interface BuscadorProps {
 }
 
 export const Buscadores = (p: BuscadorProps) => {
+  const [abierto, setAbierto] = useState(false);
+
   return (
-    <div className="buscador_contenedor_comp">
-      {p.tituloBuscador && (
-        <p className="buscador_titulo">
-          <Search size={13} />
-          {p.tituloBuscador}
-        </p>
-      )}
+    <div className={`buscador_contenedor_comp ${abierto ? "abierto" : ""}`}>
+      <div className="buscador_encabezado">
+        {p.tituloBuscador && (
+          <p className="buscador_titulo">
+            <Search size={13} />
+            {p.tituloBuscador}
+          </p>
+        )}
 
-      <div className="buscador_cuerpo">
-        {p.intputBuscador.map((input) => {
-          const isSelect = input.options && input.options.length > 0;
-          return (
-            <div className="buscador_columna" key={input.name}>
-              {isSelect ? (
-                <>
-                  <label className="buscador_label_generico">
-                    {input.label || "Tipo"}
-                  </label>
-                  <select
-                    className="buscador_input_base"
+        {/* Botón hamburguesa con animación integrada a cruz */}
+        <button
+          type="button"
+          className={`buscador_toggle ${abierto ? "is-active" : ""}`}
+          onClick={() => setAbierto((prev) => !prev)}
+          aria-expanded={abierto}
+          aria-label={abierto ? "Ocultar filtros" : "Mostrar filtros"}
+        >
+          <div className="buscador_hamburguesa_icon">
+            <span className="linea linea-1"></span>
+            <span className="linea linea-2"></span>
+            <span className="linea linea-3"></span>
+          </div>
+          <span>Filtros</span>
+        </button>
+      </div>
+
+      <div className="buscador_cuerpo_colapsable">
+        <div className="buscador_cuerpo">
+          {p.intputBuscador.map((input) => {
+            const isSelect = input.options && input.options.length > 0;
+            return (
+              <div className="buscador_columna" key={input.name}>
+                {isSelect ? (
+                  <>
+                    <label className="buscador_label_generico">
+                      {input.label || "Tipo"}
+                    </label>
+                    <select
+                      className="buscador_input_base"
+                      name={input.name}
+                      onChange={p.onItems}
+                      value={p.buscadorData?.[input.name ?? ""] || ""}
+                    >
+                      {input.options?.map((item, index) => (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : (
+                  <Inputs
+                    label={input.label}
+                    type={input.type}
                     name={input.name}
-                    onChange={p.onItems}
                     value={p.buscadorData?.[input.name ?? ""] || ""}
-                  >
-                    {input.options?.map((item, index) => (
-                      <option key={index} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              ) : (
-                <Inputs
-                  label={input.label}
-                  type={input.type}
-                  name={input.name}
-                  value={p.buscadorData?.[input.name ?? ""] || ""}
-                  onChange={p.onChange}
-                  placeholder={input.placeholder}
-                  readonly={false}
-                />
-              )}
-            </div>
-          );
-        })}
+                    onChange={p.onChange}
+                    placeholder={input.placeholder}
+                    readonly={false}
+                  />
+                )}
+              </div>
+            );
+          })}
 
-        <div className="buscador_columna">
-          <label className="buscador_label_generico">Estado</label>
-          <select
-            className="buscador_input_base"
-            name="estado"
-            onChange={p.onEstados}
-          >
-            {p.estados.map((estado, index) => (
-              <option key={index} value={estado}>
-                {estado}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="buscador_columna">
+            <label className="buscador_label_generico">Estado</label>
+            <select
+              className="buscador_input_base"
+              name="estado"
+              onChange={p.onEstados}
+            >
+              {p.estados.map((estado, index) => (
+                <option key={index} value={estado}>
+                  {estado}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="buscador_columna">
-          <label className="buscador_label_generico">&nbsp;</label>
-          <Boton
-            texto={p.captionBoton}
-            logo="Add"
-            clase="aceptar"
-            onClick={p.onAgregar}
-          />
+          <div className="buscador_columna">
+            <label className="buscador_label_generico">&nbsp;</label>
+            <Boton
+              texto={p.captionBoton}
+              logo="Add"
+              clase="aceptar"
+              onClick={p.onAgregar}
+            />
+          </div>
         </div>
       </div>
     </div>

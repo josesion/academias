@@ -171,6 +171,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
         {/* BUSCADOR: Ahora es solo un área de posicionamiento */}
         <header className="area_buscador">
           <Buscadores
+            tituloBuscador="Filtro de Busqueda"
             intputBuscador={inputsFiltro}
             buscadorData={filtroData}
             onChange={onHandleChangeBuscador}

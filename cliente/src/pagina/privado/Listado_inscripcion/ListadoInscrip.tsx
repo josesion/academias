@@ -33,8 +33,6 @@ export const ListadoInscripcionPage = () => {
     errorAnulacion,
   } = state;
 
-  console.log(state.dataInfoDetalle);
-
   return (
     <div className="contenedor_listado">
       {dataAnularInscripcion.modalAnular && (

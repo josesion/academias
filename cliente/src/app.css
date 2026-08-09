@@ -111,7 +111,9 @@
 .app{
 
     width:100%;
+    /* Usamos min-height dinámico para móviles (fallback a 100vh para navegadores viejos) */
     min-height:100vh;
+    min-height:100dvh;
 
     position:relative;
 
@@ -119,7 +121,7 @@
 
     display:flex;
     flex-direction:column;
-    background: var(--fondo-principal)
+    background: var(--fondo-principal);
 }
 
 
@@ -132,7 +134,9 @@
     display:flex;
     flex-direction:column;
 
+    /* Reemplazamos 100vh por 100dvh para que respete la barra del celu */
     height:100vh;
+    height:100dvh;
 
     overflow:hidden;
 

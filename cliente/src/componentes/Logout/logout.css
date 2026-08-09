@@ -1,0 +1,205 @@
+/* ===========================================================
+   MENU USUARIO — ELPIS SOBRIO
+=========================================================== */
+
+.menu_usuario_backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 1500;
+}
+
+/* ===========================================================
+   PANEL
+=========================================================== */
+
+.menu_usuario_panel {
+    position: fixed;
+
+    top: 72px;
+    right: 20px;
+
+    width: 300px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 20px;
+
+    border-radius: var(--radio-lg);
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+
+    box-shadow: var(--sombra-md);
+
+    z-index: 1600;
+
+    animation: menu_usuario_entrada 0.18s ease;
+
+    /* punto de anclaje visual — mismo criterio que .item_card/.recibo_ticket:
+       una esquina de origen ayuda a leer "esto salió de ahí arriba" */
+    transform-origin: top right;
+}
+
+/* ===========================================================
+   HEADER
+=========================================================== */
+
+.menu_usuario_header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* mismo lenguaje que asistencia_header_icono / panel_header svg:
+   ícono principal siempre lleva el acento de marca, nunca neutro */
+.menu_usuario_avatar {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 50%;
+
+    background: color-mix(in srgb, var(--color-primario) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
+    color: var(--color-primario);
+}
+
+.menu_usuario_info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.menu_usuario_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--texto-deshabilitado);
+}
+
+.menu_usuario_info h3 {
+    margin: 0;
+
+    font-size: var(--texto-lg);
+    font-family: var(--fuente-principal);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===========================================================
+   DIVISOR
+=========================================================== */
+
+.menu_usuario_divisor {
+    width: 100%;
+    height: 1px;
+    background: var(--borde);
+}
+
+/* ===========================================================
+   BOTON CERRAR SESION
+=========================================================== */
+
+.menu_usuario_logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    padding: 12px 14px;
+
+    border: none;
+    border-radius: var(--radio-md);
+
+    cursor: pointer;
+
+    background: transparent;
+    color: var(--texto-secundario);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-medio);
+
+    transition: var(--transicion);
+}
+
+.menu_usuario_logout svg {
+    flex-shrink: 0;
+    transition: var(--transicion);
+}
+
+.menu_usuario_logout:hover {
+    background: color-mix(in srgb, var(--color-error) 10%, var(--fondo-hover));
+    color: var(--color-error);
+}
+
+.menu_usuario_logout:hover svg {
+    transform: translateX(2px);
+}
+
+.menu_usuario_logout:active {
+    transform: scale(0.98);
+}
+
+/* foco de teclado — faltaba en el original */
+.menu_usuario_logout:focus-visible {
+    outline: 2px solid var(--color-error);
+    outline-offset: 2px;
+}
+
+/* ===========================================================
+   ANIMACION
+=========================================================== */
+
+@keyframes menu_usuario_entrada {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .menu_usuario_panel {
+        animation: none;
+    }
+}
+
+/* ===========================================================
+   RESPONSIVE
+=========================================================== */
+
+@media (max-width: 768px) {
+    .menu_usuario_panel {
+        top: 64px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        padding: 18px;
+    }
+
+    .menu_usuario_avatar {
+        width: 48px;
+        height: 48px;
+    }
+
+    .menu_usuario_info h3 {
+        font-size: var(--texto-md);
+    }
+}

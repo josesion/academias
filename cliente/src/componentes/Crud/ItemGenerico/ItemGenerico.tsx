@@ -62,7 +62,7 @@ export function ItemGenerico<T extends object>({
   textoBoton,
 }: ItemGenericoProps<T>) {
   return (
-    <div className="item_card">
+    <div className="item_card_generico">
       <div className="item_card_body">
         {data &&
           Object.entries(data).map(([key, value]) => {
