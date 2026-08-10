@@ -1,0 +1,267 @@
+/* ============================================================
+   DETALLE CAJAS — histórico de cajas cerradas
+   ============================================================ */
+
+.detalle_caja_marco {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.detalle_caja_titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+
+    color: var(--color-primario);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.detalle_caja_vacio {
+    padding: 40px 20px;
+    text-align: center;
+
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio-md);
+}
+
+/* ============================================================
+   LISTA
+   ============================================================ */
+
+.detalle_caja_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ============================================================
+   TARJETA
+   ============================================================ */
+
+.detalle_caja_card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 18px 20px 18px 24px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-left: 3px solid var(--texto-deshabilitado);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
+
+    animation: cajaEntrada 0.3s ease backwards;
+}
+
+.detalle_caja_lista .detalle_caja_card:nth-child(1) { animation-delay: 0.02s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(2) { animation-delay: 0.06s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(3) { animation-delay: 0.10s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(4) { animation-delay: 0.14s; }
+
+@keyframes cajaEntrada {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.detalle_caja_card:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+    transform: translateY(-2px);
+}
+
+.detalle_caja_card.ok {
+    border-left-color: var(--color-exito);
+}
+
+.detalle_caja_card.faltante {
+    border-left-color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 5%, var(--fondo-secundario));
+}
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+
+.detalle_caja_cabecera {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.detalle_caja_fechas {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detalle_caja_rango {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+}
+
+.detalle_caja_horas {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+}
+
+/* sello — mismo lenguaje que ElementoLista/recibo_stamp */
+.detalle_caja_sello {
+    flex-shrink: 0;
+
+    padding: 4px 10px;
+
+    border: 2px solid currentColor;
+    border-radius: 3px;
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    transform: rotate(-4deg);
+    opacity: 0.9;
+}
+
+.sello_verde {
+    color: var(--color-exito);
+}
+
+.sello_rojo {
+    color: var(--color-error);
+}
+
+/* ============================================================
+   MONTOS
+   ============================================================ */
+
+.detalle_caja_montos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    padding: 14px;
+
+    background: var(--fondo-hover);
+    border-radius: var(--radio-md);
+}
+
+.monto_item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.monto_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-deshabilitado);
+}
+
+.monto_valor {
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+
+    font-variant-numeric: tabular-nums;
+}
+
+.monto_positivo {
+    color: var(--color-exito);
+}
+
+.monto_negativo {
+    color: var(--color-error);
+}
+
+/* ============================================================
+   OBSERVACIONES
+   ============================================================ */
+
+.detalle_caja_obs {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    padding: 10px 12px;
+
+    border-left: 2px solid var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 6%, transparent);
+
+    color: var(--texto-secundario);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-style: italic;
+    line-height: var(--linea-texto);
+}
+
+.detalle_caja_obs svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-advertencia);
+}
+
+.detalle_caja_obs p {
+    margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .detalle_caja_card {
+        padding: 16px 16px 16px 20px;
+    }
+
+    .detalle_caja_montos {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .detalle_caja_cabecera {
+        flex-direction: column;
+    }
+
+    .detalle_caja_sello {
+        align-self: flex-start;
+    }
+}

@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import Cookies from "js-cookie";
+import { useEffect } from "react";
+
 import { Logo } from "../Logo/logo";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
 import {
@@ -31,8 +31,6 @@ import { MenuUsuario } from "../Logout/Logout";
 
 import "../MenuNav/menuNav.css";
 
-console.log();
-
 export const MenuNav = () => {
   const {
     rol,
@@ -46,8 +44,6 @@ export const MenuNav = () => {
     setDataVisualMenu,
     setSeccionAbierta,
   } = useMenuNav();
-
-  console.log(dataVisualMenu);
 
   const irInicio = () => irA("/");
   const irLogin = () => irA("/login");

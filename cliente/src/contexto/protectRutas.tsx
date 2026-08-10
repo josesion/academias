@@ -27,6 +27,7 @@ type UsuarioEscuelaInfo = {
   //escuela: number | null;
   rol: string;
   usuario: string;
+  razon_social: string;
 };
 
 export const RutasProtegidasContext = createContext<AuthContextType>(

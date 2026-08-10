@@ -1,0 +1,240 @@
+
+/* ============================================================
+   GRAFICOS — ELPIS DESIGN SYSTEM
+   ============================================================ */
+
+/* ============================================================
+   CONTENEDOR
+   ============================================================ */
+
+.grafico_metodos_pago {
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 18px;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-md);
+
+    box-shadow: var(--sombra-sm);
+
+    transition: var(--transicion);
+}
+
+.grafico_metodos_pago:hover {
+
+    border-color: var(--borde-hover);
+
+    box-shadow: var(--sombra-md);
+
+}
+
+
+/* ============================================================
+   TITULO
+   ============================================================ */
+
+.grafico_metodos_pago h4 {
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin: 0 0 18px;
+
+    color: var(--texto-principal);
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-sm);
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: .01em;
+}
+
+
+/* ============================================================
+   CONTENEDOR DEL GRAFICO
+   ============================================================ */
+
+.grafico_metodos_pago_contenido {
+
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+}
+
+
+/* ============================================================
+   RECHARTS
+   ============================================================ */
+
+.grafico_metodos_pago .recharts-wrapper {
+
+    font-family: var(--fuente-principal);
+}
+
+
+/* ============================================================
+   EJES
+   ============================================================ */
+
+.grafico_metodos_pago .recharts-cartesian-axis-line {
+
+    stroke: var(--borde);
+
+}
+
+.grafico_metodos_pago .recharts-cartesian-axis-tick-line {
+
+    stroke: var(--borde);
+
+}
+
+.grafico_metodos_pago .recharts-text {
+
+    fill: var(--texto-secundario);
+
+    font-family: var(--fuente-principal);
+
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   GRID
+   ============================================================ */
+
+.grafico_metodos_pago .recharts-cartesian-grid-horizontal line {
+
+    stroke: rgba(255, 255, 255, .05);
+
+}
+
+.grafico_metodos_pago .recharts-cartesian-grid-vertical line {
+
+    stroke: transparent;
+
+}
+
+
+/* ============================================================
+   TOOLTIP
+   ============================================================ */
+
+.grafico_metodos_pago .recharts-tooltip-wrapper {
+
+    outline: none;
+}
+
+.grafico_metodos_pago .recharts-default-tooltip {
+
+    padding: 10px 12px !important;
+
+    background: var(--fondo-superficie) !important;
+
+    border: 1px solid var(--borde-hover) !important;
+
+    border-radius: var(--radio-sm) !important;
+
+    box-shadow: var(--sombra-md);
+
+}
+
+.grafico_metodos_pago .recharts-tooltip-label {
+
+    margin-bottom: 5px;
+
+    color: var(--texto-principal) !important;
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-negrita);
+}
+
+.grafico_metodos_pago .recharts-tooltip-item {
+
+    color: var(--texto-secundario) !important;
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+}
+
+
+/* ============================================================
+   BARRAS
+   ============================================================ */
+
+.grafico_metodos_pago .recharts-bar-rectangle {
+
+    transition: opacity .2s ease;
+
+}
+
+.grafico_metodos_pago .recharts-bar-rectangle:hover {
+
+    opacity: .82;
+
+}
+
+.grafico_metodos_pago .recharts-tooltip-wrapper {
+    outline: none;
+}
+
+.grafico_metodos_pago .recharts-default-tooltip {
+    background: var(--fondo-superficie) !important;
+    border: 1px solid var(--borde) !important;
+    border-radius: var(--radio-sm) !important;
+    box-shadow: var(--sombra-md) !important;
+}
+
+.grafico_metodos_pago .recharts-tooltip-item {
+    color: var(--texto-principal) !important;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .grafico_metodos_pago {
+
+        padding: 15px;
+
+    }
+
+    .grafico_metodos_pago h4 {
+
+        margin-bottom: 14px;
+
+        font-size: var(--texto-xs);
+
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .grafico_metodos_pago {
+
+        padding: 13px;
+
+        border-radius: var(--radio-sm);
+
+    }
+
+}

@@ -6,6 +6,7 @@ interface UserData {
     rol: string;
     id_escuela : number,
     usuario : string,
+    razon_social : string
 }
 
 export interface LoginRequest {

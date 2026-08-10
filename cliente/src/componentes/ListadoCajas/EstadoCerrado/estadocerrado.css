@@ -1,0 +1,410 @@
+/* ============================================================
+   ESTADO CAJA CERRADA
+   ============================================================ */
+
+.estado_caja_cerrada {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 20px;
+
+    width: 100%;
+    box-sizing: border-box;
+
+    margin: 20px auto;
+
+    padding: 22px 24px;
+
+    overflow: hidden;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-md);
+}
+
+
+/* ============================================================
+   LÍNEA DECORATIVA SUPERIOR
+   ============================================================ */
+
+.estado_caja_cerrada::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--borde-hover),
+        transparent
+    );
+
+    opacity: 0.7;
+}
+
+
+/* ============================================================
+   VISUAL
+   ============================================================ */
+
+.caja_cerrada_visual {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 64px;
+    height: 64px;
+
+    flex-shrink: 0;
+}
+
+
+/* ============================================================
+   ANILLO
+   ============================================================ */
+
+.caja_cerrada_anillo {
+    position: absolute;
+
+    width: 58px;
+    height: 58px;
+
+    border-radius: 50%;
+
+    border: 1px solid var(--borde);
+
+    opacity: 0.8;
+
+    animation: cajaCerradaPulso 3s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   ICONO PRINCIPAL
+   ============================================================ */
+
+.caja_cerrada_icono {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 46px;
+
+    border-radius: var(--radio-sm);
+
+    background: var(--fondo-superficie);
+
+    border: 1px solid var(--borde);
+
+    color: var(--texto-deshabilitado);
+
+    box-shadow:
+        inset 0 0 20px rgba(255, 255, 255, 0.015);
+
+    animation: cajaCerradaRespirar 3s ease-in-out infinite;
+}
+
+
+/* ============================================================
+   PEQUEÑO CANDADO
+   ============================================================ */
+
+.caja_cerrada_candado {
+    position: absolute;
+
+    right: -5px;
+    bottom: -5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 22px;
+    height: 22px;
+
+    border-radius: 50%;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde-hover);
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   CONTENIDO
+   ============================================================ */
+
+.caja_cerrada_contenido {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+
+.caja_cerrada_encabezado {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 4px;
+}
+
+.caja_cerrada_label {
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-semi-negrita);
+
+    text-transform: uppercase;
+
+    letter-spacing: 1px;
+
+    color: var(--texto-deshabilitado);
+}
+
+
+/* ============================================================
+   BADGE
+   ============================================================ */
+
+.caja_cerrada_badge {
+    display: flex;
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 3px 8px;
+
+    border-radius: 999px;
+
+    background: var(--fondo-superficie);
+
+    border: 1px solid var(--borde);
+
+    color: var(--texto-deshabilitado);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: 0.62rem;
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: 0.7px;
+}
+
+.caja_cerrada_badge span {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--texto-deshabilitado);
+
+    opacity: 0.7;
+}
+
+
+/* ============================================================
+   TÍTULO
+   ============================================================ */
+
+.caja_cerrada_contenido h2 {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+
+    font-size: var(--titulo-sm);
+
+    font-weight: var(--peso-negrita);
+
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   DESCRIPCIÓN
+   ============================================================ */
+
+.caja_cerrada_contenido p {
+    max-width: 620px;
+
+    margin: 5px 0 0;
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-sm);
+
+    line-height: 1.5;
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   LÍNEA DE ESTADO
+   ============================================================ */
+
+.caja_cerrada_linea {
+    position: absolute;
+
+    right: 24px;
+    bottom: 18px;
+
+    width: 70px;
+    height: 1px;
+
+    overflow: hidden;
+
+    background: var(--borde);
+}
+
+.caja_cerrada_linea span {
+    position: absolute;
+
+    top: 0;
+    left: -30px;
+
+    width: 25px;
+    height: 1px;
+
+    background: var(--texto-deshabilitado);
+
+    opacity: 0.5;
+
+    animation: cajaCerradaScan 4s linear infinite;
+}
+
+
+/* ============================================================
+   ANIMACIONES
+   ============================================================ */
+
+@keyframes cajaCerradaPulso {
+
+    0%,
+    100% {
+        transform: scale(0.95);
+
+        opacity: 0.45;
+    }
+
+    50% {
+        transform: scale(1.08);
+
+        opacity: 0.8;
+    }
+}
+
+
+@keyframes cajaCerradaRespirar {
+
+    0%,
+    100% {
+        opacity: 0.8;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+@keyframes cajaCerradaScan {
+
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(100px);
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    .estado_caja_cerrada {
+        align-items: flex-start;
+
+        padding: 18px;
+    }
+
+    .caja_cerrada_visual {
+        width: 54px;
+        height: 54px;
+    }
+
+    .caja_cerrada_anillo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .caja_cerrada_icono {
+        width: 40px;
+        height: 40px;
+    }
+
+    .caja_cerrada_contenido h2 {
+        font-size: 1rem;
+    }
+
+    .caja_cerrada_contenido p {
+        font-size: 0.78rem;
+    }
+
+    .caja_cerrada_linea {
+        display: none;
+    }
+}
+
+
+@media (max-width: 430px) {
+
+    .estado_caja_cerrada {
+        gap: 14px;
+    }
+
+    .caja_cerrada_encabezado {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 5px;
+    }
+
+    .caja_cerrada_visual {
+        margin-top: 3px;
+    }
+}

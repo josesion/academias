@@ -61,7 +61,7 @@ export const loginLogica = () : LoginLogicaReturn =>{
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const respuesta = await LoginFetch(dataLogin);
-        
+ 
         if (
           respuesta.error === true &&
           respuesta.code === "VALIDATION_ERROR" &&
@@ -84,7 +84,8 @@ export const loginLogica = () : LoginLogicaReturn =>{
 
           setRol({
             rol: respuesta.data.rol,
-            usuario : respuesta.data.usuario
+            usuario : respuesta.data.usuario,
+            razon_social : respuesta.data.razon_social
           });
     
           if (respuesta.data.rol === "administrador")

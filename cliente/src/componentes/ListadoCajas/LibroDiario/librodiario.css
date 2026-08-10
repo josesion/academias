@@ -1,0 +1,399 @@
+/* ============================================================
+   LIBRO DIARIO GENERAL — nivel contador
+   ============================================================ */
+
+.libro_diario_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* ============================================================
+   ESTADO VACÍO
+   ============================================================ */
+
+.libro_diario_vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 60px 20px;
+
+    color: var(--texto-deshabilitado);
+    text-align: center;
+}
+
+.libro_diario_vacio p {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+}
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+
+.libro_diario_encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.libro_diario_titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.libro_diario_titulo svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    box-sizing: border-box;
+
+    border-radius: var(--radio-sm);
+    background: color-mix(in srgb, var(--color-primario) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
+    color: var(--color-primario);
+}
+
+.libro_diario_titulo h2 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+}
+
+.libro_diario_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+}
+
+/* ============================================================
+   RESUMEN
+   ============================================================ */
+
+.libro_diario_resumen {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.resumen_item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.resumen_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    color: var(--texto-deshabilitado);
+}
+
+.resumen_valor {
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+    font-variant-numeric: tabular-nums;
+}
+
+.resumen_valor.positivo {
+    color: var(--color-exito);
+}
+
+.resumen_valor.negativo {
+    color: var(--color-error);
+}
+
+.resumen_neto .resumen_valor {
+    color: var(--color-primario);
+}
+
+/* ============================================================
+   TABLA
+   ============================================================ */
+
+.libro_diario_tabla_wrapper {
+    width: 100%;
+    max-height: 560px;
+    overflow: auto;
+
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--borde);
+    background: var(--fondo-secundario);
+}
+
+.libro_diario_tabla_wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+
+.libro_diario_tabla_wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 10px;
+}
+
+.libro_diario_tabla {
+    width: 100%;
+    border-collapse: collapse;
+
+    font-family: var(--fuente-principal);
+}
+
+.libro_diario_tabla thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    padding: 12px 16px;
+
+    background: var(--fondo-secundario);
+    border-bottom: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--texto-deshabilitado);
+
+    text-align: left;
+}
+
+.libro_diario_tabla th.text-right,
+.libro_diario_tabla td.text-right {
+    text-align: right;
+}
+
+/* separador de día — fila que ocupa todo el ancho */
+.fila_separador_dia td {
+    padding: 8px 16px;
+
+    background: var(--fondo-hover);
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-secundario);
+
+    border-bottom: 1px solid var(--borde);
+    border-top: 1px solid var(--borde);
+}
+
+/* fila de movimiento */
+.fila_movimiento td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--borde);
+
+    font-size: var(--texto-sm);
+    color: var(--texto-principal);
+    white-space: nowrap;
+
+    transition: var(--transicion);
+}
+
+.fila_movimiento:hover td {
+    background: var(--fondo-hover);
+}
+
+.fila_movimiento:last-child td {
+    border-bottom: none;
+}
+
+.col_hora {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+    width: 70px;
+}
+
+.col_concepto {
+    white-space: normal;
+    min-width: 220px;
+}
+
+.concepto_contenido {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.concepto_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+}
+
+.icono_ingreso {
+    color: var(--color-exito);
+    background: color-mix(in srgb, var(--color-exito) 14%, transparent);
+}
+
+.icono_egreso {
+    color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 14%, transparent);
+}
+
+.concepto_texto {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.concepto_desc {
+    font-weight: var(--peso-medio);
+    white-space: normal;
+}
+
+.concepto_ref {
+    font-family: var(--fuente-codigo);
+    font-size: 0.66rem;
+    color: var(--texto-deshabilitado);
+}
+
+.col_medio {
+    width: 130px;
+}
+
+.medio_pill {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.68rem;
+    text-transform: capitalize;
+    color: var(--texto-secundario);
+}
+
+.col_monto {
+    width: 110px;
+    font-family: var(--fuente-codigo);
+    font-weight: var(--peso-semi-negrita);
+    font-variant-numeric: tabular-nums;
+}
+
+.monto_positivo {
+    color: var(--color-exito);
+}
+
+.monto_negativo {
+    color: var(--color-error);
+}
+
+.col_saldo {
+    width: 120px;
+    font-family: var(--fuente-codigo);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+    font-variant-numeric: tabular-nums;
+}
+
+.concepto_ref {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.66rem;
+    color: var(--texto-deshabilitado);
+}
+
+.concepto_ref svg {
+    flex-shrink: 0;
+}
+
+.concepto_ref_separador {
+    opacity: 0.5;
+}
+
+/* ============================================================
+   RESPONSIVE — tabla a tarjetas
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .libro_diario_encabezado {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .libro_diario_tabla thead {
+        display: none;
+    }
+
+    .libro_diario_tabla,
+    .libro_diario_tabla tbody,
+    .fila_movimiento {
+        display: block;
+        width: 100%;
+    }
+
+    .fila_movimiento {
+        padding: 14px 16px;
+    }
+
+    .fila_movimiento td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+
+        width: 100%;
+        padding: 6px 0;
+        border-bottom: none;
+        white-space: normal;
+    }
+
+    .fila_movimiento td::before {
+        content: attr(data-label);
+
+        font-family: var(--fuente-codigo);
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--texto-deshabilitado);
+
+        flex-shrink: 0;
+    }
+
+    .col_concepto::before {
+        align-self: flex-start;
+        padding-top: 2px;
+    }
+
+    .fila_movimiento {
+        border-bottom: 1px solid var(--borde);
+    }
+}

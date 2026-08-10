@@ -5,7 +5,7 @@ import { asistenciaHorarios, registroAsistencia, obtenerDataAsistencia } from ".
 
 
 export const useAsistenciaSet = () =>{
- 
+
     
     const config = {
         //nombre_escuela : rol. , declarar en login el nombre de la esucela 

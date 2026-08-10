@@ -1,4 +1,7 @@
-import {  useEffect , useReducer} from "react";
+import { useEffect , useReducer, useContext} from "react";
+import { RutasProtegidasContext } from "../contexto/protectRutas";
+import { useActualizarAlEnfocar } from "../utils/useActulizarFocus";
+
 import { initialState, asistenciaReducer} from "../reducers/asistenciaReducer";
 import { initialStateMetricas, metricasReducer } from "../reducers/metricasReducer";
 
@@ -18,11 +21,14 @@ interface DataUseAsistenciaConfig{
 };
 
 export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
-
+    const { rol }  = useContext(RutasProtegidasContext);
 
     const [ sateMetrica, disparchMetricas] = useReducer( metricasReducer, initialStateMetricas());
     const [ state , dispatch] = useReducer( asistenciaReducer, initialState());
 
+
+
+    
 // ──────────────────────────────────────────────────────────────
 //Handles asistencia 
 // ────────────────────────────────────────────────────────────── 
@@ -134,7 +140,11 @@ useEffect(()=>{
 },[]);
 
 
+useEffect(()=>{
+    dispatch({ type : "SET_NOMBRE_ESCUELA", payload : rol?.razon_social ? rol.razon_social : "-" })
+},[state.actualizar])
 
+    useActualizarAlEnfocar({dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR"  }); 
 
     return{
         state,

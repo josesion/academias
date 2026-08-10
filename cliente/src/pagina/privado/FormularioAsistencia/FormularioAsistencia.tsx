@@ -32,7 +32,7 @@ export const FormularioAsistencia = () => {
       {/* ================= HEADER ================= */}
 
       <header className="asistencia_header">
-        <h1>Academia Fuerza Gigante</h1>
+        <h1>{state.nombreEscuela} </h1>
 
         <p>Registro automático de asistencia</p>
       </header>

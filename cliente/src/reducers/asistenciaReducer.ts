@@ -6,7 +6,8 @@ import  type * as TipadoAsistencia  from "../tipadosTs/asistencia.typado";
 // ==========================================
 
 export interface AsitenciaTipado {
-   
+    actualizar : number,
+    nombreEscuela : string | null,
     errorGenerico : string | null,
     exitoAsistencia : boolean,
     claseEnCurso : TipadoAsistencia.ResultadoClase_en_cursos,
@@ -22,6 +23,8 @@ export interface AsitenciaTipado {
 // ==========================================
 
 export const initialState = (): AsitenciaTipado =>({
+    actualizar : 0,
+    nombreEscuela : null,
     errorGenerico : null,
     exitoAsistencia : false, 
     claseEnCurso : { error : null , message: null , code : null},
@@ -44,13 +47,14 @@ export const initialState = (): AsitenciaTipado =>({
 // 3. ACCIONES (EVENTOS DEL SISTEMA)
 // ==========================================
 export type AsistenciaAction =
-    
+    | { type :  "SET_NOMBRE_ESCUELA", payload : string | null } 
+    | { type :  "SET_ACTUALIZAR" }     
     | { type: 'SET_ERROR_GENERICO'; payload: string | null }
 
 // ──────────────────────────────────────────────────────────────
 // estados para  handleCachearAlumno
 // ────────────────────────────────────────────────────────────── 
-
+   
     | { type: 'SET_REGISTRO_ASISTENCIA'; payload:  TipadoAsistencia.BusquedaAlumno }
 
     | { type: 'SET_ASISTENCIA_OK'; payload: {
@@ -90,6 +94,11 @@ export const asistenciaReducer = (state: ReturnType<typeof initialState>, action
 : ReturnType<typeof initialState> => {
   
         switch(action.type){
+            case "SET_ACTUALIZAR" : 
+                return { ...state, actualizar : state.actualizar + 1 }
+
+            case "SET_NOMBRE_ESCUELA" : 
+                return { ...state, nombreEscuela : action.payload}
 
             case "SET_ERROR_GENERICO" :
                 return{ ...state, errorGenerico : action.payload };

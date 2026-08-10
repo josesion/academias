@@ -24,6 +24,7 @@ import { InscripcionPage } from "./pagina/privado/Inscripcion/Inscripcion";
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
 // Formulario  Arqueo Caja
 import { CajaArqueo } from "./pagina/privado/caja/Caja";
+import { ListadoCajas } from "./pagina/privado/ListadoCajas/ListadoCajas";
 // Formulario listado Inscripciones
 import { ListadoInscripcionPage } from "./pagina/privado/Listado_inscripcion/ListadoInscrip";
 
@@ -86,6 +87,7 @@ function App() {
                 <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
                 <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
                 <Route path="/caja_usuario" element={<CajaArqueo />} />
+                <Route path="/caja_listado" element={<ListadoCajas />} />
                 <Route path="/inscrip_page" element={<InscripcionPage />} />
                 <Route path="/horario_page" element={<HorarioPagina />} />
                 <Route

@@ -1,0 +1,436 @@
+/* ============================================================
+   ESTADO CAJA — ENCABEZADO LISTADO
+   ============================================================ */
+
+.estado_caja_contenedor {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin: 20px auto;
+
+    padding: 20px 22px;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+}
+
+.estado_caja_contenedor:hover {
+    border-color: var(--borde-hover);
+}
+
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+
+.estado_caja_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding-bottom: 16px;
+
+    border-bottom: 1px solid var(--borde);
+}
+
+
+/* ============================================================
+   TÍTULO
+   ============================================================ */
+
+.estado_caja_titulo {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.estado_caja_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border-radius: var(--radio-sm);
+
+    background: color-mix(
+        in srgb,
+        var(--color-primario) 12%,
+        transparent
+    );
+
+    border: 1px solid color-mix(
+        in srgb,
+        var(--color-primario) 25%,
+        transparent
+    );
+
+    color: var(--color-primario);
+}
+
+.estado_caja_label {
+    display: block;
+
+    margin-bottom: 2px;
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-semi-negrita);
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+    color: var(--texto-deshabilitado);
+}
+
+.estado_caja_titulo h2 {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+
+    font-size: var(--titulo-sm);
+
+    font-weight: var(--peso-negrita);
+
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   BADGE ESTADO
+   ============================================================ */
+
+.estado_caja_badge {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: rgba(34, 197, 94, 0.08);
+
+    border: 1px solid rgba(34, 197, 94, 0.18);
+
+    color: var(--color-exito);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: 0.68rem;
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: 0.8px;
+
+    white-space: nowrap;
+}
+
+.estado_caja_punto {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--color-exito);
+
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+
+    animation: estadoCajaPulso 2s ease-in-out infinite;
+}
+
+@keyframes estadoCajaPulso {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.45;
+    }
+}
+
+
+/* ============================================================
+   CUERPO
+   ============================================================ */
+
+.cuerpo_estado {
+    display: flex;
+    flex-direction: column;
+
+    gap: 18px;
+
+    padding-top: 18px;
+}
+
+
+/* ============================================================
+   INFORMACIÓN DEL CAJERO
+   ============================================================ */
+
+.estado_caja_info {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.estado_caja_dato {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+
+    padding: 12px 14px;
+
+    background: var(--fondo-superficie);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-secundario);
+}
+
+.estado_caja_dato svg {
+    flex-shrink: 0;
+
+    color: var(--color-primario);
+}
+
+.estado_caja_dato div {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.estado_caja_dato span {
+    margin-bottom: 3px;
+
+    font-family: var(--fuente-codigo);
+
+    font-size: 0.65rem;
+
+    font-weight: var(--peso-medio);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.7px;
+
+    color: var(--texto-deshabilitado);
+}
+
+.estado_caja_dato strong {
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-sm);
+
+    font-weight: var(--peso-semi-negrita);
+
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   MONTOS
+   ============================================================ */
+
+.cuerpo_estado_montos {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+.estado_caja_monto {
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    padding: 14px 16px;
+
+    background: var(--fondo-superficie);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-sm);
+}
+
+.estado_caja_monto span {
+    font-family: var(--fuente-codigo);
+
+    font-size: 0.65rem;
+
+    font-weight: var(--peso-medio);
+
+    letter-spacing: 0.7px;
+
+    text-transform: uppercase;
+
+    color: var(--texto-deshabilitado);
+}
+
+.estado_caja_monto strong {
+    font-family: var(--fuente-principal);
+
+    font-size: 1.05rem;
+
+    font-weight: var(--peso-negrita);
+
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   TOTAL
+   ============================================================ */
+
+.estado_caja_monto.total {
+    border-color: color-mix(
+        in srgb,
+        var(--color-primario) 25%,
+        var(--borde)
+    );
+
+    background: color-mix(
+        in srgb,
+        var(--color-primario) 5%,
+        var(--fondo-superficie)
+    );
+}
+
+.estado_caja_monto.total strong {
+    color: var(--color-primario);
+}
+
+
+/* ============================================================
+   BOTÓN
+   ============================================================ */
+
+.cuerpo_estado_botones {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding-top: 2px;
+}
+
+.cuerpo_estado_botones .boton_personalizado {
+    min-width: 210px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+
+    .estado_caja_contenedor {
+        padding: 18px;
+    }
+
+    .estado_caja_header {
+        align-items: flex-start;
+    }
+
+    .estado_caja_info {
+        grid-template-columns: 1fr;
+    }
+
+    .cuerpo_estado_montos {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .estado_caja_monto.total {
+        grid-column: span 2;
+    }
+
+    .cuerpo_estado_botones {
+        justify-content: stretch;
+    }
+
+    .cuerpo_estado_botones .boton_personalizado {
+        width: 100%;
+    }
+}
+
+
+/* ============================================================
+   MÓVIL PEQUEÑO
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    .estado_caja_contenedor {
+        margin: 14px auto;
+
+        padding: 16px;
+    }
+
+    .estado_caja_header {
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+    .estado_caja_badge {
+        align-self: flex-start;
+    }
+
+    .estado_caja_titulo h2 {
+        font-size: 1rem;
+    }
+
+    .estado_caja_icono {
+        width: 36px;
+        height: 36px;
+    }
+
+    .cuerpo_estado {
+        gap: 14px;
+    }
+
+    .cuerpo_estado_montos {
+        grid-template-columns: 1fr;
+    }
+
+    .estado_caja_monto.total {
+        grid-column: auto;
+    }
+
+    .estado_caja_monto strong {
+        font-size: 1rem;
+    }
+}
