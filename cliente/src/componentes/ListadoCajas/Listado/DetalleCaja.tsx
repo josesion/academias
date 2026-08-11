@@ -19,7 +19,15 @@ interface DetalleProps {
   monto_faltante: number;
 }
 
-export const DetalleCajas = ({ props }: { props: DetalleProps[] }) => {
+interface DetalleCajasProps {
+  props: DetalleProps[];
+  onAbrirLibroDiario: () => void; // Función global que recibe el id
+}
+
+export const DetalleCajas = ({
+  props,
+  onAbrirLibroDiario,
+}: DetalleCajasProps) => {
   if (!props || props.length === 0) {
     return (
       <div className="detalle_caja_vacio">
@@ -106,9 +114,7 @@ export const DetalleCajas = ({ props }: { props: DetalleProps[] }) => {
                 texto="Ver detalle de arqueo"
                 logo="Go"
                 disable={false}
-                onClick={() => {
-                  console.log("Abrir libro diario");
-                }}
+                onClick={onAbrirLibroDiario}
               />
             </article>
           );

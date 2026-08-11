@@ -13,7 +13,8 @@ interface LoginDataResult {
     id_escuela : number,
     usuario    : string,
     tokenCadena : string,
-    rol : "usuario" | "admin" 
+    rol : "usuario" | "admin",
+    razon_social : string 
 };
 
 /**
@@ -36,11 +37,8 @@ const loginUsuario =  async ( data : LoginInputs)
 : Promise<TipadoData<LoginDataResult>>=> {
     const loginData : LoginInputs = loginSchema.parse( data );
     const loginResult = await dataLogin.loginData( loginData );
-   
+  
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
-
-
-
 
         // validamos que la contraseña sea  la correcta  
         //  data.contrasena = "130788" es la contraseña q viene del usuario
@@ -86,6 +84,7 @@ const loginUsuario =  async ( data : LoginInputs)
                     id_usuario :  loginResult.data.id_usuario,
                     usuario    :  loginResult.data.usuario,
                     rol        : loginResult.data.rol, 
+                    razon_social : loginResult.data.razon_social,
                     tokenCadena : token
                 },
                 code : "USUARIO_EXISTE"

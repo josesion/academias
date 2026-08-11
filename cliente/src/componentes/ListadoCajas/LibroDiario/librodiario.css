@@ -1,14 +1,15 @@
+
 /* ============================================================
-   LIBRO DIARIO GENERAL — nivel contador
+   LIBRO DIARIO — formato clásico oscuro ELPIS
    ============================================================ */
 
 .libro_diario_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
 
     width: 100%;
-    max-width: 1100px;
+    max-width: 1000px;
     margin: 0 auto;
 }
 
@@ -31,6 +32,7 @@
 
 .libro_diario_vacio p {
     margin: 0;
+
     font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
 }
@@ -42,12 +44,6 @@
 .libro_diario_encabezado {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 20px;
-
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--borde);
 }
 
 .libro_diario_titulo {
@@ -60,340 +56,868 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
 
-    width: 36px;
-    height: 36px;
-    padding: 8px;
+    width: 34px;
+    height: 34px;
+
+    padding: 7px;
+
     box-sizing: border-box;
 
     border-radius: var(--radio-sm);
-    background: color-mix(in srgb, var(--color-primario) 16%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
+
+    background: color-mix(
+        in srgb,
+        var(--color-primario) 12%,
+        transparent
+    );
+
+    border: 1px solid color-mix(
+        in srgb,
+        var(--color-primario) 22%,
+        transparent
+    );
+
     color: var(--color-primario);
 }
 
 .libro_diario_titulo h2 {
     margin: 0;
+
     font-family: var(--fuente-titulos);
     font-size: var(--texto-lg);
     font-weight: var(--peso-semi-negrita);
+
     color: var(--texto-principal);
 }
 
 .libro_diario_titulo span {
+    display: block;
+
+    margin-top: 2px;
+
     font-family: var(--fuente-principal);
     font-size: var(--texto-xs);
+
     color: var(--texto-deshabilitado);
 }
 
 /* ============================================================
-   RESUMEN
+   CONTENEDOR TABLA
    ============================================================ */
 
-.libro_diario_resumen {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-}
+.libro_diario_tabla_wrapper {
+    width: 100%;
 
-.resumen_item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
+    overflow-x: auto;
 
-.resumen_label {
-    font-family: var(--fuente-codigo);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 1.1px;
-    color: var(--texto-deshabilitado);
-}
+    background: var(--fondo-secundario);
 
-.resumen_valor {
-    font-family: var(--fuente-titulos);
-    font-size: var(--texto-md);
-    font-weight: var(--peso-semi-negrita);
-    color: var(--texto-principal);
-    font-variant-numeric: tabular-nums;
-}
+    border: 1px solid var(--borde);
 
-.resumen_valor.positivo {
-    color: var(--color-exito);
-}
+    border-radius: var(--radio-lg);
 
-.resumen_valor.negativo {
-    color: var(--color-error);
-}
+    padding: 3px;
 
-.resumen_neto .resumen_valor {
-    color: var(--color-primario);
+    box-shadow: var(--sombra-sm);
 }
 
 /* ============================================================
    TABLA
    ============================================================ */
 
-.libro_diario_tabla_wrapper {
+.libro_diario_tabla_clasica {
     width: 100%;
-    max-height: 560px;
-    overflow: auto;
 
-    border-radius: var(--radio-lg);
-    border: 1px solid var(--borde);
-    background: var(--fondo-secundario);
-}
-
-.libro_diario_tabla_wrapper::-webkit-scrollbar {
-    width: 6px;
-}
-
-.libro_diario_tabla_wrapper::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
-}
-
-.libro_diario_tabla {
-    width: 100%;
     border-collapse: collapse;
 
     font-family: var(--fuente-principal);
 }
 
-.libro_diario_tabla thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+/* ============================================================
+   ENCABEZADO DE TABLA
+   ============================================================ */
 
-    padding: 12px 16px;
+.libro_diario_tabla_clasica thead th {
+    padding: 11px 16px;
 
-    background: var(--fondo-secundario);
+    /*
+       Antes teníamos una línea blanca de 2px.
+       Ahora usamos una separación mucho más discreta.
+    */
     border-bottom: 1px solid var(--borde);
 
     font-family: var(--fuente-codigo);
+
     font-size: var(--texto-xs);
-    font-weight: var(--peso-negrita);
-    letter-spacing: 0.06em;
+
+    font-weight: var(--peso-semi-negrita);
+
+    letter-spacing: 0.07em;
+
     text-transform: uppercase;
+
     color: var(--texto-deshabilitado);
 
     text-align: left;
 }
 
-.libro_diario_tabla th.text-right,
-.libro_diario_tabla td.text-right {
+.libro_diario_tabla_clasica th.text-right,
+.libro_diario_tabla_clasica td.text-right {
     text-align: right;
 }
 
-/* separador de día — fila que ocupa todo el ancho */
-.fila_separador_dia td {
-    padding: 8px 16px;
+/* ============================================================
+   FILAS
+   ============================================================ */
 
-    background: var(--fondo-hover);
-
-    font-family: var(--fuente-codigo);
-    font-size: 0.65rem;
-    font-weight: var(--peso-negrita);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--texto-secundario);
-
-    border-bottom: 1px solid var(--borde);
-    border-top: 1px solid var(--borde);
-}
-
-/* fila de movimiento */
-.fila_movimiento td {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--borde);
-
-    font-size: var(--texto-sm);
-    color: var(--texto-principal);
-    white-space: nowrap;
-
+.fila_asiento {
     transition: var(--transicion);
 }
 
-.fila_movimiento:hover td {
-    background: var(--fondo-hover);
+/*
+   En lugar de franjas demasiado visibles,
+   usamos una variación muy pequeña del fondo.
+*/
+.fila_asiento:nth-child(even) {
+    background: rgba(255, 255, 255, 0.018);
 }
 
-.fila_movimiento:last-child td {
-    border-bottom: none;
+.fila_asiento:hover {
+    background: color-mix(
+        in srgb,
+        var(--color-primario) 5%,
+        transparent
+    );
 }
 
-.col_hora {
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    color: var(--texto-deshabilitado);
+.fila_asiento td {
+    padding: 10px 16px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+
+    font-size: var(--texto-sm);
+
+    color: var(--texto-principal);
+
+    vertical-align: middle;
+}
+
+/* ============================================================
+   CÓDIGO
+   ============================================================ */
+
+.col_cod {
     width: 70px;
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-deshabilitado);
 }
 
-.col_concepto {
-    white-space: normal;
-    min-width: 220px;
+/* ============================================================
+   FECHA
+   ============================================================ */
+
+.col_fecha {
+    width: 130px;
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-secundario);
+
+    white-space: nowrap;
 }
 
-.concepto_contenido {
+.fecha_hora {
+    color: var(--texto-deshabilitado);
+}
+
+/* ============================================================
+   CUENTA / CONCEPTO
+   ============================================================ */
+
+.col_cuenta {
+    min-width: 240px;
+}
+
+.cuenta_contenido {
     display: flex;
     align-items: center;
+
     gap: 10px;
 }
 
-.concepto_icono {
+.cuenta_icono {
     display: flex;
     align-items: center;
     justify-content: center;
+
     flex-shrink: 0;
 
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
+
     border-radius: 50%;
 }
 
 .icono_ingreso {
     color: var(--color-exito);
-    background: color-mix(in srgb, var(--color-exito) 14%, transparent);
+
+    background: color-mix(
+        in srgb,
+        var(--color-exito) 12%,
+        transparent
+    );
 }
 
 .icono_egreso {
     color: var(--color-error);
-    background: color-mix(in srgb, var(--color-error) 14%, transparent);
+
+    background: color-mix(
+        in srgb,
+        var(--color-error) 12%,
+        transparent
+    );
 }
 
-.concepto_texto {
+.cuenta_texto {
     display: flex;
     flex-direction: column;
+
     gap: 2px;
+
     min-width: 0;
 }
 
-.concepto_desc {
+.cuenta_desc {
     font-weight: var(--peso-medio);
-    white-space: normal;
-}
 
-.concepto_ref {
-    font-family: var(--fuente-codigo);
-    font-size: 0.66rem;
-    color: var(--texto-deshabilitado);
-}
-
-.col_medio {
-    width: 130px;
-}
-
-.medio_pill {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-
-    background: var(--fondo-hover);
-    border: 1px solid var(--borde);
-
-    font-family: var(--fuente-codigo);
-    font-size: 0.68rem;
-    text-transform: capitalize;
-    color: var(--texto-secundario);
-}
-
-.col_monto {
-    width: 110px;
-    font-family: var(--fuente-codigo);
-    font-weight: var(--peso-semi-negrita);
-    font-variant-numeric: tabular-nums;
-}
-
-.monto_positivo {
-    color: var(--color-exito);
-}
-
-.monto_negativo {
-    color: var(--color-error);
-}
-
-.col_saldo {
-    width: 120px;
-    font-family: var(--fuente-codigo);
-    font-weight: var(--peso-semi-negrita);
     color: var(--texto-principal);
-    font-variant-numeric: tabular-nums;
 }
 
-.concepto_ref {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
+.cuenta_meta {
     font-family: var(--fuente-codigo);
-    font-size: 0.66rem;
+
+    font-size: 0.64rem;
+
     color: var(--texto-deshabilitado);
-}
 
-.concepto_ref svg {
-    flex-shrink: 0;
-}
+    white-space: nowrap;
 
-.concepto_ref_separador {
-    opacity: 0.5;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
 }
 
 /* ============================================================
-   RESPONSIVE — tabla a tarjetas
+   DEBE / HABER
+   ============================================================ */
+
+.col_debe,
+.col_haber {
+    width: 130px;
+
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-medio);
+
+    font-variant-numeric: tabular-nums;
+
+    color: var(--texto-secundario);
+}
+
+/* ============================================================
+   TOTALES
+   ============================================================ */
+
+.fila_totales td {
+    padding: 11px 16px;
+
+    /*
+       Línea mucho más fina y discreta.
+    */
+    border-top: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-semi-negrita);
+
+    color: var(--texto-secundario);
+}
+
+.fila_totales td:first-child {
+    font-family: var(--fuente-principal);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-deshabilitado);
+}
+
+/* ============================================================
+   TOTAL GENERAL
+   ============================================================ */
+
+.fila_total_general td {
+    padding: 11px 16px;
+
+    background: color-mix(
+        in srgb,
+        var(--color-primario) 7%,
+        transparent
+    );
+
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-semi-negrita);
+
+    font-size: var(--texto-sm);
+
+    color: var(--color-primario);
+
+    font-variant-numeric: tabular-nums;
+}
+
+.fila_total_general td:first-child {
+    font-family: var(--fuente-principal);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-secundario);
+}
+
+.btn-imprimir {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    height: 44px;
+    min-width: 140px;
+    padding: 0 20px;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+
+    border-radius: 14px;
+    cursor: pointer;
+
+    position: relative;
+    overflow: hidden;
+
+    transition: all 0.25s ease;
+
+    /* Estética Glass inspirada en tus variantes (tinte esmeralda/zafiro suave) */
+    background: rgba(14, 116, 144, 0.15);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    color: #e0f2fe;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
+
+.btn-imprimir:hover {
+    transform: translateY(-2px);
+    background: rgba(14, 116, 144, 0.28);
+    border-color: rgba(56, 189, 248, 0.45);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    color: #f0f9ff;
+}
+
+.btn-imprimir:active {
+    transform: scale(0.97);
+    box-shadow: none;
+}
+
+/* ============================================================
+   RESPONSIVE
    ============================================================ */
 
 @media (max-width: 768px) {
-    .libro_diario_encabezado {
-        flex-direction: column;
-        align-items: flex-start;
-    }
 
-    .libro_diario_tabla thead {
+    .libro_diario_tabla_clasica thead {
         display: none;
     }
 
-    .libro_diario_tabla,
-    .libro_diario_tabla tbody,
-    .fila_movimiento {
+    .libro_diario_tabla_clasica,
+    .libro_diario_tabla_clasica tbody,
+    .libro_diario_tabla_clasica tfoot,
+    .fila_asiento,
+    .fila_totales,
+    .fila_total_general {
         display: block;
-        width: 100%;
-    }
-
-    .fila_movimiento {
-        padding: 14px 16px;
-    }
-
-    .fila_movimiento td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
 
         width: 100%;
-        padding: 6px 0;
-        border-bottom: none;
-        white-space: normal;
     }
 
-    .fila_movimiento td::before {
-        content: attr(data-label);
+    .fila_asiento {
+        padding: 11px 14px;
 
-        font-family: var(--fuente-codigo);
-        font-size: 0.6rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        color: var(--texto-deshabilitado);
-
-        flex-shrink: 0;
-    }
-
-    .col_concepto::before {
-        align-self: flex-start;
-        padding-top: 2px;
-    }
-
-    .fila_movimiento {
         border-bottom: 1px solid var(--borde);
     }
+
+    .fila_asiento td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: flex-start;
+
+        gap: 12px;
+
+        padding: 4px 0;
+
+        border-bottom: none;
+    }
+
+    .fila_asiento td::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-family: var(--fuente-codigo);
+
+        font-size: 0.6rem;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.06em;
+
+        color: var(--texto-deshabilitado);
+    }
+
+    .col_cuenta {
+        min-width: 0;
+    }
+
+    .cuenta_contenido {
+        align-items: flex-start;
+    }
+
+    .cuenta_meta {
+        max-width: 220px;
+    }
+
+    .fila_totales {
+        padding: 12px 14px;
+
+        display: flex;
+
+        justify-content: space-between;
+    }
+
+    .fila_totales td {
+        padding: 4px 0;
+
+        border-top: none;
+    }
+
+    .fila_totales td:first-child {
+        display: none;
+    }
+
+    .fila_total_general {
+        padding: 12px 14px;
+
+        display: flex;
+
+        justify-content: space-between;
+    }
+
+    .fila_total_general td {
+        padding: 4px 0;
+    }
 }
+
+@media (max-width: 480px) {
+
+    .libro_diario_titulo h2 {
+        font-size: var(--texto-md);
+    }
+
+    .libro_diario_titulo span {
+        font-size: 0.65rem;
+    }
+
+    .libro_diario_tabla_wrapper {
+        border-radius: var(--radio-md);
+    }
+
+    .fila_asiento {
+        padding: 10px 12px;
+    }
+
+    .cuenta_meta {
+        max-width: 170px;
+    }
+
+    .col_debe,
+    .col_haber {
+        font-size: var(--texto-xs);
+    }
+}
+
+
+
+/* ============================================================
+   IMPRESIÓN — LIBRO DIARIO
+   ============================================================ */
+
+@media print {
+
+    /* --------------------------------------------------------
+       1. DOCUMENTO COMPLETO
+       -------------------------------------------------------- */
+
+    html,
+    body {
+        width: 100% !important;
+        height: auto !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: visible !important;
+
+        background: #ffffff !important;
+    }
+
+
+    /* --------------------------------------------------------
+       2. OCULTAR LA APLICACIÓN
+       -------------------------------------------------------- */
+
+    body > * {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------------------
+       3. ENCONTRAR EL CONTENEDOR DEL LIBRO
+       
+       IMPORTANTE:
+       Si tu React está montado directamente dentro de #root,
+       hacemos visible únicamente ese árbol.
+       -------------------------------------------------------- */
+
+    #root {
+        display: block !important;
+
+        width: 100% !important;
+        height: auto !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: visible !important;
+
+        background: #ffffff !important;
+    }
+
+
+    /* --------------------------------------------------------
+       4. OCULTAR TODO DENTRO DE ROOT
+       -------------------------------------------------------- */
+
+    #root > * {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------------------
+       5. MOSTRAR EL LIBRO DIARIO
+       -------------------------------------------------------- */
+
+    #root .libro_diario_contenedor {
+        display: flex !important;
+
+        width: 100% !important;
+        max-width: none !important;
+
+        height: auto !important;
+        max-height: none !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: visible !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       6. MOSTRAR TODO EL CONTENIDO DEL LIBRO
+       -------------------------------------------------------- */
+
+    #root .libro_diario_contenedor * {
+        visibility: visible !important;
+    }
+
+
+    /* --------------------------------------------------------
+       7. ENCABEZADO
+       -------------------------------------------------------- */
+
+    .libro_diario_encabezado {
+        display: flex !important;
+
+        width: 100% !important;
+
+        margin-bottom: 20px !important;
+
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+
+    .libro_diario_titulo h2 {
+        color: #000000 !important;
+    }
+
+
+    .libro_diario_titulo span {
+        color: #555555 !important;
+    }
+
+
+    .libro_diario_titulo svg {
+        color: #000000 !important;
+
+        background: transparent !important;
+        border: 1px solid #999999 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       8. TABLA
+       -------------------------------------------------------- */
+
+    .libro_diario_tabla_wrapper {
+        display: block !important;
+
+        width: 100% !important;
+
+        height: auto !important;
+        max-height: none !important;
+
+        margin: 0 !important;
+        padding: 0 !important;
+
+        overflow: visible !important;
+
+        background: #ffffff !important;
+
+        border: none !important;
+    }
+
+
+    .libro_diario_tabla_clasica {
+        display: table !important;
+
+        width: 100% !important;
+
+        height: auto !important;
+
+        border-collapse: collapse !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       9. CABECERA DE TABLA
+       -------------------------------------------------------- */
+
+    .libro_diario_tabla_clasica thead {
+        display: table-header-group !important;
+    }
+
+
+    .libro_diario_tabla_clasica thead th {
+        padding: 8px 10px !important;
+
+        border-bottom: 1px solid #777777 !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+
+        font-size: 10px !important;
+    }
+
+
+    /* --------------------------------------------------------
+       10. CUERPO
+       -------------------------------------------------------- */
+
+    .libro_diario_tabla_clasica tbody {
+        display: table-row-group !important;
+    }
+
+
+    .fila_asiento {
+        display: table-row !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+
+    .fila_asiento td {
+        display: table-cell !important;
+
+        padding: 7px 10px !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+
+        border-bottom: 1px solid #dddddd !important;
+    }
+
+
+    /* --------------------------------------------------------
+       11. TEXTOS
+       -------------------------------------------------------- */
+
+    .col_cod,
+    .col_fecha,
+    .col_cuenta,
+    .col_debe,
+    .col_haber,
+    .cuenta_desc,
+    .cuenta_meta {
+        color: #000000 !important;
+    }
+
+
+    .fecha_hora,
+    .cuenta_meta {
+        color: #555555 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       12. ICONOS
+       -------------------------------------------------------- */
+
+    .cuenta_icono {
+        background: transparent !important;
+        border: 1px solid #999999 !important;
+    }
+
+    .icono_ingreso {
+        color: #15803d !important;
+    }
+
+    .icono_egreso {
+        color: #b91c1c !important;
+    }
+
+
+    /* --------------------------------------------------------
+       13. TOTALES
+       -------------------------------------------------------- */
+
+    .libro_diario_tabla_clasica tfoot {
+        display: table-footer-group !important;
+    }
+
+
+    .fila_totales {
+        display: table-row !important;
+    }
+
+
+    .fila_totales td {
+        display: table-cell !important;
+
+        padding: 9px 10px !important;
+
+        border-top: 1px solid #777777 !important;
+
+        background: #ffffff !important;
+
+        color: #000000 !important;
+    }
+
+
+    .fila_total_general {
+        display: table-row !important;
+    }
+
+
+    .fila_total_general td {
+        display: table-cell !important;
+
+        padding: 9px 10px !important;
+
+        background: #f3f3f3 !important;
+
+        color: #000000 !important;
+    }
+
+
+    /* --------------------------------------------------------
+       14. OCULTAR BOTONES
+       -------------------------------------------------------- */
+
+    button,
+    .btn-imprimir {
+        display: none !important;
+    }
+
+
+    /* --------------------------------------------------------
+       15. EVITAR CORTES RAROS
+       -------------------------------------------------------- */
+
+    .libro_diario_contenedor,
+    .libro_diario_tabla_wrapper,
+    .libro_diario_tabla_clasica {
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+    }
+
+
+    /* Las filas sí intentamos mantenerlas completas */
+    .fila_asiento {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+
+    /* --------------------------------------------------------
+       16. MÁRGENES DE LA HOJA
+       -------------------------------------------------------- */
+
+    @page {
+        size: A4 portrait;
+        margin: 12mm;
+    }
+}
+

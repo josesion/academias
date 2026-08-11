@@ -19,9 +19,21 @@ const loginData = async( data : LoginInputs)
                       usuario: string, 
                       id_escuela : number
                       contrasena : string,
-                      rol : "usuario" | "admin"  
+                      rol : "usuario" | "admin" ,
+                      razon_social : string 
                     }>>=> {
-    const sql : string = `SELECT usuario, id_usuario, id_escuela, contrasena, rol FROM usuarios WHERE usuario = ?`;
+    const sql : string = `select 
+                            u.usuario,
+                            u.id_usuario,
+                            u.id_escuela,
+                            u.contrasena,
+                            u.rol,
+                            e.razon_social
+                        from
+                            usuarios u 
+                            inner join escuelas e ON u.id_escuela = e.id_escuela 
+                        where
+                            u.usuario = ?;`;
     const { usuario } = data ;    
     const valores : unknown[] = [ usuario ]
     return buscarExistenteEntidad({

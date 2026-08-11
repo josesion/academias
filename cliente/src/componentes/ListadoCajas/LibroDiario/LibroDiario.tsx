@@ -1,5 +1,7 @@
+// LibroDiarioGeneral.tsx
 import { useMemo } from "react";
-import { ArrowDownLeft, ArrowUpRight, BookOpen, User } from "lucide-react";
+import { Boton } from "../../generales/Boton/Boton";
+import { BookOpen, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 import "./libroDiario.css";
 
@@ -17,56 +19,33 @@ export interface MovimientoLibroDiario {
 
 interface LibroDiarioProps {
   movimientos: MovimientoLibroDiario[];
+  onCerrarLbroDiario: () => void;
 }
 
 const formatearMoneda = (valor: number) =>
-  valor.toLocaleString("es-AR", {
-    minimumFractionDigits: 0,
-  });
+  valor.toLocaleString("es-AR", { minimumFractionDigits: 0 });
 
-export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
-  // ============================================================
-  // SALDO ACUMULADO
-  // ============================================================
+const codigoAsiento = (id: number) => String(id).padStart(4, "0");
 
-  const conSaldo = useMemo(() => {
-    let acumulado = 0;
+export const LibroDiarioGeneral = ({
+  movimientos,
+  onCerrarLbroDiario,
+}: LibroDiarioProps) => {
+  const totales = useMemo(() => {
+    const debe = movimientos
+      .filter((m) => m.tipo === "ingreso")
+      .reduce((acc, m) => acc + m.monto, 0);
+    const haber = movimientos
+      .filter((m) => m.tipo === "egreso")
+      .reduce((acc, m) => acc + m.monto, 0);
 
-    return movimientos.map((mov) => {
-      acumulado += mov.tipo === "ingreso" ? mov.monto : -mov.monto;
-
-      return {
-        ...mov,
-        saldo: acumulado,
-      };
-    });
-  }, [movimientos]);
-
-  // ============================================================
-  // RESUMEN DEL PERÍODO
-  // ============================================================
-
-  const resumen = useMemo(() => {
-    const entradas = movimientos
-      .filter((mov) => mov.tipo === "ingreso")
-      .reduce((acc, mov) => acc + mov.monto, 0);
-
-    const salidas = movimientos
-      .filter((mov) => mov.tipo === "egreso")
-      .reduce((acc, mov) => acc + mov.monto, 0);
-
-    return {
-      entradas,
-      salidas,
-      neto: entradas - salidas,
-    };
+    return { debe, haber, total: debe + haber };
   }, [movimientos]);
 
   if (!movimientos || movimientos.length === 0) {
     return (
       <div className="libro_diario_vacio">
         <BookOpen size={28} />
-
         <p>Todavía no hay movimientos registrados.</p>
       </div>
     );
@@ -74,92 +53,57 @@ export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
 
   return (
     <section className="libro_diario_contenedor">
-      {/* ======================================================
-                          ENCABEZADO
-      ====================================================== */}
-
       <header className="libro_diario_encabezado">
         <div className="libro_diario_titulo">
           <BookOpen size={16} />
-
           <div>
-            <h2>Libro diario general</h2>
-
-            <span>Orden cronológico de todos los movimientos</span>
+            <h2>Libro diario</h2>
+            <span>Registro cronológico de caja</span>
           </div>
-        </div>
-
-        <div className="libro_diario_resumen">
-          <div className="resumen_item">
-            <span className="resumen_label">Entradas</span>
-
-            <span className="resumen_valor positivo">
-              +${formatearMoneda(resumen.entradas)}
-            </span>
-          </div>
-
-          <div className="resumen_item">
-            <span className="resumen_label">Salidas</span>
-
-            <span className="resumen_valor negativo">
-              -${formatearMoneda(resumen.salidas)}
-            </span>
-          </div>
-
-          <div className="resumen_item resumen_neto">
-            <span className="resumen_label">Saldo del período</span>
-
-            <span className="resumen_valor">
-              ${formatearMoneda(resumen.neto)}
-            </span>
-          </div>
+          <Boton
+            clase="editar"
+            logo="Cancel"
+            texto="Cerrar Libro Diario"
+            disable={false}
+            onClick={onCerrarLbroDiario}
+          />
+          <button
+            type="button"
+            className="btn-imprimir"
+            onClick={() => window.print()}
+          >
+            🖨️ Imprimir / Guardar PDF
+          </button>
         </div>
       </header>
 
-      {/* ======================================================
-                            TABLA
-      ====================================================== */}
-
       <div className="libro_diario_tabla_wrapper">
-        <table className="libro_diario_tabla">
+        <table className="libro_diario_tabla_clasica">
           <thead>
             <tr>
+              <th className="col_cod">Cód.</th>
               <th className="col_fecha">Fecha</th>
-
-              <th className="col_hora">Hora</th>
-
-              <th className="col_concepto">Concepto</th>
-
-              <th className="col_medio">Medio</th>
-
-              <th className="col_monto text-right">Monto</th>
-
-              <th className="col_saldo text-right">Saldo</th>
+              <th className="col_cuenta">Concepto</th>
+              <th className="col_debe text-right">Debe</th>
+              <th className="col_haber text-right">Haber</th>
             </tr>
           </thead>
 
           <tbody>
-            {conSaldo.map((mov) => (
-              <tr
-                key={mov.id_movimiento}
-                className={`fila_movimiento ${mov.tipo}`}
-              >
+            {movimientos.map((mov) => (
+              <tr key={mov.id_movimiento} className="fila_asiento">
+                <td className="col_cod" data-label="Cód.">
+                  {codigoAsiento(mov.id_movimiento)}
+                </td>
+
                 <td className="col_fecha" data-label="Fecha">
-                  {mov.fecha}
+                  {mov.fecha} <span className="fecha_hora">{mov.hora}</span>
                 </td>
 
-                <td className="col_hora" data-label="Hora">
-                  {mov.hora}
-                </td>
-
-                <td className="col_concepto" data-label="Concepto">
-                  <div className="concepto_contenido">
+                <td className="col_cuenta" data-label="Concepto">
+                  <div className="cuenta_contenido">
                     <span
-                      className={`concepto_icono ${
-                        mov.tipo === "ingreso"
-                          ? "icono_ingreso"
-                          : "icono_egreso"
-                      }`}
+                      className={`cuenta_icono ${mov.tipo === "ingreso" ? "icono_ingreso" : "icono_egreso"}`}
                     >
                       {mov.tipo === "ingreso" ? (
                         <ArrowDownLeft size={13} />
@@ -168,39 +112,38 @@ export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
                       )}
                     </span>
 
-                    <div className="concepto_texto">
-                      <span className="concepto_desc">{mov.descripcion}</span>
-
-                      <span className="concepto_ref">
-                        Caja #{mov.id_caja}
-                        <span className="concepto_ref_separador">·</span>
-                        <User size={10} />
-                        {mov.usuario}
+                    <div className="cuenta_texto">
+                      <span className="cuenta_desc">{mov.descripcion}</span>
+                      <span className="cuenta_meta">
+                        {mov.cuenta} · Caja #{mov.id_caja} · {mov.usuario}
                       </span>
                     </div>
                   </div>
                 </td>
 
-                <td className="col_medio" data-label="Medio">
-                  <span className="medio_pill">{mov.cuenta}</span>
+                <td className="col_debe text-right" data-label="Debe">
+                  {mov.tipo === "ingreso" ? formatearMoneda(mov.monto) : ""}
                 </td>
 
-                <td
-                  className={`col_monto text-right ${
-                    mov.tipo === "ingreso" ? "monto_positivo" : "monto_negativo"
-                  }`}
-                  data-label="Monto"
-                >
-                  {mov.tipo === "ingreso" ? "+" : "-"}$
-                  {formatearMoneda(mov.monto)}
-                </td>
-
-                <td className="col_saldo text-right" data-label="Saldo">
-                  ${formatearMoneda(mov.saldo)}
+                <td className="col_haber text-right" data-label="Haber">
+                  {mov.tipo === "egreso" ? formatearMoneda(mov.monto) : ""}
                 </td>
               </tr>
             ))}
           </tbody>
+
+          <tfoot>
+            <tr className="fila_totales">
+              <td colSpan={3}>Totales</td>
+              <td className="text-right">${formatearMoneda(totales.debe)}</td>
+              <td className="text-right">${formatearMoneda(totales.haber)}</td>
+            </tr>
+
+            <tr className="fila_total_general">
+              <td colSpan={4}>Total general</td>
+              <td className="text-right">${formatearMoneda(totales.total)}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </section>

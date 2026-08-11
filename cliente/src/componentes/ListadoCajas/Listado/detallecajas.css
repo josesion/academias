@@ -7,12 +7,30 @@
     flex-direction: column;
     gap: 16px;
 
+
+    
     width: 100%;
     max-width: 700px;
     margin: 0 auto;
+
+  box-sizing: border-box;
+
+  max-height: 750px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 6px;
 }
 
 .detalle_caja_titulo {
+    /* NUEVO: Mantiene el título fijo arriba al hacer scroll */
+    position: sticky;
+    top: 0;
+    background-color: var(--fondo-principal, #0f172a); 
+    z-index: 10;
+    padding-top: 4px;
+
     display: flex;
     align-items: center;
     gap: 8px;
@@ -39,6 +57,26 @@
 
     border: 1px dashed var(--borde);
     border-radius: var(--radio-md);
+}
+
+/* ============================================================
+   ESTILIZAR LA BARRA DE SCROLL (NUEVO)
+   ============================================================ */
+.detalle_caja_marco::-webkit-scrollbar {
+    width: 6px;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-thumb {
+    background: var(--borde);
+    border-radius: 4px;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-thumb:hover {
+    background: var(--texto-deshabilitado);
 }
 
 /* ============================================================

@@ -50,7 +50,8 @@ const login = async( req: Request, res: Response ) =>{
                   id_escuela : loginResult.data?.id_escuela,
                   id_usuario : loginResult.data?.id_usuario,
                   rol        : loginResult.data?.rol ,
-                  usuario    : loginResult.data?.usuario    
+                  usuario    : loginResult.data?.usuario,
+                  razon_social : loginResult.data?.razon_social    
                 },
                 undefined,
                 loginResult.code

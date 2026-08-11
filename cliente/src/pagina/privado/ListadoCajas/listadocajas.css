@@ -1,0 +1,285 @@
+/* ==========================================
+   CONTENEDOR PRINCIPAL
+   ========================================== */
+
+.listado_cajas_pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   SECCIÓN INFERIOR
+   ========================================== */
+
+.listado_cajas_grid_inferior {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   PANEL DE DETALLE
+   ========================================== */
+
+.listado_cajas_panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 750px;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.listado_cajas_panel .detalle_caja_marco {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================
+   COLUMNA DE GRÁFICOS
+   ========================================== */
+
+.listado_cajas_graficos_columna {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  max-height: 750px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+}
+
+/* Scrollbar de gráficos */
+.listado_cajas_graficos_columna::-webkit-scrollbar {
+  width: 6px;
+}
+
+.listado_cajas_graficos_columna::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.listado_cajas_graficos_columna::-webkit-scrollbar-thumb {
+  background: var(--borde-hover);
+  border-radius: 10px;
+}
+
+.listado_cajas_graficos_columna::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-primario) 45%, transparent);
+}
+
+
+/* ==========================================
+   BLOQUE DE GRÁFICO Y SUBTÍTULO
+   ========================================== */
+
+.contenedor_grafico_bloque {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.grafico_subtitulo {
+  margin-bottom: 6px;
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+
+/* ==========================================
+   MODAL FLOTANTE DE FINANZAS (OVERLAY & CONTENIDO)
+   ========================================== */
+
+/* Fondo oscuro fijo que cubre toda la pantalla y asla el modal */
+.modal-overlay-finanzas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(27, 29, 34, 0.75); /* Oscurece el fondo de atrás */
+  backdrop-filter: blur(6px);                /* Efecto borroso prolijo */
+  z-index: 9999;                             /* Lo manda por encima de todo */
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+
+  /* Animación de aparición de la capa oscura */
+  animation: fadeInOverlay 0.3s ease forwards;
+}
+
+/* Contenedor central del modal flotante */
+.modal-contenido-finanzas {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  
+  background-color: var(--fondo-principal, #0f172a);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 32px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+
+  /* Animación zarpada desde el costado */
+  animation: modalEntradaZarpada 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.modal-contenido-finanzas > * {
+  min-width: 0;
+  flex: 1;
+}
+
+/* Animaciones de salida */
+.modal-overlay-finanzas.saliendo {
+  animation: fadeOutOverlay 0.3s ease forwards;
+}
+
+.modal-overlay-finanzas.saliendo .modal-contenido-finanzas {
+  animation: modalSalidaZarpada 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+
+/* --- KEYFRAMES --- */
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOutOverlay {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes modalEntradaZarpada {
+  from {
+    opacity: 0;
+    transform: translateX(-150px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes modalSalidaZarpada {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-150px) scale(0.95);
+  }
+}
+
+
+/* ==========================================
+   RESPONSIVIDAD Y MEDIA QUERIES
+   ========================================== */
+
+@media (min-width: 1400px) {
+  .listado_cajas_grid_inferior {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .listado_cajas_panel .detalle_caja_lista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .listado_cajas_pagina {
+    padding: 16px;
+  }
+
+  .listado_cajas_grid_inferior {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .listado_cajas_graficos_columna {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .listado_cajas_panel {
+    height: auto;
+    width: 100%;
+  }
+
+  .listado_cajas_panel .detalle_caja_marco {
+    max-height: 750px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .listado_cajas_pagina {
+    padding: 12px;
+    gap: 18px;
+  }
+
+  .modal-contenido-finanzas {
+    padding: 16px;
+  }
+
+  .listado_cajas_grid_inferior {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .listado_cajas_graficos_columna {
+    width: 100%;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .listado_cajas_panel {
+    width: 100%;
+  }
+
+  .listado_cajas_panel .detalle_caja_marco {
+    max-height: 750px;
+    overflow-y: auto;
+  }
+}
+
+

@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const puerto = process.env.PORT || 3000;
+const puerto = Number(process.env.PORT) || 4000;
+const host =  "0.0.0.0";
 
-
-app.listen(puerto, () => {
-    console.log(`El servidor se está escuchando desde del puerto ${puerto}`);
+app.listen(puerto, host, () => {
+   console.log(`El servidor se está escuchando en http://${host}:${puerto}`);
 }); 
