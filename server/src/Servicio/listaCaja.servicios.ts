@@ -30,11 +30,11 @@ const encabezadoHistorialCajaServicio = async( id : EstadoCajaInput)
     const id_escuela : EstadoCajaInput = EstadoCajaSchema.parse(id);
 
     const resultEstado = await listaCajaData.listaEstadoCaja(id_escuela);
-
+  
     const sinCaja = resultEstado.code === 'ESTADO_CAJA_NO_EXISTE';
 
     if ( resultEstado.code === 'ESTADO_CAJA_EXISTE' ||  sinCaja){
-          
+
           const dataEstado: DataEstadoResult | null = sinCaja    ? null : (resultEstado.data ?? null);
 
           return{

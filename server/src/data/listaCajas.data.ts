@@ -42,32 +42,22 @@ const listaEstadoCaja = async( id_escuela : EstadoCajaInput)
 :Promise<TipadoData<DataEstadoResult>> =>{
 
     const sql : string = `SELECT 
-                                c.id_caja,
-                                CONCAT(u.nombre, ' ', u.apellido) AS cajero,
-                                -- Fecha formateada como YYYY-MM-DD
-                                DATE_FORMAT(c.fecha_apertura, '%Y-%m-%d') AS fecha_apertura,
-                                -- Hora formateada como HH:i:s (o HH:mm:ss)
-                                DATE_FORMAT(c.fecha_apertura, '%H:%i:%s') AS hora_apertura,
-                                c.estado,
-                                -- Total general sumando todos los movimientos de la caja abierta
-                                COALESCE(SUM(dc.monto), 0.00) AS total,
-                                -- Desglose dinámico en formato JSON para efectivo y virtual (u otras cuentas)
-                                COALESCE(
-                                    JSON_OBJECTAGG(
-                                        LOWER(TRIM(ce.nombre_cuenta)), 
-                                        (SELECT COALESCE(SUM(dc2.monto), 0.00) 
-                                        FROM detalle_caja dc2 
-                                        JOIN cuentas_escuela ce2 ON dc2.id_cuenta = ce2.id_cuenta 
-                                        WHERE dc2.id_caja = c.id_caja AND ce2.id_cuenta = ce.id_cuenta)
-                                    ), 
-                                    JSON_OBJECT()
-                                ) AS totales
-                            FROM cajas c
-                            LEFT JOIN usuarios u ON c.id_usuario_apertura = u.id_usuario
-                            LEFT JOIN detalle_caja dc ON c.id_caja = dc.id_caja
-                            LEFT JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
-                            WHERE c.id_escuela = ? AND c.estado = 'abierta'
-                            GROUP BY c.id_caja, u.nombre, u.apellido, c.fecha_apertura, c.estado;`;
+                            c.id_caja,
+                            CONCAT(u.nombre, ' ', u.apellido) AS cajero,
+                            DATE_FORMAT(c.fecha_apertura, '%Y-%m-%d') AS fecha_apertura,
+                            DATE_FORMAT(c.fecha_apertura, '%H:%i:%s') AS hora_apertura,
+                            c.estado,
+                            COALESCE(SUM(dc.monto), 0.00) AS total,
+                            JSON_OBJECT(
+                                'efectivo', COALESCE(SUM(CASE WHEN ce.tipo_cuenta = 'fisico' THEN dc.monto ELSE 0 END), 0.00),
+                                'virtual', COALESCE(SUM(CASE WHEN ce.tipo_cuenta = 'virtual' THEN dc.monto ELSE 0 END), 0.00)
+                            ) AS totales
+                        FROM cajas c
+                        LEFT JOIN usuarios u ON c.id_usuario_apertura = u.id_usuario
+                        LEFT JOIN detalle_caja dc ON c.id_caja = dc.id_caja
+                        LEFT JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
+                        WHERE c.id_escuela = ? AND c.estado = 'abierta'
+                        GROUP BY c.id_caja, u.nombre, u.apellido, c.fecha_apertura, c.estado;`;
 
     const valor : unknown[] = [ id_escuela.id_escuela ];
 
