@@ -4,6 +4,8 @@ import { method as permisos} from "../utils/permisos";
 
     const ruta = Router();
     const { validarPermiso } = permisos;
-    ruta.get("/api/list_estado_caja", validarPermiso, listaCajasControlador.estadoListaCaja)
+
+    ruta.get("/api/estado_caja_historial", validarPermiso, listaCajasControlador.encabezadoHistorial);
+    ruta.get("/api/list_estado_caja", validarPermiso, listaCajasControlador.estadoListaCaja);
 
 export default ruta;

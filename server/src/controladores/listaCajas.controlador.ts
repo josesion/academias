@@ -3,27 +3,53 @@ import { tryCatch } from "../utils/tryCatch";
 import { handleControladores } from "../utils/handleControladores";
 
 
-import { MAPA_HISTORIAL_CAJAS } from "../respuestas/listaCajas";
+import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL__ESTADO_CAJAS } from "../respuestas/listaCajas";
 import { method as listaCajaServicios } from "../Servicio/listaCaja.servicios";
-import { InputConvinados } from "../squemas/listaCajas";
-import { CajasServicioResponse } from "../data/listaCajas.data";
+import { InputConvinados, EstadoCajaInput } from "../squemas/listaCajas";
+import { CajasServicioResponse, DataEstadoResult } from "../data/listaCajas.data";
+
 
 
 /**
- * Controlador de Express para gestionar el listado y métricas del historial de cajas.
- * Extrae y normaliza los parámetros de la petición (filtros de usuario, diferencias de caja, 
- * rango de fechas y paginación), construye el objeto de entrada tipado y delega 
+ * Controlador de Express para gestionar y obtener de forma exclusiva el estado actual 
+ * de la caja de la escuela (para el encabezado o panel principal).
+ * Extrae el ID de la escuela desde la sesión del usuario (`req.usuario`) y delega 
  * la ejecución al manejador centralizado de controladores.
  *
  * @async
- * @function estadoListaCaja
- * @param {Request} req - Objeto de petición HTTP de Express (contiene `req.query` con los filtros y `req.usuario`).
+ * @function encabezadoHistorialCaja
+ * @param {Request} req - Objeto de petición HTTP de Express (contiene los datos del usuario autenticado en `req.usuario`).
  * @param {Response} res - Objeto de respuesta HTTP de Express.
  * 
- * @returns {Promise<void>} No retorna un valor directo, sino que responde a la petición HTTP 
- *          mediante el manejador `handleControladores`.
+ * @returns {Promise<void>} No retorna valor, responde directamente al cliente mediante `handleControladores`.
  * 
- * @throws {Error} Puede propagar errores si el servicio o el manejador de controladores fallan.
+ * @example
+ * // Petición GET esperada al endpoint asociado:
+ * // /api/cajas/estado-actual
+ */
+const encabezadoHistorialCaja  = async (req : Request , res : Response) =>{
+
+    const data = { id_escuela : Number(req.usuario?.id_escuela)};
+
+    await handleControladores<EstadoCajaInput, DataEstadoResult>(
+        res, data, listaCajaServicios.estadoCaja,MAPA_HISTORIAL__ESTADO_CAJAS
+    );
+
+};
+
+
+/**
+ * Controlador de Express optimizado para gestionar exclusivamente el listado 
+ * del historial de cajas cerradas y sus métricas asociadas.
+ * Extrae y normaliza los parámetros de la petición (`req.query`), construye 
+ * el objeto de entrada tipado y delega la ejecución al manejador centralizado de controladores.
+ *
+ * @async
+ * @function estadoListaCaja
+ * @param {Request} req - Objeto de petición HTTP de Express (contiene los filtros en `req.query` y la sesión en `req.usuario`).
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * 
+ * @returns {Promise<void>} No retorna valor, responde directamente a través de `handleControladores`.
  * 
  * @example
  * // Petición GET esperada:
@@ -62,5 +88,6 @@ const estadoListaCaja = async( req : Request , res : Response) => {
 };
 
 export const method = {
+    encabezadoHistorial : tryCatch( encabezadoHistorialCaja),
     estadoListaCaja : tryCatch(estadoListaCaja)
 }   

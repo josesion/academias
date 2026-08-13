@@ -329,8 +329,8 @@ const metricasMetodoPagoCajas = (  data :  InputConvinados)
 
 };
 
+
 export interface CajasServicioResponse {
-    dataEstado: DataEstadoResult | null;
     dataDetalle: HistorialCaja[] | null;
     dataMetodo: DataResultMetodosPagos[] | null;
 }

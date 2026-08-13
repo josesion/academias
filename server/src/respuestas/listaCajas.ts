@@ -10,6 +10,17 @@ export const ERROR_INTERNO_SERVIDOR = {
 } as const;                         
 
 
+export const MAPA_HISTORIAL__ESTADO_CAJAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+
+    "HISTORIAL_CAJA_ESTADO_OK" : {
+        status : CodigoEstadoHTTP.OK,
+        msg : "Historial caja ok."
+    }
+
+}; 
+
 export const MAPA_HISTORIAL_CAJAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
