@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Search, ChevronRight } from "lucide-react";
+
 import { Buscadores } from "../../../componentes/generales/Buscadores/Buscador";
 import { FiltroFechas } from "../../../componentes/generales/FiltrosFechas/FiltrosFechas";
 import { ContenedorListadoInscripciones } from "../../../componentes/Inscripciones/ContenedorListadoInscrp/ContendorListadoInscrip";
@@ -33,6 +36,8 @@ export const ListadoInscripcionPage = () => {
     errorAnulacion,
   } = state;
 
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+
   return (
     <div className="contenedor_listado">
       {dataAnularInscripcion.modalAnular && (
@@ -48,36 +53,47 @@ export const ListadoInscripcionPage = () => {
               carga={dataAnularInscripcion.carga}
             />
           ) : (
-            <div
-              style={{ color: "white", textAlign: "center", padding: "20px" }}
-            >
-              <PanelDetalleInscripSoloLectura
-                infoDetalle={dataInfoDetalle}
-                estado={state.dataInfoDetalle.estado}
-                onCerrar={handleCancelarAnulacion}
-              />
-            </div>
+            <PanelDetalleInscripSoloLectura
+              infoDetalle={dataInfoDetalle}
+              estado={state.dataInfoDetalle.estado}
+              onCerrar={handleCancelarAnulacion}
+            />
           )}
         </div>
       )}
 
-      <div className="contenedor_filtros">
-        <Buscadores
-          tituloBuscador="Filtro de Busqueda"
-          intputBuscador={inputsFiltro}
-          estados={estado}
-          buscadorData={state.filtroData}
-          captionBoton={"Inscribir"}
-          onChange={handleChangaValue}
-          onEstados={handleChangeEstado}
-          onAgregar={abrirInscribir}
-        />
-        <FiltroFechas
-          fechaDesde={state.filtroData.fecha_desde}
-          fechaHasta={state.filtroData.fecha_hasta}
-          onDesdeChange={handleChangeFechaDesde}
-          onHastaChange={handleChangeFechaHasta}
-        />
+      {/* FILTROS: panel lateral que se esconde a la izquierda */}
+      <div className={`contenedor_filtros ${filtrosAbiertos ? "abierto" : ""}`}>
+        <button
+          type="button"
+          className="filtros_lengueta"
+          onClick={() => setFiltrosAbiertos((prev) => !prev)}
+          aria-expanded={filtrosAbiertos}
+          aria-label={filtrosAbiertos ? "Ocultar filtros" : "Mostrar filtros"}
+        >
+          <Search size={16} />
+          <span className="filtros_lengueta_texto">Filtro</span>
+          <ChevronRight size={14} className="filtros_flecha" />
+        </button>
+
+        <div className="filtros_cuerpo">
+          <Buscadores
+            tituloBuscador="Filtro de Busqueda"
+            intputBuscador={inputsFiltro}
+            estados={estado}
+            buscadorData={state.filtroData}
+            captionBoton={"Inscribir"}
+            onChange={handleChangaValue}
+            onEstados={handleChangeEstado}
+            onAgregar={abrirInscribir}
+          />
+          <FiltroFechas
+            fechaDesde={state.filtroData.fecha_desde}
+            fechaHasta={state.filtroData.fecha_hasta}
+            onDesdeChange={handleChangeFechaDesde}
+            onHastaChange={handleChangeFechaHasta}
+          />
+        </div>
       </div>
 
       <ContenedorListadoInscripciones

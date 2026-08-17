@@ -1,347 +1,162 @@
-import { useReducer } from "react";
+import { useReducer, useEffect, use } from "react";
+import { useEffectServicio } from "../../utils/useEfectServicio";
+import  { initialStateListadoCaja , listadoCajaReducer,type ListadoCajaAction } from "../../reducers/listadoCajaReducer";
 
-import  { initialStateListadoCaja , listadoCajaReducer } from "../../reducers/listadoCajaReducer";
 
-export interface MovimientoLibroDiario {
-  id_movimiento: number;
-  usuario: string;
-  id_caja: number;
-  fecha: string;
-  hora: string;
-  descripcion: string;
-  tipo: "ingreso" | "egreso";
-  cuenta: string;
-  monto: number;
+
+
+
+const coloresSobrios = [
+  "var(--color-primario)",    // #6D5DF6 
+  "var(--color-secundario)",  // #66A9E8 
+  "#38BDF8",                  // Celeste suave secundario
+  "#2DD4BF",                  // Teal apagado elegante
+  "#34D399",                  // Esmeralda suave
+  "#FBBF24",                  // Ámbar sobrio (no chilla)
+  "#FB923C",                  // Naranja tostado sutil
+  "#F87171",                  // Coral / Rojo atenuado
+  "#A78BFA",                  // Púrpura claro complementario
+  "var(--texto-secundario)"   // #A7AFBF - Gris texto secundario para el neutro
+];
+
+type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
+
+type estadoCaja = "exacta" | "con_diferencia" | null
+
+interface HistorialCajasConfig {
+
+        servicios : {
+            estadoEncabezado : ServicioCrud,
+            historialCajas : ServicioCrud
+        },
 }
 
-export interface MetodoPagoData {
-  metodo: string;
-  total: number;
-  color: string;
-}
-
-export const ListaCajaBase = () => {
+export const useListaCajaBase = ( config : HistorialCajasConfig ) => {
     
     const [ stateListadoCaja, dispatchListadoCaja] = useReducer( listadoCajaReducer , initialStateListadoCaja());
-  //  console.log(stateListadoCaja)
+
+    console.log(stateListadoCaja.filtrosBusqueda)
+
+
 
     const abrirLibroDiario = () =>{
-        dispatchListadoCaja({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
+      dispatchListadoCaja({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
     };
 
     const cerrarLibroDiario = () =>{
       dispatchListadoCaja({ type : "SET_MODAL_LIBRO_DIARIO" , payload : false });
     };
+// ──────────────────────────────────────────────────────────────
+//  Funciones para cachear los filtros de busqueda
+// ──────────────────────────────────────────────────────────────  
+  // ---------------------------- Cachear usuario      ---------------
+
+  const cachearUsuario = (e: React.ChangeEvent<HTMLSelectElement>) =>{ 
+      const usuario : number | null = e.target.value  ? Number(e.target.value) : null ;
+      dispatchListadoCaja({type : "SET_FILTRO_BUSQUEDA_USUARIO", payload : usuario})
+  }
+  // ---------------------------- Cachear estado caja  ---------------
+  const cachearEstado = (e: React.ChangeEvent<HTMLSelectElement>) =>{ 
+      const estado : estadoCaja = e.target.value ? e.target.value as estadoCaja : null ;
+      dispatchListadoCaja({ type : "SET_FILTRO_BUSQUEDA_ESTADO" , payload : estado});
+  }
+  // ---------------------------- Cachear Fecha Desde  ---------------
+ const cachearFechaD =  (event: React.ChangeEvent<HTMLInputElement>) =>{
+      dispatchListadoCaja({type : "SET_FILTRO_BUSQUEDA_FECHAD", payload : event.target.value});
+ };
+  // ---------------------------- Cachear Fecha Hasta ---------------
+  const cachearFechaH =  (event: React.ChangeEvent<HTMLInputElement>) =>{
+      dispatchListadoCaja({type : "SET_FILTRO_BUSQUEDA_FECHAH", payload : event.target.value})
+ };
 
 
-            const mockHistorialCajasCerradas = [
-            {
-                id_caja: 14,
-                fecha: {
-                apertura: "2026-08-09",
-                cierre: "2026-08-09"
-                },
-                hora: {
-                apertura: "09:00:00",
-                cierre: "21:30:00"
-                },
-                observaciones: "Caja cerrada perfecta sin diferencias.",
-                monto_sistema: 65000.00,
-                monto_real: 65000.00,
-                monto_faltante: 0.00
-            },
-            {
-                id_caja: 13,
-                fecha: {
-                apertura: "2026-08-08",
-                cierre: "2026-08-08"
-                },
-                hora: {
-                apertura: "09:00:00",
-                cierre: "22:00:00"
-                },
-                observaciones: "Faltó $500 en efectivo por un vuelto mal entregado al mediodía.",
-                monto_sistema: 82000.00,
-                monto_real: 81500.00,
-                monto_faltante: -500.00
-            },
-            {
-                id_caja: 12,
-                fecha: {
-                apertura: "2026-08-07",
-                cierre: "2026-08-07"
-                },
-                hora: {
-                apertura: "09:00:00",
-                cierre: "21:00:00"
-                },
-                observaciones: "Sobró $500, un alumno dejó un pago extra sin registrar.",
-                monto_sistema: 54000.00,
-                monto_real: 54500.00,
-                monto_faltante: 500.00
-            },
-            {
-                id_caja: 11,
-                fecha: {
-                apertura: "2026-08-06",
-                cierre: "2026-08-06"
-                },
-                hora: {
-                apertura: "08:30:00",
-                cierre: "20:45:00"
-                },
-                observaciones: "Cierre normal de rutina sin novedades.",
-                monto_sistema: 47000.00,
-                monto_real: 47000.00,
-                monto_faltante: 0.00
-            },
-            {
-                id_caja: 11,
-                fecha: {
-                apertura: "2026-08-06",
-                cierre: "2026-08-06"
-                },
-                hora: {
-                apertura: "08:30:00",
-                cierre: "20:45:00"
-                },
-                observaciones: "Cierre normal de rutina sin novedades.",
-                monto_sistema: 47000.00,
-                monto_real: 47000.00,
-                monto_faltante: 0.00
-            },
-            {
-                id_caja: 11,
-                fecha: {
-                apertura: "2026-08-06",
-                cierre: "2026-08-06"
-                },
-                hora: {
-                apertura: "08:30:00",
-                cierre: "20:45:00"
-                },
-                observaciones: "Cierre normal de rutina sin novedades.",
-                monto_sistema: 47000.00,
-                monto_real: 47000.00,
-                monto_faltante: 0.00
-            }
-            ];
+
+// ──────────────────────────────────────────────────────────────
+//  Trae el encabezado del historial de caja 
+// ──────────────────────────────────────────────────────────────  
+   useEffectServicio<any,any, ListadoCajaAction>({
+      valores : {},
+      servicios : config.servicios.estadoEncabezado,
+      dispatch : dispatchListadoCaja,
+      accionResultado : (data)=>({type : "SET_ESTADO_CAJA", payload : data || null}),
+      accionError : ( mensaje ) =>({type : "SET_ERROR_ESTADO_CAJA", payload : mensaje || ""}),
+      accionCarga : ( estado ) =>({ type : "SET_CARGA_ESTADO", payload : estado}),
+      useAbort : true,
+      dependencias : []
+   });
+
+   const data = {
+      idUsuarioFiltro : null, fechaDesde: "2026-02-11", fechaHasta : "2026-08-11", pagina : 1 , estadoDiferencia : null
+   };
+
+// ──────────────────────────────────────────────────────────────
+//  Trae el Historial de cajas, Metricas Metodos Pago y Paginacion
+// ──────────────────────────────────────────────────────────────  
+useEffect(()=>{
+        const controlador = new AbortController();
+        const signal = controlador.signal;
+
+        // 1. Timeout razonable (ej: 10 segundos = 10000 ms)
+        const timeoutId = setTimeout(() => {
+          controlador.abort();
+          dispatchListadoCaja({ 
+            type : "SET_ERROR_HISTORIAL_CAJA", 
+            payload : "La solicitud ha tardado demasiado tiempo. Por favor, inténtelo de nuevo más tarde."
+          });
+          dispatchListadoCaja({ type : "SET_CARGA_HISTORIAL", payload: false});
+        }, 10000); 
+
+       const historialCaja = async () =>{
+        try{ 
+          dispatchListadoCaja({type : "SET_CARGA_HISTORIAL", payload : true});
+
+          const historialCasjas = config.servicios.historialCajas;
+          const resultHistorial = await historialCasjas(data, signal);
+
+          if( resultHistorial.code === 'HISTORIAL_CAJA_OK') {
+
+            const metodoPago = resultHistorial.data.dataMetodo !== null ? resultHistorial.data.dataMetodo : null
+
+            const dataConColor = metodoPago.map((item : { id_cuenta : number,metodo : string, total : number, } , index : number) => ({
+              ...item,
+              color: coloresSobrios[index % coloresSobrios.length]
+            }))
 
 
-            const mockLibroDiario: MovimientoLibroDiario[] = [
-              {
-                id_movimiento: 1,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "09:15:00",
-                descripcion: "Inscripción alumna nueva - María Gomez",
-                tipo: "ingreso",
-                cuenta: "Efectivo",
-                monto: 10000.00
-              },
-              {
-                id_movimiento: 2,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "10:30:00",
-                descripcion: "Pago de cuota mensual - Carlos Ruiz",
-                tipo: "ingreso",
-                cuenta: "Mercado Pago",
-                monto: 12000.00
-              },
-              {
-                id_movimiento: 3,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "12:00:00",
-                descripcion: "Compra de insumos de limpieza y librería",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 4500.00
-              },
-              {
-                id_movimiento: 4,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "15:45:00",
-                descripcion: "Pago de cuota mensual - Lucía Benítez",
-                tipo: "ingreso",
-                cuenta: "Efectivo",
-                monto: 12000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              },
-              {
-                id_movimiento: 5,
-                usuario: "Juan Pérez",
-                id_caja: 14,
-                fecha: "2026-08-09",
-                hora: "18:20:00",
-                descripcion: "Reparación menor de parlante de estudio",
-                tipo: "egreso",
-                cuenta: "Efectivo",
-                monto: 8000.00
-              }
-            ];
+             const cargaProps = { 
+                  dataDetalle:  resultHistorial.data.dataDetalle,
+                  dataMetodo:   dataConColor,
+                  paginacion :  resultHistorial.paginacion
+             };
+             dispatchListadoCaja({ type : "SET_HISOTRIAL_CAJAS", payload : cargaProps})
+          };
 
-            const mockResumenMetodosPago: MetodoPagoData[] = [
-              { metodo: "efectivo", total: 180000.00, color: "#10B981" }, // Verde esmeralda
-              { metodo: "mercado pago", total: 62000.00, color: "#3B82F6" }, // Azul moderno
-              { metodo: "transferencia", total: 35000.00, color: "#8B5CF6" }, // Violeta / Índigo
-              { metodo: "tarjeta", total: 18500.00, color: "#8c7856" },
- 
-            ];
+        }catch(e: any){
+          // Si el error fue provocado por el AbortController, no pisamos el mensaje de timeout
+          if (e.name !== 'AbortError') {
+            dispatchListadoCaja({type : "SET_ERROR_HISTORIAL_CAJA", payload : "Error en el servidor, historial cajas."});
+          }
+        }finally{
+          // 2. Importante: Limpiamos el timeout apenas termina la petición (sea éxito o error)
+          clearTimeout(timeoutId);
+          dispatchListadoCaja({type : "SET_CARGA_HISTORIAL", payload : false});
+        };
+       };
 
-            const mockCajaActiva = {
-                        id_caja: 14,
-                        cajero: "Juan Pérez",
-                        fecha_apertura: "2026-06-07",
-                        hora_apertura :  "09:00:00",
-                        estado: "abierta",
-                        total : 60000.00,
-                        totales: {
-                            efectivo: 45000.00,
-                            virtual: 12000.00
-                        }
-            }
+       historialCaja();
 
+    return () => {
+        // Cleanup en orden correcto: primero limpiamos el timer y después abortamos
+        clearTimeout(timeoutId);
+        controlador.abort(); 
+    };       
+   },[]);
+
+
+  
     
         return {
-            mockLibroDiario, mockResumenMetodosPago, mockCajaActiva, mockHistorialCajasCerradas,
             stateListadoCaja, abrirLibroDiario, cerrarLibroDiario,
-        }
+            cachearUsuario, cachearEstado, cachearFechaD, cachearFechaH,
+        };
 };

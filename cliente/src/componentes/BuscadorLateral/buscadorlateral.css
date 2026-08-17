@@ -1,0 +1,142 @@
+/* ============================================================
+   BUSCADOR LATERAL — panel que se esconde a la izquierda
+   ============================================================ */
+
+.buscador_lateral_panel {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    z-index: 500;
+
+    display: flex;
+    flex-direction: row-reverse; /* lengüeta primera en el DOM (tabindex
+                                     correcto), pero visualmente a la
+                                     derecha del cuerpo — necesario para
+                                     que el translate deje asomando la
+                                     lengüeta y no la cola del cuerpo */
+    align-items: stretch;
+
+    transform: translate(calc(-100% + 44px), -50%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.buscador_lateral_panel.abierto {
+    transform: translate(0, -50%);
+}
+
+/* ============================================================
+   LENGÜETA — lo único visible cuando está cerrado
+   ============================================================ */
+
+.buscador_lateral_lengueta {
+    flex-shrink: 0;
+
+    width: 44px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 20px 0;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-left: none;
+    border-radius: 0 var(--radio-lg) var(--radio-lg) 0;
+
+    box-shadow: var(--sombra-md);
+
+    color: var(--texto-secundario);
+    cursor: pointer;
+
+    transition: var(--transicion);
+}
+
+.buscador_lateral_lengueta:hover {
+    color: var(--color-primario);
+    border-color: color-mix(in srgb, var(--color-primario) 35%, var(--borde));
+}
+
+.buscador_lateral_panel.abierto .buscador_lateral_lengueta {
+    color: var(--color-primario);
+    background: color-mix(in srgb, var(--color-primario) 8%, var(--fondo-secundario));
+}
+
+.buscador_lateral_lengueta_texto {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.68rem;
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.buscador_lateral_flecha {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.buscador_lateral_panel.abierto .buscador_lateral_flecha {
+    transform: rotate(180deg);
+}
+
+/* ============================================================
+   CUERPO — filtros reales, solo visibles con el panel abierto
+   ============================================================ */
+
+.buscador_lateral_cuerpo {
+    width: 340px;
+    flex-shrink: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding: 24px 20px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-right: none;
+
+    box-shadow: var(--sombra-md);
+
+    /* mientras el panel está fuera de pantalla, el cuerpo no debe
+       ser interactuable ni anunciado por lectores de pantalla */
+    visibility: hidden;
+    transition: visibility 0s linear 0.35s;
+}
+
+.buscador_lateral_panel.abierto .buscador_lateral_cuerpo {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+/* fila con los dos selectores lado a lado — usuario y estado */
+.buscador_lateral_fila {
+    display: flex;
+    gap: 12px;
+}
+
+.buscador_lateral_campo {
+    width: 100%;
+    min-width: 0; /* evita que un select con texto largo empuje la fila */
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .buscador_lateral_cuerpo {
+        width: min(340px, 84vw);
+    }
+
+    /* poco espacio real: los dos selectores vuelven a apilarse */
+    .buscador_lateral_fila {
+        flex-direction: column;
+        gap: 18px;
+    }
+}

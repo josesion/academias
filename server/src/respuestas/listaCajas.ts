@@ -10,13 +10,18 @@ export const ERROR_INTERNO_SERVIDOR = {
 } as const;                         
 
 
-export const MAPA_HISTORIAL__ESTADO_CAJAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+export const MAPA_HISTORIAL_ESTADO_CAJAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
 
     "HISTORIAL_CAJA_ESTADO_OK" : {
         status : CodigoEstadoHTTP.OK,
         msg : "Historial caja ok."
+    },
+
+    "CAJA_CERRADADA_HISTORIAL" : {
+        status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
+        msg : "Caja se encuentra cerrada."
     }
 
 }; 

@@ -39,7 +39,7 @@ export const Buscadores = (p: BuscadorProps) => {
   const [abierto, setAbierto] = useState(false);
 
   return (
-    <div className={`buscador_contenedor_comp ${abierto ? "abierto" : ""}`}>
+    <div className={`buscador_contenedor_comp  abierto `}>
       <div className="buscador_encabezado">
         {p.tituloBuscador && (
           <p className="buscador_titulo">
@@ -47,22 +47,6 @@ export const Buscadores = (p: BuscadorProps) => {
             {p.tituloBuscador}
           </p>
         )}
-
-        {/* Botón hamburguesa con animación integrada a cruz */}
-        <button
-          type="button"
-          className={`buscador_toggle ${abierto ? "is-active" : ""}`}
-          onClick={() => setAbierto((prev) => !prev)}
-          aria-expanded={abierto}
-          aria-label={abierto ? "Ocultar filtros" : "Mostrar filtros"}
-        >
-          <div className="buscador_hamburguesa_icon">
-            <span className="linea linea-1"></span>
-            <span className="linea linea-2"></span>
-            <span className="linea linea-3"></span>
-          </div>
-          <span>Filtros</span>
-        </button>
       </div>
 
       <div className="buscador_cuerpo_colapsable">

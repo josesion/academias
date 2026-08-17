@@ -3,7 +3,7 @@ import { tryCatch } from "../utils/tryCatch";
 import { handleControladores } from "../utils/handleControladores";
 
 
-import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL__ESTADO_CAJAS } from "../respuestas/listaCajas";
+import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL_ESTADO_CAJAS } from "../respuestas/listaCajas";
 import { method as listaCajaServicios } from "../Servicio/listaCaja.servicios";
 import { InputConvinados, EstadoCajaInput } from "../squemas/listaCajas";
 import { CajasServicioResponse, DataEstadoResult } from "../data/listaCajas.data";
@@ -32,7 +32,7 @@ const encabezadoHistorialCaja  = async (req : Request , res : Response) =>{
     const data = { id_escuela : Number(req.usuario?.id_escuela)};
 
     await handleControladores<EstadoCajaInput, DataEstadoResult>(
-        res, data, listaCajaServicios.estadoCaja,MAPA_HISTORIAL__ESTADO_CAJAS
+        res, data, listaCajaServicios.estadoCaja,MAPA_HISTORIAL_ESTADO_CAJAS
     );
 
 };
@@ -81,6 +81,7 @@ const estadoListaCaja = async( req : Request , res : Response) => {
         pagina : Number(pagina),
         offset : offset
     };
+
 
     await handleControladores<InputConvinados,CajasServicioResponse >(
         res, data , listaCajaServicios.listaCajasServicio, MAPA_HISTORIAL_CAJAS

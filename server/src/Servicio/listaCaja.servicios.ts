@@ -7,40 +7,28 @@ import { InputConvinados, SchemaFinal, EstadoCajaInput, EstadoCajaSchema } from 
 import { DataEstadoResult, HistorialCaja, DataResultMetodosPagos, CajasServicioResponse } from "../data/listaCajas.data";
 
 
-/**
- * Servicio encargado de consultar y procesar exclusivamente el estado actual de la caja 
- * (abierta o inexistente) para el encabezado del panel de control.
- * Valida los datos de entrada utilizando un esquema de Zod y maneja los códigos de respuesta.
- *
- * @async
- * @function encabezadoHistorialCajaServicio
- * @param {EstadoCajaInput} id - Datos de entrada o identificadores requeridos (validados por `EstadoCajaSchema`).
- * 
- * @returns {Promise<TipadoData<DataEstadoResult>>} Promesa que resuelve con la estructura estándar del sistema, 
- *          conteniendo los datos de la caja actual o `null` si no existe ninguna caja abierta.
- * 
- * @throws {ZodError} Si la validación de entrada con `EstadoCajaSchema` falla.
- * 
- * @example
- * const respuesta = await encabezadoHistorialCajaServicio({ id_escuela: 1 });
- */
+
 const encabezadoHistorialCajaServicio = async( id : EstadoCajaInput)
 :Promise<TipadoData<DataEstadoResult>> =>{
 
     const id_escuela : EstadoCajaInput = EstadoCajaSchema.parse(id);
 
     const resultEstado = await listaCajaData.listaEstadoCaja(id_escuela);
-  
-    const sinCaja = resultEstado.code === 'ESTADO_CAJA_NO_EXISTE';
 
-    if ( resultEstado.code === 'ESTADO_CAJA_EXISTE' ||  sinCaja){
+    if ( resultEstado.code === 'ESTADO_CAJA_NO_EXISTE'){
+        return{
+            error : true,
+            message : "Sin caja abierta",
+            code : "CAJA_CERRADADA_HISTORIAL"
+        }
+    }
 
-          const dataEstado: DataEstadoResult | null = sinCaja    ? null : (resultEstado.data ?? null);
+    if ( resultEstado.code === 'ESTADO_CAJA_EXISTE' ){
 
           return{
             error : false,
             message : "Tareas realizadas con exito.",
-            data : dataEstado as DataEstadoResult ,
+            data : resultEstado.data as DataEstadoResult ,
             code : "HISTORIAL_CAJA_ESTADO_OK"
         };      
 

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Search, ChevronRight } from "lucide-react";
+
 import { Formulario } from "../../generales/Formulario/Formulario";
 import { ListadoMolde } from "../ListaMolde/Listado";
 import { Buscadores } from "../../generales/Buscadores/Buscador";
@@ -6,44 +9,6 @@ import { EliminarVentana } from "../../generales/EliminarModal/EliminarModal";
 
 import "./ambcss.css";
 
-// Aquí definimos los tipos de las props que el componente recibirá
-/**
- * @typedef {Object} AmbViewProps
- * // === Control de Modales y Formulario ===
- * @property {boolean} modal - Controla la visibilidad del modal de Alta/Modificación.
- * @property {boolean} modalEliminar - Controla la visibilidad del modal de Eliminación.
- * @property {Record<string, string | null>} errorsZod - Errores de validación por campo del formulario.
- * @property {string | null} errorGenerico - Mensaje de error a nivel de formulario/proceso de eliminación.
- * @property {any} formData - Datos actuales del formulario de Alta/Modificación.
- * @property {any[]} inputsEntidad - Definición de los campos del formulario.
- * @property {"alta" | "modificar"} tipoFormulario - Indica el modo de la operación actual.
- * @property {string} botonTexto - Texto para el botón de acción principal de la lista.
- * @property {string} accionEliminar - Descripción del elemento a eliminar.
- * * // === Listado y Paginación ===
- * @property {any[]} dataAlumnosListado - Datos de la tabla a mostrar.
- * @property {any} barraPaginacion - Objeto con los datos de paginación (página actual, total, etc.).
- * @property {boolean} carga - Indica si la carga de datos de la lista o una acción de ABM está en curso.
- * @property {boolean} error - Indica si ocurrió un error al cargar la lista.
- * @property {number} statuscode - Código de estado HTTP de la última carga de listado.
- * * // === Buscador y Filtro ===
- * @property {any} filtroData - Datos actuales del formulario de filtro.
- * @property {any[]} inputsFiltro - Definición de los campos para el buscador.
- * @property {string[]} estados - Opciones de estado (ej: Activo/Inactivo) para el filtro.
- * * // === Handlers (Funciones) ===
- * @property {function(React.ChangeEvent<HTMLInputElement>): void} onHandleChangeBuscador - Manejador de cambios en los inputs del buscador.
- * @property {function(): void} onHandleCancelar - Cierra el modal de formulario.
- * @property {function(React.FormEvent<HTMLFormElement>): Promise<void>} onHandleSubmit - Envía el formulario de Alta/Modificación.
- * @property {function(React.ChangeEvent<HTMLInputElement>): void} onHandleChangeFormulario - Manejador de cambios en los inputs del formulario.
- * @property {function(): void} onHandleAgregar - Abre el modal en modo 'alta'.
- * @property {function(React.ChangeEvent<HTMLSelectElement>): void} onHandleEstado - Manejador para el cambio de filtro de estado.
- * @property {function(number): void} onHandlePaginaCambiada - Maneja el evento de cambio de página.
- * @property {function(any): void} [onModificar] - Función para iniciar la modificación de un ítem (desde la tabla).
- * @property {function(any): void} [onEliminar] - Función para abrir el modal de eliminación (desde la tabla).
- * @property {function(): void} [onHandleCancelarEliminar] - Cancela y cierra el modal de eliminación.
- * @property {function(): Promise<void>} onHandleSubmitEliminar - Confirma y ejecuta la eliminación.
- */
-
-// Aquí definimos los tipos de las props que el componente recibirá
 interface AmbViewProps {
   modal: boolean;
   modalEliminar: boolean;
@@ -85,14 +50,6 @@ interface AmbViewProps {
   onHandleSubmitEliminar: () => Promise<void>;
 }
 
-/**
- * @function AmbVistas
- * @description Componente funcional React que renderiza la estructura completa de un módulo ABM,
- * incluyendo Buscador, Listado, Paginación y Modales de Formulario y Eliminación.
- * @param {AmbViewProps} props - Propiedades pasadas desde el componente de lógica (AmbAlumnos).
- * @returns {JSX.Element} La estructura visual completa del ABM.
- */
-
 export const AmbVistas: React.FC<AmbViewProps> = (props) => {
   const {
     modal,
@@ -128,6 +85,8 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
     onModificar,
     onEliminar,
   } = props;
+
+  const [buscadorAbierto, setBuscadorAbierto] = useState(false);
 
   return (
     <div className="amb_master_wrapper">
@@ -168,22 +127,38 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
 
       {/* ESTRUCTURA DE ALTO RENDIMIENTO */}
       <div className="amb_layout_container">
-        {/* BUSCADOR: Ahora es solo un área de posicionamiento */}
-        <header className="area_buscador">
-          <Buscadores
-            tituloBuscador="Filtro de Busqueda"
-            intputBuscador={inputsFiltro}
-            buscadorData={filtroData}
-            onChange={onHandleChangeBuscador}
-            captionBoton="Agregar"
-            onAgregar={onHandleAgregar}
-            estados={estados}
-            onEstados={onHandleEstado}
-            onItems={onHandleItems}
-          />
-        </header>
+        {/* BUSCADOR: ahora es un panel lateral que se esconde */}
+        <div
+          className={`area_buscador_lateral ${buscadorAbierto ? "abierto" : ""}`}
+        >
+          <button
+            type="button"
+            className="area_buscador_lengueta"
+            onClick={() => setBuscadorAbierto((prev) => !prev)}
+            aria-expanded={buscadorAbierto}
+            aria-label={buscadorAbierto ? "Ocultar filtros" : "Mostrar filtros"}
+          >
+            <Search size={16} />
+            <span className="area_buscador_lengueta_texto">Filtro</span>
+            <ChevronRight size={14} className="area_buscador_flecha" />
+          </button>
 
-        {/* LISTADO: Ocupa todo el centro */}
+          <div className="area_buscador_cuerpo">
+            <Buscadores
+              tituloBuscador="Filtro de Busqueda"
+              intputBuscador={inputsFiltro}
+              buscadorData={filtroData}
+              onChange={onHandleChangeBuscador}
+              captionBoton="Agregar"
+              onAgregar={onHandleAgregar}
+              estados={estados}
+              onEstados={onHandleEstado}
+              onItems={onHandleItems}
+            />
+          </div>
+        </div>
+
+        {/* LISTADO: ocupa todo el centro, ahora arranca más arriba */}
         <main className="area_listado">
           <ListadoMolde
             items={dataAlumnosListado}
@@ -196,7 +171,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
           />
         </main>
 
-        {/* PAGINACIÓN: Solo la línea sutil y el componente */}
+        {/* PAGINACIÓN */}
         <footer className="area_paginacion">
           <Paginacion
             contadorPagina={barraPaginacion.contadorPagina || 0}

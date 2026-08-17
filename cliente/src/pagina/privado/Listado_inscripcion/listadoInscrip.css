@@ -1,51 +1,169 @@
 /* ============================================================
-   CONTENEDOR PRINCIPAL CON SCROLL GLOBAL
+   CONTENEDOR PRINCIPAL — arranca justo donde termina la lengüeta
    ============================================================ */
+
 .contenedor_listado {
+    position: relative;
+
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 5px;
+
+    padding: 5px 5px 5px 60px; /* 60px = 44px de la lengüeta + 16px de aire,
+                                   así el contenido nunca queda tapado */
+
     width: 100%;
-    height: 95vh;           /* Ocupa casi todo el alto de la pantalla */
-          /* Habilita scroll si el contenido supera el alto */
-  
+    height: 95vh;
+
     margin: 0 auto;
     box-sizing: border-box;
-   
 }
 
 /* ============================================================
-   SECCIÓN DE FILTROS EN COLUMNA
+   FILTROS — panel lateral que se esconde a la izquierda
    ============================================================ */
+
 .contenedor_filtros {
+    position: fixed;
+    top: 50%;
+    left: 0;
+    z-index: 500;
+
     display: flex;
-    flex-direction: column; /* Filtros uno debajo del otro */
-    gap: 1px;             /* Espacio entre el bloque Buscadores y FiltroFechas */
-    width: 100%;
-    padding: 1px;
-    border-radius: 12px;
-    justify-content: center;
-    align-items: center;
+    flex-direction: row-reverse; /* lengüeta primera en el DOM, visualmente
+                                     a la derecha del cuerpo */
+    align-items: stretch;
+
+    transform: translate(calc(-100% + 44px), -50%);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Aseguramos que los componentes internos ocupen todo el ancho */
-.contenedor_filtros > * {
-    width: 100%;
+.contenedor_filtros.abierto {
+    transform: translate(0, -50%);
+}
+
+.filtros_lengueta {
+    flex-shrink: 0;
+
+    width: 44px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 20px 0;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-left: none;
+    border-radius: 0 var(--radio-lg) var(--radio-lg) 0;
+
+    box-shadow: var(--sombra-md);
+
+    color: var(--texto-secundario);
+    cursor: pointer;
+
+    transition: var(--transicion);
+}
+
+.filtros_lengueta:hover {
+    color: var(--color-primario);
+    border-color: color-mix(in srgb, var(--color-primario) 35%, var(--borde));
+}
+
+.contenedor_filtros.abierto .filtros_lengueta {
+    color: var(--color-primario);
+    background: color-mix(in srgb, var(--color-primario) 8%, var(--fondo-secundario));
+}
+
+.filtros_lengueta_texto {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.68rem;
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.filtros_flecha {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contenedor_filtros.abierto .filtros_flecha {
+    transform: rotate(180deg);
+}
+
+.filtros_cuerpo {
+    width: min(400px, 86vw);
+    flex-shrink: 0;
+
+    max-height: 85vh;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    padding: 20px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-right: none;
+
+    box-shadow: var(--sombra-md);
+
+    visibility: hidden;
+    transition: visibility 0s linear 0.35s;
+}
+
+.contenedor_filtros.abierto .filtros_cuerpo {
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+/* los dos componentes internos ya traen su propio margin/max-width
+   pensado para vivir centrados en una página — dentro del panel
+   angosto no corresponde, así que los aplano acá */
+.filtros_cuerpo .buscador_contenedor_comp,
+.filtros_cuerpo .filtro_fechas_wrapper {
+    margin: 0;
+    max-width: 100%;
 }
 
 /* ============================================================
    CONTENEDOR DE LA TABLA
    ============================================================ */
-/* Si la tabla ya tiene su propio scroll, esto ayuda a que no colapsen */
+
 .contenedor_listado > :nth-child(2) {
-    flex: 1; 
-    min-height: 400px; /* Evita que la tabla desaparezca en pantallas muy chicas */
+    flex: 1;
+    min-height: 400px;
 }
 
 /* ============================================================
    PAGINACIÓN
    ============================================================ */
+
 .contenedor_listado > :last-child {
-    padding-bottom: 20px; /* Espacio extra al final para que no pegue al borde */
+    padding-bottom: 20px;
+}
+
+/* ============================================================
+   RESPONSIVE — en mobile no hay espacio real para reservar 60px
+   de margen fijo, el listado vuelve a usar todo el ancho y el
+   panel de filtros pasa a superponerse como overlay normal
+   ============================================================ */
+
+@media (max-width: 700px) {
+    .contenedor_listado {
+        padding-left: 5px;
+        padding: 5px 5px 5px 60px;
+    }
+
+    .filtros_cuerpo {
+        width: 92vw;
+    }
 }

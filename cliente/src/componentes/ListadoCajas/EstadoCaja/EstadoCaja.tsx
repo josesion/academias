@@ -1,16 +1,16 @@
 import { Boton } from "../../generales/Boton/Boton";
-import { EstadoCajaCerrada } from "../EstadoCerrado/EstadoCerrado";
-
+import { ComponenteCargando } from "../../generales/Cargando/Cargando";
 import { Clock3, UserRound, Wallet } from "lucide-react";
 
 import "./estadocaja.css";
 
 interface EstadoCajaData {
+  carga: boolean;
   id_caja: number;
   usuario: string;
   fecha_apertura: string;
   hora_apertura: string;
-  estado: "abierta" | "cerrada";
+  estado?: "abierta" | "cerrada";
   total: number;
   totales: {
     efectivo: number;
@@ -21,8 +21,8 @@ interface EstadoCajaData {
 export const EstadoCaja = (props: EstadoCajaData) => {
   return (
     <section className="estado_caja_contenedor">
-      {props.estado === "cerrada" ? (
-        <EstadoCajaCerrada />
+      {props.carga ? (
+        <ComponenteCargando />
       ) : (
         <div>
           {/* =====================================================

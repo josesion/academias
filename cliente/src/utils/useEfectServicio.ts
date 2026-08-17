@@ -76,7 +76,7 @@ export const useEffectServicio = <T, R, A>(
         dispatch(accionCarga(true));
    
         const result = await servicios(valores , controller?.signal);
-        
+  
         if (result.statusCode >= 200 && result.statusCode < 300) {
           dispatch(accionResultado(result.data));
         } else {
