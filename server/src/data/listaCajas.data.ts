@@ -266,7 +266,7 @@ export interface DataResultMetodosPagos {
  *     estadoDiferencia: null
  * });
  */
-const metricasMetodoPagoCajas = (  data :  InputConvinados) 
+const metricasMetodoPagoCajas =async (  data :  InputConvinados) 
 :Promise<TipadoData<DataResultMetodosPagos[]>> => {
 
     const { id_escuela , fechaDesde, fechaHasta, idUsuarioFiltro, estadoDiferencia } = data;
@@ -310,7 +310,7 @@ const metricasMetodoPagoCajas = (  data :  InputConvinados)
         estadoDiferencia
     ];
     
-    return listarEntidadSinPaginacion({
+    return await listarEntidadSinPaginacion({
         slqListado : sql,
         valores :valores,
         entidad : "METODOS_DATOS",
@@ -353,7 +353,7 @@ const usuarioEscuela = async ( id : EstadoCajaInput)
 
     const valor : unknown[] = [ id.id_escuela ];
     
-    return listarEntidadSinPaginacion({
+    return await listarEntidadSinPaginacion({
         slqListado : slq,
         valores : valor,
         entidad : "LISTA_USUARIOS_ESCUELA",
@@ -419,12 +419,65 @@ const libroDiarioDetalle  = async ( data : LibroDiarioInput)
 
 } 
 
+
+/**
+ * Consulta y obtiene el resumen agrupado de los montos por método de pago (cuenta) 
+ * para una caja específica, excluyendo los saldos iniciales y calculando el balance 
+ * de ingresos menos egresos.
+ *
+ * @async
+ * @function graficosMetodosPagoCaja
+ * @param {LibroDiarioInput} id - Objeto de entrada que contiene el identificador de la caja (`id_caja`).
+ * @returns {Promise<TipadoData<DataResultMetodosPagos[]>>} Retorna una promesa con un objeto TipadoData:
+ * - Si es exitoso (`error: false`): Devuelve la lista con los totales por método de pago en la propiedad `data`.
+ * - Si ocurre algún error o no hay registros: Retorna el estado de error correspondiente con su mensaje y código.
+ */
+const graficosMetodosPagoCaja =async ( id : LibroDiarioInput)
+:Promise<TipadoData< DataResultMetodosPagos[]>> =>{
+
+    const sql : string = `SELECT 
+                                ce.id_cuenta,
+                                ce.nombre_cuenta AS metodo,
+                                COALESCE(
+                                    SUM(
+                                        CASE 
+                                            WHEN cc.tipo_movimiento = 'ingreso' THEN dc.monto
+                                            WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
+                                            ELSE 0
+                                        END
+                                    ), 0
+                                ) AS total
+                            FROM detalle_caja dc
+                            INNER JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
+                            INNER JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
+                            WHERE dc.id_caja = ?
+                            AND cc.nombre_categoria != 'Saldo Inicial'
+                            GROUP BY ce.id_cuenta, ce.nombre_cuenta, ce.tipo_cuenta
+                            ORDER BY total DESC;`;
+
+    const valor : unknown[] = [ id.id_caja ];
+
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores : valor,
+        entidad : "METODO_PAGOS_RESUMEN",
+        estado : ""
+    });
+};
+
+
+export interface CajasResumenResponse {
+    dataDetalle: MovimientoLibroDiario[] | null;
+    dataMetodo: DataResultMetodosPagos[] | null;
+};
+
 export const method = {
     listaEstadoCaja : tryCatchDatos(listaEstadoCaja),
     detalleCajasCerradas : tryCatchDatos(detalleCajasCerradas),
     metricasMetodoPagoCajas : tryCatchDatos( metricasMetodoPagoCajas),
     usuarioEscuela : tryCatchDatos( usuarioEscuela),
     libroDiarioDetalle : tryCatchDatos( libroDiarioDetalle ),
+    graficosMetodosPagoCaja : tryCatchDatos( graficosMetodosPagoCaja ),
 };
 
 

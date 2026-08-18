@@ -8,7 +8,7 @@ import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL_ESTADO_CAJAS,
 } from "../respuestas/listaCajas";
 import { method as listaCajaServicios } from "../Servicio/listaCaja.servicios";
 import { InputConvinados, EstadoCajaInput, LibroDiarioInput } from "../squemas/listaCajas";
-import { CajasServicioResponse, DataEstadoResult, MovimientoLibroDiario, ReturnUsuarioEscuelas } from "../data/listaCajas.data";
+import { CajasServicioResponse, DataEstadoResult, MovimientoLibroDiario, ReturnUsuarioEscuelas,  CajasResumenResponse } from "../data/listaCajas.data";
 
 
 
@@ -130,7 +130,7 @@ const libroDiario = async ( req : Request , res : Response ) =>{
         id_caja : Number(req.query.id)
     };
     
-    await handleControladores<LibroDiarioInput, MovimientoLibroDiario[] >(
+    await handleControladores<LibroDiarioInput,  CajasResumenResponse >(
         res, data, listaCajaServicios.libroDiario, MAPA_LIBRO_DIARIO
     );
 };

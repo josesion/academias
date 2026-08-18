@@ -10,7 +10,8 @@ import { InputConvinados, SchemaFinal,
 
 import { DataEstadoResult, HistorialCaja, 
          DataResultMetodosPagos, CajasServicioResponse,
-         ReturnUsuarioEscuelas,  MovimientoLibroDiario      
+         ReturnUsuarioEscuelas,  MovimientoLibroDiario ,
+         CajasResumenResponse     
 } from "../data/listaCajas.data";
 
 
@@ -165,50 +166,55 @@ const usuariosEscuela = async( id : EstadoCajaInput)
 
 
 /**
- * Valida los datos de entrada para el libro diario mediante un esquema Zod, 
- * solicita los detalles de la caja a la capa de datos y procesa la respuesta 
- * para estandarizar el formato devuelto al controlador.
+ * Valida los datos de entrada para el libro diario mediante un esquema Zod,
+ * consulta en paralelo o secuencia los detalles de movimientos y el resumen de métodos de pago por caja,
+ * y consolida ambos resultados en una respuesta unificada para el cliente.
  *
  * @async
  * @function libroDiario
  * @param {LibroDiarioInput} data - Objeto de entrada con el identificador de la caja (`id_caja`).
  * @throws {ZodError} Si la validación de los datos a través de `LibroDiarioSchema` falla.
- * @returns {Promise<TipadoData<MovimientoLibroDiario[]>>} Retorna una promesa con un objeto TipadoData:
- * - Si es exitoso (`error: false`): Devuelve la lista de movimientos con el código `"LISTADO_DETALLE_CAJA_OK"`.
- * - Si la caja no tiene registros (`error: true`): Devuelve el código `"CAJA_SIN_DETALLE"`.
- * - Si ocurre un error inesperado (`error: true`): Devuelve el código `"ERROR_SERVIDOR"`.
+ * @returns {Promise<TipadoData<CajasResumenResponse>>} Retorna una promesa con un objeto TipadoData:
+ * - Si es exitoso o carece parcial/totalmente de registros (`error: false`): Devuelve un objeto consolidado 
+ *   con `dataDetalle` y `dataMetodo` bajo el código `"LISTADO_DETALLE_CAJA_OK"`.
+ * - Si ocurre un error inesperado a nivel de servidor (`error: true`): Retorna el código `"ERROR_SERVIDOR"`.
  */
-const libroDiario = async ( data : LibroDiarioInput )
-: Promise<TipadoData<MovimientoLibroDiario[]>> => {
+    const libroDiario = async ( data : LibroDiarioInput )
+    : Promise<TipadoData<CajasResumenResponse>> => {
 
-    const dataValidada : LibroDiarioInput = LibroDiarioSchema.parse( data );
+        const dataValidada : LibroDiarioInput = LibroDiarioSchema.parse( data );
 
-    const resultLibroDiario = await listaCajaData.libroDiarioDetalle( dataValidada );
+        const resultLibroDiario = await listaCajaData.libroDiarioDetalle( dataValidada );
+        const resultMetodosPago = await listaCajaData.graficosMetodosPagoCaja(dataValidada);
 
-    if ( resultLibroDiario.code === 'DETALLE_CAJA_RESUMEN_LISTED' ){
-        return {
-            error : false, 
-            message : "Libro diario listado correctamente.",
-            data : resultLibroDiario.data,
-            code : "LISTADO_DETALLE_CAJA_OK"
-        }
-    };
+        const sinDetalleCaja = resultLibroDiario.code === 'NO_ACTIVE_DETALLE_CAJA_RESUMEN';
+        const sinMetodosPago = resultMetodosPago.code === "NO_ACTIVE_METODO_PAGOS_RESUMEN"
 
-    if ( resultLibroDiario.code ===  'NO_ACTIVE_DETALLE_CAJA_RESUMEN' ){
-        return {
+
+        if ( 
+            (resultLibroDiario.code === 'DETALLE_CAJA_RESUMEN_LISTED' || resultMetodosPago.code === "METODO_PAGOS_RESUMEN_LISTED") 
+            || ( sinDetalleCaja || sinMetodosPago)
+        ){
+
+            const dataDetalle : MovimientoLibroDiario[] | null = sinDetalleCaja ? null : ( resultLibroDiario.data ??  null);
+            const dataMetodo :  DataResultMetodosPagos[] | null  = sinMetodosPago ? null : ( resultMetodosPago.data ?? null);
+
+            return {
+                error : false, 
+                message : "Libro diario listado correctamente.",
+                data :  { dataDetalle , dataMetodo },
+                code : "LISTADO_DETALLE_CAJA_OK"
+            }
+        };
+
+
+        return{
             error : true, 
-            message : "Esta caja no contiene detalles.",
-            code : "CAJA_SIN_DETALLE"
-        }
-    };    
+            message : "Error en el servidor , Libro diario resumen.",
+            code : "ERROR_SERVIDOR"
+        };    
 
-    return{
-        error : true, 
-        message : "Error en el servidor , Libro diario resumen.",
-        code : "ERROR_SERVIDOR"
-    };    
-
-};
+    };
 
 
 
