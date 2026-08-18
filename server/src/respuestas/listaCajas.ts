@@ -36,3 +36,35 @@ export const MAPA_HISTORIAL_CAJAS : Record<string , { status : CodigoEstadoHTTP,
     }
 
 }; 
+
+export const MAPA_USUARIOS_ESCUELAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+
+    "LISTA_USUARIOS_OK" : {
+        status : CodigoEstadoHTTP.OK,
+        msg : "Lista usuarios ok."
+    },
+
+    "SIN_USUARIOS_ESCUELA" : {
+        status :CodigoEstadoHTTP.SIN_CONTENIDO,
+        msg : "Esta escuela no tiene usuarios."
+    }
+
+}; 
+
+export const MAPA_LIBRO_DIARIO : Record< string, {status : CodigoEstadoHTTP, msg : string}> = {
+
+    ERROR_SERVIDOR,
+
+    "LISTADO_DETALLE_CAJA_OK"  : {
+        status : CodigoEstadoHTTP.OK,
+        msg : "Listado del detalle de caja ok."
+    },
+
+     "CAJA_SIN_DETALLE" : {
+        status : CodigoEstadoHTTP.NO_ENCONTRADO,
+        msg : "Esta caja no contiene detalles en el."
+     }
+
+};

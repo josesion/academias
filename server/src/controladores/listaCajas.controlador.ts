@@ -3,10 +3,12 @@ import { tryCatch } from "../utils/tryCatch";
 import { handleControladores } from "../utils/handleControladores";
 
 
-import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL_ESTADO_CAJAS } from "../respuestas/listaCajas";
+import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL_ESTADO_CAJAS,
+         MAPA_USUARIOS_ESCUELAS, MAPA_LIBRO_DIARIO,
+} from "../respuestas/listaCajas";
 import { method as listaCajaServicios } from "../Servicio/listaCaja.servicios";
-import { InputConvinados, EstadoCajaInput } from "../squemas/listaCajas";
-import { CajasServicioResponse, DataEstadoResult } from "../data/listaCajas.data";
+import { InputConvinados, EstadoCajaInput, LibroDiarioInput } from "../squemas/listaCajas";
+import { CajasServicioResponse, DataEstadoResult, MovimientoLibroDiario, ReturnUsuarioEscuelas } from "../data/listaCajas.data";
 
 
 
@@ -82,13 +84,61 @@ const estadoListaCaja = async( req : Request , res : Response) => {
         offset : offset
     };
 
-
+   
     await handleControladores<InputConvinados,CajasServicioResponse >(
         res, data , listaCajaServicios.listaCajasServicio, MAPA_HISTORIAL_CAJAS
     );    
 };
 
+
+/**
+ * Controlador HTTP encargado de extraer el identificador de la escuela desde la sesión del usuario autenticado,
+ * empaquetarlo y delegarlo al servicio correspondiente mediante el manejador centralizado de controladores.
+ *
+ * @async
+ * @function usuarioEscuela
+ * @param {Request} req - Objeto de solicitud HTTP de Express, que incluye opcionalmente la información del usuario autenticado (`req.usuario`).
+ * @param {Response} res - Objeto de respuesta HTTP de Express utilizado para devolver el resultado al cliente.
+ * @returns {Promise<void>} No retorna un valor directamente; envía la respuesta HTTP a través de `res`.
+ */
+const usuarioEscuela = async ( req : Request , res : Response) => {
+
+    const data = {
+        id_escuela :Number( req.usuario?.id_escuela)
+    };
+
+    await handleControladores<EstadoCajaInput, ReturnUsuarioEscuelas[] >(
+        res, data, listaCajaServicios.usuariosEscuela, MAPA_USUARIOS_ESCUELAS
+    );
+
+};
+
+/**
+ * Controlador HTTP encargado de capturar el identificador de la caja desde los parámetros 
+ * de la query de la petición (req.query.id), empaquetarlo y delegarlo al servicio 
+ * correspondiente utilizando el manejador centralizado de controladores.
+ *
+ * @async
+ * @function libroDiario
+ * @param {Request} req - Objeto de solicitud HTTP de Express, que contiene el `id` de la caja en los query params (`req.query.id`).
+ * @param {Response} res - Objeto de respuesta HTTP de Express utilizado para devolver el resultado al cliente.
+ * @returns {Promise<void>} No retorna un valor directamente; envía la respuesta HTTP correspondiente a través de `res`.
+ */
+const libroDiario = async ( req : Request , res : Response ) =>{
+
+    const data = {
+        id_caja : Number(req.query.id)
+    };
+    
+    await handleControladores<LibroDiarioInput, MovimientoLibroDiario[] >(
+        res, data, listaCajaServicios.libroDiario, MAPA_LIBRO_DIARIO
+    );
+};
+
+
 export const method = {
     encabezadoHistorial : tryCatch( encabezadoHistorialCaja),
-    estadoListaCaja : tryCatch(estadoListaCaja)
+    estadoListaCaja : tryCatch(estadoListaCaja), 
+    usuarioEscuela : tryCatch(usuarioEscuela),
+    libroDiario : tryCatch( libroDiario )
 }   

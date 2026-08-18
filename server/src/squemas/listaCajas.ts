@@ -6,6 +6,12 @@ export const EstadoCajaSchema = z.object({
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."), 
 });
 
+export const LibroDiarioSchema = z.object({
+    id_caja: z.coerce.number()
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja debe ser positivo (mayor que 0)."), 
+});
+
 export const HistorialCajaSchema  = z.object({
 
     
@@ -25,6 +31,7 @@ export const HistorialCajaSchema  = z.object({
 
 
 export type EstadoCajaInput = z.infer<typeof EstadoCajaSchema>;
+export type LibroDiarioInput = z.infer<typeof LibroDiarioSchema>;
 export type HistorialCajaInput = z.infer<typeof HistorialCajaSchema>;
 
 export const SchemaFinal = z.object({

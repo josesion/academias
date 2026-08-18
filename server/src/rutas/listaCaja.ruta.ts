@@ -7,5 +7,7 @@ import { method as permisos} from "../utils/permisos";
 
     ruta.get("/api/estado_caja_historial", validarPermiso, listaCajasControlador.encabezadoHistorial);
     ruta.get("/api/list_estado_caja", validarPermiso, listaCajasControlador.estadoListaCaja);
+    ruta.get("/api/usuarios_escuela", validarPermiso, listaCajasControlador.usuarioEscuela);
+    ruta.get("/api/detalle_caja_resumen", validarPermiso , listaCajasControlador.libroDiario);
 
 export default ruta;

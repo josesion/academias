@@ -13,83 +13,47 @@ export  interface ResultTarjetas extends ReultTarjetasInscripcion, ReultTarjetas
 };
 
 /**
- * Orquesta la obtención y consolidación de métricas generales para el panel de control.
- * Valida la existencia de una caja abierta, obtiene métricas de inscripciones, 
- * estados de vencimientos y el balance financiero actual.
+ * Obtiene y consolida las métricas de inscripciones, vencimientos y el balance de caja 
+ * para una escuela específica. Si la caja está cerrada, permite que las demás métricas 
+ * se muestren correctamente asignando un valor por defecto a la caja.
  *
  * @async
  * @function metricasInscripcion
- * @param {Object} data - Objeto con los datos de entrada.
- * @param {number} data.id_escuela - Identificador de la escuela para filtrar las métricas.
- * @returns {Promise<{error: boolean, message: string, code: string, data?: Object}>} 
- * Retorna un objeto con las métricas consolidadas si todo es correcto, 
- * o un objeto de error en caso de fallo en la validación o en la consulta a la BD.
- * * @throws {Error} Si la validación con `MetricasSchema` falla.
- * * @example
- * const resultado = await metricasInscripcion({ id_escuela: 107 });
- * if (!resultado.error) {
- * console.log("Métricas obtenidas:", resultado.data);
- * }
+ * @param {MetricaInputs} data - Objeto de entrada con los datos necesarios (ej. id_escuela).
+ * @throws {ZodError} Si la validación de los datos de entrada a través de `MetricasSchema` falla.
+ * @returns {Promise<TipadoData<ResultTarjetas>>} Retorna una promesa con un objeto de tipo TipadoData:
+ * - Si es exitoso (`error: false`): Devuelve las métricas consolidadas en `data` con código `"METRICAS_OK"`.
+ * - Si falla alguna validación o hay un error en el servidor: Devuelve `error: true` con su respectivo mensaje y código 
+ *   (ej. `"SIN_METRICAS_INSCRIPCIONES"`, `"SIN_METRICAS_VENCIMIENTOS"`, `"ERROR_SERVIDOR"`).
  */
-const metricasInscripcion = async ( data : MetricaInputs )
-:Promise<TipadoData<ResultTarjetas>> => {
+const metricasInscripcion = async ( data : MetricaInputs ) : Promise<TipadoData<ResultTarjetas>> => {
 
     const validarInfo : MetricaInputs = MetricasSchema.parse( data ); 
  
-    
+    // 1. Consultamos TODAS las fuentes en paralelo o secuencial sin cortar antes de tiempo
     const resultIdCaja = await dataCaja.idCajaAbierta( validarInfo );
 
-
-    if ( resultIdCaja.code ==='ID_CAJA_NO_EXISTE'){
-        return{
-            error : true, 
-            message : "Sin caja. Abra una antes por favor.",
-            code : "SIN_CAJA_ABIERTA"
-        };
-    };
-
-    const metricaTotalCaja = await dataCaja.metricasPrincipal({
-        id_caja : resultIdCaja.data?.id_caja,
-        id_escuela : validarInfo.id_escuela
-    });
-
-    if ( metricaTotalCaja.code === 'NO_ACTIVE_METRICAS_PANEL'){
-        return{
-            error : true, 
-            message : "Sin metricas, Balance total.",
-            code : "SIN_METRICAS_CAJA"
-        };
-    };
-
+    const metricaTotalCaja = resultIdCaja.code !== 'ID_CAJA_NO_EXISTE' && resultIdCaja.data?.id_caja 
+        ? await dataCaja.metricasPrincipal({
+            id_caja : resultIdCaja.data.id_caja,
+            id_escuela : validarInfo.id_escuela
+          })
+        : null;
 
     const resulMetricas = await dataMetricas.metricasInsc( validarInfo.id_escuela );
-    //console.log(resulMetricas)
-
-    if ( resulMetricas.code === 'METRICAS_INSCRIPCIONES_NO_EXISTE'){
-        return{
-            error : true, 
-            message : "Sin metricas, inscripcion.",
-            code : "SIN_METRICAS_INSCRIPCIONES"
-        };
-    };
-
     const resultVencimientos = await dataMetricas.metricasVencimientos( validarInfo.id_escuela );
-  //  console.log(resultVencimientos)
-
-    if ( resultVencimientos.code === 'METRICAS_VENCIMIENTOS_NO_EXISTE'){
-        return{
-            error : true, 
-            message : "Sin metricas, inscripcion.",
-            code : "SIN_METRICAS_VENCIMIENTOS"
-        };
-    };
 
 
-// todo ok 
+    // 2. Manejamos los errores específicos si es necesario, o armamos un valor por defecto si la caja está cerrada
+    const totalCajaValor = (metricaTotalCaja && metricaTotalCaja.code === 'METRICAS_PANEL_LISTED' && Array.isArray(metricaTotalCaja.data))
+        ? Number(metricaTotalCaja.data[0].balance_neto)
+        : 0; // Si no hay caja abierta, la caja arranca en 0 pero las demás métricas se muestran igual
+
+
+    // 3. Validamos que al menos las métricas principales (inscripciones y vencimientos) estén OK
     if ( 
         resulMetricas.code === 'METRICAS_INSCRIPCIONES_EXISTE' &&
-        resultVencimientos.code === 'METRICAS_VENCIMIENTOS_EXISTE' &&
-        metricaTotalCaja.code === 'METRICAS_PANEL_LISTED' &&  Array.isArray(metricaTotalCaja.data) 
+        resultVencimientos.code === 'METRICAS_VENCIMIENTOS_EXISTE'
     ){
 
         const result = {
@@ -100,10 +64,9 @@ const metricasInscripcion = async ( data : MetricaInputs )
              vencen_proximos: Number( resultVencimientos.data?.vencen_proximos), 
              vencidos_este_mes: Number( resultVencimientos.data?.vencidos_este_mes ) ,
             
-             total_caja : Number(metricaTotalCaja.data[0].balance_neto )
+             total_caja : totalCajaValor // Si no había caja, mandará 0 o lo que prefieras mostrar
         };
 
-   
         return{
             error: false,
             message : "Metricas inscripciones ok.",
@@ -112,13 +75,20 @@ const metricasInscripcion = async ( data : MetricaInputs )
         };
     };    
 
+    // Manejo de errores si fallan las otras métricas
+    if (resulMetricas.code === 'METRICAS_INSCRIPCIONES_NO_EXISTE') {
+        return { error: true, message: "Sin metricas, inscripcion.", code: "SIN_METRICAS_INSCRIPCIONES" };
+    }
+
+    if (resultVencimientos.code === 'METRICAS_VENCIMIENTOS_NO_EXISTE') {
+        return { error: true, message: "Sin metricas, vencimientos.", code: "SIN_METRICAS_VENCIMIENTOS" };
+    }
 
     return {
         error : true, 
         message : "Error en el servidor, metricas.",
         code : "ERROR_SERVIDOR"
     };
-
 };
 
 

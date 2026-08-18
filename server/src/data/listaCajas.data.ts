@@ -4,7 +4,7 @@ import { listarEntidad } from "../hooks/funcionListar";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { EstadoCajaInput,  InputConvinados, } from "../squemas/listaCajas";
+import { EstadoCajaInput,  InputConvinados, LibroDiarioInput} from "../squemas/listaCajas";
 
 
 export interface DataEstadoResult{
@@ -323,12 +323,108 @@ const metricasMetodoPagoCajas = (  data :  InputConvinados)
 export interface CajasServicioResponse {
     dataDetalle: HistorialCaja[] | null;
     dataMetodo: DataResultMetodosPagos[] | null;
+};
+
+export interface ReturnUsuarioEscuelas {
+    id_usuario : number,
+    usuario   : string,
+};
+
+
+/**
+ * Obtiene la lista de usuarios asociados a una escuela específica sin paginación.
+ *
+ * @async
+ * @function usuarioEscuela
+ * @param {EstadoCajaInput} id - Objeto de entrada que contiene el identificador de la escuela (`id_escuela`).
+ * @returns {Promise<TipadoData<ReturnUsuarioEscuelas[]>>} Retorna una promesa con un objeto de tipo TipadoData:
+ * - Si es exitoso (`error: false`): Devuelve un array con los usuarios de la escuela en la propiedad `data`.
+ * - Si ocurre un error en la consulta: Devuelve `error: true` con su respectivo mensaje y código de error.
+ */
+const usuarioEscuela = async ( id : EstadoCajaInput)
+:Promise<TipadoData<ReturnUsuarioEscuelas[]>> =>{
+
+    const slq : string = `SELECT 
+                                u.id_usuario,
+                                u.usuario
+                            FROM usuarios u
+                            INNER JOIN escuelas e ON u.id_escuela = e.id_escuela
+                            WHERE u.id_escuela = ?;`
+
+    const valor : unknown[] = [ id.id_escuela ];
+    
+    return listarEntidadSinPaginacion({
+        slqListado : slq,
+        valores : valor,
+        entidad : "LISTA_USUARIOS_ESCUELA",
+        estado : ""
+    });
+
+};
+
+
+export interface MovimientoLibroDiario {
+  id_movimiento: number;
+  usuario: string;
+  id_caja: number;
+  fecha: string;
+  hora: string;
+  categoria: string;
+  descripcion: string | null;
+  tipo: "ingreso" | "egreso";
+  cuenta: string;
+  monto: number;
 }
+
+/**
+ * Consulta y obtiene el detalle completo de los movimientos de una caja específica (excluyendo el saldo inicial) 
+ * utilizando los joins correspondientes con usuarios, categorías y cuentas.
+ *
+ * @async
+ * @function libroDiarioDetalle
+ * @param {LibroDiarioInput} data - Objeto de entrada que contiene el identificador de la caja a consultar (`id_caja`).
+ * @returns {Promise<TipadoData<MovimientoLibroDiario[]>>} Retorna una promesa con un objeto de tipo TipadoData:
+ * - Si es exitoso (`error: false`): Devuelve la lista de movimientos del libro diario en la propiedad `data`.
+ * - Si ocurre algún error o no hay registros: Retorna el estado de error correspondiente con su mensaje y código.
+ */
+const libroDiarioDetalle  = async ( data : LibroDiarioInput)
+:Promise<TipadoData<MovimientoLibroDiario[]>>=> {
+
+    const sql : string = `SELECT 
+                            dc.id_movimiento,
+                            CONCAT(u.nombre, ' ', u.apellido) AS usuario,
+                            dc.id_caja,
+                            DATE_FORMAT(dc.fecha_movimiento, '%Y-%m-%d') AS fecha,
+                            DATE_FORMAT(dc.fecha_movimiento, '%H:%i:%s') AS hora,
+                            cc.nombre_categoria AS categoria,
+                            dc.descripcion,
+                            cc.tipo_movimiento AS tipo,
+                            ce.nombre_cuenta AS cuenta,
+                            dc.monto
+                        FROM detalle_caja dc
+                        INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
+                        INNER JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
+                        INNER JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
+                        WHERE dc.id_caja = ?
+                        AND cc.nombre_categoria != 'Saldo Inicial';`
+
+    const valor : unknown[] = [ data.id_caja ];
+    
+    return listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores : valor,
+        entidad : "DETALLE_CAJA_RESUMEN",
+        estado : ""
+    });
+
+} 
 
 export const method = {
     listaEstadoCaja : tryCatchDatos(listaEstadoCaja),
     detalleCajasCerradas : tryCatchDatos(detalleCajasCerradas),
     metricasMetodoPagoCajas : tryCatchDatos( metricasMetodoPagoCajas),
+    usuarioEscuela : tryCatchDatos( usuarioEscuela),
+    libroDiarioDetalle : tryCatchDatos( libroDiarioDetalle ),
 };
 
 
