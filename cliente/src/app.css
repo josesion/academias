@@ -1,50 +1,50 @@
 :root{
 
     /* =====================================
-       FONDOS
+        FONDOS (Actualizados a la paleta editorial/lujo)
     ===================================== */
 
-    --fondo-principal:#17181D;
-    --fondo-secundario:#20232B;
-    --fondo-superficie:#2A2E38;
-    --fondo-hover:rgba(255,255,255,.05);
+    --fondo-principal:#FAF9F7;
+    --fondo-secundario:#FFFFFF;
+    --fondo-superficie:#F0EFEB;
+    --fondo-hover:rgba(27,28,27,.04);
 
     /* =====================================
-       TEXTO
+        TEXTO
     ===================================== */
 
-    --texto-principal:#F5F7FA;
-    --texto-secundario:#A7AFBF;
-    --texto-deshabilitado:#7A8498;
+    --texto-principal:#1B1C1B;
+    --texto-secundario:rgba(27, 28, 27, 0.6);
+    --texto-deshabilitado:rgba(27, 28, 27, 0.4);
 
     /* =====================================
-       COLORES
+        COLORES
     ===================================== */
 
-    --color-primario:#6D5DF6;
-    --color-secundario:#66A9E8;
+    --color-primario:#1B1C1B;
+    --color-secundario:#5B7B6E; /* Verde salvia sutil */
 
-    --color-exito:#22C55E;
-    --color-advertencia:#F59E0B;
-    --color-error:#EF4444;
+    --color-exito:#5B7B6E;
+    --color-advertencia:#C29B38;
+    --color-error:#B34747;
 
     /* =====================================
-       BORDES
+        BORDES
     ===================================== */
 
-    --borde:rgba(255,255,255,.08);
-    --borde-hover:rgba(255,255,255,.15);
+    --borde:rgba(116,120,120,.15);
+    --borde-hover:rgba(116,120,120,.3);
 
     /* =====================================
-       TIPOGRAFÍAS
+        TIPOGRAFÍAS
     ===================================== */
 
     --fuente-principal:"Inter",sans-serif;
-    --fuente-titulos:"Space Grotesk",sans-serif;
+    --fuente-titulos:'EB Garamond', Georgia, serif; /* Cambiado a Serif editorial */
     --fuente-codigo:"JetBrains Mono",monospace;
 
     /* =====================================
-       TAMAÑOS
+        TAMAÑOS
     ===================================== */
 
     --texto-xs:.68rem;
@@ -58,7 +58,7 @@
     --titulo-lg:2.35rem;
 
     /* =====================================
-       PESOS
+        PESOS
     ===================================== */
 
     --peso-normal:400;
@@ -67,14 +67,14 @@
     --peso-negrita:700;
 
     /* =====================================
-       ALTURA DE LÍNEA
+        ALTURA DE LÍNEA
     ===================================== */
 
     --linea-texto:1.5;
     --linea-titulo:1.2;
 
     /* =====================================
-       RADIOS
+        RADIOS
     ===================================== */
 
     --radio-sm:10px;
@@ -82,18 +82,18 @@
     --radio-lg:22px;
 
     /* =====================================
-       SOMBRAS
+        SOMBRAS
     ===================================== */
 
-    --sombra-sm:0 6px 16px rgba(0,0,0,.18);
-    --sombra-md:0 12px 28px rgba(0,0,0,.28);
-    --sombra-lg:0 18px 42px rgba(0,0,0,.35);
+    --sombra-sm:0 2px 8px rgba(27,27,27,.03);
+    --sombra-md:0 12px 32px rgba(27,27,27,.06);
+    --sombra-lg:0 20px 48px rgba(27,27,27,.09);
 
     /* =====================================
-       TRANSICIONES
+        TRANSICIONES
     ===================================== */
 
-    --transicion:all .25s ease;
+    --transicion:all .3s cubic-bezier(0.16, 1, 0.3, 1);
 
 }
 
@@ -111,7 +111,6 @@
 .app{
 
     width:100%;
-    /* Usamos min-height dinámico para móviles (fallback a 100vh para navegadores viejos) */
     min-height:100vh;
     min-height:100dvh;
 
@@ -134,7 +133,6 @@
     display:flex;
     flex-direction:column;
 
-    /* Reemplazamos 100vh por 100dvh para que respete la barra del celu */
     height:100vh;
     height:100dvh;
 
@@ -153,8 +151,8 @@
 
     scrollbar-width:thin;
     scrollbar-color:
-        var(--color-primario)
-        rgba(255,255,255,.05);
+        rgba(116,120,120,.3)
+        transparent;
 
 }
 
@@ -163,14 +161,13 @@
 
 .contenido_derecha::-webkit-scrollbar{
 
-    width:10px;
+    width:5px;
 
 }
 
 .contenido_derecha::-webkit-scrollbar-track{
 
-    background:var(--fondo-principal);
-    border-radius:999px;
+    background:transparent;
 
 }
 
@@ -178,18 +175,18 @@
 
     border-radius:999px;
 
-    background:var(--fondo-secundario)
+    background:rgba(116,120,120,.2);
 
 }
 
 .contenido_derecha::-webkit-scrollbar-thumb:hover{
 
-    background: var(--fondo-principal)
+    background:rgba(116,120,120,.4);
 }
 
 
 /* =======================================================
-   FONDO ANIMADO
+   FONDO ANIMADO (Adaptado a tonos suaves y cálidos)
 ======================================================= */
 
 .fondo-animado{
@@ -206,7 +203,7 @@
 
     filter:blur(90px);
 
-    opacity:.55;
+    opacity:.35;
 
 }
 
@@ -237,7 +234,7 @@
     right:-8%;
     bottom:5%;
 
-    background:rgba(102,169,232,.14);
+    background:rgba(91,123,110,.08);
 
     animation-duration:18s;
 
@@ -251,7 +248,7 @@
     top:35%;
     left:28%;
 
-    background:rgba(109,93,246,.10);
+    background:rgba(215,210,200,.15);
 
     animation-duration:30s;
 
@@ -265,7 +262,7 @@
     top:55%;
     left:12%;
 
-    background:rgba(102,169,232,.08);
+    background:rgba(91,123,110,.06);
 
     animation-duration:26s;
 
@@ -279,7 +276,7 @@
     top:15%;
     right:25%;
 
-    background:rgba(255,255,255,.04);
+    background:rgba(255,255,255,.6);
 
     animation-duration:28s;
 
@@ -293,7 +290,7 @@
     bottom:-8%;
     left:8%;
 
-    background:rgba(109,93,246,.08);
+    background:rgba(215,210,200,.12);
 
     animation-duration:32s;
 

@@ -71,25 +71,12 @@ export const UsuarioPage = () => {
           />
         </div>
         <div className="usuario_contenido_clases">
-          <InfoClases
-            estado={state.clases ? "EN CURSO" : "SIN CURSO"}
-            horario={
-              state.clases?.horario ? state.clases.horario : "Sin Horario."
-            }
-            nombre_clase={
-              state.clases?.nombre_clase
-                ? state.clases.nombre_clase
-                : "Sin Clase."
-            }
-            nombre_profesor={
-              state.clases?.nombre_clase
-                ? state.clases.nombre_profesor
-                : "Sin Profesor."
-            }
-            carga={state.carga.clases}
+          <Asistencia
+            asistencia={state.asistencias ? state.asistencias : []}
+            clases={state.clases}
+            estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
+            cargaClases={state.carga.clases}
           />
-
-          <Asistencia asistencia={state.asistencias ? state.asistencias : []} />
         </div>
       </section>
 

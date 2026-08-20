@@ -1,5 +1,19 @@
 import "./historial.metreicas.css";
 import type { ResultHistorial } from "../../servicio/historial.fetch";
+import {
+  PlusCircle,
+  Edit3,
+  Trash2,
+  RotateCcw,
+  Unlock,
+  Lock,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  XCircle,
+  LogIn,
+  LogOut,
+  type LucideIcon,
+} from "lucide-react";
 
 interface PropsMetricasHistorial {
   historial: ResultHistorial[] | null;
@@ -7,19 +21,23 @@ interface PropsMetricasHistorial {
 
 const ESTILO_ACCION: Record<
   ResultHistorial["accion"],
-  { color: "verde" | "rojo" | "azul" | "violeta" | "gris"; etiqueta: string }
+  {
+    color: "verde" | "rojo" | "azul" | "violeta" | "gris";
+    etiqueta: string;
+    icono: LucideIcon;
+  }
 > = {
-  CREAR: { color: "verde", etiqueta: "Creó" },
-  MODIFICAR: { color: "azul", etiqueta: "Modificó" },
-  ELIMINAR: { color: "rojo", etiqueta: "Eliminó" },
-  RESTAURAR: { color: "violeta", etiqueta: "Restauró" },
-  ABRIR: { color: "verde", etiqueta: "Abrió" },
-  CERRAR: { color: "rojo", etiqueta: "Cerró" },
-  INGRESO: { color: "verde", etiqueta: "Ingreso" },
-  EGRESO: { color: "rojo", etiqueta: "Egreso" },
-  ANULACION: { color: "rojo", etiqueta: "Anulacion" },
-  LOGIN: { color: "azul", etiqueta: "Inició sesión" },
-  LOGOUT: { color: "gris", etiqueta: "Cerró sesión" },
+  CREAR: { color: "verde", etiqueta: "Creó", icono: PlusCircle },
+  MODIFICAR: { color: "azul", etiqueta: "Modificó", icono: Edit3 },
+  ELIMINAR: { color: "rojo", etiqueta: "Eliminó", icono: Trash2 },
+  RESTAURAR: { color: "violeta", etiqueta: "Restauró", icono: RotateCcw },
+  ABRIR: { color: "verde", etiqueta: "Abrió", icono: Unlock },
+  CERRAR: { color: "rojo", etiqueta: "Cerró", icono: Lock },
+  INGRESO: { color: "verde", etiqueta: "Ingreso", icono: ArrowUpCircle },
+  EGRESO: { color: "rojo", etiqueta: "Egreso", icono: ArrowDownCircle },
+  ANULACION: { color: "rojo", etiqueta: "Anulacion", icono: XCircle },
+  LOGIN: { color: "azul", etiqueta: "Inició sesión", icono: LogIn },
+  LOGOUT: { color: "gris", etiqueta: "Cerró sesión", icono: LogOut },
 };
 
 const capitalizarModulo = (modulo: string) =>
@@ -38,8 +56,7 @@ const formatearFecha = (fecha: Date) =>
     year: "numeric",
   });
 
-// Agrupa el historial en bloques por día, para poner un separador
-// de fecha cada vez que cambia el día dentro de la línea de tiempo.
+// Agrupa el historial en bloques por día
 const agruparPorDia = (historial: ResultHistorial[]) => {
   const grupos: { fecha: string; items: ResultHistorial[] }[] = [];
 
@@ -81,14 +98,21 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
           <ol className="historial_linea_tiempo">
             {grupo.items.map((item) => {
               const estilo = ESTILO_ACCION[item.accion];
+              const IconoComponente = estilo.icono;
 
               return (
                 <li className="historial_item" key={item.id_historial}>
-                  <div className={`historial_punto punto_${estilo.color}`} />
+                  <div className={`historial_punto punto_${estilo.color}`}>
+                    <IconoComponente
+                      size={12}
+                      className="historial_punto_icono"
+                    />
+                  </div>
 
                   <div className="historial_tarjeta">
                     <div className="historial_tarjeta_encabezado">
                       <span className={`historial_pill pill_${estilo.color}`}>
+                        <IconoComponente size={13} />
                         {estilo.etiqueta}
                       </span>
                       <span className="historial_modulo">

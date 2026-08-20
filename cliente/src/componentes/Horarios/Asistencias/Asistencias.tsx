@@ -1,6 +1,6 @@
 import "./asistencia.css";
-import { Users, UserPlus } from "lucide-react";
-import { ComponenteCargando } from "../../generales/Cargando/Cargando";
+import { UserPlus } from "lucide-react";
+import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 
 type EstadoAsistencia = "presente" | "Tardanza" | "Ausente";
 
@@ -10,8 +10,17 @@ interface DataAsistencia {
   estado?: EstadoAsistencia;
 }
 
+interface DatosClase {
+  nombre_clase: string;
+  horario: string;
+  nombre_profesor: string;
+}
+
 interface AsistenciaProps {
-  asistencia: DataAsistencia[]; // Aquí le dices que espera una propiedad llamada "data"
+  asistencia: DataAsistencia[];
+  clases: DatosClase | null;
+  estadoClase: "EN CURSO" | "SIN CURSO";
+  cargaClases: boolean;
 }
 
 const variantesAvatar = ["", "variante_1", "variante_2"];
@@ -54,62 +63,119 @@ const EstadoBadge = ({
   );
 };
 
-export const Asistencia = ({ asistencia }: AsistenciaProps) => {
+export const Asistencia = ({
+  asistencia,
+  clases,
+  estadoClase,
+  cargaClases,
+}: AsistenciaProps) => {
   const presentes = asistencia.filter(
     (a) => (a.estado ?? "presente") === "presente",
   ).length;
 
+  const nombreClase = clases?.nombre_clase || "Sin Clase.";
+  const horarioClase = clases?.horario || "Sin Horario.";
+  const profesorClase = clases?.nombre_profesor || "Sin Profesor.";
+
   return (
     <section className="asistencia_contenedor">
-      <div className="asistencia_bg_icon">
-        <Users size={170} />
-      </div>
+      {/* BLOQUE DE INFORMACIÓN DE CLASE (SUPERIOR) */}
+      <div className="asistencia_bloque_info">
+        <div className="info_clases_datos">
+          <div className="info_clases_item">
+            <span className="info_clases_label">Clase</span>
+            {cargaClases ? (
+              <SpinnerTarjeta />
+            ) : (
+              <h2 title={nombreClase}>{nombreClase}</h2>
+            )}
+          </div>
 
-      <header className="asistencia_header">
-        <div className="asistencia_header_titulo">
-          <div>
-            <p>Control de asistencia</p>
+          <div className="info_clases_divisor"></div>
+
+          <div className="info_clases_item">
+            <span className="info_clases_label">Horario</span>
+            {cargaClases ? (
+              <SpinnerTarjeta />
+            ) : (
+              <p title={horarioClase}>{horarioClase}</p>
+            )}
+          </div>
+
+          <div className="info_clases_divisor"></div>
+
+          <div className="info_clases_item">
+            <span className="info_clases_label">Profesor</span>
+            {cargaClases ? (
+              <SpinnerTarjeta />
+            ) : (
+              <p title={profesorClase}>{profesorClase}</p>
+            )}
           </div>
         </div>
 
-        <span className="asistencia_total">{presentes} presentes</span>
-      </header>
-
-      {asistencia.length === 0 ? (
-        <div className="asistencia_vacio">
-          <UserPlus size={44} />
-
-          <h3>Sin alumnos registrados</h3>
-
-          <p>
-            Agregá alumnos a esta clase para comenzar a visualizar la
-            asistencia.
-          </p>
+        <div
+          className={`info_clases_estado ${
+            estadoClase === "EN CURSO" ? "curso" : "sin_curso"
+          }`}
+        >
+          <span className="estado_punto"></span>
+          {estadoClase}
         </div>
-      ) : (
-        <div className="asistencia_lista">
-          {asistencia.map((alumno, index) => (
-            <article className="asistencia_item" key={index}>
-              <div
-                className={`asistencia_icono ${
-                  variantesAvatar[index % variantesAvatar.length]
-                }`}
-              >
-                {obtenerIniciales(alumno.nombre, alumno.apellido)}
-              </div>
+      </div>
 
-              <div className="asistencia_nombre">
-                <p>{alumno.nombre}</p>
-                <span>{alumno.apellido}</span>
-              </div>
+      {/* LÍNEA DIVISORIA ENTRE LA CLASE Y LA ASISTENCIA */}
+      <div className="asistencia_seccion_divisor"></div>
 
-              <div className="asistencia_estado">
-                <EstadoBadge estado={alumno.estado} />
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+      {/* BLOQUE DE CONTROL DE ASISTENCIA (INFERIOR) */}
+      <div className="asistencia_bloque_principal">
+        <header className="asistencia_header">
+          <div className="asistencia_header_info">
+            <h3>Control de Asistencia</h3>
+            <p>Listado de alumnos de la clase</p>
+          </div>
+          <div className="asistencia_contador_badge">
+            <span className="punto_activo"></span>
+            <strong>{presentes}</strong> presentes
+          </div>
+        </header>
+
+        {asistencia.length === 0 ? (
+          <div className="asistencia_vacio">
+            <div className="asistencia_vacio_icono">
+              <UserPlus size={44} />
+            </div>
+            <h3>Sin alumnos registrados</h3>
+            <p>
+              Agregá alumnos a esta clase para comenzar a visualizar la
+              asistencia.
+            </p>
+          </div>
+        ) : (
+          <div className="asistencia_lista">
+            {asistencia.map((alumno, index) => (
+              <article className="asistencia_item" key={index}>
+                <div
+                  className={`asistencia_icono ${
+                    variantesAvatar[index % variantesAvatar.length]
+                  }`}
+                >
+                  {obtenerIniciales(alumno.nombre, alumno.apellido)}
+                </div>
+
+                <div className="asistencia_nombre">
+                  <p>{alumno.nombre}</p>
+                  <span>{alumno.apellido}</span>
+                </div>
+
+                <div className="asistencia_estado_wrapper">
+                  <EstadoBadge estado={alumno.estado} />
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 };

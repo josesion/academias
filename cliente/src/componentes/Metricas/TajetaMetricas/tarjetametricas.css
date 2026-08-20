@@ -41,36 +41,47 @@
     gap: 22px;
 
     width: 100%;
+    position: relative;
+    z-index: 2; /* Para que el texto quede siempre por encima de la marca de agua */
 }
 
 .tarjeta_metrica_contenido.centrado {
-    justify-content: center;
-    text-align: center;
+    justify-content: flex-start; /* O center si preferís todo al medio */
+    text-align: left;
 }
 
 /* ==========================================================================
-   LOGO
+   LOGO (ESTILO MARCA DE AGUA DE FONDO)
    ========================================================================== */
 
 .tarjeta_metrica_logo {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+
     display: flex;
     justify-content: center;
     align-items: center;
 
-    width: 68px;
-    min-width: 68px;
-    height: 68px;
+    width: 110px;
+    height: 110px;
 
-    border-radius: var(--radio-md);
+    pointer-events: none; /* Para que no interfiera con clics */
+    opacity: 0.06; /* Sutil marca de agua */
 
-    color: var(--texto-principal);
-
-    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
 }
 
 .tarjeta_metrica_logo svg {
-    width: 34px;
-    height: 34px;
+    width: 90px;
+    height: 90px;
+    color: currentColor;
+}
+
+/* Efecto hover opcional: que la marca de agua resalte un poquito al pasar el mouse */
+.tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+    opacity: 0.12;
+    transform: scale(1.05) rotate(-5deg);
 }
 
 /* ==========================================================================
@@ -81,11 +92,12 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    width: 100%;
 }
 
 .tarjeta_metrica_info.centrado {
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .tarjeta_metrica_titulo {
@@ -141,149 +153,25 @@
 }
 
 /* ==========================================================================
-   COLORES POR TIPO
+   COLORES POR TIPO (Afectan a la marca de agua o línea sutil)
    ========================================================================== */
 
 .tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
-    background: var(--color-exito);
+    color: var(--color-exito);
 }
 
 .tarjeta_metrica_contenedor.nuevos .tarjeta_metrica_logo {
-    background: var(--color-secundario);
+    color: var(--color-secundario);
 }
 
 .tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
-    background: var(--color-error);
+    color: var(--color-error);
 }
 
 .tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
-    background: var(--color-advertencia);
+    color: var(--color-advertencia);
 }
 
 .tarjeta_metrica_contenedor.caja .tarjeta_metrica_logo {
-    background: var(--color-primario);
-}
-
-
-
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
-
-@media (max-width: 1200px) {
-    .tarjeta_metrica_contenedor {
-        padding: 20px;
-        min-height: 115px;
-    }
-    .tarjeta_metrica_contenido {
-        gap: 18px;
-    }
-    .tarjeta_metrica_logo {
-        width: 62px;
-        min-width: 62px;
-        height: 62px;
-    }
-    .tarjeta_metrica_logo svg {
-        width: 30px;
-        height: 30px;
-    }
-    .tarjeta_metrica_valor {
-        font-size: 1.7rem;
-    }
-}
-
-@media (max-width: 992px) {
-    .tarjeta_metrica_contenedor {
-        padding: 18px;
-        min-height: 110px;
-    }
-    .tarjeta_metrica_contenido {
-        justify-content: center;
-        align-items: center;
-        gap: 16px;
-    }
-    .tarjeta_metrica_logo {
-        width: 58px;
-        min-width: 58px;
-        height: 58px;
-        border-radius: var(--radio-sm);
-    }
-    .tarjeta_metrica_logo svg {
-        width: 28px;
-        height: 28px;
-    }
-    .tarjeta_metrica_info {
-        justify-content: center;
-    }
-    .tarjeta_metrica_valor {
-        font-size: 1.5rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .tarjeta_metrica_contenedor {
-        padding: 18px;
-        min-height: 100px;
-    }
-    .tarjeta_metrica_contenido {
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        gap: 14px;
-    }
-    .tarjeta_metrica_info {
-        align-items: center;
-        text-align: center;
-    }
-    .tarjeta_metrica_titulo {
-        font-size: 0.66rem;
-    }
-    .tarjeta_metrica_valor {
-        font-size: 1.35rem;
-    }
-    .tarjeta_metrica_porcentaje,
-    .tarjeta_metrica_leyenda {
-        justify-content: center;
-        font-size: var(--texto-xs);
-    }
-}
-
-@media (max-width: 480px) {
-    .tarjeta_metrica_contenedor {
-        padding: 16px;
-        min-height: 95px;
-    }
-    .tarjeta_metrica_contenido {
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        gap: 12px;
-    }
-    .tarjeta_metrica_logo {
-        width: 54px;
-        min-width: 54px;
-        height: 54px;
-        border-radius: var(--radio-sm);
-    }
-    .tarjeta_metrica_logo svg {
-        width: 26px;
-        height: 26px;
-    }
-    .tarjeta_metrica_info {
-        align-items: center;
-        text-align: center;
-        width: 100%;
-    }
-    .tarjeta_metrica_titulo {
-        font-size: 0.64rem;
-    }
-    .tarjeta_metrica_valor {
-        font-size: 1.25rem;
-    }
-    .tarjeta_metrica_porcentaje,
-    .tarjeta_metrica_leyenda {
-        justify-content: center;
-        font-size: 0.72rem;
-    }
+    color: var(--color-primario);
 }

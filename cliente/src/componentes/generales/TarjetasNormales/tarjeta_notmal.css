@@ -160,6 +160,14 @@
 
 }
 
+/* Forzamos a que cualquier SVG o elemento interno del ícono tome el color heredado */
+.tarjeta_icono svg {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+    fill: currentColor;
+}
+
 .tarjeta_normal_contenedor:hover .tarjeta_icono{
 
     transform:scale(1.08);
@@ -205,6 +213,19 @@
         0 0 14px color-mix(
             in srgb,
             var(--color-primario) 55%,
+            transparent
+        );
+
+}
+
+.tarjeta_normal_contenedor.azul .tarjeta_icono{
+
+    color: var(--color-secundario);
+
+    background:
+        color-mix(
+            in srgb,
+            var(--color-secundario) 15%,
             transparent
         );
 

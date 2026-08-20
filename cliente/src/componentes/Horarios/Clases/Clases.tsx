@@ -1,5 +1,4 @@
 import "./infoclases.css";
-import { Music } from "lucide-react";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 
 interface DataClases {
@@ -19,10 +18,6 @@ export const InfoClases = ({
 }: DataClases) => {
   return (
     <header className="info_clases_contenedor">
-      <div className="info_clases_bg_icon">
-        <Music size={150} />
-      </div>
-
       <div className="info_clases_datos">
         <div className="info_clases_item">
           <span className="info_clases_label">Clase</span>
@@ -44,7 +39,7 @@ export const InfoClases = ({
 
         <div className="info_clases_divisor"></div>
 
-        <div className="info_clases_item">
+        <div className="Info_clases_item">
           <span className="info_clases_label">Profesor</span>
 
           {carga ? (
@@ -61,7 +56,6 @@ export const InfoClases = ({
         }`}
       >
         <span className="estado_punto"></span>
-
         {estado}
       </div>
     </header>

@@ -239,6 +239,45 @@
   color: var(--texto-deshabilitado);
 }
 
+
+/* Centrar ícono dentro del punto de la línea de tiempo */
+.historial_punto {
+    position: absolute;
+    top: 4px;
+    left: 0;
+
+    width: 16px; /* Lo agrandamos un poquito de 12px a 16px para que entre bien el ícono */
+    height: 16px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--fondo-principal);
+    box-shadow: 0 0 0 2px currentColor;
+    padding: 1px;
+}
+
+.historial_punto_icono {
+    color: #fff; /* O el color que prefieras para contraste */
+}
+
+/* Alinear ícono dentro de la pill de la tarjeta */
+.historial_pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
