@@ -1,6 +1,4 @@
-// LibroDiarioGeneral.tsx
 import { useMemo } from "react";
-import { Boton } from "../../generales/Boton/Boton";
 import { BookOpen, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
 import "./libroDiario.css";
@@ -11,7 +9,8 @@ export interface MovimientoLibroDiario {
   id_caja: number;
   fecha: string;
   hora: string;
-  descripcion: string;
+  categoria: string;
+  descripcion: string | null;
   tipo: "ingreso" | "egreso";
   cuenta: string;
   monto: number;
@@ -19,28 +18,35 @@ export interface MovimientoLibroDiario {
 
 interface LibroDiarioProps {
   movimientos: MovimientoLibroDiario[];
-  onCerrarLbroDiario: () => void;
 }
 
 const formatearMoneda = (valor: number) =>
-  valor.toLocaleString("es-AR", { minimumFractionDigits: 0 });
+  valor.toLocaleString("es-AR", {
+    minimumFractionDigits: 0,
+  });
 
 const codigoAsiento = (id: number) => String(id).padStart(4, "0");
 
-export const LibroDiarioGeneral = ({
-  movimientos,
-  onCerrarLbroDiario,
-}: LibroDiarioProps) => {
+export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
+  console.log(movimientos);
+
   const totales = useMemo(() => {
     const debe = movimientos
       .filter((m) => m.tipo === "ingreso")
-      .reduce((acc, m) => acc + m.monto, 0);
+      .reduce((acc, m) => acc + Number(m.monto), 0);
+
     const haber = movimientos
       .filter((m) => m.tipo === "egreso")
-      .reduce((acc, m) => acc + m.monto, 0);
+      .reduce((acc, m) => acc + Number(m.monto), 0);
 
-    return { debe, haber, total: debe + haber };
+    return {
+      debe,
+      haber,
+      total: debe - haber,
+    };
   }, [movimientos]);
+
+  console.log(totales);
 
   if (!movimientos || movimientos.length === 0) {
     return (
@@ -53,30 +59,9 @@ export const LibroDiarioGeneral = ({
 
   return (
     <section className="libro_diario_contenedor">
-      <header className="libro_diario_encabezado">
-        <div className="libro_diario_titulo">
-          <BookOpen size={16} />
-          <div>
-            <h2>Libro diario</h2>
-            <span>Registro cronológico de caja</span>
-          </div>
-          <Boton
-            clase="editar"
-            logo="Cancel"
-            texto="Cerrar Libro Diario"
-            disable={false}
-            onClick={onCerrarLbroDiario}
-          />
-          <button
-            type="button"
-            className="btn-imprimir"
-            onClick={() => window.print()}
-          >
-            🖨️ Imprimir / Guardar PDF
-          </button>
-        </div>
-      </header>
-
+      {/* =====================================================
+          TABLA
+          ===================================================== */}
       <div className="libro_diario_tabla_wrapper">
         <table className="libro_diario_tabla_clasica">
           <thead>
@@ -97,13 +82,18 @@ export const LibroDiarioGeneral = ({
                 </td>
 
                 <td className="col_fecha" data-label="Fecha">
-                  {mov.fecha} <span className="fecha_hora">{mov.hora}</span>
+                  {mov.fecha}
+                  <span className="fecha_hora"> {mov.hora}</span>
                 </td>
 
                 <td className="col_cuenta" data-label="Concepto">
                   <div className="cuenta_contenido">
                     <span
-                      className={`cuenta_icono ${mov.tipo === "ingreso" ? "icono_ingreso" : "icono_egreso"}`}
+                      className={`cuenta_icono ${
+                        mov.tipo === "ingreso"
+                          ? "icono_ingreso"
+                          : "icono_egreso"
+                      }`}
                     >
                       {mov.tipo === "ingreso" ? (
                         <ArrowDownLeft size={13} />
@@ -113,10 +103,19 @@ export const LibroDiarioGeneral = ({
                     </span>
 
                     <div className="cuenta_texto">
-                      <span className="cuenta_desc">{mov.descripcion}</span>
+                      <span className="cuenta_categoria">{mov.categoria}</span>
                       <span className="cuenta_meta">
-                        {mov.cuenta} · Caja #{mov.id_caja} · {mov.usuario}
+                        {mov.cuenta}
+                        {" · "}
+                        Caja #{mov.id_caja}
+                        {" · "}
+                        {mov.usuario}
                       </span>
+                      {mov.descripcion && (
+                        <span className="cuenta_descripcion">
+                          {mov.descripcion}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </td>

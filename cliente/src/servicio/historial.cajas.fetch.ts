@@ -118,3 +118,82 @@ const parametrosConvertidos: Record<string, string> = {
     });  
 
 };
+
+export interface ResultUsuariosEscuela {
+    id_usuario : number,
+    usuario : string
+}
+
+
+export const usuariosEscuelas = async ()
+:Promise<ApiResponse<ResultUsuariosEscuela[]>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }; 
+
+   const rutaCompleta = `${PAGINA}api/usuarios_escuela`;   
+   
+   return await apiFetch( rutaCompleta , { 
+        method : "GET"
+   });
+};
+
+
+export interface DataResumen {
+    id_caja : number
+};
+
+interface MovimientoLibroDiario {
+  id_movimiento: number;
+  usuario: string;
+  id_caja: number;
+  fecha: string;
+  hora: string;
+  categoria: string;
+  descripcion: string | null;
+  tipo: "ingreso" | "egreso";
+  cuenta: string;
+  monto: number;
+};
+
+
+export interface CajasResumenResponse {
+    dataDetalle: MovimientoLibroDiario[] | null;
+    dataMetodo: DataResultMetodosPagos[] | null;
+};
+
+
+export const detalleCajaResumen =async ( data : DataResumen)
+:Promise<ApiResponse<CajasResumenResponse>>=>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }; 
+
+    
+    const parametrosConvertidos: Record<string, string> = {
+        id : String(data.id_caja)
+    };
+   
+   const rutaCompleta = `${PAGINA}api/detalle_caja_resumen?${new URLSearchParams(parametrosConvertidos).toString()}`; 
+
+   return await apiFetch( rutaCompleta, {
+        method : "GET"  
+   });
+
+};

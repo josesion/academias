@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
-
+import { BookOpen } from "lucide-react";
 // Componentes
 import { EstadoCaja } from "../../../componentes/ListadoCajas/EstadoCaja/EstadoCaja";
 import { DetalleCajas } from "../../../componentes/ListadoCajas/Listado/DetalleCaja";
@@ -8,15 +8,20 @@ import { LibroDiarioGeneral } from "../../../componentes/ListadoCajas/LibroDiari
 import { EstadoCajaCerrada } from "../../../componentes/ListadoCajas/EstadoCerrado/EstadoCerrado";
 import { GraficoMetodosPago } from "../../../componentes/ListadoCajas/Graficosmetodos/Graficos";
 import { BuscadorLateral } from "../../../componentes/BuscadorLateral/BuscadorLateral";
+import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
+import { Boton } from "../../../componentes/generales/Boton/Boton";
+import { SinDetallesCaja } from "../../../componentes/ListadoCajas/SinContenidos/SinDetalles/SinDetalles";
 
 import "./listadocajas.css";
+
 export interface MovimientoLibroDiario {
   id_movimiento: number;
   usuario: string;
   id_caja: number;
   fecha: string;
   hora: string;
-  descripcion: string;
+  categoria: string;
+  descripcion: string | null;
   tipo: "ingreso" | "egreso";
   cuenta: string;
   monto: number;
@@ -28,203 +33,6 @@ export interface MetodoPagoData {
   color: string;
 }
 
-const mockLibroDiario: MovimientoLibroDiario[] = [
-  {
-    id_movimiento: 1,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "09:15:00",
-    descripcion: "Inscripción alumna nueva - María Gomez",
-    tipo: "ingreso",
-    cuenta: "Efectivo",
-    monto: 10000.0,
-  },
-  {
-    id_movimiento: 2,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "10:30:00",
-    descripcion: "Pago de cuota mensual - Carlos Ruiz",
-    tipo: "ingreso",
-    cuenta: "Mercado Pago",
-    monto: 12000.0,
-  },
-  {
-    id_movimiento: 3,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "12:00:00",
-    descripcion: "Compra de insumos de limpieza y librería",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 4500.0,
-  },
-  {
-    id_movimiento: 4,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "15:45:00",
-    descripcion: "Pago de cuota mensual - Lucía Benítez",
-    tipo: "ingreso",
-    cuenta: "Efectivo",
-    monto: 12000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-  {
-    id_movimiento: 5,
-    usuario: "Juan Pérez",
-    id_caja: 14,
-    fecha: "2026-08-09",
-    hora: "18:20:00",
-    descripcion: "Reparación menor de parlante de estudio",
-    tipo: "egreso",
-    cuenta: "Efectivo",
-    monto: 8000.0,
-  },
-];
-
-const mockResumenMetodosPago: MetodoPagoData[] = [
-  { metodo: "efectivo", total: 180000.0, color: "#10B981" }, // Verde esmeralda
-  { metodo: "mercado pago", total: 62000.0, color: "#3B82F6" }, // Azul moderno
-  { metodo: "transferencia", total: 35000.0, color: "#8B5CF6" }, // Violeta / Índigo
-  { metodo: "tarjeta", total: 18500.0, color: "#8c7856" },
-];
-
 // Función auxiliar correctamente tipada con genéricos
 const dividirEnBloques = <T,>(array: T[], tamanoBloque: number): T[][] => {
   const bloques: T[][] = [];
@@ -233,18 +41,6 @@ const dividirEnBloques = <T,>(array: T[], tamanoBloque: number): T[][] => {
   }
   return bloques;
 };
-
-interface UsuarioOption {
-  id_usuario: number;
-  username: string;
-}
-
-// 2. Simulás o traés tu lista de usuarios desde la API
-const listaUsuarios: UsuarioOption[] = [
-  { id_usuario: 1, username: "jose_dev" },
-  { id_usuario: 2, username: "ana_admin" },
-  { id_usuario: 3, username: "carlos_caja" },
-];
 
 export const ListadoCajas = () => {
   const {
@@ -255,10 +51,17 @@ export const ListadoCajas = () => {
     cachearEstado,
     cachearFechaD,
     cachearFechaH,
+    handlePaginaCambiada,
   } = setHistorialCajas();
 
-  const { estadoCaja, historialCajas, carga, filtrosBusqueda } =
-    stateListadoCaja;
+  const {
+    estadoCaja,
+    historialCajas,
+    carga,
+    filtrosBusqueda,
+    usuariosEscuela,
+    detalleCaja,
+  } = stateListadoCaja;
 
   // Estado local para manejar la animación fluida de salida del modal
   const [estaCerrando, setEstaCerrando] = useState(false);
@@ -271,7 +74,7 @@ export const ListadoCajas = () => {
     }, 300); // Coincide con la duración de la animación CSS de salida
   };
 
-  // Partimos los métodos de pago en bloques de 5
+  // Partimos los métodos de pago en bloques de 3
   const bloquesMetodosPago = dividirEnBloques(
     historialCajas?.dataMetodo || [],
     3,
@@ -279,11 +82,10 @@ export const ListadoCajas = () => {
 
   return (
     <div className="listado_cajas_pagina">
-      {/* 1. Caja Activa */}
-
+      {/* 1. Caja Activa / Buscador */}
       <BuscadorLateral
         filtros={filtrosBusqueda}
-        usuario={listaUsuarios}
+        usuario={usuariosEscuela}
         cachearUsuario={cachearUsuario}
         cachearEstado={cachearEstado}
         cachearFechaD={cachearFechaD}
@@ -327,7 +129,7 @@ export const ListadoCajas = () => {
           )}
         </div>
 
-        {/* Contenedor de los gráficos divididos de 5 en 5 */}
+        {/* Contenedor de los gráficos divididos */}
         <div className="listado_cajas_graficos_columna">
           {bloquesMetodosPago.length > 0 ? (
             bloquesMetodosPago.map((bloqueDatos, index) => (
@@ -357,22 +159,61 @@ export const ListadoCajas = () => {
       </div>
 
       <div>
-        <p>paginacion</p>
+        <Paginacion
+          contadorPagina={stateListadoCaja.paginacion.contadorPagina}
+          paginaActual={stateListadoCaja.paginacion.pagina}
+          onPaginaCambiada={handlePaginaCambiada}
+        />
       </div>
 
-      {/* 3. MODAL FLOTANTE DE FINANZAS (Fuera del flujo principal, cubriendo todo) */}
+      {/* 3. MODAL FLOTANTE DE FINANZAS */}
       {stateListadoCaja.modal.libroDiario && (
         <div
           className={`modal-overlay-finanzas ${estaCerrando ? "saliendo" : ""}`}
         >
           <div className="modal-contenido-finanzas">
-            <div className="area-impresion-modal">
-              <LibroDiarioGeneral
-                movimientos={mockLibroDiario}
-                onCerrarLbroDiario={manejarCierreConAnimacion}
+            <header className="modal_finanzas_header">
+              <div>
+                <header className="libro_diario_encabezado">
+                  <div className="libro_diario_titulo_grupo">
+                    <div className="libro_diario_icono_wrapper">
+                      <BookOpen size={18} />
+                    </div>
+                    <div className="libro_diario_titulo_texto">
+                      <h2>Libro diario</h2>
+                      <span>Registro cronológico de caja</span>
+                    </div>
+                  </div>
+                </header>
+              </div>
+
+              <Boton
+                clase="editar"
+                logo="Cancel"
+                texto="Cerrar Libro Diario"
+                disable={false}
+                onClick={manejarCierreConAnimacion}
               />
-              <div className="ocultar-en-impresion">
-                <GraficoMetodosPago props={mockResumenMetodosPago} />
+            </header>
+
+            <div className="area-impresion-modal">
+              <div className="modal_finanzas_contenido">
+                <div className="modal_libro_panel">
+                  {detalleCaja?.dataDetalle ? (
+                    <LibroDiarioGeneral movimientos={detalleCaja.dataDetalle} />
+                  ) : (
+                    <SinDetallesCaja />
+                  )}
+                </div>
+
+                {detalleCaja?.dataMetodo && (
+                  <aside className="modal_grafico_panel ocultar-en-impresion">
+                    <div className="modal_grafico_titulo">
+                      Distribución por método de pago
+                    </div>
+                    <GraficoMetodosPago props={detalleCaja.dataMetodo} />
+                  </aside>
+                )}
               </div>
             </div>
           </div>

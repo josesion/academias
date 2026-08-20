@@ -23,8 +23,30 @@ interface DetalleProps {
 interface DetalleCajasProps {
   carga: boolean;
   props: DetalleProps[];
-  onAbrirLibroDiario: () => void; // Función global que recibe el id
+  onAbrirLibroDiario: (idCaja: number) => void;
 }
+
+// tres estados posibles, no dos — faltante, sobrante y exacta se
+// tratan cada uno como algo distinto, no "ok" vs "no ok"
+type EstadoArqueo = "faltante" | "sobrante" | "exacta";
+
+const calcularEstado = (montoFaltante: number): EstadoArqueo => {
+  if (montoFaltante < 0) return "faltante";
+  if (montoFaltante > 0) return "sobrante";
+  return "exacta";
+};
+
+const TEXTO_SELLO: Record<EstadoArqueo, string> = {
+  faltante: "Faltante",
+  sobrante: "Sobrante",
+  exacta: "Caja OK",
+};
+
+const TEXTO_LABEL_DIFERENCIA: Record<EstadoArqueo, string> = {
+  faltante: "Faltante",
+  sobrante: "Sobrante",
+  exacta: "Diferencia",
+};
 
 export const DetalleCajas = ({
   carga,
@@ -51,12 +73,12 @@ export const DetalleCajas = ({
       ) : (
         <div className="detalle_caja_lista">
           {props.map((detalle) => {
-            const esFaltante = detalle.monto_faltante < 0;
+            const estado = calcularEstado(detalle.monto_faltante);
 
             return (
               <article
                 key={detalle.id_caja}
-                className={`detalle_caja_card ${esFaltante ? "faltante" : "ok"}`}
+                className={`detalle_caja_card ${estado}`}
               >
                 <header className="detalle_caja_cabecera">
                   <div className="detalle_caja_fechas">
@@ -72,10 +94,8 @@ export const DetalleCajas = ({
                     </span>
                   </div>
 
-                  <div
-                    className={`detalle_caja_sello ${esFaltante ? "sello_rojo" : "sello_verde"}`}
-                  >
-                    {esFaltante ? "Faltante" : "Caja OK"}
+                  <div className={`detalle_caja_sello sello_${estado}`}>
+                    {TEXTO_SELLO[estado]}
                   </div>
                 </header>
 
@@ -96,14 +116,14 @@ export const DetalleCajas = ({
 
                   <div className="monto_item">
                     <span className="monto_label">
-                      {esFaltante ? "Faltante" : "Diferencia"}
+                      {TEXTO_LABEL_DIFERENCIA[estado]}
                     </span>
-                    <span
-                      className={`monto_valor ${esFaltante ? "monto_negativo" : "monto_positivo"}`}
-                    >
-                      {esFaltante
-                        ? `-$${Math.abs(detalle.monto_faltante).toLocaleString("es-AR")}`
-                        : "$0"}
+                    <span className={`monto_valor monto_${estado}`}>
+                      {estado === "exacta"
+                        ? "$0"
+                        : `${estado === "sobrante" ? "+" : "-"}$${Math.abs(
+                            detalle.monto_faltante,
+                          ).toLocaleString("es-AR")}`}
                     </span>
                   </div>
                 </div>
@@ -120,7 +140,10 @@ export const DetalleCajas = ({
                   texto="Ver detalle de arqueo"
                   logo="Go"
                   disable={false}
-                  onClick={onAbrirLibroDiario}
+                  onClick={() => {
+                    onAbrirLibroDiario(detalle.id_caja);
+                    console.log(detalle.id_caja);
+                  }}
                 />
               </article>
             );

@@ -207,6 +207,87 @@
     transform: translateX(-150px) scale(0.95);
   }
 }
+/* ==========================================
+   MODAL DE FINANZAS — header + layout interno
+   ========================================== */
+
+.modal_finanzas_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.modal_finanzas_titulo {
+  margin: 0;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+}
+
+.modal_finanzas_subtitulo {
+  display: block;
+  margin-top: 2px;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+}
+
+.area-impresion-modal {
+  width: 100%;
+}
+
+.modal_finanzas_contenido {
+   display: flex;
+   flex-direction: column;
+   
+   gap: 10px;
+}
+
+.modal_libro_panel {
+  min-width: 0;
+}
+
+/* ==========================================
+   PANEL LATERAL DE GRÁFICO
+   ========================================== */
+
+.modal_grafico_panel {
+  position: sticky;
+  top: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  padding: 20px;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+
+  box-shadow: var(--sombra-sm);
+}
+
+.modal_grafico_titulo {
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--borde);
+}
+
 
 
 /* ==========================================

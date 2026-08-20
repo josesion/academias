@@ -129,7 +129,7 @@
     transform: translateY(-2px);
 }
 
-.detalle_caja_card.ok {
+.detalle_caja_card.exacta {
     border-left-color: var(--color-exito);
 }
 
@@ -137,6 +137,12 @@
     border-left-color: var(--color-error);
     background: color-mix(in srgb, var(--color-error) 5%, var(--fondo-secundario));
 }
+
+.detalle_caja_card.sobrante {
+    border-left-color: var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 5%, var(--fondo-secundario));
+}
+
 
 /* ============================================================
    CABECERA
@@ -196,14 +202,17 @@
     opacity: 0.9;
 }
 
-.sello_verde {
+.sello_exacta {
     color: var(--color-exito);
 }
 
-.sello_rojo {
+.sello_faltante {
     color: var(--color-error);
 }
 
+.sello_sobrante {
+    color: var(--color-advertencia);
+}
 /* ============================================================
    MONTOS
    ============================================================ */
@@ -242,12 +251,16 @@
     font-variant-numeric: tabular-nums;
 }
 
-.monto_positivo {
-    color: var(--color-exito);
+.monto_exacta {
+    color: var(--texto-principal);
 }
 
-.monto_negativo {
+.monto_faltante {
     color: var(--color-error);
+}
+
+.monto_sobrante {
+    color: var(--color-advertencia);
 }
 
 /* ============================================================

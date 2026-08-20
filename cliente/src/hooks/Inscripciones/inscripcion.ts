@@ -1,3 +1,5 @@
+
+
 import { useReducer } from "react";
 import { useNavigate } from "react-router-dom";
 //hooks
@@ -26,7 +28,7 @@ type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 interface InscripcionConfig {
 
-    usuario    : string,
+    usuario    : string, 
 
     servicios :{
         listaAlumnosPaginado : ServicioCrud,

@@ -7,8 +7,8 @@ import { SelectorOpt } from "../generales/CompSelecObt/SelectorOpt";
 import "./buscadorLateral.css";
 
 export interface UsuarioOption {
-  id_usuario: number | null;
-  username: string | null;
+  id_usuario: number;
+  usuario: string;
 }
 
 interface EstadoCajaOption {
@@ -21,7 +21,6 @@ export interface FiltrosBusqueda {
   estadoDiferencia: "exacta" | "con_diferencia" | null;
   fechaDesde: string;
   fechaHasta: string;
-  pagina: number;
 }
 
 interface PropsBuscador {
@@ -70,7 +69,7 @@ export const BuscadorLateral = ({
             <SelectorOpt<UsuarioOption>
               categorias={listaUsusarios}
               itemKey="id_usuario"
-              itemLabel="username"
+              itemLabel="usuario"
               onChangeSelector={cachearUsuario}
               name="idUsuarioFiltro"
               labelDefault="Usuarios"
