@@ -1,310 +1,183 @@
 /* ==========================================================================
-   PANEL MÉTODOS DE PAGO — REDISEÑO
+   PANEL DE MOVIMIENTO DE PAGO — ESTILO EDITORIAL / LUJO
    ========================================================================== */
 
 .panel_metodo_pago_contenedor {
-  position: relative;
-  box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
 
-  width: 100%;
-  max-width: 100%;
-
-  container-type: inline-size;
-  container-name: panel-pagos;
-
-  background: var(--fondo-secundario);
-  backdrop-filter: blur(18px);
-
-  border-radius: var(--radio-lg);
-
-  padding: 20px;
-
-  border: 1px solid var(--borde);
-
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  box-shadow: var(--sombra-md);
-
-  transition: var(--transicion);
-
-  height: 480px;
-  overflow: hidden;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    font-family: var(--fuente-principal);
+    box-sizing: border-box;
+    transition: var(--transicion);
 }
 
 .panel_metodo_pago_contenedor:hover {
-  border-color: var(--borde-hover);
-  box-shadow: var(--sombra-lg);
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
 }
 
-/* ==========================================================================
-   TITULO — ícono en badge
-   ========================================================================== */
-
+/* --- Header del Panel --- */
 .panel_header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--borde);
-}
-
-.panel_header svg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 28px;
-  height: 28px;
-  padding: 6px;
-  box-sizing: border-box;
-
-  border-radius: var(--radio-sm);
-  background: color-mix(in srgb, var(--color-primario) 16%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
-  color: var(--color-primario);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--color-primario);
 }
 
 .panel_titulo {
-  margin: 0;
-
-  font-family: var(--fuente-titulos);
-  font-size: var(--texto-md);
-  font-weight: var(--peso-semi-negrita);
-
-  color: var(--texto-principal);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
 }
 
-/* ==========================================================================
-   ESTADO VACÍO
-   ========================================================================== */
-
+/* --- Estado Vacío --- */
 .panel_vacio {
-  flex: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  color: var(--texto-deshabilitado);
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-sm);
-  text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+    color: var(--texto-deshabilitado);
+    font-size: var(--texto-sm);
+    text-align: center;
 }
 
-/* ==========================================================================
-   LISTA
-   ========================================================================== */
-
+/* --- Lista de Métodos --- */
 .panel_lista {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  padding-right: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-.panel_lista::-webkit-scrollbar {
-  width: 6px;
-}
-
-.panel_lista::-webkit-scrollbar-track {
-  background: var(--fondo-hover);
-  border-radius: 10px;
-}
-
-.panel_lista::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-  border-radius: 10px;
-}
-
-/* ==========================================================================
-   ITEM — avatar + contenido, en vez de línea lateral
-   ========================================================================== */
-
+/* --- Item Individual --- */
 .metodo_item_completo {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-
-  padding: 12px 14px;
-
-  border-radius: var(--radio-md);
-  background: var(--fondo-hover);
-  border: 1px solid transparent;
-
-  transition: var(--transicion);
-  animation: metodoEntrada 0.3s ease backwards;
-}
-
-.metodo_item_completo:nth-child(1) { animation-delay: 0.02s; }
-.metodo_item_completo:nth-child(2) { animation-delay: 0.06s; }
-.metodo_item_completo:nth-child(3) { animation-delay: 0.10s; }
-.metodo_item_completo:nth-child(4) { animation-delay: 0.14s; }
-
-@keyframes metodoEntrada {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: color-mix(in srgb, var(--fondo-principal) 60%, transparent);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    transition: var(--transicion);
 }
 
 .metodo_item_completo:hover {
-  background: color-mix(in srgb, var(--texto-principal) 5%, var(--fondo-hover));
-  border-color: var(--borde);
-  transform: translateX(4px);
+    border-color: var(--borde-hover);
+    background: var(--fondo-principal);
 }
 
-/* ===== AVATAR ===== */
-
+/* --- Avatar / Siglas --- */
 .metodo_avatar {
-  flex-shrink: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 40px;
-  height: 40px;
-
-  border-radius: var(--radio-sm);
-
-  background: var(--color-primario);
-  color: var(--texto-principal);
-
-  font-family: var(--fuente-titulos);
-  font-weight: var(--peso-negrita);
-  font-size: var(--texto-xs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--color-primario), color-mix(in srgb, var(--color-primario) 70%, black));
+    color: #ffffff;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-primario) 30%, transparent);
 }
 
 .metodo_avatar.variante_1 {
-  background: var(--color-secundario);
+    background: linear-gradient(135deg, var(--color-secundario), color-mix(in srgb, var(--color-secundario) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-secundario) 30%, transparent);
 }
 
-/* ===== CONTENIDO ===== */
-
+/* --- Contenido del Item --- */
 .metodo_contenido {
-  flex: 1;
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
 }
 
 .metodo_fila_principal {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .metodo_nombre {
-  min-width: 0;
-
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-md);
-  font-weight: var(--peso-semi-negrita);
-  color: var(--texto-principal);
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
 }
 
+/* --- Monto Total con Decimales Estilizados --- */
 .metodo_monto_total {
-  flex-shrink: 0;
-
-  font-family: var(--fuente-titulos);
-  font-size: var(--texto-lg);
-  font-weight: var(--peso-negrita);
-  color: var(--texto-principal);
-
-  font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    line-height: 1;
 }
 
-/* ===== DESGLOSE — chips en vez de texto plano ===== */
+.metodo_monto_total .monto_simbolo {
+    font-size: 1.1rem;
+    font-weight: var(--peso-negrita);
+}
 
+.metodo_monto_total .monto_entero {
+    font-size: 1.4rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
+}
+
+.metodo_monto_total .monto_decimal {
+    font-size: 1rem;
+    font-weight: var(--peso-normal);
+    color: var(--texto-deshabilitado);
+    opacity: 0.65; /* Efecto desvanecido */
+}
+
+/* --- Desglose Secundario (Inicial y Sesión) --- */
 .metodo_desglose {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--borde);
 }
 
 .desglose_dato {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  padding: 2px 9px;
-  border-radius: 999px;
-
-  background: var(--fondo-superficie);
-
-  font-family: var(--fuente-codigo);
-  font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--texto-xs);
 }
 
 .dato_label {
-  color: var(--texto-deshabilitado);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    color: var(--texto-secundario);
+    font-family: var(--fuente-codigo);
+    text-transform: uppercase;
+    font-size: 0.68rem;
 }
 
 .dato_valor {
-  color: var(--texto-secundario);
-  font-weight: var(--peso-semi-negrita);
-  font-variant-numeric: tabular-nums;
-
-  white-space: nowrap;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
 }
 
-.positivo {
-  color: var(--color-exito) !important;
+.dato_valor.positivo {
+    color: #10b981; /* Verde éxito */
 }
 
-.negativo {
-  color: var(--color-error) !important;
-}
-
-/* ==========================================================================
-   RESPONSIVE — container queries
-   ========================================================================== */
-
-@container panel-pagos (max-width: 280px) {
-  .metodo_item_completo {
-    align-items: flex-start;
-  }
-
-  .metodo_fila_principal {
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .metodo_avatar {
-    width: 34px;
-    height: 34px;
-  }
-}
-
-@supports not (container-type: inline-size) {
-  @media (max-width: 480px) {
-    .metodo_item_completo {
-      align-items: flex-start;
-    }
-
-    .metodo_fila_principal {
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .metodo_avatar {
-      width: 34px;
-      height: 34px;
-    }
-  }
+.dato_valor.negativo {
+    color: #ef4444; /* Rojo alerta */
 }

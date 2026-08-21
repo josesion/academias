@@ -1,170 +1,136 @@
 /* ============================================================
-   ITEM GENÉRICO — nítido, esquinas limpias y sin sombras cruzadas
+   ITEM GENÉRICO — Estilo Editorial / Tarjeta Vertical
    ============================================================ */
 
-.item_card_generico {
+.item_card_editorial {
     position: relative;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
     justify-content: space-between;
 
     width: 100%;
-    min-height: 76px;
+    max-width: 380px;
+    min-height: 240px;
 
-    background: var(--fondo-secundario) !important;
-
+    background: var(--fondo-secundario);
     border: 1px solid var(--borde);
-    border-radius: var(--radio-lg);
-    padding: 14px 22px 14px 34px;
+    border-radius: 0; /* Bordes rectos puros */
+    padding: 24px;
+    box-sizing: border-box;
 
-    /* CLAVE PARA LAS ESQUINAS: Corta cualquier desborde o sombra cuadrada en las puntas */
-    overflow: hidden !important; 
-
-    /* Quitamos cualquier sombra propia interna para que no se amontone en el efecto mazo */
-    box-shadow: none !important;
-
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
-.item_card_generico:hover {
-    border-color: var(--borde-hover);
-    background: var(--fondo-secundario, var(--fondo-principal));
+.item_card_editorial:hover {
+    border-color: var(--texto-principal);
 }
 
-/* LÍNEA DE ACENTO — fija y limpia */
-.item_card_generico::before {
-    content: "";
+/* Indicador de estado cuadrado arriba a la derecha */
+.item_indicador_punto {
     position: absolute;
-    left: 14px;
     top: 20px;
-    bottom: 20px;
-    width: 3px;
-
-    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
-
-    opacity: 0.7;
+    right: 20px;
+    width: 6px;
+    height: 6px;
+    background: var(--texto-principal);
 }
 
-/* CONTENEDOR DE DATOS */
+/* Cuerpo de la tarjeta */
 .item_card_body {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 34px;
-    flex-grow: 1;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.item_row {
+/* Identificador superior (ej: #0842) */
+.item_id_editorial {
+    font-family: var(--fuente-titulos);
+    font-size: 1.1rem;
+    color: var(--texto-secundario);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+}
+
+/* Contenedor de textos */
+.item_contenido_principal {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    min-width: 120px;
+    gap: 12px;
+    margin-top: 4px;
 }
 
-.item_key {
+/* Título principal (Primer campo destacado) */
+.item_bloque_principal {
     display: flex;
-    align-items: center;
-    gap: 6px;
+    flex-direction: column;
+    gap: 2px;
+}
 
-    font-family: var(--fuente-codigo);
-    font-size: 0.66rem;
-    color: var(--texto-deshabilitado);
-    font-weight: var(--peso-semi-negrita);
-    letter-spacing: 1.6px;
+.item_bloque_principal .item_valor_titulo {
+    font-family: var(--fuente-titulos);
+    font-size: 1.8rem;
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--texto-principal);
+    text-transform: capitalize;
+}
+
+/* Bloques de detalles (Mes, Clases, Monto, etc.) */
+.item_bloque_detalle {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 6px;
+    border-top: 1px solid var(--borde);
+}
+
+.item_label_editorial {
+    font-family: var(--fuente-codigo, sans-serif);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--texto-secundario);
+}
+
+.item_bloque_detalle .item_valor_sub {
+    font-family: var(--fuente-codigo, sans-serif);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--texto-principal);
     text-transform: uppercase;
 }
 
-.item_key::before {
-    content: "";
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: var(--color-primario);
-    opacity: 0.8;
-}
-
-.item_value {
-    font-family: var(--fuente-titulos);
-    font-size: var(--texto-lg);
-    font-weight: var(--peso-semi-negrita);
-    letter-spacing: -0.01em;
-    color: var(--texto-principal);
-}
-
-/* ACCIONES — cápsula propia */
+/* Acciones inferiores con línea divisoria fina */
 .item_card_actions {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: 8px;
-
-    margin-left: 20px;
-    padding: 6px;
-
-    background: var(--fondo-hover);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-md);
-
-    flex-shrink: 0;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--borde);
 }
 
-/* ============================================================
-   RESPONSIVE: DE LÍNEA A TARJETA
-   ============================================================ */
-
-@media (max-width: 1000px) {
-    .item_card_generico {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 22px 22px 22px 30px;
-        border-radius: var(--radio-lg);
-    }
-
-    .item_card_generico::before {
-        top: 20px;
-        bottom: 20px;
-        height: auto;
-        opacity: 0.8;
-    }
-
-    .item_card_body {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-
-    .item_row {
-        width: 100%;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--borde);
-    }
-
-    .item_row:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .item_card_actions {
-        width: 100%;
-        margin-left: 0;
-        justify-content: space-evenly;
-    }
+.item_link_editar,
+.item_link_eliminar {
+    background: none;
+    border: none;
+    font-family: var(--fuente-codigo, sans-serif);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--texto-principal);
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s ease;
 }
 
-@media (max-width: 480px) {
-    .item_card_actions {
-        flex-direction: column;
-    }
+.item_link_editar:hover,
+.item_link_eliminar:hover {
+    opacity: 0.6;
+}
 
-    .item_card_actions button {
-        width: 100% !important;
-    }
+.item_link_eliminar {
+    color: #c94a4a;
 }

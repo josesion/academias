@@ -1,66 +1,41 @@
 /* ==========================================================================
-   RECIBO — TICKETERA TÉRMICA
+   RECIBO — TICKETERA TÉRMICA (ESTILO EDITORIAL / LUJO)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
 
-:root {
-  --papel: #2b2b29;
-  --papel_linea: #e2ded0;
-  --tinta: #eae6de;
-  --tinta_media: #8a8578;
-  --verde: #2f7d4f;
-  --rojo: #ca1e0e;
-  --ambar: #a6791f;
-
-  /* color del "fondo" contra el que se recorta el perforado — ajustar si el modal usa otro fondo */
-  --notch-color: #0f172a;
-}
-
-/* ==========================================================================
-   CONTENEDOR PRINCIPAL
-   ========================================================================== */
-
 .recibo_ticket {
-  position: relative;
-
-  width: 100%;
-  max-width: 420px;
-  max-height: 85dvh;
-
-  margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  background: var(--papel);
-  color: var(--tinta);
-
-  font-family: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
-
-  border-radius: 6px;
-
-  box-shadow:
-    0 24px 60px rgba(0,0,0,0.45),
-    0 2px 0 rgba(0,0,0,0.06);
-
-  animation: reciboAparece 0.22s ease;
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 85dvh;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    /* Conectado con tus tokens globales */
+    background: var(--fondo-secundario);
+    color: var(--texto-principal);
+    border: 1px solid var(--borde);
+    font-family: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-md);
+    animation: reciboAparece 0.22s ease;
 }
 
 .recibo_ticket::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 .recibo_ticket::-webkit-scrollbar-track {
-  background: transparent;
+    background: transparent;
 }
 
 .recibo_ticket::-webkit-scrollbar-thumb {
-  background: var(--papel_linea);
-  border-radius: 999px;
+    background: var(--borde);
+    border-radius: 999px;
 }
 
 /* ==========================================================================
@@ -68,268 +43,233 @@
    ========================================================================== */
 
 .recibo_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  padding: 18px 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 20px 22px 0;
 }
 
 .recibo_marca {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-
-  color: var(--tinta_media);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: var(--texto-deshabilitado);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
 }
 
-/* sello de goma rotado — el elemento distintivo del ticket */
+/* Sello de goma rotado */
 .recibo_stamp {
-  flex-shrink: 0;
-
-  padding: 4px 10px;
-
-  border: 2px solid currentColor;
-  border-radius: 3px;
-
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-
-  transform: rotate(-6deg);
-
-  opacity: 0.85;
+    flex-shrink: 0;
+    padding: 3px 10px;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    transform: rotate(-5deg);
+    opacity: 0.9;
 }
 
-.stamp_verde { color: var(--verde); }
-.stamp_rojo { color: var(--rojo); }
+.stamp_verde { color: var(--color-exito); }
+.stamp_rojo { color: var(--color-error); }
 
 /* ==========================================================================
    TOTAL
    ========================================================================== */
 
 .recibo_total {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  padding: 14px 22px 4px;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 22px 4px;
+    text-align: center;
 }
 
 .recibo_total_label {
-  color: var(--tinta_media);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+    color: var(--texto-deshabilitado);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .recibo_monto {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
-
-  margin-top: 6px;
-  max-width: 100%;
-
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -1px;
-
-  word-break: break-word;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    max-width: 100%;
+    font-size: 2.3rem;
+    font-weight: 700;
+    letter-spacing: -1px;
 }
 
-.monto_verde { color: var(--verde); }
-.monto_rojo { color: var(--rojo); }
+.monto_verde { color: var(--color-exito); }
+.monto_rojo { color: var(--color-error); }
 
 /* ==========================================================================
-   PERFORADO (borde de ticket con muescas laterales)
+   PERFORADO CON MUESCAS LATERALES
    ========================================================================== */
 
 .recibo_perforado {
-  position: relative;
-
-  height: 0;
-  margin: 18px 0;
-
-  border-top: 2px dashed var(--papel_linea);
+    position: relative;
+    height: 0;
+    margin: 18px 0;
+    border-top: 2px dashed var(--borde);
 }
 
 .recibo_perforado::before,
 .recibo_perforado::after {
-  content: "";
-
-  position: absolute;
-  top: -9px;
-
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-
-  background: var(--notch-color);
+    content: "";
+    position: absolute;
+    top: -9px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fondo-principal); /* Se recorta contra el fondo del modal */
+    border: 1px solid var(--borde);
 }
 
-.recibo_perforado::before { left: -9px; }
-.recibo_perforado::after { right: -9px; }
+.recibo_perforado::before { left: -10px; }
+.recibo_perforado::after { right: -10px; }
 
 /* ==========================================================================
    BODY
    ========================================================================== */
 
 .recibo_body {
-  padding: 0 22px;
+    padding: 0 22px;
 }
 
 .recibo_fila {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-
-  padding: 7px 0;
-
-  font-size: 0.85rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 0.85rem;
 }
 
 .recibo_fila_label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-
-  color: var(--tinta_media);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    color: var(--texto-deshabilitado);
 }
 
 .recibo_fila_valor {
-  min-width: 0;
-
-  font-weight: 700;
-  text-align: right;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    min-width: 0;
+    font-weight: 700;
+    text-align: right;
+    color: var(--texto-principal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .recibo_linea_punteada {
-  margin: 12px 0;
-  border-top: 1px dashed var(--papel_linea);
+    margin: 12px 0;
+    border-top: 1px dashed var(--borde);
 }
 
 .recibo_meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-
-  margin-bottom: 12px;
-
-  color: var(--tinta_media);
-  font-size: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    margin-bottom: 12px;
+    color: var(--texto-deshabilitado);
+    font-size: 0.72rem;
 }
 
 .recibo_meta span {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* ==========================================================================
-   NOTA / OBSERVACIONES
+   OBSERVACIONES / NOTAS
    ========================================================================== */
 
 .recibo_obs {
-  margin-bottom: 14px;
-  padding: 10px 12px;
-
-  border-left: 2px solid var(--ambar);
-  background: rgba(166,121,31,0.06);
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    border-left: 2px solid var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 10%, transparent);
+    border-radius: 0 var(--radio-sm) var(--radio-sm) 0;
 }
 
 .recibo_obs_label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-
-  color: var(--ambar);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-advertencia);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
 .recibo_obs p {
-  margin: 4px 0 0;
-
-  color: var(--tinta);
-  font-size: 0.82rem;
-  font-style: italic;
-  line-height: 1.5;
-
-  overflow-wrap: break-word;
-  word-break: break-word;
+    margin: 4px 0 0;
+    color: var(--texto-principal);
+    font-size: 0.82rem;
+    font-style: italic;
+    line-height: 1.5;
 }
 
 /* ==========================================================================
-   CÓDIGO DE BARRAS (decorativo, refleja el id del movimiento en texto)
+   CÓDIGO DE BARRAS DECORATIVO
    ========================================================================== */
 
 .recibo_barcode {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-
-  margin-top: 10px;
-  padding: 0 22px 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 0 22px 6px;
 }
 
 .recibo_barcode_bars {
-  width: 100%;
-  max-width: 220px;
-  height: 34px;
-
-  background-image: repeating-linear-gradient(
-    90deg,
-    var(--tinta) 0px,
-    var(--tinta) 2px,
-    transparent 2px,
-    transparent 4px,
-    var(--tinta) 4px,
-    var(--tinta) 5px,
-    transparent 5px,
-    transparent 9px,
-    var(--tinta) 9px,
-    var(--tinta) 12px,
-    transparent 12px,
-    transparent 14px
-  );
-  background-repeat: repeat-x;
-  background-size: 14px 100%;
-
-  opacity: 0.85;
+    width: 100%;
+    max-width: 220px;
+    height: 30px;
+    background-image: repeating-linear-gradient(
+        90deg,
+        var(--texto-secundario) 0px,
+        var(--texto-secundario) 2px,
+        transparent 2px,
+        transparent 4px,
+        var(--texto-secundario) 4px,
+        var(--texto-secundario) 5px,
+        transparent 5px,
+        transparent 9px,
+        var(--texto-secundario) 9px,
+        var(--texto-secundario) 12px,
+        transparent 12px,
+        transparent 14px
+    );
+    background-repeat: repeat-x;
+    background-size: 14px 100%;
+    opacity: 0.65;
 }
 
 .recibo_barcode_id {
-  color: var(--tinta_media);
-  font-size: 0.68rem;
-  letter-spacing: 0.15em;
+    color: var(--texto-deshabilitado);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
 }
 
 /* ==========================================================================
@@ -337,88 +277,49 @@
    ========================================================================== */
 
 .recibo_footer {
-  display: flex;
-  justify-content: center;
-
-  padding: 16px 22px 20px;
+    display: flex;
+    justify-content: center;
+    padding: 16px 22px 20px;
 }
 
 .recibo_footer button {
-  width: 100%;
-  min-height: 46px;
-
-  border-radius: 4px;
-  font-weight: 700;
-
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.recibo_footer button:hover {
-  opacity: 0.85;
-}
-
-.recibo_footer button:active {
-  transform: scale(0.98);
+    width: 100%;
+    min-height: 44px;
+    border-radius: var(--radio-md);
+    font-weight: 700;
 }
 
 /* ==========================================================================
-   ANIMACIÓN
+   ANIMACIONES Y RESPONSIVE
    ========================================================================== */
 
 @keyframes reciboAparece {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
-/* ==========================================================================
-   RESPONSIVE
-   ========================================================================== */
 
 @media (max-width: 420px) {
-  .recibo_ticket {
-    max-width: 100%;
-    max-height: 90dvh;
-    border-radius: 0;
-  }
+    .recibo_ticket {
+        max-width: 100%;
+        max-height: 90dvh;
+        border-radius: 0;
+    }
 
-  .recibo_header,
-  .recibo_body,
-  .recibo_barcode,
-  .recibo_footer {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
+    .recibo_header,
+    .recibo_body,
+    .recibo_barcode,
+    .recibo_footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
 
-  .recibo_monto {
-    font-size: 2rem;
-  }
-
-  .recibo_meta {
-    flex-direction: column;
-    gap: 6px;
-  }
-}
-
-@media (max-height: 700px) {
-  .recibo_ticket {
-    max-height: 94dvh;
-  }
-
-  .recibo_total {
-    padding-top: 10px;
-  }
-
-  .recibo_monto {
-    font-size: 2.1rem;
-  }
-
-  .recibo_perforado {
-    margin: 12px 0;
-  }
+    .recibo_monto {
+        font-size: 2rem;
+    }
 }

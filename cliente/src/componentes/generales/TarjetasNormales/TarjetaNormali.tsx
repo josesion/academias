@@ -1,5 +1,6 @@
+import React from "react";
+import CountUp from "react-countup";
 import "./tarjeta_notmal.css";
-import CountUp from "react-countup"; // Importamos el animador
 
 interface TarjetaProps {
   titulo: string;
@@ -14,21 +15,32 @@ export const TarjetasNormales = ({
   claseColor,
   icono,
 }: TarjetaProps) => {
+  // Separamos la parte entera y los decimales del número de forma nativa
+  const parteEntera = Math.floor(monto);
+  const decimales = Math.round((monto - parteEntera) * 100)
+    .toString()
+    .padStart(2, "0");
+
   return (
-    <div className={`tarjeta_normal_contenedor ${claseColor}`}>
+    <div className={`tarjeta_normal_contenedor ${claseColor || ""}`}>
       <div className="tarjeta_header">
-        <span>{titulo}</span>
+        <span className="tarjeta_titulo">{titulo}</span>
         {icono && <div className="tarjeta_icono">{icono}</div>}
       </div>
-      <div className="tarjeta_monto">
-        ${" "}
+      <div className="tarjeta_monto_wrapper">
+        <span className="tarjeta_simbolo">$</span>
+
+        {/* CountUp solo anima la parte entera limpiamente */}
         <CountUp
-          end={monto}
-          duration={1.5} // Cuánto tarda en subir (segundos)
-          separator="." // Separador de miles
-          decimal="," // Separador de decimales
-          preserveValue={true} // Para que si cambia de 100 a 150, empiece desde el 100
+          end={parteEntera}
+          duration={1.5}
+          separator="."
+          preserveValue={true}
+          className="monto_entero"
         />
+
+        {/* Los decimales van al lado con su clase para achicarlos y desvanecerlos */}
+        <span className="monto_decimal">,{decimales}</span>
       </div>
     </div>
   );

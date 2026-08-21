@@ -40,6 +40,12 @@ export const ListadoInscripcionPage = () => {
 
   return (
     <div className="contenedor_listado">
+      <header className="gestion_inscripciones_header">
+        <h2 className="gestion_inscripciones_titulo">
+          Gestión de Inscripciones :
+        </h2>
+      </header>
+
       {dataAnularInscripcion.modalAnular && (
         <div className="modal_overlay_fix">
           {state.dataInfoDetalle.estado === "activos" ? (

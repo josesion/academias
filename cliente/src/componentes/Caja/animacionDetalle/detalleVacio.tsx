@@ -1,3 +1,4 @@
+import React from "react";
 import "./detalleVacio.css";
 
 interface CajaVaciaProps {
@@ -5,28 +6,28 @@ interface CajaVaciaProps {
   submensaje?: string;
 }
 
-export const CajaVaciaAnimation = ({
+export const CajaVaciaAnimation: React.FC<CajaVaciaProps> = ({
   mensaje = "Sin movimientos registrados",
   submensaje = "El detalle se encuentra vacío en este momento.",
-}: CajaVaciaProps) => {
+}) => {
   return (
-    <div className="contenedor-vacio-animado">
-      <div className="escena-animacion">
+    <div className="contenedor_vacio_animado">
+      <div className="escena_animacion">
         {/* Estructura minimalista tipo documento / ticket financiero */}
-        <div className="documento-flotante">
-          <div className="doc-linea linea-titulo"></div>
-          <div className="doc-linea linea-corta"></div>
-          <div className="doc-linea"></div>
-          <div className="doc-linea linea-media"></div>
-          <div className="doc-badge-vacio">0.00</div>
+        <div className="documento_flotante">
+          <div className="doc_linea linea_titulo"></div>
+          <div className="doc_linea linea_corta"></div>
+          <div className="doc_linea"></div>
+          <div className="doc_linea linea_media"></div>
+          <div className="doc_badge_vacio">0.00</div>
         </div>
         {/* Sutil halo de luz ambiental */}
-        <div className="halo-ambiental"></div>
+        <div className="halo_ambiental"></div>
       </div>
 
-      <div className="texto-vacio">
-        <p className="titulo-vacio">{mensaje}</p>
-        <p className="subtitulo-vacio">{submensaje}</p>
+      <div className="texto_vacio">
+        <p className="titulo_vacio">{mensaje}</p>
+        <p className="subtitulo_vacio">{submensaje}</p>
       </div>
     </div>
   );

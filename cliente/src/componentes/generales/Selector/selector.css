@@ -1,65 +1,84 @@
-/* ============================================================
-   SELECTOR PLEGABLE — input con datalist nativo
-   ============================================================ */
+/* ==========================================================================
+   SELECTOR PLEGABLE — ESTESTICA EDITORIAL / LUJO
+   ========================================================================== */
 
 .caja_contenedor {
     display: flex;
     flex-direction: column;
     gap: 6px;
-
     width: 100%;
 }
 
-.caja_contenedor p {
-    margin: 0;
-
+.selector_label {
     font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
-    font-weight: var(--peso-semi-negrita);
     text-transform: uppercase;
-    letter-spacing: 1.2px;
-    color: var(--texto-deshabilitado);
+    letter-spacing: 0.08em;
+    color: var(--texto-secundario);
+    font-weight: var(--peso-negrita);
 }
 
-.caja_contenedor input {
+/* Contenedor del input con los iconos decorativos */
+.selector_input_wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
     width: 100%;
-    box-sizing: border-box;
+}
 
-    padding: 12px 14px;
-
+.selector_input_cyber {
+    width: 100%;
+    height: 42px;
+    padding: 0 38px 0 38px; /* Espacio para los iconos de los costados */
+    
     background: var(--fondo-superficie);
     border: 1px solid var(--borde);
     border-radius: var(--radio-sm);
-
+    
     color: var(--texto-principal);
     font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
-
     outline: none;
+    box-sizing: border-box;
+
     transition: var(--transicion);
 }
 
-.caja_contenedor input::placeholder {
+.selector_input_cyber::placeholder {
     color: var(--texto-deshabilitado);
 }
 
-.caja_contenedor input:hover {
+.selector_input_cyber:hover {
     border-color: var(--borde-hover);
 }
 
-.caja_contenedor input:focus {
+.selector_input_cyber:focus {
     border-color: var(--color-primario);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+    background: var(--fondo-principal);
 }
 
-/* Sin efecto real en la mayoría de los navegadores — ver nota arriba */
+/* Iconos internos */
+.selector_icono_izq,
+.selector_icono_der {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-deshabilitado);
+    pointer-events: none;
+}
+
+.selector_icono_izq {
+    left: 12px;
+}
+
+.selector_icono_der {
+    right: 12px;
+}
+
+/* Ajustes opcionales para la lista nativa del datalist (limitado por navegadores pero estilizable en algunos contextos modernos) */
 .selector_contenedor {
-    background: var(--fondo-principal);
-    color: var(--texto-principal);
-    font-family: var(--fuente-principal);
-}
-
-.selector_item {
-    background: var(--fondo-principal);
+    background-color: var(--fondo-principal);
     color: var(--texto-principal);
 }

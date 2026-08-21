@@ -9,14 +9,36 @@
     flex-direction: column;
     gap: 20px;
 
-    padding: 5px 5px 5px 60px; /* 60px = 44px de la lengüeta + 16px de aire,
-                                   así el contenido nunca queda tapado */
+    padding: 5px 5px 5px 60px; /* 60px = 44px de la lengüeta + 16px de aire */
 
     width: 100%;
     height: 95vh;
 
     margin: 0 auto;
     box-sizing: border-box;
+}
+
+/* ==========================================================================
+   HEADER DE SECCIÓN — GESTIÓN DE INSCRIPCIONES
+   ========================================================================== */
+
+.gestion_inscripciones_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 5px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.gestion_inscripciones_titulo {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    letter-spacing: -0.02em;
+    margin: 0;
 }
 
 /* ============================================================
@@ -30,8 +52,7 @@
     z-index: 500;
 
     display: flex;
-    flex-direction: row-reverse; /* lengüeta primera en el DOM, visualmente
-                                     a la derecha del cuerpo */
+    flex-direction: row-reverse; /* lengüeta primera en el DOM, visualmente a la derecha */
     align-items: stretch;
 
     transform: translate(calc(-100% + 44px), -50%);
@@ -44,7 +65,6 @@
 
 .filtros_lengueta {
     flex-shrink: 0;
-
     width: 44px;
 
     display: flex;
@@ -69,13 +89,15 @@
 }
 
 .filtros_lengueta:hover {
-    color: var(--color-primario);
-    border-color: color-mix(in srgb, var(--color-primario) 35%, var(--borde));
+    color: var(--texto-principal);
+    border-color: var(--borde-hover);
+    background: var(--fondo-superficie);
 }
 
 .contenedor_filtros.abierto .filtros_lengueta {
-    color: var(--color-primario);
-    background: color-mix(in srgb, var(--color-primario) 8%, var(--fondo-secundario));
+    color: var(--color-secundario);
+    background: var(--fondo-secundario);
+    border-color: var(--borde-hover);
 }
 
 .filtros_lengueta_texto {
@@ -114,7 +136,7 @@
     border: 1px solid var(--borde);
     border-right: none;
 
-    box-shadow: var(--sombra-md);
+    box-shadow: var(--sombra-lg);
 
     visibility: hidden;
     transition: visibility 0s linear 0.35s;
@@ -125,9 +147,7 @@
     transition-delay: 0s;
 }
 
-/* los dos componentes internos ya traen su propio margin/max-width
-   pensado para vivir centrados en una página — dentro del panel
-   angosto no corresponde, así que los aplano acá */
+/* Aplanamiento de componentes internos dentro del panel angosto */
 .filtros_cuerpo .buscador_contenedor_comp,
 .filtros_cuerpo .filtro_fechas_wrapper {
     margin: 0;
@@ -152,9 +172,7 @@
 }
 
 /* ============================================================
-   RESPONSIVE — en mobile no hay espacio real para reservar 60px
-   de margen fijo, el listado vuelve a usar todo el ancho y el
-   panel de filtros pasa a superponerse como overlay normal
+   RESPONSIVE
    ============================================================ */
 
 @media (max-width: 700px) {

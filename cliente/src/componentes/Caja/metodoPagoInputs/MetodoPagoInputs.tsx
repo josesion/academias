@@ -1,4 +1,6 @@
+import React from "react";
 import { Inputs } from "../../generales/Inputs/Inputs";
+import { Wallet, Landmark, ArrowUpRight } from "lucide-react";
 
 import "./metodopagointputs.css";
 
@@ -15,98 +17,86 @@ interface PropsInputs {
   onChangeMontos?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export const MetodosPagoInputs = (props: PropsInputs) => {
+export const MetodosPagoInputs: React.FC<PropsInputs> = (props) => {
   return (
     <div className="contenedor_metodo_pago_inputs">
       <div className="metodo_pago_titulo">
-        <h3>Arqueo por Método de Pago</h3>
-        <span>Ingrese el dinero contado para cada cuenta.</span>
+        <span>Desglose de cuentas físicas y virtuales para el arqueo</span>
       </div>
 
-      {/* Header solo escritorio */}
+      <div className="grid_metodos_pago">
+        {props.listadoMetodoPago?.map((item) => {
+          const diferencia =
+            Number(item.monto_real) - Number(item.monto_sistema);
+          const esFisico = item.tipo_cuenta === "fisico";
 
-      <div className="header_arqueo_grid">
-        <span>Cuenta</span>
-        <span>Sistema</span>
-        <span>Conteo Real</span>
-        <span>Diferencia</span>
+          return (
+            <div key={item.id_cuenta} className="tarjeta_metodo_pago">
+              {/* CABECERA DE LA TARJETA */}
+              <div className="metodo_header">
+                <div className="metodo_info_principal">
+                  <div
+                    className={`metodo_icono ${esFisico ? "fisico" : "virtual"}`}
+                  >
+                    {esFisico ? <Landmark size={16} /> : <Wallet size={16} />}
+                  </div>
+                  <div>
+                    <h4>{item.nombre_cuenta}</h4>
+                    <span>
+                      {esFisico ? "Efectivo / Caja" : "Digital / Banco"}
+                    </span>
+                  </div>
+                </div>
+
+                <div
+                  className={`badge_diferencia ${
+                    diferencia < 0
+                      ? "negativo"
+                      : diferencia > 0
+                        ? "positivo"
+                        : "ok"
+                  }`}
+                >
+                  {diferencia === 0
+                    ? "EXACTO"
+                    : `${diferencia > 0 ? "+" : ""}$${diferencia.toLocaleString(
+                        "es-AR",
+                        {
+                          minimumFractionDigits: 2,
+                        },
+                      )}`}
+                </div>
+              </div>
+
+              {/* CUERPO CON LOS INPUTS */}
+              <div className="metodo_cuerpo">
+                <div className="metodo_campo">
+                  <span className="dato_label">Sistema</span>
+                  <div className="monto_sistema_display">
+                    $
+                    {Number(item.monto_sistema).toLocaleString("es-AR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </div>
+                </div>
+
+                <div className="metodo_campo">
+                  <span className="dato_label">Conteo Real</span>
+                  <Inputs
+                    label=""
+                    type="number"
+                    readonly={false}
+                    value={item.monto_real}
+                    placeholder="0.00"
+                    name={item.nombre_cuenta}
+                    onChange={props.onChangeMontos}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-
-      {props.listadoMetodoPago?.map((item) => {
-        const diferencia = Number(item.monto_real) - item.monto_sistema;
-
-        return (
-          <div key={item.id_cuenta} className="fila_metodo_pago">
-            {/* ===========================
-                CABECERA
-            =========================== */}
-
-            <div className="fila_superior">
-              <div className="columna_nombre">
-                <div className="icon_tipo">
-                  {item.tipo_cuenta === "fisico" ? "💵" : "💳"}
-                </div>
-
-                <div className="info_cuenta">
-                  <h4>{item.nombre_cuenta}</h4>
-
-                  <span>
-                    {item.tipo_cuenta === "fisico"
-                      ? "Cuenta física"
-                      : "Cuenta virtual"}
-                  </span>
-                </div>
-              </div>
-
-              <div
-                className={`badge_diferencia ${
-                  diferencia < 0
-                    ? "negativo"
-                    : diferencia > 0
-                      ? "positivo"
-                      : "ok"
-                }`}
-              >
-                {diferencia === 0
-                  ? "✔ Correcto"
-                  : `${diferencia > 0 ? "+" : ""}$ ${diferencia.toLocaleString("es-AR")}`}
-              </div>
-            </div>
-
-            {/* ===========================
-                CUERPO
-            =========================== */}
-
-            <div className="fila_datos">
-              <div className="dato">
-                <span className="dato_label">Sistema</span>
-
-                <Inputs
-                  label=""
-                  type="text"
-                  readonly={true}
-                  value={`$ ${item.monto_sistema.toLocaleString("es-AR")}`}
-                  placeholder=""
-                />
-              </div>
-
-              <div className="dato">
-                <span className="dato_label">Conteo Real</span>
-
-                <Inputs
-                  label=""
-                  type="number"
-                  readonly={false}
-                  value={item.monto_real}
-                  placeholder="0.00"
-                  name={item.nombre_cuenta}
-                  onChange={props.onChangeMontos}
-                />
-              </div>
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 };

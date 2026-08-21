@@ -1,3 +1,4 @@
+import React from "react";
 import { TarjetasNormales } from "../../generales/TarjetasNormales/TarjetaNormali";
 import { MetodosPagoInputs } from "../metodoPagoInputs/MetodoPagoInputs";
 import { Boton } from "../../generales/Boton/Boton";
@@ -12,35 +13,32 @@ interface PropsCierreCaja {
   metricasPanel?: MetricasCajaPanelPrincipal[] | null;
   montoRealFinal: number;
   carga: boolean;
-
   onCambioObservaciones: (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
-
   onCambioMontos: (event: React.ChangeEvent<HTMLInputElement>) => void;
-
   onCerrar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-
   onCancelar?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const CierreCaja = (data: PropsCierreCaja) => {
+  const balanceNeto = data.metricasPanel?.[0]?.balance_neto ?? 0;
+  const esCajaPerfecta = data.montoRealFinal === balanceNeto;
+  const esPendiente = data.montoRealFinal === 0;
+
   return (
     <div className="coontenedor_cierre_caja">
       {/* =====================================================
-                        TITULO
+          TITULO
       ===================================================== */}
-
       <div className="cierre_titulo">
         <h2>Resumen y Arqueo Final de Caja</h2>
-
         <span>Verifique los montos reales antes de confirmar el cierre.</span>
       </div>
 
       {/* =====================================================
-                      RESUMEN
+          RESUMEN (¡Intacto tal como lo tenías!)
       ===================================================== */}
-
       <section className="card_cierre">
         <div className="card_titulo">Resumen General</div>
 
@@ -65,16 +63,15 @@ export const CierreCaja = (data: PropsCierreCaja) => {
 
           <TarjetasNormales
             titulo="Balance Neto"
-            monto={data.metricasPanel?.[0]?.balance_neto || 0}
+            monto={balanceNeto}
             claseColor="negro"
           />
         </div>
       </section>
 
       {/* =====================================================
-                  METODOS DE PAGO
+          METODOS DE PAGO
       ===================================================== */}
-
       <section className="card_cierre">
         <div className="card_titulo">Arqueo por Métodos de Pago</div>
 
@@ -87,72 +84,55 @@ export const CierreCaja = (data: PropsCierreCaja) => {
       </section>
 
       {/* =====================================================
-                    RESULTADO
+          RESULTADO Y JUSTIFICACIÓN (Unidos en un bloque dual)
       ===================================================== */}
+      <div className="bloque_dual_resultado_justificacion">
+        <section className="card_cierre seccion_resultado_dual">
+          <div className="card_titulo">Resultado del Arqueo</div>
 
-      <section className="card_cierre">
-        <div className="card_titulo">Resultado del Arqueo</div>
+          <div className="contenedor_resultado_cierre_caja">
+            <p
+              className={
+                esPendiente
+                  ? "badge_dif pendiente"
+                  : esCajaPerfecta
+                    ? "badge_dif ok"
+                    : data.montoRealFinal < balanceNeto
+                      ? "badge_dif negativo"
+                      : "badge_dif positivo"
+              }
+            >
+              {esPendiente
+                ? "ESPERANDO INGRESO DE MONTOS..."
+                : esCajaPerfecta
+                  ? `CAJA PERFECTA: $${data.montoRealFinal.toLocaleString("es-AR")}`
+                  : data.montoRealFinal < balanceNeto
+                    ? `FALTANTE EN CAJA: $${(data.montoRealFinal - balanceNeto).toLocaleString("es-AR")}`
+                    : `SOBRANTE EN CAJA: $${(data.montoRealFinal - balanceNeto).toLocaleString("es-AR")}`}
+            </p>
+          </div>
+        </section>
 
-        <div className="contenedor_resultado_cierre_caja">
-          <p
-            className={
-              data.montoRealFinal === 0
-                ? "badge_dif pendiente"
-                : data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
-                  ? "badge_dif ok"
-                  : data.montoRealFinal <
-                      (data.metricasPanel?.[0]?.balance_neto ?? 0)
-                    ? "badge_dif negativo"
-                    : "badge_dif positivo"
-            }
-          >
-            {data.montoRealFinal === 0
-              ? "ESPERANDO INGRESO DE MONTOS..."
-              : data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
-                ? `CAJA PERFECTA: ${data.montoRealFinal.toLocaleString("es-AR")}`
-                : data.montoRealFinal <
-                    (data.metricasPanel?.[0]?.balance_neto ?? 0)
-                  ? `FALTANTE EN CAJA: ${(
-                      data.montoRealFinal -
-                      (data.metricasPanel?.[0]?.balance_neto ?? 0)
-                    ).toLocaleString("es-AR")}`
-                  : `SOBRANTE EN CAJA: ${(
-                      data.montoRealFinal -
-                      (data.metricasPanel?.[0]?.balance_neto ?? 0)
-                    ).toLocaleString("es-AR")}`}
-          </p>
-        </div>
-      </section>
+        <section className="card_cierre seccion_justificacion_dual">
+          <div className="card_titulo">Justificación</div>
+
+          <p className="texto_ayuda">Obligatoria si hay diferencia.</p>
+
+          <textarea
+            id="observaciones_cierre"
+            name="observaciones_cierre"
+            className="textarea_cyber"
+            placeholder="Ej: Faltan $200 por compra de insumos..."
+            rows={2}
+            disabled={esCajaPerfecta}
+            onChange={data.onCambioObservaciones}
+          />
+        </section>
+      </div>
 
       {/* =====================================================
-                    OBSERVACIONES
+          BOTONERA
       ===================================================== */}
-
-      <section className="card_cierre">
-        <div className="card_titulo">Justificación</div>
-
-        <p className="texto_ayuda">
-          Solo es obligatoria cuando existe una diferencia entre el balance
-          esperado y el arqueo realizado.
-        </p>
-
-        <textarea
-          id="observaciones_cierre"
-          name="observaciones_cierre"
-          className="textarea_cyber"
-          placeholder="Ej: Faltan $200 por compra de insumos..."
-          rows={4}
-          disabled={
-            data.montoRealFinal === data.metricasPanel?.[0]?.balance_neto
-          }
-          onChange={data.onCambioObservaciones}
-        />
-      </section>
-
-      {/* =====================================================
-                    BOTONERA
-      ===================================================== */}
-
       <div className="contenedor_botonera_cierre_caja">
         <Boton
           disable={data.carga}

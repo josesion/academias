@@ -2,7 +2,9 @@ import { useRef, useEffect } from "react";
 import { Boton } from "../../generales/Boton/Boton";
 import { Inputs } from "../../generales/Inputs/Inputs";
 import { CompoError } from "../../generales/Error/Error";
-import { FcDebt } from "react-icons/fc";
+import { Wallet, Landmark } from "lucide-react";
+import { type ListadoTipoCuentas } from "../../../tipadosTs/caja.typado";
+
 import "./aperturacaja.css";
 
 interface DetalleApertura {
@@ -10,13 +12,10 @@ interface DetalleApertura {
   nombre_cuenta: string;
   monto: number;
 }
-// Importamos o definimos la interfaz del detalle aquí también
-import { type ListadoTipoCuentas } from "../../../tipadosTs/caja.typado";
 
 interface AbrirCajaProps {
   onAbrirCaja: () => void;
   onCancelar: () => void;
-  // Cambiamos la prop para que reciba la función dinámica con los 3 parámetros
   onChangeMontoDinamico: (
     id_cuenta: number,
     nombre: string,
@@ -25,7 +24,6 @@ interface AbrirCajaProps {
   enviado: boolean;
   errorGenerico: string | null;
   listadoCuentasActivas: ListadoTipoCuentas[];
-  // Ahora es un Array, no un Record
   aperturaDetalle: DetalleApertura[] | null;
 }
 
@@ -39,49 +37,82 @@ export const AperturaCaja = (props: AbrirCajaProps) => {
   }, [props.listadoCuentasActivas]);
 
   return (
-    <div className="apertura-caja-container">
-      <p className="titulo-apertura">
-        Apertura Caja <FcDebt />
-      </p>
-
-      <div className="apertura_tipos_cuentas">
-        {props.listadoCuentasActivas.map(
-          (item: ListadoTipoCuentas, index: number) => {
-            // Buscamos el objeto correspondiente en el array de detalles
-            const detalleActual = props.aperturaDetalle?.find(
-              (d) => d.id_cuenta === item.id_cuenta,
-            );
-
-            return (
-              <div key={item.id_cuenta} className="contenedor_input_cuenta">
-                <p>
-                  <strong>{item.nombre_cuenta}</strong> ({item.tipo_cuenta})
-                </p>
-                <Inputs
-                  name={item.id_cuenta.toString()}
-                  placeholder="0.00"
-                  label="Monto Inicial"
-                  type="text"
-                  // Si existe en el array mostramos el monto, si no, vacío
-                  value={detalleActual ? detalleActual.monto : ""}
-                  onChange={(e: any) =>
-                    props.onChangeMontoDinamico(
-                      item.id_cuenta,
-                      item.nombre_cuenta,
-                      e.target.value,
-                    )
-                  }
-                  readonly={false}
-                  // Hacemos focus solo al primero
-                  ref={index === 0 ? montoInputRef : null}
-                />
-              </div>
-            );
-          },
-        )}
+    <div className="coontenedor_apertura_caja">
+      {/* TÍTULO */}
+      <div className="apertura_titulo">
+        <h2>Apertura de Caja</h2>
+        <span>
+          Ingrese el saldo inicial con el que cuenta cada método de pago.
+        </span>
       </div>
 
-      <div className="acciones-apertura">
+      {/* TARJETA / GRILLA DE CUENTAS */}
+      <div className="card_cierre">
+        <div className="card_titulo">Cuentas Habilitadas</div>
+
+        <div className="grid_apertura_cuentas">
+          {props.listadoCuentasActivas.map(
+            (item: ListadoTipoCuentas, index: number) => {
+              const detalleActual = props.aperturaDetalle?.find(
+                (d) => d.id_cuenta === item.id_cuenta,
+              );
+              const esFisico = item.tipo_cuenta === "fisico";
+
+              return (
+                <div key={item.id_cuenta} className="tarjeta_metodo_pago">
+                  <div className="metodo_header">
+                    <div className="metodo_info_principal">
+                      <div
+                        className={`metodo_icono ${esFisico ? "fisico" : "virtual"}`}
+                      >
+                        {esFisico ? (
+                          <Landmark size={16} />
+                        ) : (
+                          <Wallet size={16} />
+                        )}
+                      </div>
+                      <div>
+                        <h4>{item.nombre_cuenta}</h4>
+                        <span>
+                          {esFisico ? "Efectivo / Caja" : "Digital / Banco"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="metodo_cuerpo_apertura">
+                    <div className="metodo_campo">
+                      <span className="dato_label">Monto Inicial</span>
+                      <Inputs
+                        name={item.id_cuenta.toString()}
+                        placeholder="0.00"
+                        label=""
+                        type="number"
+                        value={detalleActual ? detalleActual.monto : ""}
+                        onChange={(e: any) =>
+                          props.onChangeMontoDinamico(
+                            item.id_cuenta,
+                            item.nombre_cuenta,
+                            e.target.value,
+                          )
+                        }
+                        readonly={false}
+                        ref={index === 0 ? montoInputRef : null}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            },
+          )}
+        </div>
+      </div>
+
+      {/* ERROR SI LO HAY */}
+      {props.errorGenerico && <CompoError mensaje={props.errorGenerico} />}
+
+      {/* ACCIONES / BOTONERA */}
+      <div className="contenedor_botonera_apertura">
         <Boton
           texto="Abrir Caja"
           logo="Go"
@@ -96,8 +127,6 @@ export const AperturaCaja = (props: AbrirCajaProps) => {
           onClick={props.onCancelar}
         />
       </div>
-
-      {props.errorGenerico && <CompoError mensaje={props.errorGenerico} />}
     </div>
   );
 };

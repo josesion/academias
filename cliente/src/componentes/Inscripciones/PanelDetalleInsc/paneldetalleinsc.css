@@ -1,62 +1,40 @@
 /* ==========================================================================
-   PANEL DETALLE INSCRIPCIÓN — TICKETERA TÉRMICA
-   (mismas variables/clases que informes.css — ideal moverlas a un
-   recibo.css compartido, ver nota arriba)
+   PANEL DETALLE INSCRIPCIÓN (MODO ANULACIÓN / ACCIÓN CRÍTICA)
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&display=swap');
+.recibo_ticket.ticket_inscripcion {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 85dvh;
+    margin: 0 auto;
 
-:root {
-  --papel: #2b2b29;
-  --papel_linea: #e2ded0;
-  --tinta: #eae6de;
-  --tinta_media: #8a8578;
-  --verde: #2f7d4f;
-  --rojo: #ca1e0e;
-  --ambar: #a6791f;
-  --notch-color: #0f172a;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    /* Fondo especial con tinte de alerta/error para diferenciarlo */
+    background:  var(--fondo-secundario);
+    color: var(--texto-principal);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--borde));
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-lg);
+    animation: reciboAparece 0.22s ease;
 }
 
-.recibo_ticket {
-  position: relative;
-
-  width: 100%;
-  max-width: 420px;
-  max-height: 85dvh;
-
-  margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  background: var(--papel);
-  color: var(--tinta);
-
-  font-family: 'IBM Plex Mono', ui-monospace, 'Courier New', monospace;
-
-  border-radius: 6px;
-
-  box-shadow:
-    0 24px 60px rgba(0,0,0,0.45),
-    0 2px 0 rgba(0,0,0,0.06);
-
-  animation: reciboAparece 0.22s ease;
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar {
+    width: 6px;
 }
 
-.recibo_ticket::-webkit-scrollbar {
-  width: 6px;
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.recibo_ticket::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.recibo_ticket::-webkit-scrollbar-thumb {
-  background: var(--papel_linea);
-  border-radius: 999px;
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar-thumb {
+    background: var(--borde-hover);
+    border-radius: 999px;
 }
 
 /* ==========================================================================
@@ -64,50 +42,50 @@
    ========================================================================== */
 
 .recibo_header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-
-  padding: 18px 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 20px 24px 0;
 }
 
 .recibo_marca {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
 
-  color: var(--tinta_media);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+    color: var(--texto-secundario);
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-semi-negrita);
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recibo_marca svg {
+    color: var(--color-error);
+    flex-shrink: 0;
 }
 
 .recibo_stamp {
-  flex-shrink: 0;
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: var(--radio-sm);
 
-  padding: 4px 10px;
-
-  border: 2px solid currentColor;
-  border-radius: 3px;
-
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-
-  transform: rotate(-6deg);
-
-  opacity: 0.85;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-/* estampa neutra — este ticket no tiene ingreso/egreso, solo un dato de identidad */
 .stamp_neutro {
-  color: var(--tinta_media);
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
 }
 
 /* ==========================================================================
@@ -115,143 +93,148 @@
    ========================================================================== */
 
 .recibo_total {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  padding: 14px 22px 4px;
-  text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px 4px;
+    text-align: center;
 }
 
 .recibo_total_label {
-  color: var(--tinta_media);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .recibo_monto {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
 
-  margin-top: 6px;
-  max-width: 100%;
+    margin-top: 6px;
+    max-width: 100%;
 
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -1px;
+    font-family: var(--fuente-titulos);
+    font-size: 2.4rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
 
-  word-break: break-word;
+    word-break: break-word;
 }
 
 .monto_neutro {
-  color: var(--tinta);
+    color: var(--texto-principal);
 }
 
 /* ==========================================================================
-   PERFORADO
+   PERFORADO (Efecto ticket térmico con muescos)
    ========================================================================== */
 
 .recibo_perforado {
-  position: relative;
-
-  height: 0;
-  margin: 18px 0;
-
-  border-top: 2px dashed var(--papel_linea);
+    position: relative;
+    height: 0;
+    margin: 18px 0;
+    border-top: 2px dashed color-mix(in srgb, var(--color-error) 30%, var(--borde));
 }
 
 .recibo_perforado::before,
 .recibo_perforado::after {
-  content: "";
-
-  position: absolute;
-  top: -9px;
-
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-
-  background: var(--notch-color);
+    content: "";
+    position: absolute;
+    top: -10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fondo-principal);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--borde));
 }
 
-.recibo_perforado::before { left: -9px; }
-.recibo_perforado::after { right: -9px; }
+.recibo_perforado::before { left: -10px; }
+.recibo_perforado::after { right: -10px; }
 
 /* ==========================================================================
    BODY
    ========================================================================== */
 
 .recibo_body {
-  padding: 0 22px;
+    padding: 0 24px;
 }
 
 .recibo_fila {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-
-  padding: 7px 0;
-
-  font-size: 0.85rem;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: var(--texto-sm);
 }
 
 .recibo_fila_label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    color: var(--texto-secundario);
+}
 
-  color: var(--tinta_media);
+.recibo_fila_label svg {
+    color: var(--color-error);
 }
 
 .recibo_fila_valor {
-  min-width: 0;
+    min-width: 0;
+    font-family: var(--fuente-codigo);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+    text-align: right;
 
-  font-weight: 700;
-  text-align: right;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .recibo_linea_punteada {
-  margin: 12px 0;
-  border-top: 1px dashed var(--papel_linea);
+    margin: 14px 0;
+    border-top: 1px solid var(--borde);
 }
 
 /* ==========================================================================
-   BLOQUE ANULAR — mismo lenguaje que recibo_obs (nota destacada)
+   BLOQUE ANULAR
    ========================================================================== */
 
 .panel_anular_bloque {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 
-  margin-bottom: 14px;
-  padding: 14px;
+    margin-bottom: 8px;
+    padding: 14px;
 
-  border-left: 2px solid var(--rojo);
-  background: rgba(202, 30, 14, 0.06);
+    border-left: 2px solid var(--color-error);
+    background: var(--fondo-superficie);
+    border-radius: 0 var(--radio-sm) var(--radio-sm) 0;
 }
 
 .panel_anular_label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 
-  color: var(--rojo);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+    color: var(--color-error);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.panel_anular_bloque .selector_contenedor {
+    width: 100%;
 }
 
 /* ==========================================================================
@@ -259,28 +242,15 @@
    ========================================================================== */
 
 .recibo_footer {
-  display: flex;
-  justify-content: center;
-
-  padding: 16px 22px 20px;
+    display: flex;
+    justify-content: center;
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--borde);
+    margin-top: 12px;
 }
 
 .recibo_footer button {
-  width: 100%;
-  min-height: 46px;
-
-  border-radius: 4px;
-  font-weight: 700;
-
-  transition: transform 0.15s ease, opacity 0.15s ease;
-}
-
-.recibo_footer button:hover {
-  opacity: 0.85;
-}
-
-.recibo_footer button:active {
-  transform: scale(0.98);
+    width: 100%;
 }
 
 /* ==========================================================================
@@ -288,8 +258,8 @@
    ========================================================================== */
 
 @keyframes reciboAparece {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ==========================================================================
@@ -297,20 +267,20 @@
    ========================================================================== */
 
 @media (max-width: 420px) {
-  .recibo_ticket {
-    max-width: 100%;
-    max-height: 90dvh;
-    border-radius: 0;
-  }
+    .recibo_ticket.ticket_inscripcion {
+        max-width: 100%;
+        max-height: 90dvh;
+        border-radius: 0;
+    }
 
-  .recibo_header,
-  .recibo_body,
-  .recibo_footer {
-    padding-left: 16px;
-    padding-right: 16px;
-  }
+    .recibo_header,
+    .recibo_body,
+    .recibo_footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
 
-  .recibo_monto {
-    font-size: 2rem;
-  }
+    .recibo_monto {
+        font-size: 2rem;
+    }
 }

@@ -1,4 +1,7 @@
-/* --- CONTENEDOR PRINCIPAL --- */
+/* ==========================================================================
+   SIN RESULTADO — ESTILO EDITORIAL / LUJO (NUEVO DISEÑO)
+   ========================================================================== */
+
 .sin_resultado_contenedor {
     display: flex;
     justify-content: center;
@@ -15,20 +18,20 @@
     max-width: 420px;
     width: 100%;
     text-align: center;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(10, 15, 30, 0.3) 100%);
-    border: 1px solid var(--borde, rgba(255, 255, 255, 0.05));
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
+    /* Estilo limpio heredado de la nueva línea de diseño */
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 3rem 2rem;
+    box-shadow: var(--sombra-sm);
 }
 
 /* --- ESCENA DE ANIMACIÓN (RADAR / LUPA) --- */
 .escena_busqueda {
     position: relative;
-    width: 110px;
-    height: 110px;
+    width: 100px;
+    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,8 +39,8 @@
 }
 
 .contenedor_icono_animado {
-    font-size: 42px;
-    color: var(--color-primario, #3b82f6);
+    font-size: 38px;
+    color: var(--color-primario);
     z-index: 3;
     display: flex;
     align-items: center;
@@ -45,12 +48,12 @@
     animation: flotarLupa 4s ease-in-out infinite;
 }
 
-/* Anillos de Radar más limpios y sutiles */
+/* Anillos de Radar adaptados a los tokens */
 .radar_anillo {
     position: absolute;
     width: 100%;
     height: 100%;
-    border: 1px solid var(--color-primario, #3b82f6);
+    border: 1px solid var(--color-primario);
     border-radius: 50%;
     opacity: 0;
     animation: pulsoRadar 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
@@ -61,14 +64,14 @@
     animation-delay: 1.5s;
 }
 
-/* Halo ambiental detrás del icono */
+/* Halo ambiental más sutil y acorde a la marca */
 .halo_ambiental_busqueda {
     position: absolute;
-    width: 60px;
-    height: 60px;
-    background: var(--color-primario, #3b82f6);
-    filter: blur(25px);
-    opacity: 0.2;
+    width: 50px;
+    height: 50px;
+    background: var(--color-primario);
+    filter: blur(20px);
+    opacity: 0.15;
     border-radius: 50%;
     z-index: 2;
 }
@@ -77,23 +80,26 @@
 .texto_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     width: 100%;
 }
 
 .sin_resultado_texto {
-    font-size: 1.15rem;
-    font-weight: 600;
+    font-family: var(--fuente-principal);
+    font-size: 1.25rem;
+    font-weight: var(--peso-negrita);
     margin: 0;
-    color: var(--texto-principal, #f8fafc);
+    color: var(--texto-principal);
     letter-spacing: -0.01em;
 }
 
 .sin_resultado_subtexto {
-    font-size: 0.88rem;
-    color: var(--texto-secundario, #94a3b8);
-    line-height: 1.4;
-    font-weight: 400;
+    font-family: var(--fuente-codigo);
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    line-height: 1.5;
+    font-weight: var(--peso-medio);
+    letter-spacing: 0.02em;
 }
 
 /* --- KEYFRAMES --- */
@@ -103,17 +109,17 @@
         transform: translateY(0px) rotate(0deg); 
     }
     50% { 
-        transform: translateY(-6px) rotate(3deg); 
+        transform: translateY(-5px) rotate(2deg); 
     }
 }
 
 @keyframes pulsoRadar {
     0% {
         transform: scale(0.6);
-        opacity: 0.6;
+        opacity: 0.5;
     }
     100% {
-        transform: scale(1.6);
+        transform: scale(1.5);
         opacity: 0;
     }
 }

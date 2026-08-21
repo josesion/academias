@@ -1,789 +1,186 @@
-/*==========================================================
-        CONTENEDOR PRINCIPAL
-==========================================================*/
+/* ==========================================================================
+   METODOS DE PAGO INPUTS — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
 
-.contenedor_metodo_pago_inputs{
-
-    display:flex;
-    flex-direction:column;
-
-    gap:16px;
-
-    width:100%;
-
+.contenedor_metodo_pago_inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
 }
 
-/*==========================================================
-                    TITULO
-==========================================================*/
-
-.metodo_pago_titulo{
-
-    display:flex;
-    flex-direction:column;
-
-    gap:4px;
-
-    padding-bottom:8px;
-
-    border-bottom:1px solid var(--borde);
-
+.metodo_pago_titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.metodo_pago_titulo h3{
-
-    margin:0;
-
-    font-family:var(--fuente-titulos);
-
-    font-size:var(--titulo-sm);
-
-    font-weight:var(--peso-semi-negrita);
-
-    color:var(--texto-principal);
-
+.metodo_pago_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
 }
 
-.metodo_pago_titulo span{
-
-    color:var(--texto-secundario);
-
-    font-size:var(--texto-sm);
-
-    line-height:var(--linea-texto);
-
+/* Grilla fluida que se acomoda sola (en fila si entra, baja a columna si falta espacio) */
+.grid_metodos_pago {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
 }
 
-/*==========================================================
-                HEADER ESCRITORIO
-==========================================================*/
-
-.header_arqueo_grid{
-
-    display:grid;
-
-    grid-template-columns:
-        2fr
-        1.2fr
-        1.2fr
-        170px;
-
-    gap:18px;
-
-    padding:0 14px;
-
-    color:var(--texto-secundario);
-
-    font-size:var(--texto-xs);
-
-    font-family:var(--fuente-codigo);
-
-    text-transform:uppercase;
-
-    letter-spacing:1.3px;
-
+/* Tarjeta individual por cada cuenta */
+.tarjeta_metodo_pago {
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: var(--transicion);
 }
 
-/*==========================================================
-                TARJETA
-==========================================================*/
-
-.fila_metodo_pago{
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items: normal;
-
-
-
-    gap:5px;
-
-    padding:12px;
-
-    border-radius:var(--radio-md);
-
-    background:var(--fondo-secundario);
-
-    border:1px solid var(--borde);
-
-    box-shadow:var(--sombra-sm);
-
-    transition:var(--transicion);
-
-    position:relative;
-
-  
-
+.tarjeta_metodo_pago:hover {
+    border-color: var(--borde-hover);
 }
 
-.fila_metodo_pago::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,.03),
-            transparent 45%
-        );
-
-    pointer-events:none;
-
+/* Cabecera de la tarjeta */
+.metodo_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--borde);
 }
 
-.fila_metodo_pago:hover{
-
-    transform:translateY(-2px);
-
-    border-color:var(--borde-hover);
-
-    box-shadow:var(--sombra-md);
-
+.metodo_info_principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
 }
 
-/*==========================================================
-            CABECERA DE LA TARJETA
-==========================================================*/
-
-.fila_superior{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:20px;
-
+.metodo_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    flex-shrink: 0;
 }
 
-/*==========================================================
-            NOMBRE DE LA CUENTA
-==========================================================*/
-
-.columna_nombre{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:14px;
-
+.metodo_icono.fisico {
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
 }
 
-.icon_tipo{
-
-    width:46px;
-    height:46px;
-
-    flex-shrink:0;
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    border-radius:50%;
-
-    font-size:1.2rem;
-
-    background:
-
-        linear-gradient(
-            135deg,
-            color-mix(in srgb,var(--color-primario) 25%,transparent),
-            color-mix(in srgb,var(--color-secundario) 20%,transparent)
-        );
-
-    border:1px solid var(--borde);
-
-    transition:var(--transicion);
-
+.metodo_icono.virtual {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
 }
 
-.fila_metodo_pago:hover .icon_tipo{
-
-    transform:scale(1.08);
-
+.metodo_info_principal h4 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: 0.9rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.info_cuenta{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:2px;
-
+.metodo_info_principal span {
+    font-family: var(--fuente-principal);
+    font-size: 0.7rem;
+    color: var(--texto-deshabilitado);
 }
 
-.info_cuenta h4{
-
-    margin:0;
-
-    color:var(--texto-principal);
-
-    font-size:var(--texto-lg);
-
-    font-weight:var(--peso-semi-negrita);
-
+/* Badge de diferencia por cuenta */
+.badge_diferencia {
+    padding: 3px 8px;
+    border-radius: var(--radio-sm);
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
 }
 
-.info_cuenta span{
-
-    color:var(--texto-secundario);
-
-    font-size:var(--texto-xs);
-
-    font-family:var(--fuente-codigo);
-
-    letter-spacing:.8px;
-
-    text-transform:uppercase;
-
+.badge_diferencia.ok {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
 }
 
-/*==========================================================
-            BADGE DIFERENCIA
-==========================================================*/
-
-.badge_diferencia{
-
-    display:flex;
-
-    justify-content:center;
-    align-items:center;
-
-    min-width:130px;
-
-    padding:10px 16px;
-
-    border-radius:999px;
-
-    font-size:var(--texto-sm);
-
-    font-weight:var(--peso-negrita);
-
-    transition:var(--transicion);
-
-    border:1px solid transparent;
-
-    white-space:nowrap;
-
+.badge_diferencia.negativo {
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    color: var(--color-error);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }
 
-.badge_diferencia.ok{
-
-    color:var(--color-exito);
-
-    background:
-        color-mix(in srgb,var(--color-exito) 12%,transparent);
-
-    border-color:
-        color-mix(in srgb,var(--color-exito) 30%,transparent);
-
+.badge_diferencia.positivo {
+    background: color-mix(in srgb, var(--color-advertencia) 12%, transparent);
+    color: var(--color-advertencia);
+    border: 1px solid color-mix(in srgb, var(--color-advertencia) 30%, transparent);
 }
 
-.badge_diferencia.positivo{
-
-    color:var(--color-advertencia);
-
-    background:
-        color-mix(in srgb,var(--color-advertencia) 12%,transparent);
-
-    border-color:
-        color-mix(in srgb,var(--color-advertencia) 30%,transparent);
-
+/* Cuerpo de la tarjeta (Sistema vs Conteo real) — Perfectamente alineado */
+.metodo_cuerpo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: end;
 }
 
-.badge_diferencia.negativo{
-
-    color:var(--color-error);
-
-    background:
-        color-mix(in srgb,var(--color-error) 12%,transparent);
-
-    border-color:
-        color-mix(in srgb,var(--color-error) 30%,transparent);
-
+.metodo_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
 }
 
-/*==========================================================
-                GRID DE DATOS
-==========================================================*/
-
-.fila_datos{
-
-    display:grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    gap:18px;
-
-    align-items:end;
-
+.dato_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--texto-deshabilitado);
+    height: 16px;
+    display: flex;
+    align-items: center;
 }
 
-.dato{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:8px;
-
-    min-width:0;
-
+.monto_sistema_display {
+    font-family: var(--fuente-codigo);
+    font-size: 0.85rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    padding: 0 12px;
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.dato_label{
-
-    color:var(--texto-secundario);
-
-    font-family:var(--fuente-codigo);
-
-    font-size:var(--texto-xs);
-
-    text-transform:uppercase;
-
-    letter-spacing:1.2px;
-
+/* Forzamos uniformidad en los inputs reales */
+.metodo_campo .inputs_contenedor, 
+.metodo_campo input {
+    height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
-/*==========================================================
-            INPUTS
-==========================================================*/
-
-.dato .caja_contenedor{
-
-    width:100%;
-
-}
-
-.dato input{
-
-    width:100%;
-
-    box-sizing:border-box;
-
-}
-
-/*==========================================================
-        INPUT SOLO LECTURA
-==========================================================*/
-
-.dato input:read-only{
-
-    background:
-
-        color-mix(
-            in srgb,
-            var(--fondo-superficie) 88%,
-            black
-        );
-
-    color:var(--texto-principal);
-
-    border:1px solid var(--borde);
-
-    cursor:default;
-
-    font-weight:var(--peso-semi-negrita);
-
-}
-
-/*==========================================================
-        INPUT EDITABLE
-==========================================================*/
-
-.dato input:not(:read-only){
-
-    transition:var(--transicion);
-
-}
-
-.dato input:not(:read-only):hover{
-
-    border-color:var(--borde-hover);
-
-}
-
-.dato input:not(:read-only):focus{
-
-    border-color:var(--color-primario);
-
-    box-shadow:
-
-        0 0 0 3px
-        color-mix(
-            in srgb,
-            var(--color-primario) 18%,
-            transparent
-        );
-
-}
-
-/*==========================================================
-        EFECTO TARJETA
-==========================================================*/
-
-.fila_metodo_pago:hover .badge_diferencia{
-
-    transform:scale(1.03);
-
-}
-
-.fila_metodo_pago:hover .info_cuenta h4{
-
-    color:var(--color-primario);
-
-}
-
-/*==========================================================
-            ANIMACION ENTRADA
-==========================================================*/
-
-.fila_metodo_pago{
-
-    animation:entradaMetodo .35s ease;
-
-}
-
-@keyframes entradaMetodo{
-
-    from{
-
-        opacity:0;
-
-        transform:
-
-            translateY(10px);
-
+/* Ajustes responsivos internos */
+@media (max-width: 480px) {
+    .grid_metodos_pago {
+        grid-template-columns: 1fr;
     }
-
-    to{
-
-        opacity:1;
-
-        transform:
-
-            translateY(0);
-
-    }
-
-}
-
-/*==========================================================
-            SCROLL DEL LISTADO
-==========================================================*/
-
-.contenedor_metodo_pago_inputs{
-
-    max-height:520px;
-
-    overflow-y:auto;
-
-    padding-right:6px;
-
-}
-
-.contenedor_metodo_pago_inputs::-webkit-scrollbar{
-
-    width:8px;
-
-}
-
-.contenedor_metodo_pago_inputs::-webkit-scrollbar-track{
-
-    background:var(--fondo-principal);
-
-    border-radius:999px;
-
-}
-
-.contenedor_metodo_pago_inputs::-webkit-scrollbar-thumb{
-
-    background:
-
-        linear-gradient(
-
-            180deg,
-
-            var(--color-primario),
-
-            var(--color-secundario)
-
-        );
-
-    border-radius:999px;
-
-}
-
-.contenedor_metodo_pago_inputs::-webkit-scrollbar-thumb:hover{
-
-    filter:brightness(1.15);
-
-}
-
-/*==========================================================
-            ESPACIADO ENTRE TARJETAS
-==========================================================*/
-
-.fila_metodo_pago + .fila_metodo_pago{
-
-    margin-top:2px;
-
-}
-
-/*==========================================================
-                    TABLET
-==========================================================*/
-
-@media (max-width:950px){
-
-    .header_arqueo_grid{
-
-        grid-template-columns:
-            1.8fr
-            1fr
-            1fr
-            140px;
-
-        gap:14px;
-
-    }
-
-    .fila_metodo_pago{
-
-        padding:16px;
-
-    }
-
-    .fila_datos{
-
-        gap:14px;
-
-    }
-
-    .badge_diferencia{
-
-        min-width:115px;
-
-        padding:8px 14px;
-
-        font-size:var(--texto-xs);
-
-    }
-
-}
-
-/*==========================================================
-                    CELULAR
-==========================================================*/
-
-@media (max-width:768px){
-
-    .header_arqueo_grid{
-
-        display:none;
-
-    }
-
-    .contenedor_metodo_pago_inputs{
-
-        max-height:none;
-
-        overflow:visible;
-
-        padding-right:0;
-
-    }
-
-    .fila_metodo_pago{
-
-        gap:14px;
-
-        padding:16px;
-
-    }
-
-    .fila_superior{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:14px;
-
-    }
-
-    .columna_nombre{
-
-        width:100%;
-
-    }
-
-    .badge_diferencia{
-
-        width:100%;
-
-        justify-content:center;
-
-    }
-
-    .fila_datos{
-
-        grid-template-columns:1fr;
-
-        gap:12px;
-
-    }
-
-}
-
-/*==========================================================
-                TELEFONOS PEQUEÑOS
-==========================================================*/
-
-@media (max-width:480px){
-
-    .fila_metodo_pago{
-
-        padding:14px;
-
-        border-radius:var(--radio-sm);
-
-    }
-
-    .icon_tipo{
-
-        width:40px;
-        height:40px;
-
-        font-size:1rem;
-
-    }
-
-    .info_cuenta h4{
-
-        font-size:var(--texto-md);
-
-    }
-
-    .info_cuenta span{
-
-        font-size:.62rem;
-
-    }
-
-    .dato{
-
-        gap:6px;
-
-    }
-
-    .dato_label{
-
-        font-size:.62rem;
-
-    }
-
-    .badge_diferencia{
-
-        min-height:42px;
-
-        font-size:var(--texto-xs);
-
-    }
-
-}
-
-/*==========================================================
-            EFECTOS EXTRA
-==========================================================*/
-
-.fila_metodo_pago{
-
-    position:relative;
-
-}
-
-.fila_metodo_pago::after{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    border-radius:inherit;
-
-    pointer-events:none;
-
-    opacity:0;
-
-    transition:var(--transicion);
-
-    background:
-
-        linear-gradient(
-
-            135deg,
-
-            color-mix(
-                in srgb,
-                var(--color-primario) 8%,
-                transparent
-            ),
-
-            transparent 45%
-
-        );
-
-}
-
-.fila_metodo_pago:hover::after{
-
-    opacity:1;
-
-}
-
-.fila_metodo_pago:hover{
-
-    transform:
-        translateY(-2px);
-
-}
-
-.badge_diferencia{
-
-    box-shadow:var(--sombra-sm);
-
-}
-
-.icon_tipo{
-
-    box-shadow:var(--sombra-sm);
-
-}
-
-.info_cuenta h4{
-
-    transition:var(--transicion);
-
-}
-
-.fila_metodo_pago:hover .info_cuenta h4{
-
-    color:var(--color-secundario);
-
 }

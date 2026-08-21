@@ -90,6 +90,12 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
 
   return (
     <div className="amb_master_wrapper">
+      <header>
+        <div>
+          <h2>Gestion : {entidad}</h2>
+        </div>
+      </header>
+
       {/* MODALES - Sin cambios en la lógica */}
       {modal && (
         <div className="modal_overlay_fix">

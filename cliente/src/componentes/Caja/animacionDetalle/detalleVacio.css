@@ -1,140 +1,137 @@
-/* --- CONTENEDOR PRINCIPAL --- */
-.contenedor-vacio-animado {
+/* ==========================================================================
+   CAJA VACÍA / ESTADO VACÍO — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
+
+.contenedor_vacio_animado {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 2.5rem 2rem;
     width: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.65) 0%, rgba(10, 15, 30, 0.4) 100%);
-    border: 1px solid var(--borde, rgba(255, 255, 255, 0.06));
-    border-radius: 20px;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    padding: 40px 20px;
     box-sizing: border-box;
-    font-family: inherit;
+    font-family: var(--fuente-principal);
+    text-align: center;
 }
 
-/* --- ESCENA DE LA ANIMACIÓN --- */
-.escena-animacion {
+/* --- Escena y Contenedor de la Animación --- */
+.escena_animacion {
     position: relative;
-    width: 180px;
-    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 24px;
 }
 
-/* --- DOCUMENTO / TICKET MINIMALISTA FLOTANTE --- */
-.documento-flotante {
+/* --- Documento / Ticket Flotante --- */
+.documento_flotante {
     position: relative;
-    width: 85px;
-    height: 110px;
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 16px 12px;
+    z-index: 2;
+    width: 68px;
+    height: 88px;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: 12px;
+    box-shadow: var(--sombra-md);
     display: flex;
     flex-direction: column;
     gap: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    animation: flotarSutil 4s ease-in-out infinite;
-    z-index: 2;
+    box-sizing: border-box;
+    animation: flotarDocumento 4s ease-in-out infinite;
 }
 
-/* Líneas internas simulando datos */
-.doc-linea {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 4px;
+/* Líneas simuladas dentro del documento */
+.doc_linea {
+    height: 4px;
+    background: var(--borde);
+    border-radius: 2px;
     width: 100%;
 }
 
-.linea-titulo {
-    width: 60%;
-    background: var(--color-primario, #3b82f6);
-    opacity: 0.7;
+.linea_titulo {
+    width: 70%;
+    background: var(--texto-secundario);
 }
 
-.linea-corta {
+.linea_corta {
     width: 40%;
 }
 
-.linea-media {
-    width: 75%;
+.linea_media {
+    width: 85%;
 }
 
-/* Sello / Badge de vacío */
-.doc-badge-vacio {
+/* Badge de "0.00" estilo sutil en el ticket */
+.doc_badge_vacio {
     margin-top: auto;
     align-self: center;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--texto-secundario, #94a3b8);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 2px 8px;
-    border-radius: 6px;
+    font-family: var(--fuente-codigo);
+    font-size: 0.55rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-deshabilitado);
+    background: var(--fondo-superficie);
+    padding: 2px 6px;
+    border-radius: var(--radio-sm);
+    border: 1px solid var(--borde);
 }
 
-/* --- HALO AMBIENTAL --- */
-.halo-ambiental {
+/* --- Halo Ambiental --- */
+.halo_ambiental {
     position: absolute;
-    width: 90px;
-    height: 90px;
-    background: var(--color-primario, #3b82f6);
-    filter: blur(40px);
-    opacity: 0.15;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-primario) 25%, transparent) 0%, transparent 70%);
     border-radius: 50%;
-    animation: pulsoHalo 4s ease-in-out infinite;
     z-index: 1;
+    animation: pulsarHalo 4s ease-in-out infinite;
 }
 
-/* --- TEXTO DE ESTADO --- */
-.texto-vacio {
-    text-align: center;
-    width: 100%;
+/* --- Textos Descriptivos --- */
+.texto_vacio {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 320px;
 }
 
-.titulo-vacio {
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--texto-principal, #f8fafc);
-    margin: 0 0 0.35rem 0;
-    letter-spacing: -0.01em;
-}
-
-.subtitulo-vacio {
-    font-size: 0.88rem;
-    color: var(--texto-secundario, #94a3b8);
+.titulo_vacio {
+    font-family: var(--fuente-titulos);
+    font-size: 1.1rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
     margin: 0;
-    font-weight: 400;
+}
+
+.subtitulo_vacio {
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+    margin: 0;
     line-height: 1.4;
 }
 
-/* --- KEYFRAMES DE ANIMACIONES SOBRIAS --- */
+/* ==========================================================================
+   KEYFRAMES DE ANIMACIÓN
+   ========================================================================== */
 
-@keyframes flotarSutil {
+@keyframes flotarDocumento {
     0%, 100% {
-        transform: translateY(0px) rotate(0deg);
+        transform: translateY(0) rotate(0deg);
     }
     50% {
-        transform: translateY(-8px) rotate(1deg);
+        transform: translateY(-6px) rotate(1.5deg);
     }
 }
 
-@keyframes pulsoHalo {
+@keyframes pulsarHalo {
     0%, 100% {
         transform: scale(1);
-        opacity: 0.12;
+        opacity: 0.6;
     }
     50% {
-        transform: scale(1.3);
-        opacity: 0.22;
+        transform: scale(1.35);
+        opacity: 0.9;
     }
 }

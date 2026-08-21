@@ -1,32 +1,7 @@
 import type React from "react";
-
-import { type Horas, type DiaSemana } from "../../tipadosTs/horario";
+import { User } from "lucide-react";
+import { type Horas, type DiaSemana } from "../../../tipadosTs/horario";
 import "./claseasignar.css";
-/**
- * Componente ClaseAsignada.
- *
- * Representa visualmente una clase ya asignada dentro del calendario
- * para un día y una hora específica.
- *
- * Funcionalidades:
- * - Busca la clase correspondiente al par (día + hora).
- * - Renderiza la información básica de la clase.
- * - Permite seleccionar la clase para acciones posteriores
- *   (ej: modificar o eliminar).
- *
- * Lógica clave:
- * - Si no existe una clase para la combinación `dia` + `hora`,
- *   el componente no renderiza nada.
- *
- * Suposiciones:
- * - No existen clases duplicadas para el mismo día y hora.
- * - `Horarios_Clases` contiene todas las clases del calendario.
- *
- * @param dia Día de la semana a evaluar.
- * @param hora Hora de inicio de la clase.
- * @param Horarios_Clases Listado completo de clases asignadas.
- * @param onSelect Callback ejecutado al hacer click sobre la clase.
- */
 
 export interface ClaseHorario {
   dia: DiaSemana;
@@ -57,7 +32,6 @@ export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
   Horarios_Clases,
   onSelect,
 }) => {
-  // Busca la clase correspondiente al día y hora actual
   const clase = Horarios_Clases?.find(
     (horario) => horario.dia === dia && horario.hora_inicio === hora,
   );
@@ -69,9 +43,26 @@ export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
   };
 
   return (
-    <div className="clase_asignada" onClick={handleClick}>
-      <p className="clase_tipo">{clase.tipo_clase}</p>
-      <p className="clase_profesor">Prof: {clase.profesor}</p>
+    <div
+      className="tarjeta_clase_asignada"
+      onClick={handleClick}
+      title="Click para ver o modificar"
+    >
+      <div className="clase_indicador_lateral" />
+
+      <div className="clase_contenido_interno">
+        {/* Bloque principal en columna: Tipo de clase y Nivel */}
+        <div className="clase_header_columna">
+          <span className="clase_tipo_badge">{clase.tipo_clase}</span>
+          <span className="clase_nivel_badge">{clase.nivel}</span>
+        </div>
+
+        {/* Bloque del profesor abajo */}
+        <div className="clase_detalle_profe">
+          <User size={12} />
+          <span className="clase_profesor_texto">{clase.profesor}</span>
+        </div>
+      </div>
     </div>
   );
 };

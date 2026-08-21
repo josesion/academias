@@ -1,16 +1,5 @@
-// Seccion de componentes
-import { Boton } from "../../generales/Boton/Boton";
-
-//seccion de estilos
 import "./itemGenerico.css";
 
-/**
- * @typedef {Object} ItemGenericoProps - Propiedades del componente ItemGenerico.
- * @template T
- * @property {T} data - El objeto de datos a mostrar.
- * @property {(data: T) => void} [onEditarButton] - La función que se llama cuando se hace clic en el botón 'Editar'. Se pasa el objeto de datos completo.
- * @property {(data: T) => void} [onEliminarButton] - La función que se llama cuando se hace clic en el botón 'Eliminar'. Se pasa el objeto de datos completo.
- */
 type ItemGenericoProps<T extends object> = {
   textoBoton: string;
   data: T;
@@ -18,89 +7,97 @@ type ItemGenericoProps<T extends object> = {
   onEliminarButton?: (data: T) => void;
 };
 
-/**
- * Función auxiliar para capitalizar la primera letra de una cadena.
- * @param {string} s - La cadena a capitalizar.
- * @returns {string} La cadena con la primera letra en mayúscula o una cadena vacía si no es una cadena válida.
- */
-const capitalize = (s: string): string => {
-  if (typeof s !== "string") return "";
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
-
-/**
- * Componente `ItemGenerico` para renderizar de manera dinámica los pares clave-valor de un objeto
- * y proporciona botones de "Editar" y "Eliminar".
- *
- * @param {ItemGenericoProps} { data, onEditarButton, onEliminarButton } - Las propiedades del componente.
- * @returns {JSX.Element} El elemento JSX del componente.
- *
- * @example
- * // Con un objeto de ejemplo:
- * const usuariosEjemplo = {
- * id: 1,
- * usuario: 'joses',
- * nombre_completo: 'José Sánchez',
- * };
- *
- * <ItemGenerico
- * data={usuariosEjemplo}
- * onEditarButton={(data) => console.log('Editar:', data)}
- * onEliminarButton={(data) => console.log('Eliminar:', data)}
- * />
- *
- * // El componente mostrará:
- * // ID: 1
- * // Usuario: joses
- * // Nombre_completo: José Sánchez
- * // Y los botones de Editar y Eliminar
- */
 export function ItemGenerico<T extends object>({
   data,
   onEditarButton,
   onEliminarButton,
   textoBoton,
 }: ItemGenericoProps<T>) {
-  return (
-    <div className="item_card_generico">
-      <div className="item_card_body">
-        {data &&
-          Object.entries(data).map(([key, value]) => {
-            let displayValue: string | number = "";
+  const entries = data ? (Object.entries(data) as [string, any][]) : [];
 
-            if (value === null || value === undefined) {
-              displayValue = "";
-            } else if (typeof value === "object") {
-              displayValue = "[Objeto]";
-            } else {
-              displayValue = value as string | number;
-            }
+  // Buscamos si hay un ID o código para mostrarlo arriba de todo
+  const idEntry = entries.find(
+    ([key]) =>
+      key.toLowerCase().includes("id") || key.toLowerCase().includes("codigo"),
+  );
+
+  // Resto de los campos (ej: mes, cantidad_clases, monto, nombre, etc.)
+  const otherEntries = entries.filter(
+    ([key]) =>
+      !key.toLowerCase().includes("id") &&
+      !key.toLowerCase().includes("codigo"),
+  );
+
+  // Helpers para identificar claves específicas y darles contexto visual si querés
+  const formatLabel = (key: string) => {
+    const lower = key.toLowerCase();
+    if (lower.includes("clase")) return "Clases";
+    if (lower.includes("mes")) return "Mes";
+    if (
+      lower.includes("monto") ||
+      lower.includes("precio") ||
+      lower.includes("total")
+    )
+      return "Monto";
+    return key.replace(/_/g, " ");
+  };
+
+  return (
+    <div className="item_card_editorial">
+      {/* Indicador superior derecho estilo etiqueta */}
+      <div className="item_indicador_punto" />
+
+      <div className="item_card_body">
+        {/* Identificador / ID superior (Ej: #0842) */}
+        {idEntry && <span className="item_id_editorial">#{idEntry[1]}</span>}
+
+        {/* Contenido dinámico con etiquetas claras */}
+        <div className="item_contenido_principal">
+          {otherEntries.map(([key, value], index) => {
+            const displayValue =
+              value === null || value === undefined ? "-" : String(value);
+            const esPrincipal = index === 0; // El primer campo sigue manteniendo protagonismo visual grande
 
             return (
-              <div key={key} className="item_row">
-                <span className="item_key">{capitalize(key)}</span>
-                <span className="item_value">{displayValue}</span>
+              <div
+                key={key}
+                className={
+                  esPrincipal ? "item_bloque_principal" : "item_bloque_detalle"
+                }
+              >
+                <span className="item_label_editorial">{formatLabel(key)}</span>
+                <span
+                  className={
+                    esPrincipal ? "item_valor_titulo" : "item_valor_sub"
+                  }
+                >
+                  {displayValue}
+                </span>
               </div>
             );
           })}
+        </div>
       </div>
 
+      {/* Acciones minimalistas abajo */}
       <div className="item_card_actions">
-        <Boton
-          texto="Editar"
-          logo="Edit"
-          size={18}
-          clase="aceptar"
+        <button
+          type="button"
+          className="item_link_editar"
           onClick={() => onEditarButton && data && onEditarButton(data)}
-        />
+        >
+          ✏️ EDITAR
+        </button>
 
-        <Boton
-          texto={textoBoton}
-          logo="Delete"
-          size={18}
-          clase="eliminar"
-          onClick={() => onEliminarButton && data && onEliminarButton(data)}
-        />
+        {onEliminarButton && (
+          <button
+            type="button"
+            className="item_link_eliminar"
+            onClick={() => onEliminarButton && data && onEliminarButton(data)}
+          >
+            {textoBoton.toUpperCase()}
+          </button>
+        )}
       </div>
     </div>
   );

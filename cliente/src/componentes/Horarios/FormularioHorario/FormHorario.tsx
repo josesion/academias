@@ -2,13 +2,7 @@ import { SelectorPlegable } from "../../generales/Selector/Selector";
 import { Calendario } from "../Calendario/Calendario";
 import { TarjetaHorario } from "../TarjetaHorario/TarjetaHorario";
 import { Boton } from "../../generales/Boton/Boton";
-import {
-  SlidersHorizontal,
-  User,
-  Layers,
-  Tag,
-  CalendarDays,
-} from "lucide-react";
+import { SlidersHorizontal, CalendarDays } from "lucide-react";
 
 import type * as TipadoHorario from "../../../tipadosTs/horario";
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
@@ -98,9 +92,6 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
 
               <div className="filtro_primario_campos">
                 <div className="filtro_campo">
-                  <span className="filtro_campo_icono">
-                    <User size={12} />
-                  </span>
                   <SelectorPlegable<TipadoHorario.DataProfesor>
                     titulo="Profesores"
                     objetoListado={listaProfe}
@@ -114,9 +105,6 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                 </div>
 
                 <div className="filtro_campo">
-                  <span className="filtro_campo_icono">
-                    <Layers size={12} />
-                  </span>
                   <SelectorPlegable<TipadoHorario.DataNivel>
                     titulo="Niveles"
                     objetoListado={listaNiveles}
@@ -129,9 +117,6 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                 </div>
 
                 <div className="filtro_campo">
-                  <span className="filtro_campo_icono">
-                    <Tag size={12} />
-                  </span>
                   <SelectorPlegable<TipadoHorario.DataTipo>
                     titulo="Tipos"
                     objetoListado={listaTipo}

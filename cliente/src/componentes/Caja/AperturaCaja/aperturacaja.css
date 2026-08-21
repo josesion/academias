@@ -1,238 +1,234 @@
-/* --- CONTENEDOR PRINCIPAL --- */
-.apertura-caja-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 2rem;
+/* ==========================================================================
+   APERTURA DE CAJA — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
 
-    /* Estilo visual */
-    background: linear-gradient(145deg, rgba(31, 31, 43, 0.95), rgba(13, 13, 18, 0.98));
-    border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-    
-    width: 95%;
-    /* Aumentado para permitir que la grilla se expanda */
-    max-width: 900px; 
+.coontenedor_apertura_caja {
+    width: 100%;
+    max-width: 900px;
     margin: 20px auto;
-    
-    animation: fadeInForm 0.4s ease;
-    transition: box-shadow 0.25s ease;
+    max-height: 90dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-right: 4px;
 }
 
-.apertura-caja-container:hover {
-    box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+.coontenedor_apertura_caja::-webkit-scrollbar {
+    width: 8px;
 }
 
-/* --- TÍTULO --- */
-.titulo-apertura {
-    font-size: 1.6rem;
-    font-weight: 700;
-    text-align: center;
-    color: var(--color-letra);
-    letter-spacing: 1px;
-    width: 100%;
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    padding-bottom: 12px;
+.coontenedor_apertura_caja::-webkit-scrollbar-track {
+    background: var(--fondo-hover);
+    border-radius: 10px;
+}
+
+.coontenedor_apertura_caja::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+   TÍTULO
+   ========================================================================== */
+
+.apertura_titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 4px;
+}
+
+.apertura_titulo h2 {
     margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.apertura_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+    line-height: var(--linea-texto);
+}
+/* ==========================================================================
+   TARJETA CONTENEDORA
+   ========================================================================== */
+
+.card_cierre {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
+}
+
+.card_titulo {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--texto-secundario);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   GRILLA DE CUENTAS (Idéntica a métodos de pago)
+   ========================================================================== */
+
+.grid_apertura_cuentas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.tarjeta_metodo_pago {
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: var(--transicion);
+}
+
+.tarjeta_metodo_pago:hover {
+    border-color: var(--borde-hover);
+}
+
+.metodo_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--borde);
+}
+
+.metodo_info_principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.metodo_icono {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    flex-shrink: 0;
 }
 
-/* --- GRILLA DINÁMICA (Lo que pediste) --- */
-.apertura_tipos_cuentas {
-    display: grid;
-    width: 100%;
-    gap: 20px;
-    /* Crea columnas de mínimo 250px. 
-       Si la pantalla es chica, se pone uno debajo del otro.
-       Si es grande, se ponen 2 o 3 en la misma fila.
-    */
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    padding: 10px 0;
+.metodo_icono.fisico {
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
 }
 
-/* --- CONTENEDOR DE CADA INPUT --- */
-.contenedor_input_cuenta {
+.metodo_icono.virtual {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+}
+
+.metodo_info_principal h4 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: 0.9rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metodo_info_principal span {
+    font-family: var(--fuente-principal);
+    font-size: 0.7rem;
+    color: var(--texto-deshabilitado);
+}
+
+/* Cuerpo de la tarjeta de apertura */
+.metodo_cuerpo_apertura {
     display: flex;
     flex-direction: column;
-    background: rgba(255, 255, 255, 0.03);
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.contenedor_input_cuenta p {
-    margin: 0 0 10px 0;
-    color: var(--color-letra);
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-.contenedor_input_cuenta strong {
-    color: #fff;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-}
-
-/* --- INPUTS --- */
-.apertura-caja-container input {
     width: 100%;
-    padding: 11px 14px;
-    font-size: 15px;
-    color: #f2f2f2;
-    background-color: #1f1f2b;
-    border: 1px solid #3a3a4a;
-    border-radius: 8px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.apertura-caja-container input:focus {
-    outline: none;
-    border-color: var(--color-fondo-azul);
-    box-shadow: 0 0 0 2px rgba(79,70,229,0.25);
-}
-
-/* --- BOTONERA --- */
-.acciones-apertura {
+.metodo_campo {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
-    gap: 15px;
+    flex-direction: column;
+    gap: 4px;
     width: 100%;
-    margin-top: 15px;
-    /* Limitamos el ancho de la botonera para que no se vea gigante */
-    max-width: 500px;
 }
 
-.acciones-apertura > * {
-    flex: 1; /* Hace que ambos botones midan lo mismo */
+.dato_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--texto-deshabilitado);
+    height: 16px;
+    display: flex;
+    align-items: center;
 }
 
-/* --- ANIMACIÓN --- */
-@keyframes fadeInForm {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.metodo_campo .inputs_contenedor, 
+.metodo_campo input {
+    height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
 }
 
-/* --- MEDIA QUERIES --- */
+/* ==========================================================================
+   BOTONERA
+   ========================================================================== */
+
+.contenedor_botonera_apertura {
+    display: flex;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.contenedor_botonera_apertura > * {
+    flex: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
 @media (max-width: 600px) {
-    .apertura-caja-container {
-        width: 98%;
-        padding: 15px;
+    .coontenedor_apertura_caja {
+        max-width: 100%;
     }
 
-    .acciones-apertura {
-        flex-direction: column;
-        align-items: center;
+    .card_cierre {
+        padding: 16px;
+        border-radius: var(--radio-md);
     }
 
-    .acciones-apertura > * {
-        width: 100%;
+    .apertura_titulo h2 {
+        font-size: var(--texto-lg);
     }
-    
-    .apertura_tipos_cuentas {
-        /* En móviles muy chicos, bajamos un poco el mínimo para evitar desbordes */
+
+    .grid_apertura_cuentas {
         grid-template-columns: 1fr;
     }
-}
 
-
-/* ===================================================
-   RESPONSIVE: FORMULARIO APERTURA DE CAJA
-   =================================================== */
-
-.apertura-caja-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding: 2rem;
-    
-    border-radius: 14px;
-    width: 90%;
-    max-width: 480px;
-    margin: 0 auto;
-    
-    /* Control de altura para que no se salga de la pantalla */
-    max-height: 90vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-}
-
-/* Contenedor de la lista de cuentas con scroll propio si es necesario */
-.apertura_tipos_cuentas {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-}
-
-.contenedor_input_cuenta {
-    background: rgba(255, 255, 255, 0.03);
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.contenedor_input_cuenta p {
-    font-size: 0.85rem;
-    margin-bottom: 8px;
-    color: var(--color-letra);
-}
-
-/* Responsive para celulares */
-@media (max-width: 576px) {
-    .apertura-caja-container {
-        width: 95%;
-        padding: 1.2rem;
-        gap: 1rem;
+    .contenedor_botonera_apertura {
+        flex-direction: column-reverse;
     }
-
-    .titulo-apertura {
-        font-size: 1.2rem;
-        text-align: center;
-    }
-
-    /* Botones uno arriba del otro en móvil */
-    .acciones-apertura {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-    }
-
-    .acciones-apertura > * {
-        width: 100%;
-        flex: none;
-    }
-}
-
-/* Ajuste para pantallas muy bajitas (celular horizontal) */
-@media (max-height: 550px) {
-    .apertura-caja-container {
-        padding: 1rem;
-        max-height: 95vh;
-    }
-
-    .titulo-apertura {
-        margin: 0;
-        font-size: 1rem;
-    }
-}
-
-/* Scrollbar estética para la lista de cuentas */
-.apertura-caja-container::-webkit-scrollbar {
-    width: 6px;
-}
-.apertura-caja-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
 }

@@ -1,398 +1,77 @@
-/* ==========================================================
-   TARJETA NORMAL - ELPIS UI
-   ========================================================== */
+/* ==========================================================================
+   TARJETAS NORMALES — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
 
-.tarjeta_normal_contenedor{
+.tarjeta_normal_contenedor {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
-    position:relative;
+    width: 100%;
+    max-width: 320px;
+    padding: 24px;
 
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-
-    min-height:115px;
-
-    padding:22px 22px 22px 42px;
-
-    overflow:hidden;
-
-    border-radius:var(--radio-lg);
-
-    background:
-        linear-gradient(
-            145deg,
-            var(--fondo-secundario),
-            var(--fondo-principal)
-        );
-
-    border:1px solid var(--borde);
-
-    box-shadow:var(--sombra-md);
-
-    transition:var(--transicion);
-
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    font-family: var(--fuente-principal);
+    transition: var(--transicion);
 }
 
-/*==========================================
-            BRILLO SUPERIOR
-==========================================*/
-
-.tarjeta_normal_contenedor::after{
-
-    content:"";
-
-    position:absolute;
-
-    top:0;
-    left:0;
-
-    width:100%;
-    height:100%;
-
-    pointer-events:none;
-
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,.05),
-            transparent 38%
-        );
-
+.tarjeta_normal_contenedor:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+    transform: translateY(-2px);
 }
 
-/*==========================================
-            LINEA LATERAL
-==========================================*/
-
-.tarjeta_normal_contenedor::before{
-
-    content:"";
-
-    position:absolute;
-
-    left:14px;
-    top:18px;
-    bottom:18px;
-
-    width:6px;
-
-    border-radius:999px;
-
-    transition:var(--transicion);
-
+/* --- Header --- */
+.tarjeta_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
-/*==========================================
-            HOVER
-==========================================*/
-
-.tarjeta_normal_contenedor:hover{
-
-    transform:translateY(-4px);
-
-    border-color:var(--borde-hover);
-
-    box-shadow:var(--sombra-lg);
-
+.tarjeta_titulo {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
 }
 
-.tarjeta_normal_contenedor:hover::before{
-
-    transform:scaleY(1.08);
-
+.tarjeta_icono {
+    color: var(--color-primario);
 }
 
-/*==========================================
-            HEADER
-==========================================*/
-
-.tarjeta_header{
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    gap:10px;
-
+/* --- Monto con tipografía editorial --- */
+.tarjeta_monto_wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    line-height: 1;
 }
 
-.tarjeta_header span{
-
-    font-family:var(--fuente-codigo);
-
-    font-size:var(--texto-xs);
-
-    font-weight:var(--peso-negrita);
-
-    text-transform:uppercase;
-
-    letter-spacing:1.4px;
-
-    color:var(--texto-secundario);
-
+.tarjeta_simbolo {
+    font-size: 1.2rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.03em;
 }
 
-/*==========================================
-            ICONO
-==========================================*/
-
-.tarjeta_icono{
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    width:34px;
-    height:34px;
-
-    border-radius:12px;
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-primario) 14%,
-            transparent
-        );
-
-    color:var(--color-primario);
-
-    transition:var(--transicion);
-
+.monto_entero {
+    font-size: 1.2rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.03em;
 }
 
-/* Forzamos a que cualquier SVG o elemento interno del ícono tome el color heredado */
-.tarjeta_icono svg {
-    width: 18px;
-    height: 18px;
-    color: inherit;
-    fill: currentColor;
-}
-
-.tarjeta_normal_contenedor:hover .tarjeta_icono{
-
-    transform:scale(1.08);
-
-}
-
-/*==========================================
-            MONTO
-==========================================*/
-
-.tarjeta_monto{
-
-    margin-top:8px;
-
-    font-family:var(--fuente-principal);
-
-    font-size:1.7rem;
-
-    font-weight:var(--peso-negrita);
-
-    color:var(--texto-principal);
-
-    line-height:1.2;
-
-    font-variant-numeric:tabular-nums;
-
-}
-
-/*==========================================
-            VARIANTE AZUL
-==========================================*/
-
-.tarjeta_normal_contenedor.azul::before{
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--color-primario),
-            var(--color-secundario)
-        );
-
-    box-shadow:
-        0 0 14px color-mix(
-            in srgb,
-            var(--color-primario) 55%,
-            transparent
-        );
-
-}
-
-.tarjeta_normal_contenedor.azul .tarjeta_icono{
-
-    color: var(--color-secundario);
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-secundario) 15%,
-            transparent
-        );
-
-}
-
-.tarjeta_normal_contenedor.azul:hover{
-
-    box-shadow:
-        var(--sombra-lg),
-        0 0 22px color-mix(
-            in srgb,
-            var(--color-primario) 18%,
-            transparent
-        );
-
-}
-
-/*==========================================
-            VARIANTE VERDE
-==========================================*/
-
-.tarjeta_normal_contenedor.verde::before{
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--color-exito),
-            color-mix(
-                in srgb,
-                var(--color-exito) 65%,
-                white
-            )
-        );
-
-}
-
-.tarjeta_normal_contenedor.verde .tarjeta_icono{
-
-    color:var(--color-exito);
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-exito) 15%,
-            transparent
-        );
-
-}
-
-/*==========================================
-            VARIANTE ROJO
-==========================================*/
-
-.tarjeta_normal_contenedor.rojo::before{
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--color-error),
-            color-mix(
-                in srgb,
-                var(--color-error) 65%,
-                white
-            )
-        );
-
-}
-
-.tarjeta_normal_contenedor.rojo .tarjeta_icono{
-
-    color:var(--color-error);
-
-    background:
-        color-mix(
-            in srgb,
-            var(--color-error) 15%,
-            transparent
-        );
-
-}
-
-/*==========================================
-            VARIANTE NEUTRA
-==========================================*/
-
-.tarjeta_normal_contenedor.negro::before{
-
-    background:
-        linear-gradient(
-            180deg,
-            var(--texto-principal),
-            var(--texto-secundario)
-        );
-
-}
-
-.tarjeta_normal_contenedor.negro .tarjeta_icono{
-
-    color:var(--texto-principal);
-
-    background:
-        color-mix(
-            in srgb,
-            var(--texto-principal) 10%,
-            transparent
-        );
-
-}
-
-/*==========================================
-            RESPONSIVE
-==========================================*/
-
-@media (max-width:768px){
-
-    .tarjeta_normal_contenedor{
-
-        min-height:95px;
-
-        padding:18px 18px 18px 36px;
-
-        border-radius:var(--radio-md);
-
-    }
-
-    .tarjeta_monto{
-
-        font-size:1.35rem;
-
-    }
-
-    .tarjeta_icono{
-
-        width:30px;
-        height:30px;
-
-    }
-
-}
-
-@media (max-width:480px){
-
-    .tarjeta_normal_contenedor{
-
-        min-height:82px;
-
-        padding:16px 16px 16px 32px;
-
-    }
-
-    .tarjeta_header span{
-
-        font-size:.62rem;
-
-    }
-
-    .tarjeta_monto{
-
-        font-size:1.15rem;
-
-    }
-
-    .tarjeta_icono{
-
-        width:28px;
-        height:28px;
-
-    }
-
+/* --- Decimales más chicos y desvanecidos --- */
+.monto_decimal {
+    font-size: 1.2rem;
+    font-weight: var(--peso-normal);
+    color: var(--texto-deshabilitado);
+    opacity: 0.65; /* Efecto visual de desvanecimiento como pediste */
 }

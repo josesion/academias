@@ -56,7 +56,7 @@ interface AbmConfig {
  */
 export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
-    
+   
 
 // --- Estado para actulizar el estado al entrar en focus
     const [actualizarGenerico , setActualizarGernerico ] = useState<number>(0);
@@ -438,6 +438,8 @@ useEffect(() => {
         handleSubmit, handleSubmitEliminar,
         handleCancelar, handleCancelarEliminar,
         handlePaginaCambiada, 
+
+        
 
     }
 

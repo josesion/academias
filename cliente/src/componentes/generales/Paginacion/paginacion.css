@@ -1,256 +1,94 @@
 /* ============================================================
-   PAGINACIÓN - ELPIS DESIGN SYSTEM
+   PAGINACIÓN — Estilo Editorial Premium
    ============================================================ */
 
-.paginacion_contenedor{
-
-    width:100%;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    padding:30px 0;
-
+.paginacion_contenedor {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--borde);
 }
 
-/* ============================================================
-   CONTENEDOR PRINCIPAL
-   ============================================================ */
-
-.paginacion_componente{
-
-    display:flex;
-    align-items:center;
-    gap:12px;
-
-    padding:10px 14px;
-
-    background:rgba(255,255,255,.02);
-
-    border:1px solid var(--borde);
-
-    border-radius:var(--radio-lg);
-
-    transition:var(--transicion);
-
+.paginacion_componente {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--fondo-superficie);
+    padding: 4px;
+    border-radius: var(--radio-md);
+    border: 1px solid var(--borde);
 }
 
-.paginacion_componente:hover{
-
-    border-color:var(--borde-hover);
-
+.paginacion_centro {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
-/* ============================================================
-   CENTRO
-   ============================================================ */
-
-.paginacion_centro{
-
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-}
-
-/* ============================================================
-   BOTONES
-   ============================================================ */
-
-.btn_nav,
+/* --- Botones comunes (Genericos y Seleccionado) --- */
 .btn_generico,
-.btn_seleccionado{
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    min-width:40px;
-    height:40px;
-
-    padding:0 14px;
-
-    border-radius:var(--radio-sm);
-
-    font-family:var(--fuente-principal);
-    font-size:var(--texto-sm);
-    font-weight:var(--peso-semi-negrita);
-
-    cursor:pointer;
-
-    transition:var(--transicion);
-
+.btn_seleccionado {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radio-sm);
+    border: none;
+    cursor: pointer;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-sm);
+    transition: var(--transicion);
 }
 
-/* ============================================================
-   BOTONES NORMALES
-   ============================================================ */
-
-.btn_generico{
-
-    background:transparent;
-
-    border:1px solid transparent;
-
-    color:var(--texto-secundario);
-
+/* Botón Normal */
+.btn_generico {
+    background: transparent;
+    color: var(--texto-principal);
 }
 
-.btn_generico:hover{
-
-    background:var(--fondo-hover);
-
-    border-color:var(--borde);
-
-    color:var(--texto-principal);
-
-    transform:translateY(-2px);
-
+.btn_generico:hover {
+    background: var(--fondo-principal);
+    color: var(--color-secundario);
 }
 
-/* ============================================================
-   BOTÓN ACTIVO
-   ============================================================ */
-
-.btn_seleccionado{
-
-    background:var(--color-primario);
-
-    color:var(--texto-principal);
-
-    border:1px solid var(--color-primario);
-
+/* Botón Seleccionado (Tu toque de lujo) */
+.btn_seleccionado {
+    background: var(--color-primario);
+    color: #fff;
+    font-weight: var(--peso-negrita);
+    box-shadow: var(--sombra-sm);
 }
 
-.btn_seleccionado:hover{
-
-    filter:brightness(1.08);
-
-    transform:translateY(-2px);
-
+/* --- Botones de Navegación (Izquierda/Derecha) --- */
+.btn_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radio-sm);
+    border: none;
+    background: transparent;
+    color: var(--texto-principal);
+    cursor: pointer;
+    transition: var(--transicion);
 }
 
-/* ============================================================
-   FLECHAS
-   ============================================================ */
-
-.btn_nav{
-
-    background:transparent;
-
-    border:1px solid transparent;
-
-    color:var(--texto-secundario);
-
+.btn_nav:hover:not(:disabled) {
+    background: var(--fondo-principal);
+    color: var(--color-secundario);
 }
 
-.btn_nav:hover:not(:disabled){
-
-    background:var(--fondo-hover);
-
-    border-color:var(--borde);
-
-    color:var(--texto-principal);
-
-    transform:translateY(-2px);
-
+.btn_nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
-.btn_nav:disabled{
-
-    opacity:.35;
-
-    cursor:not-allowed;
-
-    transform:none;
-
-}
-
-/* ============================================================
-   PUNTOS SUSPENSIVOS
-   ============================================================ */
-
-.puntos_suspensivos{
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    min-width:22px;
-
-    color:var(--texto-deshabilitado);
-
-    font-family:var(--fuente-codigo);
-
-    font-size:var(--texto-sm);
-
-    user-select:none;
-
-}
-
-/* ============================================================
-   ANIMACIÓN DE ENTRADA
-   ============================================================ */
-
-.paginacion_componente{
-
-    animation:entradaPaginacion .35s ease;
-
-}
-
-@keyframes entradaPaginacion{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(10px);
-
-    }
-
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
-    }
-
-}
-
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
-
-@media(max-width:700px){
-
-    .paginacion_componente{
-
-        gap:8px;
-
-        padding:8px 10px;
-
-    }
-
-    .paginacion_centro{
-
-        gap:6px;
-
-    }
-
-    .btn_nav,
-    .btn_generico,
-    .btn_seleccionado{
-
-        min-width:34px;
-
-        height:34px;
-
-        padding:0 10px;
-
-        font-size:var(--texto-xs);
-
-    }
-
+/* --- Puntos Suspensivos --- */
+.puntos_suspensivos {
+    padding: 0 8px;
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-codigo);
 }

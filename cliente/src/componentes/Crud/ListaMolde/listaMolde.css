@@ -3,8 +3,8 @@
    ============================================================ */
 
 .rueda_contenedor {
-    --altura-rueda: 62vh;
-    --altura-item-aprox: 150px; /* usado solo para calcular el espaciador */
+    --altura-rueda: 65vh;
+    --altura-item-aprox: 280px; /* Actualizado al alto real de la tarjeta editorial */
     position: relative;
 
     height: var(--altura-rueda);
@@ -25,26 +25,16 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
 
-    /* la cámara 3D — sin esto, rotateX/z no producen ninguna
-       sensación de profundidad real, se ven planos */
     perspective: 1200px;
 
-scrollbar-width: none;
+    scrollbar-width: none;
     -ms-overflow-style: none;
 }
 
 .rueda_contenedor::-webkit-scrollbar {
-   display: none;
+    display: none;
 }
 
-.rueda_contenedor::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
-}
-
-/* espaciador: la mitad de la altura del contenedor menos medio ítem —
-   así el primer y el último elemento SÍ pueden llegar al centro real
-   del carrusel, en vez de quedarse pegados al borde superior/inferior */
 .rueda_espaciador {
     flex: 0 0 auto;
     height: calc((var(--altura-rueda) - var(--altura-item-aprox)) / 2);
@@ -58,6 +48,8 @@ scrollbar-width: none;
 .rueda_item {
     flex: 0 0 auto;
     width: 100%;
+    display: flex;             /* Centra horizontalmente el contenido */
+    justify-content: center;   /* Alinea al medio exacto */
 
     scroll-snap-align: center;
     scroll-snap-stop: always;
@@ -67,23 +59,19 @@ scrollbar-width: none;
     transform-style: preserve-3d;
     backface-visibility: hidden;
     will-change: transform, opacity;
-
-    /* GSAP escribe scale/opacity/rotateX/z inline en cada frame —
-       esto es solo el punto de arranque antes del primer cálculo */
     transform-origin: center center;
 }
 
-/* la tarjeta activa recibe el borde/sombra con color — única fuente
-   de "esto está enfocado" ahora que no hay blur para reforzarlo */
-.rueda_item--activa .item_card_generico {
-    border-color: color-mix(in srgb, var(--color-primario) 40%, var(--borde));
+/* Selector activo corregido para la tarjeta editorial */
+.rueda_item--activa .item_card_editorial {
+    border-color: var(--texto-principal);
     box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
-    transition: border-color 0.4s ease, box-shadow 0.4s ease;
+    transform: scale(1.02); /* Pequeño pop visual cuando queda en el centro */
+    transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
 }
 
 /* ============================================================
-   ACCESIBILIDAD — sin 3D, la rueda pasa a ser una lista con
-   scroll-snap simple, siempre legible
+   ACCESIBILIDAD
    ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -103,6 +91,6 @@ scrollbar-width: none;
 @media (max-width: 600px) {
     .rueda_contenedor {
         --altura-rueda: 72vh;
-        --altura-item-aprox: 220px; /* en mobile ItemGenerico es más alto (columna) */
+        --altura-item-aprox: 300px;
     }
 }

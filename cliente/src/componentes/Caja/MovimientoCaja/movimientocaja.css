@@ -1,22 +1,21 @@
 /* ============================================================
-   MOVIMIENTOS DE CAJA — listado alineado a grid
+   MOVIMIENTOS DE CAJA — ESTILO EDITORIAL / LUJO
    ============================================================ */
 
 .movimiento_detalle_contenedor {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-
+    gap: 12px;
     width: 100%;
 }
 
 /* ============================================================
-   GRID COMPARTIDO — header y fila usan las mismas columnas
+   GRID COMPARTIDO (Desktop)
    ============================================================ */
 
 .movimiento_header,
 .movimiento_fila {
-    grid-template-columns: 0.9fr 0.7fr 1.1fr 1fr 1.2fr 0.9fr;
+    grid-template-columns: 0.9fr 0.7fr 1.1fr 1fr 1.2fr 1fr;
 }
 
 /* ============================================================
@@ -27,17 +26,14 @@
     display: grid;
     align-items: center;
     gap: 12px;
-
     padding: 0 18px 10px;
-
-    border-bottom: 1px solid var(--borde);
+    border-bottom: 2px solid var(--borde);
 }
 
 .movimiento_header span {
     display: flex;
     align-items: center;
     gap: 6px;
-
     font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
     font-weight: var(--peso-negrita);
@@ -51,14 +47,13 @@
 }
 
 /* ============================================================
-   LISTA
+   LISTA Y SCROLLBAR
    ============================================================ */
 
 .movimiento_lista {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-
+    gap: 10px;
     max-height: 480px;
     overflow-y: auto;
     padding-right: 4px;
@@ -79,32 +74,29 @@
 }
 
 /* ============================================================
-   FILA
+   FILA INDIVIDUAL
    ============================================================ */
 
 .movimiento_fila {
     display: grid;
     align-items: center;
     gap: 12px;
-
     padding: 14px 18px;
-
     border-radius: var(--radio-md);
-    border-left: 3px solid transparent;
     background: var(--fondo-secundario);
     border: 1px solid var(--borde);
-
+    border-left: 4px solid transparent;
     cursor: pointer;
     transition: var(--transicion);
 }
 
 .movimiento_fila:hover {
     border-color: var(--borde-hover);
-    background: color-mix(in srgb, var(--texto-principal) 4%, var(--fondo-secundario));
+    background: var(--fondo-principal);
+    box-shadow: var(--sombra-sm);
     transform: translateY(-1px);
 }
 
-/* borde de acento según el tipo — verde entra, rojo sale */
 .movimiento_fila.ingreso {
     border-left-color: var(--color-exito);
 }
@@ -124,20 +116,17 @@
     min-width: 0;
 }
 
-.campo > span:last-child {
+.valor_texto {
     font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
     color: var(--texto-principal);
-
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* labels: solo visibles en mobile, se ocultan en desktop porque
-   el header ya los dice una vez arriba */
 .campo_label {
-    display: none;
+    display: none; /* Oculto en desktop */
 }
 
 /* ============================================================
@@ -149,24 +138,26 @@
     align-items: center;
     gap: 5px;
     width: fit-content;
-
-    padding: 4px 10px;
+    padding: 3px 9px;
     border-radius: 999px;
-
-    font-family: var(--fuente-principal);
-    font-size: var(--texto-xs);
-    font-weight: var(--peso-semi-negrita);
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     white-space: nowrap;
 }
 
 .badge_estado.ingreso {
     color: var(--color-exito);
-    background: color-mix(in srgb, var(--color-exito) 14%, transparent);
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 25%, transparent);
 }
 
 .badge_estado.egreso {
     color: var(--color-error);
-    background: color-mix(in srgb, var(--color-error) 14%, transparent);
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-error) 25%, transparent);
 }
 
 /* ============================================================
@@ -175,25 +166,26 @@
 
 .campo_monto {
     justify-self: end;
-
     font-family: var(--fuente-titulos);
-    font-size: var(--texto-lg);
     font-weight: var(--peso-negrita);
-
-    font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
 
-.campo_monto.ingreso {
+.monto_valor {
+    font-size: 1.15rem;
+    letter-spacing: -0.01em;
+}
+
+.campo_monto.ingreso .monto_valor {
     color: var(--color-exito);
 }
 
-.campo_monto.egreso {
+.campo_monto.egreso .monto_valor {
     color: var(--color-error);
 }
 
 /* ============================================================
-   RESPONSIVE — vuelve a tarjeta apilada
+   RESPONSIVE — Transforma la fila en tarjeta compacta
    ============================================================ */
 
 @media (max-width: 900px) {
@@ -209,47 +201,37 @@
             "categoria categoria"
             "monto monto";
         row-gap: 12px;
+        padding: 16px;
     }
 
-    .campo_fecha    { grid-area: fecha; }
-    .campo_hora     { grid-area: hora; }
-    .campo_cuenta   { grid-area: cuenta; }
-    .campo_estado   { grid-area: estado; }
-    .campo_categoria{ grid-area: categoria; }
+    .campo_fecha     { grid-area: fecha; }
+    .campo_hora      { grid-area: hora; }
+    .campo_cuenta    { grid-area: cuenta; }
+    .campo_estado    { grid-area: estado; }
+    .campo_categoria { grid-area: categoria; }
 
     .campo_monto {
         grid-area: monto;
         justify-self: start;
-
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
         padding-top: 10px;
-        border-top: 1px solid var(--borde);
+        border-top: 1px dashed var(--borde);
     }
 
-    /* en mobile el header no existe: los labels vuelven */
+    /* En mobile se muestran los labels descriptivos */
     .campo_label {
         display: flex;
         align-items: center;
         gap: 4px;
-
         font-family: var(--fuente-codigo);
         font-size: 0.62rem;
         font-weight: var(--peso-semi-negrita);
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--texto-deshabilitado);
-    }
-}
-
-@media (max-width: 480px) {
-    .movimiento_fila {
-        padding: 12px 14px;
-    }
-
-    .campo > span:last-child {
-        font-size: var(--texto-xs);
-    }
-
-    .campo_monto {
-        font-size: var(--texto-md);
     }
 }

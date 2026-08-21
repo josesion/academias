@@ -1,3 +1,13 @@
+import React from "react";
+import {
+  Calendar,
+  Clock,
+  User,
+  Award,
+  Tag,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import {
   type DataProfesor,
   type DataNivel,
@@ -7,36 +17,6 @@ import {
 } from "../../../tipadosTs/horario";
 
 import "./tarjetahorario.css";
-/**
- * Componente TarjetaHorario.
- *
- * Muestra un resumen visual del horario que se está creando o modificando.
- * Funciona como feedback en tiempo real del estado del formulario de horarios.
- *
- * Responsabilidades:
- * - Mostrar día y rango horario seleccionado.
- * - Mostrar profesor, nivel y tipo de clase elegidos.
- * - Indicar el estado actual del formulario (listo para guardar o incompleto).
- *
- * Comportamiento:
- * - Si algún dato no fue seleccionado, se muestran textos guía
- *   ("Elegir Profesor", "Elegir Nivel", etc.).
- * - El estado visual cambia según el mensaje recibido
- *   (ej: "Listo para Guardar" → estado válido).
- *
- * Uso típico:
- * - Se utiliza dentro del formulario de horarios, tanto en ALTA como en MOD.
- * - No gestiona estado propio: es un componente 100% presentacional.
- *
- * @param dataProfe Profesor seleccionado (o null si no hay selección).
- * @param dataNivel Nivel seleccionado (o null).
- * @param dataTipo Tipo de clase seleccionado (o null).
- * @param dia Día de la semana seleccionado.
- * @param hora_inicio Hora de inicio.
- * @param hora_fin Hora de fin.
- * @param metodo Indica si el formulario está en modo ALTA o MOD.
- * @param mensajeEstado Texto que describe el estado actual del formulario.
- */
 
 export interface DataFormHorarios {
   dataProfe: DataProfesor | null;
@@ -49,33 +29,46 @@ export interface DataFormHorarios {
   mensajeEstado: string;
 }
 
-export const TarjetaHorario = (data: DataFormHorarios) => {
-  const claseEstado =
-    data.mensajeEstado === "Listo para Guardar" ? "listo" : "error";
+export const TarjetaHorario: React.FC<DataFormHorarios> = (data) => {
+  const esListo = data.mensajeEstado === "Listo para Guardar";
+
   return (
-    <div className="info_horario">
-      <h3 className="info_horario_titulo">Información del horario</h3>
+    <div className="card_cierre tarjeta_resumen_horario">
+      <div className="card_titulo">
+        <span>Resumen del Horario</span>
+        {data.metodo && <span className="badge_metodo">{data.metodo}</span>}
+      </div>
+
+      {/* BLOQUE TEMPORAL (Día y Hora) */}
       <div className="info_horario_bloque">
         <div className="info_item">
-          <span className="info_label">Día:</span>
-          <span className="info_valor">{data.dia}</span>
+          <span className="info_label_con_icono">
+            <Calendar size={14} /> Día
+          </span>
+          <span className="info_valor">{data.dia || "No seleccionado"}</span>
         </div>
 
         <div className="info_item">
-          <span className="info_label">Horario:</span>
-          <span className="info_valor">
-            {data.hora_inicio ? data.hora_inicio : "--:--"}--
-            {data.hora_fin ? data.hora_fin : "--:--"}
+          <span className="info_label_con_icono">
+            <Clock size={14} /> Horario
+          </span>
+          <span className="info_valor codigo">
+            {data.hora_inicio || "--:--"} — {data.hora_fin || "--:--"}
           </span>
         </div>
       </div>
 
-      <hr className="info_divisor" />
+      <div className="info_divisor" />
 
+      {/* BLOQUE DETALLES (Profesor, Nivel, Tipo) */}
       <div className="info_horario_bloque">
         <div className="info_item">
-          <span className="info_label">Profesor:</span>
-          <span className="info_valor">
+          <span className="info_label_con_icono">
+            <User size={14} /> Profesor
+          </span>
+          <span
+            className={`info_valor ${!data.dataProfe ? "placeholder" : ""}`}
+          >
             {data.dataProfe
               ? `${data.dataProfe.Apellido} ${data.dataProfe.Nombre}`
               : "Elegir Profesor"}
@@ -83,27 +76,32 @@ export const TarjetaHorario = (data: DataFormHorarios) => {
         </div>
 
         <div className="info_item">
-          <span className="info_label">Nivel:</span>
-          <span className="info_valor">
+          <span className="info_label_con_icono">
+            <Award size={14} /> Nivel
+          </span>
+          <span
+            className={`info_valor ${!data.dataNivel ? "placeholder" : ""}`}
+          >
             {data.dataNivel ? data.dataNivel.nivel : "Elegir Nivel"}
           </span>
         </div>
 
         <div className="info_item">
-          <span className="info_label">Tipo:</span>
-          <span className="info_valor">
+          <span className="info_label_con_icono">
+            <Tag size={14} /> Tipo
+          </span>
+          <span className={`info_valor ${!data.dataTipo ? "placeholder" : ""}`}>
             {data.dataTipo ? data.dataTipo.tipo : "Elegir Tipo"}
           </span>
         </div>
       </div>
 
-      <hr className="info_divisor" />
+      <div className="info_divisor" />
 
-      <div className="info_estado">
-        <span className="info_estado_label">Estado:</span>
-        <span className={`info_estado_valor ${claseEstado}`}>
-          {data.mensajeEstado}
-        </span>
+      {/* BLOQUE ESTADO */}
+      <div className={`info_estado_banner ${esListo ? "listo" : "error"}`}>
+        {esListo ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+        <span className="info_estado_texto">{data.mensajeEstado}</span>
       </div>
     </div>
   );

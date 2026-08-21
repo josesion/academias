@@ -1,7 +1,6 @@
+import React from "react";
 import "./informes.css";
-
 import { Boton } from "../generales/Boton/Boton";
-
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -15,7 +14,21 @@ import {
   UserRound,
 } from "lucide-react";
 
-export const InformeDetalleCaja = ({
+interface InformeDetalleCajaProps {
+  id_movimiento: number;
+  tipo: "ingreso" | "egreso";
+  monto: number;
+  usuario: string;
+  fecha: string;
+  hora: string;
+  metodo_pago: string;
+  observaciones?: string | null;
+  metodo: "fisico" | "virtual" | string;
+  nombre_alumno_vinculado?: string | null;
+  onCerrarModal: () => void;
+}
+
+export const InformeDetalleCaja: React.FC<InformeDetalleCajaProps> = ({
   id_movimiento,
   tipo,
   monto,
@@ -27,7 +40,7 @@ export const InformeDetalleCaja = ({
   metodo,
   nombre_alumno_vinculado,
   onCerrarModal,
-}: any) => {
+}) => {
   const esIngreso = tipo === "ingreso";
 
   return (

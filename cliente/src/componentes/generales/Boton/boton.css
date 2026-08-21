@@ -1,128 +1,102 @@
-/* ==========================================================================
-   BOTÓN MODERNO — ESTILO UNIFICADO
-   ========================================================================== */
+/* ============================================================
+   BOTÓN — Estética Editorial / Lujo
+   ============================================================ */
 
-.boton_moderno {
-    /* Reset de estilos nativos */
-    appearance: none;
-    border: none;
-    background: transparent;
-    padding: 0;
-    cursor: pointer;
-    
-    /* Layout principal */
+.boton_personalizado {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    padding: 10px 18px;
     
-    /* Estilos base (Diseño plano y bordes rectos) */
-    padding: 8px 16px;
     font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
-    font-weight: var(--peso-semi-negrita);
-    border-radius: 0; /* Sin bordes redondeados, tal como venimos trabajando */
+    font-weight: var(--peso-medio);
+    letter-spacing: 0.02em;
     
-    /* Transiciones suaves */
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease, border-color 0.2s ease;
-    
-    /* Altura mínima para consistencia visual */
-    min-height: 36px;
-}
-
-/* Efecto al presionar */
-.boton_moderno:active {
-    transform: translateY(1px);
-}
-
-/* Estado deshabilitado o cargando */
-.boton_moderno:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-}
-
-/* ==========================================================================
-   VARIANTES DE CLASE
-   ========================================================================== */
-
-/* 1. Aceptar (Éxito) */
-.boton_aceptar {
-    background-color: var(--color-exito);
-    color: #ffffff;
-}
-.boton_aceptar:hover:not(:disabled) {
-    filter: brightness(0.9);
-}
-
-/* 2. Cancelar (Neutro / Fondo secundario) */
-.boton_cancelar {
-    background-color: var(--fondo-secundario);
+    background: var(--fondo-secundario);
     color: var(--texto-principal);
+    
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    
+    cursor: pointer;
+    transition: var(--transicion);
+    outline: none;
+}
+
+.boton_personalizado:hover:not(:disabled) {
+    border-color: var(--borde-hover);
+    background: rgb(92, 89, 89);
+    box-shadow: var(--sombra-sm);
+}
+
+/* ============================================================
+   VARIANTES POR COLOR (Integración total)
+   ============================================================ */
+
+/* ACEPTAR / EDITAR (Usando tu color exito/salvia) */
+.boton_personalizado.aceptar,
+.boton_personalizado.editar {
+    background: var(--color-exito);
+    color: #ffffff;
+    border: none;
+}
+.boton_personalizado.aceptar:hover:not(:disabled),
+.boton_personalizado.editar:hover:not(:disabled) {
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(91, 123, 110, 0.2);
+}
+
+/* ELIMINAR / CANCELAR (Usando tu color error) */
+.boton_personalizado.eliminar,
+.boton_personalizado.cancelar {
+    background: transparent;
+    border-color: rgba(179, 71, 71, 0.2);
+    color: var(--color-error);
+}
+.boton_personalizado.eliminar:hover:not(:disabled),
+.boton_personalizado.cancelar:hover:not(:disabled) {
+    background: var(--color-error);
+    color: #fff;
+}
+
+/* AGREGAR / LISTAR (Estilo neutro/premium) */
+.boton_personalizado.agregar,
+.boton_personalizado.listar {
+    background: var(--fondo-superficie);
     border: 1px solid var(--borde);
 }
-.boton_cancelar:hover:not(:disabled) {
-    border-color: var(--borde-hover);
+.boton_personalizado.agregar:hover:not(:disabled),
+.boton_personalizado.listar:hover:not(:disabled) {
+    background: #fff;
+    border-color: var(--texto-secundario);
 }
 
-/* 3. Agregar (Primario / Azul o Secundario) */
-.boton_agregar {
-    background-color: var(--color-secundario);
-    color: #ffffff;
-}
-.boton_agregar:hover:not(:disabled) {
-    filter: brightness(0.9);
-}
-
-/* 4. Eliminar (Peligro / Error) */
-.boton_eliminar {
-    background-color: var(--color-error);
-    color: #ffffff;
-}
-.boton_eliminar:hover:not(:disabled) {
-    filter: brightness(0.9);
-}
-
-/* 5. Listar / Editar (Transparentes con borde sutil) */
-.boton_listar,
-.boton_editar {
-    background-color: transparent;
-    color: var(--texto-principal);
-    border: 1px solid var(--borde);
-}
-.boton_listar:hover:not(:disabled),
-.boton_editar:hover:not(:disabled) {
-    background-color: var(--fondo-secundario);
-    border-color: var(--borde-hover);
-}
-
-/* 6. Flechas (Navegación compacta) */
-.boton_flechas {
-    background-color: transparent;
+/* FLECHAS (Sutiles) */
+.boton_personalizado.flechas {
+    background: transparent;
+    border: none;
     color: var(--texto-secundario);
-    padding: 6px 10px;
 }
-.boton_flechas:hover:not(:disabled) {
+.boton_personalizado.flechas:hover:not(:disabled) {
     color: var(--texto-principal);
-    background-color: var(--fondo-secundario);
 }
 
-/* ==========================================================================
-   ELEMENTOS INTERNOS (Iconos y Spinner)
-   ========================================================================== */
-
-.boton_icono {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ============================================================
+   ESTADO DESHABILITADO / CARGANDO
+   ============================================================ */
+.boton_personalizado.boton_deshabilitado,
+.boton_personalizado:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fondo-superficie);
+    border-color: transparent;
+    color: var(--texto-deshabilitado);
 }
 
-.boton_texto {
-    line-height: 1;
-}
-
-/* Animación de carga */
 .spinner_girando {
-    animation: girar 1s linear infinite;
+    animation: girar 0.8s linear infinite;
 }
 
 @keyframes girar {

@@ -28,56 +28,68 @@ export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
         </div>
       ) : (
         <div className="panel_lista">
-          {cuentas.map((cuenta, index) => (
-            <div className="metodo_item_completo" key={cuenta.id_cuenta}>
-              <div
-                className={`metodo_avatar ${index % 2 === 0 ? "" : "variante_1"}`}
-              >
-                {cuenta.nombre_cuenta.slice(0, 2).toUpperCase()}
-              </div>
+          {cuentas.map((cuenta, index) => {
+            // Separamos la parte entera y los decimales para el saldo final
+            const parteEntera = Math.floor(cuenta.saldo_final_cuenta);
+            const decimales = Math.round(
+              (cuenta.saldo_final_cuenta - parteEntera) * 100,
+            )
+              .toString()
+              .padStart(2, "0");
 
-              <div className="metodo_contenido">
-                <div className="metodo_fila_principal">
-                  <span className="metodo_nombre">{cuenta.nombre_cuenta}</span>
-                  <span className="metodo_monto_total">
-                    ${" "}
-                    <CountUp
-                      end={cuenta.saldo_final_cuenta}
-                      duration={1.5}
-                      separator="."
-                      decimal=","
-                      decimals={2}
-                      preserveValue={true}
-                    />
-                  </span>
+            return (
+              <div className="metodo_item_completo" key={cuenta.id_cuenta}>
+                <div
+                  className={`metodo_avatar ${index % 2 === 0 ? "" : "variante_1"}`}
+                >
+                  {cuenta.nombre_cuenta.slice(0, 2).toUpperCase()}
                 </div>
 
-                <div className="metodo_desglose">
-                  <div className="desglose_dato">
-                    <span className="dato_label">Inicial</span>
-                    <span className="dato_valor">
-                      $
-                      {cuenta.inicial_cuenta.toLocaleString("es-AR", {
-                        minimumFractionDigits: 2,
-                      })}
+                <div className="metodo_contenido">
+                  <div className="metodo_fila_principal">
+                    <span className="metodo_nombre">
+                      {cuenta.nombre_cuenta}
+                    </span>
+                    <span className="metodo_monto_total">
+                      <span className="monto_simbolo">$</span>
+                      <CountUp
+                        end={parteEntera}
+                        duration={1.5}
+                        separator="."
+                        preserveValue={true}
+                        className="monto_entero"
+                      />
+                      <span className="monto_decimal">,{decimales}</span>
                     </span>
                   </div>
 
-                  <div className="desglose_dato">
-                    <span className="dato_label">Sesión</span>
-                    <span
-                      className={`dato_valor ${cuenta.movimiento_sesion >= 0 ? "positivo" : "negativo"}`}
-                    >
-                      {cuenta.movimiento_sesion >= 0 ? "+" : ""}$
-                      {cuenta.movimiento_sesion.toLocaleString("es-AR", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </span>
+                  <div className="metodo_desglose">
+                    <div className="desglose_dato">
+                      <span className="dato_label">Inicial</span>
+                      <span className="dato_valor">
+                        $
+                        {cuenta.inicial_cuenta.toLocaleString("es-AR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
+
+                    <div className="desglose_dato">
+                      <span className="dato_label">Sesión</span>
+                      <span
+                        className={`dato_valor ${cuenta.movimiento_sesion >= 0 ? "positivo" : "negativo"}`}
+                      >
+                        {cuenta.movimiento_sesion >= 0 ? "+" : ""}$
+                        {cuenta.movimiento_sesion.toLocaleString("es-AR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

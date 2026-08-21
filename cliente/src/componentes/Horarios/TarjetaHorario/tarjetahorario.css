@@ -1,204 +1,113 @@
-/* ============================================================
-   TARJETA HORARIO — resumen en vivo del formulario
-   ============================================================ */
+/* ==========================================================================
+   TARJETA HORARIO — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
 
-.info_horario {
-  position: relative;
-
-  padding: 24px 26px 22px 42px;
-  margin-top: 1rem;
-
-  background: var(--fondo-secundario);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
-
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-
-  color: var(--texto-principal);
-
-  box-shadow: var(--sombra-lg);
-
-  animation: infoFadeSlide 0.25s ease-out;
-  background-color: var(--);
+.tarjeta_resumen_horario {
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-/* línea de acento a la izquierda */
-.info_horario::before {
-  content: "";
-  position: absolute;
-  left: 14px;
-  top: 18px;
-  bottom: 18px;
-  width: 4px;
-
-  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-  border-radius: 6px;
+.card_titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--texto-secundario);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
 }
 
-/* ================= TÍTULO ================= */
-
-.info_horario_titulo {
-  text-align: center;
-
-  font-family: var(--fuente-codigo);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-negrita);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-
-  margin: 0 0 8px;
-
-  color: var(--texto-secundario);
+.badge_metodo {
+    padding: 2px 6px;
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
+    border-radius: var(--radio-sm);
+    font-size: 0.65rem;
 }
 
-/* ================= BLOQUES / ITEMS ================= */
-
+/* Bloques de contenido interno */
 .info_horario_bloque {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 24px;
-  row-gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .info_item {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
 }
 
-.info_label {
-  font-family: var(--fuente-codigo);
-  font-size: var(--texto-xs);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--texto-deshabilitado);
+.info_label_con_icono {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-deshabilitado);
 }
 
 .info_valor {
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-md);
-  font-weight: var(--peso-medio);
-  color: var(--texto-principal);
-}
-
-/* ================= DIVISOR ================= */
-
-.info_divisor {
-  grid-column: span 2;
-  border: none;
-  border-top: 1px solid var(--borde);
-  margin: 6px 0;
-}
-
-/* ================= ESTADO ================= */
-
-.info_estado {
-  grid-column: span 2;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-top: 8px;
-  padding-top: 12px;
-
-  border-top: 1px solid var(--borde);
-
-  font-family: var(--fuente-principal);
-  font-size: var(--texto-sm);
-}
-
-.info_estado_label {
-  color: var(--texto-deshabilitado);
-}
-
-.info_estado_valor {
-  font-weight: var(--peso-negrita);
-}
-
-.info_estado_valor.listo {
-  color: var(--color-exito);
-}
-
-.info_estado_valor.incompleto {
-  color: var(--color-advertencia);
-}
-
-.info_estado_valor.error {
-  color: var(--color-error);
-}
-
-/* ================= ANIMACIÓN ================= */
-
-@keyframes infoFadeSlide {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 768px) {
-  .info_horario {
-    padding: 14px 16px 14px 26px;
-    border-radius: var(--radio-md);
-    gap: 10px;
-  }
-
-  .info_horario_titulo {
-    font-size: 0.62rem;
-    letter-spacing: 1.5px;
-    margin-bottom: 4px;
-  }
-
-  .info_horario_bloque {
-    grid-template-columns: 1fr;
-    row-gap: 6px;
-  }
-
-  .info_item {
-    gap: 2px;
-  }
-
-  .info_label {
-    font-size: 0.6rem;
-  }
-
-  .info_valor {
+    font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
-  }
-
-  .info_divisor,
-  .info_estado {
-    grid-column: span 1;
-    margin: 4px 0;
-  }
-
-  .info_estado {
-    padding-top: 8px;
-    margin-top: 4px;
-    font-size: var(--texto-xs);
-  }
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    text-align: right;
 }
 
-@media (max-width: 420px) {
-  .info_horario {
-    padding: 12px 14px 12px 22px;
-    border-radius: var(--radio-sm);
-  }
+.info_valor.codigo {
+    font-family: var(--fuente-codigo);
+    letter-spacing: -0.5px;
+}
 
-  .info_valor {
-    font-size: 0.8rem;
-  }
+.info_valor.placeholder {
+    color: var(--texto-deshabilitado);
+    font-weight: normal;
+    font-style: italic;
+}
 
-  .info_estado {
-    font-size: 0.7rem;
-  }
+/* Divisor sutil */
+.info_divisor {
+    height: 1px;
+    background: var(--borde);
+    width: 100%;
+    margin: 2px 0;
+}
+
+/* Banner de estado final */
+.info_estado_banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radio-md);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+.info_estado_banner.listo {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.info_estado_banner.error {
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    color: var(--color-error);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
 }

@@ -108,7 +108,7 @@
 }
 
 /* ==========================================================================
-   RESUMEN GENERAL
+   RESUMEN GENERAL (¡Intacto!)
    ========================================================================== */
 
 .contenedor_resumen_general {
@@ -118,11 +118,30 @@
 }
 
 /* ==========================================================================
-   METODOS DE PAGO — solo un wrapper, MetodosPagoInputs trae su propio CSS
+   METODOS DE PAGO — Grid responsivo (en fila si entra, columna si baja)
    ========================================================================== */
 
 .contenedor_detalle_cierre_caja {
     width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+/* ==========================================================================
+   BLOQUE DUAL: Resultado y Justificación unidos horizontalmente
+   ========================================================================== */
+
+.bloque_dual_resultado_justificacion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.bloque_dual_resultado_justificacion .card_cierre {
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
 }
 
 /* ==========================================================================
@@ -248,6 +267,12 @@
 /* ==========================================================================
    RESPONSIVE
    ========================================================================== */
+
+@media (max-width: 768px) {
+    .bloque_dual_resultado_justificacion {
+        grid-template-columns: 1fr;
+    }
+}
 
 @media (max-width: 600px) {
     .coontenedor_cierre_caja {
