@@ -14,6 +14,8 @@ export const RutasPrivadas = () => {
 
   useEffect(() => {
     async function verificarAutenticacion() {
+      console.log(Cookies.get("token"));
+
       if (Cookies.get("token")) {
         const resultToken = await VerificarPermisos();
 
