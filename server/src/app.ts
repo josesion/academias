@@ -30,7 +30,7 @@ import listaCajas from "./rutas/listaCaja.ruta";
 
 import historial from "./rutas/historial.ruta";
 
-
+import prueba from "./index"
 
 import protectRutas from "./rutas/protegida.rutas";
 import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
@@ -48,6 +48,9 @@ app.use(cors({
     origin : true,//"http://localhost:5173"
     credentials: true 
 }));
+
+
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(alumnoRutas);
@@ -72,7 +75,7 @@ app.use(protectRutas);
 app.use(listaCajas)
 app.use(historial);
 
-
+app.use(prueba)
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
     let statusCode = 500;
