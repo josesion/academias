@@ -18,4 +18,11 @@ const pool: Pool = mysql.createPool({
   }
 });
 
+console.log("CONECTANDO A:", {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: DB_NAME_ACTUAL,
+  port: process.env.DB_PORT
+});
+
 export default pool;
