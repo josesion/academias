@@ -43,12 +43,17 @@ asistenciaData.vencerInscripciones();
 
 import logger from "./utils/logger";
 
+/** 
+app.use(cors({
+    origin : true,//"http://localhost:5173"
+    credentials: true 
+}));
+*/
 
 app.use(cors({
-    origin: "https://academias-q8pz128ya-jose-manuel-lopezs-projects.vercel.app",
+    origin: "https://academias-tau.vercel.app",
     credentials: true,
 }));
-
 
 
 app.use(express.json());
