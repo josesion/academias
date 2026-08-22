@@ -29,7 +29,7 @@ import { useMenuNav } from "../../hooks/navegacion";
 
 import { MenuUsuario } from "../Logout/Logout";
 
-import "../MenuNav/menuNav.css";
+import "./menuNav.css";
 
 export const MenuNav = () => {
   const {

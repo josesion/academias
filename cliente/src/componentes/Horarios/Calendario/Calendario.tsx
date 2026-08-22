@@ -1,5 +1,5 @@
 import React from "react";
-import "./Calendario.css";
+import "./calendario.css";
 import { ClaseAsignada } from "../ClasesAsignadas/ClasesAsiganadas";
 import { CeldaVacia } from "../CeldaVacia/CeldaVacia";
 import { Boton } from "../../generales/Boton/Boton";

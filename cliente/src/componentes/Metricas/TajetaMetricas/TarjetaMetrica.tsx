@@ -14,6 +14,8 @@ import {
 
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 
+import "./tarjetametricas.css";
+
 export interface MetricasProps {
   carga: boolean;
   titulo: string;
