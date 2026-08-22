@@ -63,7 +63,7 @@
 
     letter-spacing: 0.4px;
 
-    background:var(--texto-secundario);
+    background: var(--texto-secundario);
 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -72,7 +72,7 @@
 }
 
 /* ==========================================================================
-   PARTICULAS
+   PARTÍCULAS — COLORES ARMONIZADOS
    ========================================================================== */
 
 .particula_titulo {
@@ -88,17 +88,27 @@
 
     opacity: 0;
 
-    filter: blur(2px);
+    filter: blur(3px);
+}
+
+.tp-1, .tp-3 {
+    background: var(--color-primario);
+    box-shadow: 
+        0 0 15px var(--color-primario),
+        0 0 30px color-mix(in srgb, var(--color-primario) 40%, transparent);
+}
+
+.tp-2, .tp-4 {
+    background: var(--texto-secundario);
+    box-shadow: 
+        0 0 15px var(--texto-secundario),
+        0 0 30px color-mix(in srgb, var(--texto-secundario) 40%, transparent);
 }
 
 .tp-1 {
     left: 10%;
     width: 12px;
     height: 12px;
-    background: var(--color-primario);
-    box-shadow:
-        0 0 12px var(--color-primario),
-        0 0 25px color-mix(in srgb, var(--color-primario) 70%, transparent);
     animation-delay: 0s;
 }
 
@@ -106,10 +116,6 @@
     left: 32%;
     width: 10px;
     height: 10px;
-    background: var(--color-secundario);
-    box-shadow:
-        0 0 10px var(--color-secundario),
-        0 0 22px color-mix(in srgb, var(--color-secundario) 65%, transparent);
     animation-delay: 0.8s;
 }
 
@@ -117,10 +123,6 @@
     left: 62%;
     width: 14px;
     height: 14px;
-    background: var(--color-primario);
-    box-shadow:
-        0 0 16px var(--color-primario),
-        0 0 30px color-mix(in srgb, var(--color-primario) 75%, transparent);
     animation-delay: 1.5s;
 }
 
@@ -128,10 +130,6 @@
     left: 85%;
     width: 9px;
     height: 9px;
-    background: var(--color-secundario);
-    box-shadow:
-        0 0 10px var(--color-secundario),
-        0 0 20px color-mix(in srgb, var(--color-secundario) 65%, transparent);
     animation-delay: 0.4s;
 }
 
@@ -141,7 +139,7 @@
         opacity: 0;
     }
     20% {
-        opacity: 1;
+        opacity: 0.4;
     }
     100% {
         transform: translateY(-110px) translateX(18px) scale(1.3);

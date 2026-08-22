@@ -60,6 +60,8 @@ export const MenuNav = () => {
   const irAsistencia = () => irA("/asistencia");
   //const irInscripciones = () => irA("/user_inscripciones");
   const irArqueoCaja = () => irA("/caja_usuario");
+  const irListadoCaja = () => irA("/caja_listado");
+
   // const irInscripciones = () => irA("/inscrip_page");
   const irListInscripciones = () => irA("/list_inscrip");
   const irHorarios = () => irA("/horario_page");
@@ -172,6 +174,14 @@ export const MenuNav = () => {
                       }}
                     >
                       <BsCashStack size={18} color="#38bdf8" /> Arqueo de Caja
+                    </li>
+
+                    <li
+                      onClick={(e) => {
+                        (e.stopPropagation, irListadoCaja());
+                      }}
+                    >
+                      <PiCardsBold size={18} color="#38bdf8" /> Listado Cajas
                     </li>
                   </ul>
                 )}
