@@ -42,7 +42,9 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
 export function crearCookie() {
     const cookieOpcion = {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 día
-        path: "/" // Ruta válida para toda la app
+        path: "/", // Ruta válida para toda la app
+        secure: true,
+        sameSite: "none" as const
     };
     return cookieOpcion;
 }
