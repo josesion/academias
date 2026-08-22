@@ -8,7 +8,7 @@ import { MAPA_HISTORIAL_CAJAS, MAPA_HISTORIAL_ESTADO_CAJAS,
 } from "../respuestas/listaCajas";
 import { method as listaCajaServicios } from "../Servicio/listaCaja.servicios";
 import { InputConvinados, EstadoCajaInput, LibroDiarioInput } from "../squemas/listaCajas";
-import { CajasServicioResponse, DataEstadoResult, MovimientoLibroDiario, ReturnUsuarioEscuelas,  CajasResumenResponse } from "../data/listaCajas.data";
+import { CajasServicioResponse, DataEstadoResult, ReturnUsuarioEscuelas,  CajasResumenResponse } from "../data/listaCajas.data";
 
 
 

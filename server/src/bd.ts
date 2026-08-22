@@ -9,11 +9,15 @@ const DB_NAME_ACTUAL = process.env.NODE_ENV === 'test'
     ? process.env.TEST_DATABASE // Usará la BD de PRUEBA
     : process.env.DATABASE;    // Usará la BD de DESARROLLO
 
-const pool: Pool = mysql.createPool({ // Sin async/await aquí
+const pool: Pool = mysql.createPool({
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASSWORD,
-  database: DB_NAME_ACTUAL ,
+  database: DB_NAME_ACTUAL,
+  port: Number(process.env.PORT_DB) || 11858,
+  ssl: { 
+    rejectUnauthorized: false 
+  }
 });
 
 export default pool;
