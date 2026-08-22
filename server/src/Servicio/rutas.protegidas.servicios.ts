@@ -24,8 +24,6 @@ dotenv.config();
 const verificarSesion = async (token: string): Promise<TipadoData<{id : string}>> => {
     const clave = process.env.JWT_CLAVE;
 
-    console.log("TOKEN RECIBIDO:", token ? "SI" : "NO");
-    console.log("JWT_CLAVE:", clave ? "SI" : "NO");
 
     if (!token || !clave) {
         return { error: true, message: "No autorizado", code: "UNAUTHORIZED" };

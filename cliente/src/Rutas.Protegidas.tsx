@@ -1,5 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import Cookies from "js-cookie";
 
 import { RutasProtegidasContext } from "./contexto/protectRutas";
 import { VerificarPermisos } from "./servicio/permisosRutas";
@@ -9,40 +10,41 @@ export const RutasPrivadas = () => {
   const { autenticado, setAutenticado, setUsuarioInfo } = useContext(
     RutasProtegidasContext,
   );
-
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     async function verificarAutenticacion() {
-      const resultToken = await VerificarPermisos();
+      if (Cookies.get("token")) {
+        const resultToken = await VerificarPermisos();
 
-      if (resultToken.error === false) {
-        setAutenticado(true);
+        if (resultToken.error === false) {
+          setCargando(false);
+          setAutenticado(true);
 
-        if (resultToken.data && resultToken.data !== null) {
-          setUsuarioInfo({
-            usuario: resultToken.data,
-            error: false,
-          });
+          if (resultToken.data && resultToken.data !== null) {
+            setUsuarioInfo({
+              usuario: resultToken.data,
+              error: false,
+            });
+          }
+        } else {
+          setAutenticado(false);
+          setCargando(false);
+          setUsuarioInfo(null);
         }
       } else {
         setAutenticado(false);
-        setUsuarioInfo(null);
+        setCargando(false);
       }
-
-      setCargando(false);
     }
-
     verificarAutenticacion();
   }, []);
 
   if (cargando) {
     return <ComponenteCargando />;
   }
-
   if (!autenticado) {
     return <Navigate to="/login" replace />;
   }
-
   return <Outlet />;
 };
