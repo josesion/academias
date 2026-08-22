@@ -45,8 +45,8 @@ import logger from "./utils/logger";
 
 
 app.use(cors({
-    origin : true,//"http://localhost:5173"
-    credentials: true 
+    origin: "https://academias-q8pz128ya-jose-manuel-lopezs-projects.vercel.app",
+    credentials: true,
 }));
 
 
