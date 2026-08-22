@@ -4,7 +4,7 @@ import { Search, ChevronRight } from "lucide-react";
 import { FiltroFechas } from "../generales/FiltrosFechas/FiltrosFechas";
 import { SelectorOpt } from "../generales/CompSelecObt/SelectorOpt";
 
-import "./buscadorLateral.css";
+import "./buscadorlateral.css";
 
 export interface UsuarioOption {
   id_usuario: number;
