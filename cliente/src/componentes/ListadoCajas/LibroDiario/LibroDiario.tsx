@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { BookOpen, ArrowDownLeft, ArrowUpRight } from "lucide-react";
 
-import "./libroDiario.css";
+import "./librodiario.css";
 
 export interface MovimientoLibroDiario {
   id_movimiento: number;
