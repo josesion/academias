@@ -16,6 +16,8 @@ interface AutenticacionResultado {
 export async function verificarAutenticacion(): Promise<AutenticacionResultado> {
     const token = Cookies.get('token');
 
+    console.log(token)
+
     if (!token) {
         return { autenticado: false };
     }
