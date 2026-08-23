@@ -1,5 +1,6 @@
 import express, {Express, NextFunction, Response , Request} from "express";
 import { z } from "zod";
+import path from "path";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -80,7 +81,23 @@ app.use(protectRutas);
 app.use(listaCajas)
 app.use(historial);
 
+// ========================================
+// SERVIR FRONTEND ESTÁTICO (React + Vite)
+// ========================================
+// 1. Servir archivos estáticos (CSS, JS, imágenes, assets)
+// Desde ../../cliente/dist (relativo a /server/build)
+app.use(express.static(path.join(__dirname, "../../cliente/dist")));
 
+// 2. SPA Fallback: redirigir rutas desconocidas a index.html
+// Esto permite que React Router maneje la navegación
+// El * captura cualquier ruta que NO sea /api/...
+app.get("*", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "../../cliente/dist/index.html"));
+});
+
+// ========================================
+// MIDDLEWARE DE ERROR (DEBE SER EL ÚLTIMO)
+// ========================================
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
     let statusCode = 500;
@@ -129,3 +146,4 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
 });
 
 export default app;
+
