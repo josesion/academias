@@ -50,8 +50,9 @@ app.use(cors({
 }));
 */
 
+
 app.use(cors({
-    origin: "https://academias-tau.vercel.app",
+    origin: "https://academias-client-production.up.railway.app",
     credentials: true,
 }));
 
@@ -63,7 +64,7 @@ app.use(profesorRutas)
 app.use(adminRutas);
 app.use(planesRutas);
 app.use(usuarioRutas);
-app.use(loginRutas);
+app.use(loginRutas);    
 app.use(planesUsuariosRuta);
 app.use(nivelRutas);
 app.use(tipoRutas);
