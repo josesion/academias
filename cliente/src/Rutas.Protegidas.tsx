@@ -15,6 +15,8 @@ export const RutasPrivadas = () => {
     async function verificarAutenticacion() {
       const resultToken = await VerificarPermisos();
 
+      console.log("RESULTADO VERIFICAR:", resultToken);
+
       if (resultToken.error === false) {
         setAutenticado(true);
 
