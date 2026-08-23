@@ -257,7 +257,7 @@ Promise<TipadoData<{ id_caja: number, estado: string }>> => {
 const idCajaAbierta = async ( data : IdCajaAbiertaInputs ) 
 : Promise<TipadoData<{id_caja : number }>>    =>{
         const sql : string = `select id_caja from cajas c 
-                             where  c.estado = "abierta" and c.id_escuela = ?;`;
+                             where  c.estado = 'abierta' and c.id_escuela = ?;`;
         const valores : unknown[] = [ data.id_escuela ];
         return await buscarExistenteEntidad({
             slqEntidad : sql,
