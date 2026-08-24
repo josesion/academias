@@ -329,6 +329,7 @@ const listadoPlanes = async ( planes : ListaPlanesUsuariosInputs)
 	const dataListado : ListaPlanesUsuariosInputs = ListaPlanesUsuariosSchema.parse( planes );
 
     	const planesListado = await planesUsuarios.listadoPlanesUsuarios(  dataListado , Number(dataListado.pagina) );
+        console.log("Listado de planes, servicios", planesListado)
 
         if ( planesListado.code === 'PLANUSUARIO_LISTED'){
             return {
