@@ -1,67 +1,54 @@
-import express, { Express, NextFunction, Response, Request } from "express";
-
+import express, {Express, NextFunction, Response , Request} from "express";
 import { z } from "zod";
-
 import cookieParser from "cookie-parser";
-
 import cors from "cors";
 
-import path from "path";
-
-import { method as asistenciaData } from "./data/asistencia.data";
+import { method as asistenciaData} from "./data/asistencia.data";
 
 import { ClientError } from "./utils/error";
-
 import { enviarResponseError } from "./utils/responseError";
 
 import planesUsuariosRuta from "./rutas/planes.usuarios";
-
 import adminRutas from "./rutas/admin.ruta";
-
 import usuarioRutas from "./rutas/usuario.ruta";
-
 import planesRutas from "./rutas/plan.ruta";
-
 import loginRutas from "./rutas/login.rutas";
-
 import alumnoRutas from "./rutas/alumno.ruta";
-
 import profesorRutas from "./rutas/profesores.ruta";
-
 import nivelRutas from "./rutas/nivel.ruta";
-
-import tipoRutas from "./rutas/tipo.ruta";
-
+import tipoRutas from  "./rutas/tipo.ruta";
 import categoriasCajasRutas from "./rutas/categorias.cajas";
+import cuentasCajaRutas  from "./rutas/cuentas.escuelas";
 
-import cuentasCajaRutas from "./rutas/cuentas.escuelas";
-
-import cajasRutas from "./rutas/caja.rutas";
+import cajasRutas from "./rutas/caja.rutas"
 
 import inscripciones from "./rutas/inscripciones";
-
 import horarios from "./rutas/horarios.ruta";
-
-import asistencias from "./rutas/asistencias";
-
-import metricas from "./rutas/metricas.ruta";
-
+import asistencias  from "./rutas/asistencias";
+import metricas  from "./rutas/metricas.ruta";
 import listaCajas from "./rutas/listaCaja.ruta";
 
 import historial from "./rutas/historial.ruta";
 
-import protectRutas from "./rutas/protegida.rutas";
 
+
+import protectRutas from "./rutas/protegida.rutas";
 import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
+
+
+const app : Express = express();
+
+iniciarCronVencimientoInscripciones();
+asistenciaData.vencerInscripciones();
 
 import logger from "./utils/logger";
 
-
-const app: Express = express();
-
-iniciarCronVencimientoInscripciones();
-
-asistenciaData.vencerInscripciones();
+/** 
+app.use(cors({
+    origin : true,//"http://localhost:5173"
+    credentials: true 
+}));
+*/
 
 
 app.use(cors({
@@ -71,174 +58,75 @@ app.use(cors({
 
 
 app.use(express.json());
-
 app.use(cookieParser());
-
-
 app.use(alumnoRutas);
-
-app.use(profesorRutas);
-
+app.use(profesorRutas)
 app.use(adminRutas);
-
 app.use(planesRutas);
-
 app.use(usuarioRutas);
-
-app.use(loginRutas);
-
+app.use(loginRutas);    
 app.use(planesUsuariosRuta);
-
 app.use(nivelRutas);
-
 app.use(tipoRutas);
-
 app.use(asistencias);
-
 app.use(categoriasCajasRutas);
-
 app.use(cuentasCajaRutas);
 
 app.use(cajasRutas);
 
 app.use(inscripciones);
-
 app.use(horarios);
-
 app.use(metricas);
-
 app.use(protectRutas);
-
-app.use(listaCajas);
-
+app.use(listaCajas)
 app.use(historial);
 
 
-// ========================================
-// SERVIR FRONTEND REACT
-// ========================================
+app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
-app.use(express.static(
-    path.join(__dirname, "../../cliente/dist")
-));
+    let statusCode = 500;
+    let message = "Error interno del servidor";
+    let code = "INTERNAL_SERVER_ERROR";
+    let errorsDetails: any[] | undefined = undefined;
 
-app.get("/{*splat}", (__req: Request, res: Response) => {
-
-    res.sendFile(
-        path.join(__dirname, "../../cliente/dist/index.html")
-    );
-
-});
-
-
-// ========================================
-// MIDDLEWARE DE ERRORES
-// ========================================
-
-app.use(
-    (
-        err: Error,
-        __req: Request,
-        res: Response,
-        __next: NextFunction
-    ) => {
-
-        let statusCode = 500;
-
-        let message = "Error interno del servidor";
-
-        let code = "INTERNAL_SERVER_ERROR";
-
-        let errorsDetails: any[] | undefined = undefined;
-
-
+    
         if (err instanceof ClientError) {
-
             statusCode = err.statusCode;
-
             message = err.message;
-
             code = err.code;
-
         }
-
         else if (err instanceof z.ZodError) {
-
             statusCode = 400;
-
             message = "Error de validación de datos";
-
             code = "VALIDATION_ERROR";
 
-            errorsDetails = (err as z.ZodError).issues.map(zodIssue => ({
-
-                campo: zodIssue.path.join("."),
-
-                message: zodIssue.message,
-
-                code: zodIssue.code
-
-            }));
-
+        errorsDetails = (err as z.ZodError).issues.map(zodIssue => ({
+            campo: zodIssue.path.join('.'),
+            message: zodIssue.message,
+            code: zodIssue.code
+        }))
+        //  intercepta errores de parseo JSON. del body (ej: `{ "id_plan" : , }`)
         }
+        else if (err instanceof SyntaxError && (err as any).status === 400 && 'body' in err) {
+             statusCode = 400 ,
+             message    =  "Error de sintaxis JSON: El cuerpo de la solicitud no es un JSON válido.", 
+             code = "INVALID_JSON_SYNTAX"          
+        }else{
+            // 1. Buscamos el ID de la escuela en el body o en la URL (query)
+                const id_escuela = __req.body?.id_escuela || __req.query?.id_escuela || "N/A";
+                
+                // 2. Buscamos el nombre del usuario si lo tenés
+                const usuario = __req.body?.usuario_nom || "Anónimo";
 
-        // Intercepta errores de parseo JSON del body
-        // Ejemplo: { "id_plan": , }
-
-        else if (
-            err instanceof SyntaxError &&
-            (err as any).status === 400 &&
-            "body" in err
-        ) {
-
-            statusCode = 400;
-
-            message =
-                "Error de sintaxis JSON: El cuerpo de la solicitud no es un JSON válido.";
-
-            code = "INVALID_JSON_SYNTAX";
-
-        }
-
-        else {
-
-            // Buscamos el ID de la escuela en body o query
-
-            const id_escuela =
-                __req.body?.id_escuela ||
-                __req.query?.id_escuela ||
-                "N/A";
-
-
-            // Buscamos el nombre del usuario
-
-            const usuario =
-                __req.body?.usuario_nom ||
-                "Anónimo";
-
-
-            // Logger del error
-
-            logger.error(
-                `[${__req.method}] ${__req.url} | Escuela: ${id_escuela} | User: ${usuario}`,
-                {
+                // 3. El logger ahora guarda todo el "ADN" del error
+                logger.error(`[${__req.method}] ${__req.url} | Escuela: ${id_escuela} | User: ${usuario}`, { 
                     mensaje: err.message,
-                    stack: err.stack
-                }
-            );
+                    stack: err.stack 
+                });
+        };
 
-        }
+    enviarResponseError(res, statusCode, message, code, errorsDetails );
 
-        enviarResponseError(
-            res,
-            statusCode,
-            message,
-            code,
-            errorsDetails
-        );
-
-    }
-);
-
+});
 
 export default app;
