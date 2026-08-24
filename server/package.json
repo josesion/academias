@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon build/index.js",
     "tsc": "tsc",
-    "build": "tsc",
+    "build": "cd ../cliente && npm install && npm run build && cd ../server && npm install && tsc",
     "test": "set NODE_ENV=test && jest --detectOpenHandles",
     "start": "node build/index.js"
     
@@ -48,3 +48,4 @@
     "typescript": "^5.9.3"
   }
 }
+

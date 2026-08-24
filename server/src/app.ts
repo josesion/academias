@@ -2,6 +2,7 @@ import express, {Express, NextFunction, Response , Request} from "express";
 import { z } from "zod";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import path from "path";
 
 import { method as asistenciaData} from "./data/asistencia.data";
 
@@ -45,20 +46,25 @@ import logger from "./utils/logger";
 
 /** 
 app.use(cors({
-    origin : true,//"http://localhost:5173"
+    origin : true,//\"http://localhost:5173\"
     credentials: true 
 }));
 */
 
 
 app.use(cors({
-    origin: "https://academias-client-production.up.railway.app",
+    origin: "*",
     credentials: true,
 }));
 
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Servir archivos estáticos del frontend compilado
+const clientBuildPath = path.join(__dirname, "../../cliente/dist");
+app.use(express.static(clientBuildPath));
+
 app.use(alumnoRutas);
 app.use(profesorRutas)
 app.use(adminRutas);
@@ -81,8 +87,12 @@ app.use(protectRutas);
 app.use(listaCajas)
 app.use(historial);
 
+// SPA Fallback: sirve index.html para todas las rutas que no son /api
+app.get("*", (req: Request, res: Response) => {
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+});
 
-app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
+app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>>{
 
     let statusCode = 500;
     let message = "Error interno del servidor";
@@ -100,12 +110,12 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
             message = "Error de validación de datos";
             code = "VALIDATION_ERROR";
 
-        errorsDetails = (err as z.ZodError).issues.map(zodIssue => ({
+        errorsDetails = (err as z.ZodError).issues.map(zodIssue => (({
             campo: zodIssue.path.join('.'),
             message: zodIssue.message,
             code: zodIssue.code
-        }))
-        //  intercepta errores de parseo JSON. del body (ej: `{ "id_plan" : , }`)
+        })))
+        //  intercepta errores de parseo JSON. del body (ej: `{ \"id_plan\" : , }`)
         }
         else if (err instanceof SyntaxError && (err as any).status === 400 && 'body' in err) {
              statusCode = 400 ,
@@ -130,3 +140,4 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
 });
 
 export default app;
+
