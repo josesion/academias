@@ -14,7 +14,7 @@
     "sourceMap": true,                        // Genera archivos .map para facilitar la depuración
     "allowJs": true,                          // Permite que TypeScript procese archivos .js (si tuvieras)
     "resolveJsonModule": true,
-    "types": ["node", "jest"]  
+   "types": ["node", "jest", "multer"]
                    // Permite importar archivos .json
   },
   "include": [

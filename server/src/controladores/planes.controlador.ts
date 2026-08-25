@@ -95,7 +95,7 @@ const listarPlanes = async( req : Request, res : Response) =>{
         estado, orden, descripcion ,limit :Number(limit) , offset: Number(offset)
     }); 
     const listado =  await planesData.listarPlanes( dataResult , Number(pagina));
-    console.log("listado controlador", listado)
+  
     if ( listado.error === false ) {
         return enviarResponse(res , 200 , listado.message , listado.data, listado.paginacion ,listado.code);
     }else{

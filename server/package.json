@@ -9,7 +9,6 @@
     "build": "tsc",
     "test": "set NODE_ENV=test && jest --detectOpenHandles",
     "start": "node build/index.js"
-    
   },
   "keywords": [],
   "author": "",
@@ -21,10 +20,12 @@
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.10.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "multer": "^2.2.0",
     "mysql2": "^3.14.3",
     "node-cron": "^4.2.1",
     "winston": "^3.19.0",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/mocha": "^10.0.10",
+    "@types/multer": "^2.2.0",
     "@types/node": "^24.9.2",
     "@types/node-cron": "^3.0.11",
     "@types/supertest": "^6.0.3",

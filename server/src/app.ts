@@ -29,7 +29,7 @@ import metricas  from "./rutas/metricas.ruta";
 import listaCajas from "./rutas/listaCaja.ruta";
 
 import historial from "./rutas/historial.ruta";
-
+import flayer   from "./rutas/flayer.ruta";
 
 
 import protectRutas from "./rutas/protegida.rutas";
@@ -82,7 +82,7 @@ app.use(metricas);
 app.use(protectRutas);
 app.use(listaCajas)
 app.use(historial);
-
+app.use(flayer);
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
