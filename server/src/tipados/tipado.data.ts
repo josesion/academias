@@ -47,7 +47,9 @@ export interface DataUsuarioNuevo {
 }
 
 export interface DataIdUsuario{
-    usuario : string
+    usuario : string,
+    rol : string,
+    razon_social: string;
 }
 
 export interface DataModPublico {

@@ -87,7 +87,7 @@ export const MetodosPagoInputs: React.FC<PropsInputs> = (props) => {
                     type="number"
                     readonly={false}
                     value={item.monto_real}
-                    placeholder="0.00"
+                    placeholder="Ingrese  importe"
                     name={item.nombre_cuenta}
                     onChange={props.onChangeMontos}
                   />

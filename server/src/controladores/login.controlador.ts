@@ -42,7 +42,7 @@ const login = async( req: Request, res: Response ) =>{
     if ( config.status === CodigoEstadoHTTP.OK){
             const cookieOptions = crearCookie();
             res.cookie("token", loginResult.data?.tokenCadena, cookieOptions);
-            console.log("LOGIN: COOKIE ENVIADA");
+            //console.log("LOGIN: COOKIE ENVIADA");
         return enviarResponse(
                 res,
                 config.status,

@@ -54,7 +54,7 @@ export  interface JsonDataCierre {
 export interface DetalleApertura {
         id_cuenta: number;
         nombre_cuenta: string;
-        monto: number  ;
+        monto: number | string  ;
 }
 export interface ListadoTipoCuentas{
         id_cuenta : number,

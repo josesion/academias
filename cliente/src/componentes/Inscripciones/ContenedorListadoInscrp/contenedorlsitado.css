@@ -3,132 +3,210 @@
    ============================================================ */
 
 .listado_wrapper {
+
     width: 100%;
     height: 450px;
     overflow-y: auto;
     overflow-x: hidden;
 
-    background: color-mix(in srgb, var(--fondo-secundario) 45%, transparent);
+    background: color-mix(
+        in srgb,
+        var(--fondo-secundario) 45%,
+        transparent
+    );
+
     border-radius: var(--radio-md);
     border: 1px solid var(--borde);
+
     backdrop-filter: blur(10px);
 
     position: relative;
     box-sizing: border-box;
 }
 
+
 /* --- Scroll (Webkit) --- */
+
 .listado_wrapper::-webkit-scrollbar {
     width: 8px;
 }
 
 .listado_wrapper::-webkit-scrollbar-track {
+
     background: var(--fondo-hover);
     border-radius: 10px;
 }
 
 .listado_wrapper::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+
+    background: linear-gradient(
+        180deg,
+        var(--color-primario),
+        var(--color-secundario)
+    );
+
     border-radius: 10px;
 }
 
 .listado_wrapper::-webkit-scrollbar-thumb:hover {
+
     background: linear-gradient(
         180deg,
-        color-mix(in srgb, var(--color-primario) 85%, white),
-        color-mix(in srgb, var(--color-secundario) 85%, white)
+        color-mix(
+            in srgb,
+            var(--color-primario) 85%,
+            white
+        ),
+        color-mix(
+            in srgb,
+            var(--color-secundario) 85%,
+            white
+        )
     );
 }
 
+
 /* --- Tabla General --- */
+
 .tabla_inscripciones {
+
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+
     border-collapse: collapse;
     table-layout: fixed;
+
     font-family: var(--fuente-principal);
 }
 
+
 /* --- Encabezados Sticky (Desktop) --- */
+
 .tabla_header th {
+
     position: sticky;
     top: 0;
     z-index: 20;
 
     background: var(--fondo-principal);
+
     padding: 1.2rem 1rem;
 
     font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
+
     text-transform: uppercase;
+
     color: var(--texto-deshabilitado);
+
     font-weight: var(--peso-negrita);
+
     letter-spacing: 0.1em;
 
     text-align: center;
+
     border-bottom: 2px solid var(--borde);
 }
 
+
 /* --- Cuerpo de Tabla --- */
+
 .tabla_body {
     position: relative;
 }
 
 .tabla_body::after {
+
     content: "";
+
     display: block;
+
     height: 30px;
 }
+
 
 /* ==========================================================================
    ESTADOS VACÍOS O DE CARGA (CENTRADO PERFECTO)
    ========================================================================== */
 
-/* Forzamos a que la fila y la celda que contienen el aviso ocupen todo el alto disponible del wrapper */
+/* Forzamos a que la fila y la celda que contienen el aviso
+   ocupen todo el alto disponible del wrapper */
+
 .tabla_body tr.fila_vacia_o_carga,
 .tabla_body tr:has(.sin_resultado_contenedor),
 .tabla_body tr:has(.cargando_contenedor) {
+
     display: flex;
+
     width: 100%;
     height: 100%;
-    min-height: 350px; /* Asegura espacio vertical para centrar */
+    min-height: 350px;
+
     align-items: center;
     justify-content: center;
 }
 
 .tabla_body td.sin_datos,
 .tabla_body td[colspan] {
+
     display: flex;
+
     align-items: center;
     justify-content: center;
+
     width: 100%;
+
     border: none !important;
     background: transparent !important;
+
     padding: 0 !important;
 }
 
-/* --- Ajustes Responsive --- */
+
+/* ============================================================
+   CONTENEDOR DE TARJETAS MOBILE
+   ============================================================ */
+
+.listado_mobile {
+
+    display: none;
+}
+
+
+/* ============================================================
+   AJUSTES RESPONSIVE
+   ============================================================ */
+
 @media (max-width: 768px) {
+
     .listado_wrapper {
+
         height: auto;
         max-height: 80vh;
+
         background: transparent;
         border: none;
+
         overflow-y: auto;
     }
 
-    .tabla_header {
+
+    /* La tabla desaparece completamente en móvil */
+
+    .tabla_inscripciones {
         display: none;
     }
 
-    .tabla_inscripciones,
-    .tabla_body {
-        display: block;
-        width: 100%;
-    }
 
-    .tabla_body::after {
-        height: 80px;
+    /* Las tarjetas aparecen en móvil */
+
+    .listado_mobile {
+
+        display: flex;
+
+        flex-direction: column;
+
+        width: 100%;
     }
 }

@@ -1,7 +1,6 @@
 
-export const PAGINA = import.meta.env.VITE_API_URL;
+//export const PAGINA = import.meta.env.VITE_API_URL;
 
-console.log("PAGINA:", PAGINA);
 
-//export const PAGINA = "http://localhost:4000/";
+export const PAGINA =   "http://192.168.0.21:4000/";
 

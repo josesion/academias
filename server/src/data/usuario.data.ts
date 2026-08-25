@@ -30,7 +30,13 @@ const buscarUsuario= async (usuario : string) : Promise<TipadoData<DataUsuarioNu
 const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> => {
     
     // 1. Cambiamos la consulta SQL para que busque por ID (esto es vital)
-    const sql = `SELECT * FROM usuarios WHERE id_usuario = ?;`;
+    const sql = `SELECT 
+                        u.*,
+                        e.razon_social
+                    FROM usuarios u
+                    INNER JOIN escuelas e 
+                        ON u.id_escuela = e.id_escuela
+                    WHERE u.id_usuario = ?;`;
     const valores = [id];    
     
     // 2. Le decimos a TS que el resultado es un array de objetos con la columna 'usuario'
@@ -51,7 +57,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
     return {
         error: false,
         message: "Usuario encontrado",
-        data: { usuario: resultado[0].usuario }, 
+        data: { usuario: resultado[0].usuario, rol : resultado[0].rol, razon_social : resultado[0].razon_social }, 
         code: "USER_FOUND",
     };
 };

@@ -3,7 +3,9 @@ import  { apiFetch ,type ApiResponse  } from "../utils/apiFetch";
 
 
 interface ValidarToken {
-    usuario: string | null ;
+    usuario: string  ;
+    rol : string,
+    razon_social: string;
 }
 
 export const VerificarPermisos = async() : Promise<ApiResponse<ValidarToken>> =>{

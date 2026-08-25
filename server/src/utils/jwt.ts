@@ -40,13 +40,17 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
  * @returns Objeto con las opciones de configuración de la cookie
  */
 export function crearCookie() {
+
+    const esProduccion = process.env.NODE_ENV === "production";
+
     const cookieOpcion = {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         path: "/",
         httpOnly: true,
-        secure: true,
-        sameSite: "none" as const
+        secure: esProduccion,
+        sameSite: esProduccion ? "none" as const : "lax" as const
     };
+
     return cookieOpcion;
 }
 

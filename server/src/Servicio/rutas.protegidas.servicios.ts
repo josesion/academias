@@ -21,10 +21,14 @@ dotenv.config();
  * * @throws {Error} Si el token es inválido o expiró, el error es capturado por el middleware tryCatchDatos.
  */
 
-const verificarSesion = async (token: string): Promise<TipadoData<{id : string}>> => {
+const verificarSesion = async (token: string): Promise<TipadoData<{    
+    usuario : string,
+    rol : string,
+    razon_social: string;
+}>> => {
     const clave = process.env.JWT_CLAVE;
-console.log("TOKEN RECIBIDO:", token ? "SI" : "NO");
-console.log("JWT_CLAVE:", clave ? "SI" : "NO");
+//console.log("TOKEN RECIBIDO:", token ? "SI" : "NO");
+// console.log("JWT_CLAVE:", clave ? "SI" : "NO");
 
     if (!token || !clave) {
         return { error: true, message: "No autorizado", code: "UNAUTHORIZED" };
@@ -36,11 +40,11 @@ console.log("JWT_CLAVE:", clave ? "SI" : "NO");
         const idUsuario = usuario.id;
         const id = await dataUsuario.buscarIdUsuario(idUsuario);
 
-        if (id.error === false) {
+        if (id.error === false && id.data !== undefined) {
             return {
                 error: false,
                 message: "Usuario encontrado",
-                data: usuario.id,
+                data: id.data ,
                 code: "AUTHORIZED"
             };
         }

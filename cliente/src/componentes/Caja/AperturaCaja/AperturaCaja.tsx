@@ -10,7 +10,7 @@ import "./aperturacaja.css";
 interface DetalleApertura {
   id_cuenta: number;
   nombre_cuenta: string;
-  monto: number;
+  monto: number | string;
 }
 
 interface AbrirCajaProps {

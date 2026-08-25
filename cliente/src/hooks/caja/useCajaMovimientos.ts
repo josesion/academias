@@ -166,7 +166,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
     // --- capturamos el monto para tipo de cuentas
     const handleMontoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value, name } = e.target;
-
+        
         if (value){
             dispatch({
                 type : "UPDATE_MOVIMIENTO_EXTRA" ,

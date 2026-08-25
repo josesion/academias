@@ -1,13 +1,16 @@
 import React from "react";
+
 import {
   ElementoLista,
   type InscripcionListado,
 } from "../ElementoListadoInscrip/ElementoListado";
+
 import { ComponenteCargando } from "../../generales/Cargando/Cargando";
 import { SinResultado } from "../../generales/SinItemsListado/SinResultado";
-
 import { obtenerEstadoVigencia } from "../../../utils/fecha";
+
 import "./contenedorlsitado.css";
+
 interface Props {
   data: InscripcionListado[];
   carga: boolean;
@@ -31,8 +34,11 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
 }) => {
   return (
     <div className="listado_wrapper">
+      {/* ==============================
+          VISTA DESKTOP
+      ============================== */}
+
       <table className="tabla_inscripciones">
-        {/* Encabezados: solo se ven en Desktop */}
         <thead className="tabla_header">
           <tr>
             <th>Alumno</th>
@@ -66,6 +72,8 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
               <ElementoLista
                 key={inscripcion.id_inscripcion}
                 inscripcion={inscripcion}
+                mostrarDesktop={true}
+                mostrarMobile={false}
                 onSeleccionar={(
                   id,
                   metodo_pago,
@@ -99,6 +107,51 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
           </tbody>
         )}
       </table>
+
+      {/* ==============================
+          VISTA MOBILE
+      ============================== */}
+
+      {!carga && data.length > 0 && (
+        <div className="listado_mobile">
+          {data.map((inscripcion) => (
+            <ElementoLista
+              key={inscripcion.id_inscripcion}
+              inscripcion={inscripcion}
+              mostrarDesktop={false}
+              mostrarMobile={true}
+              onSeleccionar={(
+                id,
+                metodo_pago,
+                monto_pagado,
+                nombre_completo,
+                clases_totales,
+                clases_tomadas,
+                dni_alumno,
+                vigencia,
+                estado,
+              ) => {
+                onSeleccionarInscripcion(
+                  id,
+                  metodo_pago,
+                  monto_pagado,
+                  nombre_completo,
+                  clases_totales,
+                  clases_tomadas,
+                  dni_alumno,
+                  vigencia,
+                  estado,
+                );
+              }}
+              vigencia={obtenerEstadoVigencia(
+                inscripcion.vigencia,
+                inscripcion.clases_usadas,
+                inscripcion.clases_totales,
+              )}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

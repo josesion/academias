@@ -330,7 +330,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 ...state,
                 metricasCuentasCierre: (state.metricasCuentasCierre || []).map((det) => (
                     det.nombre_cuenta === action.payload.nombreCuenta 
-                    ? { ...det, monto_real: Number(action.payload.valorCuenta) } 
+                    ? { ...det, monto_real: action.payload.valorCuenta } 
                     : det
                 ))
             };
@@ -340,7 +340,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 ...state,
                 aperturaDetalle: (state.aperturaDetalle || []).map((det) => (
                     det.nombre_cuenta === action.payload.nombreCuenta 
-                    ? { ...det, monto: Number(action.payload.valorCuenta) } 
+                    ? { ...det, monto: action.payload.valorCuenta } 
                     : det
                 ))
             };

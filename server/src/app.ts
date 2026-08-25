@@ -43,19 +43,21 @@ asistenciaData.vencerInscripciones();
 
 import logger from "./utils/logger";
 
-/** 
+ 
 app.use(cors({
-    origin : true,//"http://localhost:5173"
-    credentials: true 
+    origin: [
+        "http://localhost:5173",
+        "http://192.168.0.21:5173"
+    ],
+    credentials: true
 }));
-*/
 
-
+/** 
 app.use(cors({
     origin: "https://academias-client-production.up.railway.app",
     credentials: true,
 }));
-
+*/
 
 app.use(express.json());
 app.use(cookieParser());

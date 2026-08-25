@@ -6,7 +6,7 @@ import { VerificarPermisos } from "./servicio/permisosRutas";
 import { ComponenteCargando } from "./componentes/generales/Cargando/Cargando";
 
 export const RutasPrivadas = () => {
-  const { autenticado, setAutenticado, setUsuarioInfo } = useContext(
+  const { autenticado, setAutenticado, setUsuarioInfo, setRol } = useContext(
     RutasProtegidasContext,
   );
   const [cargando, setCargando] = useState(true);
@@ -14,8 +14,6 @@ export const RutasPrivadas = () => {
   useEffect(() => {
     async function verificarAutenticacion() {
       const resultToken = await VerificarPermisos();
-
-      console.log("RESULTADO VERIFICAR:", resultToken);
 
       if (resultToken.error === false) {
         setAutenticado(true);
@@ -25,6 +23,8 @@ export const RutasPrivadas = () => {
             usuario: resultToken.data,
             error: false,
           });
+
+          setRol(resultToken.data);
         }
       } else {
         setAutenticado(false);

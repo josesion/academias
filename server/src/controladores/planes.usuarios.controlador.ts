@@ -203,7 +203,7 @@ const listadoPlanesUsuarios = async( req : Request , res : Response ) =>{
 		pagina  : Number( pagina )
 	};
 
-	console.log("listado planes controlador", dataListado)
+	
 
 	await handleControladores<ListaPlanesUsuariosInputs,ResulListadoPlanesUsuarios[] >(
 		res, dataListado, planesServicio.listadoPlanes, MAPA_LISTADO_PLAN

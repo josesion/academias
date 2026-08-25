@@ -42,7 +42,7 @@ export const useIuCaja = ( config : IuCajaConfig) => {
     const handleCierreMontos = (event: React.ChangeEvent<HTMLInputElement>) => {
         const nombreCuenta = event.target.name;
         const valorCuenta = event.target.value;
-
+     
         if (valorCuenta !== "" && isNaN(Number(valorCuenta))) return;
 
         dispatch({ 
@@ -108,7 +108,7 @@ const handleCachearDetalle = (
         metodo : metodo,
         nombre_alumno_vinculado : nombre_alumno_vinculado 
     };    
-
+   
     dispatch({ type : "SET_INFORME_DETALLE" , payload : data });
     dispatch({ type : "ABRIR_MODAL_INFORME"});
 };    

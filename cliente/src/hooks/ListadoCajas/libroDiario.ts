@@ -15,18 +15,16 @@ interface LibroDiarioCongif {
 
 export const libroDiario = ( config : LibroDiarioCongif) => {
 
-    const {  stateLibroDiario, dispatchLibroDiario } = config;
-
-    console.log( stateLibroDiario.detalleCaja?.dataMetodo )
+    const { dispatchLibroDiario } = config;
 
     const abrirLibroDiario =async (idCaja: number) =>{
-     console.log(idCaja)
+  
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
 
       const detalle = config.servicios.detalleCajaResumen;
       
       const resultDetalle = await detalle({ id_caja : idCaja });
-      console.log(resultDetalle)
+   
       
       const metodoPago = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' ? resultDetalle.data.dataMetodo : null ;
 
