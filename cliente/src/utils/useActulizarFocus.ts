@@ -34,6 +34,7 @@ export const useActualizarAlEnfocar = ( props : PropsActualizarFocus) => {
         const handleFocus = async() => {
 
             const verificarUser= await verificarAutenticacion();
+       
             if (verificarUser.autenticado === false) {
                 setRol({rol : "visita", usuario :  "", razon_social  : ""});
                 window.location.href = "/login" // por defecto en esta app es login

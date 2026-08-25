@@ -142,7 +142,6 @@ export const DetalleCajas = ({
                   disable={false}
                   onClick={() => {
                     onAbrirLibroDiario(detalle.id_caja);
-                    console.log(detalle.id_caja);
                   }}
                 />
               </article>

@@ -28,8 +28,6 @@ const formatearMoneda = (valor: number) =>
 const codigoAsiento = (id: number) => String(id).padStart(4, "0");
 
 export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
-  console.log(movimientos);
-
   const totales = useMemo(() => {
     const debe = movimientos
       .filter((m) => m.tipo === "ingreso")
@@ -45,8 +43,6 @@ export const LibroDiarioGeneral = ({ movimientos }: LibroDiarioProps) => {
       total: debe - haber,
     };
   }, [movimientos]);
-
-  console.log(totales);
 
   if (!movimientos || movimientos.length === 0) {
     return (

@@ -36,11 +36,6 @@ export const useMenuNav = () => {
    * Si la sección ya está abierta, la cierra. Si no, abre la nueva y cierra la anterior.
    */
   const alternarSeccion = async (nombre: string) => {
-    const verificarUser= await verificarAutenticacion();
-    if (verificarUser.autenticado === false) {
-        window.location.href = "/login" // por defecto en esta app es login
-        return;
-    };
     setSeccionAbierta(seccionAbierta === nombre ? null : nombre);
   };
 
