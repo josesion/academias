@@ -1,14 +1,3 @@
-/**
- * Interfaz para la respuesta de éxito de la API.
- * @template T El tipo de los datos que devuelve la API en caso de éxito.
- */
-
-
-
-
-/**
- * Interfaz para la respuesta exitosa
- */
 export interface ApiSuccessResponse<T> {
     error: false;
     message: string;
@@ -28,9 +17,6 @@ export interface ApiSuccessResponse<T> {
     };
 }
 
-/**
- * Interfaz para la respuesta de error
- */
 export interface ApiErrorResponse {
     error: true;
     message: string;
@@ -47,9 +33,6 @@ export interface ApiErrorResponse {
 
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
-/**
- * Estructura base que devuelve el backend
- */
 export interface BackendRawResponse {
     error: boolean;
     message: string;
@@ -69,27 +52,34 @@ export interface BackendRawResponse {
 
 interface FetchOptions {
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
-    body?: object;
+    body?: object | FormData;
     headers?: HeadersInit;
     credentials?: RequestCredentials;
     signal?: AbortSignal;
 }
 
-/**
- * apiFetch PRO – totalmente optimizado
- */
 export async function apiFetch<T>(
     url: string,
     options?: FetchOptions
 ): Promise<ApiResponse<T>> {
-   
+
     const clientTimestamp = new Date().toISOString();
     const start = performance.now();
     const calcDuration = () => Number((performance.now() - start).toFixed(2));
 
-    const defaultHeaders = {
-        'Content-Type': 'application/json'
-    };
+    const isFormData = options?.body instanceof FormData;
+
+    const defaultHeaders: HeadersInit = isFormData
+        ? {}
+        : { 'Content-Type': 'application/json' };
+
+    let body: BodyInit | undefined;
+
+    if (options?.body instanceof FormData) {
+        body = options.body;
+    } else if (options?.body) {
+        body = JSON.stringify(options.body);
+    }
 
     try {
 
@@ -99,23 +89,20 @@ export async function apiFetch<T>(
                 ...defaultHeaders,
                 ...(options?.headers || {})
             },
-            body: options?.body ? JSON.stringify(options.body) : undefined,
+            body,
             credentials: options?.credentials || 'include',
             signal: options?.signal,
         });
 
-       
-           //  AQUI — leer la respuesta cruda
-           // se consume el cuerpo de la respuesta como texto
         const rawText = await response.text();
         const responseSize = new TextEncoder().encode(rawText).length;
 
+        // *----------------------------*
+        // * MANEJO DE RESPUESTAS HTTP ERROR (4xx / 5xx)
+        // *----------------------------*
 
-
-        // ----------------------------
-        //  MANEJO DE RESPUESTAS HTTP ERROR (4xx / 5xx)
-        // ----------------------------
         if (!response.ok) {
+
             let raw: BackendRawResponse | null = null;
 
             try {
@@ -132,20 +119,25 @@ export async function apiFetch<T>(
                 code: raw?.code,
                 meta: {
                     clientTimestamp,
-                    serverTimestamp: raw?.meta?.serverTimestamp ?? null ,
+                    serverTimestamp: raw?.meta?.serverTimestamp ?? null,
                     durationMs: calcDuration(),
-                    responseSize : responseSize
+                    responseSize
                 }
             };
         }
 
-        // ----------------------------
-        //  RESPUESTA EXITOSA -> PARSEAR JSON
-        // ----------------------------
-        const rawData: BackendRawResponse = rawText ? JSON.parse(rawText) : { error: false, message: "", data: null };
+        // *----------------------------*
+        // * RESPUESTA EXITOSA -> PARSEAR JSON
+        // *----------------------------*
 
-        // Si el backend indica error lógico
+        const rawData: BackendRawResponse = rawText
+            ? JSON.parse(rawText)
+            : { error: false, message: "", data: null };
+
+        // * Si el backend indica error lógico
+
         if (rawData.error) {
+
             return {
                 error: true,
                 message: rawData.message,
@@ -156,14 +148,15 @@ export async function apiFetch<T>(
                     clientTimestamp,
                     serverTimestamp: rawData.meta?.serverTimestamp ?? null,
                     durationMs: calcDuration(),
-                    responseSize : responseSize
+                    responseSize
                 }
             };
         }
 
-        // ----------------------------
-        //  RESPUESTA EXITOSA REAL
-        // ----------------------------
+        // *----------------------------*
+        // * RESPUESTA EXITOSA REAL
+        // *----------------------------*
+
         return {
             error: false,
             message: rawData.message || "Operación exitosa",
@@ -173,43 +166,46 @@ export async function apiFetch<T>(
             code: rawData.code,
             meta: {
                 clientTimestamp,
-                serverTimestamp: rawData.meta?.serverTimestamp  ?? null ,
+                serverTimestamp: rawData.meta?.serverTimestamp ?? null,
                 durationMs: calcDuration(),
-                responseSize : responseSize
+                responseSize
             }
         };
 
     } catch (err: any) {
 
-        // ----------------------------
-        //  ERROR POR ABORTAR MANUALMENTE
-        // ----------------------------
+        // *----------------------------*
+        // * ERROR POR ABORTAR MANUALMENTE
+        // *----------------------------*
+
         if (err.name === 'AbortError') {
+
             return {
                 error: true,
                 message: "Petición cancelada",
                 statusCode: 0,
                 code: "REQUEST_ABORTED",
-                meta: { 
-                    clientTimestamp ,
+                meta: {
+                    clientTimestamp,
                     durationMs: calcDuration(),
                     responseSize: 0
                 }
             };
         }
 
-        // ----------------------------
-        //  ERROR DE RED / DESCONEXIÓN
-        // ----------------------------
+        // *----------------------------*
+        // * ERROR DE RED / DESCONEXIÓN
+        // *----------------------------*
+
         return {
             error: true,
             message: "Error de conexión o inesperado: " + (err.message || ""),
             statusCode: 0,
-            meta: { 
-                    clientTimestamp  , 
-                    durationMs: calcDuration(), 
-                    responseSize: 0
-                    }
-            };
+            meta: {
+                clientTimestamp,
+                durationMs: calcDuration(),
+                responseSize: 0
+            }
+        };
     }
 }
