@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { Logo } from "../Logo/logo";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
@@ -43,6 +43,7 @@ export const MenuNav = () => {
     dataVisualMenu,
     setDataVisualMenu,
     setSeccionAbierta,
+    setMenuMobileAbierto,
   } = useMenuNav();
 
   const irInicio = () => irA("/");
@@ -75,9 +76,26 @@ export const MenuNav = () => {
     });
   }, [rol]);
 
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Si el menú existe y el lugar donde hiciste clic NO está dentro del menú:
+      if (navRef.current && !navRef.current.contains(event.target as Node)) {
+        setSeccionAbierta(null);
+        setMenuMobileAbierto(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setSeccionAbierta]);
+
   return (
     <>
-      <nav className="menu_nav">
+      <nav className="menu_nav" ref={navRef}>
         <div className="app-name-container">
           <Logo size={60} />
           <div className="app-user-info">

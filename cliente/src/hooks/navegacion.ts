@@ -3,8 +3,6 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 
-import { verificarAutenticacion } from "../hooks/verificacionUsuario";
-
 import Cookies from "js-cookie";
 
 export const useMenuNav = () => {
@@ -66,6 +64,8 @@ export const useMenuNav = () => {
 
   };
 
+  
+
   return {
     rol,
     menuMobileAbierto,
@@ -77,5 +77,6 @@ export const useMenuNav = () => {
     dataVisualMenu,
     setDataVisualMenu,
     setSeccionAbierta,
+    setMenuMobileAbierto
   };
 };
