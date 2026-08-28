@@ -6,6 +6,8 @@ import { upload } from "../middleware/upload";
 
 const ruta = Router();
 
-ruta.post("/api/flayer", permisos.validarPermiso, upload.single("imagen"), controladorFlayer.postFlayer,);
+ruta.post("/api/flayer", permisos.validarPermiso, upload.single("imagen"), controladorFlayer.postFlayer);
+ruta.get("/api/get_flayer", permisos.validarPermiso, controladorFlayer.getFlayers);
+
 
 export default ruta;
