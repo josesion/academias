@@ -27,7 +27,7 @@ export const GuardarFlayerSchema = z.object({
         .string({
             error: "El título debe ser un texto",
         })
-        .min(1, {
+        .min(5, {
             error: "El título es obligatorio",
         })
         .max(150, {
@@ -38,6 +38,9 @@ export const GuardarFlayerSchema = z.object({
         .string({
             error: "La descripción debe ser un texto",
         })
+        .min(8, {
+            error: "La descripción es obligatorio",
+        })        
         .max(500, {
             error: "La descripción no puede superar los 500 caracteres",
         }),

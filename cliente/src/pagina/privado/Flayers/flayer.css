@@ -1,0 +1,79 @@
+.flayers_pagina {
+  max-width: 360px;
+  margin: 0 auto;
+  min-height: 100%;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-family: var(--fuente-principal);
+  background: var(--fondo-principal);
+}
+
+.flayers_pagina_header,
+.flayers_pagina_lienzo,
+.flayers_pagina_formulario {
+  width: 100%;
+}
+
+.flayers_pagina_header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: center;
+}
+
+.flayers_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+  letter-spacing: -0.01em;
+}
+
+.flayers_subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--color-secundario);
+}
+
+.flayers_pagina_lienzo {
+  padding: 10px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: var(--fondo-secundario);
+}
+
+/* Pantallas más anchas: header y lienzo/form lado a lado */
+@media (min-width: 720px) {
+  .flayers_pagina {
+    max-width: 720px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-template-areas:
+      "header header"
+      "lienzo formulario";
+    align-items: start;
+    justify-content: center;
+    justify-items: center;
+    gap: 28px 32px;
+  }
+
+  .flayers_pagina_header {
+    grid-area: header;
+    text-align: left;
+  }
+
+  .flayers_pagina_lienzo {
+    grid-area: lienzo;
+  }
+
+  .flayers_pagina_formulario {
+    grid-area: formulario;
+  }
+}

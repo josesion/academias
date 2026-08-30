@@ -1,0 +1,16 @@
+.formulario_flayer_contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+.formulario_flayer_campo {
+  width: 100%;
+}
+
+.formulario_flayer_acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}

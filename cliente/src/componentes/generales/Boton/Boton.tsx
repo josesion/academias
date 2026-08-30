@@ -41,6 +41,7 @@ interface BotonProps {
     | "editar";
   focus?: true | false;
   disable?: true | false;
+  type?: "button" | "submit" | "reset";
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
@@ -79,6 +80,7 @@ export const Boton = (parametros: BotonProps) => {
       onClick={parametros.onClick}
       autoFocus={parametros.focus}
       disabled={parametros.disable}
+      type={parametros.type || "submit"}
     >
       {/* Si está enviando, mostramos el spinner girando */}
       {parametros.disable ? (

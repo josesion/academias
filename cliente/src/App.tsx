@@ -32,7 +32,8 @@ import { ListadoInscripcionPage } from "./pagina/privado/Listado_inscripcion/Lis
 import { RutasPrivadas } from "./Rutas.Protegidas";
 import { LayoutConMenu, LayoutSinMenu } from "./hooks/menuManager";
 
-// Pagina principal Metricas
+// Flayers
+import { FlayersPag } from "./pagina/privado/Flayers/Flayers";
 
 //Seccion conetxtos
 import { ProtectRutasProv } from "./contexto/protectRutas";
@@ -90,6 +91,7 @@ function App() {
                 <Route path="/caja_listado" element={<ListadoCajas />} />
                 <Route path="/inscrip_page" element={<InscripcionPage />} />
                 <Route path="/horario_page" element={<HorarioPagina />} />
+                <Route path="/flayers" element={<FlayersPag />} />
                 <Route
                   path="/list_inscrip"
                   element={<ListadoInscripcionPage />}

@@ -1,0 +1,85 @@
+.lienzo_contenedor {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--borde);
+  background: var(--fondo-superficie);
+}
+
+.lienzo_fondo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) saturate(1.05);
+  opacity: 0.5;
+  transform: scale(1.15);
+}
+
+.lienzo_imagen {
+  position: relative;
+  z-index: 2;
+  max-width: 85%;
+  max-height: 85%;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--sombra-md);
+}
+
+/* Overlay "Cambiar Imagen": ocupa todo el lienzo, aparece en hover */
+.lienzo_btn_cargar {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  background: rgba(27, 28, 27, 0);
+  color: transparent;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  opacity: 0;
+  transition: var(--transicion);
+}
+
+.lienzo_contenedor:hover .lienzo_btn_cargar,
+.lienzo_btn_cargar:focus-visible {
+  background: rgba(27, 28, 27, 0.45);
+  color: #fff;
+  opacity: 1;
+}
+
+.lienzo_btn_quitar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(27, 28, 27, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: var(--transicion);
+}
+
+.lienzo_btn_quitar:hover {
+  background: var(--color-error);
+}
