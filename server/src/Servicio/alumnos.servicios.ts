@@ -51,7 +51,7 @@ const altaAlumno = async( data : AlumnosInputs)
     // Verifico si el alumno ya existe en la bd de forma global
     const existeAlumno = await dataAlumno.verAlumnoExistente(alumnoData.dni);
 
-    if ( existeAlumno.code ==='ALUMNO_NO_EXISTE' ){ 
+    if ( existeAlumno.code ==='ALUMNO_NO_EXISTE' ){ //POSIBLE LUGAR PARA AGREGAR EL USUARIO PARA EL ALUMNO
         // si no existe creamos por primera vez y unica en la bd de forma global
         const nuevoAlumno = await dataAlumno.registarAlumno(alumnoData);
         //  Se crea por primera vez , si no se logro lanzamos un error y si no seguimos 

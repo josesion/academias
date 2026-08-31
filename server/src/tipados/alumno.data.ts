@@ -28,12 +28,14 @@ export interface RetornoRegistroAlumno  {
         dni: string;
         apellido: string;
         nombre: string;
+        email : string,
 }
 
 export interface DataAlumnosListado {
     dni_alumno: number,
     nombre: string,
     apellido: string,
+    email : string,
     numero_celular: number,
     total_registros: number
 }
@@ -43,6 +45,7 @@ export interface DataAlumnosListadoSinPag {
     Nombre: string,
     Apellido: string,
     Celular: number,
+    Email : string,
 }
 
 export interface RetornoModAlumno extends RetornoRegistroAlumno {

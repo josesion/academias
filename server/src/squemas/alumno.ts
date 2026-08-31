@@ -15,6 +15,11 @@ apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
                 .min(4,{message: "El Apellido debe tener min. 4 letras"})
                 .max(60 ,{message: "El Apellido es muy largo"}) ,
 
+email:     z.string({message: "El correo debe ser una cadena de texto"})
+                .nonempty({message: "El correo no debe estar vacio"})
+                .email({message: "El formato del correo no es válido"})
+                .max(255, {message: "El correo es muy largo"}),
+
 celular :   z.string()
                 .nonempty({message : "Celular no debe estar vacio"})
                 .min(10, { message: "El celular debe tener al menos 10 dígitos" })

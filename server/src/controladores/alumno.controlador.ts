@@ -49,6 +49,7 @@ const altaAlumno = async( req :  Request , res : Response) =>{
         nombre : req.body.nombre,
         apellido : req.body.apellido,
         celular  : req.body.celular,
+        email : req.body.email,
         id_escuela : Number(req.usuario?.id_escuela),
         id_usuario : Number(req.usuario?.id),
     };
@@ -96,6 +97,7 @@ const modAlumno = async( req : Request, res : Response) =>{
         nombre : nombre ,
         apellido : apellido ,
         celular  : String(celular),
+        email : req.body.email,
         id_escuela : Number(req.usuario?.id_escuela),
         id_usuario : Number(req.usuario?.id)
     };

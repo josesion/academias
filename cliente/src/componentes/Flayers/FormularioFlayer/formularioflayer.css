@@ -3,14 +3,21 @@
   flex-direction: column;
   gap: 18px;
   width: 100%;
+  max-width: 100%;       /* Evita que se expanda de más */
+  box-sizing: border-box; /* Incluye paddings/borders dentro del cálculo de ancho */
 }
 
 .formulario_flayer_campo {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;          /* CLAVE en flexbox para que los inputs no fuercen desbordes */
+  box-sizing: border-box;
 }
 
 .formulario_flayer_acciones {
   display: flex;
   justify-content: flex-end;
   margin-top: 6px;
+  width: 100%;
+  box-sizing: border-box;
 }

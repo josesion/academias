@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useEffect } from "react";
 import { initialFlayers, flayerReducer } from "../reducers/flayer.reducer"; 
 
 import {type Valores } from "../componentes/Flayers/FormularioFlayer/FormularioFlayer";
@@ -49,11 +49,9 @@ const quitarImagen = () =>{
     });
 };
 
-    //console.log(state.errorDetalles)
 
 const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
-       //console.log("s")
     const { imagen, valoresFormulario} = state;
 
     if (
@@ -61,10 +59,14 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
         !valoresFormulario.descripcion_titulo.trim() || 
         !imagen
     ) {
-       // console.log("Formulario incompleto: hay campos vacíos o falta la imagen");
+       dispatch({
+        type : "SET_ERROR_GENERICO", payload : "Formulario incompleto: hay campos vacíos o falta la imagen"
+       });
     } else {
         try{
-            //console.log("¡Formulario completo!");
+       
+            dispatch({ type : "SET_CARGA" , payload : true});
+
             const subirImagen = config.servicios.postFlayer;
 
             const data : PropsPostFlayer = {
@@ -73,33 +75,63 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
                 descripcion : valoresFormulario.descripcion_titulo,
                 plan : config.plan    
             }
-            console.log(data)
+
             const  resultSubirImagen = await subirImagen(data); 
             console.log(resultSubirImagen)
+
+            if( resultSubirImagen.code === "FLAYER_OK"){
+                dispatch({ type : "RESET_FORMULARIO"});
+                dispatch({ type : "SET_MODAL", payload : true});
+            };
+
+            if ( resultSubirImagen.code === 'SIN_PERMISOS' ){
+                dispatch({ type :"SET_ERROR_GENERICO", payload : resultSubirImagen.message});
+            };             
        
-            if (resultSubirImagen.errorsDetails) {
-                    console.log(2)
-                resultSubirImagen.errorsDetails.forEach((item : any) => {
-                    console.log("campo", item.campo, "mensaje", item.message);
-                    
-                    dispatch({
-                        type: "SET_DETALLE_ERRORES",
-                        payload: {
-                            campo: item.campo as keyof ErroresDetalle,
-                            valor: item.message // o item.mensaje, según cómo te lo devuelva el backend
-                        }
-                    });
+            if (resultSubirImagen.errorsDetails) {        
+                resultSubirImagen.errorsDetails.forEach((item : any) => {     
+                dispatch({
+                    type: "SET_DETALLE_ERRORES",
+                    payload: {
+                        campo: item.campo as keyof ErroresDetalle,
+                        valor: item.message // o item.mensaje, según cómo te lo devuelva el backend
+                    }
                 });
-            }  
+            });
+
+         
+
+
+        };  
 
         }catch(error){
-            console.log(error)
+            dispatch({ type : "SET_ERROR_GENERICO" , payload : "Error en el servidor"});
+            console.error(error)
         }finally{
-
-        }
+            dispatch({ type : "SET_CARGA" , payload : false});
+        };
     }
 
 };
+
+const handleCerrarModal = () =>{
+    dispatch({ type : "SET_MODAL", payload : false});
+};
+
+
+useEffect( ()=>{
+
+    const carrucelFlayers = async () =>{
+
+        const resultCarrucel = await config.servicios.getCarrucel({});
+
+        console.log(resultCarrucel)
+
+    };
+
+    carrucelFlayers();
+
+},[]);
 
 
   return {
@@ -107,7 +139,8 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
     cachearFormulario,
     cachearImagen, 
     quitarImagen,
-    handleSubmit
+    handleSubmit,
+    handleCerrarModal
   }
 
 };

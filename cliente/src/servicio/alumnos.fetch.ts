@@ -27,6 +27,7 @@ export const registroAlumno = async( parametro : TipadoAlumnos.RegistroResquest 
             dni         : parametro.dni,
             nombre      : parametro.nombre,
             apellido    : parametro.apellido,
+            email       : parametro.email, 
             celular     : parametro.celular
         }
     });
@@ -52,6 +53,7 @@ export const modAlumno = async(parametros : TipadoAlumnos.RegistroResquest )
         body   :{
             nombre      : parametros.nombre,
             apellido    : parametros.apellido,
+            email       : parametros.email,
             celular     : parametros.celular,
         }
     } );

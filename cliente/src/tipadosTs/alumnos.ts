@@ -10,7 +10,8 @@ export interface RegistroResquest {
     dni : number | string,
     nombre : string,
     apellido : string ,
-    celular  : string
+    celular  : string,
+    email : string,
 }
 
 
@@ -30,7 +31,8 @@ export interface AlumnosResponse {
     Apellido : string,
     Dni : string | number,
     Nombre : string,
-    Celular: string | number
+    Celular: string | number,
+    email : string,
 }
 
 export interface bajaAlumno {

@@ -1,31 +1,36 @@
 .flayers_pagina {
-  max-width: 360px;
+  max-width: 1080px;
   margin: 0 auto;
-  min-height: 100%;
-  padding: 32px 20px;
+  padding: 32px 20px 56px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
+  gap: 32px;
   font-family: var(--fuente-principal);
   background: var(--fondo-principal);
 }
 
-.flayers_pagina_header,
-.flayers_pagina_lienzo,
-.flayers_pagina_formulario {
-  width: 100%;
-}
-
-.flayers_pagina_header {
+/* CONTENIDO PRINCIPAL: columna en mobile/tablet, fila en desktop */
+.flayers_pagina_contenido {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 40px;
+}
+
+/* SECCIÓN CREACIÓN (header + lienzo + formulario) */
+.flayers_seccion_creacion {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flayers_creacion_header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   text-align: center;
 }
 
-.flayers_titulo {
+.flayers_creacion_titulo {
   margin: 0;
   font-family: var(--fuente-titulos);
   font-size: var(--titulo-lg);
@@ -35,45 +40,135 @@
   letter-spacing: -0.01em;
 }
 
-.flayers_subtitulo {
+.flayers_creacion_subtitulo {
   margin: 0;
   font-size: var(--texto-sm);
   line-height: var(--linea-texto);
   color: var(--color-secundario);
 }
 
+/* 👇 SIEMPRE columna, en cualquier tamaño de pantalla — no se toca en los @media */
+.flayers_creacion_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
 .flayers_pagina_lienzo {
+  width: 100%;
   padding: 10px;
   border: 1px solid var(--borde);
   border-radius: var(--radio-sm);
   background: var(--fondo-secundario);
 }
 
-/* Pantallas más anchas: header y lienzo/form lado a lado */
-@media (min-width: 720px) {
+.flayers_pagina_formulario {
+  width: 100%;
+}
+
+/* GALERÍA / CARRUSEL */
+.flayers_pagina_galeria {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+  border-top: 1px solid var(--borde);
+}
+
+.flayers_galeria_header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+}
+
+.flayers_galeria_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+}
+
+.flayers_galeria_subtitulo {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.carrusel_flayers_contenendor {
+  width: 100%;
+}
+
+/* ERROR */
+.flayers_pagina_error {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* =====================================
+    TABLET (~640px+)
+===================================== */
+@media (min-width: 640px) {
   .flayers_pagina {
-    max-width: 720px;
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    grid-template-areas:
-      "header header"
-      "lienzo formulario";
-    align-items: start;
-    justify-content: center;
-    justify-items: center;
-    gap: 28px 32px;
+    padding: 40px 32px 64px;
   }
 
-  .flayers_pagina_header {
-    grid-area: header;
+  .flayers_pagina_error {
+    margin: 0 auto;
+  }
+}
+
+/* =====================================
+    DESKTOP (~1024px+): lienzo+form a la izquierda,
+    galería a la derecha, misma altura total
+===================================== */
+@media (min-width: 1024px) {
+  .flayers_pagina {
+    padding: 56px 48px 80px;
+  }
+
+  .flayers_creacion_header,
+  .flayers_galeria_header {
     text-align: left;
   }
 
-  .flayers_pagina_lienzo {
-    grid-area: lienzo;
+  .flayers_pagina_contenido {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 56px;
   }
 
-  .flayers_pagina_formulario {
-    grid-area: formulario;
+  .flayers_seccion_creacion {
+    flex: 0 0 420px;
+    max-width: 420px;
+  }
+
+  .flayers_creacion_grid {
+    max-width: 100%;
+    margin: 0;
+  }
+
+  .flayers_pagina_error {
+    margin: 0;
+  }
+
+  .flayers_pagina_galeria {
+    flex: 1;
+    padding-top: 0;
+    border-top: none;
+    border-left: 1px solid var(--borde);
+    padding-left: 56px;
+    justify-content: center;
+  }
+
+  .carrusel_flayers_contenendor {
+    flex: 1;
+    align-items: center;
   }
 }

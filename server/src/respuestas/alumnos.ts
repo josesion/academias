@@ -18,7 +18,7 @@ export const MAPA_ALTA_ALUMNO : Record<string , { status : CodigoEstadoHTTP, msg
 
     "REGISTRO_ALUMNO_OK"  : { status : CodigoEstadoHTTP.OK , msg : "Se registro Correctamente el alumno"},
 
-    ERROR_SERVIDOR
+    ERROR_SERVIDOR//
 
 };     
 

@@ -69,21 +69,21 @@ const verAlumnoEscuelaExistente = async( dni : string , id_escuela : number)
 
 const registarAlumno  = async( parametros : AlumnosInputs)
  : Promise<TipadoData<RetornoRegistroAlumno>> =>{
-
-    const {dni , nombre ,apellido ,celular } = parametros ;     
+    
+    const { dni, nombre, apellido, email, celular } = parametros ;    
 
     const sql : string =`INSERT INTO alumnos 
-                        (dni_alumno, nombre, apellido, numero_celular )
-                        VALUES ( ? , ? , ? , ? );`;
+                        (dni_alumno, nombre, apellido, email, numero_celular)
+                        VALUES (?, ?, ?, ?, ?);`;
 
-    const valores: unknown[] = [dni , nombre , apellido , celular ];
+    const valores: unknown[] = [dni, nombre, apellido, email, celular];
    
     return await iudEntidad({
         slqEntidad : sql,
         valores    : valores,
         entidad :"Alumno",
         metodo :"CREAR",
-        datosRetorno : { dni, nombre, apellido , celular}
+        datosRetorno : { dni, nombre, apellido, email, celular }
     });
 
 };
@@ -116,18 +116,19 @@ const registroAlumnoEscuela = async( parametros : AlumnoEscuelaInputs )
 
 const modAlumno = async( parametros : AlumnosInputs)  : Promise<TipadoData<RetornoModAlumno>> =>{
 
-    const {dni , nombre ,apellido ,celular  } = parametros ;  
+    const { dni, nombre, apellido, email, celular } = parametros ;  
     const sql: string =`UPDATE alumnos
                         SET 
-                            nombre = ? ,
-                            apellido = ? ,
+                            nombre = ?,
+                            apellido = ?,
+                            email = ?,
                             numero_celular = ?
                         WHERE 
-                            dni_alumno = ? ;`;
+                            dni_alumno = ?;`;
 
-    const valores : unknown[]  = [ nombre , apellido , celular , dni];
+    const valores : unknown[]  = [ nombre, apellido, email, celular, dni ];
 
-    const datosADevolver: RetornoRegistroAlumno = { dni, nombre, apellido , celular};
+    const datosADevolver: RetornoRegistroAlumno = { dni, nombre, apellido, email, celular };
 
     return await iudEntidad({
         slqEntidad : sql,
@@ -166,11 +167,11 @@ const listaAlumnos = async(
     const likeDni = dni + "%";
     const likeApellido = apellido + "%";
     
-
-    const sqlLista =   `select
+    const sqlLista =    `select
                             alumnos.dni_alumno as Dni,
                             alumnos.apellido as Apellido,
                             alumnos.nombre as Nombre,
+                            alumnos.email as Email,
                             alumnos.numero_celular as Celular,
                             count(*) over() as total_registros
                                 from alumnos
@@ -195,7 +196,6 @@ const listaAlumnos = async(
             entidad : "Alumno",
             estado  : estado 
         })
-   
 
 };
 
@@ -207,6 +207,7 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
                                 alumnos.dni_alumno as Dni,
                                 alumnos.apellido as Apellido,
                                 alumnos.nombre as Nombre,
+                                alumnos.email as Email,
                                 alumnos.numero_celular as Celular
                             from alumnos
                                 join alumnos_en_escuela on alumnos.dni_alumno = alumnos_en_escuela.dni_alumno
@@ -214,9 +215,9 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
                                 alumnos_en_escuela.estado = ?
                                 and alumnos.dni_alumno like ?
                                 and alumnos_en_escuela.id_escuela = ?
-                                order by 
-                                      alumnos.apellido
-                                limit 15`;
+                            order by 
+                                    alumnos.apellido
+                            limit 15`;
 
     const valores : unknown[] = [estado , likeDni , escuela];
 

@@ -2,7 +2,10 @@ import { type ErroresDetalle , type Valores} from "../componentes/Flayers/Formul
 
 export interface FlayersTipado {
 
-   // errorGenericos :{},
+    errorGenericos : string | null,
+    carga : boolean,
+    modalConfirmacion : boolean,
+
     errorDetalles : ErroresDetalle,
     imagen : File | null
     valoresFormulario : Valores
@@ -11,6 +14,10 @@ export interface FlayersTipado {
 
 
 export const initialFlayers = ( ) :FlayersTipado =>({
+
+    errorGenericos : null,
+    carga : false,
+    modalConfirmacion : false,
 
     errorDetalles : {
         imagen : null,
@@ -32,8 +39,10 @@ export type FlayersAction =
 | { type: 'SET_FORMULARIO'; payload: { campo: keyof Valores; valor: string } }
 | { type: "SET_DETALLE_ERRORES"; payload : { campo : keyof ErroresDetalle; valor : string | null }}
 | { type: "SET_IMAGEN"   ; payload : File | null }
-
-
+| { type : "SET_ERROR_GENERICO" , payload : string | null}
+| { type : "SET_CARGA", payload : boolean }
+| { type : "SET_MODAL", payload : boolean }
+| { type: "RESET_FORMULARIO" };
 
 export const flayerReducer = ( state : ReturnType< typeof initialFlayers>, action : FlayersAction)
 :ReturnType<typeof initialFlayers> =>{
@@ -64,8 +73,32 @@ case "SET_IMAGEN" :
         imagen : action.payload
     };
 
+case "SET_ERROR_GENERICO" :
+     return{ 
+        ...state,
+        errorGenericos : action.payload
+     };
+
+case "SET_CARGA" : 
+    return{
+        ...state,
+        carga : action.payload
+    }     
+
+case "SET_MODAL" : 
+    return{
+        ...state,
+        modalConfirmacion : action.payload
+    };
+
+case "RESET_FORMULARIO":
+            return {
+                ...initialFlayers(), // Trae todo por defecto (vacío/nulo)
+                carga: state.carga,  // Pero preserva el estado de carga actual
+                modalConfirmacion: state.modalConfirmacion, // Mantiene el modal intacto
+            };
+                
         default:
                 return state; 
     };
-
 }    

@@ -58,6 +58,14 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         readonly : false 
     },
     {
+        name: "email",
+        label: "Correo Electrónico",
+        type: "email",
+        placeholder: "ejemplo@correo.com",
+        value: "",
+        readonly : false 
+    },
+    {
         name: "celular",
         label: "Celular",
         type: "number",
@@ -71,6 +79,7 @@ const mapAlumnoForm =( dataM : any) =>({
     dni: dataM.Dni,
     apellido: dataM.Apellido,
     nombre: dataM.Nombre,
+    email : dataM.Correo,
     celular: dataM.Celular,
 });
 
@@ -105,6 +114,7 @@ const config = {
         dni: '',
         apellido: '',
         nombre: '',
+        email: '',
         celular: ""
     },
 

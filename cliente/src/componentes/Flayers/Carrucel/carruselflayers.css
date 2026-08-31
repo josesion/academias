@@ -1,0 +1,149 @@
+.carrusel_contenedor {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--fuente-principal);
+}
+
+.carrusel_lienzo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--borde);
+  background: var(--fondo-superficie);
+}
+
+.carrusel_imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: imagen_fade_in 0.35s ease forwards;
+}
+
+.carrusel_info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: center;
+  padding: 30px 8px;
+}
+
+.carrusel_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+}
+
+.carrusel_descripcion {
+  margin: 0;
+  font-size: var(--texto-xs);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+.carrusel_controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.carrusel_btn_flecha {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--borde);
+  background: var(--fondo-secundario);
+  color: var(--texto-principal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.carrusel_btn_flecha:hover {
+  background: var(--color-primario);
+  border-color: var(--color-primario);
+  color: var(--fondo-principal);
+}
+
+.carrusel_dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.carrusel_dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--borde-hover);
+  transition: var(--transicion);
+}
+
+.carrusel_dot.activo {
+  width: 18px;
+  border-radius: 4px;
+  background: var(--color-secundario);
+}
+
+
+
+.carrusel_lienzo_vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--texto-deshabilitado);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  text-align: center;
+  padding: 24px;
+  animation: vacio_fade_in 0.4s ease forwards;
+}
+
+.carrusel_lienzo_vacio svg {
+  animation: icono_float 2.4s ease-in-out infinite;
+}
+
+@keyframes vacio_fade_in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes icono_float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes imagen_fade_in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -14,6 +14,7 @@ export interface Valores {
 }
 
 export interface PropsFormularioFlayer {
+  carga: boolean;
   valores: Valores;
   detallesErrores: ErroresDetalle;
   onChangeTitulo: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -52,7 +53,13 @@ export const FormularioFlayer = (props: PropsFormularioFlayer) => {
 
       <div className="formulario_flayer_acciones">
         {/* 2. Aseguramos que el botón sea type="submit" */}
-        <Boton clase="agregar" logo="Add" texto="Subir Flayer" type="submit" />
+        <Boton
+          clase="agregar"
+          logo="Add"
+          texto="Subir Flayer"
+          type="submit"
+          disable={props.carga}
+        />
       </div>
     </form>
   );
