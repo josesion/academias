@@ -8,6 +8,9 @@ import { method as asistenciaData} from "./data/asistencia.data";
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
 
+
+/**  RUTAS PARA EL ADMINISTRATIVO DE LA APP */
+
 import planesUsuariosRuta from "./rutas/planes.usuarios";
 import adminRutas from "./rutas/admin.ruta";
 import usuarioRutas from "./rutas/usuario.ruta";
@@ -35,6 +38,9 @@ import flayer   from "./rutas/flayer.ruta";
 import protectRutas from "./rutas/protegida.rutas";
 import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
 
+/** RUTAS PARA EL ALUMNO  */
+
+import  principalAlumnos from "./rutas/metricas.alumnos.principal.rutas";
 
 const app : Express = express();
 
@@ -83,6 +89,12 @@ app.use(protectRutas);
 app.use(listaCajas)
 app.use(historial);
 app.use(flayer);
+
+// RUTAS ALUMNOS
+
+app.use(principalAlumnos);
+
+
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 

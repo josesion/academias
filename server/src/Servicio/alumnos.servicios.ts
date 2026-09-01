@@ -1,6 +1,8 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataAlumno } from "../data/alumno.data";
 import { registroHistorial } from "../utils/postHistorial";
+import { enviarCorreo, generarPlantillaBienvenida } from "../utils/emailService";
+
 
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
@@ -43,7 +45,7 @@ const altaAlumno = async (data: AlumnosInputs)
         if (existeCorreo.code === "USUARIO_CORREO_EXISTE") {
             return {
                 error: true,
-                message: "El correo ya se encuentra registrado, intente con otro.",
+                message: "El correo ya se encuentra registrado, intente con otro 2.",
                 code: "CORREO_EXISTENTE"
             };
         };
@@ -60,6 +62,19 @@ const altaAlumno = async (data: AlumnosInputs)
         };
 
         if (registrarAlumno.code === "TRANSACCION_OK") {
+
+            const htmlContenido = generarPlantillaBienvenida(
+                alumnoData.nombre, 
+                alumnoData.email,
+                registrarAlumno.data?.contrasenaTemporal
+            );            
+
+            await enviarCorreo({
+                to: alumnoData.email,
+                subject: "¡Tus credenciales de acceso a la Academia!",
+                html: htmlContenido
+            });
+
             return {
                 error: false, // Corregido para que devuelva éxito correctamente
                 message: "Registro del alumno ok.",
@@ -155,8 +170,7 @@ const modAlumno = async (data: AlumnosInputs)
     // 2. Ejecutar la transacción de actualización limpia en la BD
     const resultadoModificacion = await dataAlumno.modAlumnoTransaccion(alumnoData); 
 
-    console.log(resultadoModificacion)
- 
+  
     if (resultadoModificacion.code === "TRANSACCION_FALLIDA") {
         return {
             error: true,
@@ -184,6 +198,8 @@ const modAlumno = async (data: AlumnosInputs)
         code: "ALUMNO_MODIFICAR_OK"
     };
 };
+
+
 
 /**
  * Servicio encargado de modificar el estado de un alumno en la escuela 
