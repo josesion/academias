@@ -29,6 +29,7 @@ import { method as usuariosData } from "../data/usuario.data";
  */
 
 const crearUsuario = async ( req : Request , res : Response )=> {
+    console.log("aqui")
     const usuarioData : CrearInputsUsuario = crearUsuarioSchema.parse(req.body);
     const usuarioExiste = await usuariosData.buscarUsuario( usuarioData.usuario );
     if (usuarioExiste.error && usuarioExiste.code === "USER_FOUND") {// si es true , significa que el usuario ya existe

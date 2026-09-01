@@ -1,4 +1,4 @@
-
+import bcrypt from 'bcryptjs';
 import { tryCatchDatos } from "../utils/tryCatchBD";
 
 
@@ -7,10 +7,12 @@ import { listarEntidad } from "../hooks/funcionListar";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
-
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs, EliminarAlumnoInputs , ListaAlumnoSinPaginacionInputs} from "../squemas/alumno";
+import { AlumnosInputs , ListaAlumnoInputs, AlumnoEscuelaInputs, EliminarAlumnoInputs , ListaAlumnoSinPaginacionInputs,
+          AlumnosTransaccionInputs
+} from "../squemas/alumno";
 import { RetornoRegistroAlumno, DataAlumnosListado , RetornoModAlumno, RetornoEliminaciom,
          RetornoVerAlumnoExistente, RetornoIncripcionAlumnoEscuela , DataAlumnosListadoSinPag
 } from "../tipados/alumno.data";
@@ -231,6 +233,95 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
 };
 
 
+export const verificarCorreoExistente = async ( email : string)
+:Promise<TipadoData<{ id_usuario : string, correo :string }>> => {
+
+  const sql : string = `SELECT id_usuario, correo FROM usuarios WHERE correo = ? OR usuario = ?;`;  
+  const valores : unknown[] = [email, email];
+
+  return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valores,
+        entidad : "USUARIO_CORREO"
+  });
+
+};
+
+
+
+export const verificarCorreoExistente2 = async (email: string, dniActual?: number | string)
+: Promise<TipadoData<{ dni_alumno: number, email: string }>> => {
+
+  const sql: string = `
+    SELECT dni_alumno, email 
+    FROM alumnos 
+    WHERE email = ? AND (? IS NULL OR dni_alumno != ?);
+  `;  
+  
+  const valores: unknown[] = [email, dniActual ?? null, dniActual ?? null];
+
+  return await buscarExistenteEntidad({
+        slqEntidad: sql,
+        valores: valores,
+        entidad: "USUARIO_CORREO"
+  });
+};
+
+
+export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
+    return await iudEntidadTransaction(async (conn) => {
+
+        console.log(data)
+        
+        // 1. "Magia": Generar contraseña aleatoria de 6 dígitos
+        const contrasenaPlano = Math.floor(100000 + Math.random() * 900000).toString();
+        
+        // 2. Hashear la contraseña generada
+        const hashedPassword = await bcrypt.hash(contrasenaPlano, 10);
+
+        // 3. Insertar en la tabla 'usuarios'
+        const sqlUsuario = `
+            INSERT INTO usuarios (usuario, contrasena, nombre, apellido, celular, rol, correo, estado, id_escuela)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        `;
+        
+        const [resUsuario]: any = await conn.execute(sqlUsuario, [
+            data.usuario || data.email, 
+            hashedPassword, // Acá va la contraseña ya hasheada
+            data.nombre,
+            data.apellido,
+            data.celular,
+            data.rol || 'alumno',
+            data.email,
+            data.estado || 'activos',
+            data.id_escuela
+        ]);
+
+        const idUsuarioGenerado = resUsuario.insertId;
+
+        // 4. Insertar en la tabla 'alumnos'
+        const sqlAlumno = `
+            INSERT INTO alumnos (dni_alumno, nombre, apellido, email, numero_celular)
+            VALUES (?, ?, ?, ?, ?);
+        `;
+
+        await conn.execute(sqlAlumno, [
+            data.dni,
+            data.nombre,
+            data.apellido,
+            data.email,
+            data.celular
+        ]);
+
+        // (Opcional) retornar también la contraseña en plano por si tenés que mandarla por mail o WhatsApp:
+        return {
+            id_usuario: idUsuarioGenerado,
+            dni: data.dni,
+            email: data.email,
+            contrasenaTemporal: contrasenaPlano // ¡Guarda si la devolvés acá para usarla en el correo!
+        };
+    });
+};
 export const  method = {
     verAlumnoExistente : tryCatchDatos( verAlumnoExistente ),
     verAlumnoEscuelaExistente : tryCatchDatos( verAlumnoEscuelaExistente ),
@@ -239,5 +330,8 @@ export const  method = {
     modAlumno      :    tryCatchDatos( modAlumno ),
     eliminarAlumno :    tryCatchDatos ( eliminarAlumno),
     listaAlumnos   :    tryCatchDatos( listaAlumnos ),
-    listadoSinPaginacion : tryCatchDatos( listadoSinPaginacion)
+    listadoSinPaginacion : tryCatchDatos( listadoSinPaginacion),
+    verificarCorreoExistente : tryCatchDatos( verificarCorreoExistente),
+    verificarCorreoExistente2 : tryCatchDatos( verificarCorreoExistente2),
+    altaAlumnoTransaccion : tryCatchDatos( altaAlumnoTransaccion),
 };

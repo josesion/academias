@@ -52,6 +52,7 @@ const altaAlumno = async( req :  Request , res : Response) =>{
         email : req.body.email,
         id_escuela : Number(req.usuario?.id_escuela),
         id_usuario : Number(req.usuario?.id),
+        usuario : req.body.email,
     };
 
     await handleControladores<AlumnosInputs,RetornoRegistroAlumno >(

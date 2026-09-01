@@ -5,7 +5,7 @@ import { registroHistorial } from "../utils/postHistorial";
 import {CrearAlumnoSchema, AlumnosInputs,
         listaAlumnosSchema, ListaAlumnoInputs,
         EliminarAlumnoEscuelaSchema, EliminarAlumnoInputs,
-        ListaAlumnoSinPaginacionInputs, listaAlumnoSinPaginacionSchema
+        ListaAlumnoSinPaginacionInputs, listaAlumnoSinPaginacionSchema,
 } from "../squemas/alumno";
 
 import type { RetornoRegistroAlumno , RetornoModAlumno, DataAlumnosListado ,DataAlumnosListadoSinPag} from "../tipados/alumno.data";
@@ -13,97 +13,111 @@ import { type HistorialInputs } from "../squemas/historial";
 import { TipadoData } from "../tipados/tipado.data";
 
 /**
- * Servicio encargado de gestionar el alta de un alumno en el sistema.
+ * Registra un alumno en el sistema de manera global y/o lo inscribe en una escuela específica.
  * 
- * La lógica sigue un flujo jerárquico:
- * 1. Valida los datos recibidos con `CrearAlumnoSchema`.
- * 2. Verifica si el alumno existe de forma global en la base de datos; si no, lo registra.
- * 3. Verifica si el alumno ya está inscrito en la escuela actual para evitar duplicados.
- * 4. Si el alumno es nuevo en la escuela, realiza la inscripción (`registroAlumnoEscuela`).
- * 5. Si la inscripción es exitosa, registra la creación en el historial de auditoría.
- *
+ * Esta función maneja un flujo multi-escuela (N:M):
+ * 1. **Alumno Nuevo:** Si el DNI no existe globalmente, valida que el correo no esté en uso por otra persona, 
+ *    crea el registro global del alumno y su usuario, y corta la ejecución devolviendo éxito.
+ * 2. **Alumno Existente (Multi-escuela):** Si el DNI ya existe, omite la creación global, valida que no esté 
+ *    ya inscripto en la escuela actual, verifica que el correo pertenezca realmente a este alumno y 
+ *    procede a vincularlo mediante la tabla intermedia `alumno_escuela`.
+ * 
  * @async
- * @function altaAlumno
- * @param {AlumnosInputs} data - Objeto con los datos completos del alumno, ID de escuela y ID de usuario.
+ * @param {AlumnosInputs} data - Objeto con los datos del alumno y la escuela (DNI, nombre, apellido, email, celular, id_escuela, id_usuario).
+ * @returns {Promise<TipadoData<RetornoRegistroAlumno>>} Retorna un objeto indicando si hubo error, un mensaje descriptivo y un código de estado (ej. REGISTRO_ALUMNO_OK, CORREO_EXISTENTE, ALUMNO_YA_REGISTRADO).
  * 
- * @returns {Promise<TipadoData<RetornoRegistroAlumno>>} Promesa que resuelve con:
- * - `REGISTRO_ALUMNO_OK`: Alta exitosa.
- * - `ALUMNO_YA_REGISTRADO`: El alumno ya pertenece a la escuela.
- * - `ERROR_ALTA_PRIMARIA`: Fallo al crear el registro global del alumno.
- * - `ERROR_SERVIDOR`: Fallo inesperado en el proceso.
- * 
- * @throws {ZodError} Si la validación de `CrearAlumnoSchema` falla.
- * 
- * @example
- * const resultado = await altaAlumno({
- *    dni: "35123456",
- *    nombre: "Ana",
- *    apellido: "Lopez",
- *    id_escuela: 1,
- *    id_usuario: 5,
- *    ...
- * });
+ * @throws {ZodError} Si los datos de entrada no pasan la validación del esquema `CrearAlumnoSchema`.
  */
-const altaAlumno = async( data : AlumnosInputs)
-: Promise<TipadoData<RetornoRegistroAlumno>> =>{
+const altaAlumno = async (data: AlumnosInputs)
+    : Promise<TipadoData<RetornoRegistroAlumno>> => {
     
-    const alumnoData : AlumnosInputs = CrearAlumnoSchema.parse(data);
+    const alumnoData: AlumnosInputs = CrearAlumnoSchema.parse(data);
+    
     // Verifico si el alumno ya existe en la bd de forma global
     const existeAlumno = await dataAlumno.verAlumnoExistente(alumnoData.dni);
 
-    if ( existeAlumno.code ==='ALUMNO_NO_EXISTE' ){ //POSIBLE LUGAR PARA AGREGAR EL USUARIO PARA EL ALUMNO
-        // si no existe creamos por primera vez y unica en la bd de forma global
-        const nuevoAlumno = await dataAlumno.registarAlumno(alumnoData);
-        //  Se crea por primera vez , si no se logro lanzamos un error y si no seguimos 
-        if (nuevoAlumno.error  === true){
+    if (existeAlumno.code === 'ALUMNO_NO_EXISTE') {
+        // Si no existe, creamos por primera vez de forma global
+        const existeCorreo = await dataAlumno.verificarCorreoExistente(alumnoData.email);
+
+        if (existeCorreo.code === "USUARIO_CORREO_EXISTE") {
             return {
-                error : true ,
-                message : "Error en alta primaria del alumno",
-                code : "ERROR_ALTA_PRIMARIA"
+                error: true,
+                message: "El correo ya se encuentra registrado, intente con otro.",
+                code: "CORREO_EXISTENTE"
+            };
+        };
+
+        const registrarAlumno = await dataAlumno.altaAlumnoTransaccion(alumnoData);
+
+
+        if (registrarAlumno.code === "TRANSACCION_FALLIDA") {
+            return {
+                error: true,
+                message: "Error en la creacion de alumno intente nuevamente mas tarde.",
+                code: "ERROR_TRANSACCION"
+            };
+        };
+
+        if (registrarAlumno.code === "TRANSACCION_OK") {
+            return {
+                error: false, // Corregido para que devuelva éxito correctamente
+                message: "Registro del alumno ok.",
+                code: "REGISTRO_ALUMNO_OK"
             };
         };
     };
-       
-   // Verifico si el alumno ya se encuentra en esta escuela , si esta lanzamos error y si no seguimos la funcion
-   const existeAlumnoEscuela = await dataAlumno.verAlumnoEscuelaExistente(String(alumnoData.dni) , Number(alumnoData.id_escuela) ); 
+        
+    // Verifico si el alumno ya se encuentra en esta escuela
+    const existeAlumnoEscuela = await dataAlumno.verAlumnoEscuelaExistente(String(alumnoData.dni), Number(alumnoData.id_escuela)); 
 
-   if (existeAlumnoEscuela.code === "ALUMNOESCUELA_EXISTE"){
-        return{
-            error : true, 
-            message : "El alumno ya se encuentra registrado en esta escuela",
-            code : "ALUMNO_YA_REGISTRADO"
+    if (existeAlumnoEscuela.code === "ALUMNOESCUELA_EXISTE") {
+        return {
+            error: true, 
+            message: "El alumno ya se encuentra registrado en esta escuela",
+            code: "ALUMNO_YA_REGISTRADO"
         };
-   };
+    };
 
-   const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(alumnoData.dni) , id_escuela : Number(alumnoData.id_escuela) });
-   
-   if ( inscripcionAlumno.code === "ALUMNO_ALTA"){
+    // Verifico que el correo no le pertenezca a otro alumno distinto (excluyendo al DNI actual)
+    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoData.email, alumnoData.dni);
 
-            const dataHistorial  : HistorialInputs = {
-                id_escuela :  alumnoData.id_escuela ,
-                id_usuario :  alumnoData.id_usuario,
-                modulo : "ALUMNOS",
-                accion : "CREAR",
-                id_registro: Number(alumnoData.dni),
-                descripcion: `Registro Alumno ${alumnoData.apellido} ${alumnoData.nombre}`,
-                datos: alumnoData // datos del alumno
-            }; 
-            
-    await registroHistorial( dataHistorial);   
+    if (correoPropiedadAlumno.code === "USUARIO_CORREO_EXISTE") {
+        return {
+            error: true,
+            message: "El correo ya pertenece a otro alumno.",
+            code: "CORREO_EXISTENTE"          
+        };
+    };
+
+    // Realiza la inscripción en la nueva escuela
+    const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(alumnoData.dni), id_escuela: Number(alumnoData.id_escuela) });
+    
+    if (inscripcionAlumno.code === "ALUMNO_ALTA") {
+        const dataHistorial: HistorialInputs = {
+            id_escuela: alumnoData.id_escuela,
+            id_usuario: alumnoData.id_usuario,
+            modulo: "ALUMNOS",
+            accion: "CREAR",
+            id_registro: Number(alumnoData.dni),
+            descripcion: `Registro Alumno ${alumnoData.apellido} ${alumnoData.nombre}`,
+            datos: alumnoData
+        }; 
+        
+        await registroHistorial(dataHistorial);   
 
         return {
-            error : false,
-            message : "Se registro correctamente el alumno",
-            code : "REGISTRO_ALUMNO_OK"
+            error: false,
+            message: "Se registro correctamente el alumno",
+            code: "REGISTRO_ALUMNO_OK"
         };
-   };
+    };
 
-   return{
-        error : true, 
-        message : "Error en el servidor , intentar nuevamente.",
-        code : "ERROR_SERVIDOR"
-   };
-
+    return {
+        error: true, 
+        message: "Error en el servidor , intentar nuevamente.",
+        code: "ERROR_SERVIDOR"
+    };
 };
 
 

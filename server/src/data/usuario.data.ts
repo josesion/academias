@@ -61,6 +61,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
         code: "USER_FOUND",
     };
 };
+
 const crearUsuario = async (usuarioData: CrearInputsUsuario) : Promise<TipadoData<DataUsuarioNuevo>> => {
     const { usuario, contrasena, nombre, apellido, celular, rol, correo, estado ,id_escuela} = usuarioData;
     const hashedPassword = await bcrypt.hash(contrasena, 10); // Hasheamos la contraseña antes de guardarla

@@ -117,8 +117,60 @@ estado: z.string()
 
 });
 
+export const CrearAlumnoTreansaccionSchema = z.object({
+// --- Datos propios del Alumno ---
+    dni: z.string({ message: "El dni es requerido" })
+        .nonempty({ message: "Dni no debe estar vacio" })
+        .min(8, { message: "EL dni esta incompleto" }),
+
+    // --- Datos personales (compartidos) ---
+    nombre: z.string({ message: "EL nombre debe ser una cadena de texto" })
+        .nonempty({ message: "Nombre no debe estar vacio" })
+        .min(2, { message: "El nombre debe tener min. 2 letras" })
+        .max(100, { message: "El nombre es muy largo" }),
+
+    apellido: z.string({ message: "EL Apellido debe ser una cadena de texto" })
+        .nonempty({ message: "Apellido no debe estar vacio" })
+        .min(2, { message: "El Apellido debe tener min. 2 letras" })
+        .max(100, { message: "El Apellido es muy largo" }),
+
+    email : z.string({ message: "El correo debe ser una cadena de texto" })
+        .nonempty({ message: "El correo no debe estar vacio" })
+        .email({ message: "El formato del correo no es válido" })
+        .max(255, { message: "El correo es muy largo" }),
+
+    celular: z.string()
+        .nonempty({ message: "Celular no debe estar vacio" })
+        .min(10, { message: "El celular debe tener al menos 10 dígitos" })
+        .max(15, { message: "El celular no puede tener más de 15 dígitos" })
+        .regex(/^\d+$/, { message: "El celular debe contener solo números" }),
+
+    id_escuela: z.number({ message: "id Escuela debe ser numerico" })
+        .min(1, { message: "El id debe ser mayor o igual a 1" }),
+
+
+
+    usuario: z.string()
+        .min(4, { message: 'El nombre de usuario debe tener al menos 4 caracteres.' })
+        .max(50, { message: 'El nombre de usuario no puede exceder los 50 caracteres.' })
+        .optional(),
+
+
+
+    rol: z.string()
+        .default('alumno')
+        .optional(),
+
+    estado: z.string()
+        .default('activos')
+        .optional(),
+          
+});
+
+
 
 export type AlumnosInputs = z.infer<typeof CrearAlumnoSchema>;
+export type AlumnosTransaccionInputs = z.infer<typeof CrearAlumnoTreansaccionSchema>;
 export type AlumnoEscuelaInputs = z.infer<typeof CrearAlumnoEscuelaSchema>;
 export type EliminarAlumnoInputs = z.infer<typeof EliminarAlumnoEscuelaSchema>; 
 export type ListaAlumnoInputs = z.infer<typeof listaAlumnosSchema>; 

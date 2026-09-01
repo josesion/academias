@@ -12,15 +12,19 @@ export const ERROR_INTERNO_SERVIDOR = {
 
 export const MAPA_ALTA_ALUMNO : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
-    "ERROR_ALTA_PRIMARIA" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error  al dar alta primaria" },
+    "ERROR_ALTA_PRIMARIA" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error al dar alta primaria" },
 
     "ALUMNO_YA_REGISTRADO" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "El alumno ya se encuentra registrado"},
 
+    "CORREO_EXISTENTE" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "El correo ya se encuentra registrado, intente con otro."},
+
+    "ERROR_TRANSACCION" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error en la creacion de alumno intente nuevamente mas tarde."},
+
     "REGISTRO_ALUMNO_OK"  : { status : CodigoEstadoHTTP.OK , msg : "Se registro Correctamente el alumno"},
 
-    ERROR_SERVIDOR//
+    "ERROR_SERVIDOR" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error en el servidor , intentar nuevamente." }
 
-};     
+}; 
 
 export const MAPA_MOD_ALUMNO : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
     
