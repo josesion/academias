@@ -322,6 +322,66 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
         };
     });
 };
+
+
+export const modAlumnoTransaccion = async (data: AlumnosInputs) => {
+    return await iudEntidadTransaction(async (conn) => {
+
+        // 1. Buscamos el correo viejo que tiene actualmente en la BD usando el DNI
+        const [alumnoRows]: any = await conn.execute(
+            `SELECT email FROM alumnos WHERE dni_alumno = ?;`,
+            [data.dni]
+        );
+        const correoViejo = alumnoRows[0]?.email;
+
+        // 2. Con ese correo viejo, buscamos su id_usuario real en la tabla usuarios
+        const [userRows]: any = await conn.execute(
+            `SELECT id_usuario FROM usuarios WHERE correo = ? OR usuario = ?;`,
+            [correoViejo, correoViejo]
+        );
+        const idUsuario = userRows[0]?.id_usuario;
+
+        if (!idUsuario) {
+            throw new Error(`No se encontró el id_usuario asociado para el alumno DNI ${data.dni}`);
+        }
+
+        // 3. Actualizar los datos personales en la tabla 'alumnos'
+        const sqlAlumno = `
+            UPDATE alumnos 
+            SET nombre = ?, apellido = ?, email = ?, numero_celular = ?
+            WHERE dni_alumno = ?;
+        `;
+        
+        await conn.execute(sqlAlumno, [
+            data.nombre,
+            data.apellido,
+            data.email,
+            data.celular ?? null,
+            data.dni
+        ]);
+
+        // 4. Actualizar la tabla 'usuarios' usando la clave primaria (id_usuario)
+        const sqlUsuario = `
+            UPDATE usuarios 
+            SET nombre = ?, apellido = ?, celular = ?, correo = ?, usuario = ?
+            WHERE id_usuario = ?;
+        `;
+        
+        await conn.execute(sqlUsuario, [
+            data.nombre,
+            data.apellido,
+            data.celular ?? null,
+            data.email, // Nuevo correo
+            data.email, // Nuevo usuario (para que coincida con el correo nuevo)
+            idUsuario   // La clave primaria segura
+        ]);
+
+        return {
+            code: "TRANSACCION_OK"
+        };
+    });
+};
+
 export const  method = {
     verAlumnoExistente : tryCatchDatos( verAlumnoExistente ),
     verAlumnoEscuelaExistente : tryCatchDatos( verAlumnoEscuelaExistente ),
@@ -334,4 +394,5 @@ export const  method = {
     verificarCorreoExistente : tryCatchDatos( verificarCorreoExistente),
     verificarCorreoExistente2 : tryCatchDatos( verificarCorreoExistente2),
     altaAlumnoTransaccion : tryCatchDatos( altaAlumnoTransaccion),
+    modAlumnoTransaccion : tryCatchDatos( modAlumnoTransaccion),
 };

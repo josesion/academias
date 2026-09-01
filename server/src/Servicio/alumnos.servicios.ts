@@ -122,71 +122,67 @@ const altaAlumno = async (data: AlumnosInputs)
 
 
 /**
- * Servicio encargado de actualizar los datos de un alumno existente 
- * y registrar la modificación en el historial de auditoría.
+ * Modifica los datos globales de un alumno y sus credenciales de usuario asociadas 
+ * de forma transaccional. 
  * 
- * Este proceso realiza los siguientes pasos:
- * 1. Valida los datos recibidos utilizando `CrearAlumnoSchema`.
- * 2. Persiste la modificación en la base de datos mediante `dataAlumno.modAlumno`.
- * 3. Si la operación es exitosa (código 'ALUMNO_MODIFICAR'), genera un registro
- *    en el historial de auditoría vinculado al usuario y escuela correspondientes.
- * 4. Retorna el resultado estandarizado de la operación.
- *
+ * Valida la disponibilidad del correo electrónico (excluyendo al propio alumno), 
+ * ejecuta la actualización atómica en la base de datos, registra el evento en 
+ * el historial y retorna el estado de la operación.
+ * 
  * @async
- * @function modAlumno
- * @param {AlumnosInputs} data - Objeto que contiene todos los campos necesarios para actualizar al alumno 
- * (incluyendo DNI, nombre, apellido, ID de escuela e ID de usuario).
+ * @param {AlumnosInputs} data - Objeto con los datos actualizados del alumno (DNI, nombre, apellido, email, celular, etc.).
+ * @returns {Promise<TipadoData<RetornoModAlumno>>} Retorna un objeto indicando si hubo error, un mensaje descriptivo y un código de control.
  * 
- * @returns {Promise<TipadoData<RetornoModAlumno>>} Promesa que resuelve con el estado de la operación 
- * (error, mensaje y código interno).
- * 
- * @throws {ZodError} Si la estructura de los datos de entrada no cumple con `CrearAlumnoSchema`.
- * 
- * @example
- * const resultado = await modAlumno({
- *    id_escuela: 1,
- *    id_usuario: 5,
- *    dni: "12345678",
- *    nombre: "Juan",
- *    apellido: "Perez",
- *    ...
- * });
+ * @throws {ZodError} Si la validación con `CrearAlumnoSchema` falla.
  */
-const modAlumno = async( data : AlumnosInputs ) 
-: Promise<TipadoData<RetornoModAlumno>> =>{
 
-    const alumnoData : AlumnosInputs = CrearAlumnoSchema.parse(data);
-   
-    const resultado  = await dataAlumno.modAlumno( alumnoData ); 
- 
-    if (resultado.code === "ALUMNO_MODIFICAR" ){
-        
-        const dataHistorial  : HistorialInputs = {
-            id_escuela :  alumnoData.id_escuela ,
-            id_usuario :  alumnoData.id_usuario,
-            modulo : "ALUMNOS",
-            accion : "MODIFICAR",
-            id_registro: Number(alumnoData.dni),
-            descripcion: `Modificacion de ${alumnoData.apellido} ${alumnoData.nombre}`,
-            datos: alumnoData // datos del alumno
-        }; 
-            
-        await registroHistorial( dataHistorial);          
+const modAlumno = async (data: AlumnosInputs) 
+: Promise<TipadoData<RetornoModAlumno>> => {
 
+    const alumnoData: AlumnosInputs = CrearAlumnoSchema.parse(data);
+   
+    // 1. Validación de correo por afuera (excluyendo el DNI propio)
+    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoData.email, alumnoData.dni);
 
+    if (correoPropiedadAlumno.code === "USUARIO_CORREO_EXISTE") {
         return {
-            error: false,
-            message : "Se modifico Correctamente",
-            code : "ALUMNO_MODIFICAR_OK"
+            error: true,
+            message: "El correo ya pertenece a otro alumno, intente con otro.",
+            code: "CORREO_EXISTENTE"
         };
     };
 
-   return{
-        error : true, 
-        message : "Error en el servidor , intentar nuevamente.",
-        code : "ERROR_SERVIDOR"
-   };    
+    // 2. Ejecutar la transacción de actualización limpia en la BD
+    const resultadoModificacion = await dataAlumno.modAlumnoTransaccion(alumnoData); 
 
+    console.log(resultadoModificacion)
+ 
+    if (resultadoModificacion.code === "TRANSACCION_FALLIDA") {
+        return {
+            error: true,
+            message: "Error al actualizar los datos, intente nuevamente.",
+            code: "ERROR_TRANSACCION"
+        };
+    };
+
+    // 3. Si todo salió bien, guardamos historial y respondemos éxito
+    const dataHistorial: HistorialInputs = {
+        id_escuela: alumnoData.id_escuela,
+        id_usuario: alumnoData.id_usuario,
+        modulo: "ALUMNOS",
+        accion: "MODIFICAR",
+        id_registro: Number(alumnoData.dni),
+        descripcion: `Modificacion de ${alumnoData.apellido} ${alumnoData.nombre}`,
+        datos: alumnoData
+    }; 
+        
+    await registroHistorial(dataHistorial);         
+
+    return {
+        error: false,
+        message: "Se modifico correctamente",
+        code: "ALUMNO_MODIFICAR_OK"
+    };
 };
 
 /**
