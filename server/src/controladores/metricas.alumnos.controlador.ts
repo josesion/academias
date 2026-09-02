@@ -7,11 +7,12 @@ import { MAPA_METRICAS_ALUMNOS } from "../respuestas/metricas.alumno";
 import { RespuestaMetricasAlumnos } from "../Servicio/metricas.alumnos.servicios";
 
 const metricasPrincipal = async ( req : Request , res : Response ) =>{
-
+    const { correo } = req.params;
+    console.log(req.params)
     const data = {
-        dni_alumno : Number(req.body.dni_alumno),
+        correo : correo,
     };
-    await handleControladores<{dni_alumno : number }, RespuestaMetricasAlumnos>(
+    await handleControladores<{ correo : string }, RespuestaMetricasAlumnos>(
         res, data , servicioMetricasAlumno.metricasAlumnoPrincipal , MAPA_METRICAS_ALUMNOS
     );
 

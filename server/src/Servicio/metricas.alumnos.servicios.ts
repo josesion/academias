@@ -15,14 +15,28 @@ export interface  RespuestaMetricasAlumnos {
 const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
 : Promise<TipadoData<RespuestaMetricasAlumnos>> => {
 
-    const dniValidado : MetricasAlumnosInputs = MetricasAlumnoSchema.parse( data );
+    const correoValidado : MetricasAlumnosInputs = MetricasAlumnoSchema.parse( data );
 
+    const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( correoValidado.correo);
+    console.log(validarCorreo)
 
+    if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
+        return {
+            error : true,
+            message : "Correo no valido, verificar en servidor.",
+            code : "CORREO_INVALIDO_SERVIDOR" // ESTO ES ASI POR Q SI O SI TENDRIA Q TENER CORREO ASOCIADO A UN DNI
+        };
+    }
+    
+    const dni = validarCorreo.data?.dni_alumno ? validarCorreo.data?.dni_alumno : 0
+    console.log(dni)
     const [respuestaMetricas, respuestaClasesHoy] = await Promise.all([
-            dataMetricasAlumno.obtenerEscuelasPorAlumno(dniValidado.dni_alumno),
-            dataMetricasAlumno.obtenerClasesEscuelasHoy(dniValidado.dni_alumno),
+            dataMetricasAlumno.obtenerEscuelasPorAlumno(dni),
+            dataMetricasAlumno.obtenerClasesEscuelasHoy(dni),
         ]);
 
+        console.log(respuestaMetricas)
+        console.log(respuestaClasesHoy)
     // ACA SE AGREGARA LA INFO DE LOS FLAYERS PARA EL ALUNNO
     const metricasAlumnos : EscuelaAlumnoRow[] | null | undefined  = respuestaMetricas.code === 'METRICAS_ESCEULAS_ALUMNOS_LISTED'
                              ? respuestaMetricas.data
@@ -34,7 +48,7 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
    
     const flayers = null ;    
     
-    if (!respuestaMetricas.error || !respuestaClasesHoy.error) {
+    if (  metricasAlumnos !== undefined || clasesHoy !== undefined) {
             return {
                 error: false,
                 message: "Métricas obtenidas correctamente.",

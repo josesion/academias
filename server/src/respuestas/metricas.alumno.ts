@@ -7,6 +7,11 @@ const ERROR_SERVIDOR = { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR ,
 export const MAPA_METRICAS_ALUMNOS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
+ 
+   "CORREO_INVALIDO_SERVIDOR" : {
+            status: CodigoEstadoHTTP.NO_AUTORIZADO,
+            msg: "Problemas con el correo/dni."
+        },    
 
     "METRICAS_PRINCIPALES_OK" : {
             status: CodigoEstadoHTTP.OK,

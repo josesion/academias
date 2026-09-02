@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 
-export const MetricasAlumnoSchema   = z.object({
-// --- Datos propios del Alumno ---
-    dni_alumno: z.number({ message: "El dni es requerido" })
-        .min(8, { message: "EL dni esta incompleto" }),          
+export const MetricasAlumnoSchema = z.object({
+    // --- Datos propios del Alumno ---
+    correo: z.string({ message: "El correo es requerido" })
+        .email({ message: "El formato del correo no es válido" }),         
 });
 
 

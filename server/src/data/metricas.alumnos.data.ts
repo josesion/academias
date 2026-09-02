@@ -1,5 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
+import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 
 import { TipadoData } from "../tipados/tipado.data";
 
@@ -15,6 +16,23 @@ export interface EscuelaAlumnoRow {
   fecha_alta_escuela: string; 
   estado_en_escuela: string;
 }
+
+
+const obtenerDniAlumno = async ( correo : string)
+:Promise<TipadoData<{dni_alumno : number}>> =>{
+    const sql : string = `SELECT a.dni_alumno 
+                            FROM alumnos a 
+                            JOIN usuarios u ON u.correo = a.email 
+                            WHERE u.correo = ?;`;
+
+    const valor : unknown[] = [correo]; 
+    
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad : "DNI_ALUMNO"
+    }); 
+};
 
 const obtenerEscuelasPorAlumno = async ( dni_alumno : number)
 :Promise<TipadoData<EscuelaAlumnoRow[]>> =>{
@@ -100,5 +118,6 @@ export const method = {
 
     obtenerEscuelasPorAlumno : tryCatchDatos( obtenerEscuelasPorAlumno ),
     obtenerClasesEscuelasHoy : tryCatchDatos( obtenerClasesEscuelasHoy),
+    obtenerDniAlumno : tryCatchDatos( obtenerDniAlumno),
 
 };
