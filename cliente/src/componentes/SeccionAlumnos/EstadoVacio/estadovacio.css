@@ -1,0 +1,104 @@
+.estado_vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+  border-radius: var(--radio-sm);
+  border: 1px dashed var(--borde);
+  background: var(--fondo-superficie);
+  font-family: var(--fuente-principal);
+  animation: estado_vacio_fade_in 0.4s ease forwards;
+}
+
+.estado_vacio_icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-deshabilitado);
+  animation: estado_vacio_float 2.6s ease-in-out infinite;
+}
+
+.estado_vacio_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+}
+
+.estado_vacio_mensaje {
+  margin: 0;
+  font-size: var(--texto-xs);
+  line-height: var(--linea-texto);
+  color: var(--texto-deshabilitado);
+}
+
+/* Variante compacta: para usar dentro de grillas (escuelas / clases) */
+.estado_vacio_compacto {
+  grid-column: 1 / -1;
+  padding: 32px 20px;
+}
+
+.estado_vacio_compacto .estado_vacio_icono svg {
+  width: 26px;
+  height: 26px;
+}
+
+.estado_vacio_compacto .estado_vacio_titulo {
+  font-size: var(--titulo-sm);
+}
+
+/* Variante grande: para el carrusel de flyers */
+.estado_vacio_grande {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 3 / 4;
+  margin: 0 auto;
+  padding: 32px;
+  box-shadow: var(--sombra-sm);
+}
+
+.estado_vacio_grande .estado_vacio_icono {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+}
+
+.estado_vacio_grande .estado_vacio_icono svg {
+  width: 34px;
+  height: 34px;
+  color: var(--color-secundario);
+}
+
+.estado_vacio_grande .estado_vacio_titulo {
+  font-size: var(--titulo-md);
+  color: var(--texto-principal);
+}
+
+.estado_vacio_grande .estado_vacio_mensaje {
+  max-width: 240px;
+  font-size: var(--texto-sm);
+}
+
+@keyframes estado_vacio_fade_in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes estado_vacio_float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}

@@ -79,7 +79,7 @@ const mapAlumnoForm =( dataM : any) =>({
     dni: dataM.Dni,
     apellido: dataM.Apellido,
     nombre: dataM.Nombre,
-    email : dataM.Correo,
+    email : dataM.Email,
     celular: dataM.Celular,
 });
 

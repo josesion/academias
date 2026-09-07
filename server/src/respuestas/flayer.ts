@@ -48,8 +48,27 @@ export const MAPA_GET_FLAYERS: Record<
     },
 
     "SIN_FLAYERS": {
-        status: CodigoEstadoHTTP.OK,
+        status: CodigoEstadoHTTP.SIN_CONTENIDO,
         msg: "No se encontraron flayers para el carrusel.",
+    },
+
+    ERROR_SERVIDOR
+
+};
+
+export const MAPA_DELETE_FLAYERS: Record<
+    string,
+    { status: CodigoEstadoHTTP; msg: string }
+> = {
+
+    "SUCCESS": {
+        status: CodigoEstadoHTTP.OK,
+        msg: "Flayers eliminado correctamente.",
+    },
+
+    "ERROR_EN_BORRAR_FLAYER": {
+        status: CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        msg: "No se encontró parámetros de la imagen para eliminar.",
     },
 
     ERROR_SERVIDOR

@@ -1,59 +1,78 @@
-/* ============================================================
-   COMPONENT CARGANDO — Estilo Editorial Premium
-   ============================================================ */
-
-/* Overlay translúcido de fondo */
 .overlay_cargando {
-    position: absolute;
-    inset: 0;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(250, 249, 247, 0.7); /* Usa tu --fondo-principal pero translúcido */
-    backdrop-filter: blur(4px); /* Efecto blur sutil muy moderno */
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(27, 28, 27, 0.35);
+  backdrop-filter: blur(4px);
 }
 
-/* Cartel contenedor central */
 .cartel_cargando {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    
-    padding: 32px 48px;
-    background: var(--fondo-secundario);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-md);
-    box-shadow: var(--sombra-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 40px;
+  border-radius: var(--radio-md);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  box-shadow: var(--sombra-lg);
+  font-family: var(--fuente-principal);
 }
 
-/* Spinner Minimalista Estilo "Anillo" */
+/* Spinner: anillo fino, arco en verde salvia rotando */
 .spinner {
-    width: 32px;
-    height: 32px;
-    border: 2px solid var(--borde);
-    border-top-color: var(--color-exito); /* Usa tu verde salvia para darle color */
-    border-radius: 50%;
-    animation: rotarSpinner 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
 }
 
-@keyframes rotarSpinner {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Texto de Carga */
 .texto_cargando {
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-sm);
-    font-weight: var(--peso-medio);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--texto-secundario);
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.texto_cargando::after {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: puntos_cargando 1.4s steps(4, end) infinite;
+}
+
+@keyframes spinner_girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes puntos_cargando {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
 }

@@ -36,10 +36,17 @@ export interface PropsPostFlayer {
     plan  : number  
 };
 
-export interface ResultPostFlayer {};
+export interface ReturnPostFlayer {
+    id? : number,
+    titulo : string,
+    descripcion : string ,
+    imagen_url : string,
+    public_id  : string,
+};
 
 
-export const postFlayer = async(  props : PropsPostFlayer) =>{
+export const postFlayer = async(  props : PropsPostFlayer)
+:Promise<ApiResponse<ReturnPostFlayer>> =>{
 
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
@@ -68,4 +75,70 @@ export const postFlayer = async(  props : PropsPostFlayer) =>{
         body :  formData
     });
     
+};
+
+
+
+export const getAllEscuelas = async ()
+:Promise<ApiResponse<ReturnCarrucel>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+
+    const ruta  = `${PAGINA}api/get_flayer`;  
+    
+    return apiFetch( ruta, {
+        method : "GET"
+    });    
+};
+
+
+
+export const getFlayersEscuela = async ()
+:Promise<ApiResponse<ReturnCarrucel>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+
+    const ruta  = `${PAGINA}api/get_flayer_escuela`;  
+    
+    return apiFetch( ruta, {
+        method : "GET"
+    });    
+};
+
+
+export const deletFlayerEscuela = async () =>{
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };    
+    const ruta  = `${PAGINA}api/delete_flayer_escuela`;  
+    
+    return apiFetch( ruta, {
+        method : "GET"
+    });  
+
 };

@@ -8,7 +8,7 @@ import { RespuestaMetricasAlumnos } from "../Servicio/metricas.alumnos.servicios
 
 const metricasPrincipal = async ( req : Request , res : Response ) =>{
     const { correo } = req.params;
-    console.log(req.params)
+
     const data = {
         correo : correo,
     };
@@ -24,4 +24,3 @@ export const method = {
     metricasPrincipal : tryCatch( metricasPrincipal ),
 
 };
-

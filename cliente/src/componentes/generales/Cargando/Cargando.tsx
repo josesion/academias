@@ -32,8 +32,13 @@ export const ComponenteCargando = () => {
   return (
     <div className="overlay_cargando" ref={containerRef}>
       <div className="cartel_cargando" ref={cartelRef}>
-        <div className="spinner"></div>
-        <p className="texto_cargando">Cargando...</p>
+        <div className="spinner" />
+        <p className="texto_cargando">
+          Cargando
+          <span className="punto" />
+          <span className="punto" />
+          <span className="punto" />
+        </p>
       </div>
     </div>
   );

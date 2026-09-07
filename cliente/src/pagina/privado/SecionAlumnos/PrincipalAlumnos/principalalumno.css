@@ -1,0 +1,130 @@
+.principal-alumno-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 20px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  font-family: var(--fuente-principal);
+  background: var(--fondo-principal);
+}
+
+/* =====================================
+    HERO / TÍTULO PRINCIPAL
+===================================== */
+.principal-alumno-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  text-align: center;
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.principal-alumno-titulo::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 48px;
+  height: 2px;
+  background: var(--color-secundario);
+}
+
+/* =====================================
+    CARRUSEL
+===================================== */
+.seccion-carrucel {
+  display: flex;
+  justify-content: center;
+}
+
+/* =====================================
+    SECCIONES (escuelas / clases)
+===================================== */
+.seccion-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.seccion-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  padding-left: 14px;
+  border-left: 3px solid var(--color-secundario);
+}
+
+/* =====================================
+    GRILLA ESCUELAS
+===================================== */
+.grilla-escuelas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* =====================================
+    GRILLA CLASES DE HOY
+===================================== */
+.grilla-clases {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* =====================================
+    TABLET (~640px+)
+===================================== */
+@media (min-width: 640px) {
+  .principal-alumno-container {
+    padding: 56px 32px 96px;
+    gap: 64px;
+  }
+
+  .principal-alumno-titulo {
+    padding-bottom: 24px;
+  }
+
+  .grilla-escuelas {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grilla-clases {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* =====================================
+    DESKTOP (~1024px+)
+===================================== */
+@media (min-width: 1024px) {
+  .principal-alumno-container {
+    padding: 64px 48px 120px;
+  }
+
+  .grilla-escuelas {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .grilla-clases {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .seccion-titulo {
+    font-size: var(--titulo-lg);
+  }
+}

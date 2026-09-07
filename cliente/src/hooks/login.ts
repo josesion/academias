@@ -92,6 +92,8 @@ export const loginLogica = () : LoginLogicaReturn =>{
             return navegar("/assistant_manager_priv");
           if (respuesta.data.rol === "usuario")
             return navegar("/user_manager_priv");
+          if ( respuesta.data.rol === "alumno")
+            return navegar("/alumno_principal")
         }
     };
 

@@ -12,6 +12,16 @@ export const GuardarFlayerSchema = z.object({
         .positive({
             error: "El ID de la escuela debe ser mayor a cero",
         }),
+    id_usuario: z
+        .number({
+            error: "El ID de usuario debe ser un número",
+        })
+        .int({
+            error: "El ID de usuario debe ser un número entero",
+        })
+        .positive({
+            error: "El ID de usuario debe ser mayor a cero",
+        }),        
     plan: z
         .number({
             error: "El ID de Plan debe ser un número",
@@ -103,5 +113,30 @@ export const GuardarImagenSchema = z.object({
         }),
 });
 
+
+export const IDEscuelaSchema = z.object({
+    id_escuela: z
+        .number({
+            error: "El ID de la escuela debe ser un número",
+        })
+
+});
+
+
+export const EliminarFlayerSchema = z.object({
+    id_flayer: z
+        .number({
+            error: "El ID flayer debe ser un número",
+        }),
+
+    id_usuario: z
+        .number({
+            error: "El ID flayer debe ser un número",
+    })    
+
+});
+
 export type GuardarFlayerInputs = z.infer<typeof GuardarFlayerSchema>;
 export type ImagenFlayerInputs = z.infer<typeof GuardarImagenSchema>;
+export type IDEscualInputs = z.infer<typeof IDEscuelaSchema>;
+export type EliminarFlayerInputs = z.infer<typeof EliminarFlayerSchema>;

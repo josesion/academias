@@ -8,6 +8,7 @@ import { GuardarFlayerInputs } from "../squemas/flayer";
 
 
 export interface ReturnPostFlayer {
+    id? : number,
     titulo : string,
     descripcion : string ,
     imagen_url : string,
@@ -148,12 +149,80 @@ const verificarPlanFlayers =async ( id_escuela : number )
     });
 };
 
+const getFlayerEscuela = async ( id_escuela : number ) 
+:Promise<TipadoData<FlayerDataResult[]>> =>{
+  
+    const slq : string = `SELECT 
+                                id_flayer,
+                                id_escuela,
+                                titulo,
+                                descripcion,
+                                imagen_url
+                        FROM flyers 
+                        WHERE id_escuela = ?;`;
 
+    const valores : unknown[] = [ id_escuela];
+
+    return  listarEntidadSinPaginacion({
+        slqListado : slq,
+        valores : valores,
+        entidad : "GET_FLAYERS",
+        estado : ""
+    });
+};
+
+
+export interface Flayer {
+  id_flayer: number;
+  id_escuela: number;
+  imagen_url: string;
+  public_id: string;
+}
+
+const getUrlFlayer = ( id_flayer : number )
+:Promise<TipadoData<Flayer>> =>{
+
+    const sql : string = `SELECT id_flayer, id_escuela, imagen_url, public_id 
+                            FROM flyers 
+                            WHERE id_flayer = ?;`;
+                           
+    const valor : unknown[] = [ id_flayer ];  
+ 
+    return buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad : "URL_FLAYER"
+    });    
+
+};
+
+export interface ReturnEliminarFlayer {
+    id_flayer: number;
+}
+const eliminarFlayerDb = async (id_flayer: number): Promise<TipadoData<ReturnEliminarFlayer>> => {
+    
+
+    const sql: string = `DELETE FROM flyers WHERE id_flayer = ?;`;
+
+    const valores: unknown[] = [id_flayer];
+
+    const dataDevolver = { id_flayer };
+
+    return await iudEntidad<ReturnEliminarFlayer>({
+        slqEntidad: sql,
+        valores: valores,
+        entidad: "FLAYER",
+        metodo: "ELIMINAR",
+        datosRetorno: dataDevolver
+    });
+};
 
 export const method = {
 
     postFlayer : tryCatchDatos( postFlayer ),
     getFlayers : tryCatchDatos( getFlayers ),
     verificarPlan : tryCatchDatos(verificarPlanFlayers),
- 
-};
+    getFlayerEscuela : tryCatchDatos( getFlayerEscuela), 
+    getUrlFlayer  : tryCatchDatos( getUrlFlayer ),
+    eliminarFlayerDb : tryCatchDatos( eliminarFlayerDb),
+ };

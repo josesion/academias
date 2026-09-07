@@ -18,8 +18,8 @@ export type ModuloHistorial =
     | "TIPOS_BAILE"
     | "CATEGORIAS_CAJA"
     | "METODOS_PAGO"
-    | "ASISTENCIAS";
-
+    | "ASISTENCIAS"
+    | "FLAYERS"
 
 export type AccionHistorial =
     | "CREAR"

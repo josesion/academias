@@ -56,7 +56,7 @@ export function EliminarVentana<T extends object>({
       </div>
 
       <div className="datos_eliminar">
-        <p>¿Estás seguro de eliminar o Restaurar?</p>
+        <p>{mensaje ? mensaje : "¿Estás seguro de eliminar o Restaurar?"}</p>
         <p className="datos_eliminar">{accion}</p>
         <span className="nota_eliminar">Esta acción no se puede deshacer.</span>
       </div>

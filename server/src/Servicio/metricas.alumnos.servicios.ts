@@ -18,7 +18,6 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
     const correoValidado : MetricasAlumnosInputs = MetricasAlumnoSchema.parse( data );
 
     const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( correoValidado.correo);
-    console.log(validarCorreo)
 
     if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
         return {
@@ -29,14 +28,14 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
     }
     
     const dni = validarCorreo.data?.dni_alumno ? validarCorreo.data?.dni_alumno : 0
-    console.log(dni)
+    
     const [respuestaMetricas, respuestaClasesHoy] = await Promise.all([
             dataMetricasAlumno.obtenerEscuelasPorAlumno(dni),
             dataMetricasAlumno.obtenerClasesEscuelasHoy(dni),
         ]);
 
-        console.log(respuestaMetricas)
-        console.log(respuestaClasesHoy)
+      
+
     // ACA SE AGREGARA LA INFO DE LOS FLAYERS PARA EL ALUNNO
     const metricasAlumnos : EscuelaAlumnoRow[] | null | undefined  = respuestaMetricas.code === 'METRICAS_ESCEULAS_ALUMNOS_LISTED'
                              ? respuestaMetricas.data

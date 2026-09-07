@@ -1,0 +1,92 @@
+.tarjeta_clase {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--borde);
+  background: var(--fondo-secundario);
+  box-shadow: var(--sombra-sm);
+  font-family: var(--fuente-principal);
+  transition: var(--transicion);
+}
+
+.tarjeta_clase:hover {
+  box-shadow: var(--sombra-md);
+  border-color: var(--borde-hover);
+}
+
+.tarjeta_clase_hora {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 64px;
+  padding: 8px 10px;
+  border-radius: var(--radio-sm);
+  background: var(--fondo-superficie);
+  color: var(--texto-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+}
+
+.tarjeta_clase_hora svg {
+  color: var(--color-secundario);
+}
+
+.tarjeta_clase_cuerpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tarjeta_clase_titulo_fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tarjeta_clase_baile {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tarjeta_clase_nivel {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--fondo-superficie);
+  color: var(--color-secundario);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tarjeta_clase_academia,
+.tarjeta_clase_profesor {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.tarjeta_clase_academia svg,
+.tarjeta_clase_profesor svg {
+  flex-shrink: 0;
+  color: var(--texto-deshabilitado);
+}

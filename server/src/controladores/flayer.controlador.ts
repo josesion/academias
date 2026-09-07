@@ -5,7 +5,7 @@ import { handleControladores } from "../utils/handleControladores";
 
 import { method as servicioFlayer } from '../Servicio/flayer.servicio';
 import  type { DataPost, FlayerData } from "../Servicio/flayer.servicio";
-import { MAPA_POST_IMAGEN, MAPA_GET_FLAYERS } from "../respuestas/flayer";
+import { MAPA_POST_IMAGEN, MAPA_GET_FLAYERS, MAPA_DELETE_FLAYERS } from "../respuestas/flayer";
 
 
 const postFlayer = async( req : Request, res: Response) =>{
@@ -22,7 +22,8 @@ const postFlayer = async( req : Request, res: Response) =>{
        imagen_url : "Url sin cargar",
        public_id  : "Public id sin cargar",
        fecha_actualizacion : null,
-       plan : Number(req.body.plan)
+       plan : Number(req.body.plan),
+       id_usuario : Number( req.usuario?.id)
   };
 
     const dataImagen = {
@@ -48,19 +49,41 @@ const getFlayers = async (__req : Request,  res: Response ) =>{
 };
 
 
+const getFlayerEScuela = async ( req : Request,  res: Response ) =>{
+
+    const data = {
+        id_escuela : Number(req.usuario?.id_escuela),
+    };
+    
+    await handleControladores(
+        res , data , servicioFlayer.getFlayerEscuela , MAPA_GET_FLAYERS
+    );
+    
+
+};
+
+
+const deletFlayerEscuela = async( req : Request,  res: Response) =>{
+
+    const { idflayer  } = req.params;
+
+    const data = {
+        id_flayer : Number(idflayer),
+        id_usuario : Number(req.usuario?.id) 
+    };
+
+    await  handleControladores(
+        res, data,  servicioFlayer.eliminarFlayer, MAPA_DELETE_FLAYERS
+    );
+
+};
+
+
 export const method = {
     postFlayer : tryCatch( postFlayer ),
     getFlayers : tryCatch( getFlayers),
+    getFlayerEscuela : tryCatch( getFlayerEScuela),
+    deleteFlayerEscuela : tryCatch( deletFlayerEscuela),
 };  
 
 
-/**
- FILE: {
-  fieldname: 'imagen',
-  originalname: 'ChatGPT Image 20 may 2026, 21_29_59.png',
-  encoding: '7bit',
-  mimetype: 'image/png',
-  buffer: <Buffer 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52 00 00 04 00 00 00 04 00 08 06 00 00 00 7f 1d 2b 83 00 00 71 62 63 61 42 58 00 00 71 62 6a 75 6d 62 00 ... 1640393 more bytes>,
-  size: 1640443
-}
- */

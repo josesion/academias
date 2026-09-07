@@ -1,4 +1,4 @@
-import { getCarrucel, postFlayer } from "../servicio/flayer";
+import { getCarrucel, postFlayer, getFlayersEscuela, getAllEscuelas, deletFlayerEscuela } from "../servicio/flayer";
 import { useFlayer } from "../hooks/flayers";
 
 
@@ -9,9 +9,12 @@ export const confiFlayer = ()=>{
 
         servicios : {
             getCarrucel : getCarrucel,
-            postFlayer  : postFlayer
+            postFlayer  : postFlayer,
+            getAllEscuelas : getAllEscuelas,
+            getFlayersEscuela : getFlayersEscuela,
+            deletFlayerEscuela : deletFlayerEscuela,
         },
-        plan : 3
+        plan : 4
     };
 
     return useFlayer(config)

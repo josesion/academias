@@ -271,7 +271,6 @@ export const verificarCorreoExistente2 = async (email: string, dniActual?: numbe
 export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
     return await iudEntidadTransaction(async (conn) => {
 
-        console.log(data)
         
         // 1. "Magia": Generar contraseña aleatoria de 6 dígitos
         const contrasenaPlano = Math.floor(100000 + Math.random() * 900000).toString();
@@ -287,7 +286,7 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
         
         const [resUsuario]: any = await conn.execute(sqlUsuario, [
             data.usuario || data.email, 
-            hashedPassword, // Acá va la contraseña ya hasheada
+            hashedPassword, // Contraseña ya hasheada
             data.nombre,
             data.apellido,
             data.celular,
@@ -299,7 +298,7 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
 
         const idUsuarioGenerado = resUsuario.insertId;
 
-        // 4. Insertar en la tabla 'alumnos'
+        // 4. Insertar en la tabla 'alumnos' (Entidad global)
         const sqlAlumno = `
             INSERT INTO alumnos (dni_alumno, nombre, apellido, email, numero_celular)
             VALUES (?, ?, ?, ?, ?);
@@ -313,12 +312,27 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
             data.celular
         ]);
 
-        // (Opcional) retornar también la contraseña en plano por si tenés que mandarla por mail o WhatsApp:
+        // 5. Insertar en la tabla de relación 'alumnos_en_escuela'
+        const sqlRelacionEscuela = `
+            INSERT INTO alumnos_en_escuela (dni_alumno, id_escuela, fecha_alta_escuela) 
+            VALUES (?, ?, ?);
+        `;
+
+        // Generamos la fecha actual para el alta en esta escuela específica
+        const fechaActual = new Date();
+
+        await conn.execute(sqlRelacionEscuela, [
+            data.dni,
+            data.id_escuela,
+            fechaActual
+        ]);
+
+        // Retornamos los datos necesarios para el controlador (incluyendo la contraseña en plano para el correo)
         return {
             id_usuario: idUsuarioGenerado,
             dni: data.dni,
             email: data.email,
-            contrasenaTemporal: contrasenaPlano // ¡Guarda si la devolvés acá para usarla en el correo!
+            contrasenaTemporal: contrasenaPlano 
         };
     });
 };

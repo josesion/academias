@@ -1,177 +1,121 @@
-/* ============================================================
-   VENTANA DE CONFIRMACIÓN — ELIMINAR (tokens de marca)
-   ============================================================ */
-
 .componente_eliminar {
-    position: relative;
-
-    width: 100%;
-    max-width: 400px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-    text-align: center;
-
-    padding: 32px;
-
-    background: color-mix(in srgb, var(--fondo-secundario) 92%, transparent);
-    backdrop-filter: blur(18px);
-
-    border: 1px solid var(--borde);
-    border-top: 3px solid var(--color-primario);
-    border-radius: var(--radio-lg);
-
-    box-shadow: var(--sombra-lg);
-
-    transition: var(--transicion);
-    animation: eliminar_entrada 0.3s ease;
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  padding: 32px 28px;
+  border-radius: var(--radio-md);
+  background: var(--fondo-secundario);
+  box-shadow: var(--sombra-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  font-family: var(--fuente-principal);
+  animation: eliminar_modal_pop_in 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes eliminar_entrada {
-    from { opacity: 0; transform: translateY(10px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ============================================================
-   ICONO DE ALERTA
-   ============================================================ */
-
+/* Ícono de advertencia */
 .icono_alerta_eliminar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-
-    background: color-mix(in srgb, var(--color-error) 14%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
-    color: var(--color-error);
-
-    transition: var(--transicion);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(194, 155, 56, 0.12);
+  color: var(--color-advertencia);
+  margin-bottom: 4px;
 }
 
-/* ============================================================
-   MENSAJE
-   ============================================================ */
-
+/* Texto principal */
 .datos_eliminar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    transition: var(--transicion);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.datos_eliminar ,p {
-    margin: 0;
-    font-family: var(--fuente-principal);
-    font-size: var(--texto-md);
-    color: var(--texto-secundario);
-}
-
-.datos_eliminar p:first-child {
-    margin: 0;
-    font-family: var(--fuente-principal);
-    font-size: var(--texto-md);
-    color: var(--texto-secundario);
-}
-
-
-
-.datos_eliminar p:last-child {
-    margin: 0;
-    font-family: var(--fuente-titulos);
-    font-weight: var(--peso-semi-negrita);
-    font-size: var(--titulo-sm);
-    color: var(--texto-principal);
-    word-break: break-word;
+.datos_eliminar p {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
 }
 
 .nota_eliminar {
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    color: var(--texto-deshabilitado);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+  font-style: italic;
 }
 
-/* ============================================================
-   BOTONERA
-   ============================================================ */
-
+/* Botonera */
 .botonera_eliminar {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-    transition: var(--transicion);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
 }
 
-.botonera_eliminar > * {
-    flex: 1;
+/* =====================================
+    ESTADO CARGANDO (overlay sobre el modal)
+===================================== */
+.estado_cargando {
+  pointer-events: none;
 }
 
-/* ============================================================
-   ESTADO CARGANDO
-   ============================================================ */
-
-.componente_eliminar.estado_cargando .icono_alerta_eliminar,
-.componente_eliminar.estado_cargando .datos_eliminar,
-.componente_eliminar.estado_cargando .botonera_eliminar {
-    opacity: 0.3;
-    pointer-events: none;
-    filter: blur(1px);
+.estado_cargando > *:not(.spinner_container_eliminar) {
+  opacity: 0.35;
+  filter: blur(1px);
+  transition: var(--transicion);
 }
 
 .spinner_container_eliminar {
-    position: absolute;
-    inset: 0;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-
-    background: color-mix(in srgb, var(--fondo-secundario) 78%, transparent);
-    border-radius: var(--radio-lg);
-    backdrop-filter: blur(3px);
-
-    z-index: 2;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border-radius: var(--radio-md);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
 }
 
 .spinner_neon_circle {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-
-    border: 3px solid var(--borde);
-    border-top-color: var(--color-primario);
-
-    animation: girar_spinner 0.8s linear infinite;
-}
-
-@keyframes girar_spinner {
-    to { transform: rotate(360deg); }
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: eliminar_spinner_girar 0.9s linear infinite;
 }
 
 .texto_cargando {
-    margin: 0;
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--texto-secundario);
+  margin: 0;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
 }
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
+@keyframes eliminar_spinner_girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-@media (max-width: 480px) {
-    .componente_eliminar {
-        max-width: 92%;
-        padding: 24px 22px;
-        gap: 16px;
-    }
+@keyframes eliminar_modal_pop_in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

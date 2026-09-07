@@ -7,20 +7,80 @@
   gap: 32px;
   font-family: var(--fuente-principal);
   background: var(--fondo-principal);
+  position: relative;
 }
 
-/* CONTENIDO PRINCIPAL: columna en mobile/tablet, fila en desktop */
+/* HEADER DE LA VISTA + BOTÓN VISUAL */
+.flayers_vista_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 20px;
+}
+
+/* CONTENIDO PRINCIPAL: ahora la galería ocupa todo el ancho,
+   el formulario ya no compite por espacio, es un modal aparte */
 .flayers_pagina_contenido {
   display: flex;
   flex-direction: column;
   gap: 40px;
 }
 
-/* SECCIÓN CREACIÓN (header + lienzo + formulario) */
+/* =====================================
+    MODAL: FORMULARIO DE CREACIÓN
+===================================== */
+.flayers_modal_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(27, 28, 27, 0.45);
+  backdrop-filter: blur(3px);
+  animation: flayers_modal_overlay_fade 0.25s ease forwards;
+}
+
 .flayers_seccion_creacion {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  padding: 32px 28px;
+  border-radius: var(--radio-md);
+  background: var(--fondo-secundario);
+  box-shadow: var(--sombra-lg);
+  animation: flayers_modal_pop_in 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.flayers_modal_btn_cerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--texto-secundario);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.flayers_modal_btn_cerrar:hover {
+  background: var(--fondo-hover);
+  color: var(--texto-principal);
 }
 
 .flayers_creacion_header {
@@ -47,14 +107,11 @@
   color: var(--color-secundario);
 }
 
-/* 👇 SIEMPRE columna, en cualquier tamaño de pantalla — no se toca en los @media */
 .flayers_creacion_grid {
   display: flex;
   flex-direction: column;
   gap: 20px;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
 }
 
 .flayers_pagina_lienzo {
@@ -62,20 +119,25 @@
   padding: 10px;
   border: 1px solid var(--borde);
   border-radius: var(--radio-sm);
-  background: var(--fondo-secundario);
+  background: var(--fondo-superficie);
 }
 
 .flayers_pagina_formulario {
   width: 100%;
 }
 
-/* GALERÍA / CARRUSEL */
+.flayers_pagina_error {
+  width: 100%;
+}
+
+/* =====================================
+    GALERÍA / CARRUSEL
+===================================== */
 .flayers_pagina_galeria {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 32px;
-  border-top: 1px solid var(--borde);
+  padding-top: 8px;
 }
 
 .flayers_galeria_header {
@@ -102,13 +164,28 @@
 
 .carrusel_flayers_contenendor {
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-/* ERROR */
-.flayers_pagina_error {
-  width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
+@keyframes flayers_modal_overlay_fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes flayers_modal_pop_in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* =====================================
@@ -119,56 +196,16 @@
     padding: 40px 32px 64px;
   }
 
-  .flayers_pagina_error {
-    margin: 0 auto;
+  .flayers_galeria_header {
+    text-align: left;
   }
 }
 
 /* =====================================
-    DESKTOP (~1024px+): lienzo+form a la izquierda,
-    galería a la derecha, misma altura total
+    DESKTOP (~1024px+)
 ===================================== */
 @media (min-width: 1024px) {
   .flayers_pagina {
     padding: 56px 48px 80px;
-  }
-
-  .flayers_creacion_header,
-  .flayers_galeria_header {
-    text-align: left;
-  }
-
-  .flayers_pagina_contenido {
-    flex-direction: row;
-    align-items: stretch;
-    gap: 56px;
-  }
-
-  .flayers_seccion_creacion {
-    flex: 0 0 420px;
-    max-width: 420px;
-  }
-
-  .flayers_creacion_grid {
-    max-width: 100%;
-    margin: 0;
-  }
-
-  .flayers_pagina_error {
-    margin: 0;
-  }
-
-  .flayers_pagina_galeria {
-    flex: 1;
-    padding-top: 0;
-    border-top: none;
-    border-left: 1px solid var(--borde);
-    padding-left: 56px;
-    justify-content: center;
-  }
-
-  .carrusel_flayers_contenendor {
-    flex: 1;
-    align-items: center;
   }
 }

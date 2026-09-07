@@ -1,9 +1,11 @@
-import { useReducer, useEffect } from "react";
-import { initialFlayers, flayerReducer } from "../reducers/flayer.reducer"; 
+import { useReducer} from "react";
+import { initialFlayers, flayerReducer, type FlayersAction } from "../reducers/flayer.reducer"; 
 
 import {type Valores } from "../componentes/Flayers/FormularioFlayer/FormularioFlayer";
 import { type PropsPostFlayer } from "../servicio/flayer";
 import {type  ErroresDetalle } from "../componentes/Flayers/FormularioFlayer/FormularioFlayer";
+
+import { useEffectServicio } from "../utils/useEfectServicio";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -12,7 +14,10 @@ interface FlayersProps {
 
     servicios : {
         getCarrucel : ServicioCrud,
-        postFlayer  : ServicioCrud
+        postFlayer  : ServicioCrud,
+        getAllEscuelas : ServicioCrud,
+        getFlayersEscuela : ServicioCrud,
+        deletFlayerEscuela : ServicioCrud,
     },
 
     plan : number
@@ -49,6 +54,13 @@ const quitarImagen = () =>{
     });
 };
 
+const abrirFormulario = () =>{
+    dispatch({type : "SET_MODAL_FORMULARIO", payload : true});
+};
+
+const cerrarFormulario = () =>{
+    dispatch({type : "SET_MODAL_FORMULARIO", payload : false});
+};
 
 const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
     e.preventDefault();
@@ -60,12 +72,12 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
         !imagen
     ) {
        dispatch({
-        type : "SET_ERROR_GENERICO", payload : "Formulario incompleto: hay campos vacíos o falta la imagen"
+        type : "SET_ERROR_GENERICO", payload : { campo : "postImagen", valor : "Formulario incompleto: hay campos vacíos o falta la imagen" }
        });
     } else {
         try{
        
-            dispatch({ type : "SET_CARGA" , payload : true});
+            dispatch({ type : "SET_CARGA" , payload : { campo : "postImagen" , valor : true}});
 
             const subirImagen = config.servicios.postFlayer;
 
@@ -77,15 +89,15 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
             }
 
             const  resultSubirImagen = await subirImagen(data); 
-            console.log(resultSubirImagen)
-
+      
+    
             if( resultSubirImagen.code === "FLAYER_OK"){
                 dispatch({ type : "RESET_FORMULARIO"});
                 dispatch({ type : "SET_MODAL", payload : true});
             };
 
             if ( resultSubirImagen.code === 'SIN_PERMISOS' ){
-                dispatch({ type :"SET_ERROR_GENERICO", payload : resultSubirImagen.message});
+                dispatch({ type :"SET_ERROR_GENERICO", payload : { campo : "postImagen", valor : resultSubirImagen.message}});
             };             
        
             if (resultSubirImagen.errorsDetails) {        
@@ -105,33 +117,33 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
         };  
 
         }catch(error){
-            dispatch({ type : "SET_ERROR_GENERICO" , payload : "Error en el servidor"});
+            dispatch({ type : "SET_ERROR_GENERICO" , payload : { campo : "postImagen" , valor : "Error en el servidor"}});
             console.error(error)
         }finally{
-            dispatch({ type : "SET_CARGA" , payload : false});
+            dispatch({ type : "SET_CARGA" , payload : { campo : "postImagen" , valor : false}});
         };
     }
 
 };
+
+const handleElimnarFlayer = ( id_flayer : number ) =>{
+    console.log(id_flayer)
+}
 
 const handleCerrarModal = () =>{
     dispatch({ type : "SET_MODAL", payload : false});
 };
 
 
-useEffect( ()=>{
-
-    const carrucelFlayers = async () =>{
-
-        const resultCarrucel = await config.servicios.getCarrucel({});
-
-        console.log(resultCarrucel)
-
-    };
-
-    carrucelFlayers();
-
-},[]);
+useEffectServicio<any , any, FlayersAction>({
+    servicios : config.servicios.getFlayersEscuela,
+    dispatch : dispatch,
+    accionCarga : ( carga ) => ({ type : "SET_CARGA", payload :{ campo : "galeria", valor : carga}}),
+    accionError : ( mensaje ) =>({ type : "SET_ERROR_GENERICO" , payload : { campo : "galeria" , valor : mensaje}}),
+    accionResultado : ( data )=>({ type : "SET_CARRUCEL_AMB", payload : data}),
+    useAbort : true,
+    dependencias :[]
+});
 
 
   return {
@@ -140,7 +152,10 @@ useEffect( ()=>{
     cachearImagen, 
     quitarImagen,
     handleSubmit,
-    handleCerrarModal
+    handleElimnarFlayer,
+    handleCerrarModal,
+    abrirFormulario, cerrarFormulario,
+
   }
 
 };

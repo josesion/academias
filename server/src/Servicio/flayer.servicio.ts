@@ -1,10 +1,17 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
-import { subirImagen } from "../utils/subirImagen";
+import {subirImagenR2 } from "../utils/subirImagen";
+import { registroHistorial } from "../utils/postHistorial";
+import { eliminarImagenR2 } from "../utils/subirImagen";
+
 import { method as dataFlayer } from "../data/flayer.data"; 
 
 import { TipadoData } from "../tipados/tipado.data";
-import { GuardarFlayerInputs, ImagenFlayerInputs , GuardarFlayerSchema, GuardarImagenSchema } from "../squemas/flayer";
-
+import {  GuardarFlayerInputs, ImagenFlayerInputs , 
+          GuardarFlayerSchema, GuardarImagenSchema,
+          IDEscualInputs, IDEscuelaSchema,  
+          EliminarFlayerInputs, EliminarFlayerSchema,   
+} from "../squemas/flayer";
+import { HistorialInputs } from "../squemas/historial";
 
 export interface FlayerData {
     titulo: string;
@@ -37,89 +44,109 @@ export interface DataPost  {
  * };
  * const resultado = await postFlayer(datosPeticion);
  */
-const postFlayer  = async ( data : DataPost )
-:Promise<TipadoData<FlayerData>> =>{
+const postFlayer = async (data: DataPost): Promise<TipadoData<FlayerData>> => {
+    const { imagen, dataTabla } = data;
 
-     const {  imagen, dataTabla} = data;
+    const validarImagen: ImagenFlayerInputs = GuardarImagenSchema.parse(imagen);
+    const dataBdValidada: GuardarFlayerInputs = GuardarFlayerSchema.parse(dataTabla);
 
-     const validarImagen : ImagenFlayerInputs =  GuardarImagenSchema.parse( imagen ); 
-     const dataBdValidada : GuardarFlayerInputs = GuardarFlayerSchema.parse( dataTabla );
+    const cantidadFlayersEscuela = await dataFlayer.verificarPlan(dataBdValidada.id_escuela);
 
-     const cantidadFlayersEscuela = await dataFlayer.verificarPlan( dataBdValidada.id_escuela );
-
-     if ( cantidadFlayersEscuela.code === "CONTADOR_FLAYES_EXISTE" ){
-          const cantidadFlayer = cantidadFlayersEscuela.data?.cantidad_flayers ? cantidadFlayersEscuela.data.cantidad_flayers : 0;
+    if (cantidadFlayersEscuela.code === "CONTADOR_FLAYES_EXISTE") {
+        const cantidadFlayer = cantidadFlayersEscuela.data?.cantidad_flayers ? cantidadFlayersEscuela.data.cantidad_flayers : 0;
   
-          if (dataBdValidada.plan <= cantidadFlayer){
-               return{
-                    error : true, 
-                    message : "Superlo el limite de su plan.",
-                    code : "SIN_PERMISOS"
-               };
-          };
-     };
+        if (dataBdValidada.plan <= cantidadFlayer) {
+            return {
+                error: true, 
+                message: "Superó el límite de su plan.",
+                code: "SIN_PERMISOS"
+            };
+        }
+    }
 
-     if (
-          validarImagen.tipo !== "image/jpeg" &&
-          validarImagen.tipo !== "image/png" &&
-          validarImagen.tipo !== "image/webp"
-     ) {
-          return {
-               error: true,
-               message: "El formato de la imagen no está permitido.",
-               code: "FORMATO_IMAGEN_INVALIDO",
-          };
-     };
+    if (
+        validarImagen.tipo !== "image/jpeg" &&
+        validarImagen.tipo !== "image/png" &&
+        validarImagen.tipo !== "image/webp"
+    ) {
+        return {
+            error: true,
+            message: "El formato de la imagen no está permitido.",
+            code: "FORMATO_IMAGEN_INVALIDO",
+        };
+    }
 
-     const MAX_SIZE = 2 * 1024 * 1024;
+    const MAX_SIZE = 2 * 1024 * 1024;
 
-     if (validarImagen.size > MAX_SIZE) {
-          return {
-               error: true,
-               message: "La imagen no puede superar los 2 MB.",
-               code: "TAMANO_IMAGEN_INVALIDO",
-          };
-     };     
+    const sizeBytes = typeof validarImagen.size === 'string' ? parseInt(validarImagen.size, 10) : validarImagen.size;
+    if (sizeBytes > MAX_SIZE) {
+        return {
+            error: true,
+            message: "La imagen no puede superar los 2 MB.",
+            code: "TAMANO_IMAGEN_INVALIDO",
+        };
+    }   
+
+    // --- CAMBIO CLAVE: Subimos a Cloudflare R2 en vez de Cloudinary ---
+    let fileKey: string;
+    try {
+        fileKey = await subirImagenR2(validarImagen.buffer, validarImagen.nombre, validarImagen.tipo);
+    } catch (error) {
+        return {
+            error: true,
+            message: "No se pudo subir la imagen a Cloudflare R2.",
+            code: "ERROR_SUBIR_IMAGEN",
+        };
+    }
+
+    // Si configuraste un dominio público en R2 (o bucket público), armás la URL completa.
+    // Si usas un dominio custom o r.dev, por ejemplo: https://tu-dominio.com/${fileKey}
+    // O si guardas la key directamente en la BD:
+    const urlImagenFinal = `${process.env.R2_PUBLIC_URL}/${fileKey}`; 
+
+    const dataImagenSubida: GuardarFlayerInputs = {
+        ...dataBdValidada,
+        imagen_url: urlImagenFinal, // URL pública para mostrar en el front
+        public_id: fileKey          // Guardamos la Key de R2 para poder borrarla/actualizarla después
+    };
+
+    const resultBdFlaser = await dataFlayer.postFlayer(dataImagenSubida);
+    
+    if (resultBdFlaser.code === 'POST_FLAYER_CREAR') {
+        const returnData: FlayerData = {
+            imagen_url: dataImagenSubida.imagen_url,
+            descripcion: dataImagenSubida.descripcion,
+            titulo: dataImagenSubida.titulo
+        };
 
 
-     const resultSubirImagen = await subirImagen( validarImagen.buffer );
-   
-     if (!resultSubirImagen.secure_url || !resultSubirImagen.public_id) {
-          return {
-               error: true,
-               message: "No se pudo obtener la información de la imagen desde Cloudinary.",
-               code: "ERROR_SUBIR_IMAGEN",
-          };
-     };
- 
-     const dataImagenSubida : GuardarFlayerInputs = {
-          ...dataBdValidada,
-          imagen_url : resultSubirImagen.secure_url,
-          public_id  : resultSubirImagen.public_id
-     };
+        const dataHistorial : HistorialInputs ={
+                id_escuela :  dataBdValidada.id_escuela ,
+                id_usuario :  dataBdValidada.id_usuario,
+                modulo : "FLAYERS",
+                accion : "CREAR",
+                id_registro: Number(resultBdFlaser.data?.id),
+                descripcion: `Se subio flayer : ${ dataBdValidada.titulo}`,
+                datos: {
+                    dataBdValidada
+                } 
+        };
 
-     const resultBdFlaser = await  dataFlayer.postFlayer( dataImagenSubida);
-     if (resultBdFlaser.code === 'POST_FLAYER_CREAR' ){
-          // aca envio el mensaje  de todo bien al controlador 
-          const returnData : FlayerData = {
-             imagen_url : dataImagenSubida.imagen_url,
-             descripcion :  dataImagenSubida.descripcion,
-             titulo  : dataImagenSubida.titulo
-          }
+        await registroHistorial( dataHistorial );
 
-          return {
-               error : false, 
-               message : "Imagen subida Correctamente",
-               data : returnData,
-               code : "FLAYER_OK"
-          };
-     };
+        return {
+            error: false, 
+            message: "Imagen subida Correctamente",
+            data: returnData,
+            code: "FLAYER_OK"
+        };
+    }
 
-     return {
-          error : true , 
-          message :  "Error en el servidor, subir flayer.",
-          code : "ERROR_SERVIDOR   "
-     };
+    return {
+        error: true, 
+        message: "Error en el servidor, subir flayer.",
+        code: "ERROR_SERVIDOR"
+    };
 };
 
 /**
@@ -163,12 +190,89 @@ const getFlayers = async (  ) =>{
      return {
           error : true , 
           message :  "Error en el servidor, carrucel flayer.",
-          code : "ERROR_SERVIDOR   "
+          code : "ERROR_SERVIDOR"
      };     
     
+};
+
+
+const getFlayerEscuela = async ( id : IDEscualInputs) =>{
+
+     const validarId : IDEscualInputs = IDEscuelaSchema.parse( id );
+
+     const resultGetFlayers = await dataFlayer.getFlayerEscuela( validarId.id_escuela );
+   
+     if ( resultGetFlayers.code === 'GET_FLAYERS_LISTED'){
+          return {
+               error : false, 
+               message : "Flayers para el carrucel.",
+               data : resultGetFlayers.data,
+               code : "FLAYERS_OK"
+          };
+     };  
+
+     if ( resultGetFlayers.code === 'NO_ACTIVE_GET_FLAYERS'){
+          return {
+               error : true, 
+               message : "No se encotraron flayers para el carrucel.",
+               code : "SIN_FLAYERS"
+          };
+     };
+
+     return {
+          error : true , 
+          message :  "Error en el servidor, carrucel flayer.",
+          code : "ERROR_SERVIDOR   "
+     };   
+
+};
+
+
+const eliminarFlayer = async ( data : EliminarFlayerInputs ) =>{
+
+     const validarData : EliminarFlayerInputs = EliminarFlayerSchema.parse( data );
+
+     const urlFlayer = await dataFlayer.getUrlFlayer( validarData.id_flayer );
+     //console.log(urlFlayer)
+     if ( urlFlayer.code === 'URL_FLAYER_NO_EXISTE'){
+          return {
+               error : true, 
+               message : "No se encontró parámetros de la imagen para eliminar.",
+               code : "ERROR_EN_BORRAR_FLAYER"
+          };
+     };
+
+     if ( urlFlayer.code === 'URL_FLAYER_EXISTE' && urlFlayer.data?.imagen_url ){
+          await eliminarImagenR2(urlFlayer.data?.imagen_url);
+          await dataFlayer.eliminarFlayerDb(validarData.id_flayer);
+          return {
+               error: false,
+               message: "Flyer eliminado correctamente",
+               code: "SUCCESS"
+          };          
+     };
+
+     return {
+          error : true , 
+          message :  "Error en el servidor, eLINAR  flayer.",
+          code : "ERROR_SERVIDOR"
+     };       
+
+/**
+// 1. Buscás el flyer en la BD para obtener su URL
+const flyer = await obtenerFlayerPorId(id);
+
+// 2. Borrás de R2 pasándole esa URL
+await eliminarImagenR2(flyer.imagen_url);
+
+// 3. Borrás el registro de MySQL
+await eliminarFlayerDeDb(id);
+ */
 };
 
 export const  method = {
      postFlayer : tryCatchDatos( postFlayer ),
      getFlayers : tryCatchDatos( getFlayers ),
+     getFlayerEscuela : tryCatchDatos( getFlayerEscuela),
+     eliminarFlayer : tryCatchDatos( eliminarFlayer),
 };

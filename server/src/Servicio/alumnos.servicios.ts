@@ -70,7 +70,8 @@ const altaAlumno = async (data: AlumnosInputs)
             );            
 
             await enviarCorreo({
-                to: alumnoData.email,
+                from : 'onboarding@resend.dev',
+                to: 'josesion1388@gmail.com',
                 subject: "¡Tus credenciales de acceso a la Academia!",
                 html: htmlContenido
             });

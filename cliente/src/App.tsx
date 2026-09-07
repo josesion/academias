@@ -38,6 +38,10 @@ import { FlayersPag } from "./pagina/privado/Flayers/Flayers";
 //Seccion conetxtos
 import { ProtectRutasProv } from "./contexto/protectRutas";
 
+//------------------------------Seccion para alumnos -------------------------------------
+
+import { PrincipalAlumnos } from "./pagina/privado/SecionAlumnos/PrincipalAlumnos/PrincipalAlumnos";
+import { EsculasSeccion } from "./pagina/privado/SecionAlumnos/EscuelasPag/EscuelasPag";
 // estilos css
 import "./app.css";
 
@@ -101,6 +105,17 @@ function App() {
                   element={<AmbCategoriasCajaUsuarios />}
                 />
                 <Route path="/alum_manager_priv" element={<AlumnoPage />} />
+
+                {/* 🔒 RUTAS para el alumno */}
+
+                <Route
+                  path="/alumno_principal"
+                  element={<PrincipalAlumnos />}
+                />
+                <Route
+                  path="/escuelas_principal"
+                  element={<EsculasSeccion />}
+                />
               </Route>
             </Route>
           </Routes>
