@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { LuX, LuImagePlus } from "react-icons/lu";
 
 import screenDefault from "./screen.png";
@@ -13,12 +13,27 @@ interface SubirImagen {
 export const LienzoImagen = (props: SubirImagen) => {
   const { onChangeImagen, imagen, quitarImagen } = props;
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const [sourceImagen, setSourceImagen] = useState<string>(screenDefault);
+
+  // * Creamos el blob UNA sola vez cuando 'imagen' cambia y limpiamos memoria
+  useEffect(() => {
+    if (!imagen) {
+      setSourceImagen(screenDefault);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imagen);
+    setSourceImagen(objectUrl);
+
+    // Limpieza al desmontar o al cambiar de imagen
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [imagen]);
 
   const handleElegirImagen = () => {
     inputFileRef.current?.click();
   };
-
-  const sourceImagen = imagen ? URL.createObjectURL(imagen) : screenDefault;
 
   return (
     <div className="lienzo_contenedor">

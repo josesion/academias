@@ -21,7 +21,7 @@ type ComponenteEliminar<T extends object> = {
   onCancelar?: () => void;
   accion: string;
   mensaje?: string | null;
-  cargando?: boolean; // <-- Nueva Prop
+  cargando?: boolean;
 };
 
 /**
@@ -40,6 +40,7 @@ export function EliminarVentana<T extends object>({
   onCancelar,
   accion,
   mensaje,
+
   cargando,
 }: ComponenteEliminar<T>) {
   return (
@@ -56,7 +57,6 @@ export function EliminarVentana<T extends object>({
       </div>
 
       <div className="datos_eliminar">
-        <p>{mensaje ? mensaje : "¿Estás seguro de eliminar o Restaurar?"}</p>
         <p className="datos_eliminar">{accion}</p>
         <span className="nota_eliminar">Esta acción no se puede deshacer.</span>
       </div>

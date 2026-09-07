@@ -23,6 +23,9 @@ export interface FlayersTipado {
     imagen: File | null;
     valoresFormulario: Valores;
     carrucelAbm : ReturnCarrucel[] | null,
+
+    planFlayers : number,
+    actualizar : number,
 }
 
 export const initialFlayers = (): FlayersTipado => ({
@@ -44,6 +47,7 @@ export const initialFlayers = (): FlayersTipado => ({
         imagen: null,
         titulo: null,
         descripcion: null,
+    
     },
     imagen: null,
     valoresFormulario: {
@@ -51,7 +55,10 @@ export const initialFlayers = (): FlayersTipado => ({
         descripcion_titulo: "",
     },
 
-    carrucelAbm : null
+    carrucelAbm : null,
+
+    planFlayers : 0,
+    actualizar : 1,
 });
 
 export type FlayersAction =  
@@ -64,6 +71,8 @@ export type FlayersAction =
 | { type: "SET_MODAL"; payload: boolean }
 | { type: "SET_MODAL_FORMULARIO"; payload: boolean }
 | { type: "SET_MODAL_ELIMINAR"; payload: boolean }
+| { type : "SET_PLAN_FLAYERS", payload : number } 
+| { type : "SET_ACTUALIZAR" }
 | { type: "RESET_FORMULARIO" };
 
 export const flayerReducer = (state: ReturnType<typeof initialFlayers>, action: FlayersAction): ReturnType<typeof initialFlayers> => {
@@ -132,7 +141,19 @@ export const flayerReducer = (state: ReturnType<typeof initialFlayers>, action: 
             return {
                 ...state,
                 modalConfirmacionEliminar: action.payload,
-            };              
+            };  
+            
+        case "SET_PLAN_FLAYERS" :
+            return {
+                ...state,
+                planFlayers : action.payload
+            };
+          
+        case "SET_ACTUALIZAR" :
+            return {
+                ...state,
+                actualizar:  state.actualizar + 1
+            };            
 
         case "RESET_FORMULARIO":
             return {
@@ -140,6 +161,7 @@ export const flayerReducer = (state: ReturnType<typeof initialFlayers>, action: 
                 carga: state.carga,  // Preserva el estado de carga actual
                 modalConfirmacion: state.modalConfirmacion, // Mantiene el modal intacto
                 carrucelAbm: state.carrucelAbm,
+                planFlayers : state.planFlayers,
             };
                 
         default:

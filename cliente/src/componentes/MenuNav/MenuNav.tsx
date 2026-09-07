@@ -65,6 +65,7 @@ export const MenuNav = () => {
 
   // const irInscripciones = () => irA("/inscrip_page");
   const irListInscripciones = () => irA("/list_inscrip");
+  const irFlayers = () => irA("/flayers");
   const irHorarios = () => irA("/horario_page");
 
   const irPrincipal = () => irA("/user_manager_priv");
@@ -200,6 +201,15 @@ export const MenuNav = () => {
                       }}
                     >
                       <PiCardsBold size={18} color="#38bdf8" /> Listado Cajas
+                    </li>
+
+                    <li
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        irFlayers();
+                      }}
+                    >
+                      <LuLayers size={18} color="#a78bfa" /> Flyers y Novedades
                     </li>
                   </ul>
                 )}

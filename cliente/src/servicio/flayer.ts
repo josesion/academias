@@ -124,7 +124,7 @@ export const getFlayersEscuela = async ()
 };
 
 
-export const deletFlayerEscuela = async () =>{
+export const deletFlayerEscuela = async ( id_flayer : number ) =>{
     const verificarUser= await verificarAutenticacion();
     if (verificarUser.autenticado === false) {
         return {
@@ -135,7 +135,7 @@ export const deletFlayerEscuela = async () =>{
             errorsDetails: undefined
         };
     };    
-    const ruta  = `${PAGINA}api/delete_flayer_escuela`;  
+    const ruta  = `${PAGINA}api/delete_flayer_escuela/${id_flayer}`;  
     
     return apiFetch( ruta, {
         method : "GET"

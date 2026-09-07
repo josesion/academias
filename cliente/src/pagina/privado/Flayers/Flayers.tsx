@@ -6,7 +6,7 @@ import { FormularioFlayer } from "../../../componentes/Flayers/FormularioFlayer/
 import { CompoError } from "../../../componentes/generales/Error/Error";
 import { ModalConfirmacion } from "../../../componentes/Flayers/Confirmacion/Confirmacion";
 import { CarruselFlayers } from "../../../componentes/Flayers/Carrucel/CarruselFlayers";
-import { Boton } from "../../../componentes/generales/Boton/Boton";
+
 import { LuX } from "react-icons/lu";
 
 import "./flayer.css";
@@ -22,9 +22,9 @@ export const FlayersPag = () => {
     handleCerrarModal,
     abrirFormulario,
     cerrarFormulario,
+    abrirModalEliminar,
+    cerrarModalEliminar,
   } = confiFlayer();
-
-  console.log(state.errorGenericos.postImagen);
 
   return (
     <section className="flayers_pagina">
@@ -42,14 +42,6 @@ export const FlayersPag = () => {
             Administra tus publicaciones y carrusel
           </p>
         </div>
-        <Boton
-          clase="agregar"
-          focus={true}
-          logo="Add"
-          texto="Agregar Flayer"
-          type="button"
-          onClick={abrirFormulario}
-        />
       </div>
 
       {/* CONTENIDO PRINCIPAL */}
@@ -122,8 +114,16 @@ export const FlayersPag = () => {
               <SpinnerTarjeta />
             ) : (
               <CarruselFlayers
+                plan={state.planFlayers}
+                tipo="galeria"
                 flayers={state.carrucelAbm}
                 onEliminar={handleElimnarFlayer}
+                carga={state.carga.borrar}
+                mensaje={state.errorGenericos.borrar || ""}
+                onAgregar={abrirFormulario}
+                moodalEliminar={state.modalConfirmacionEliminar}
+                onAbrirModalEliminar={abrirModalEliminar}
+                onCerrarModalEliminar={cerrarModalEliminar}
               />
             )}
           </div>

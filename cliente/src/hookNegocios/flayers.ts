@@ -14,7 +14,7 @@ export const confiFlayer = ()=>{
             getFlayersEscuela : getFlayersEscuela,
             deletFlayerEscuela : deletFlayerEscuela,
         },
-        plan : 4
+        plan : 6
     };
 
     return useFlayer(config)

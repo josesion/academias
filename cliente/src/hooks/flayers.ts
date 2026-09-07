@@ -1,4 +1,4 @@
-import { useReducer} from "react";
+import { useReducer, useEffect, useMemo} from "react";
 import { initialFlayers, flayerReducer, type FlayersAction } from "../reducers/flayer.reducer"; 
 
 import {type Valores } from "../componentes/Flayers/FormularioFlayer/FormularioFlayer";
@@ -27,6 +27,9 @@ interface FlayersProps {
 export const useFlayer = ( config : FlayersProps) =>{
 
  const [state, dispatch] = useReducer(flayerReducer, initialFlayers());  
+
+
+
 
  const cachearFormulario = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -93,10 +96,11 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
     
             if( resultSubirImagen.code === "FLAYER_OK"){
                 dispatch({ type : "RESET_FORMULARIO"});
+                dispatch({ type : "SET_ACTUALIZAR"});
                 dispatch({ type : "SET_MODAL", payload : true});
             };
 
-            if ( resultSubirImagen.code === 'SIN_PERMISOS' ){
+            if ( resultSubirImagen.code === 'SIN_PERMISOS' || resultSubirImagen.code === 'TAMANO_IMAGEN_INVALIDO' ){
                 dispatch({ type :"SET_ERROR_GENERICO", payload : { campo : "postImagen", valor : resultSubirImagen.message}});
             };             
        
@@ -126,9 +130,65 @@ const handleSubmit =async (e: React.FormEvent<HTMLFormElement>)=>{
 
 };
 
-const handleElimnarFlayer = ( id_flayer : number ) =>{
-    console.log(id_flayer)
-}
+
+const abrirModalEliminar = () =>{
+    dispatch({ type : "SET_MODAL_ELIMINAR", payload : true });
+};
+
+const cerrarModalEliminar = () => {
+    dispatch({ type : "SET_MODAL_ELIMINAR", payload : false });
+};
+
+const handleElimnarFlayer = async (id_flayer: number) => {
+   // console.log(id_flayer);
+
+    if (!id_flayer) {
+        dispatch({
+            type: "SET_ERROR_GENERICO",
+            payload: {
+                campo: "borrar",
+                valor: "Error: no se recibió el id del flayer"
+            }
+        });
+        return;
+    }
+
+    try {
+        dispatch({
+            type: "SET_CARGA",
+            payload: {
+                campo: "borrar",
+                valor: true
+            }
+        });
+
+        const eliminarFlayer = config.servicios.deletFlayerEscuela;
+        const retultEliminar = await eliminarFlayer(id_flayer);
+       // console.log(retultEliminar)
+        if (retultEliminar.code === "SUCCESS") {
+            dispatch({ type : "SET_MODAL_ELIMINAR", payload : false});
+            dispatch({ type : "SET_ACTUALIZAR"});
+            return;
+        }
+
+    } catch (error) {
+        dispatch({
+            type: "SET_ERROR_GENERICO",
+            payload: {
+                campo: "borrar",
+                valor: "Error en el servidor"
+            }
+        });
+    } finally {
+        dispatch({
+            type: "SET_CARGA",
+            payload: {
+                campo: "borrar",
+                valor: false
+            }
+        });
+    }
+};
 
 const handleCerrarModal = () =>{
     dispatch({ type : "SET_MODAL", payload : false});
@@ -142,9 +202,14 @@ useEffectServicio<any , any, FlayersAction>({
     accionError : ( mensaje ) =>({ type : "SET_ERROR_GENERICO" , payload : { campo : "galeria" , valor : mensaje}}),
     accionResultado : ( data )=>({ type : "SET_CARRUCEL_AMB", payload : data}),
     useAbort : true,
-    dependencias :[]
+    dependencias :[state.actualizar]
 });
 
+useEffect(()=>{
+    // aca setereamos el plan q le corresponde a cada  usuario dependiendo del plan 
+    // por el momento se harcodea desde el seting
+    dispatch({ type : "SET_PLAN_FLAYERS", payload : config.plan});
+}, []);
 
   return {
     state, 
@@ -155,6 +220,7 @@ useEffectServicio<any , any, FlayersAction>({
     handleElimnarFlayer,
     handleCerrarModal,
     abrirFormulario, cerrarFormulario,
+    abrirModalEliminar, cerrarModalEliminar,
 
   }
 
