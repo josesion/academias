@@ -8,7 +8,58 @@
   font-family: var(--fuente-principal);
   background: var(--fondo-principal);
 }
+.flayers_vacio_compacto {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--color-secundario); /* El verde salvia sutil queda perfecto aquí */
+  border-radius: var(--radio-sm);
+  width: 100%;
+  margin-bottom: 16px;
+  box-shadow: var(--sombra-sm);
+  transition: var(--transicion);
+}
 
+.flayers_vacio_compacto:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+}
+
+.flayers_vacio_icono_box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background-color: var(--fondo-superficie);
+  color: var(--color-secundario);
+  border-radius: var(--radio-sm);
+  flex-shrink: 0;
+}
+
+.flayers_vacio_info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flayers_vacio_titulo {
+  color: var(--texto-principal);
+  font-family: var(--fuente-titulos); /* Usa 'EB Garamond' para el toque editorial */
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+}
+
+.flayers_vacio_sub {
+  color: var(--texto-secundario);
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+}
 /* =====================================
     HERO / TÍTULO PRINCIPAL
 ===================================== */

@@ -31,7 +31,7 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
   // * Estado vacío
   if (!flayers || flayers.length === 0) {
     return (
-      <div className="carrusel_pro_contenedor">
+      <div className="carrusel_lineal_contenedor">
         <EstadoVacio
           variante="grande"
           icono={<LuImageOff size={34} />}
@@ -43,105 +43,81 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
   }
 
   const total = flayers.length;
+
   const irAnterior = () =>
     setIndiceActual(indiceActual === 0 ? total - 1 : indiceActual - 1);
   const irSiguiente = () =>
     setIndiceActual(indiceActual === total - 1 ? 0 : indiceActual + 1);
 
-  // * Lógica matemática adaptativa según la cantidad de flyers
-  const getClasePosicion = (index: number) => {
-    if (total === 1) return index === indiceActual ? "activa" : "oculta";
-
-    if (index === indiceActual) return "activa";
-
-    const prev1 = (indiceActual - 1 + total) % total;
-    const next1 = (indiceActual + 1) % total;
-
-    if (index === prev1) return "prev1";
-    if (index === next1) return "next1";
-
-    const prev2 = (indiceActual - 2 + total) % total;
-    const next2 = (indiceActual + 2) % total;
-
-    // Si tenemos exactamente 4 elementos, manejamos el cuarto elemento sin solaparse
-    if (total === 4) {
-      if (index === prev2) return "prev2";
-    }
-
-    // Si tenemos 5 o más, aplicamos la estructura completa de 2 y 2
-    if (total >= 5) {
-      if (index === prev2) return "prev2";
-      if (index === next2) return "next2";
-    }
-
-    return "oculta";
-  };
-
   const flayerActual = flayers[indiceActual];
 
   return (
     <div
-      className="carrusel_pro_contenedor"
+      className="carrusel_lineal_contenedor"
       onMouseEnter={() => setPausado(true)}
       onMouseLeave={() => setPausado(false)}
     >
       {/* PISTA */}
-      <div className="carrusel_pro_pista">
-        {flayers.map((flayer, index) => {
-          const clasePosicion = getClasePosicion(index);
-          return (
-            <div
-              key={flayer.id_flayer}
-              className={`carrusel_pro_item ${clasePosicion}`}
-              onClick={() => setIndiceActual(index)}
-            >
+      <div className="carrusel_lineal_marco">
+        <div
+          className="carrusel_lineal_pista"
+          style={{ transform: `translateX(-${indiceActual * 100}%)` }}
+        >
+          {flayers.map((flayer) => (
+            <div key={flayer.id_flayer} className="carrusel_lineal_slide">
               <div
-                className="carrusel_pro_fondo_blur"
+                className="carrusel_lineal_fondo_blur"
                 style={{ backgroundImage: `url(${flayer.imagen_url})` }}
               />
               <img src={flayer.imagen_url} alt={flayer.titulo} />
-              <div className="carrusel_pro_overlay" />
             </div>
-          );
-        })}
+          ))}
+        </div>
+
+        {/* Flechas superpuestas a los bordes */}
+        {total > 1 && (
+          <>
+            <button
+              className="carrusel_lineal_btn carrusel_lineal_btn_izq"
+              onClick={irAnterior}
+              aria-label="Anterior"
+            >
+              <LuChevronLeft size={20} />
+            </button>
+            <button
+              className="carrusel_lineal_btn carrusel_lineal_btn_der"
+              onClick={irSiguiente}
+              aria-label="Siguiente"
+            >
+              <LuChevronRight size={20} />
+            </button>
+          </>
+        )}
       </div>
 
-      {/* INFORMACIÓN DEL FLYER CENTRAL */}
-      <div className="carrusel_pro_info">
-        <h3 className="carrusel_pro_titulo">{flayerActual?.titulo}</h3>
-        <p className="carrusel_pro_descripcion">{flayerActual?.descripcion}</p>
-      </div>
+      {/* INFORMACIÓN + DOTS */}
+      <div className="carrusel_lineal_pie">
+        <div className="carrusel_lineal_info">
+          <h3 className="carrusel_lineal_titulo">{flayerActual?.titulo}</h3>
+          <p className="carrusel_lineal_descripcion">
+            {flayerActual?.descripcion}
+          </p>
+        </div>
 
-      {/* CONTROLES */}
-      {total > 1 && (
-        <div className="carrusel_pro_controles">
-          <button
-            className="carrusel_pro_btn"
-            onClick={irAnterior}
-            aria-label="Anterior"
-          >
-            <LuChevronLeft size={22} />
-          </button>
-
-          <div className="carrusel_pro_dots">
+        {total > 1 && (
+          <div className="carrusel_lineal_dots">
             {flayers.map((_, i) => (
               <span
                 key={i}
-                className={`carrusel_pro_dot ${i === indiceActual ? "activo" : ""}`}
+                className={`carrusel_lineal_dot ${
+                  i === indiceActual ? "activo" : ""
+                }`}
                 onClick={() => setIndiceActual(i)}
               />
             ))}
           </div>
-
-          <button
-            className="carrusel_pro_btn"
-            onClick={irSiguiente}
-            aria-label="Siguiente"
-          >
-            <LuChevronRight size={22} />
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

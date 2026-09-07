@@ -1,4 +1,3 @@
-//import { Flayer } from "./typesFlayers"; // O donde guardes la interfaz
 import { GaleriaFlayers } from "../Galerias/GaleriaFlayers";
 import { CarruselSolo } from "../CarrucelItems/CarruselFlayers";
 
@@ -12,27 +11,27 @@ export interface Flayer {
 }
 
 interface CarruselProps {
-  tipo: "carrusel" | "galeria";
+  tipo?: "carrusel" | "galeria"; // Ahora es opcional (por defecto será "carrusel")
   flayers: Flayer[] | null;
   onEliminar?: (idFlayer: number) => void;
   onAgregar?: () => void;
-  onAbrirModalEliminar: () => void;
-  onCerrarModalEliminar: () => void;
-  moodalEliminar: boolean;
-  carga: boolean;
-  mensaje: string;
-  plan: number;
+  onAbrirModalEliminar?: () => void;
+  onCerrarModalEliminar?: () => void;
+  moodalEliminar?: boolean;
+  carga?: boolean; // Opcional por si no se usa en el carrusel simple
+  mensaje?: string;
+  plan?: number;
 }
 
 export const CarruselFlayers = ({
-  tipo = "carrusel",
+  tipo = "carrusel", // Valor por defecto si no se pasa
   flayers,
   onEliminar,
   onAgregar,
   onAbrirModalEliminar,
   onCerrarModalEliminar,
   moodalEliminar,
-  carga,
+  carga = false,
   mensaje,
   plan,
 }: CarruselProps) => {
@@ -43,11 +42,15 @@ export const CarruselFlayers = ({
         flayers={flayers}
         onEliminar={onEliminar}
         onAgregar={onAgregar}
-        onAbrirModalEliminar={onAbrirModalEliminar}
-        onCerrarModalEliminar={onCerrarModalEliminar}
-        moodalEliminar={moodalEliminar}
+        onAbrirModalEliminar={
+          onAbrirModalEliminar ? onAbrirModalEliminar : () => {}
+        }
+        onCerrarModalEliminar={
+          onCerrarModalEliminar ? onCerrarModalEliminar : () => {}
+        }
+        moodalEliminar={moodalEliminar ? moodalEliminar : false}
         carga={carga}
-        mensaje={mensaje}
+        mensaje={mensaje ? mensaje : ""}
         planFlayers={plan}
       />
     );

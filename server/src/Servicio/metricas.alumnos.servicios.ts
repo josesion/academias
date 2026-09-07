@@ -1,14 +1,16 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataMetricasAlumno } from "../data/metricas.alumnos.data";
+import { method as dataFlayer } from "../data/flayer.data";
 
 import { EscuelaAlumnoRow, ClaseHoyRow } from "../data/metricas.alumnos.data";
 import { MetricasAlumnoSchema, MetricasAlumnosInputs } from "../squemas/metricas.alumno"; 
 import { TipadoData } from "../tipados/tipado.data";
+import { FlayerDataResult  } from "../data/flayer.data";
 
 export interface  RespuestaMetricasAlumnos {
      escuelas : EscuelaAlumnoRow[] | null | undefined ,
      clasesHoy : ClaseHoyRow[] |null | undefined ,
-     flayers  : null // por el momento 
+     flayers  : FlayerDataResult[] | null | undefined, // por el momento 
 };
 
 
@@ -29,9 +31,10 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
     
     const dni = validarCorreo.data?.dni_alumno ? validarCorreo.data?.dni_alumno : 0
     
-    const [respuestaMetricas, respuestaClasesHoy] = await Promise.all([
+    const [respuestaMetricas, respuestaClasesHoy, respuestaFlayers] = await Promise.all([
             dataMetricasAlumno.obtenerEscuelasPorAlumno(dni),
             dataMetricasAlumno.obtenerClasesEscuelasHoy(dni),
+            dataFlayer.getFlayerAlumnos(dni)
         ]);
 
       
@@ -45,7 +48,9 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
                              ? respuestaClasesHoy.data
                              : null                            
    
-    const flayers = null ;    
+    const flayers : FlayerDataResult[] | null | undefined  = respuestaFlayers.code === "GET_FLAYERS_LISTED"
+                             ? respuestaFlayers.data
+                             : null;    
     
     if (  metricasAlumnos !== undefined || clasesHoy !== undefined) {
             return {

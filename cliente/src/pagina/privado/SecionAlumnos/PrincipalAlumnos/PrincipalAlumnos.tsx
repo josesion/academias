@@ -17,12 +17,7 @@ export const PrincipalAlumnos = () => {
 
   return (
     <div className="principal-alumno-container">
-      {/* Sección de Carrucel Flayers */}
-      <div className="seccion-carrucel">
-        <CarruselFlayers />
-      </div>
-
-      {/* Sección de Escuelas */}
+      {/* 1. Sección de Escuelas */}
       <div className="seccion-contenedor">
         <h2 className="seccion-titulo">Mis Academias</h2>
         <div className="grilla-escuelas">
@@ -49,7 +44,30 @@ export const PrincipalAlumnos = () => {
         </div>
       </div>
 
-      {/* Sección de Clases de Hoy */}
+      {/* 2. Sección de Carrusel / Flayers (En el medio) */}
+      <div className="seccion-carrucel">
+        {data?.flayers && data.flayers.length > 0 ? (
+          <CarruselFlayers
+            flayers={data.flayers}
+            tipo="carrusel"
+            carga={state.carga.metricas}
+          />
+        ) : (
+          <div className="flayers_vacio_compacto">
+            <div className="flayers_vacio_icono_box">
+              <LuImageOff size={18} />
+            </div>
+            <div className="flayers_vacio_info">
+              <span className="flayers_vacio_titulo">Sin novedades</span>
+              <span className="flayers_vacio_sub">
+                Las academias aún no publicaron flyers
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 3. Sección de Clases de Hoy */}
       <div className="seccion-contenedor">
         <h2 className="seccion-titulo">Clases Programadas para Hoy</h2>
         <div className="grilla-clases">

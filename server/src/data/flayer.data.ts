@@ -217,6 +217,38 @@ const eliminarFlayerDb = async (id_flayer: number): Promise<TipadoData<ReturnEli
     });
 };
 
+
+const getFlayerAlumnos = async ( id_escuela : number ) 
+:Promise<TipadoData<FlayerDataResult[]>> =>{
+  
+    const slq : string = `SELECT 
+                                f.id_flayer,
+                                f.titulo,
+                                f.descripcion,
+                                f.imagen_url,
+                                f.public_id,
+                                f.fecha_creacion,
+                                e.id_escuela,
+                                e.razon_social AS academia
+                            FROM flyers f
+                            JOIN escuelas e ON f.id_escuela = e.id_escuela
+                            JOIN alumnos_en_escuela ae ON e.id_escuela = ae.id_escuela
+                            WHERE ae.dni_alumno = ? 
+                            AND ae.estado = 'activos'
+                            AND e.baja = 'activos'
+                            ORDER BY f.fecha_creacion DESC;;`;
+
+    const valores : unknown[] = [ id_escuela];
+
+    return  listarEntidadSinPaginacion({
+        slqListado : slq,
+        valores : valores,
+        entidad : "GET_FLAYERS",
+        estado : ""
+    });
+};
+
+
 export const method = {
 
     postFlayer : tryCatchDatos( postFlayer ),
@@ -225,4 +257,5 @@ export const method = {
     getFlayerEscuela : tryCatchDatos( getFlayerEscuela), 
     getUrlFlayer  : tryCatchDatos( getUrlFlayer ),
     eliminarFlayerDb : tryCatchDatos( eliminarFlayerDb),
+    getFlayerAlumnos : tryCatchDatos( getFlayerAlumnos),
  };

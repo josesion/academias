@@ -23,10 +23,18 @@ export interface ClaseHoyRow {
   profesor: string;
 };
 
+export interface FlayerDataResult {
+    id_flayer: number;
+    id_escuela: number;
+    titulo: string;
+    descripcion: string;
+    imagen_url: string;
+};
+
 export interface  RespuestaMetricasAlumnos {
      escuelas : EscuelaAlumnoRow[] | null ,
      clasesHoy : ClaseHoyRow[] |null  ,
-     flayers  : null // por el momento 
+     flayers  :  FlayerDataResult[] | null // por el momento 
 };
 
 export const alumnosEscuelas = async  (data :{ correo : string} )
