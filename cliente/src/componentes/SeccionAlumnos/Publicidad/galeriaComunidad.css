@@ -1,0 +1,327 @@
+/* ==========================================================
+   ESTILOS BASE: Galería de Comunidad (Horizontal Flotante)
+========================================================== */
+
+.galeria-comunidad-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  font-family: var(--fuente-principal, inherit);
+  background: var(--fondo-secundario, #1e1e1e);
+  border: 1px solid var(--borde, #333);
+  border-radius: var(--radio-lg, 16px);
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* --- Header y Controles --- */
+.galeria-comunidad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.comunidad-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-secundario, #aaa);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.galeria-controles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.galeria-contador {
+  font-size: 0.8rem;
+  color: var(--texto-secundario, #888);
+}
+
+.btn-control {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--borde, #333);
+  background: var(--fondo-principal, #111);
+  color: var(--texto-principal, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-control:hover {
+  background: var(--color-primario, #fff);
+  color: var(--fondo-principal, #000);
+}
+
+/* --- Viewport y Track --- */
+.galeria-viewport {
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radio-md, 12px);
+  background: var(--fondo-superficie, #161616);
+  border: 1px solid var(--borde, #333);
+}
+
+.galeria-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+
+.galeria-card {
+  flex: 0 0 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--fondo-superficie, #161616);
+}
+
+/* --- Multimedia (Imagen / Video) --- */
+.media-container {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-elemento {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tipo-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 4px 8px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- Información del Emprendedor --- */
+.galeria-info {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nombre-emprendedor {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-secundario, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.item-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--texto-principal, #fff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-descripcion {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--texto-secundario, #aaa);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-emprendedor-accion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 8px 14px;
+  background: var(--color-primario, #fff);
+  color: var(--fondo-principal, #000);
+  border-radius: var(--radio-sm, 8px);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  width: fit-content;
+}
+
+.btn-emprendedor-accion:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* --- Indicadores (Dots) --- */
+.galeria-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border: none;
+  border-radius: 50%;
+  background: var(--borde, #444);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.dot.active {
+  background: var(--color-secundario, #fff);
+  width: 18px;
+  border-radius: 4px;
+}
+
+
+/* ==========================================================
+   MODO FLOTANTE HORIZONTAL (Esquina Inferior Derecha)
+========================================================== */
+
+.galeria-flotante-wrapper {
+  position: fixed !important;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  width: 480px; /* Ancho aumentado para mayor comodidad visual */
+  max-width: calc(100vw - 48px);
+  margin: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  animation: galeriaFlotanteAparecer 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Botón de cierre (X) */
+.btn-cerrar-flotante {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 20;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--fondo-principal, #111);
+  border: 1px solid var(--borde, #444);
+  color: var(--texto-principal, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-cerrar-flotante:hover {
+  background: var(--color-primario, #fff);
+  color: var(--fondo-principal, #000);
+}
+
+/* Forzar estructura horizontal en la tarjeta flotante */
+.galeria-flotante-wrapper .galeria-card {
+  flex-direction: row !important;
+  align-items: stretch !important;
+  min-width: 0; /* Soluciona desbordamientos de flexbox */
+}
+
+.galeria-flotante-wrapper .media-container {
+  width: 38% !important;
+  height: auto !important;
+  min-height: 140px !important;
+  flex-shrink: 0;
+}
+
+.galeria-flotante-wrapper .galeria-info {
+  flex: 1 !important;
+  min-width: 0 !important; /* Evita que el texto traspase los límites del flex */
+  padding: 14px 16px !important;
+  justify-content: center;
+}
+
+/* Ajustes de tipografía para el formato horizontal */
+.galeria-flotante-wrapper .item-titulo {
+  font-size: 0.95rem !important;
+  white-space: normal !important; /* Permite que baje de línea si el título es largo */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.galeria-flotante-wrapper .item-descripcion {
+  font-size: 0.8rem !important;
+  -webkit-line-clamp: 2;
+}
+
+.galeria-flotante-wrapper .btn-emprendedor-accion {
+  padding: 6px 12px !important;
+  font-size: 0.75rem !important;
+  margin-top: 8px !important;
+}
+
+/* Animación de entrada */
+@keyframes galeriaFlotanteAparecer {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Responsivo para celulares (vuelve a vertical si la pantalla es chica) */
+@media (max-width: 540px) {
+  .galeria-flotante-wrapper {
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+
+  .galeria-flotante-wrapper .galeria-card {
+    flex-direction: column !important;
+  }
+
+  .galeria-flotante-wrapper .media-container {
+    width: 100% !important;
+    height: 160px !important;
+  }
+  
+  .galeria-flotante-wrapper .item-titulo {
+    white-space: nowrap !important;
+  }
+}

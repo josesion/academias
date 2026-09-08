@@ -42,6 +42,8 @@ import { ProtectRutasProv } from "./contexto/protectRutas";
 
 import { PrincipalAlumnos } from "./pagina/privado/SecionAlumnos/PrincipalAlumnos/PrincipalAlumnos";
 import { EsculasSeccion } from "./pagina/privado/SecionAlumnos/EscuelasPag/EscuelasPag";
+import { DataEscuela } from "./pagina/privado/SecionAlumnos/DataEscuela/DataEscual";
+
 // estilos css
 import "./app.css";
 
@@ -116,6 +118,8 @@ function App() {
                   path="/escuelas_principal"
                   element={<EsculasSeccion />}
                 />
+
+                <Route path="/data_escuela" element={<DataEscuela />} />
               </Route>
             </Route>
           </Routes>

@@ -4,7 +4,7 @@ import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import "./tarjetaescuela.css";
 
 export interface TarjetaEscuelaProps {
-  id_escuela?: number;
+  id_escuela: number; // Ahora es requerido para asegurar que siempre esté presente
   dniPropietario: number;
   nombrePropietario: string;
   apellidoPropietario: string;
@@ -12,9 +12,11 @@ export interface TarjetaEscuelaProps {
   direccion: string;
   celular: string;
   carga: boolean;
+  onClickEscuela: (id_escuela: number) => void;
 }
 
 export const TarjetaEscuela = ({
+  id_escuela,
   dniPropietario,
   nombrePropietario,
   apellidoPropietario,
@@ -22,11 +24,13 @@ export const TarjetaEscuela = ({
   direccion,
   celular,
   carga,
+  onClickEscuela,
 }: TarjetaEscuelaProps) => {
   const iniciales = `${nombrePropietario.charAt(0)}${apellidoPropietario.charAt(0)}`;
 
   return (
-    <div className="tarjeta_escuela">
+    /* Usamos una función flecha para cachear/capturar el id_escuela al hacer clic */
+    <div className="tarjeta_escuela" onClick={() => onClickEscuela(id_escuela)}>
       {carga ? (
         <SpinnerTarjeta />
       ) : (

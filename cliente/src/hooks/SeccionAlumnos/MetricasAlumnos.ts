@@ -1,6 +1,7 @@
 import { useReducer,  } from "react";
 import { initialMetricasAlumno, MetricasAlumnosReducer, type MetricasAlumnosAction } from "../../reducers/metricas.alumnos";
 import { useEffectServicio } from "../../utils/useEfectServicio";
+import { useNavigate } from "react-router-dom";
 
 
 import type { RespuestaMetricasAlumnos } from "../../servicio/principal.alumnos.fetch";
@@ -17,9 +18,15 @@ interface MetricasAlumnosProps {
 
 
 export const metricasAlumnos = ( config : MetricasAlumnosProps) =>{
+    const navegar = useNavigate();
 
     const [ state , dispatch] = useReducer(MetricasAlumnosReducer, initialMetricasAlumno() );
-    console.log( config.usuario)
+   // console.log( config.usuario)
+
+    const cachearEscuela = ( id_escuela : number) =>{
+        console.log(id_escuela)
+        navegar("/data_escuela");
+    };
 
 /**
     Efecto para traer las escuelas , clases y flayers  de las escuelas en las q se anoto el alumno
@@ -36,6 +43,7 @@ export const metricasAlumnos = ( config : MetricasAlumnosProps) =>{
     });
        
     return {
-        state
+        state,
+        cachearEscuela
     };
 }

@@ -1,0 +1,58 @@
+/* --- HERO ESCUELA --- */
+.hero-escuela {
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--sombra-sm);
+  height: 100%;
+}
+
+.hero-avatar {
+  width: 64px;
+  height: 64px;
+  background-color: var(--fondo-superficie);
+  color: var(--color-secundario);
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-sm);
+  flex-shrink: 0;
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.hero-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  font-weight: 600;
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.hero-sub {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.badge-activo {
+  background-color: rgba(91, 123, 110, 0.1);
+  color: var(--color-secundario);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  align-self: flex-start;
+  margin-top: 6px;
+}

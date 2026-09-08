@@ -5,6 +5,7 @@ import type {  RespuestaMetricasAlumnos } from "../servicio/principal.alumnos.fe
 export interface MetricasAlumnoTipado {
 
     correo : string | null,
+    id_escuela : number | null,
 
     error : {
         metricas : string  | null
@@ -22,6 +23,7 @@ export interface MetricasAlumnoTipado {
 export const initialMetricasAlumno = ( ) :MetricasAlumnoTipado =>({
 
     correo : null ,
+    id_escuela : null,
 
     error : {
         metricas : null
@@ -40,7 +42,7 @@ export type MetricasAlumnosAction =
   | { type: 'METRICAS_CARGA' ; payload : boolean }
   | { type: 'METRICAS_EXITO'; payload: RespuestaMetricasAlumnos  | null}
   | { type: 'METRICAS_ERROR'; payload: string | null}
-
+  | { type: 'SET_ID_ESCUELA'; payload: number | null }
 
 
 export const MetricasAlumnosReducer = ( 
@@ -49,6 +51,12 @@ export const MetricasAlumnosReducer = (
 ): ReturnType<typeof initialMetricasAlumno> => {
 
     switch (action.type) {
+
+        case "SET_ID_ESCUELA":
+            return {
+                ...state,
+                id_escuela : action.payload
+            }
 
         case "SET_CORREO" :
             return{

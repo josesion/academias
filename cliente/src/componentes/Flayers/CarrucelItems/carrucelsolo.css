@@ -1,84 +1,96 @@
+/* =====================================
+   CARRUSEL — estilo editorial/lujo
+   Usa las variables definidas en :root
+===================================== */
+
 .carrusel_lineal_contenedor {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  position: relative;
   width: 100%;
-  font-family: var(--fuente-principal);
+  border-radius: var(--radio-lg);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  box-shadow: var(--sombra-md);
+  overflow: hidden;
+  transition: var(--transicion);
 }
 
-/* Marco: recorta la pista y contiene las flechas */
+.carrusel_lineal_contenedor:hover {
+  box-shadow: var(--sombra-lg);
+}
+
+/* ===== MARCO / PISTA ===== */
+
 .carrusel_lineal_marco {
   position: relative;
   width: 100%;
-  border-radius: var(--radio-md);
+  aspect-ratio: 16 / 8;
   overflow: hidden;
-  border: 1px solid var(--borde);
-  box-shadow: var(--sombra-sm);
+  background: var(--fondo-superficie);
 }
 
-/* Pista: fila horizontal de slides, se desplaza con transform */
 .carrusel_lineal_pista {
   display: flex;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Cada slide ocupa el 100% del marco */
 .carrusel_lineal_slide {
   position: relative;
   flex: 0 0 100%;
-  width: 100%;
-  height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--fondo-superficie);
+  height: 100%;
   overflow: hidden;
 }
 
 .carrusel_lineal_fondo_blur {
   position: absolute;
-  inset: -10px;
+  inset: 0;
   background-size: cover;
   background-position: center;
-  filter: blur(16px) saturate(1.05);
-  opacity: 0.5;
-  z-index: 1;
+  filter: blur(38px) saturate(105%) brightness(0.94);
+  transform: scale(1.2);
+  opacity: 0.55;
 }
 
 .carrusel_lineal_slide img {
   position: relative;
-  z-index: 2;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: contain;
+  margin: 0 auto;
 }
 
-/* Flechas superpuestas a los bordes del marco */
+/* ===== FLECHAS ===== */
+
 .carrusel_lineal_btn {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--borde);
-  background: var(--fondo-secundario);
-  color: var(--texto-principal);
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--borde);
+  background: rgba(249, 249, 249, 0.75);
+  color: var(--texto-principal);
+  backdrop-filter: blur(6px);
   cursor: pointer;
-  box-shadow: var(--sombra-sm);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.92);
   transition: var(--transicion);
 }
 
+.carrusel_lineal_marco:hover .carrusel_lineal_btn {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
 .carrusel_lineal_btn:hover {
-  background: var(--color-primario);
-  border-color: var(--color-primario);
-  color: var(--fondo-principal);
+  border-color: var(--borde-hover);
+  background: var(--fondo-secundario);
 }
 
 .carrusel_lineal_btn_izq {
@@ -89,24 +101,24 @@
   right: 14px;
 }
 
-/* Pie: info + dots, debajo del marco */
+/* ===== PIE / INFO + DOTS ===== */
+
 .carrusel_lineal_pie {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  padding: 18px 22px;
+  border-top: 1px solid var(--borde);
+  background: var(--fondo-secundario);
 }
 
 .carrusel_lineal_info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   min-width: 0;
 }
 
 .carrusel_lineal_titulo {
-  margin: 0;
+  margin: 0 0 4px;
   font-family: var(--fuente-titulos);
   font-size: var(--titulo-sm);
   font-weight: var(--peso-semi-negrita);
@@ -119,6 +131,7 @@
 
 .carrusel_lineal_descripcion {
   margin: 0;
+  font-family: var(--fuente-principal);
   font-size: var(--texto-sm);
   color: var(--texto-secundario);
   line-height: var(--linea-texto);
@@ -130,30 +143,45 @@
 .carrusel_lineal_dots {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .carrusel_lineal_dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--borde-hover);
-  transition: var(--transicion);
   cursor: pointer;
+  transition: var(--transicion);
+}
+
+.carrusel_lineal_dot:hover {
+  background: var(--texto-secundario);
 }
 
 .carrusel_lineal_dot.activo {
-  background: var(--color-secundario);
-  width: 18px;
+  width: 20px;
   border-radius: 4px;
+  background: var(--color-secundario);
 }
 
-/* =====================================
-    TABLET/DESKTOP: un poco más de alto
-===================================== */
-@media (min-width: 640px) {
-  .carrusel_lineal_slide {
-    height: 360px;
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 560px) {
+  .carrusel_lineal_pie {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .carrusel_lineal_titulo,
+  .carrusel_lineal_descripcion {
+    white-space: normal;
+  }
+
+  .carrusel_lineal_btn {
+    width: 32px;
+    height: 32px;
   }
 }

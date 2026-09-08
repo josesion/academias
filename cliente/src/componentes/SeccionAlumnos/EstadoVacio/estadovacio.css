@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 6px;
   text-align: center;
   border-radius: var(--radio-sm);
   border: 1px dashed var(--borde);
@@ -34,28 +34,50 @@
   color: var(--texto-deshabilitado);
 }
 
-/* Variante compacta: para usar dentro de grillas (escuelas / clases) */
+/* =====================================
+   VARIANTE COMPACTA
+===================================== */
+
 .estado_vacio_compacto {
   grid-column: 1 / -1;
-  padding: 32px 20px;
+  width: 100%;
+  padding: 10px 14px;
+  gap: 4px;
+}
+
+.estado_vacio_compacto .estado_vacio_icono {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
 }
 
 .estado_vacio_compacto .estado_vacio_icono svg {
-  width: 26px;
-  height: 26px;
+  width: 18px;
+  height: 18px;
 }
 
 .estado_vacio_compacto .estado_vacio_titulo {
-  font-size: var(--titulo-sm);
+  font-size: var(--texto-sm);
 }
 
-/* Variante grande: para el carrusel de flyers */
+.estado_vacio_compacto .estado_vacio_mensaje {
+  max-width: 280px;
+  font-size: var(--texto-xs);
+}
+
+/* =====================================
+   VARIANTE GRANDE
+===================================== */
+
 .estado_vacio_grande {
   width: 100%;
   max-width: 420px;
   aspect-ratio: 3 / 4;
   margin: 0 auto;
   padding: 32px;
+  gap: 10px;
   box-shadow: var(--sombra-sm);
 }
 
@@ -83,11 +105,16 @@
   font-size: var(--texto-sm);
 }
 
+/* =====================================
+   ANIMACIONES
+===================================== */
+
 @keyframes estado_vacio_fade_in {
   from {
     opacity: 0;
     transform: scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -95,9 +122,11 @@
 }
 
 @keyframes estado_vacio_float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-5px);
   }

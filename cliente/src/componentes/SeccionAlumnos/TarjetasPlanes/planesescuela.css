@@ -1,0 +1,100 @@
+/* --- GRILLA DE PLANES (SAAS PRICING) --- */
+.grilla-planes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.plan-card {
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--sombra-sm);
+  position: relative;
+  transition: var(--transicion);
+}
+
+.plan-card.activo {
+  border: 2px solid var(--color-secundario);
+  background: linear-gradient(to bottom, var(--fondo-secundario), rgba(91, 123, 110, 0.02));
+}
+
+.badge-plan-activo {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background-color: var(--color-secundario);
+  color: white;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.plan-nombre {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+}
+
+.plan-precio {
+  font-size: 1.8rem;
+  font-weight: var(--peso-negrita);
+  letter-spacing: -0.5px;
+  color: var(--texto-principal);
+}
+
+.plan-precio span {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-normal);
+  color: var(--texto-secundario);
+}
+
+.plan-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin-bottom: 8px;
+}
+
+.plan-lista li::before {
+  content: "✓ ";
+  color: var(--color-secundario);
+  font-weight: bold;
+}
+
+.btn-plan-accion {
+  background-color: var(--fondo-superficie);
+  color: var(--texto-principal);
+  border: 1px solid var(--borde);
+  padding: 10px 16px;
+  border-radius: var(--radio-sm);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: var(--transicion);
+  width: 100%;
+}
+
+.btn-plan-accion:hover {
+  border-color: var(--color-secundario);
+  color: var(--color-secundario);
+}
+
+.btn-plan-accion.actual {
+  background-color: var(--color-secundario);
+  color: white;
+  border-color: var(--color-secundario);
+  cursor: default;
+}

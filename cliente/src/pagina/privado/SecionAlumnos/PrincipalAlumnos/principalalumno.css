@@ -1,43 +1,89 @@
+/* --- CONTENEDOR GENERAL DE LA VISTA ALUMNO --- */
 .principal-alumno-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 48px 20px 80px;
   display: flex;
   flex-direction: column;
-  gap: 56px;
-  font-family: var(--fuente-principal);
-  background: var(--fondo-principal);
-}
-.flayers_vacio_compacto {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  background-color: var(--fondo-secundario);
-  border: 1px solid var(--borde);
-  border-left: 3px solid var(--color-secundario); /* El verde salvia sutil queda perfecto aquí */
-  border-radius: var(--radio-sm);
-  width: 100%;
-  margin-bottom: 16px;
-  box-shadow: var(--sombra-sm);
-  transition: var(--transicion);
+  gap: 32px;
+  padding: 24px 16px;
 }
 
-.flayers_vacio_compacto:hover {
-  border-color: var(--borde-hover);
-  box-shadow: var(--sombra-md);
+/* --- SECCIONES GENERALES --- */
+.seccion-contenedor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.seccion-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- GRILLAS --- */
+.grilla-escuelas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+.grilla-clases {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+/* --- GRILLA COMBINADA DE FLAYERS Y COMUNIDAD (Lado a lado) --- */
+.media-comunidad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+/* --- SECCIÓN CARRUSEL / FLAYERS --- */
+.seccion-carrucel {
+  width: 100%;
+  border-radius: var(--radio-md, 12px);
+  overflow: hidden;
+}
+
+/* --- ESTADO VACÍO COMPACTO (FLAYERS) --- */
+.flayers_vacio_compacto {
+  background-color: var(--fondo-secundario, #f8f9fa);
+  border: 1px dashed var(--borde, #e5e7eb);
+  border-radius: var(--radio-md, 12px);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 120px;
 }
 
 .flayers_vacio_icono_box {
+  background-color: var(--fondo-principal, #ffffff);
+  border: 1px solid var(--borde, #e5e7eb);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  background-color: var(--fondo-superficie);
-  color: var(--color-secundario);
-  border-radius: var(--radio-sm);
+  color: var(--texto-secundario, #6b7280);
   flex-shrink: 0;
+  box-shadow: var(--sombra-sm);
 }
 
 .flayers_vacio_info {
@@ -47,135 +93,33 @@
 }
 
 .flayers_vacio_titulo {
-  color: var(--texto-principal);
-  font-family: var(--fuente-titulos); /* Usa 'EB Garamond' para el toque editorial */
-  font-size: var(--titulo-sm);
-  font-weight: var(--peso-semi-negrita);
-  line-height: var(--linea-titulo);
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-sm, 0.875rem);
+  font-weight: var(--peso-medio, 500);
+  color: var(--texto-principal, #111827);
 }
 
 .flayers_vacio_sub {
-  color: var(--texto-secundario);
   font-family: var(--fuente-principal);
-  font-size: var(--texto-sm);
-  line-height: var(--linea-texto);
-}
-/* =====================================
-    HERO / TÍTULO PRINCIPAL
-===================================== */
-.principal-alumno-titulo {
-  margin: 0;
-  font-family: var(--fuente-titulos);
-  font-size: var(--titulo-lg);
-  font-weight: var(--peso-semi-negrita);
-  color: var(--texto-principal);
-  line-height: var(--linea-titulo);
-  letter-spacing: -0.01em;
-  text-align: center;
-  position: relative;
-  padding-bottom: 20px;
+  font-size: var(--texto-xs, 0.75rem);
+  color: var(--texto-secundario, #6b7280);
 }
 
-.principal-alumno-titulo::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48px;
-  height: 2px;
-  background: var(--color-secundario);
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 960px) {
+  .media-comunidad-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* =====================================
-    CARRUSEL
-===================================== */
-.seccion-carrucel {
-  display: flex;
-  justify-content: center;
-}
-
-/* =====================================
-    SECCIONES (escuelas / clases)
-===================================== */
-.seccion-contenedor {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.seccion-titulo {
-  margin: 0;
-  font-family: var(--fuente-titulos);
-  font-size: var(--titulo-md);
-  font-weight: var(--peso-semi-negrita);
-  color: var(--texto-principal);
-  line-height: var(--linea-titulo);
-  padding-left: 14px;
-  border-left: 3px solid var(--color-secundario);
-}
-
-/* =====================================
-    GRILLA ESCUELAS
-===================================== */
-.grilla-escuelas {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-/* =====================================
-    GRILLA CLASES DE HOY
-===================================== */
-.grilla-clases {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* =====================================
-    TABLET (~640px+)
-===================================== */
-@media (min-width: 640px) {
+@media (max-width: 640px) {
   .principal-alumno-container {
-    padding: 56px 32px 96px;
-    gap: 64px;
+    padding: 16px 12px;
+    gap: 24px;
   }
 
-  .principal-alumno-titulo {
-    padding-bottom: 24px;
-  }
-
-  .grilla-escuelas {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .grilla-escuelas,
   .grilla-clases {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-}
-
-/* =====================================
-    DESKTOP (~1024px+)
-===================================== */
-@media (min-width: 1024px) {
-  .principal-alumno-container {
-    padding: 64px 48px 120px;
-  }
-
-  .grilla-escuelas {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-
-  .grilla-clases {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .seccion-titulo {
-    font-size: var(--titulo-lg);
+    grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,116 @@
+.data-escuela-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.nav-superior {
+  display: flex;
+  align-items: center;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transicion);
+}
+
+.btn-volver:hover {
+  color: var(--texto-principal);
+}
+
+/* --- GRILLA SUPERIOR (HERO + HORARIOS LATERAL) --- */
+.top-dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .top-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- TARJETA DE HORARIOS LATERAL --- */
+.card-horarios-lateral {
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--sombra-sm);
+  height: 100%;
+}
+
+.horarios-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seccion-titulo-inline {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.card-horarios-lateral p {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+/* --- SECCIONES Y BLOQUES --- */
+.seccion-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seccion-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+/* --- BOTONES GENERALES --- */
+.btn-principal {
+  background-color: var(--color-primario);
+  color: var(--fondo-secundario);
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radio-sm);
+  font-weight: var(--peso-medio);
+  font-size: var(--texto-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transicion);
+  width: 100%;
+}
+
+.btn-principal:hover {
+  background-color: var(--color-secundario);
+}

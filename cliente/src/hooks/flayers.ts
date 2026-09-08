@@ -1,4 +1,4 @@
-import { useReducer, useEffect, useMemo} from "react";
+import { useReducer, useEffect} from "react";
 import { initialFlayers, flayerReducer, type FlayersAction } from "../reducers/flayer.reducer"; 
 
 import {type Valores } from "../componentes/Flayers/FormularioFlayer/FormularioFlayer";
