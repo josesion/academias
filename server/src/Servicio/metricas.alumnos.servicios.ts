@@ -2,8 +2,10 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataMetricasAlumno } from "../data/metricas.alumnos.data";
 import { method as dataFlayer } from "../data/flayer.data";
 
-import { EscuelaAlumnoRow, ClaseHoyRow } from "../data/metricas.alumnos.data";
-import { MetricasAlumnoSchema, MetricasAlumnosInputs } from "../squemas/metricas.alumno"; 
+import { EscuelaAlumnoRow, ClaseHoyRow, EscuelaData, InscripcionActualData, PlanEscuelaData} from "../data/metricas.alumnos.data";
+import { MetricasAlumnoSchema, MetricasAlumnosInputs,
+         DataEscuelaInputs, DataEscuelaSchema,
+ } from "../squemas/metricas.alumno"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { FlayerDataResult  } from "../data/flayer.data";
 
@@ -73,8 +75,85 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
 };
 
 
+export interface ResultInfoEscuela {
+
+    heroEscuela : EscuelaData | null | undefined,
+    flayer : FlayerDataResult[] | null | undefined,
+    inscripcion :InscripcionActualData | null | undefined,
+    planes :  PlanEscuelaData[] | null | undefined
+
+};
+
+const dataEscuelaServicio = async ( data : DataEscuelaInputs )
+:Promise<TipadoData<ResultInfoEscuela>> =>{
+
+    const validarData : DataEscuelaInputs = DataEscuelaSchema.parse( data);
+
+
+    const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( validarData.correo);
+
+    if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
+        return {
+            error : true,
+            message : "Correo no valido, verificar en servidor.",
+            code : "CORREO_INVALIDO_SERVIDOR" // ESTO ES ASI POR Q SI O SI TENDRIA Q TENER CORREO ASOCIADO A UN DNI
+        };
+    }
+
+    const dataInscripcion ={
+        ...validarData,
+        dni_alumno : validarCorreo.data?.dni_alumno,
+    };
+
+    const [ infoEscuela , infoFlayers, infoInscripcion, infoPlanes ] = await Promise.all([
+         dataMetricasAlumno.dataEscuela( validarData.id_escuela),
+         dataFlayer.getFlayerEscuela( validarData.id_escuela),
+         dataMetricasAlumno.inscripcionActual(dataInscripcion),
+         dataMetricasAlumno.planesActivos(validarData.id_escuela)   
+    ]);
+
+    const heroEscuela : EscuelaData | null | undefined = infoEscuela.code === 'DATA_ESCUELA_EXISTE'
+                        ? infoEscuela.data
+                        : null ;  
+
+    const flayerEscuela : FlayerDataResult[] | null | undefined = infoFlayers.code === 'GET_FLAYERS_LISTED'
+                        ? infoFlayers.data
+                        : null ;
+
+    const inscripcion : InscripcionActualData | null | undefined = infoInscripcion.code === 'INSCRIPCION_ACTUAL_EXISTE'
+                        ? infoInscripcion.data
+                        : null ;                   
+
+    const planes : PlanEscuelaData[] | null | undefined = infoPlanes.code === 'PLANES_ACTIVOS_LISTED'
+                        ? infoPlanes.data
+                        : null ;
+
+
+    if ( heroEscuela !== undefined || flayerEscuela !== undefined || inscripcion !== undefined || planes !== undefined ){
+        return {
+            error : false,
+            message : "Data de escuela obtenida correctamente.",
+            code : "DATA_ESCUELA_OK",
+            data :{
+                heroEscuela : heroEscuela,
+                flayer : flayerEscuela,
+                inscripcion : inscripcion,
+                planes : planes 
+            }
+        };
+    };                    
+    
+    return {
+        error: true, 
+        message : "Error en el servidor, Data de escuela.",
+        code : "ERROR_SERVIDOR"
+    };                         
+
+};
+
 export const method = {
 
     metricasAlumnoPrincipal : tryCatchDatos( metricasAlumnoPrincipal ),
+    dataEscuelaServicio : tryCatchDatos( dataEscuelaServicio),
 
 };

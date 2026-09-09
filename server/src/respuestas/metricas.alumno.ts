@@ -19,3 +19,20 @@ export const MAPA_METRICAS_ALUMNOS : Record<string , { status : CodigoEstadoHTTP
         },
 
 };                          
+
+
+export const MAPA_INFO_ESCUELA : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+ 
+   "CORREO_INVALIDO_SERVIDOR" : {
+            status: CodigoEstadoHTTP.NO_AUTORIZADO,
+            msg: "Problemas con el correo/dni."
+        },    
+
+    "DATA_ESCUELA_OK" : {
+            status: CodigoEstadoHTTP.OK,
+            msg: "Info Escuela ok."
+        },
+
+}; 

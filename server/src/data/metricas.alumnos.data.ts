@@ -109,15 +109,144 @@ const obtenerClasesEscuelasHoy =  async ( dni_alumno : number )
         estado : ""
     });
 
+};
 
+export interface EscuelaData {
+  dni_propietario: number;
+  nombre_propietario: string;
+  apellido_propietario: string;
+  razon_social: string;
+  direccion: string;
+  celular: string;
+};
+
+
+
+
+export const dataEscuela = async ( id_escuela : number)
+:Promise<TipadoData<EscuelaData>> =>{
+    const sql : string = `SELECT 
+                            dni_propietario,
+                            nombre_propietario,
+                            apellido_propietario,
+                            razon_social,
+                            direccion,
+                            celular
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valor : unknown[] = [ id_escuela ]; 
+    
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad : "DATA_ESCUELA"
+    });
 
 };
 
+
+export interface InscripcionActualData {
+  id_inscripcion: number;
+  id_plan: number;
+  fecha_inicio: string;
+  fecha_fin: string | null;
+  clases_asignadas_inscritas: number;
+  meses_asignados_inscritos: number;
+  monto: number;
+  estado: "activos" | "suspendido" | "vencidos";
+  descripcion_plan: string;
+  clases_utilizadas: number;
+}
+
+interface PropInscirpcion {
+    dni_alumno : number,
+    id_escuela : number,
+};
+
+export const inscripcionActual = async ( data :  PropInscirpcion)
+:Promise<TipadoData<InscripcionActualData>> =>{
+
+    const {dni_alumno , id_escuela } = data;
+
+    const sql : string = `SELECT 
+                            i.id_inscripcion,
+                            i.id_plan,
+                            i.fecha_inicio,
+                            i.fecha_fin,
+                            i.clases_asignadas_inscritas,
+                            i.meses_asignados_inscritos,
+                            i.monto,
+                            i.estado,
+                            COALESCE(pe.nombre_personalizado, 'Plan general') AS descripcion_plan,
+                            (
+                                SELECT COUNT(*) 
+                                FROM asistencias a 
+                                WHERE a.id_inscripcion = i.id_inscripcion 
+                                AND a.estado = 'presente'
+                            ) AS clases_utilizadas
+                        FROM inscripciones i
+                        LEFT JOIN planes_en_escuela pe 
+                            ON i.id_escuela = pe.id_escuela 
+                            AND i.id_plan = pe.id_plan
+                        WHERE i.dni_alumno = ?	
+                        AND i.id_escuela = ?
+                        AND i.estado = 'activos'
+                        ORDER BY i.fecha_inicio DESC
+                        LIMIT 1;`;
+
+    const valor : unknown[] = [dni_alumno, id_escuela  ]; 
+    
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad : "INSCRIPCION_ACTUAL"
+    });
+};
+
+
+export interface PlanEscuelaData {
+  id_plan: number;
+  descripcion_plan: string;
+  cantidad_clases: number;
+  cantidad_meses: number;
+  monto: number;
+  estado: string;
+};
+
+export const planesActivos = async ( id_escuela : number)
+:Promise<TipadoData<PlanEscuelaData[]>> =>{
+
+    const sql : string = `SELECT 
+                                pp.id_plan,
+                                COALESCE(pe.nombre_personalizado, pp.descripcion_plan) AS descripcion_plan,
+                                pe.clases_asignadas AS cantidad_clases,
+                                pe.meses_asignados AS cantidad_meses,
+                                pe.monto_asignado AS monto,
+                                pe.estado
+                            FROM planes_en_escuela pe
+                            INNER JOIN planes_pago pp 
+                                ON pe.id_plan = pp.id_plan
+                            WHERE pe.id_escuela = 107 
+                            AND pe.estado = 'activos';`;
+
+    const valor : unknown[] = [ id_escuela ];
+    
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores    : valor,
+        entidad    : "PLANES_ACTIVOS",
+        estado : ""
+    });
+
+};
 
 export const method = {
 
     obtenerEscuelasPorAlumno : tryCatchDatos( obtenerEscuelasPorAlumno ),
     obtenerClasesEscuelasHoy : tryCatchDatos( obtenerClasesEscuelasHoy),
     obtenerDniAlumno : tryCatchDatos( obtenerDniAlumno),
-
+    dataEscuela    : tryCatchDatos( dataEscuela ),
+    inscripcionActual : tryCatchDatos( inscripcionActual),
+    planesActivos : tryCatchDatos( planesActivos),
 };
