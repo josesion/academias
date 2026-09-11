@@ -32,12 +32,13 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
   carga,
   onSeleccionarInscripcion,
 }) => {
+  const sinContenido = carga || data.length === 0;
+
   return (
     <div className="listado_wrapper">
       {/* ==============================
-          VISTA DESKTOP
+          VISTA DESKTOP — Solo el header vive siempre dentro de la tabla
       ============================== */}
-
       <table className="tabla_inscripciones">
         <thead className="tabla_header">
           <tr>
@@ -50,23 +51,7 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
           </tr>
         </thead>
 
-        {carga === true ? (
-          <tbody className="tabla_body">
-            <tr>
-              <td colSpan={6}>
-                <ComponenteCargando />
-              </td>
-            </tr>
-          </tbody>
-        ) : data.length === 0 ? (
-          <tbody className="tabla_body">
-            <tr>
-              <td colSpan={6} className="sin_datos">
-                <SinResultado />
-              </td>
-            </tr>
-          </tbody>
-        ) : (
+        {!sinContenido && (
           <tbody className="tabla_body">
             {data.map((inscripcion) => (
               <ElementoLista
@@ -109,10 +94,18 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
       </table>
 
       {/* ==============================
+          ESTADO VACÍO / CARGANDO — fuera de la tabla, centrado real
+      ============================== */}
+      {sinContenido && (
+        <div className="listado_estado_vacio">
+          {carga ? <ComponenteCargando /> : <SinResultado />}
+        </div>
+      )}
+
+      {/* ==============================
           VISTA MOBILE
       ============================== */}
-
-      {!carga && data.length > 0 && (
+      {!sinContenido && (
         <div className="listado_mobile">
           {data.map((inscripcion) => (
             <ElementoLista

@@ -6,99 +6,70 @@ type ServicioCrud<T> = (
 ) => Promise<any>;
 
 interface DataServicios<T, R, A> {
-  valores?: T;
-
-  servicios: ServicioCrud<T>;
-
-  dispatch: React.Dispatch<A>;
-
-  accionResultado: (data: R | null) => A;
-  accionCarga: (estado: boolean) => A;
-  accionError: (mensaje: string | null) => A;
-
-  dependencias?: React.DependencyList;
-
-  useAbort?: boolean
+    valores?: T;
+    servicios: ServicioCrud<T>;
+    dispatch: React.Dispatch<A>;
+    accionResultado: (data: R | null) => A;
+    accionCarga: (estado: boolean) => A;
+    accionError: (mensaje: string | null) => A;
+    dependencias?: React.DependencyList;
+    useAbort?: boolean;
+    enabled?: boolean; // NUEVO: Condición para disparar el fetch
 };
 
-
-
-/**
- * Hook para gestionar la ejecución de servicios asíncronos con manejo de estados,
- * cancelación de peticiones (AbortController) y tiempo límite (timeout) opcional.
- *
- * @template T - Tipo de los valores/parámetros de entrada para el servicio.
- * @template R - Tipo de la respuesta esperada del servicio.
- * @template A - Tipo de la acción (o cualquier dato extra necesario).
- *
- * @param {Object} props - Configuración del hook.
- * @param {boolean} props.useAbort - Si es true, activa el AbortController y el temporizador.
- * @param {Function} props.servicios - Función de servicio API (debe aceptar `signal` como parámetro).
- * @param {T} props.valores - Parámetros necesarios para ejecutar el servicio.
- * @param {Array<any>} props.dependencias - Array de dependencias para el useEffect.
- * @param {Function} props.dispatch - Función de dispatch para actualizar el estado global.
- * @param {Function} props.accionCarga - Action creator para actualizar el estado de carga.
- * @param {Function} props.accionResultado - Action creator para actualizar el resultado exitoso.
- * @param {Function} props.accionError - Action creator para manejar errores.
- *
- * @description
- * El hook ejecuta el servicio solicitado y gestiona el ciclo de vida de la petición:
- * 1. Si `useAbort` es true, establece un temporizador de 8 segundos.
- * 2. Si la petición supera el tiempo, se aborta automáticamente (AbortError).
- * 3. En el `catch`, ignora el `AbortError` para evitar mensajes de error falsos al usuario.
- * 4. El `finally` asegura la limpieza del temporizador y el estado de carga.
- */
 export const useEffectServicio = <T, R, A>(
-  data: DataServicios<T, R, A>
+    data: DataServicios<T, R, A>
 ) => {
-  const {
-    servicios,
-    valores,
-    dispatch,
-    accionResultado,
-    accionCarga,
-    accionError,
-    dependencias = [],
-    useAbort = false
-  } = data;
+    const {
+        servicios,
+        valores,
+        dispatch,
+        accionResultado,
+        accionCarga,
+        accionError,
+        dependencias = [],
+        useAbort = false,
+        enabled = true // Por defecto arranca en true si no se especifica
+    } = data;
 
-  useEffect(() => {
-    let controller: AbortController | undefined;
-    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    useEffect(() => {
+        // Si está deshabilitado (ej. porque el id_escuela es null), salimos al toque
+        if (!enabled) return;
 
-    if (useAbort) {
-        controller = new AbortController();
-        timeoutId = setTimeout(() => controller?.abort(), 8000);
-    };
+        let controller: AbortController | undefined;
+        let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-    const generica = async () => {
-      try {
-        dispatch(accionCarga(true));
-   
-        const result = await servicios(valores , controller?.signal);
+        if (useAbort) {
+            controller = new AbortController();
+            timeoutId = setTimeout(() => controller?.abort(), 8000);
+        };
 
-        if (result.statusCode >= 200 && result.statusCode < 300) {
-          dispatch(accionResultado(result.data));
-        } else {
-          dispatch(accionResultado(null));
-          dispatch(accionError(result.message  || "Error desconocido" ));
-        }
-      } catch (error: any) {
-          if (error.name !== 'AbortError') {
-             dispatch(accionError("Error de conexión"));
-          }
-      } finally {
-        dispatch(accionCarga(false));
-      }
-    };
+        const generica = async () => {
+            try {
+                dispatch(accionCarga(true));
+           
+                const result = await servicios(valores, controller?.signal);
 
+                if (result.statusCode >= 200 && result.statusCode < 300) {
+                    dispatch(accionResultado(result.data));
+                } else {
+                    dispatch(accionResultado(null));
+                    dispatch(accionError(result.message || "Error desconocido"));
+                }
+            } catch (error: any) {
+                if (error.name !== 'AbortError') {
+                    dispatch(accionError("Error de conexión"));
+                }
+            } finally {
+                dispatch(accionCarga(false));
+            }
+        };
 
-    generica();
+        generica();
 
-    return () => {
+        return () => {
             if (timeoutId) clearTimeout(timeoutId);
             if (controller) controller.abort();
-          
-    };
-  }, dependencias);
+        };
+    }, [...dependencias, enabled]);
 };

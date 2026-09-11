@@ -59,11 +59,9 @@ export const MenuNav = () => {
   const irTipoCuentas = () => irA("/user_tipo_cuenta");
 
   const irAsistencia = () => irA("/asistencia");
-  //const irInscripciones = () => irA("/user_inscripciones");
   const irArqueoCaja = () => irA("/caja_usuario");
   const irListadoCaja = () => irA("/caja_listado");
 
-  // const irInscripciones = () => irA("/inscrip_page");
   const irListInscripciones = () => irA("/list_inscrip");
   const irFlayers = () => irA("/flayers");
   const irHorarios = () => irA("/horario_page");
@@ -81,7 +79,6 @@ export const MenuNav = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // Si el menú existe y el lugar donde hiciste clic NO está dentro del menú:
       if (navRef.current && !navRef.current.contains(event.target as Node)) {
         setSeccionAbierta(null);
         setMenuMobileAbierto(false);
@@ -92,7 +89,9 @@ export const MenuNav = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setSeccionAbierta]);
+  }, [setSeccionAbierta, setMenuMobileAbierto]);
+
+  console.log(rol);
 
   return (
     <>
@@ -140,7 +139,6 @@ export const MenuNav = () => {
           {dataVisualMenu?.rol === "usuario" && (
             <>
               {/* SECCIÓN Principal */}
-
               <li
                 className="menu-item alinear menu_principal"
                 onClick={irPrincipal}
@@ -197,7 +195,8 @@ export const MenuNav = () => {
 
                     <li
                       onClick={(e) => {
-                        (e.stopPropagation, irListadoCaja());
+                        e.stopPropagation();
+                        irListadoCaja();
                       }}
                     >
                       <PiCardsBold size={18} color="#38bdf8" /> Listado Cajas
@@ -330,8 +329,12 @@ export const MenuNav = () => {
                   </ul>
                 )}
               </li>
+            </>
+          )}
 
-              {/* SALIR */}
+          {/* MI CUENTA / SALIR (COMPARTIDO ALUMNO Y USUARIO) */}
+          {(rol?.rol === "alumno" || dataVisualMenu?.rol === "usuario") && (
+            <>
               <li
                 className="alinear"
                 onClick={() => {
@@ -341,11 +344,12 @@ export const MenuNav = () => {
                 <ImExit size={20} color="#796d6d" />
                 Mi Cuenta
               </li>
+
               {seccionAbierta === "salir" && (
                 <MenuUsuario
                   usuario={dataVisualMenu.usuario ?? ""}
                   onCerrar={() => {
-                    setSeccionAbierta(null); // Cerramos el acordeón limpiamente
+                    setSeccionAbierta(null);
                   }}
                   onLogout={cerrarSesion}
                 />

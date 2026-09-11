@@ -2,6 +2,12 @@ import { PAGINA } from "./variables.globales";
 import { apiFetch ,type ApiResponse  } from "../utils/apiFetch";
 import { verificarAutenticacion } from "../hooks/verificacionUsuario";
 
+import { type EscuelaData } from "../componentes/SeccionAlumnos/InfoEscuela/InfoEscuela";
+import { type InscripcionActualData } from "../componentes/SeccionAlumnos/EstadoAlumno/EstadoPlan";
+import { type  PlanEscuelaData } from "../componentes/SeccionAlumnos/TarjetasPlanes/TarjetasPlanes";
+import { type HorarioClaseData } from "../componentes/SeccionAlumnos/Horarios/Horarios";
+
+
 export interface EscuelaAlumnoRow {
   id_escuela: number;
   razon_social: string;
@@ -55,4 +61,56 @@ export const alumnosEscuelas = async  (data :{ correo : string} )
  return await apiFetch( ruta, { 
     method : "GET"
  })
+};
+
+
+export interface ResultInfoEscuela {
+
+    heroEscuela : EscuelaData | null ,
+    flayer : FlayerDataResult[] | null ,
+    inscripcion :InscripcionActualData | null ,
+    planes :  PlanEscuelaData[] | null 
+
+};
+
+export const dataEscuela = async (data :{ correo : string, id_escuela : number})
+:Promise<ApiResponse<ResultInfoEscuela>> =>{
+  
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+    const ruta  = `${PAGINA}api/data_escuela_alumno/${data.correo}/${data.id_escuela}`; 
+    
+    return await apiFetch( ruta, { method : "GET"});    
+
+};
+
+
+
+export const horarioEscuela = async ( data : { id_escuela : number})
+:Promise<ApiResponse<HorarioClaseData[]>> =>{
+   
+    const verificarUser= await verificarAutenticacion();
+
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+    const ruta  = `${PAGINA}api/horario_escuela/${data.id_escuela}`; 
+    
+    return await apiFetch( ruta, { method : "GET"});  
+
 };

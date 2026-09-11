@@ -1,5 +1,5 @@
 import React from "react";
-
+import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import "./infoescuela.css";
 
 export interface EscuelaData {
@@ -13,9 +13,10 @@ export interface EscuelaData {
 
 interface HeroEscuelaProps {
   escuela: EscuelaData;
+  carga: boolean;
 }
 
-export const HeroEscuela: React.FC<HeroEscuelaProps> = ({ escuela }) => {
+export const HeroEscuela: React.FC<HeroEscuelaProps> = ({ escuela, carga }) => {
   // Función auxiliar para sacar las iniciales para el Avatar (ej: "Academia Danza" -> "AD")
   const obtenerIniciales = (texto: string) => {
     if (!texto) return "DL";
@@ -28,18 +29,24 @@ export const HeroEscuela: React.FC<HeroEscuelaProps> = ({ escuela }) => {
 
   return (
     <div className="hero-escuela">
-      <div className="hero-avatar">
-        {obtenerIniciales(escuela.razon_social)}
-      </div>
-      <div className="hero-info">
-        <h1 className="hero-titulo">{escuela.razon_social}</h1>
-        <p className="hero-sub">
-          Propietario: {escuela.nombre_propietario}{" "}
-          {escuela.apellido_propietario} • {escuela.direccion} • Tel:{" "}
-          {escuela.celular}
-        </p>
-        <span className="badge-activo">Alumno Activo</span>
-      </div>
+      {carga ? (
+        <SpinnerTarjeta />
+      ) : (
+        <>
+          <div className="hero-avatar">
+            {obtenerIniciales(escuela.razon_social)}
+          </div>
+          <div className="hero-info">
+            <h1 className="hero-titulo">{escuela.razon_social}</h1>
+            <p className="hero-sub">
+              Propietario: {escuela.nombre_propietario}{" "}
+              {escuela.apellido_propietario} • {escuela.direccion} • Tel:{" "}
+              {escuela.celular}
+            </p>
+            <span className="badge-activo">Alumno Activo</span>
+          </div>
+        </>
+      )}
     </div>
   );
 };

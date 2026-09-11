@@ -1,7 +1,7 @@
 import { useContext} from "react";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 
-import { alumnosEscuelas } from "../servicio/principal.alumnos.fetch"; 
+import { alumnosEscuelas, dataEscuela } from "../servicio/principal.alumnos.fetch"; 
 import { metricasAlumnos } from "../hooks/SeccionAlumnos/MetricasAlumnos";
 
 export const configMetricasAlumnos = ()=>{
@@ -10,7 +10,8 @@ export const configMetricasAlumnos = ()=>{
     const config ={
         usuario : rol?.usuario ? rol.usuario : "users",
         servicios :{
-            alumnosEscuelas : alumnosEscuelas
+            alumnosEscuelas : alumnosEscuelas,
+            dataEscuela     : dataEscuela,
         },
 
     };

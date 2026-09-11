@@ -114,3 +114,41 @@
 .btn-principal:hover {
   background-color: var(--color-secundario);
 }
+
+
+/* ============================================================
+   AVISO FLOTANTE DE ERROR (RobotError) — abajo a la derecha
+   ============================================================ */
+
+.robot-error-flotante {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1200;
+  max-width: 320px;
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-lg, 0 15px 35px rgba(0, 0, 0, 0.25));
+  animation: robotErrorEntrada 0.35s ease;
+}
+
+@keyframes robotErrorEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .robot-error-flotante {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}

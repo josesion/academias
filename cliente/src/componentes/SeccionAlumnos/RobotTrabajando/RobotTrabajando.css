@@ -1,0 +1,150 @@
+/* RobotTrabajando.css */
+
+.robot_trabajo_contenedor {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  text-align: left;
+}
+
+.robot_trabajo_cerrar {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.robot_trabajo_cerrar:hover {
+  color: #fff;
+}
+
+.robot_trabajo_glow {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(
+    circle,
+    rgba(91, 255, 224, 0.2) 0%,
+    rgba(91, 107, 255, 0.1) 45%,
+    transparent 75%
+  );
+  filter: blur(4px);
+  z-index: 0;
+  animation: robot_trabajo_pulso 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.robot_trabajo_svg {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.robot_trabajo_antena_luz {
+  animation: robot_trabajo_titileo 1.1s ease-in-out infinite;
+}
+
+.robot_trabajo_ojo {
+  animation: robot_trabajo_parpadeo 3s ease-in-out infinite;
+}
+.robot_trabajo_ojo_2 {
+  animation-delay: 0.15s;
+}
+
+.robot_trabajo_engranaje {
+  animation: robot_trabajo_girar 2.4s linear infinite;
+}
+
+.robot_trabajo_luz {
+  animation: robot_trabajo_titileo 1.4s ease-in-out infinite;
+}
+.robot_trabajo_luz_2 {
+  animation-delay: 0.6s;
+}
+
+.robot_trabajo_brazo {
+  animation: robot_trabajo_martillar 0.9s ease-in-out infinite;
+  transform-origin: 157px 140px;
+}
+
+.robot_trabajo_texto {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.robot_trabajo_mensaje {
+  color: #c7cdff;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+}
+
+.robot_trabajo_progreso {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(123, 140, 255, 0.15);
+  overflow: hidden;
+}
+
+.robot_trabajo_progreso_fill {
+  height: 100%;
+  width: 40%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #5b6bff, #5bffe0);
+  animation: robot_trabajo_avance 1.6s ease-in-out infinite;
+}
+
+/* --- Keyframes --- */
+
+@keyframes robot_trabajo_pulso {
+  0%, 100% { opacity: 0.6; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+}
+
+@keyframes robot_trabajo_titileo {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+@keyframes robot_trabajo_parpadeo {
+  0%, 88%, 100% { transform: scaleY(1); }
+  92% { transform: scaleY(0.15); }
+}
+
+@keyframes robot_trabajo_girar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes robot_trabajo_martillar {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-8deg); }
+}
+
+@keyframes robot_trabajo_avance {
+  0% { transform: translateX(-100%); width: 40%; }
+  50% { transform: translateX(50%); width: 40%; }
+  100% { transform: translateX(250%); width: 40%; }
+}

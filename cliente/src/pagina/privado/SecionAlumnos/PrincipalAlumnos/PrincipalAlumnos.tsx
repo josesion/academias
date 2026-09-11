@@ -93,7 +93,7 @@ export const PrincipalAlumnos = () => {
           <CarruselFlayers
             flayers={data.flayers}
             tipo="carrusel"
-            carga={state.carga.metricas}
+            cargaSpiner={state.carga.metricas}
           />
         ) : (
           <div className="flayers_vacio_compacto">

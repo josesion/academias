@@ -1,6 +1,6 @@
 import { GaleriaFlayers } from "../Galerias/GaleriaFlayers";
 import { CarruselSolo } from "../CarrucelItems/CarruselFlayers";
-
+import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import "./carruselflayers.css";
 
 export interface Flayer {
@@ -21,6 +21,7 @@ interface CarruselProps {
   carga?: boolean; // Opcional por si no se usa en el carrusel simple
   mensaje?: string;
   plan?: number;
+  cargaSpiner: boolean;
 }
 
 export const CarruselFlayers = ({
@@ -34,7 +35,12 @@ export const CarruselFlayers = ({
   carga = false,
   mensaje,
   plan,
+  cargaSpiner,
 }: CarruselProps) => {
+  if (cargaSpiner) {
+    return <SpinnerTarjeta />;
+  }
+
   // * Si el tipo es galería, renderizamos el componente exclusivo de galería
   if (tipo === "galeria") {
     return (
