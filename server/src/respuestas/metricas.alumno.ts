@@ -36,3 +36,15 @@ export const MAPA_INFO_ESCUELA : Record<string , { status : CodigoEstadoHTTP, ms
         },
 
 }; 
+
+export const MAPA_HORARIO_ESCUELA : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+ 
+
+    "HORARIO_ESCUELA_OK" : {
+            status: CodigoEstadoHTTP.OK,
+            msg: "Info Escuela horario ok."
+        },
+
+}; 

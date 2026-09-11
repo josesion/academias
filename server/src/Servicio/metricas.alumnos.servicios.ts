@@ -2,9 +2,10 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataMetricasAlumno } from "../data/metricas.alumnos.data";
 import { method as dataFlayer } from "../data/flayer.data";
 
-import { EscuelaAlumnoRow, ClaseHoyRow, EscuelaData, InscripcionActualData, PlanEscuelaData} from "../data/metricas.alumnos.data";
+import { EscuelaAlumnoRow, ClaseHoyRow, EscuelaData, InscripcionActualData, PlanEscuelaData,  HorarioClaseData} from "../data/metricas.alumnos.data";
 import { MetricasAlumnoSchema, MetricasAlumnosInputs,
          DataEscuelaInputs, DataEscuelaSchema,
+         IdEscuelaInputs, IdEscuelaSchema,
  } from "../squemas/metricas.alumno"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { FlayerDataResult  } from "../data/flayer.data";
@@ -39,9 +40,8 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
             dataFlayer.getFlayerAlumnos(dni)
         ]);
 
-      
 
-    // ACA SE AGREGARA LA INFO DE LOS FLAYERS PARA EL ALUNNO
+
     const metricasAlumnos : EscuelaAlumnoRow[] | null | undefined  = respuestaMetricas.code === 'METRICAS_ESCEULAS_ALUMNOS_LISTED'
                              ? respuestaMetricas.data
                              : null 
@@ -111,6 +111,9 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
          dataMetricasAlumno.inscripcionActual(dataInscripcion),
          dataMetricasAlumno.planesActivos(validarData.id_escuela)   
     ]);
+    
+    console.log(infoInscripcion)
+
 
     const heroEscuela : EscuelaData | null | undefined = infoEscuela.code === 'DATA_ESCUELA_EXISTE'
                         ? infoEscuela.data
@@ -151,9 +154,38 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
 
 };
 
+
+const horarioEscuelaServicio = async ( data : IdEscuelaInputs)
+:Promise<TipadoData<HorarioClaseData[] | null >> =>{
+
+    const validarData  : IdEscuelaInputs = IdEscuelaSchema.parse(data);
+
+    const resultHorario = await dataMetricasAlumno.horarioEscuela(validarData.id_escuela);
+    const infoHorario :  HorarioClaseData[] | null | undefined  = resultHorario.code === 'HORARIO_ESCUELA_LISTED' 
+                        ?  resultHorario.data
+                        : null;
+
+    if ( infoHorario !== undefined ){
+        return {
+            error : false, 
+            message : "Horario de escuela ok.",
+            data : infoHorario,
+            code : "HORARIO_ESCUELA_OK"
+        };
+    }; 
+
+    return {
+        error: true, 
+        message : "Error en el servidor, Horarios escuela.",
+        code : "ERROR_SERVIDOR"
+    };     
+
+};
+
 export const method = {
 
     metricasAlumnoPrincipal : tryCatchDatos( metricasAlumnoPrincipal ),
     dataEscuelaServicio : tryCatchDatos( dataEscuelaServicio),
+    horarioEscuelaServicio : tryCatchDatos( horarioEscuelaServicio),
 
 };

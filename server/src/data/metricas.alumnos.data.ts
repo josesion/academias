@@ -169,11 +169,13 @@ export const inscripcionActual = async ( data :  PropInscirpcion)
 
     const {dni_alumno , id_escuela } = data;
 
+    console.log( data)
+
     const sql : string = `SELECT 
                             i.id_inscripcion,
                             i.id_plan,
-                            i.fecha_inicio,
-                            i.fecha_fin,
+                            DATE_FORMAT(i.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+                            DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS fecha_fin,
                             i.clases_asignadas_inscritas,
                             i.meses_asignados_inscritos,
                             i.monto,
@@ -189,11 +191,11 @@ export const inscripcionActual = async ( data :  PropInscirpcion)
                         LEFT JOIN planes_en_escuela pe 
                             ON i.id_escuela = pe.id_escuela 
                             AND i.id_plan = pe.id_plan
-                        WHERE i.dni_alumno = ?	
+                        WHERE i.dni_alumno = ?  
                         AND i.id_escuela = ?
                         AND i.estado = 'activos'
                         ORDER BY i.fecha_inicio DESC
-                        LIMIT 1;`;
+                        LIMIT 1`;
 
     const valor : unknown[] = [dni_alumno, id_escuela  ]; 
     
@@ -241,6 +243,60 @@ export const planesActivos = async ( id_escuela : number)
 
 };
 
+export interface HorarioClaseData {
+  id: number;
+  dia_semana:
+    | "lunes"
+    | "martes"
+    | "miercoles"
+    | "jueves"
+    | "viernes"
+    | "sabado"
+    | "domingo";
+  hora_inicio: string;
+  hora_fin: string;
+  tipo_clase: string; // Viene de tipo_clase.tipo (Ej: Bachata, Salsa)
+  nivel: string; // Viene de niveles.nivel (Ej: Principiante, Intermedio)
+  nombre_profesor: string; // Nombre y apellido concatenados de la tabla profesores
+  estado: string;
+}
+
+const horarioEscuela =async ( id_escuela : number )
+:Promise<TipadoData<HorarioClaseData[]>> =>{
+      const sql : string = `SELECT 
+                                h.id,
+                                h.dia_semana,
+                                h.hora_inicio,
+                                h.hora_fin,
+                                tc.tipo AS tipo_clase,
+                                n.nivel AS nivel,
+                                CONCAT(p.nombre, ' ', p.apellido) AS nombre_profesor,
+                                h.estado
+                            FROM horarios_clases h
+                            LEFT JOIN tipo_clase tc 
+                                ON h.id_tipo_clase = tc.id
+                            LEFT JOIN niveles n 
+                                ON h.id_nivel = n.id
+                            LEFT JOIN profesores_en_escuela pe 
+                                ON h.dni_profesor = pe.dni_profesor AND h.id_escuela = pe.id_escuela
+                            LEFT JOIN profesores p 
+                                ON pe.dni_profesor = p.dni -- (Ajusta 'p.dni' si tu tabla de profesores usa otra columna para el documento)
+                            WHERE h.id_escuela = ?
+                            AND h.estado = 'activos'
+                            ORDER BY 
+                                FIELD(h.dia_semana, 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'),
+                                h.hora_inicio ASC;`;
+
+    const valor : unknown[] = [ id_escuela ];
+    
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores    : valor,
+        entidad    : "HORARIO_ESCUELA",
+        estado : ""
+    });  
+};
+
 export const method = {
 
     obtenerEscuelasPorAlumno : tryCatchDatos( obtenerEscuelasPorAlumno ),
@@ -249,4 +305,5 @@ export const method = {
     dataEscuela    : tryCatchDatos( dataEscuela ),
     inscripcionActual : tryCatchDatos( inscripcionActual),
     planesActivos : tryCatchDatos( planesActivos),
+    horarioEscuela : tryCatchDatos( horarioEscuela),
 };

@@ -15,5 +15,13 @@ export const DataEscuelaSchema = z.object({
         
 });
 
+export const IdEscuelaSchema = z.object({
+    id_escuela: z.number({ message: "id Escuela debe ser numerico" })
+        .min(1, { message: "El id debe ser mayor o igual a 1" }), 
+            
+});
+
+
 export type MetricasAlumnosInputs = z.infer<typeof MetricasAlumnoSchema>;
 export type DataEscuelaInputs = z.infer<typeof DataEscuelaSchema>;
+export type IdEscuelaInputs = z.infer<typeof IdEscuelaSchema>;
