@@ -173,6 +173,42 @@
   animation: modalSalidaZarpada 0.3s cubic-bezier(0.7, 0, 0.84, 0) forwards;
 }
 
+/* ==========================================
+   MODAL DE FINANZAS — header + layout interno
+   ========================================== */
+
+.modal_finanzas_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* Reutilizamos las clases limpias del libro diario para el título del modal */
+.modal_finanzas_header .libro_diario_titulo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal_finanzas_header .libro_diario_titulo > svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    padding: 7px;
+    box-sizing: border-box;
+    border-radius: var(--radio-sm);
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-primario) 22%, transparent);
+    color: var(--color-primario);
+}
 
 /* --- KEYFRAMES --- */
 

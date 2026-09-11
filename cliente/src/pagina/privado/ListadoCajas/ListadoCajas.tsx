@@ -173,18 +173,12 @@ export const ListadoCajas = () => {
         >
           <div className="modal-contenido-finanzas">
             <header className="modal_finanzas_header">
-              <div>
-                <header className="libro_diario_encabezado">
-                  <div className="libro_diario_titulo_grupo">
-                    <div className="libro_diario_icono_wrapper">
-                      <BookOpen size={18} />
-                    </div>
-                    <div className="libro_diario_titulo_texto">
-                      <h2>Libro diario</h2>
-                      <span>Registro cronológico de caja</span>
-                    </div>
-                  </div>
-                </header>
+              <div className="libro_diario_titulo">
+                <BookOpen size={20} />
+                <div className="libro_diario_titulo_texto">
+                  <h2>Libro diario</h2>
+                  <span>Registro cronológico de caja</span>
+                </div>
               </div>
 
               <Boton
