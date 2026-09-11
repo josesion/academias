@@ -112,8 +112,6 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
          dataMetricasAlumno.planesActivos(validarData.id_escuela)   
     ]);
     
-    console.log(infoInscripcion)
-
 
     const heroEscuela : EscuelaData | null | undefined = infoEscuela.code === 'DATA_ESCUELA_EXISTE'
                         ? infoEscuela.data

@@ -377,7 +377,7 @@ export interface MovimientoLibroDiario {
 }
 
 /**
- * Consulta y obtiene el detalle completo de los movimientos de una caja específica (excluyendo el saldo inicial) 
+ * Consulta y obtiene el detalle completo de los movimientos de una caja específica (incluyendo el saldo inicial) 
  * utilizando los joins correspondientes con usuarios, categorías y cuentas.
  *
  * @async
@@ -405,8 +405,7 @@ const libroDiarioDetalle  = async ( data : LibroDiarioInput)
                         INNER JOIN usuarios u ON dc.id_usuario = u.id_usuario
                         INNER JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
                         INNER JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
-                        WHERE dc.id_caja = ?
-                        AND cc.nombre_categoria != 'Saldo Inicial';`
+                        WHERE dc.id_caja = ?;`
 
     const valor : unknown[] = [ data.id_caja ];
     
@@ -417,7 +416,7 @@ const libroDiarioDetalle  = async ( data : LibroDiarioInput)
         estado : ""
     });
 
-} 
+}
 
 
 /**
