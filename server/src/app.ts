@@ -42,6 +42,10 @@ import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripcion
 
 import  principalAlumnos from "./rutas/metricas.alumnos.principal.rutas";
 
+/** RUTAS ADMINISTRADOR */
+
+import  administradorPlanes from "./rutas/planes_saas.ruta";
+
 const app : Express = express();
 
 iniciarCronVencimientoInscripciones();
@@ -94,7 +98,9 @@ app.use(flayer);
 
 app.use(principalAlumnos);
 
+// RUTAS ADMINISTRADOR
 
+app.use(administradorPlanes);
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
