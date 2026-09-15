@@ -117,7 +117,7 @@ const listaPlanesSaas = async ()
 :Promise<TipadoData<PlanSaasRow[]>> =>{
 
     const resultListaPlanesSaas = await dataPlanesSaas.listaPlanesSaas();
-    console.log(resultListaPlanesSaas)
+  
 
     if ( resultListaPlanesSaas.code === 'PLANES_SAAS_LISTED'){
     

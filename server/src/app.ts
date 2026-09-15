@@ -45,6 +45,8 @@ import  principalAlumnos from "./rutas/metricas.alumnos.principal.rutas";
 /** RUTAS ADMINISTRADOR */
 
 import  administradorPlanes from "./rutas/planes_saas.ruta";
+import  subcripciones from "./rutas/supcripcion.escuelas";
+
 
 const app : Express = express();
 
@@ -101,6 +103,7 @@ app.use(principalAlumnos);
 // RUTAS ADMINISTRADOR
 
 app.use(administradorPlanes);
+app.use(subcripciones);
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
