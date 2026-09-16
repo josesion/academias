@@ -1,10 +1,19 @@
 import { VerificarPermisos } from "../servicio/permisosRutas";
+
+interface DatosUsuarioAuth {
+    usuario: string;
+    rol: string;
+    razon_social: string;
+    tipo: string; 
+}
+
 interface AutenticacionResultado {
     autenticado: boolean;
     token?: string;
     mensaje?: string;
     statusCode?: number;
     code?: string;
+    usuario?: DatosUsuarioAuth | null;
 }
 
 
@@ -14,11 +23,13 @@ export async function verificarAutenticacion(): Promise<AutenticacionResultado> 
     if (resultToken.error === false) {
         return {
             autenticado: true,
+            usuario: resultToken.data
         };
     }
 
     return {
         autenticado: false,
+        usuario: null
     };
 }
 

@@ -8,28 +8,28 @@ const rutas = Router();
 rutas.post(
     "/api/alta_cuenta", 
     permisos.validarPermiso, 
-    permisoSaas.verificarPlan(['basico', 'intermedio']), 
+    permisoSaas.verificarPlan(['intermedio']), 
     cuentasControlador.crearCuentaEscuela
 );
 
 rutas.put(
     "/api/mod_cuenta/:id_cuenta", 
     permisos.validarPermiso, 
-    permisoSaas.verificarPlan(['basico', 'intermedio']), 
+    permisoSaas.verificarPlan(['intermedio']), 
     cuentasControlador.modCuentaEscuela
 );
 
 rutas.put(
     "/api/estado_cuenta/:id_cuenta/:estado", 
     permisos.validarPermiso, 
-    permisoSaas.verificarPlan(['basico', 'intermedio']), 
+    permisoSaas.verificarPlan(['intermedio']), 
     cuentasControlador.estadoCuentasEscuela
 );
 
 rutas.get(
     "/api/list_tipos_cuentas", 
     permisos.validarPermiso, 
-    permisoSaas.verificarPlan(['basico', 'intermedio']), 
+    permisoSaas.verificarPlan(['intermedio']), 
     cuentasControlador.listaCuentas
 );
 

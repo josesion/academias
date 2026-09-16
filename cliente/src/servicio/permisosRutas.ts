@@ -6,6 +6,7 @@ interface ValidarToken {
     usuario: string  ;
     rol : string,
     razon_social: string;
+    tipo : string;
 }
 
 export const VerificarPermisos = async() : Promise<ApiResponse<ValidarToken>> =>{
