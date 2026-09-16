@@ -10,11 +10,11 @@ import { MAPA_POST_SUSCRIPCION } from "../respuestas/suscripcion.escuela";
 
 
 const postSuscripcion = async ( req : Request , res : Response) =>{
-
+    console.log(req.usuario)
     const {  fecha_inscripcion, fecha_vencimiento} = generarFechasSuscripcion();
 
     const data : SuscripcionInputs = {
-        id_escuela : Number(req.usuario?.id_escuela),
+        id_escuela : Number(req.body.id_escuela),
         id_plan_saas : Number(req.body.id_plan_saas),
         fecha_inscripcion : fecha_inscripcion ,
         fecha_vencimiento : fecha_vencimiento,

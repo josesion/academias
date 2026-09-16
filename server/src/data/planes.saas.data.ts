@@ -10,34 +10,47 @@ export interface ResultPostPlanesSass {
     tipo : string,
 };
 
-const postPlanesSaas = async ( data : PlanSaasInputs)
-: Promise<TipadoData<ResultPostPlanesSass>> =>{
-     const { tipo , descripcion, precio, cant_flyers, estado } = data; 
+const postPlanesSaas = async (data: PlanSaasInputs): Promise<TipadoData<ResultPostPlanesSass>> => {
+     // 1. Agregamos caracteristicas a la desestructuración
+     const { tipo, descripcion, precio, cant_flyers, estado, caracteristicas } = data; 
        
-     const sql = `INSERT INTO planes_saas (tipo, descripcion, precio, cant_flyers, estado) VALUES 
-                  ( ?, ?, ?, ?, ?)`;
+     // 2. Sumamos la columna caracteristicas al INSERT y su respectivo placeholder (?)
+     const sql = `INSERT INTO planes_saas (tipo, descripcion, precio, cant_flyers, caracteristicas, estado) VALUES 
+                   ( ?, ?, ?, ?, ?, ?)`;
    
-     const valores: unknown[] = [tipo, descripcion, precio, cant_flyers, estado];
+     // 3. Incluimos caracteristicas en el array de valores. 
+     // Nota: Dependiendo de tu driver de MySQL (ej. mysql2), podés pasar el objeto directo o usar JSON.stringify() si la BD espera un string JSON.
+     const valores: unknown[] = [
+         tipo, 
+         descripcion, 
+         precio, 
+         cant_flyers, 
+         caracteristicas ? JSON.stringify(caracteristicas) : null, 
+         estado
+     ];
+     
      const datosADevolver = { descripcion, tipo };
    
      return await iudEntidad({
-       slqEntidad: sql,
-       valores,
-       entidad: "Planes_Saas",
-       metodo: "CREAR",
-       datosRetorno: datosADevolver,
+        slqEntidad: sql,
+        valores,
+        entidad: "Planes_Saas",
+        metodo: "CREAR",
+        datosRetorno: datosADevolver,
      }); 
 };
 
 export interface PlanSaasConId extends ResultPostPlanesSass {
     id_plan: number;
-}
+};
+
 const modPlanesSaas = async ( data : PlanSaasInputs)
 : Promise<TipadoData<PlanSaasConId>> =>{
 
-    const { tipo , descripcion, precio, cant_flyers, estado, id_plan } = data; 
+    // 1. Extraemos caracteristicas junto con el resto de los campos
+    const { tipo, descripcion, precio, cant_flyers, estado, id_plan, caracteristicas } = data; 
 
-    if ( !id_plan  ){
+    if ( !id_plan ){
         return {
             error : true,
             message : "Verifique el id plan",
@@ -45,17 +58,29 @@ const modPlanesSaas = async ( data : PlanSaasInputs)
         }
     };
 
+     // 2. Sumamos caracteristicas al UPDATE de la consulta SQL
      const sql = `UPDATE planes_saas 
                     SET 
                         tipo = ?, 
                         descripcion = ?, 
                         precio = ?, 
                         cant_flyers = ?, 
+                        caracteristicas = ?, 
                         estado = ?
                     WHERE id_plan = ?;`;
    
-     const valores: unknown[] = [tipo, descripcion, precio, cant_flyers, estado, id_plan];
-     const datosADevolver = { descripcion, tipo , id_plan };
+     // 3. Incluimos JSON.stringify(caracteristicas) en el array de valores respetando el orden de los interrogantes (?)
+     const valores: unknown[] = [
+         tipo, 
+         descripcion, 
+         precio, 
+         cant_flyers, 
+         caracteristicas ? JSON.stringify(caracteristicas) : null, 
+         estado, 
+         id_plan
+     ];
+     
+     const datosADevolver = { descripcion, tipo, id_plan };
    
      return await iudEntidad<PlanSaasConId>({
        slqEntidad: sql,
@@ -123,23 +148,23 @@ export interface PlanSaasRow {
     id_plan: number;
     tipo: 'basico' | 'intermedio' | 'premium';
     descripcion: string;
-    precio: number; // En MySQL los DECIMAL suelen llegar como string o number según el driver, pero number es lo standard
+    precio: number;
     cant_flyers: number;
+    caracteristicas: any; // O podés tiparlo con la estructura exacta del objeto si lo preferís
     estado: 'activo' | 'inactivo';
 };
 
-const listaPlanesSaas = async ()
-:Promise<TipadoData<PlanSaasRow[]>> =>{
+const listaPlanesSaas = async (): Promise<TipadoData<PlanSaasRow[]>> => {
+    // Agregamos caracteristicas al SELECT
+    const sql: string = `SELECT id_plan, tipo, descripcion, precio, cant_flyers, caracteristicas, estado FROM planes_saas;`;
 
-    const sql : string = `SELECT id_plan, tipo, descripcion, precio, cant_flyers, estado FROM planes_saas;`;
+    const valores: unknown[] = [];
 
-    const valores : unknown[] = [];
-
-    return  await listarEntidadSinPaginacion({
-        slqListado : sql,
-        valores : valores,
-        entidad : "PLANES_SAAS",
-        estado : ""
+    return await listarEntidadSinPaginacion({
+        slqListado: sql,
+        valores: valores,
+        entidad: "PLANES_SAAS",
+        estado: ""
     });
 };
 

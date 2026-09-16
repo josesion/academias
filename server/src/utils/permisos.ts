@@ -15,6 +15,7 @@ declare global {
         id: number;
         rol: string;
         id_escuela: number;
+        tipo : string
       };
     }
   }
@@ -53,7 +54,8 @@ const validarPermiso = tryCatch(async (req: Request, res: Response, next: NextFu
                 req.usuario = {
                     id: usuario.id,
                     rol: usuario.rol,
-                    id_escuela: usuario.id_escuela
+                    id_escuela: usuario.id_escuela,
+                    tipo : usuario.tipo
                 };
 
                 next(); // Pase libre al controlador

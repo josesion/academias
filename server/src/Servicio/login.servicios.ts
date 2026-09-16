@@ -52,7 +52,8 @@ const loginUsuario =  async ( data : LoginInputs)
             const tokenData = {
                 id: loginResult.data.id_usuario,
                 rol: loginResult.data.rol,
-                id_escuela: loginResult.data.id_escuela          
+                id_escuela: loginResult.data.id_escuela,
+                tipo : loginResult.data.plan_tipo         
             };
 
             const token = generateToken(tokenData);
@@ -101,7 +102,7 @@ const loginUsuario =  async ( data : LoginInputs)
     if ( loginResult.code === "USUARIO_NO_EXISTE"){
         return {
             error : true,
-            message : "El usuario no existe en el sistema",
+            message : "El usuario no existe en el sistema o esta vencido su plan.",
             code : "USUARIO_NO_EXISTE"
         };
     }

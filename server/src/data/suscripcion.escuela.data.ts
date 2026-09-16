@@ -1,7 +1,7 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
-
+import pool from "../bd";
 
 import { SuscripcionInputs } from "../squemas/suscripciones.escuela";
 import { TipadoData } from "../tipados/tipado.data";
@@ -49,7 +49,23 @@ const verificarSuscripcion = async ( id_escuela : number )
 };
 
 
+
+
+
+
+const vencerPlanesEscuelas  = async () => {
+  const sql = `UPDATE suscripciones_escuelas 
+                            SET estado = 'vencido' 
+                            WHERE id_suscripcion > 0 
+                            AND estado = 'activo' 
+                            AND fecha_vencimiento < CURDATE()`;
+
+  await pool.execute(sql);
+};
+
+
 export const method = {
     postSuscripcion : tryCatchDatos( postSuscripcion ),
     verificarSuscripcion : tryCatchDatos( verificarSuscripcion),
+    vencerPlanesEscuelas : tryCatchDatos( vencerPlanesEscuelas ),
 };

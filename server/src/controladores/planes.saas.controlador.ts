@@ -13,12 +13,18 @@ import { MAPA_POST_PLANES_SAAS, MAPA_MOD_PLANES_SAAS,
 
 const postPlanesSaas = async( req: Request, res: Response) =>{
 
-    const data: PlanSaasInputs = {
+const data: PlanSaasInputs = {
         tipo: req.body.tipo,
         descripcion: req.body.descripcion,
         precio: Number(req.body.precio),
         cant_flyers: Number(req.body.cant_flyers),
-        estado: req.body.estado
+        estado: req.body.estado,
+        // Si req.body.caracteristicas ya viene como objeto lo mandas directo, 
+        // si viene como string de JSON, hacés un JSON.parse(). O si usas MySQL nativo/Prisma/Sequelize 
+        // a veces se pasa directo el objeto. Acá te dejo cómo estructurarlo:
+        caracteristicas: typeof req.body.caracteristicas === 'string' 
+            ? JSON.parse(req.body.caracteristicas) 
+            : req.body.caracteristicas
     };
 
     await handleControladores<PlanSaasInputs,ResultPostPlanesSass >(
@@ -30,13 +36,16 @@ const postPlanesSaas = async( req: Request, res: Response) =>{
 
 const modPlanesSass = async (req: Request, res: Response) =>{
 
-    const data: PlanSaasInputs = {
-        id_plan : Number(req.params.id) ,
+const data: PlanSaasInputs = {
+        id_plan: Number(req.params.id),
         tipo: req.body.tipo,
         descripcion: req.body.descripcion,
         precio: Number(req.body.precio),
         cant_flyers: Number(req.body.cant_flyers),
-        estado: req.body.estado
+        estado: req.body.estado,
+        caracteristicas: typeof req.body.caracteristicas === 'string' 
+            ? JSON.parse(req.body.caracteristicas) 
+            : req.body.caracteristicas
     };
 
     await handleControladores<PlanSaasInputs, PlanSaasConId >(

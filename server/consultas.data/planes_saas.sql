@@ -4,6 +4,7 @@ CREATE TABLE planes_saas (
     descripcion VARCHAR(100) NOT NULL,
     precio DECIMAL(10, 2) NOT NULL,
     cant_flyers INT NOT NULL DEFAULT 0,
+    caracteristicas JSON NULL,
     estado VARCHAR(20) DEFAULT 'activo'
 );
 

@@ -8,7 +8,18 @@ export const PlanSaasSchema = z.object({
   descripcion: z.string().min(3, "La descripción debe tener al menos 3 caracteres").max(100),
   precio: z.number().positive("El precio debe ser mayor a 0"),
   cant_flyers: z.number().int().nonnegative("La cantidad de flyers no puede ser negativa").default(0),
-  estado: z.enum(['activo', "inactivo"]).default('activo')
+  estado: z.enum(['activo', 'inactivo']).default('activo'),
+  
+  // Lo hacemos opcional por si la petición no lo envía
+  caracteristicas: z.object({
+    titulo: z.string().min(1, "El título de características es requerido"),
+    items: z.array(
+      z.object({
+        texto: z.string().min(1, "El texto del ítem es requerido"),
+        disponible: z.boolean()
+      })
+    )
+  }).optional()
 });
 
 export const PlanDeleteSaasSchema = z.object({
