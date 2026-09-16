@@ -303,6 +303,31 @@ const anularInscripcion = async(
         };              
 };
 
+
+
+const anularInscripcionBasico = async ( dataInsc : AnularInscripcionInputs )
+:Promise<TipadoData<{}>> =>{
+
+    const {id_escuela, id_inscripcion} = dataInsc;
+
+    const sql : string = `update inscripciones 
+                                set inscripciones.estado = "suspendido"
+                                where 
+                                inscripciones. id_escuela = ?
+                                and
+                                inscripciones.id_inscripcion = ?;`;
+    
+    const valores : unknown[] = [ id_escuela, id_inscripcion ];
+
+    return await iudEntidad({
+        slqEntidad : sql,
+        valores : valores,
+        metodo : "MODIFICAR",
+        entidad : "ANULAR_INSCRIPCION",
+        datosRetorno : {}
+    });
+};
+
 /**
  * Ejecuta una validación atómica de seguridad y recupera el monto histórico para anulación.
  * * Esta función consulta en un solo viaje a la base de datos tres puntos críticos:
@@ -543,5 +568,6 @@ export const method = {
     anularInscripcion  : tryCatchDatos( anularInscripcion ),
     reglaAnulacionInscripcion : tryCatchDatos( reglaAnulacionInscripcion ),
     idMetodoPago : tryCatchDatos( buscarMetodoPago ),
-    saldoMetodoPago : tryCatchDatos( saldoMetodoPago )
+    saldoMetodoPago : tryCatchDatos( saldoMetodoPago ),
+    anularInscripcionBasico : tryCatchDatos( anularInscripcionBasico ),
 };

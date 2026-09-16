@@ -22,7 +22,7 @@ const postFlayer = async( req : Request, res: Response) =>{
        imagen_url : "Url sin cargar",
        public_id  : "Public id sin cargar",
        fecha_actualizacion : null,
-       plan : Number(req.body.plan),
+       plan : Number(req.usuario?.flayer),
        id_usuario : Number( req.usuario?.id)
   };
 

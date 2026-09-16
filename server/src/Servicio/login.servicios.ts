@@ -53,7 +53,8 @@ const loginUsuario =  async ( data : LoginInputs)
                 id: loginResult.data.id_usuario,
                 rol: loginResult.data.rol,
                 id_escuela: loginResult.data.id_escuela,
-                tipo : loginResult.data.plan_tipo         
+                tipo : loginResult.data.plan_tipo,
+                flayer : loginResult.data.flayer         
             };
 
             const token = generateToken(tokenData);

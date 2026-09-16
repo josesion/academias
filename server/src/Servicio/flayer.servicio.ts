@@ -258,16 +258,7 @@ const eliminarFlayer = async ( data : EliminarFlayerInputs ) =>{
           code : "ERROR_SERVIDOR"
      };       
 
-/**
-// 1. Buscás el flyer en la BD para obtener su URL
-const flyer = await obtenerFlayerPorId(id);
 
-// 2. Borrás de R2 pasándole esa URL
-await eliminarImagenR2(flyer.imagen_url);
-
-// 3. Borrás el registro de MySQL
-await eliminarFlayerDeDb(id);
- */
 };
 
 export const  method = {

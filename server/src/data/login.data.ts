@@ -25,6 +25,7 @@ export interface UsuarioLoginData {
     fecha_vencimiento: string | null; // O Date, dependiendo de cómo lo devuelva tu driver de DB
     plan_tipo: string | null;
     plan_descripcion: string | null;
+    flayer : number
 }
 
 const loginData = async( data : LoginInputs) 
@@ -39,7 +40,8 @@ const loginData = async( data : LoginInputs)
                             s.estado AS estado_suscripcion,
                             s.fecha_vencimiento,
                             p.tipo AS plan_tipo,
-                            p.descripcion AS plan_descripcion
+                            p.descripcion AS plan_descripcion,
+                            p.cant_flyers As flayer
                         FROM usuarios u 
                         INNER JOIN escuelas e ON u.id_escuela = e.id_escuela 
                         INNER JOIN suscripciones_escuelas s ON e.id_escuela = s.id_escuela 

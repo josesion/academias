@@ -161,7 +161,10 @@ const anularInscripcion = async ( req : Request, res : Response) => {
         estadoInsc  : "activos",// queda fijo para q siempre busque el activos
         id_usuario : id_usuario,
         id_cuenta  : req.body.id_cuenta || null,
+        tipo : req.usuario?.tipo
     };
+
+
     const dataDetalle = {
         descripcion : "Anulación de inscripción"// queda fijo para q siempre muestre este comentario
     };
