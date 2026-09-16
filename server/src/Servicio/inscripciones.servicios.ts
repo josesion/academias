@@ -25,93 +25,143 @@ import { type HistorialInputs } from "../squemas/historial";
 
 
 /**
- * Servicio encargado de procesar la inscripción de un alumno con su respectivo pago inicial en caja,
- * validando previamente que no exista una inscripción vigente y registrando el historial correspondiente si es exitosa.
+ * Servicio centralizado para gestionar el registro de inscripciones en el sistema.
+ * 
+ * Divide su lógica de ejecución según el plan SaaS del usuario autenticado:
+ * - **Básico**: Ejecuta un registro de inscripción simplificado y directo a la base de datos sin interactuar con el módulo de caja, generando su respectivo registro de historial.
+ * - **Intermedio**: Ejecuta un flujo transaccional completo que valida la existencia previa del alumno, gestiona el detalle de caja, impacta las cuentas financieras y registra el historial con todos los datos correspondientes.
  * 
  * @async
  * @function inscripcionServiciosCaja
- * @param {InscripcionInputs} dataInscripcion - Datos necesarios para registrar la inscripción (alumno, escuela, usuario, etc.).
- * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Datos del detalle de caja para el pago asociado, excluyendo el campo de referencia.
- * @returns {Promise<TipadoData<{ id_inscripcion: number, dni_alumno: number }>>} Retorna una estructura con el estado de la operación, mensaje descriptivo, el código de resultado y los datos de la inscripción si se completa con éxito.
+ * @param {InscripcionInputs} dataInscripcion - Datos de entrada de la inscripción validados por esquema (incluye plan, escuela, alumno, fechas, montos y tipo de plan).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataDetalle - Datos complementarios para el movimiento de caja (requerido y utilizado exclusivamente para el plan intermedio).
+ * @returns {Promise<TipadoData<{ id?: number; dni_alumno: number }>>} Resultado estructurado de la operación con estado de error, mensaje descriptivo, datos de retorno y código de estado del servidor.
  */
 const inscripcionServiciosCaja = async( 
     dataInscripcion: InscripcionInputs, 
-    dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>)
-: Promise<TipadoData<{ id_inscripcion : number , dni_alumno : number }>> =>{
+    dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>
+): Promise<TipadoData<{ id? : number , dni_alumno : number }>> =>{
 
     const validInsc = InscripcionSchema.parse(dataInscripcion);
-   
-    const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
-    
+
+    // 1. Verificamos vigencia / existencia del alumno primero para ambos planes
     const inscVigente = await inscripcionesData.verificacion( validInsc );
 
-    switch(inscVigente.code ){
+    switch( inscVigente.code ){
 
-        case "INSCRIPCION_NO_EXISTE" : {
-
-            const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);
-      
-            if ( resultadoInscripcion.code === "TRANSACCION_OK" ){
-
-            const dataHistorial  : HistorialInputs = {
-                id_escuela :  validInsc.id_escuela ,
-                id_usuario :  validInsc .id_usuario,
-                modulo : "INSCRIPCIONES",
-                accion : "CREAR",
-                id_registro: Number(resultadoInscripcion.data?.id_inscripcion),
-                descripcion: `Inscripcion del alumno, DNI: ${resultadoInscripcion.data?.dni_alumno}`,
-                datos: {
-                    id_inscripcion : resultadoInscripcion.data?.id_inscripcion,
-                    alumno : resultadoInscripcion.data?.dni_alumno
-                }
-            }; 
-            
-            await registroHistorial( dataHistorial);                  
-
-
-                return {
-                    error : false,
-                    message : `EL alumno : ${ dataInscripcion.dni_alumno }, registro existoso`,
-                    data : resultadoInscripcion.data,
-                    code : "INSCRIPCION_EXITOSA"
-                };
-            };
-
-            if ( resultadoInscripcion.code === "TRANSACCION_FALLIDA" ){
-                return {
-                    error : true,
-                    message : `La inscripcion fallo por alguna razon `,
-                    data : resultadoInscripcion.data,
-                    code : "INSCRIPCION_FALLIDA"
-                };
-            };           
-           
+        case "INSCRIPCION_EXISTE": {
             return {
                 error: true,
-                message: "No se pudo crear la inscripción",
-                code: "INSCRIPCION_CREACION_FALLIDA"
+                message: `El alumno : ${validInsc.dni_alumno} ya se encuentra inscripto.`,
+                code: "INSCRIPCION_EXISTENTE"
             };
-        }; 
+        }
 
-        case "INSCRIPCION_EXISTE"    :{
+        case "INSCRIPCION_NO_EXISTE": {
+
+            // 2. Si no existe, bifurcamos según el tipo de plan SaaS
             
-            
-            return {
+            if( validInsc.tipo === "basico") {
+
+                const resultInscripcionBasica = await inscripcionesData.inscripcionBasica( validInsc );
+                             
+                if ( resultInscripcionBasica.code === "INSCRIPCIONES_CREAR" || !resultInscripcionBasica.error ){
+
+                    const dataHistorial : HistorialInputs = {
+                        id_escuela : validInsc.id_escuela,
+                        id_usuario : validInsc.id_usuario,
+                        modulo : "INSCRIPCIONES",
+                        accion : "CREAR",
+                        id_registro: Number(resultInscripcionBasica.data?.id),
+                        descripcion: `Inscripción básica del alumno, DNI: ${validInsc.dni_alumno}`,
+                        datos: {
+                            id_inscripcion : resultInscripcionBasica.data?.id,
+                            alumno : validInsc.dni_alumno
+                        }
+                    }; 
+                    
+                    await registroHistorial(dataHistorial);
+
+                    return {
+                        error : false, 
+                        message : `El alumno: ${validInsc.dni_alumno}, registro exitoso`,
+                        data : { dni_alumno : validInsc.dni_alumno },
+                        code : "INSCRIPCION_EXITOSA"
+                    };
+                }
+
+                return {
                     error: true,
-                    message: `El alumno : ${dataInscripcion.dni_alumno} ya se encuentra inscripto.`,
-                    code: "INSCRIPCION_EXISTENTE"
+                    message: "No se pudo crear la inscripción básica",
+                    code: "INSCRIPCION_CREACION_FALLIDA"
                 };
-        };
+            };
 
-        default:{
+            if( validInsc.tipo === "intermedio") {
+
+                const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
+                
+                const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);
+        
+                if ( resultadoInscripcion.code === "TRANSACCION_OK" ){
+
+                    const dataHistorial : HistorialInputs = {
+                        id_escuela : validInsc.id_escuela,
+                        id_usuario : validInsc.id_usuario,
+                        modulo : "INSCRIPCIONES",
+                        accion : "CREAR",
+                        id_registro: Number(resultadoInscripcion.data?.id_inscripcion),
+                        descripcion: `Inscripcion del alumno, DNI: ${resultadoInscripcion.data?.dni_alumno}`,
+                        datos: {
+                            id_inscripcion : resultadoInscripcion.data?.id_inscripcion,
+                            alumno : resultadoInscripcion.data?.dni_alumno
+                        }
+                    }; 
+                    
+                    await registroHistorial( dataHistorial);         
+
+                    return {
+                        error : false,
+                        message : `EL alumno : ${ dataInscripcion.dni_alumno }, registro exitoso`,
+                        data : resultadoInscripcion.data,
+                        code : "INSCRIPCION_EXITOSA"
+                    };
+                };
+
+                if ( resultadoInscripcion.code === "TRANSACCION_FALLIDA" ){
+                    return {
+                        error : true,
+                        message : `La inscripción falló por alguna razón`,
+                        data : resultadoInscripcion.data,
+                        code : "INSCRIPCION_FALLIDA"
+                    };
+                };          
+        
+                return {
+                    error: true,
+                    message: "No se pudo crear la inscripción",
+                    code: "INSCRIPCION_CREACION_FALLIDA"
+                };
+            };
+
+            break;
+        }
+
+        default: {
             return {
                 error : true,
-                message : "No se logro verificar la inscripcion",
-                code   :"NO_SE_LOGRO_VERIFICAR"
+                message : "No se logró verificar la inscripción",
+                code : "NO_SE_LOGRO_VERIFICAR"
             };
-        };    
+        }
 
-    };
+    };   
+   
+    return{
+        error : true, 
+        message : "Error en el servidor , Inscripción.",
+        code : "ERROR_SERVIDOR"
+    };      
 };
 
 /**
@@ -201,6 +251,7 @@ const anularInscripcionServicio = async (
     const id_escuela = verificacionInsc.id_escuela || 1;
   
     if( verificacionInsc.tipo === "intermedio" ){
+
             // 2. Controlar Caja Abierta (Guard Clause)
             const cajaAbierta = await dataCaja.idCajaAbierta({ id_escuela });
 
@@ -334,11 +385,11 @@ const anularInscripcionServicio = async (
     };    
 
     if( verificacionInsc.tipo === "basico" ){
-
+        
         const resultAnulacionBasica = await inscripcionesData.anularInscripcionBasico( verificacionInsc );
-
-        if( resultAnulacionBasica.code === "ANULAR_INSCRIPCION_MODIFICADA"  ){
-
+              
+        if( resultAnulacionBasica.code === "ANULAR_INSCRIPCION_MODIFICAR"  ){
+                
                 const dataHistorial : HistorialInputs = {
                     id_escuela :  verificacionInsc.id_escuela ,
                     id_usuario :  verificacionInsc.id_usuario,
@@ -367,7 +418,6 @@ const anularInscripcionServicio = async (
         message : "Error en el servidor , Anulacion de inscripcion.",
         code : "ERROR_SERVIDOR"
     };    
-
 
 };
 

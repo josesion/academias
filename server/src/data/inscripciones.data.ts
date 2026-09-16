@@ -69,16 +69,12 @@ const verificacion = async( data : VerificacionInputs )
  */
 
 const registroInscripcion = async( data : InscripcionInputs) 
-: Promise<TipadoData<{ id_plan : number , dni_alumno : number }>> =>{
-
-    
+: Promise<TipadoData<{ id_plan : number , dni_alumno : number, id?: number }>> =>{
 
     const { id_plan, id_escuela ,dni_alumno ,fecha_inicio ,fecha_fin ,
             clases_asignadas_inscritas , meses_asignados_inscritos ,monto
     } = data ;
 
-
- 
     const sql : string = `INSERT INTO inscripciones (
                             id_plan, 
                             id_escuela, 
@@ -218,6 +214,7 @@ export const inscripcionConPagoAlta = async (
 
 };
 
+
 /**
  * Realiza la anulación física de una inscripción mediante una transacción atómica.
  * * Esta función ejecuta dos operaciones vinculadas:
@@ -304,7 +301,17 @@ const anularInscripcion = async(
 };
 
 
-
+/**
+ * Realiza la anulación (suspensión) lógica de una inscripción para usuarios del plan básico.
+ * 
+ * Ejecuta una consulta de actualización (`UPDATE`) en la base de datos cambiando el estado 
+ * de la inscripción a "suspendido" utilizando la escuela y el ID de la inscripción, sin afectar módulos de caja.
+ * 
+ * @async
+ * @function anularInscripcionBasico
+ * @param {AnularInscripcionInputs} dataInsc - Objeto con los datos de la inscripción, requiriendo al menos el ID de la escuela y el ID de la inscripción.
+ * @returns {Promise<TipadoData<{}>>} Retorna una estructura con el resultado de la operación, indicando si hubo error, mensaje descriptivo, datos vacíos y el código de estado correspondiente.
+ */
 const anularInscripcionBasico = async ( dataInsc : AnularInscripcionInputs )
 :Promise<TipadoData<{}>> =>{
 
@@ -560,7 +567,7 @@ const saldoMetodoPago =async ( id_caja : number , id_cuenta : number)
 
 
 export const method = {
-    alta  : tryCatchDatos( registroInscripcion ), 
+    inscripcionBasica  : tryCatchDatos( registroInscripcion ), 
     verificacion : tryCatchDatos( verificacion ),
     verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
     inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta ),

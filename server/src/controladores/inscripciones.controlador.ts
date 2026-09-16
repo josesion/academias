@@ -46,6 +46,7 @@ const inscripcion = async( req : Request , res : Response ) =>{
     const dataRecivida = req.body;
     const id_escuela = req.usuario?.id_escuela;
     const id_usuario = req.usuario?.id;
+    const tipo = req.usuario?.tipo || "basico";
 
     //  campos para la Inscripción
     const dataInscrip: InscripcionInputs = {
@@ -58,21 +59,21 @@ const inscripcion = async( req : Request , res : Response ) =>{
         clases_asignadas_inscritas: dataRecivida.clases_asignadas_inscritas,
         meses_asignados_inscritos: dataRecivida.meses_asignados_inscritos,
         estado :"activos",
-        id_usuario : Number(req.usuario?.id)
+        id_usuario : Number(req.usuario?.id),
+        tipo : tipo
     };
 
-    // campos para el Detalle de Caja
+// Campos para el Detalle de Caja (condicional según el tipo de plan SaaS)
     const dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'> = {
-        id_escuela : Number(id_escuela),
-        id_caja: dataRecivida.id_caja,
-        id_categoria: dataRecivida.id_categoria,
-        id_cuenta   : dataRecivida.id_cuenta,
-        id_usuario  : Number(id_usuario),
-        monto: dataRecivida.monto, // Usamos el mismo monto
-        descripcion: dataRecivida.descripcion
+        id_escuela: Number(id_escuela),
+        id_caja: tipo === "intermedio" ? dataRecivida.id_caja : 0,
+        id_categoria: tipo === "intermedio" ? dataRecivida.id_categoria : 0,
+        id_cuenta: tipo === "intermedio" ? dataRecivida.id_cuenta : 0,
+        id_usuario: Number(id_usuario),
+        monto: tipo === "intermedio" ? dataRecivida.monto : 0, 
+        descripcion: tipo === "intermedio" ? dataRecivida.descripcion : ""
     };
 
-    
 
    const dataInscripcion = await inscripcionServicios.inscripcionServiciosCaja( dataInscrip, dataDetalle);
 
@@ -163,7 +164,7 @@ const anularInscripcion = async ( req : Request, res : Response) => {
         id_cuenta  : req.body.id_cuenta || null,
         tipo : req.usuario?.tipo
     };
-
+    
 
     const dataDetalle = {
         descripcion : "Anulación de inscripción"// queda fijo para q siempre muestre este comentario

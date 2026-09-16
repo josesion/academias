@@ -7,6 +7,7 @@ export const EstadoEnum = z.enum(["activos", "inactivos", "vencidos"]);
 
 
 export const InscripcionSchema = z.object({
+        tipo: z.string(),
     // --- ID del Plan (INT) ---
     id_plan: z.coerce.number()
         .int("El ID del plan debe ser un número entero.")
