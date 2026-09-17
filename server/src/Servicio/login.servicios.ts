@@ -13,8 +13,9 @@ interface LoginDataResult {
     id_escuela : number,
     usuario    : string,
     tokenCadena : string,
-    rol : "usuario" | "admin",
-    razon_social : string 
+    rol : "usuario" | "admin" | "alumno",
+    razon_social : string ;
+    tipo : string;
 };
 
 /**
@@ -59,24 +60,29 @@ const loginUsuario =  async ( data : LoginInputs)
 
             const token = generateToken(tokenData);
 
-         const dataHistorial : HistorialInputs = {
-              id_escuela :  loginResult.data.id_escuela ,
-              id_usuario :  loginResult.data.id_usuario,
-              modulo : "USUARIOS",
-              accion : "LOGIN",
-              id_registro: loginResult.data.id_usuario,
-              descripcion: `${loginResult.data.usuario} ingreso al sistema`,
-              datos: {
-                  "usuario":  loginResult.data.usuario,
-                  "id_escuela" : loginResult.data.id_usuario,
-              }
-          };    
-          
-           const historial = await  servicioHistorial.postHistorialServicio( dataHistorial);
+        if ( loginResult.data.rol === "usuario"){
+            // Este filtro es para q solamente ingrese el historial del usuario
+            const dataHistorial : HistorialInputs = {
+                id_escuela :  loginResult.data.id_escuela ,
+                id_usuario :  loginResult.data.id_usuario,
+                modulo : "USUARIOS",
+                accion : "LOGIN",
+                id_registro: loginResult.data.id_usuario,
+                descripcion: `${loginResult.data.usuario} ingreso al sistema`,
+                datos: {
+                    "usuario":  loginResult.data.usuario,
+                    "id_escuela" : loginResult.data.id_usuario,
+                }
+            };    
+            
+            const historial = await  servicioHistorial.postHistorialServicio( dataHistorial);
 
-           if ( historial.code !== "HISTORIAL_OK" ) {
-                console.error("Error registrando historial de login:", historial.message);
-           }; 
+            if ( historial.code !== "HISTORIAL_OK" ) {
+                    console.error("Error registrando historial de login:", historial.message);
+            }; 
+        };    
+
+
 
             return{
                 error: false,
@@ -87,6 +93,7 @@ const loginUsuario =  async ( data : LoginInputs)
                     usuario    :  loginResult.data.usuario,
                     rol        : loginResult.data.rol, 
                     razon_social : loginResult.data.razon_social,
+                    tipo : loginResult.data.tipo,
                     tokenCadena : token
                 },
                 code : "USUARIO_EXISTE"

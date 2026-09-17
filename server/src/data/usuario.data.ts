@@ -39,7 +39,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
                 INNER JOIN escuelas e 
                     ON u.id_escuela = e.id_escuela
                 LEFT JOIN suscripciones_escuelas s 
-                    ON e.id_escuela = s.id_escuela AND s.estado = 'activo'
+                    ON e.id_escuela = s.id_escuela 
                 LEFT JOIN planes_saas p 
                     ON s.id_plan_saas = p.id_plan
                 WHERE u.id_usuario = ? ;`;
@@ -67,7 +67,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
             usuario: resultado[0].usuario,
             rol : resultado[0].rol,
             razon_social : resultado[0].razon_social,
-            tipo : resultado[0].tipo || "basico"
+            tipo : resultado[0].tipo 
         }, 
         code: "USER_FOUND",
     };

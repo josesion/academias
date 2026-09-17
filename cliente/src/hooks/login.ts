@@ -85,7 +85,8 @@ export const loginLogica = () : LoginLogicaReturn =>{
           setRol({
             rol: respuesta.data.rol,
             usuario : respuesta.data.usuario,
-            razon_social : respuesta.data.razon_social
+            razon_social : respuesta.data.razon_social,
+            tipo : respuesta.data.tipo 
           });
     
           if (respuesta.data.rol === "administrador")

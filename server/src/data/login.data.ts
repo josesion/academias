@@ -19,13 +19,14 @@ export interface UsuarioLoginData {
     usuario: string;
     id_escuela: number;
     contrasena: string;
-    rol : "usuario" | "admin" , // O podés dejarlo como "usuario" | "admin" según prefieras
+    rol : "usuario" | "admin" | "alumno", // O podés dejarlo como "usuario" | "admin" según prefieras
     razon_social: string;
     estado_suscripcion: string | null;
     fecha_vencimiento: string | null; // O Date, dependiendo de cómo lo devuelva tu driver de DB
     plan_tipo: string | null;
     plan_descripcion: string | null;
-    flayer : number
+    flayer : number,
+    tipo : string;
 }
 
 const loginData = async( data : LoginInputs) 

@@ -7,6 +7,7 @@ interface UserData {
     id_escuela : number,
     usuario : string,
     razon_social : string
+    tipo : string;
 }
 
 export interface LoginRequest {
