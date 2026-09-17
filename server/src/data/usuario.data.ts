@@ -67,7 +67,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
             usuario: resultado[0].usuario,
             rol : resultado[0].rol,
             razon_social : resultado[0].razon_social,
-            tipo : resultado[0].tipo 
+            tipo : resultado[0].tipo
         }, 
         code: "USER_FOUND",
     };

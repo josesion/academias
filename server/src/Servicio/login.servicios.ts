@@ -18,73 +18,54 @@ interface LoginDataResult {
     tipo : string;
 };
 
-/**
- * Servicio de autenticación: Valida esquema, busca usuario, verifica password y genera JWT.
- * * @async
+
+
+ /**
+ * Procesa el inicio de sesión de un usuario (alumno o administrador/dueño de escuela),
+ * validando credenciales, verificando roles y aplicando restricciones de planes SaaS si corresponde.
+ * 
+ * @async
  * @function loginUsuario
- * @param {LoginInputs} data - Objeto con las credenciales del usuario (usuario y contrasena).
- * @returns {Promise<TipadoData<LoginDataResult>>} Objeto estandarizado con:
- * - error: boolean
- * - message: descripción del resultado
- * - data: (id_usuario, id_escuela, usuario, tokenCadena) si el login es exitoso.
- * - code: "USUARIO_EXISTE" | "VERIFICAR_USUARIO" | "USUARIO_NO_EXISTE" | "ERROR_LOGIN"
- * * @description
- * 1. Valida los datos con loginSchema (Zod).
- * 2. Consulta la capa de datos (dataLogin).
- * 3. Compara hashes de contraseña con bcrypt.
- * 4. Genera el token de sesión con el ID numérico.
+ * @param {LoginInputs} data - Objeto con las credenciales ingresadas por el usuario (usuario y contraseña).
+ * @returns {Promise<TipadoData<LoginDataResult>>} Retorna un objeto con el resultado de la operación,
+ * indicando si hubo error, un mensaje descriptivo, un código de estado interno y los datos de sesión (incluyendo el token JWT).
+ * 
+ * @throws {ZodError} Si los datos de entrada no cumplen con la validación del esquema `loginSchema`.
+ * @throws {Error} Si ocurre un error inesperado en la base de datos o en los servicios externos.
  */
+   
 const loginUsuario =  async ( data : LoginInputs) 
 : Promise<TipadoData<LoginDataResult>>=> {
+    let token ;
     const loginData : LoginInputs = loginSchema.parse( data );
-    const loginResult = await dataLogin.loginData( loginData );
-  
+    const loginResult = await dataLogin.loginDataGenerico( loginData );
+   
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
-
-        // validamos que la contraseña sea  la correcta  
-        //  data.contrasena = "130788" es la contraseña q viene del usuario
-        //  loginResult.data.contrasena = "asafshk21234bkja1289"  es la constraseña encripatada en la bd
 
         const passwordValida = await bcrypt.compare(data.contrasena, loginResult.data.contrasena);
 
-        if (passwordValida){
+        if( !passwordValida ){
+            return{
+                error : true,
+                message : "Verifcar los datos del usuario",
+                code   : "VERIFICAR_USUARIO"
+            };
+        };
 
-            // Mando en la firma token id, tol e id_escuela 
+
+        if (loginResult.data.rol === "alumno"){
+
             const tokenData = {
-                id: loginResult.data.id_usuario,
-                rol: loginResult.data.rol,
-                id_escuela: loginResult.data.id_escuela,
-                tipo : loginResult.data.plan_tipo,
-                flayer : loginResult.data.flayer         
+                    id: loginResult.data.id_usuario,
+                    rol: loginResult.data.rol,
+                    id_escuela: loginResult.data.id_escuela,
+                    tipo : "basico",
+                    flayer : 0         
             };
 
-            const token = generateToken(tokenData);
+             token = generateToken(tokenData);
 
-        if ( loginResult.data.rol === "usuario"){
-            // Este filtro es para q solamente ingrese el historial del usuario
-            const dataHistorial : HistorialInputs = {
-                id_escuela :  loginResult.data.id_escuela ,
-                id_usuario :  loginResult.data.id_usuario,
-                modulo : "USUARIOS",
-                accion : "LOGIN",
-                id_registro: loginResult.data.id_usuario,
-                descripcion: `${loginResult.data.usuario} ingreso al sistema`,
-                datos: {
-                    "usuario":  loginResult.data.usuario,
-                    "id_escuela" : loginResult.data.id_usuario,
-                }
-            };    
-            
-            const historial = await  servicioHistorial.postHistorialServicio( dataHistorial);
-
-            if ( historial.code !== "HISTORIAL_OK" ) {
-                    console.error("Error registrando historial de login:", historial.message);
-            }; 
-        };    
-
-
-
-            return{
+             return{
                 error: false,
                 message : "El usuario existe en el sistema",
                 data : {
@@ -93,24 +74,85 @@ const loginUsuario =  async ( data : LoginInputs)
                     usuario    :  loginResult.data.usuario,
                     rol        : loginResult.data.rol, 
                     razon_social : loginResult.data.razon_social,
-                    tipo : loginResult.data.tipo,
-                    tokenCadena : token
+                    tipo : "basico",
+                    tokenCadena : token 
                 },
                 code : "USUARIO_EXISTE"
-            };
-        }else{
-            return{
-                error : true,
-                message : "Verifcar los datos del usuario",
-                code   : "VERIFICAR_USUARIO"
-            };
-        };    
+            };              
+
+        };
+
+        if (loginResult.data.rol === "usuario"){
+
+                const usuarioLogin = await dataLogin.loginDataUsuario(loginData);
+
+                if ( usuarioLogin.code === "USUARIO_EXISTE" && usuarioLogin.data  ){
+
+                            const tokenData = {
+                                id: loginResult.data.id_usuario,
+                                rol: loginResult.data.rol,
+                                id_escuela: loginResult.data.id_escuela,
+                                tipo : usuarioLogin.data.plan_tipo,
+                                flayer : usuarioLogin.data.flayer         
+                            };
+
+                            token = generateToken(tokenData);
+
+
+                            if ( usuarioLogin.data.rol === "usuario"){
+                            // Este filtro es para q solamente ingrese el historial del usuario
+                            const dataHistorial : HistorialInputs = {
+                                id_escuela :  loginResult.data.id_escuela ,
+                                id_usuario :  loginResult.data.id_usuario,
+                                modulo : "USUARIOS",
+                                accion : "LOGIN",
+                                id_registro: loginResult.data.id_usuario,
+                                descripcion: `${loginResult.data.usuario} ingreso al sistema`,
+                                datos: {
+                                    "usuario":  loginResult.data.usuario,
+                                    "id_escuela" : loginResult.data.id_escuela,
+                                }
+                            };    
+                            
+                            const historial = await  servicioHistorial.postHistorialServicio( dataHistorial);
+
+                            if ( historial.code !== "HISTORIAL_OK" ) {
+                                    console.error("Error registrando historial de login:", historial.message);
+                            };
+
+
+                            return{
+                                error: false,
+                                message : "El usuario existe en el sistema",
+                                data : {
+                                    id_escuela : loginResult.data.id_escuela,
+                                    id_usuario :  loginResult.data.id_usuario,
+                                    usuario    :  loginResult.data.usuario,
+                                    rol        : loginResult.data.rol, 
+                                    razon_social : usuarioLogin.data.razon_social,
+                                    tipo : usuarioLogin.data.tipo,
+                                    tokenCadena : token 
+                                },
+                                code : "USUARIO_EXISTE"
+                            }; 
+                    };
+                };
+
+                if ( usuarioLogin.code === "USUARIO_NO_EXISTE" ){
+                    return {
+                        error : true,
+                        message : "El usuario no existe en el sistema o esta vencido su plan.",
+                        code : "USUARIO_NO_EXISTE"
+                    };
+                };
+        };
     };
+
 
     if ( loginResult.code === "USUARIO_NO_EXISTE"){
         return {
             error : true,
-            message : "El usuario no existe en el sistema o esta vencido su plan.",
+            message : "Verifique sos datos.",
             code : "USUARIO_NO_EXISTE"
         };
     }
@@ -119,7 +161,8 @@ const loginUsuario =  async ( data : LoginInputs)
         error : true,
         message :  "Error al intentar loguearse en el sistema",
         code : "ERROR_SERVIDOR"
-    };    
+    };  
+    
 };
 
 

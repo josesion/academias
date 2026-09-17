@@ -6,4 +6,4 @@ const ruta = Router();
 
     ruta.post("/api/post_suspcripcion", validarPermiso, controladorSuscripcion.postSuscripcion);
 
- export default ruta    
+ export default ruta      
