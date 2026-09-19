@@ -169,8 +169,6 @@ export const inscripcionActual = async ( data :  PropInscirpcion)
 
     const {dni_alumno , id_escuela } = data;
 
-    console.log( data)
-
     const sql : string = `SELECT 
                             i.id_inscripcion,
                             i.id_plan,
@@ -297,6 +295,7 @@ const horarioEscuela =async ( id_escuela : number )
     });  
 };
 
+
 export const method = {
 
     obtenerEscuelasPorAlumno : tryCatchDatos( obtenerEscuelasPorAlumno ),
@@ -306,4 +305,5 @@ export const method = {
     inscripcionActual : tryCatchDatos( inscripcionActual),
     planesActivos : tryCatchDatos( planesActivos),
     horarioEscuela : tryCatchDatos( horarioEscuela),
+
 };

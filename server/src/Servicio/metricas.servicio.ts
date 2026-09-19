@@ -3,13 +3,15 @@ import { method as dataMetricas } from  "../data/metricas.data";
 import { method as dataCaja } from "../data/caja.data";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { ResultClase , ReultTarjetasInscripcion, ReultTarjetasVencimientos,  ResultAsistencia } from "../data/metricas.data";
-import { MetricaInputs,MetricasSchema } from "../squemas/metricas";
+import { ResultClase , ReultTarjetasInscripcion, ReultTarjetasVencimientos,  ResultAsistencia,
+         VencimientoEscuela
+ } from "../data/metricas.data";
+import { MetricaInputs,MetricasSchema, IdEscuelaInputs, IdEscuelaSchema } from "../squemas/metricas";
 
 
 
 export  interface ResultTarjetas extends ReultTarjetasInscripcion, ReultTarjetasVencimientos{            
-    total_caja : number,
+    total_caja?: number,
 };
 
 /**
@@ -33,21 +35,26 @@ const metricasInscripcion = async ( data : MetricaInputs ) : Promise<TipadoData<
     // 1. Consultamos TODAS las fuentes en paralelo o secuencial sin cortar antes de tiempo
     const resultIdCaja = await dataCaja.idCajaAbierta( validarInfo );
 
-    const metricaTotalCaja = resultIdCaja.code !== 'ID_CAJA_NO_EXISTE' && resultIdCaja.data?.id_caja 
-        ? await dataCaja.metricasPrincipal({
-            id_caja : resultIdCaja.data.id_caja,
-            id_escuela : validarInfo.id_escuela
-          })
-        : null;
+    let totalCajaValor;
+
+    if ( validarInfo.tipo != "basico" ){
+
+        const metricaTotalCaja = resultIdCaja.code !== 'ID_CAJA_NO_EXISTE' && resultIdCaja.data?.id_caja 
+            ? await dataCaja.metricasPrincipal({
+                id_caja : resultIdCaja.data.id_caja,
+                id_escuela : validarInfo.id_escuela
+            })
+            : null;
+
+        // 2. Manejamos los errores específicos si es necesario, o armamos un valor por defecto si la caja está cerrada
+        totalCajaValor = (metricaTotalCaja && metricaTotalCaja.code === 'METRICAS_PANEL_LISTED' && Array.isArray(metricaTotalCaja.data))
+            ? Number(metricaTotalCaja.data[0].balance_neto)
+            : 0; // Si no hay caja abierta, la caja arranca en 0 pero las demás métricas se muestran igual    
+
+    };
 
     const resulMetricas = await dataMetricas.metricasInsc( validarInfo.id_escuela );
     const resultVencimientos = await dataMetricas.metricasVencimientos( validarInfo.id_escuela );
-
-
-    // 2. Manejamos los errores específicos si es necesario, o armamos un valor por defecto si la caja está cerrada
-    const totalCajaValor = (metricaTotalCaja && metricaTotalCaja.code === 'METRICAS_PANEL_LISTED' && Array.isArray(metricaTotalCaja.data))
-        ? Number(metricaTotalCaja.data[0].balance_neto)
-        : 0; // Si no hay caja abierta, la caja arranca en 0 pero las demás métricas se muestran igual
 
 
     // 3. Validamos que al menos las métricas principales (inscripciones y vencimientos) estén OK
@@ -63,8 +70,8 @@ const metricasInscripcion = async ( data : MetricaInputs ) : Promise<TipadoData<
              
              vencen_proximos: Number( resultVencimientos.data?.vencen_proximos), 
              vencidos_este_mes: Number( resultVencimientos.data?.vencidos_este_mes ) ,
-            
-             total_caja : totalCajaValor // Si no había caja, mandará 0 o lo que prefieras mostrar
+             
+             ...(validarInfo.tipo !== "basico" && { total_caja: totalCajaValor })
         };
 
         return{
@@ -192,8 +199,42 @@ const asistenciaClases = async ( data : MetricaInputs )
     };
 };
 
+
+const fechaVencimietno = async ( data : IdEscuelaInputs)
+:Promise<TipadoData<VencimientoEscuela>> =>{
+
+    const validarData : IdEscuelaInputs = IdEscuelaSchema.parse( data );
+
+    const resultFecha = await  dataMetricas.fechaVencimiento( validarData.id_escuela );
+
+
+    if ( resultFecha.code ===  'FECHA_VENCIMIENTO_EXISTE'){
+        return {
+            error : false,
+            message : "Se encontro fecha de vencimietno.",
+            data : resultFecha.data,
+            code : "FECHA_VENCIMIENO_OK"
+        };
+    };
+
+    if ( resultFecha.code ===  'FECHA_VENCIMIENTO_NO_EXISTE'){
+       return {
+         error : true, 
+         message : "No se encontro ninguna fecha de vencimiento.",
+         code : "SIN_FECHA_VENCIMIENTO"    
+       }; 
+    };    
+
+    return {
+        error : true,
+        message : "Error en el servidor , fecha Vencimiento.",
+        code : "ERROR_SERVIDOR"
+    };    
+};
+
 export const method = {
     metricasInscripcion : tryCatchDatos( metricasInscripcion),
     encabezadoClases    : tryCatchDatos( encabezadoClases ),
     asistenciaClases    : tryCatchDatos( asistenciaClases ),
+    fechaVencimietno : tryCatchDatos(fechaVencimietno)
 };

@@ -207,9 +207,38 @@ const asistenciaClases = ( id_horario : number)
 
 };
 
+
+export interface VencimientoEscuela {
+  id_escuela: number;
+  razon_social: string;
+  fecha_vencimiento: string; 
+}
+
+const fechaVencimiento = async ( id_escuela : number )
+:Promise<TipadoData<VencimientoEscuela>> =>{
+
+      const sql : string = `SELECT 
+                                e.id_escuela,
+                                e.razon_social,
+                               s.fecha_vencimiento
+                            FROM escuelas e
+                            INNER JOIN suscripciones_escuelas s ON e.id_escuela = s.id_escuela
+                            WHERE e.id_escuela = ?
+                                AND s.estado = 'activo';`;
+
+    const valor : unknown[] = [ id_escuela  ]; 
+    
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad : "FECHA_VENCIMIENTO"
+    });  
+};
+
 export const  method = {
     metricasInsc : tryCatchDatos( metricasInsc ),
     metricasVencimientos : tryCatchDatos( metricasVencimientos ),
     encabezadoClases   : tryCatchDatos( encabezadoClases ),
     asistenciaClases : tryCatchDatos( asistenciaClases ),
+    fechaVencimiento : tryCatchDatos( fechaVencimiento ),
 };

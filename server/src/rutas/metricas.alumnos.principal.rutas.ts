@@ -9,4 +9,6 @@ const ruta = Router();
     ruta.get("/api/data_escuela_alumno/:correo/:id_escuela", validarPermiso, controladorMetricasAlumnos.dataEscuelaAlumno );
     ruta.get("/api/horario_escuela/:id_escuela", validarPermiso, controladorMetricasAlumnos.horarioEscuela );
 
+   
+
  export default ruta    

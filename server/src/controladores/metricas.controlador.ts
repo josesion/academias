@@ -2,13 +2,15 @@ import { Request , Response } from "express";
 import { tryCatch } from "../utils/tryCatch";
 import { handleControladores } from "../utils/handleControladores";
 
-import { ResultClase,  ResultAsistencia } from "../data/metricas.data";
+import { ResultClase,  ResultAsistencia, VencimientoEscuela } from "../data/metricas.data";
 import { ResultTarjetas } from "../Servicio/metricas.servicio";
 
 import { method as servicioMetrica } from "../Servicio/metricas.servicio";
-import { MAPA_METRICAS_TARJETAS,
+import { MAPA_METRICAS_TARJETAS, MAPA_FECHA_VENCIMIENTO,
          MAPA_METRICAS_CLASES, MAPA_METRICAS_ASISTENCIAS
  } from "../respuestas/metricas";
+import { IdEscuelaInputs } from "../squemas/metricas";
+
 
 /**
  * Controlador para la obtención de las métricas de inscripción de la escuela.
@@ -23,8 +25,11 @@ import { MAPA_METRICAS_TARJETAS,
  */
 const metricaInscripcion = async( req : Request , res : Response ) => {
     
-    const data = { id_escuela : req.usuario?.id_escuela || 0 };
-
+    const data = { 
+        id_escuela : req.usuario?.id_escuela || 0 ,
+        tipo : req.usuario?.tipo || "basico"
+    };
+  
     await handleControladores<{ id_escuela : number }, ResultTarjetas >( 
         res, data , servicioMetrica.metricasInscripcion , MAPA_METRICAS_TARJETAS    
     );
@@ -65,9 +70,22 @@ const asistenciaClases = async (  req : Request , res : Response  ) =>{
      ); 
 };
 
+const fechaVencimientoPlan = async ( req : Request , res : Response ) =>{
+
+    const data : IdEscuelaInputs= {
+        id_escuela : req.usuario?.id_escuela || 0
+    };
+
+    await handleControladores<IdEscuelaInputs, VencimientoEscuela>(
+        res, data, servicioMetrica.fechaVencimietno, MAPA_FECHA_VENCIMIENTO
+    );
+    
+};
+
 
 export const method = {
     metricaInscripcion : tryCatch( metricaInscripcion ),
     encabezadoClases   : tryCatch( encabezadoClases),
-    asistenciaClases   : tryCatch( asistenciaClases )
+    asistenciaClases   : tryCatch( asistenciaClases ),
+    fechaVencimientoPlan : tryCatch(fechaVencimientoPlan ),
 };

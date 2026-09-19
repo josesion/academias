@@ -180,6 +180,9 @@ const horarioEscuelaServicio = async ( data : IdEscuelaInputs)
 
 };
 
+
+
+
 export const method = {
 
     metricasAlumnoPrincipal : tryCatchDatos( metricasAlumnoPrincipal ),

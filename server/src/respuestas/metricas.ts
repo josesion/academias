@@ -79,3 +79,22 @@ export const MAPA_METRICAS_ASISTENCIAS : Record<string , { status : CodigoEstado
         },
 
 };
+
+
+export const MAPA_FECHA_VENCIMIENTO : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+
+
+   "SIN_FECHA_VENCIMIENTO"    : {
+            status: CodigoEstadoHTTP.NO_ENCONTRADO,
+            msg: "No se fecha vencimiento."
+        },
+
+
+    "FECHA_VENCIMIENO_OK": {
+            status: CodigoEstadoHTTP.OK,
+            msg: "Fecha vencimiento ok."
+        },
+
+};

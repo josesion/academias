@@ -12,7 +12,7 @@ import { DataEscuelaInputs, MetricasAlumnosInputs } from "../squemas/metricas.al
 
 const metricasPrincipal = async ( req : Request , res : Response ) =>{
     const { correo } = req.params;
-
+   
     const data : MetricasAlumnosInputs = {
         correo : correo,
     };
@@ -47,6 +47,10 @@ const horarioEscuela = async ( req : Request , res : Response ) =>{
         res, data, servicioMetricasAlumno.horarioEscuelaServicio ,MAPA_HORARIO_ESCUELA
     );
 };
+
+
+
+
 
 
 export const method = {
