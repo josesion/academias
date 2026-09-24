@@ -83,3 +83,30 @@ export const metricasAsistencia = async ()
 
     return apiFetch( ruta , { method : "GET" } );
 };
+
+
+export interface VencimientoEscuela {
+  id_escuela: number;
+  razon_social: string;
+  fecha_vencimiento: string; 
+}
+
+export const fechaVencimientoPlan =async ()
+:Promise<ApiResponse<VencimientoEscuela>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };   
+   
+    const ruta  = `${PAGINA}api/vencimiento_plan_saas`;  
+
+    return apiFetch( ruta , { method : "GET" } );
+
+}

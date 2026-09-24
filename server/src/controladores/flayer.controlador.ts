@@ -25,7 +25,7 @@ const postFlayer = async( req : Request, res: Response) =>{
        plan : Number(req.usuario?.flayer),
        id_usuario : Number( req.usuario?.id)
   };
-
+ 
     const dataImagen = {
         buffer: req.file.buffer,
         tipo: req.file.mimetype,

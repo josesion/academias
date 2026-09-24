@@ -79,8 +79,10 @@ const fechaVencimientoPlan = async ( req : Request , res : Response ) =>{
     await handleControladores<IdEscuelaInputs, VencimientoEscuela>(
         res, data, servicioMetrica.fechaVencimietno, MAPA_FECHA_VENCIMIENTO
     );
-    
+
 };
+
+
 
 
 export const method = {

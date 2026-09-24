@@ -1,0 +1,116 @@
+/* ==========================================================================
+   FORMULARIO PLANES — dos columnas (campos / características)
+   ========================================================================== */
+
+.form-planes-container {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  grid-template-rows: 1fr auto; /* fila de contenido flexible + footer auto */
+  grid-template-areas:
+    "campos caracteristicas"
+    "footer footer";
+  gap: 2rem;
+
+  min-height: 100%; /* antes era height:100% — eso impedía crecer con el contenido */
+  box-sizing: border-box;
+}
+
+/* ---------- COLUMNA IZQUIERDA: CAMPOS NORMALES ---------- */
+
+.form-grid {
+  grid-area: campos;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+
+  padding-right: 1.75rem;
+  border-right: 1px solid var(--borde);
+  min-width: 0;
+}
+
+/* ---------- COLUMNA DERECHA: CARACTERÍSTICAS ---------- */
+
+.caracteristicas-section {
+  grid-area: caracteristicas;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-width: 0;
+  min-height: 0;
+}
+
+.section-title {
+  font-family: var(--fuente-titulos, serif);
+  font-size: var(--texto-lg, 1.1rem);
+  font-weight: var(--peso-semi-negrita, 600);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.caracteristicas-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.caracteristicas-btn-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.caracteristicas-list-wrapper {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md, 16px);
+  background-color: var(--fondo-superficie);
+  padding: 0.9rem;
+  /* sin flex/overflow propio: la lista crece con su contenido y el
+     scroll lo maneja el contenedor padre (.section-formulario-contenido) */
+}
+
+/* ---------- FOOTER (ocupa todo el ancho, abajo) ---------- */
+
+.form-footer {
+  grid-area: footer;
+
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+/* Tablet / panel angosto: colapsa a una sola columna */
+@media (max-width: 720px) {
+  .form-planes-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "campos"
+      "caracteristicas"
+      "footer";
+  }
+
+  .form-grid {
+    padding-right: 0;
+    border-right: none;
+    padding-bottom: 1.1rem;
+    border-bottom: 1px solid var(--borde);
+  }
+}
+
+/* Mobile: inputs de características también en columna, botones a todo el ancho */
+@media (max-width: 480px) {
+  .caracteristicas-inputs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .caracteristicas-btn-container,
+  .form-footer {
+    justify-content: stretch;
+  }
+}

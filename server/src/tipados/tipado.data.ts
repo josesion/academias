@@ -51,6 +51,7 @@ export interface DataIdUsuario{
     rol: string;
     razon_social: string;
     tipo: string; 
+    estado_suscripcion : string;
 }
 
 export interface DataModPublico {

@@ -1,0 +1,153 @@
+.listado-planes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: var(--fuente-principal);
+}
+
+.plan-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-sm);
+  transition: var(--transicion);
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.plan-card-row:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+}
+
+.plan-divider {
+  background-color: var(--borde);
+  height: 100%;
+  width: 1px;
+}
+
+/* Izquierda: Info General */
+.plan-info-general {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.plan-header-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.plan-badge {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radio-sm);
+  background-color: var(--fondo-superficie);
+  color: var(--texto-principal);
+  letter-spacing: 0.05em;
+}
+
+.plan-estado {
+  font-size: var(--texto-xs);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radio-sm);
+  text-transform: capitalize;
+}
+
+.plan-estado.activo {
+  background-color: rgba(91, 123, 110, 0.15);
+  color: var(--color-secundario);
+}
+
+.plan-descripcion {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.plan-metrics {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-label {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.metric-value {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+}
+
+/* Derecha: Características JSON */
+.plan-caracteristicas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: var(--fondo-principal);
+  padding: 1rem;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--borde);
+}
+
+.caracteristicas-titulo {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-secundario);
+  margin: 0 0 0.25rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.caracteristicas-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.caracteristica-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--texto-sm);
+}
+
+.carac-key {
+  color: var(--texto-secundario);
+  text-transform: capitalize;
+}
+
+.carac-val {
+  color: var(--texto-principal);
+  font-weight: var(--peso-medio);
+}
+
+/* Responsivo para celulares */
+@media (max-width: 768px) {
+  .plan-card-row {
+    grid-template-columns: 1fr;
+  }
+  .plan-divider {
+    height: 1px;
+    width: 100%;
+  }
+}

@@ -3,12 +3,15 @@ import { method as dataPlanesSaas } from "../data/planes.saas.data";
 
 import { TipadoData } from "../tipados/tipado.data";
 import { ResultPostPlanesSass, PlanSaasConId, PlanDelet, PlanSaasRow } from "../data/planes.saas.data";
-import { PlanDeletSaasInputs, PlanDeleteSaasSchema, PlanSaasInputs, PlanSaasSchema } from "../squemas/planes.saas";
+import { PlanDeletSaasInputs, PlanDeleteSaasSchema, PlanSaasInputs, PlanSaasSchema,
+         FiltroPlanesInputs, FiltroPlanesSchema
+ } from "../squemas/planes.saas";
 
 const postPlanesSaas = async ( data : PlanSaasInputs)
 :Promise<TipadoData<ResultPostPlanesSass>> =>{
 
     const validarData : PlanSaasInputs = PlanSaasSchema.parse( data );
+    
     const resultPostPlanes  = await dataPlanesSaas.postPlanesSaas( validarData);
   
     
@@ -113,14 +116,16 @@ const bajaPlanesSaas = async (data : PlanDeletSaasInputs )
 };
 
 
-const listaPlanesSaas = async ()
+const listaPlanesSaas = async ( estado : FiltroPlanesInputs)
 :Promise<TipadoData<PlanSaasRow[]>> =>{
 
-    const resultListaPlanesSaas = await dataPlanesSaas.listaPlanesSaas();
-  
+    const validarEstado : FiltroPlanesInputs = FiltroPlanesSchema.parse(estado);
 
-    if ( resultListaPlanesSaas.code === 'PLANES_SAAS_LISTED'){
+    const resultListaPlanesSaas = await dataPlanesSaas.listaPlanesSaas( validarEstado );
     
+    console.log(resultListaPlanesSaas)
+
+    if ( resultListaPlanesSaas.code === 'PLANES_SAAS_LISTED'){    
         return {
             error : false,
             message : "Listado de planes Administrativo ok.",
@@ -128,6 +133,14 @@ const listaPlanesSaas = async ()
             data : resultListaPlanesSaas.data
         };
     };
+
+    if ( resultListaPlanesSaas.code === 'NO_ACTIVE_PLANES_SAAS'){    
+        return {
+            error : true,
+            message : "Sin listado Administrativo.",
+            code : "SIN_LISTA_PLANES",
+        };
+    };    
     
     return{
         error : true, 

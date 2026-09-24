@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { RutasProtegidasContext } from "../../../contexto/protectRutas";
 //Componentes
 import { SelectorPlegable } from "../../generales/Selector/Selector";
 import { TarjetaInscripcion } from "../TarjetaInscripcion/TarjetaInscripcion";
@@ -39,6 +41,9 @@ interface InscripcionProps {
 }
 
 export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
+  const { rol } = useContext(RutasProtegidasContext);
+  console.log(rol?.tipo);
+
   const {
     plan,
     alumno,
@@ -86,12 +91,14 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
       <div className="formulario_inscripcion_info">
         <TarjetaInscripcion plan={plan} alumno={alumno} />
 
-        <MetodoPagoInscripcion
-          listaMetodoPago={props.listaMetodo}
-          handleCachearMetodoPago={handleCachearMetodoPago}
-          handleTextAreaNotas={handleTextAreaNotas}
-          notas={notas}
-        />
+        {rol?.tipo === "intermedio" && (
+          <MetodoPagoInscripcion
+            listaMetodoPago={props.listaMetodo}
+            handleCachearMetodoPago={handleCachearMetodoPago}
+            handleTextAreaNotas={handleTextAreaNotas}
+            notas={notas}
+          />
+        )}
       </div>
 
       <div className="formulario_inscripcion_mensaje_error">

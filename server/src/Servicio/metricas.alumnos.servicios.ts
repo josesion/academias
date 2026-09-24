@@ -39,8 +39,7 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
             dataMetricasAlumno.obtenerClasesEscuelasHoy(dni),
             dataFlayer.getFlayerAlumnos(dni)
         ]);
-
-
+    
 
     const metricasAlumnos : EscuelaAlumnoRow[] | null | undefined  = respuestaMetricas.code === 'METRICAS_ESCEULAS_ALUMNOS_LISTED'
                              ? respuestaMetricas.data
@@ -88,8 +87,7 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
 :Promise<TipadoData<ResultInfoEscuela>> =>{
 
     const validarData : DataEscuelaInputs = DataEscuelaSchema.parse( data);
-
-
+   
     const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( validarData.correo);
 
     if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
@@ -128,8 +126,8 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
     const planes : PlanEscuelaData[] | null | undefined = infoPlanes.code === 'PLANES_ACTIVOS_LISTED'
                         ? infoPlanes.data
                         : null ;
-
-
+    
+  
     if ( heroEscuela !== undefined || flayerEscuela !== undefined || inscripcion !== undefined || planes !== undefined ){
         return {
             error : false,

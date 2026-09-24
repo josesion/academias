@@ -5,7 +5,7 @@ import { LoginInputs } from "../squemas/login";
 import { TipadoData } from "../tipados/tipado.data";
 import { buscarExistenteEntidad } from '../hooks/buscarExistenteEntidad';
 
-export type RolUsuario = "usuario" | "alumno" | "admin"; 
+export type RolUsuario = "usuario" | "alumno" | "administrador"; 
 
 export interface UsuarioLogin {
   id_usuario: number;
@@ -83,25 +83,23 @@ export interface UsuarioLoginData {
 const loginDataUsuario = async( data : LoginInputs) 
 : Promise<TipadoData<UsuarioLoginData>>=> {
     const sql : string = `SELECT 
-                            u.usuario,
-                            u.id_usuario,
-                            u.id_escuela,
-                            u.contrasena,
-                            u.rol,
-                            e.razon_social,
-                            s.estado AS estado_suscripcion,
-                            s.fecha_vencimiento,
-                            p.tipo AS plan_tipo,
-                            p.descripcion AS plan_descripcion,
-                            p.cant_flyers As flayer
-                        FROM usuarios u 
-                        INNER JOIN escuelas e ON u.id_escuela = e.id_escuela 
-                        INNER JOIN suscripciones_escuelas s ON e.id_escuela = s.id_escuela 
-                            AND s.estado = 'activo' 
-                            AND s.fecha_vencimiento >= CURDATE()
-                        INNER JOIN planes_saas p ON s.id_plan_saas = p.id_plan
-                        where
-                            u.usuario = ?;`;
+                                u.usuario,
+                                u.id_usuario,
+                                u.id_escuela,
+                                u.contrasena,
+                                u.rol,
+                                e.razon_social,
+                                s.estado AS estado_suscripcion,
+                                s.fecha_vencimiento,
+                                p.tipo AS plan_tipo,
+                                p.descripcion AS plan_descripcion,
+                                p.cant_flyers AS flayer
+                            FROM usuarios u 
+                            INNER JOIN escuelas e ON u.id_escuela = e.id_escuela 
+                            LEFT JOIN suscripciones_escuelas s ON e.id_escuela = s.id_escuela 
+                                AND s.estado = 'activo' -- Traemos la suscripción activa (incluso si ya venció la fecha)
+                            LEFT JOIN planes_saas p ON s.id_plan_saas = p.id_plan
+                            WHERE u.usuario = ?;`;
     const { usuario } = data ;    
     const valores : unknown[] = [ usuario ]
     return buscarExistenteEntidad({

@@ -43,10 +43,10 @@ const inscripcionServiciosCaja = async(
 ): Promise<TipadoData<{ id? : number , dni_alumno : number }>> =>{
 
     const validInsc = InscripcionSchema.parse(dataInscripcion);
-
+   
     // 1. Verificamos vigencia / existencia del alumno primero para ambos planes
     const inscVigente = await inscripcionesData.verificacion( validInsc );
-
+   
     switch( inscVigente.code ){
 
         case "INSCRIPCION_EXISTE": {
@@ -62,7 +62,7 @@ const inscripcionServiciosCaja = async(
             // 2. Si no existe, bifurcamos según el tipo de plan SaaS
             
             if( validInsc.tipo === "basico") {
-
+              
                 const resultInscripcionBasica = await inscripcionesData.inscripcionBasica( validInsc );
                              
                 if ( resultInscripcionBasica.code === "INSCRIPCIONES_CREAR" || !resultInscripcionBasica.error ){
@@ -98,7 +98,7 @@ const inscripcionServiciosCaja = async(
             };
 
             if( validInsc.tipo === "intermedio") {
-
+               
                 const validCaja = DetalleCajaSchema.omit({ referencia_id: true }).parse(dataDetalle);
                 
                 const resultadoInscripcion = await inscripcionesData.inscripcionConPagoAlta(validInsc, validCaja);

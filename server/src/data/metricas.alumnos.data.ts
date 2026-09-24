@@ -227,7 +227,7 @@ export const planesActivos = async ( id_escuela : number)
                             FROM planes_en_escuela pe
                             INNER JOIN planes_pago pp 
                                 ON pe.id_plan = pp.id_plan
-                            WHERE pe.id_escuela = 107 
+                            WHERE pe.id_escuela = ?
                             AND pe.estado = 'activos';`;
 
     const valor : unknown[] = [ id_escuela ];

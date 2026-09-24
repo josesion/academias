@@ -11,15 +11,17 @@ export const PlanSaasSchema = z.object({
   estado: z.enum(['activo', 'inactivo']).default('activo'),
   
   // Lo hacemos opcional por si la petición no lo envía
-  caracteristicas: z.object({
-    titulo: z.string().min(1, "El título de características es requerido"),
-    items: z.array(
-      z.object({
-        texto: z.string().min(1, "El texto del ítem es requerido"),
-        disponible: z.boolean()
+
+  
+  caracteristicas: z.array(
+    z.object({
+      clave: z.string().min(1, "La clave es requerida"),
+      valor: z.union([z.string(), z.number()]).refine(val => val !== undefined && val !== "", {
+        message: "El valor es requerido"
       })
-    )
-  }).optional()
+    })
+  ).optional()
+ 
 });
 
 export const PlanDeleteSaasSchema = z.object({
@@ -27,5 +29,10 @@ export const PlanDeleteSaasSchema = z.object({
 });
 
 
+export const FiltroPlanesSchema = z.object({
+  estado: z.enum(['activo', 'inactivo']).default('activo'), 
+});
+
 export type PlanSaasInputs = z.infer<typeof PlanSaasSchema>;
 export type PlanDeletSaasInputs = z.infer<typeof PlanDeleteSaasSchema>;
+export type FiltroPlanesInputs = z.infer<typeof FiltroPlanesSchema>;

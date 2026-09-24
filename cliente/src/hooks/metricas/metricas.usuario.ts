@@ -1,11 +1,14 @@
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useContext } from "react";
+
 import { initialStateMetricas, metricasReducer,type MetricaAction } from "../../reducers/metricasReducer";
 import { useEffectServicio } from "../../utils/useEfectServicio";
 import { useActualizarAlEnfocar } from "../../utils/useActulizarFocus";
 import { recepcionComunicacion } from "../../utils/canalComunicacion";
 
-import type { ResultTarjeta, ResultClase, ResultAsistencia } from "../../servicio/metrica.fetch";
+import { type ResultTarjeta, type ResultClase, type ResultAsistencia, type VencimientoEscuela, fechaVencimientoPlan } from "../../servicio/metrica.fetch";
 import { type ResultHistorial } from "../../servicio/historial.fetch";
+
+import { RutasProtegidasContext } from "../../contexto/protectRutas";
 
 type ServicioCrud = (data?: any, signal?: AbortSignal) => Promise<any>;
 
@@ -15,14 +18,19 @@ interface MetricasConfig {
         clases   : ServicioCrud,
         asistencia : ServicioCrud,
         historial  : ServicioCrud,
+        fechaVencimientoPlan : ServicioCrud
     },
 };
  
 
 export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
 
+    const { rol } = useContext( RutasProtegidasContext ); 
+    
+    const rolTipo = rol?.tipo || "basico";
+
     const [ state , dispatch] = useReducer( metricasReducer, initialStateMetricas());   
-     
+
     const tarjetas = config.servicios.tarjetas; // Serivicio que obtiene las metricas de las tarjetas
     const clases   = config.servicios.clases;
     const asistencia = config.servicios.asistencia;
@@ -117,6 +125,19 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         dependencias : [state.actualizarCierreCaja, state.actualizarGeneral]
     });     
 
+    
+
+ // ------------ fecha de vencimiento del plan -----------
+    useEffectServicio<undefined , VencimientoEscuela, MetricaAction>({
+        servicios : fechaVencimientoPlan,
+        dispatch : dispatch,
+        accionResultado: ( data )=>({ type : "SET_FECHA_VENCIMIENTO", payload : data }),
+        accionCarga : ( carga )=>({ type : "SET_CARGA_VENCIMIENTO", payload : carga}),
+        accionError : ( mensaje )=>({ type : "SET_ERROR_VENCIMIENTO", payload : mensaje}),
+        useAbort : true, 
+        dependencias : []
+    });
+   
 
 /**
  * Configura un listener en un canal de comunicación para sincronizar 
@@ -218,12 +239,13 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         };
     }, []); 
 
-    
+
     //Actualizacion por focus en la pantalla
     useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR_GENERICO"});
     
     return{
-        state
+        state,
+        rolTipo
     };
 
 };

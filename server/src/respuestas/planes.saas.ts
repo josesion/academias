@@ -56,6 +56,11 @@ export const MAPA_BAJAS_PLANES_SAAS : Record<string , { status : CodigoEstadoHTT
 export const MAPA_LISTA_PLANES_SAAS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
+
+    "SIN_LISTA_PLANES" : {
+            status : CodigoEstadoHTTP.NO_ENCONTRADO,
+            msg : "Sin listado Administrativo."
+    },    
  
     "LISTA_PLANES_SAAS_OK" : {
             status: CodigoEstadoHTTP.OK,

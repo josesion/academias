@@ -3,7 +3,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { PlanSaasInputs, PlanDeletSaasInputs } from "../squemas/planes.saas";
+import { PlanSaasInputs, PlanDeletSaasInputs, FiltroPlanesInputs } from "../squemas/planes.saas";
 
 export interface ResultPostPlanesSass {
     descripcion : string, 
@@ -154,11 +154,14 @@ export interface PlanSaasRow {
     estado: 'activo' | 'inactivo';
 };
 
-const listaPlanesSaas = async (): Promise<TipadoData<PlanSaasRow[]>> => {
+const listaPlanesSaas = async ( estado : FiltroPlanesInputs )
+: Promise<TipadoData<PlanSaasRow[]>> => {
     // Agregamos caracteristicas al SELECT
-    const sql: string = `SELECT id_plan, tipo, descripcion, precio, cant_flyers, caracteristicas, estado FROM planes_saas;`;
+    const sql: string = `SELECT id_plan, tipo, descripcion, precio, cant_flyers, caracteristicas, estado 
+                            FROM planes_saas 
+                            WHERE estado = ? ;`;
 
-    const valores: unknown[] = [];
+    const valores: unknown[] = [estado.estado];
 
     return await listarEntidadSinPaginacion({
         slqListado: sql,

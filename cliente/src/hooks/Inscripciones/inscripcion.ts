@@ -1,7 +1,8 @@
 
 
-import { useReducer } from "react";
+import { useReducer, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { RutasProtegidasContext } from "../../contexto/protectRutas";
 //hooks
 import { peticionComunicacion } from "../../utils/canalComunicacion";
 import { fechaHoy, fechaVencimiento } from "../../utils/fecha";
@@ -56,6 +57,8 @@ interface InscripcionConfig {
 export const useInscipcion =( config : InscripcionConfig) =>{
      
     const navegar = useNavigate();
+    const { rol } = useContext( RutasProtegidasContext ); 
+
 
     const [ sateMetrica, dispatchMetricas] = useReducer( metricasReducer, initialStateMetricas());
 
@@ -143,30 +146,42 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
 
-    
-        if (state.alumno === null || state.plan === null || state.cuenta === null || state.detalleMovimientoIds.id_caja === null) {
-            // Validación de infraestructura (Caja)
-            if (state.detalleMovimientoIds.id_caja === null) { 
-                dispatch({ type : "SET_ERROR_GENERICO", payload : "Abra caja antes de realizar una inscripcion"});
-           
-                return; 
-            }
+        console.log(4564)
+        // 1. Verificamos si el rol actual exige caja y método de pago
+        const esIntermedio = rol?.tipo === "intermedio"; // (o "intemerdio" según tu BD)
 
-            //Caso extremo: Falta todo
-            if (state.plan === null && state.alumno === null && state.cuenta === null) { 
-                dispatch({ type : "SET_ERROR_GENERICO" , payload : "Seleccionar Plan, Alumno y Metodo de Pago"});
-        
-                return; 
-            }
-
-            //Casos individuales
-            if (state.alumno === null) { dispatch({ type : "SET_ERROR_GENERICO" , payload : "Seleccionar alumno" }); return; }
-            if (state.plan === null) { dispatch({ type : "SET_ERROR_GENERICO" , payload : "Seleccionar Plan" }); return; }
-            if (state.cuenta === null) { dispatch({ type : "SET_ERROR_GENERICO" , payload : "Seleccione el metodo de pago" }); return; }
-            
-            return; // Seguridad extra
+        // 2. Validación general de infraestructura: Si es intermedio y falta la caja
+        if (esIntermedio && state.detalleMovimientoIds.id_caja === null) {
+            console.log(1);
+            dispatch({ type: "SET_ERROR_GENERICO", payload: "Abra caja antes de realizar una inscripción" });
+            return;
         }
-        
+
+        // 3. Caso extremo: Faltan varios campos principales a la vez
+        if (state.alumno === null && state.plan === null && (esIntermedio && state.cuenta === null)) {
+            console.log(2);
+            dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccionar Plan, Alumno y Método de Pago" });
+            return;
+        }
+
+        // 4. Casos individuales
+        if (state.alumno === null) {
+            dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccionar alumno" });
+            return;
+        }
+
+        if (state.plan === null) {
+            dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccionar Plan" });
+            return;
+        }
+
+        // El método de pago solo se exige si es intermedio
+        if (esIntermedio && state.cuenta === null) {
+            console.log(3);
+            dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccione el método de pago" });
+            return;
+        }
+   
         dispatch({type : "INICIAR_OPERACION_INSCRIPCION"});
 
         await new Promise(resolve => setTimeout(resolve, 600));

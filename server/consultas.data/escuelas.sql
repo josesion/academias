@@ -11,15 +11,24 @@ CREATE TABLE escuelas (
     baja VARCHAR(20) DEFAULT 'activos'
 );
 
-
-INSERT INTO escuelas (dni_propietario, nombre_propietario, apellido_propietario, razon_social, direccion, celular, fecha_registro, baja)
+INSERT INTO
+    escuelas (
+        dni_propietario,
+        nombre_propietario,
+        apellido_propietario,
+        razon_social,
+        direccion,
+        celular,
+        fecha_registro,
+        baja
+    )
 VALUES (
-    45678901, 
-    'María', 
-    'López', 
-    'Academia Danza Latina S.R.L.', 
-    'Av. Central 500', 
-    '3874556677', 
-    '2025-10-28', 
-    'activos'
-);
+        33762577, -- Reemplaza con tu DNI real
+        'Jose Manuel', -- Tu nombre
+        'Lopez', -- Tu apellido
+        'Mi Escuela Admin', -- Razón social o nombre del establecimiento
+        'Calle Falsa 123', -- Dirección de la escuela
+        '3874043376', -- Tu número de celular de contacto
+        CURDATE(), -- Fecha actual automática de registro
+        'activos' -- Estado por defecto
+    );

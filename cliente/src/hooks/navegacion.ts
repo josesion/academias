@@ -58,7 +58,7 @@ export const useMenuNav = () => {
     Cookies.remove("token");
     setMenuMobileAbierto(false);
     setDataVisualMenu({ rol : "visita", usuario :  null });
-    setRol({rol : "visita", usuario :  "" , razon_social : "" , tipo : "basico"})
+    setRol({rol : "visita", usuario :  "" , razon_social : "" , tipo : "basico", estado_suscripcion : ""})
     setSeccionAbierta(null);;
     navegar("/login");
 

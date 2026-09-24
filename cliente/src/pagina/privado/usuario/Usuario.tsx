@@ -1,17 +1,19 @@
 import "./usuario.css";
 import { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/TarjetaMetrica";
-import { InfoClases } from "../../../componentes/Horarios/Clases/Clases";
+import { AlertaVencimiento } from "../../../componentes/AlertaVencimiento/AlertaVencimiento";
 import { Asistencia } from "../../../componentes/Horarios/Asistencias/Asistencias";
 import { MetricasHistorial } from "../../../componentes/Historial/Historial.metricas";
-
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 
 export const UsuarioPage = () => {
   const containerRef = useRef<HTMLDivElement>(null); // <-- Referencia principal para el scope de GSAP
   const refGrupo1 = useRef<HTMLElement>(null);
   const [altoGrupo1, setAltoGrupo1] = useState<number>();
+
+  const navegar = useNavigate();
 
   useEffect(() => {
     if (!refGrupo1.current) return;
@@ -24,7 +26,7 @@ export const UsuarioPage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const { state } = metricasUsuarioSeting();
+  const { state, rolTipo } = metricasUsuarioSeting();
 
   return (
     <div className="usuario_contenedor_metricas" ref={containerRef}>
@@ -61,14 +63,15 @@ export const UsuarioPage = () => {
             valor={state.tarjetas?.vencidos_este_mes || 0}
             leyenda="De este mes"
           />
-
-          <TarjetaMetrica
-            carga={state.carga.tarjeta}
-            tipo="caja"
-            titulo="Total caja"
-            valor={state.tarjetas?.total_caja || 0}
-            leyenda="En esta sesion"
-          />
+          {rolTipo === "intermedio" && (
+            <TarjetaMetrica
+              carga={state.carga.tarjeta}
+              tipo="caja"
+              titulo="Total caja"
+              valor={state.tarjetas?.total_caja || 0}
+              leyenda="En esta sesion"
+            />
+          )}
         </div>
         <div className="usuario_contenido_clases">
           <Asistencia
@@ -90,6 +93,14 @@ export const UsuarioPage = () => {
         <div className="usuario_contenido_historial">
           <MetricasHistorial historial={state.historial} />
         </div>
+
+        {state.fechaVencimiento && (
+          <AlertaVencimiento
+            fechaVencimiento={state.fechaVencimiento?.fecha_vencimiento}
+            carga={state.carga.vencimiento}
+            mensajeError={state.error.vencimiento}
+          />
+        )}
       </section>
     </div>
   );

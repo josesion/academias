@@ -9,7 +9,7 @@ export const verificarPlan = (planesPermitidos: PlanesPermitidos) => {
     return tryCatch(async (req: Request, res: Response, next: NextFunction) => {
         // Obtenemos el plan actual del usuario (cargado previamente por el middleware de autenticación)
         const planActual = req.usuario?.tipo; // O req.usuario?.tipo_plan según cómo lo tengas en el token
-
+        //console.log(planActual)
         if (!planActual) {
             return enviarResponseError(res, 403, "No se encontró información del plan en la sesión.");
         }

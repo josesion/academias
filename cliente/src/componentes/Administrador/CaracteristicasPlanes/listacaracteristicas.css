@@ -1,0 +1,36 @@
+.lista-caracteristicas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  font-family: var(--fuente-principal, sans-serif);
+}
+
+.carac-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--fondo-secundario, #faf8f5);
+  border: 1px solid var(--borde, #e6e1db);
+  border-radius: var(--radio-sm, 6px);
+  font-size: var(--texto-sm, 0.9rem);
+}
+
+.carac-clave {
+  font-weight: var(--peso-semi-negrita, 600);
+  color: var(--texto-secundario, #666);
+  text-transform: capitalize;
+}
+
+.carac-valor {
+  color: var(--texto-principal, #1a1a1a);
+  font-weight: var(--peso-medio, 500);
+}
+
+.carac-vacio {
+  font-size: var(--texto-xs, 0.85rem);
+  color: var(--texto-secundario, #888);
+  font-style: italic;
+  margin: 0;
+}

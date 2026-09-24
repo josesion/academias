@@ -13,9 +13,10 @@ interface LoginDataResult {
     id_escuela : number,
     usuario    : string,
     tokenCadena : string,
-    rol : "usuario" | "admin" | "alumno",
+    rol : "usuario" | "administrador" | "alumno",
     razon_social : string ;
     tipo : string;
+    estado_suscripcion : string
 };
 
 
@@ -36,6 +37,8 @@ interface LoginDataResult {
    
 const loginUsuario =  async ( data : LoginInputs) 
 : Promise<TipadoData<LoginDataResult>>=> {
+
+    
     let token ;
     const loginData : LoginInputs = loginSchema.parse( data );
     const loginResult = await dataLogin.loginDataGenerico( loginData );
@@ -53,14 +56,16 @@ const loginUsuario =  async ( data : LoginInputs)
         };
 
 
-        if (loginResult.data.rol === "alumno"){
+        if ( loginResult.data.rol === "alumno" || loginResult.data.rol === "administrador" ){
+
+           const tipoResult =  loginResult.data.rol === "alumno" ? "alumno" : "administrador" 
 
             const tokenData = {
                     id: loginResult.data.id_usuario,
                     rol: loginResult.data.rol,
                     id_escuela: loginResult.data.id_escuela,
-                    tipo : "basico",
-                    flayer : 0         
+                    tipo : tipoResult ,
+                    flayer : 0,
             };
 
              token = generateToken(tokenData);
@@ -75,6 +80,7 @@ const loginUsuario =  async ( data : LoginInputs)
                     rol        : loginResult.data.rol, 
                     razon_social : loginResult.data.razon_social,
                     tipo : "basico",
+                    estado_suscripcion : "Sin fecha",
                     tokenCadena : token 
                 },
                 code : "USUARIO_EXISTE"
@@ -85,22 +91,25 @@ const loginUsuario =  async ( data : LoginInputs)
         if (loginResult.data.rol === "usuario"){
 
                 const usuarioLogin = await dataLogin.loginDataUsuario(loginData);
-
+        
                 if ( usuarioLogin.code === "USUARIO_EXISTE" && usuarioLogin.data  ){
-
+                  
                             const tokenData = {
                                 id: loginResult.data.id_usuario,
                                 rol: loginResult.data.rol,
                                 id_escuela: loginResult.data.id_escuela,
                                 tipo : usuarioLogin.data.plan_tipo,
-                                flayer : usuarioLogin.data.flayer         
+                                flayer : usuarioLogin.data.flayer ,
+                                estado_suscripcion : usuarioLogin.data.estado_suscripcion               
                             };
-
+                        
                             token = generateToken(tokenData);
 
 
                             if ( usuarioLogin.data.rol === "usuario"){
                             // Este filtro es para q solamente ingrese el historial del usuario
+
+                        
                             const dataHistorial : HistorialInputs = {
                                 id_escuela :  loginResult.data.id_escuela ,
                                 id_usuario :  loginResult.data.id_usuario,
@@ -111,6 +120,7 @@ const loginUsuario =  async ( data : LoginInputs)
                                 datos: {
                                     "usuario":  loginResult.data.usuario,
                                     "id_escuela" : loginResult.data.id_escuela,
+                                    "estado_suscripcion" : usuarioLogin.data.estado_suscripcion
                                 }
                             };    
                             
@@ -121,6 +131,7 @@ const loginUsuario =  async ( data : LoginInputs)
                             };
 
 
+                          
                             return{
                                 error: false,
                                 message : "El usuario existe en el sistema",
@@ -131,6 +142,7 @@ const loginUsuario =  async ( data : LoginInputs)
                                     rol        : loginResult.data.rol, 
                                     razon_social : usuarioLogin.data.razon_social,
                                     tipo : usuarioLogin.data.tipo,
+                                    estado_suscripcion : usuarioLogin.data.estado_suscripcion || "Sin fecha", 
                                     tokenCadena : token 
                                 },
                                 code : "USUARIO_EXISTE"
@@ -139,6 +151,7 @@ const loginUsuario =  async ( data : LoginInputs)
                 };
 
                 if ( usuarioLogin.code === "USUARIO_NO_EXISTE" ){
+                
                     return {
                         error : true,
                         message : "El usuario no existe en el sistema o esta vencido su plan.",

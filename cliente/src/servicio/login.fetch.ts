@@ -8,6 +8,7 @@ interface UserData {
     usuario : string,
     razon_social : string
     tipo : string;
+    estado_suscripcion : string;
 }
 
 export interface LoginRequest {

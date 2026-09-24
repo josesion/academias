@@ -34,7 +34,8 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
                     u.usuario,
                     u.rol,
                     e.razon_social,
-                    p.tipo AS tipo
+                    p.tipo AS tipo,
+                    s.estado AS estado_suscripcion
                 FROM usuarios u
                 INNER JOIN escuelas e 
                     ON u.id_escuela = e.id_escuela
@@ -42,7 +43,9 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
                     ON e.id_escuela = s.id_escuela 
                 LEFT JOIN planes_saas p 
                     ON s.id_plan_saas = p.id_plan
-                WHERE u.id_usuario = ? ;`;
+                WHERE u.id_usuario = ?
+                ORDER BY s.id_suscripcion DESC -- O podés ordenar por fecha, ej: s.created_at DESC
+                LIMIT 1;`;
     const valores = [id];    
     
     // 2. Le decimos a TS que el resultado es un array de objetos con la columna 'usuario'
@@ -67,7 +70,8 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
             usuario: resultado[0].usuario,
             rol : resultado[0].rol,
             razon_social : resultado[0].razon_social,
-            tipo : resultado[0].tipo
+            tipo : resultado[0].tipo,
+            estado_suscripcion : resultado[0].estado_suscripcion
         }, 
         code: "USER_FOUND",
     };

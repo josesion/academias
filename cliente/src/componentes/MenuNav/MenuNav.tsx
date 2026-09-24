@@ -51,9 +51,7 @@ export const MenuNav = () => {
 
   const esUsuario = dataVisualMenu?.rol === "usuario";
   const mostrarMiCuenta = rol?.rol === "alumno" || esUsuario;
-
-  console.log(rol);
-
+  // console.log(rol?.tipo);
   return (
     <nav className="menu_nav" ref={navRef}>
       <div className="app-name-container">
@@ -71,7 +69,16 @@ export const MenuNav = () => {
       >
         {dataVisualMenu?.rol === "visita" && <VistaVisita irA={irA} />}
 
-        {rol?.rol === "administrador" && <VistaAdministrador irA={irA} />}
+        {rol?.rol === "administrador" && (
+          <VistaAdministrador
+            irA={irA}
+            alternarSeccion={alternarSeccion}
+            seccionAbierta={seccionAbierta}
+            onLogout={cerrarSesion}
+            cerrar={() => setSeccionAbierta(null)}
+            usuario={dataVisualMenu.usuario ?? ""}
+          />
+        )}
 
         {esUsuario && (
           <VistaUsuario

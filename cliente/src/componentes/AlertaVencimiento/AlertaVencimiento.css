@@ -1,0 +1,283 @@
+/* ============================================================
+   ALERTA DE VENCIMIENTO — Tarjeta flotante (abajo a la derecha)
+   ============================================================ */
+
+.alerta-vencimiento {
+  --acento: var(--color-advertencia, #e9b949);
+  --acento-suave: rgba(233, 185, 73, .12);
+
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+
+  width: 100%;
+  max-width: 360px;
+  padding: 22px;
+  border-radius: var(--radio-md, 14px);
+
+  background: var(--fondo-principal, #1e1e1e);
+  border: 1px solid var(--borde, rgba(255, 255, 255, 0.12));
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.45), 0 0 20px rgba(0, 0, 0, 0.2);
+
+  isolation: isolate;
+  overflow: hidden;
+
+  animation: alertaEntrada .4s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+/* Estado Urgente */
+.alerta-vencimiento.urgente {
+  --acento: #B9702F;
+  --acento-suave: rgba(185, 112, 47, .18);
+}
+
+/* Estado Crítico / Vencido / Error */
+.alerta-vencimiento.critico,
+.alerta-vencimiento.error {
+  --acento: var(--color-error, #e53e3e);
+  --acento-suave: rgba(229, 62, 62, .18);
+  border-color: rgba(229, 62, 62, 0.3);
+}
+
+/* ---------- FONDO AMBIENTAL ---------- */
+
+.alerta-vencimiento::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 30%,
+    var(--acento-suave),
+    transparent 75%
+  );
+}
+
+.alerta-contenido {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ---------- MEDIDOR ---------- */
+
+.alerta-medidor {
+  position: relative;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 2px;
+}
+
+.alerta-medidor-error {
+  background: var(--acento-suave);
+  border-radius: 50%;
+  color: var(--acento);
+  border: 1px solid var(--acento);
+}
+
+.alerta-medidor-error svg {
+  width: 32px;
+  height: 32px;
+}
+
+.alerta-onda {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--acento);
+  opacity: 0;
+  animation: ondaExpansiva 2.8s cubic-bezier(.16, 1, .3, 1) infinite;
+}
+
+.alerta-onda.retraso { animation-delay: 1.4s; }
+
+.alerta-anillo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.anillo-base {
+  fill: none;
+  stroke: var(--borde, rgba(255, 255, 255, 0.1));
+  stroke-width: 3;
+}
+
+.anillo-progreso {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px var(--acento));
+  animation: dibujarAnillo 1.4s cubic-bezier(.16, 1, .3, 1) .3s both;
+}
+
+.alerta-numero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+  color: var(--acento);
+}
+
+.alerta-numero strong {
+  font-family: var(--fuente-titulos, inherit);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.alerta-numero small {
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--texto-secundario, #a0aec0);
+}
+
+/* ---------- TEXTO ---------- */
+
+.alerta-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos, inherit);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--texto-principal, #fff);
+}
+
+.alerta-desc {
+  margin: 0;
+  font-family: var(--fuente-principal, inherit);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--texto-secundario, #a0aec0);
+}
+
+/* ---------- BOTONES ---------- */
+
+.alerta-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.alerta-cta {
+  position: relative;
+  padding: 10px 16px;
+  border: 1px solid var(--acento);
+  border-radius: var(--radio-sm, 6px);
+  background: transparent;
+  color: var(--acento);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.alerta-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--acento);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .35s cubic-bezier(.16, 1, .3, 1);
+  z-index: 0;
+}
+
+.alerta-cta span { position: relative; z-index: 1; }
+
+.alerta-cta:hover { color: #fff; }
+.alerta-cta:hover::before { transform: scaleX(1); }
+
+.alerta-btn-volver {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radio-sm, 6px);
+  background: transparent;
+  color: var(--texto-secundario, #a0aec0);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alerta-btn-volver:hover {
+  color: var(--texto-principal, #fff);
+  background: var(--fondo-hover, rgba(255, 255, 255, 0.05));
+}
+
+/* ---------- SKELETON (Carga prolija) ---------- */
+
+.skeleton-circulo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  animation: pulsoSkeleton 1.4s ease-in-out infinite;
+}
+
+.skeleton-linea {
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  animation: pulsoSkeleton 1.4s ease-in-out infinite;
+}
+
+.skeleton-linea-titulo {
+  width: 160px;
+  height: 16px;
+  margin-top: 4px;
+}
+
+.skeleton-linea-desc {
+  width: 220px;
+  height: 32px;
+}
+
+@keyframes pulsoSkeleton {
+  0%, 100% { opacity: .3; }
+  50%      { opacity: .8; }
+}
+
+/* ---------- KEYFRAMES ---------- */
+
+@keyframes alertaEntrada {
+  from { opacity: 0; transform: translateY(20px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@keyframes ondaExpansiva {
+  0%   { opacity: .7; transform: scale(.85); }
+  70%  { opacity: 0;  transform: scale(1.3); }
+  100% { opacity: 0;  transform: scale(1.3); }
+}
+
+@keyframes dibujarAnillo {
+  from { stroke-dashoffset: 163.36; }
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 480px) {
+  .alerta-vencimiento {
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}

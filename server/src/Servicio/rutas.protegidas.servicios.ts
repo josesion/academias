@@ -26,6 +26,7 @@ const verificarSesion = async (token: string): Promise<TipadoData<{
     rol : string,
     razon_social: string;
     tipo : string;
+    estado_suscripcion : string;
 }>> => {
     const clave = process.env.JWT_CLAVE;
 //console.log("TOKEN RECIBIDO:", token ? "SI" : "NO");

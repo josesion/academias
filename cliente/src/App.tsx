@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
 // seccion de paginas
 import { Inicio } from "./pagina/publico/inicio/Inicios";
 //import { Admin } from "./pagina/privado/Admin/Admin";
@@ -44,6 +43,12 @@ import { PrincipalAlumnos } from "./pagina/privado/SecionAlumnos/PrincipalAlumno
 
 import { DataEscuela } from "./pagina/privado/SecionAlumnos/DataEscuela/DataEscual";
 
+// -----------------------------Seccion Administrador -------------------------------------
+
+import { DashboardAdministrador } from "./pagina/privado/Admin/Admin";
+import { PaginaPlanes } from "./pagina/privado/Admin/PaginaPlanes/PaginaPlanes";
+import { PaginaEscuela } from "./pagina/privado/Admin/PaginaEscuelas/PaginaEscuela";
+
 // estilos css
 import "./app.css";
 
@@ -71,6 +76,8 @@ function App() {
 
             {/* 🔒 RUTAS CON MENÚ */}
             <Route element={<LayoutConMenu />}>
+              {/* 🔒 Aca iria el condicional el modal de vencimietno  */}
+
               <Route path="/" element={<Inicio />} />
               <Route path="/login" element={<Login />} />
               <Route path="/assistant_login" element={<Login />} />
@@ -109,13 +116,20 @@ function App() {
                 <Route path="/alum_manager_priv" element={<AlumnoPage />} />
 
                 {/* 🔒 RUTAS para el alumno */}
-
+                <Route path="/data_escuela" element={<DataEscuela />} />
                 <Route
                   path="/alumno_principal"
                   element={<PrincipalAlumnos />}
                 />
 
-                <Route path="/data_escuela" element={<DataEscuela />} />
+                {/* 🔒 RUTAS  Administrativa */}
+                <Route
+                  path="/assistant_manager_priv"
+                  element={<DashboardAdministrador />}
+                />
+
+                <Route path="/admin/planes_saas" element={<PaginaPlanes />} />
+                <Route path="/admin/escuelas" element={<PaginaEscuela />} />
               </Route>
             </Route>
           </Routes>

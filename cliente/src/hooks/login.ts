@@ -46,6 +46,7 @@ export const loginLogica = () : LoginLogicaReturn =>{
     const navegar = useNavigate();      
     const { setRol } = useContext(RutasProtegidasContext);
 
+
     const [errorsZod, setErrorsZod] = useState<Record<string, string | null>>({});
     const [errorGenerico, setErrorGenerico] = useState<string | null>(null);
     const [dataLogin, setDataLogin] = useState<any>({
@@ -61,7 +62,7 @@ export const loginLogica = () : LoginLogicaReturn =>{
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const respuesta = await LoginFetch(dataLogin);
- 
+        
         if (
           respuesta.error === true &&
           respuesta.code === "VALIDATION_ERROR" &&
@@ -80,13 +81,13 @@ export const loginLogica = () : LoginLogicaReturn =>{
           return;
         }
         if (respuesta.error === false) {
-
-
+       
           setRol({
             rol: respuesta.data.rol,
             usuario : respuesta.data.usuario,
             razon_social : respuesta.data.razon_social,
-            tipo : respuesta.data.tipo 
+            tipo : respuesta.data.tipo ,
+            estado_suscripcion : respuesta.data.estado_suscripcion
           });
     
           if (respuesta.data.rol === "administrador")

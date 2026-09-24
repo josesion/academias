@@ -1,4 +1,4 @@
-import type{  ResultClase, ResultTarjeta, ResultAsistencia } from "../servicio/metrica.fetch";
+import type{  ResultClase, ResultTarjeta, ResultAsistencia, VencimientoEscuela } from "../servicio/metrica.fetch";
 import { type ResultHistorial } from "../servicio/historial.fetch";
 // ==========================================
 // 1. DEFINICIÓN DEL ESTADO (MOLDE)
@@ -10,7 +10,7 @@ export interface MetricaUsuario {
         clases   : boolean,
         asistencia:boolean,
         historial : boolean,
-
+        vencimiento : boolean,
     },
     error  : {
         tarjeta : string | null,
@@ -20,17 +20,20 @@ export interface MetricaUsuario {
         actualizar : string | null,
         metricasTarjetas : string | null,
         cierreCaja : string | null,
+        vencimiento : string | null,
     },
 
     tarjetas : ResultTarjeta | null,
     clases   : ResultClase   | null,
     asistencias : ResultAsistencia[] | null,
     historial   : ResultHistorial[] | null,
+    fechaVencimiento : VencimientoEscuela | null,
 
     actualizar : number,
     actualizarTajetas : number,
     actualizarCierreCaja : number,
     actualizarGeneral : number,
+    
 };
 
 // ==========================================
@@ -44,6 +47,7 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
         clases   : false,
         asistencia : false,
         historial : false, 
+        vencimiento : false,    
     },
 
     error : {
@@ -54,6 +58,7 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
         actualizar : null,
         metricasTarjetas : null,
         cierreCaja : null,
+        vencimiento : null,
     },
 
     tarjetas : null,
@@ -65,6 +70,7 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
     actualizarTajetas : 0,
     actualizarCierreCaja : 0,
     actualizarGeneral : 0,
+    fechaVencimiento : null,
 });
 
 // ==========================================
@@ -95,6 +101,10 @@ export type MetricaAction =
       | { type: 'SET_ERROR_METRICAS_CIERRE' , payload : string | null}
       
       | { type: 'SET_ACTUALIZAR_GENERICO' } 
+
+      | { type : "SET_CARGA_VENCIMIENTO" , payload : boolean}
+      | { type : "SET_ERROR_VENCIMIENTO" , payload : string | null }
+      | { type : "SET_FECHA_VENCIMIENTO", payload : VencimientoEscuela | null}
 
 
 // ==========================================
@@ -214,7 +224,32 @@ export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, 
         
     case "SET_ACTUALIZAR_GENERICO" :
         return { ...state, actualizarGeneral : state.actualizarGeneral +1 }    
+
+
+    case "SET_CARGA_VENCIMIENTO" :
+        return {
+            ...state,
+            carga :{
+                ...state.carga,
+                vencimiento : action.payload
+            }
+        } 
+        
+    case "SET_ERROR_VENCIMIENTO" :
+        return {
+            ...state,
+            error :{
+                ...state.error,
+                vencimiento : action.payload
+            }
+        }    
  
+    case "SET_FECHA_VENCIMIENTO" :
+        return {
+            ...state,
+            fechaVencimiento : action.payload
+        }        
+            
         default:
                 return state;       
       };

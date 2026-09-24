@@ -21,12 +21,11 @@ type UsuarioInfo = {
 };
 
 type UsuarioEscuelaInfo = {
-  // id_usuario: number;
-  //escuela: number | null;
   rol: string;
   usuario: string;
   razon_social: string;
   tipo: string;
+  estado_suscripcion: string;
 };
 
 export const RutasProtegidasContext = createContext<AuthContextType>(
@@ -38,6 +37,7 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
   const [usuarioInfo, setUsuarioInfo] = useState<UsuarioInfo | null>(null);
   const [rol, setRol] = useState<UsuarioEscuelaInfo | null>(() => {
     const estadoGuardado = localStorage.getItem("usuarioEscuela");
+
     return estadoGuardado
       ? JSON.parse(estadoGuardado)
       : {
@@ -45,6 +45,7 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
           usuario: "visita",
         };
   });
+
   const [usuarioEscuela, setUsuarioEscuela] =
     useState<UsuarioEscuelaInfo | null>(null);
 

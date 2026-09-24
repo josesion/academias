@@ -10,6 +10,12 @@ const ping = async(__req: Request, res: Response) => {
     //enviarResponse(res , 200 ,"mensaje de prueba", { message: "Pong" }, "PING_SUCCESS");
 };
 
+const crearEscuela = async (__req: Request, res: Response) =>{
+    
+};
+
+
 export const method = {
     ping: tryCatch(ping),
+    crearEscuela : tryCatch(crearEscuela),
 }; 
