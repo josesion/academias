@@ -13,6 +13,11 @@ export interface PlanesSassTipado {
         listado : string | null,
     },
 
+    botonesVisibles : {
+        modificar : boolean,
+        baja : boolean,
+    }
+
     formulario: PlanFormState;
     clavesValor: ClaveValorForm;
     caracteristicas: Caracteristica[];
@@ -30,6 +35,11 @@ export const initialPlanesEscuelas = (): PlanesSassTipado => ({
     error : {
         post : null,  
         listado :  null,
+    },
+
+    botonesVisibles : {
+        baja : false, 
+        modificar : false, 
     },
 
     formulario: {
@@ -86,7 +96,36 @@ export type PlanesSassAction =
     | { type : "SET_LISTADO_PLAN", payload : PlanSaasRow[] | null}
     | { type: "CARGAR_PLAN_EDITAR"; payload: PlanSaasItem }
 
+    | { type: "SET_BOTONES_VISIBLES"; payload: { modificar?: boolean; baja?: boolean } }
+    | { type: "TOGGLE_BOTONES_EDICION"; payload: boolean } 
+
     | { type: "LIMPIAR_TODO" };
+
+const parseCaracteristicas = (caracteristicas: unknown): Caracteristica[] => {
+    if (Array.isArray(caracteristicas)) {
+        return caracteristicas.filter((item): item is Caracteristica => {
+            return !!item && typeof item === "object" && "clave" in item && "valor" in item;
+        });
+    }
+
+    if (typeof caracteristicas === "string") {
+        try {
+            const parsed = JSON.parse(caracteristicas);
+            return parseCaracteristicas(parsed);
+        } catch {
+            return [];
+        }
+    }
+
+    if (caracteristicas && typeof caracteristicas === "object") {
+        return Object.entries(caracteristicas as Record<string, unknown>).map(([clave, valor]) => ({
+            clave,
+            valor: String(valor),
+        }));
+    }
+
+    return [];
+};
 
 export const PlanesSassReducer = ( 
     state: ReturnType<typeof initialPlanesEscuelas>, 
@@ -106,7 +145,8 @@ export const PlanesSassReducer = (
                     precio_plan: { ...state.formulario.precio_plan, value: String(plan.precio) },
                     flayers_plan: { ...state.formulario.flayers_plan, value: String(plan.cant_flyers) },
                     estado: plan.estado,
-                }
+                },
+                caracteristicas: parseCaracteristicas(plan.caracteristicas),
             };
         }
 
@@ -216,11 +256,33 @@ export const PlanesSassReducer = (
                 ...state,
                 listadoPlan : action.payload
             };  
-            
+
+        case "SET_BOTONES_VISIBLES":
+            return {
+                ...state,
+                botonesVisibles: {
+                    ...state.botonesVisibles,
+                    ...action.payload,
+                },
+            };
+
+        case "TOGGLE_BOTONES_EDICION": {
+            const enEdicion = action.payload;
+            return {
+                ...state,
+                botonesVisibles: {
+                    modificar: enEdicion,
+                    baja: enEdicion,
+                },
+            };
+        }          
   
 
         case "LIMPIAR_TODO":
-            return initialPlanesEscuelas()            
+            return {
+                ...initialPlanesEscuelas(),
+                listadoPlan: state.listadoPlan, // Preservamos el listado actual
+            };       
 
         default:
             return state;            

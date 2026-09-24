@@ -10,16 +10,19 @@ import "./paginaplanes.css";
 export const PaginaPlanes = () => {
   const [panelAbierto, setPanelAbierto] = useState(false);
 
-  const { state, handleEditarPlan } = setAbmPlanes();
+  const planesLogic = setAbmPlanes();
+  const { state, dispatch, cachearEditarPlan, handleEditarPlan } = planesLogic;
+
+  const cerrarPaleta = () => {
+    setPanelAbierto(false);
+    dispatch({ type: "LIMPIAR_TODO" });
+  };
 
   return (
     <div className="pagina-planes-container">
       {/* Overlay para cerrar tocando afuera (solo mobile/cuando está abierto) */}
       {panelAbierto && (
-        <div
-          className="planes-overlay"
-          onClick={() => setPanelAbierto(false)}
-        />
+        <div className="planes-overlay" onClick={cerrarPaleta} />
       )}
 
       <aside className={`section-formulario ${panelAbierto ? "abierto" : ""}`}>
@@ -36,7 +39,14 @@ export const PaginaPlanes = () => {
           className="section-formulario-contenido"
           id="panel-formulario-planes"
         >
-          <FormularioPlanes />
+          <FormularioPlanes
+            state={state}
+            cachearFormulario={planesLogic.cachearFormulario}
+            postPlanesSaas={planesLogic.postPlanesSaas}
+            cachearCaracateristicas={planesLogic.cachearCaracateristicas}
+            agregarCaracteristica={planesLogic.agregarCaracteristica}
+            editarPlan={handleEditarPlan}
+          />
         </div>
       </aside>
 
@@ -44,7 +54,7 @@ export const PaginaPlanes = () => {
         <h2>Administración de Planes SaaS</h2>
         <ListadoPlanes
           planes={state.listadoPlan as PlanSaasItem[]}
-          onSeleccionarPlan={handleEditarPlan}
+          onSeleccionarPlan={cachearEditarPlan}
         />
       </div>
     </div>

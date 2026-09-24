@@ -14,6 +14,7 @@ export interface PlanesSaasProps {
     servicios : {
          postPlanesSaaas : ServicioCrud,
          getPlanSaas : ServicioCrud,
+         putPlanesSaas : ServicioCrud
     }
 }
 
@@ -130,19 +131,86 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
         }
     };
 
-    console.log(state.formulario)
-    console.log(state.caracteristicas)
+    const cachearEditarPlan = (plan: PlanSaasItem) => {
+        //console.log("Plan al que se le hizo clic:", plan);
+        dispatch({ type: "CARGAR_PLAN_EDITAR", payload: plan }); 
+        dispatch({ type : "SET_BOTONES_VISIBLES", payload : {modificar : true}});
 
-    const handleEditarPlan = (plan: PlanSaasItem) => {
-        console.log("Plan al que se le hizo clic:", plan);
-        dispatch({ type: "CARGAR_PLAN_EDITAR", payload: plan }); // <-- Sin la "A" extra
     };
 
+    const handleEditarPlan = async () =>{
+        // 1. Validamos que ningún input del formulario principal esté vacío
+        const { formulario } = state;
+        
+        const nombreVacio = !formulario.nombre_plan.value.toString().trim();
+        const tipoVacio = !formulario.tipo.value.toString().trim();
+        const precioVacio = !formulario.precio_plan.value.toString().trim();
+        const flayersVacio = !formulario.flayers_plan.value.toString().trim();
+
+        if (nombreVacio || tipoVacio || precioVacio || flayersVacio) {
+            dispatch({ 
+                type: "ERROR_POST", 
+                payload: "Por favor, completa todos los campos del plan antes de guardar." 
+            });
+            return; // Cortamos la ejecución para que no haga el post
+        }
+
+        // 2. Opcional: Validar también que tenga al menos una característica si lo necesitás
+        if (state.caracteristicas.length === 0) {
+            dispatch({ 
+                type: "ERROR_POST", 
+                payload: "Debes agregar al menos una característica al plan." 
+            });
+            return;
+        }   
+             
+        dispatch({ type: "ERROR_POST", payload: null });
+    
+        try {
+            dispatch({ type: "CARGA_POST", payload: true });
+
+
+                const data : CuerpoPlanes  = {
+                    id : formulario.id,
+                    descripcion : formulario.nombre_plan.value,
+                    tipo : formulario.tipo.value,
+                    precio : Number( formulario.precio_plan.value),
+                    cant_flyers : Number( formulario.flayers_plan.value),
+                    estado : "activo",
+                    caracteristicas : state.caracteristicas
+                }
+            
+            const putPlanes = config.servicios.putPlanesSaas;
+            const resultPutPlanes = await putPlanes(data);
+          
+            if ( resultPutPlanes.code === "MOD_PLANES_SAAS_OK"){
+                 dispatch({ type : "LIMPIAR_TODO"});
+                 return
+            };
+
+            dispatch({ 
+                type: "ERROR_POST", 
+                payload: resultPutPlanes.message
+            }); 
+
+            
+        } catch (error) {
+            dispatch({ 
+                type: "ERROR_POST", 
+                payload: "Ocurrió un error al intentar guardar el plan." 
+            });
+        } finally {
+            dispatch({ type: "CARGA_POST", payload: false });
+        }
+
+    };
 
 
     const data = {
         estado : "activo"
     };
+
+    
     useEffectServicio< FiltroPlanes, PlanSaasRow[], PlanesSassAction>({
         servicios : config.servicios.getPlanSaas,
         dispatch : dispatch,
@@ -156,8 +224,9 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
 
 
     return{
-        state,  cachearFormulario,
+        state, dispatch ,cachearFormulario,
         postPlanesSaas, cachearCaracateristicas,
-        agregarCaracteristica, handleEditarPlan
+        agregarCaracteristica, cachearEditarPlan,
+        handleEditarPlan,
     }
 };

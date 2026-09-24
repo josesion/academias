@@ -4,8 +4,7 @@ import { Inputs } from "../../generales/Inputs/Inputs";
 import { CompoError } from "../../generales/Error/Error";
 import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
 import { ListaCaracteristicas } from "../CaracteristicasPlanes/ListaCaracteristicasProps";
-
-import { setAbmPlanes } from "../../../hookNegocios/admin.plames";
+import type { PlanesSassTipado } from "../../../reducers/planes.saas.reducer";
 
 export type TipoPlanSaaS = "basico" | "intermedio" | "premium";
 
@@ -20,15 +19,25 @@ export const PLANES_OPCIONES: PlanOpcion[] = [
   { id: "premium", nombre: "Premium" },
 ];
 
-export const FormularioPlanes = () => {
-  const {
-    state,
-    cachearFormulario,
-    postPlanesSaas,
-    cachearCaracateristicas,
-    agregarCaracteristica,
-  } = setAbmPlanes();
+interface FormularioPlanesProps {
+  state: PlanesSassTipado;
+  cachearFormulario: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
+  postPlanesSaas: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  cachearCaracateristicas: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  agregarCaracteristica: () => void;
+  editarPlan?: () => void;
+}
 
+export const FormularioPlanes = ({
+  state,
+  cachearFormulario,
+  postPlanesSaas,
+  cachearCaracateristicas,
+  agregarCaracteristica,
+  editarPlan,
+}: FormularioPlanesProps) => {
   return (
     <form className="form-planes-container" onSubmit={postPlanesSaas}>
       <div className="form-grid">
@@ -48,6 +57,7 @@ export const FormularioPlanes = () => {
           itemKey="id"
           itemLabel="nombre"
           name={state.formulario.tipo.nombre}
+          value={state.formulario.tipo.value}
           labelDefault="Seleccione un plan..."
           onChangeSelector={cachearFormulario}
         />
@@ -119,13 +129,24 @@ export const FormularioPlanes = () => {
       </div>
 
       <div className="form-footer">
-        <Boton
-          clase="aceptar"
-          texto="Guardar Plan"
-          logo={"Go"}
-          type="submit"
-          disable={state.carga.post}
-        />
+        {state.botonesVisibles.modificar ? (
+          <Boton
+            clase="editar"
+            texto="Editar Plan Saas"
+            disable={state.carga.post}
+            type="button"
+            logo="Edit"
+            onClick={editarPlan}
+          />
+        ) : (
+          <Boton
+            clase="aceptar"
+            texto="Guardar Plan"
+            logo={"Go"}
+            type="submit"
+            disable={state.carga.post}
+          />
+        )}
       </div>
 
       {state.error.post && <CompoError mensaje={state.error.post} />}

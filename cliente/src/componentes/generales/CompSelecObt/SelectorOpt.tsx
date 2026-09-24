@@ -7,6 +7,7 @@ interface CompoIEProps<T> {
   itemLabel: keyof T;
   onChangeSelector: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   name?: string;
+  value?: string | number;
   labelDefault?: string;
 }
 
@@ -17,11 +18,17 @@ export const SelectorOpt = <T,>({
   itemLabel,
   onChangeSelector,
   name,
+  value,
   labelDefault = "Seleccionar",
 }: CompoIEProps<T>) => {
   return (
     <div className="grupo_input_caja">
-      <select className="input_caja" name={name} onChange={onChangeSelector}>
+      <select
+        className="input_caja"
+        name={name}
+        value={value ?? ""}
+        onChange={onChangeSelector}
+      >
         <option value="">{labelDefault}</option>
         {categorias.map((item, index) => (
           <option

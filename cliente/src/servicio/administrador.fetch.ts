@@ -107,3 +107,40 @@ export const getPlanSaas = async( parametro : FiltroPlanes )
         method : "GET"
     });
 }
+
+
+
+export interface ResultPostPlanesSass {
+    descripcion : string, 
+    tipo : string,
+    id_plan : number
+};
+
+export const putPlanesSaas  = async( parametro : CuerpoPlanes ) 
+    :Promise<ApiResponse<ResultPostPlanesSass>> =>{
+
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401, 
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }    
+
+
+    const ruta  = `${PAGINA}api/mod_planes_saas/${parametro.id}`;
+    return await apiFetch( ruta , {
+        method : "PUT",
+        body : {
+            descripcion: parametro.descripcion,
+            tipo: parametro.tipo,
+            precio: parametro.precio,
+            cant_flyers: parametro.cant_flyers,
+            estado: parametro.estado,
+            caracteristicas: parametro.caracteristicas      
+        }
+    });
+}

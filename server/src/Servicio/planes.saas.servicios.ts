@@ -123,7 +123,7 @@ const listaPlanesSaas = async ( estado : FiltroPlanesInputs)
 
     const resultListaPlanesSaas = await dataPlanesSaas.listaPlanesSaas( validarEstado );
     
-    console.log(resultListaPlanesSaas)
+  
 
     if ( resultListaPlanesSaas.code === 'PLANES_SAAS_LISTED'){    
         return {
