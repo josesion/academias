@@ -1,4 +1,5 @@
 import React from "react";
+import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
 import "./listadoplanes.css";
 
 // Tipado basado en tu tabla planes_saas
@@ -12,9 +13,15 @@ export interface PlanSaasItem {
   estado: string;
 }
 
+const opcionesEstadoPlanes = [
+  { id: "activo", nombre: "Activo" },
+  { id: "inactivo", nombre: "Inactivo" },
+];
+
 interface PlanInfoGeneralProps {
   plan: PlanSaasItem;
   onEditar?: (plan: PlanSaasItem) => void;
+  onCambiarEstado?: (plan: PlanSaasItem) => void;
 }
 
 // -----------------------------------------------------------------
@@ -23,7 +30,10 @@ interface PlanInfoGeneralProps {
 export const PlanInfoGeneral: React.FC<PlanInfoGeneralProps> = ({
   plan,
   onEditar,
+  onCambiarEstado,
 }) => {
+  const textoBoton = plan.estado === "activo" ? "Dar de baja" : "Dar de alta";
+
   return (
     <div
       className="plan-info-general"
@@ -51,6 +61,17 @@ export const PlanInfoGeneral: React.FC<PlanInfoGeneralProps> = ({
           <span className="metric-value">{plan.cant_flyers}</span>
         </div>
       </div>
+
+      <button
+        type="button"
+        className="plan-toggle-estado"
+        onClick={(e) => {
+          e.stopPropagation();
+          onCambiarEstado?.(plan);
+        }}
+      >
+        {textoBoton}
+      </button>
     </div>
   );
 };
@@ -165,11 +186,13 @@ export const PlanCaracteristicas: React.FC<{ caracteristicas: any }> = ({
 interface ListadoPlanesProps {
   planes: PlanSaasItem[];
   onSeleccionarPlan?: (plan: PlanSaasItem) => void;
+  onCambiarEstado?: (plan: PlanSaasItem) => void;
 }
 
 export const ListadoPlanes: React.FC<ListadoPlanesProps> = ({
   planes,
   onSeleccionarPlan,
+  onCambiarEstado,
 }) => {
   if (!planes || planes.length === 0) {
     return (
@@ -183,7 +206,11 @@ export const ListadoPlanes: React.FC<ListadoPlanesProps> = ({
     <div className="listado-planes-container">
       {planes.map((plan) => (
         <div key={plan.id_plan} className="plan-card-row">
-          <PlanInfoGeneral plan={plan} onEditar={onSeleccionarPlan} />
+          <PlanInfoGeneral
+            plan={plan}
+            onEditar={onSeleccionarPlan}
+            onCambiarEstado={onCambiarEstado}
+          />
           <div className="plan-divider"></div>
           <PlanCaracteristicas caracteristicas={plan.caracteristicas} />
         </div>

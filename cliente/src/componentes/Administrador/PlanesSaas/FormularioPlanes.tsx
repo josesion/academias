@@ -48,7 +48,7 @@ export const FormularioPlanes = ({
           readonly={false}
           name={state.formulario.nombre_plan.nombre}
           value={state.formulario.nombre_plan.value}
-          error={"nombre"}
+          error={""}
           onChange={cachearFormulario}
         />
 
@@ -69,7 +69,7 @@ export const FormularioPlanes = ({
           readonly={false}
           name={state.formulario.precio_plan.nombre}
           value={state.formulario.precio_plan.value}
-          error={"precio"}
+          error={""}
           onChange={cachearFormulario}
         />
 
@@ -80,7 +80,7 @@ export const FormularioPlanes = ({
           readonly={false}
           name={state.formulario.flayers_plan.nombre}
           value={state.formulario.flayers_plan.value}
-          error={"flayers"}
+          error={""}
           onChange={cachearFormulario}
         />
       </div>
@@ -97,7 +97,7 @@ export const FormularioPlanes = ({
             readonly={false}
             name={state.clavesValor.clave.nombre}
             value={state.clavesValor.clave.value}
-            error={"clave"}
+            error={""}
             onChange={cachearCaracateristicas}
           />
 
@@ -108,7 +108,7 @@ export const FormularioPlanes = ({
             readonly={false}
             name={state.clavesValor.valor.nombre}
             value={state.clavesValor.valor.value}
-            error={"valor"}
+            error={""}
             onChange={cachearCaracateristicas}
           />
         </div>

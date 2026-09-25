@@ -3,7 +3,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { PlanSaasInputs, PlanDeletSaasInputs, FiltroPlanesInputs } from "../squemas/planes.saas";
+import { PlanSaasInputs, PlanDeletSaasInputs, FiltroPlanesInputs, PlanEstadoSaasInputs } from "../squemas/planes.saas";
 
 export interface ResultPostPlanesSass {
     descripcion : string, 
@@ -92,10 +92,10 @@ const modPlanesSaas = async ( data : PlanSaasInputs)
 };
 
 
-const bajaPlanesSaas = async ( data : PlanSaasInputs)
+const bajaPlanesSaas = async ( data : PlanEstadoSaasInputs)
 : Promise<TipadoData<{id_plan : number}>> =>{
 
-    const { id_plan } = data; 
+    const { id_plan, estado } = data; 
 
     if ( !id_plan  ){
         return {
@@ -106,10 +106,10 @@ const bajaPlanesSaas = async ( data : PlanSaasInputs)
     };
 
      const sql = `UPDATE planes_saas 
-                    SET estado = 'inactivo' 
+                    SET estado = ? 
                     WHERE id_plan = ?;`;
    
-     const valores: unknown[] = [ id_plan];
+     const valores: unknown[] = [ estado, id_plan];
      const datosADevolver = {  id_plan };
    
      return await iudEntidad<{id_plan : number}>({

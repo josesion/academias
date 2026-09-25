@@ -3,7 +3,7 @@ import { handleControladores } from "../utils/handleControladores";
 import { tryCatch } from "../utils/tryCatch";
 
 import { method as servicioPlanesSass } from "../Servicio/planes.saas.servicios"; 
-import { PlanSaasInputs, PlanDeletSaasInputs, FiltroPlanesInputs } from "../squemas/planes.saas";
+import { PlanSaasInputs, PlanDeletSaasInputs, FiltroPlanesInputs,  PlanEstadoSaasInputs } from "../squemas/planes.saas";
 import { ResultPostPlanesSass, PlanSaasConId, PlanDelet, PlanSaasRow } from "../data/planes.saas.data";
 import { MAPA_POST_PLANES_SAAS, MAPA_MOD_PLANES_SAAS, 
          MAPA_DELETE_PLANES_SAAS, MAPA_BAJAS_PLANES_SAAS,
@@ -69,8 +69,9 @@ const deletPlanesSaas = async (req: Request, res: Response) =>{
 
 
 const bajaPlanesSass = async (req: Request, res: Response) =>{
-    const data: PlanDeletSaasInputs = {
+    const data:  PlanEstadoSaasInputs = {
         id_plan : Number(req.params.id) ,
+        estado : req.params.estado as 'activo' | 'inactivo'
     };
 
     await handleControladores<PlanDeletSaasInputs, { id_plan : number}>(

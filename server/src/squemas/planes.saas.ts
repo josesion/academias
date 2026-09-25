@@ -28,6 +28,10 @@ export const PlanDeleteSaasSchema = z.object({
   id_plan: z.number().int().positive(),
 });
 
+export const PlanEstadoSaasSchema = z.object({
+  id_plan: z.number().int().positive(),
+  estado: z.enum(['activo', 'inactivo']).default('activo'),
+});
 
 export const FiltroPlanesSchema = z.object({
   estado: z.enum(['activo', 'inactivo']).default('activo'), 
@@ -35,4 +39,5 @@ export const FiltroPlanesSchema = z.object({
 
 export type PlanSaasInputs = z.infer<typeof PlanSaasSchema>;
 export type PlanDeletSaasInputs = z.infer<typeof PlanDeleteSaasSchema>;
+export type PlanEstadoSaasInputs = z.infer<typeof PlanEstadoSaasSchema>;
 export type FiltroPlanesInputs = z.infer<typeof FiltroPlanesSchema>;

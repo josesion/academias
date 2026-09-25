@@ -14,17 +14,39 @@ export interface PlanesSaasProps {
     servicios : {
          postPlanesSaaas : ServicioCrud,
          getPlanSaas : ServicioCrud,
-         putPlanesSaas : ServicioCrud
+         putPlanesSaas : ServicioCrud,
+         estadoPlanes : ServicioCrud,
     }
 }
+
 
 
 export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
 
     const [ state, dispatch] = useReducer(PlanesSassReducer, initialPlanesEscuelas());
 
-    //console.log(state.listadoPlan)
+///////////////////////////////////////////////////////////////////////////////////  
+//   CACHEAR INFORMACION
+//////////////////////////////////////////////////////////////////////////////////
+    const cerrarModalEstado = () =>{
+        dispatch({ type : "MODAL_ESTADO" , payload : false});
+        dispatch({ type : "SET_PLAN_SELECCIONADO",
+                   payload : {
+                        estado : null,
+                        id_plan : null
+                   } 
+        });
+    };
 
+    const cachearEstadoPlan = (plan: PlanSaasItem) =>{
+        dispatch({ type : "SET_PLAN_SELECCIONADO",
+                   payload : {
+                        estado : plan.estado,
+                        id_plan : plan.id_plan
+                   } 
+        });
+        dispatch({ type : "MODAL_ESTADO" , payload : true});
+    };
 
     const cachearFormulario = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;  
@@ -60,8 +82,29 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
 
         dispatch({ type : "AGREGAR_CARACTERISTICA" , payload : { clave : clave, valor : valor }});
         dispatch({ type : "LIMPIAR_CLAVE_VALOR"});
-    };
+    };    
 
+    const cachearEditarPlan = (plan: PlanSaasItem) => {
+        //console.log("Plan al que se le hizo clic:", plan);
+        dispatch({ type: "CARGAR_PLAN_EDITAR", payload: plan }); 
+        dispatch({ type : "SET_BOTONES_VISIBLES", payload : {modificar : true}});
+
+    };  
+    
+    const cachearEstadoLista = (e: React.ChangeEvent<HTMLSelectElement>) =>{
+     
+        const { value } = e.target;
+
+        if ( !value ){
+            return
+        };
+
+        dispatch({ type : "SET_FILTRO_ESTADO", payload : value });
+    };    
+
+///////////////////////////////////////////////////////////////////////////////////  
+//   POST PLANES
+//////////////////////////////////////////////////////////////////////////////////
     const postPlanesSaas = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -112,6 +155,7 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
             
             if ( resultPostPlanes.code === "PLAN_SAAS_OK"){
                  dispatch({ type : "LIMPIAR_TODO"});
+                 dispatch({ type : "ACTUALIZAR" });
                  return
             };
 
@@ -131,13 +175,10 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
         }
     };
 
-    const cachearEditarPlan = (plan: PlanSaasItem) => {
-        //console.log("Plan al que se le hizo clic:", plan);
-        dispatch({ type: "CARGAR_PLAN_EDITAR", payload: plan }); 
-        dispatch({ type : "SET_BOTONES_VISIBLES", payload : {modificar : true}});
 
-    };
-
+///////////////////////////////////////////////////////////////////////////////////  
+//  MOD PLANES
+//////////////////////////////////////////////////////////////////////////////////
     const handleEditarPlan = async () =>{
         // 1. Validamos que ningún input del formulario principal esté vacío
         const { formulario } = state;
@@ -185,6 +226,7 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
           
             if ( resultPutPlanes.code === "MOD_PLANES_SAAS_OK"){
                  dispatch({ type : "LIMPIAR_TODO"});
+                 dispatch({ type : "ACTUALIZAR" });
                  return
             };
 
@@ -197,7 +239,7 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
         } catch (error) {
             dispatch({ 
                 type: "ERROR_POST", 
-                payload: "Ocurrió un error al intentar guardar el plan." 
+                payload: "Ocurrió un error al intentar modificar el plan." 
             });
         } finally {
             dispatch({ type: "CARGA_POST", payload: false });
@@ -206,11 +248,59 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
     };
 
 
-    const data = {
-        estado : "activo"
+///////////////////////////////////////////////////////////////////////////////////  
+//  ESTADO PLANES
+//////////////////////////////////////////////////////////////////////////////////
+    const cambiarEstadoPlan =async () =>{
+        if (!state.planSeleccionado.id_plan) {
+            cerrarModalEstado();
+            return;
+        }
+
+        try{
+            dispatch({ type : "CARGA_POST" , payload : true   });
+
+            const estdoPlan = config.servicios.estadoPlanes;
+            const resultEstadoPlan = await estdoPlan( state.planSeleccionado);
+            
+            if ( resultEstadoPlan.code ===  "PLAN_SAAS_OK") {
+
+                dispatch({ type : "MODAL_ESTADO" , payload : false});
+                dispatch({ type : "SET_PLAN_SELECCIONADO",
+                        payload : {
+                                estado : null,
+                                id_plan : null
+                        } 
+                });
+                return
+            };
+
+
+        }catch(error){
+
+            dispatch({ type : "ERROR_POST" ,
+                payload :"Error en el serivdor, estado planes"
+            })
+
+        }finally{
+            dispatch({ type : "CARGA_POST" , payload : false});
+        };
+
+
+
+        dispatch({ type : "MODAL_ESTADO" , payload : false});
+        dispatch({ type : "ACTUALIZAR" });
     };
 
-    
+
+///////////////////////////////////////////////////////////////////////////////////  
+//  LISTADO PLANES
+//////////////////////////////////////////////////////////////////////////////////
+
+    const data = {
+        estado : state.filtroEstado || "activo"
+    };
+
     useEffectServicio< FiltroPlanes, PlanSaasRow[], PlanesSassAction>({
         servicios : config.servicios.getPlanSaas,
         dispatch : dispatch,
@@ -219,14 +309,17 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
         accionCarga : ( carga ) => ({ type : "CARGA_LISTADO" , payload : carga}),
         accionError : ( mensaje ) =>({ type : "ERROR_LISTADO" , payload : mensaje}),
         useAbort :true,
-        dependencias : []
+        dependencias : [state.actualizar, state.filtroEstado]
     });
+
+
 
 
     return{
         state, dispatch ,cachearFormulario,
-        postPlanesSaas, cachearCaracateristicas,
+        postPlanesSaas, cachearCaracateristicas,cachearEstadoLista,
         agregarCaracteristica, cachearEditarPlan,
-        handleEditarPlan,
+        handleEditarPlan, cachearEstadoPlan,
+        cambiarEstadoPlan, cerrarModalEstado,
     }
 };

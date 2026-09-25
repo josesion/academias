@@ -1,8 +1,15 @@
 import type { ClaveValorForm, PlanFormState, PlanSaasRow } from "../servicio/administrador.fetch";
 import { type Caracteristica } from "../servicio/administrador.fetch";
 import {type PlanSaasItem } from "../componentes/Administrador/ListadoPlanesSaas/ListadoPlanes";
+import { type PlanSeleccionado } from "../servicio/administrador.fetch";
+
 
 export interface PlanesSassTipado {
+    modalEstado : boolean,
+    actualizar : number,
+    filtroEstado: string,
+    planSeleccionado: PlanSeleccionado,
+
     carga : { 
         post : boolean,
         listado : boolean,
@@ -26,6 +33,14 @@ export interface PlanesSassTipado {
 };
 
 export const initialPlanesEscuelas = (): PlanesSassTipado => ({
+
+    modalEstado : false,
+    actualizar : 0,
+    filtroEstado: "",
+    planSeleccionado: {
+        id_plan: null,
+        estado: "activos",
+    },
 
     carga : {
         post : false, 
@@ -81,6 +96,10 @@ export type CampoPlanKey = keyof Omit<PlanFormState, 'id' | 'estado'>;
 export type CampoClaveValorKey = keyof ClaveValorForm;
 
 export type PlanesSassAction = 
+    | { type : "MODAL_ESTADO", payload : boolean}
+    | { type : "ACTUALIZAR" }
+    | { type : "SET_FILTRO_ESTADO", payload: string }
+
     | { type: "CARGA_POST", payload : boolean }    
     | { type: "ERROR_POST" , payload : string | null }
   
@@ -89,6 +108,7 @@ export type PlanesSassAction =
     
     | { type: "CAMBIAR_CAMPO"; payload: { campo: CampoPlanKey; valor: string | number } }
     | { type: "SET_ID"; payload: number | null }
+    | { type: "SET_PLAN_SELECCIONADO"; payload: { id_plan: number | null; estado: string | null } }
     | { type: "CAMBIAR_CLAVE_VALOR"; payload: { campo: CampoClaveValorKey; valor: string } }
     | { type: "LIMPIAR_CLAVE_VALOR" }
     | { type: "AGREGAR_CARACTERISTICA"; payload: Caracteristica }
@@ -133,10 +153,33 @@ export const PlanesSassReducer = (
 ): ReturnType<typeof initialPlanesEscuelas> => {
 
     switch (action.type) {
+
+        case "MODAL_ESTADO" : 
+            return {
+                ...state,
+                modalEstado : action.payload
+            }
+
+        case "ACTUALIZAR" :
+            return {
+                ...state,
+                actualizar : state.actualizar +1 
+            }    
+
+        case "SET_FILTRO_ESTADO": 
+            return {
+                ...state,
+                filtroEstado: action.payload,
+            };    
+
         case "CARGAR_PLAN_EDITAR": {
             const plan = action.payload;
             return {
                 ...state,
+                planSeleccionado: {
+                    id_plan: plan.id_plan,
+                    estado: plan.estado,
+                },
                 formulario: {
                     ...state.formulario,
                     id: plan.id_plan,
@@ -207,6 +250,15 @@ export const PlanesSassReducer = (
                 formulario: {
                     ...state.formulario,
                     id: action.payload ?? undefined,
+                },
+            };
+
+        case "SET_PLAN_SELECCIONADO":
+            return {
+                ...state,
+                planSeleccionado: {
+                    ...state.planSeleccionado,
+                    ...action.payload,
                 },
             };
 

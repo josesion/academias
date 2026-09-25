@@ -144,3 +144,33 @@ export const putPlanesSaas  = async( parametro : CuerpoPlanes )
         }
     });
 }
+
+
+export interface PlanDelet {
+    id_plan : number
+};
+
+export interface PlanSeleccionado {
+    id_plan: number | null;
+    estado: string | null;
+}
+
+export const estadoPlanes = async ( parametro : PlanSeleccionado)
+:Promise<ApiResponse<PlanDelet>> =>{
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401, 
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    }     
+
+     const ruta  = `${PAGINA}api/baja_planes_saas/${parametro.id_plan}/${parametro.estado}`;
+    return await apiFetch( ruta , {
+        method : "PUT"
+    });   
+
+};

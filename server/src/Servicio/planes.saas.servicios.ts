@@ -4,9 +4,16 @@ import { method as dataPlanesSaas } from "../data/planes.saas.data";
 import { TipadoData } from "../tipados/tipado.data";
 import { ResultPostPlanesSass, PlanSaasConId, PlanDelet, PlanSaasRow } from "../data/planes.saas.data";
 import { PlanDeletSaasInputs, PlanDeleteSaasSchema, PlanSaasInputs, PlanSaasSchema,
-         FiltroPlanesInputs, FiltroPlanesSchema
+         FiltroPlanesInputs, FiltroPlanesSchema,
+         PlanEstadoSaasInputs, PlanEstadoSaasSchema
  } from "../squemas/planes.saas";
 
+/**
+ * Crea un nuevo plan SaaS con la información validada por el esquema.
+ *
+ * @param data - Datos del plan a registrar.
+ * @returns Respuesta tipada con el resultado de la creación del plan.
+ */
 const postPlanesSaas = async ( data : PlanSaasInputs)
 :Promise<TipadoData<ResultPostPlanesSass>> =>{
 
@@ -34,6 +41,12 @@ const postPlanesSaas = async ( data : PlanSaasInputs)
 
 
 
+/**
+ * Modifica un plan SaaS existente validando el payload antes del update.
+ *
+ * @param data - Datos del plan a actualizar.
+ * @returns Respuesta tipada con el plan actualizado o el detalle del error.
+ */
 const modPlanesSaas = async (data : PlanSaasInputs )
 :Promise<TipadoData<PlanSaasConId>> =>{
 
@@ -67,6 +80,12 @@ const modPlanesSaas = async (data : PlanSaasInputs )
 };
 
 
+/**
+ * Elimina un plan SaaS usando el esquema específico de borrado.
+ *
+ * @param data - Identificador y datos requeridos para eliminar el plan.
+ * @returns Respuesta tipada confirmando la eliminación o el error generado.
+ */
 const deletPlanesSaas = async (data : PlanSaasInputs )
 :Promise<TipadoData<PlanDelet>> =>{
 
@@ -92,17 +111,27 @@ const deletPlanesSaas = async (data : PlanSaasInputs )
 
 
 
-const bajaPlanesSaas = async (data : PlanDeletSaasInputs )
+/**
+ * Alterna el estado de un plan SaaS entre activo e inactivo.
+ *
+ * @param data - Identificador del plan y estado actual para invertirlo.
+ * @returns Respuesta tipada con el nuevo estado del plan o el error asociado.
+ */
+const bajaPlanesSaas = async (data : PlanEstadoSaasInputs )
 :Promise<TipadoData<PlanDelet>> =>{
 
-    const validarData : PlanDeletSaasInputs = PlanDeleteSaasSchema.parse( data );
-  
-    const resultDeletePlanes = await dataPlanesSaas.bajaPlanesSaas(validarData);
+    const validarData : PlanEstadoSaasInputs = PlanEstadoSaasSchema.parse( data );
+    const nuevoEstado = validarData.estado === 'activo' ? 'inactivo' : 'activo';
+
+    const resultDeletePlanes = await dataPlanesSaas.bajaPlanesSaas({
+        id_plan: validarData.id_plan,
+        estado: nuevoEstado
+    });
 
     if ( resultDeletePlanes.code ===  'PLANES_SAAS_MODIFICAR'){
         return{
             error : false,
-            message : "Plan cambio de estado con exito.",
+            message : `Plan actualizado a ${nuevoEstado} con exito.`,
             code : "BAJA_PLANES_SAAS_OK",
             data : resultDeletePlanes.data
         }
@@ -116,6 +145,12 @@ const bajaPlanesSaas = async (data : PlanDeletSaasInputs )
 };
 
 
+/**
+ * Obtiene el listado de planes SaaS según el filtro de estado enviado.
+ *
+ * @param estado - Filtro que determina si se listan los planes activos, inactivos o todos.
+ * @returns Respuesta tipada con el conjunto de planes o el estado vacío/error.
+ */
 const listaPlanesSaas = async ( estado : FiltroPlanesInputs)
 :Promise<TipadoData<PlanSaasRow[]>> =>{
 
@@ -149,6 +184,11 @@ const listaPlanesSaas = async ( estado : FiltroPlanesInputs)
     }; 
 };
 
+/**
+ * Colección de métodos del servicio para gestionar planes SaaS.
+ *
+ * Incluye creación, modificación, eliminación, activación/inactivación y listado.
+ */
 export const method = {
     postPlanesSaas : tryCatchDatos( postPlanesSaas ),
     modPlanesSaas  : tryCatchDatos( modPlanesSaas),

@@ -8,6 +8,18 @@
   font-family: var(--fuente-principal);
 }
 
+.planes-filtro-estado {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.planes-filtro-estado .grupo_input_caja {
+  width: min(220px, 100%);
+}
+
 .plan-card-row {
   display: grid;
   grid-template-columns: 1fr 1px 1fr;
