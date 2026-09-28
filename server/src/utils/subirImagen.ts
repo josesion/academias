@@ -5,10 +5,12 @@ import crypto from "crypto";
 export async function subirImagenR2(
   buffer: Buffer,
   nombreOriginal: string,
-  mimetype: string
+  mimetype: string,
+  filename: string = "flyers/"
 ): Promise<string> {
   const fileExtension = nombreOriginal.split(".").pop();
-  const fileName = `flyers/${crypto.randomUUID()}.${fileExtension}`;
+  const carpeta = filename && filename.trim() ? filename.trim() : "flyers/";
+  const fileName = `${carpeta}${crypto.randomUUID()}.${fileExtension}`;
 
   await s3Client.send(
     new PutObjectCommand({

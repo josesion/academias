@@ -85,31 +85,31 @@ export const GuardarFlayerSchema = z.object({
 
 export const GuardarImagenSchema = z.object({
     buffer: z.instanceof(Buffer, {
-        error: "La imagen debe ser un buffer válido",
+        message: "La imagen debe ser un buffer válido",
     }),
 
     tipo: z
         .string({
-            error: "El tipo de imagen debe ser un texto",
+            message: "El tipo de imagen debe ser un texto",
         })
         .min(1, {
-            error: "El tipo de imagen es obligatorio",
+            message: "El tipo de imagen es obligatorio",
         }),
 
     size: z
         .number({
-            error: "El tamaño de la imagen debe ser un número",
+            message: "El tamaño de la imagen debe ser un número",
         })
         .positive({
-            error: "El tamaño de la imagen debe ser mayor a cero",
+            message: "El tamaño de la imagen debe ser mayor a cero",
         }),
 
     nombre: z
         .string({
-            error: "El nombre de la imagen debe ser un texto",
+            message: "El nombre de la imagen debe ser un texto",
         })
         .min(1, {
-            error: "El nombre de la imagen es obligatorio",
+            message: "El nombre de la imagen es obligatorio",
         }),
 });
 

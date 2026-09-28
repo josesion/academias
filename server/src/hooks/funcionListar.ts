@@ -33,7 +33,7 @@ export const listarEntidad = async <TRespuesta>(
     type RowConTotal = TRespuesta & PaginacionDBRow;
 
     const listado = await select<RowConTotal>(slqListado , valores);
-
+    
     if ( listado.length <= 0) {
         // Cuando no hay resultados devolvemos un TipadoData consistente
         // en lugar de lanzar una excepción. Esto mantiene la misma
@@ -51,13 +51,11 @@ export const listarEntidad = async <TRespuesta>(
     const totalRegistro  =listado[0].total_registros;
     const totalPagina = Math.ceil( totalRegistro / limit);
     // extraigo el total de registros para la renderizacion 
-
     const dataEntidad = listado.map( entidad => {
         const { total_registros, ...alumnoData } = entidad as any; 
         return alumnoData;
     });
-
-
+    
       return {
         error: false,
         message: ` ${entidadM} listados ${estado}`,
