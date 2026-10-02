@@ -1,0 +1,190 @@
+/* =====================================
+   CONTENEDOR
+===================================== */
+
+.pagina_escuelas {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  padding: 40px 32px 64px;
+
+  box-sizing: border-box;
+
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENCABEZADO
+===================================== */
+
+.pagina_escuelas_encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding-bottom: 24px;
+
+  border-bottom: 1px solid var(--borde);
+}
+
+.pagina_escuelas_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.pagina_escuelas_etiqueta {
+  color: var(--color-secundario);
+
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.pagina_escuelas_titulos h1 {
+  margin: 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+}
+
+.pagina_escuelas_titulos p {
+  margin: 0;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+}
+
+.pagina_escuelas_acciones {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* =====================================
+   CONTENIDO
+===================================== */
+
+.pagina_escuelas_contenido {
+  width: 100%;
+  min-width: 0;
+}
+
+/* =====================================
+   MODAL
+===================================== */
+
+.pagina_escuelas_modal_fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  box-sizing: border-box;
+
+  background: rgba(27, 28, 27, 0.45);
+  backdrop-filter: blur(4px);
+
+  animation: pagina_escuelas_fondo_entrada 0.25s ease both;
+}
+
+.pagina_escuelas_modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100vh - 48px);
+
+  overflow-y: auto;
+
+  background: var(--fondo-secundario);
+
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+
+  box-shadow: var(--sombra-lg);
+
+  animation: pagina_escuelas_modal_entrada 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pagina_escuelas_fondo_entrada {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pagina_escuelas_modal_entrada {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1000px) {
+  .pagina_escuelas {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (max-width: 650px) {
+  .pagina_escuelas {
+    gap: 20px;
+    padding: 24px 16px 40px;
+  }
+
+  .pagina_escuelas_encabezado {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+
+    padding-bottom: 18px;
+  }
+
+  .pagina_escuelas_titulos h1 {
+    font-size: 1.9rem;
+  }
+
+  .pagina_escuelas_acciones {
+    justify-content: flex-start;
+  }
+
+  .pagina_escuelas_modal_fondo {
+    padding: 12px;
+  }
+
+  .pagina_escuelas_modal {
+    max-height: calc(100vh - 24px);
+  }
+}

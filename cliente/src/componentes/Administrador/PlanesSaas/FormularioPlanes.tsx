@@ -47,7 +47,7 @@ export const FormularioPlanes = ({
           placeholder="Ingrese el nombre"
           readonly={false}
           name={state.formulario.nombre_plan.nombre}
-          value={state.formulario.nombre_plan.value}
+          value={state.formulario.nombre_plan.value ?? ""}
           error={""}
           onChange={cachearFormulario}
         />
@@ -57,7 +57,7 @@ export const FormularioPlanes = ({
           itemKey="id"
           itemLabel="nombre"
           name={state.formulario.tipo.nombre}
-          value={state.formulario.tipo.value}
+          value={state.formulario.tipo.value ?? ""}
           labelDefault="Seleccione un plan..."
           onChangeSelector={cachearFormulario}
         />
@@ -68,7 +68,7 @@ export const FormularioPlanes = ({
           placeholder="Ingrese el precio"
           readonly={false}
           name={state.formulario.precio_plan.nombre}
-          value={state.formulario.precio_plan.value}
+          value={state.formulario.precio_plan.value ?? ""}
           error={""}
           onChange={cachearFormulario}
         />
@@ -79,7 +79,7 @@ export const FormularioPlanes = ({
           placeholder="Cantidad Flayers"
           readonly={false}
           name={state.formulario.flayers_plan.nombre}
-          value={state.formulario.flayers_plan.value}
+          value={state.formulario.flayers_plan.value ?? ""}
           error={""}
           onChange={cachearFormulario}
         />
@@ -96,7 +96,7 @@ export const FormularioPlanes = ({
             placeholder="Ej: soporte"
             readonly={false}
             name={state.clavesValor.clave.nombre}
-            value={state.clavesValor.clave.value}
+            value={state.clavesValor.clave.value ?? ""}
             error={""}
             onChange={cachearCaracateristicas}
           />
@@ -107,7 +107,7 @@ export const FormularioPlanes = ({
             placeholder="Ej: 24/7"
             readonly={false}
             name={state.clavesValor.valor.nombre}
-            value={state.clavesValor.valor.value}
+            value={state.clavesValor.valor.value ?? ""}
             error={""}
             onChange={cachearCaracateristicas}
           />

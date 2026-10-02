@@ -1,86 +1,180 @@
-/* ================= CONTENEDOR CON REBOTE Y ESTILO DARK ================= */
+/* =====================================
+   COMPONENTE VERIFICACIÓN
+   Estilo editorial / lujo
+===================================== */
+
+/* ---------- Contenedor (modo inline y base del modal) ---------- */
 .contenedor_verificacion {
-    position: relative;
-    padding: 30px 30px 30px 45px; /* Más espacio a la izquierda para la línea */
-    background: linear-gradient(
-        180deg,
-        rgba(25, 20, 35, 0.95), 
-        rgba(10, 10, 20, 0.98)
-    );
-    border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    max-width: 450px;
-    margin: 20px auto;
-    text-align: center;
-    backdrop-filter: blur(15px);
-
-    /* --- LA ANIMACIÓN ZARPADA (REBOTE) --- */
-    animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  padding: 2rem 1.75rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  text-align: center;
 }
 
-/* --- Decoración lateral (La magia del color) --- */
-.contenedor_verificacion::before {
-    content: "";
-    position: absolute;
-    left: 15px;
-    top: 30px;
-    bottom: 30px;
-    width: 5px;
-    background: linear-gradient(180deg, #3b82f6, #a855f7, #ef4444);
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
-}
-
-/* --- TEXTO --- */
 .contenedor_verificacion p {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.4;
-    margin: 0;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+  letter-spacing: 0.01em;
 }
 
-/* --- BOTONERA --- */
+/* Línea decorativa sutil sobre el texto */
+.contenedor_verificacion p::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin: 0 auto 1rem;
+  background: var(--color-secundario);
+  opacity: 0.7;
+}
+
+/* ---------- Botones ---------- */
 .contenedor_verificacion_botones {
-    display: flex;
-    gap: 1.2rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.contenedor_verificacion_botones button {
+  flex: 1;
+  max-width: 140px;
+  padding: 0.7rem 1.25rem;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+/* Aceptar: sólido oscuro */
+.contenedor_verificacion_botones .aceptar {
+  background: var(--color-primario);
+  color: var(--fondo-secundario);
+  border: 1px solid var(--color-primario);
+}
+
+.contenedor_verificacion_botones .aceptar:hover:not(:disabled) {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+  transform: translateY(-1px);
+  box-shadow: var(--sombra-md);
+}
+
+.contenedor_verificacion_botones .aceptar:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--sombra-sm);
+}
+
+.contenedor_verificacion_botones .aceptar:disabled {
+  background: var(--fondo-superficie);
+  border-color: var(--borde);
+  color: var(--texto-deshabilitado);
+  cursor: not-allowed;
+}
+
+/* Cancelar: contorno discreto */
+.contenedor_verificacion_botones .cancelar {
+  background: transparent;
+  color: var(--texto-secundario);
+  border: 1px solid var(--borde);
+}
+
+.contenedor_verificacion_botones .cancelar:hover {
+  background: var(--fondo-hover);
+  border-color: var(--borde-hover);
+  color: var(--texto-principal);
+}
+
+.contenedor_verificacion_botones button:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+/* =====================================
+   MODO MODAL
+===================================== */
+
+.modal_verificacion_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(27, 28, 27, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: verificacion_overlay_in 0.3s ease both;
+}
+
+.modal_verificacion_contenedor {
+  width: 100%;
+  max-width: 400px;
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-lg);
+  animation: verificacion_modal_in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Dentro del modal, la tarjeta hereda el radio y pierde su sombra propia */
+.modal_verificacion_contenedor .contenedor_verificacion {
+  padding: 2.5rem 2rem 2rem;
+  border-radius: var(--radio-lg);
+  box-shadow: none;
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes verificacion_overlay_in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes verificacion_modal_in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .modal_verificacion_contenedor .contenedor_verificacion {
+    padding: 2rem 1.25rem 1.5rem;
+  }
+
+  .contenedor_verificacion_botones {
+    flex-direction: column-reverse;
+  }
+
+  .contenedor_verificacion_botones button {
+    max-width: none;
     width: 100%;
-    justify-content: center;
+  }
 }
 
-/* Para que los botones se agranden un poquito al pasar el mouse */
-.contenedor_verificacion_botones > * {
-    flex: 1;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+@media (prefers-reduced-motion: reduce) {
+  .modal_verificacion_overlay,
+  .modal_verificacion_contenedor {
+    animation: none;
+  }
 }
-
-.contenedor_verificacion_botones > *:hover {
-    transform: scale(1.05);
-    filter: brightness(1.2);
-}
-
-/* ================= KEYFRAMES REBOTE ZARPADO ================= */
-@keyframes bounceIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.3);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.05);
-    }
-    70% {
-        transform: scale(0.9);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-

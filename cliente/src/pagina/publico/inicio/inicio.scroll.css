@@ -1,0 +1,678 @@
+/* ============================================================
+   ELPIS — INICIO / SCROLL POR PANTALLAS
+   Importar DESPUÉS de inicio.css (ya lo hace Inicio.tsx)
+   ============================================================ */
+
+
+/* ============================================================
+   CONTENEDOR: una sola pantalla fija, sin barra de scroll
+   ============================================================ */
+
+.inicio{
+
+    --curva-corte:cubic-bezier(.77,0,.175,1);
+    --curva-suave:cubic-bezier(.22,.61,.36,1);
+    --duracion-corte:.9s;
+
+    position:relative;
+
+    /* Si tenés un navbar global, poné --inicio-alto:calc(100dvh - 64px) */
+    height:var(--inicio-alto,100vh);
+    min-height:0;
+
+    overflow:hidden;
+    overscroll-behavior:none;
+
+}
+
+@supports (height:100dvh){
+
+    .inicio{
+
+        height:var(--inicio-alto,100dvh);
+
+    }
+
+}
+
+
+/* ============================================================
+   PANTALLAS APILADAS
+   Activa = visible completa
+   Anterior = recogida hacia arriba
+   Siguiente = esperando abajo
+   ============================================================ */
+
+.pantalla{
+
+    position:absolute;
+    inset:0;
+
+    background:var(--fondo-principal);
+
+    /* Sin barra visible, pero scrollea si la pantalla no entra */
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+    overscroll-behavior:contain;
+
+    visibility:hidden;
+
+    transition:
+        clip-path var(--duracion-corte) var(--curva-corte),
+        visibility 0s linear var(--duracion-corte);
+
+}
+
+.pantalla::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+.pantalla_activa{
+
+    z-index:2;
+
+    visibility:visible;
+
+    clip-path:inset(0 0 0 0);
+
+    transition:
+        clip-path var(--duracion-corte) var(--curva-corte),
+        visibility 0s;
+
+}
+
+.pantalla_anterior{
+
+    clip-path:inset(0 0 100% 0);
+
+}
+
+.pantalla_siguiente{
+
+    clip-path:inset(100% 0 0 0);
+
+}
+
+.pantalla_beneficios{
+
+    background:var(--fondo-secundario);
+
+}
+
+
+/* ============================================================
+   CONTENIDO DE CADA PANTALLA (parallax durante el corte)
+   ============================================================ */
+
+.pantalla_contenido{
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+
+    min-height:100%;
+
+    transition:transform var(--duracion-corte) var(--curva-corte);
+
+}
+
+.pantalla_anterior .pantalla_contenido{
+
+    transform:translateY(-10vh);
+
+}
+
+.pantalla_siguiente .pantalla_contenido{
+
+    transform:translateY(10vh);
+
+}
+
+.pantalla_activa .pantalla_contenido{
+
+    transform:none;
+
+}
+
+
+/* ============================================================
+   AJUSTES DE LAS SECCIONES ORIGINALES DENTRO DE LAS PANTALLAS
+   ============================================================ */
+
+.pantalla .hero{
+
+    flex:1 0 auto;
+
+    min-height:0;
+
+}
+
+.pantalla .funciones,
+.pantalla .beneficios,
+.pantalla .planes{
+
+    padding-top:clamp(56px,9vh,100px);
+    padding-bottom:clamp(56px,9vh,100px);
+
+    border-top:none;
+
+    background:transparent;
+
+}
+
+.pantalla .titulo_seccion{
+
+    margin-bottom:clamp(28px,5vh,55px);
+
+}
+
+.pantalla .funcion_card{
+
+    padding:clamp(18px,2.6vh,25px);
+
+}
+
+.pantalla .plan_card ul{
+
+    margin:20px 0;
+
+}
+
+.pantalla .cta{
+
+    flex:1 0 auto;
+
+    border-top:none;
+
+}
+
+
+/* ============================================================
+   TITULARES: cada línea sube desde una máscara
+   ============================================================ */
+
+.linea{
+
+    display:block;
+
+    padding-bottom:.12em;
+    margin-bottom:-.12em;
+
+    overflow:hidden;
+
+}
+
+.linea_texto{
+
+    display:block;
+
+}
+
+
+/* ============================================================
+   ANIMACIONES DE ENTRADA
+   Se disparan cada vez que la pantalla pasa a ser la activa.
+   Usan "backwards" para no pisar los hover (transform) después.
+   ============================================================ */
+
+@keyframes entrar{
+
+    from{
+
+        opacity:0;
+        transform:translateY(28px);
+
+    }
+
+}
+
+@keyframes entrar_izq{
+
+    from{
+
+        opacity:0;
+        transform:translateX(-32px);
+
+    }
+
+}
+
+@keyframes entrar_der{
+
+    from{
+
+        opacity:0;
+        transform:translateX(32px);
+
+    }
+
+}
+
+@keyframes entrar_lateral{
+
+    from{
+
+        opacity:0;
+        transform:translateX(56px);
+
+    }
+
+}
+
+@keyframes subir_linea{
+
+    from{
+
+        transform:translateY(108%);
+
+    }
+
+}
+
+.pantalla_activa .anim{
+
+    animation:entrar .8s var(--curva-suave) backwards;
+    animation-delay:calc(.45s + var(--i,0) * 80ms);
+
+}
+
+.pantalla_activa .anim_izq{
+
+    animation-name:entrar_izq;
+
+}
+
+.pantalla_activa .anim_der{
+
+    animation-name:entrar_der;
+
+}
+
+.pantalla_activa .anim_lateral{
+
+    animation-name:entrar_lateral;
+
+}
+
+.pantalla_activa .linea_texto{
+
+    animation:subir_linea .95s var(--curva-suave) backwards;
+    animation-delay:calc(.4s + var(--i,0) * 90ms);
+
+}
+
+
+/* ============================================================
+   LÍNEA DE LUZ QUE VIAJA CON EL CORTE
+   ============================================================ */
+
+.inicio_corte{
+
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    z-index:5;
+
+    height:2px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        var(--color-primario),
+        transparent
+    );
+
+    box-shadow:0 0 28px 3px rgba(79,70,229,.55);
+
+    animation-duration:var(--duracion-corte);
+    animation-timing-function:var(--curva-corte);
+
+}
+
+.corte_subir{
+
+    animation-name:corte_subir;
+
+}
+
+.corte_bajar{
+
+    animation-name:corte_bajar;
+
+}
+
+@keyframes corte_subir{
+
+    0%{
+
+        top:100%;
+        opacity:0;
+
+    }
+
+    12%{
+
+        opacity:1;
+
+    }
+
+    85%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        top:0%;
+        opacity:0;
+
+    }
+
+}
+
+@keyframes corte_bajar{
+
+    0%{
+
+        top:0%;
+        opacity:0;
+
+    }
+
+    12%{
+
+        opacity:1;
+
+    }
+
+    85%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        top:100%;
+        opacity:0;
+
+    }
+
+}
+
+
+/* ============================================================
+   PISTA "DESLIZÁ"
+   ============================================================ */
+
+.inicio_pista{
+
+    position:absolute;
+    left:50%;
+    bottom:20px;
+    z-index:6;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+
+    transform:translateX(-50%);
+
+    color:var(--texto-deshabilitado);
+
+    font-size:.65rem;
+    letter-spacing:.08em;
+
+    pointer-events:none;
+
+    transition:opacity .5s ease;
+
+    animation:aparecer .8s ease 2s backwards;
+
+}
+
+.pista_oculta{
+
+    opacity:0;
+
+}
+
+.pista_linea{
+
+    position:relative;
+
+    width:1px;
+    height:34px;
+
+    overflow:hidden;
+
+    background:var(--borde);
+
+}
+
+.pista_linea::after{
+
+    content:"";
+
+    position:absolute;
+    left:0;
+    top:-40%;
+
+    width:100%;
+    height:40%;
+
+    background:var(--color-primario);
+
+    animation:pista 1.8s ease-in-out infinite;
+
+}
+
+@keyframes pista{
+
+    to{
+
+        top:100%;
+
+    }
+
+}
+
+@keyframes aparecer{
+
+    from{
+
+        opacity:0;
+
+    }
+
+}
+
+
+/* ============================================================
+   NAVEGACIÓN LATERAL
+   ============================================================ */
+
+.inicio_nav{
+
+    position:absolute;
+    top:50%;
+    right:22px;
+    z-index:10;
+
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:14px;
+
+    transform:translateY(-50%);
+
+}
+
+.inicio_nav_punto{
+
+    position:relative;
+
+    width:6px;
+    height:6px;
+    padding:0;
+
+    border:0;
+    border-radius:999px;
+
+    background:var(--borde-hover);
+
+    cursor:pointer;
+
+    transition:var(--transicion);
+
+}
+
+/* Área de click más grande que el punto visible */
+.inicio_nav_punto::before{
+
+    content:"";
+
+    position:absolute;
+    inset:-8px -10px;
+
+}
+
+.inicio_nav_punto:hover{
+
+    background:var(--texto-secundario);
+
+}
+
+.inicio_nav_punto[aria-current="true"]{
+
+    height:26px;
+
+    background:var(--color-primario);
+
+}
+
+.inicio_nav_punto:focus-visible{
+
+    outline:1px solid var(--color-primario);
+    outline-offset:4px;
+
+}
+
+.inicio_nav_etiqueta{
+
+    position:absolute;
+    top:50%;
+    right:100%;
+
+    margin-right:16px;
+    padding:5px 10px;
+
+    border:1px solid var(--borde);
+    border-radius:var(--radio-sm);
+
+    background:var(--fondo-secundario);
+
+    color:var(--texto-secundario);
+
+    font-size:.68rem;
+    white-space:nowrap;
+
+    opacity:0;
+    transform:translate(6px,-50%);
+
+    pointer-events:none;
+
+    transition:var(--transicion);
+
+}
+
+.inicio_nav_punto:hover .inicio_nav_etiqueta,
+.inicio_nav_punto:focus-visible .inicio_nav_etiqueta{
+
+    opacity:1;
+    transform:translate(0,-50%);
+
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media(max-width:800px){
+
+    .inicio_pista{
+
+        display:none;
+
+    }
+
+}
+
+@media(max-height:700px){
+
+    .inicio_pista{
+
+        display:none;
+
+    }
+
+}
+
+@media(max-width:600px){
+
+    .inicio_nav{
+
+        right:6px;
+        gap:10px;
+
+    }
+
+    .inicio_nav_etiqueta{
+
+        display:none;
+
+    }
+
+}
+
+
+/* ============================================================
+   MOVIMIENTO REDUCIDO
+   ============================================================ */
+
+@media(prefers-reduced-motion:reduce){
+
+    .pantalla,
+    .pantalla_contenido{
+
+        transition:none !important;
+
+    }
+
+    .pantalla_activa .anim,
+    .pantalla_activa .linea_texto{
+
+        animation:none !important;
+
+    }
+
+    .inicio_corte,
+    .inicio_pista{
+
+        display:none;
+
+    }
+
+}

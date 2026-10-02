@@ -37,7 +37,7 @@ export const EstadoEscuelaSchema = z.object({
 
 
 export const FiltroListadoEscualSchema = z.object({
-    id_escuela: z.coerce.number().int().positive("El id de la escuela es requerido"),    
+   
     apellido: z.string().optional().default(""),
     dni: z.string().optional().default(""),
     razon_social: z.string().optional().default(""),

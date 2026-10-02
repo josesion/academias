@@ -17,7 +17,6 @@ const ping = async(__req: Request, res: Response) => {
 
 const crearEscuela = async (req: Request, res: Response) =>{
 
-
     if (!req.file) {
         return 
     };  
@@ -56,7 +55,7 @@ const modEscuelas = async ( req: Request, res: Response ) => {
     let dataEscuela: ModEscuelasInputs;
 
     const imagenModificada = req.body.imagenMod === "true" || req.body.imagenMod === true;
-
+  
     // Se asigna directamente a la constante, chau warning de variable no leída
     const imagenValida = imagenModificada && req.file ? {
         buffer: req.file.buffer,
@@ -83,7 +82,6 @@ const modEscuelas = async ( req: Request, res: Response ) => {
         imagenMod: imagenModificada,
     };
     // Retorna directo la info lista para que la consuma tu servicio/capa de datos
-    ///console.log(data)
    
     await handleControladores<EscuelaModificarPost,EscuelaResumen >(
         res, data, serviciosEscuelas.modificarEscuelaServicio , MAPA_MODIFICAR_ESCUELA
@@ -107,7 +105,6 @@ const estadoEscuela = async ( req: Request, res: Response ) =>{
 const listadoEscuela = async ( req: Request, res: Response ) =>{
 
     const data: ListadoEscuelasInputs = {
-        id_escuela: req.query.id_escuela ? Number(req.query.id_escuela) : 0,
         apellido: (req.query.apellido as string) || "",
         dni: (req.query.dni as string) || "",
         razon_social: (req.query.razon_social as string) || "",

@@ -6,10 +6,13 @@ interface PropsVerificacion {
   onConfirmar: () => void;
   onCancelar: () => void;
   enviando: boolean;
+  modal?: boolean;
 }
 
 export const CompoVerificacion = (props: PropsVerificacion) => {
-  return (
+  const { modal = false } = props;
+
+  const contenido = (
     <div className="contenedor_verificacion">
       <p>Estas seguro de {props.texto}</p>
       <div className="contenedor_verificacion_botones">
@@ -23,4 +26,19 @@ export const CompoVerificacion = (props: PropsVerificacion) => {
       </div>
     </div>
   );
+
+  if (modal) {
+    return (
+      <div className="modal_verificacion_overlay" onClick={props.onCancelar}>
+        <div
+          className="modal_verificacion_contenedor"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {contenido}
+        </div>
+      </div>
+    );
+  }
+
+  return contenido;
 };

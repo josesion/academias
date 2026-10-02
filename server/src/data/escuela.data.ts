@@ -142,6 +142,8 @@ const altaEscuela =async (  datos : PostEscuelasInputs)
 const modificarEscuela = async (
     datos: ModificarEscuelaInputs
 ): Promise<TipadoData<EscuelaResumen>> => {
+
+
     const {
         id_escuela,
         dni_propietario,
@@ -162,6 +164,7 @@ const modificarEscuela = async (
     let valores: unknown[];    
 
     if ( imagenMod && urlImagen ){
+
              sql = `UPDATE escuelas
                             SET dni_propietario = ?,
                                 nombre_propietario = ?,
@@ -269,7 +272,9 @@ export interface EscuelaListadoRow {
 }
 
 
-const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string) => {
+const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string)
+: Promise<TipadoData<EscuelaListadoRow[]>>=> {
+
     const { limit, apellido, razon_social, estado, dni, offset} = data;
 
     const apellidoLike = `%${apellido || ""}%`;
@@ -300,9 +305,7 @@ const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string) =>
     // Pasamos el estado dos veces (para la condición 'todos') y luego los tres comodines
     const valores = [ estado, apellidoLike, dniLike, razonSocialLike]; 
     
-    console.log(valores)
-
-    return await listarEntidad<EscuelaListadoRow[]>({
+    return await listarEntidad<EscuelaListadoRow>({
         slqListado: sql,
         valores: valores,
         entidad: "LISTADO_ESCUELA",

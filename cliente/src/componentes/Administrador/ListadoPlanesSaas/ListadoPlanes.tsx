@@ -1,5 +1,5 @@
 import React from "react";
-import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
+
 import "./listadoplanes.css";
 
 // Tipado basado en tu tabla planes_saas

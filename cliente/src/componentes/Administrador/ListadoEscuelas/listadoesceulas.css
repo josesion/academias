@@ -1,0 +1,266 @@
+.listado_escuelas {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  font-family: var(--fuente-principal);
+}
+
+/* =====================================
+   ENCABEZADO
+===================================== */
+
+.listado_escuelas_encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 4px;
+}
+
+.listado_escuelas_encabezado h2 {
+  margin: 0;
+
+  color: var(--texto-principal);
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-semi-negrita);
+}
+
+.listado_escuelas_encabezado span {
+  color: var(--texto-secundario);
+  font-size: var(--texto-sm);
+}
+
+/* =====================================
+   LISTA
+===================================== */
+
+.listado_escuelas_lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* =====================================
+   FILA
+===================================== */
+
+.escuela_row {
+  display: grid;
+
+  grid-template-columns:
+    48px
+    minmax(180px, 1.4fr)
+    minmax(150px, 1fr)
+    minmax(120px, 0.8fr)
+    minmax(120px, 0.8fr)
+    auto;
+
+  align-items: center;
+
+  gap: 18px;
+
+  padding: 14px 18px;
+
+  background: var(--fondo-secundario);
+
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+
+  box-shadow: var(--sombra-sm);
+
+  transition: var(--transicion);
+}
+
+.escuela_row:hover {
+  border-color: var(--borde-hover);
+
+  box-shadow: var(--sombra-md);
+
+  transform: translateY(-1px);
+}
+
+/* =====================================
+   IMAGEN
+===================================== */
+
+.escuela_imagen {
+  width: 48px;
+  height: 48px;
+
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--fondo-superficie);
+
+  border: 1px solid var(--borde);
+}
+
+.escuela_imagen img {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+/* =====================================
+   INFORMACIÓN PRINCIPAL
+===================================== */
+
+.escuela_info {
+  min-width: 0;
+}
+
+.escuela_info h3 {
+  margin: 0 0 4px;
+
+  overflow: hidden;
+
+  color: var(--texto-principal);
+
+  font-size: var(--texto-md);
+  font-weight: var(--peso-semi-negrita);
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.escuela_info p {
+  margin: 0;
+
+  overflow: hidden;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-sm);
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* =====================================
+   DATOS
+===================================== */
+
+.escuela_dato {
+  min-width: 0;
+}
+
+.escuela_dato span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: var(--texto-deshabilitado);
+
+  font-size: var(--texto-xs);
+
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.escuela_dato p {
+  margin: 0;
+
+  overflow: hidden;
+
+  color: var(--texto-principal);
+
+  font-size: var(--texto-sm);
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* =====================================
+   ESTADO
+===================================== */
+
+.escuela_estado {
+  display: flex;
+
+  justify-content: flex-end;
+}
+
+.escuela_estado span {
+  padding: 5px 10px;
+
+  border-radius: 999px;
+
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+}
+
+/* =====================================
+   ACTIVA
+===================================== */
+
+.escuela_estado .activa {
+  color: var(--color-exito);
+
+  background: rgba(91, 123, 110, 0.10);
+}
+
+/* =====================================
+   INACTIVA
+===================================== */
+
+.escuela_estado .baja {
+  color: var(--color-error);
+
+  background: rgba(179, 71, 71, 0.10);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1000px) {
+  .escuela_row {
+    grid-template-columns:
+      48px
+      minmax(180px, 1fr)
+      minmax(130px, 1fr)
+      auto;
+  }
+
+  .escuela_row .escuela_dato:nth-of-type(2),
+  .escuela_row .escuela_dato:nth-of-type(3) {
+    display: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .escuela_row {
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      auto;
+
+    gap: 12px;
+
+    padding: 12px;
+  }
+
+  .escuela_imagen {
+    width: 42px;
+    height: 42px;
+  }
+
+  .escuela_dato {
+    display: none;
+  }
+
+  .escuela_estado {
+    justify-content: flex-end;
+  }
+}

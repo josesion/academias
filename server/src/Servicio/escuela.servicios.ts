@@ -7,7 +7,7 @@ import { PostEscuelasInputs, PostEscuelaScjema, ModEscuelaSchema, ModEscuelasInp
  } from "../squemas/escuelas";
 import { method as dataEscuela } from "../data/escuela.data";
 
-import { EscuelaResumen } from "../data/escuela.data";
+import { EscuelaResumen,  RetornoEstado, EscuelaListadoRow } from "../data/escuela.data";
 import { TipadoData } from "../tipados/tipado.data";
 import { eliminarImagenR2 } from "../utils/subirImagen";
 
@@ -135,11 +135,11 @@ const crearEscuela  = async (  data : EscuelaPost)
 
 
 const modificarEscuelaServicio = async (data: EscuelaModificarPost): Promise<TipadoData<EscuelaResumen>> => {
-    const { imagen, escuela } = data;
-
+    const { imagen, escuela, imagenMod } = data;
+    
     const validarEscuela: ModEscuelasInputs = ModEscuelaSchema.parse(escuela);
 
-    if (imagen) {
+    if (imagen && imagenMod ) {
 
         const validarImagen: ImagenFlayerInputs = GuardarImagenSchema.parse(imagen);
 
@@ -169,7 +169,7 @@ const modificarEscuelaServicio = async (data: EscuelaModificarPost): Promise<Tip
         }
 
         const escuelaActual = await dataEscuela.localizarPublicIdEscuela(validarEscuela.id_escuela);
-    
+   
         if (escuelaActual.code === "ESCUELA_PUBLIC_ID_EXISTE" && escuelaActual.data?.public_id) {
             const urlVieja = escuelaActual.data.urlImagen
                 ? escuelaActual.data.urlImagen
@@ -183,6 +183,7 @@ const modificarEscuelaServicio = async (data: EscuelaModificarPost): Promise<Tip
         let fileKey: string;
         try {
             fileKey = await subirImagenR2(validarImagen.buffer, validarImagen.nombre, validarImagen.tipo, "logo_escuela/");
+            
         } catch (error) {
             return {
                 error: true,
@@ -195,6 +196,7 @@ const modificarEscuelaServicio = async (data: EscuelaModificarPost): Promise<Tip
 
         const escuelaModificada = await dataEscuela.modificarEscuela({
             ...validarEscuela,
+            imagenMod : imagenMod,
             urlImagen: urlImagenFinal,
             public_id: fileKey,
         });
@@ -233,7 +235,8 @@ const modificarEscuelaServicio = async (data: EscuelaModificarPost): Promise<Tip
     };
 };
 
-const estadoEscuela = async ( data : EstadoEscuelasInputs ) =>{
+const estadoEscuela = async ( data : EstadoEscuelasInputs )
+:Promise<TipadoData< RetornoEstado>> =>{
 
     const validarEstado : EstadoEscuelasInputs = EstadoEscuelaSchema.parse( data );
     const resultEstado = await  dataEscuela.estadoEscuela( validarEstado );
@@ -259,7 +262,8 @@ const estadoEscuela = async ( data : EstadoEscuelasInputs ) =>{
 
 };
 
-const listaEscuela = async ( data :  ListadoEscuelasInputs ) =>{
+const listaEscuela = async ( data :  ListadoEscuelasInputs )
+:Promise<TipadoData<EscuelaListadoRow[]>> =>{
 
     const validarData : ListadoEscuelasInputs = FiltroListadoEscualSchema.parse( data ); 
 
@@ -270,9 +274,9 @@ const listaEscuela = async ( data :  ListadoEscuelasInputs ) =>{
         ...validarData,
         offset : offset
     }
-    console.log(info)
+
     const resultListado = await dataEscuela.listadoEscuelas(info, String(pagina));
-    console.log(resultListado)
+
     if ( resultListado.code === "LISTADO_ESCUELA_LISTED") {
         return {
             error: false,
