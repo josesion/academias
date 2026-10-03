@@ -10,7 +10,7 @@ import { EscuelaResumen, RetornoEstado } from "../data/escuela.data";
 
 import { ModEscuelasInputs, EstadoEscuelasInputs, ListadoEscuelasInputs } from "../squemas/escuelas";
 
-const ping = async(__req: Request, res: Response) => {
+const ping = async(__req: Request, __res: Response) => {
 
 
 };

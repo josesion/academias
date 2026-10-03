@@ -19,3 +19,19 @@ export const MAPA_POST_SUSCRIPCION : Record<string , { status : CodigoEstadoHTTP
     },
 
 }; 
+
+export const MAPA_GET_SUSCRIPCION : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+
+     "LISTADO_SUSP_EMPY" : {
+            status: CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE,
+            msg: "Sin contenido."
+    },
+ 
+   "LISTADO_SUSP_OK": {
+            status: CodigoEstadoHTTP.OK,
+            msg: "Get Suscripcion ok."
+    },
+
+}; 
