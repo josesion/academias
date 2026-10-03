@@ -6,6 +6,8 @@ import { FormularioEscuelas } from "../../../../componentes/Administrador/Escuel
 import { ListadoEscuelas } from "../../../../componentes/Administrador/ListadoEscuelas/ListadoEscuela";
 import { Boton } from "../../../../componentes/generales/Boton/Boton";
 import { EliminarVentana } from "../../../../componentes/generales/EliminarModal/EliminarModal";
+import { FiltroEscuelas } from "../../../../componentes/Administrador/BuscadorEscuelas/BuscadorEscuelas";
+import { Paginacion } from "../../../../componentes/generales/Paginacion/Paginacion";
 
 export const PaginaEscuela = () => {
   const {
@@ -20,10 +22,9 @@ export const PaginaEscuela = () => {
     handleEstadoEscuelas,
     cachearFormulario,
     cachearFiltros,
+    cachearPagina,
     cacharFormularioPut,
   } = setAmbEscuelas();
-
-  // console.log(state.formulario);
 
   return (
     <section className="pagina_escuelas">
@@ -38,7 +39,7 @@ export const PaginaEscuela = () => {
 
         <div className="pagina_escuelas_acciones">
           <Boton
-            clase="agregar"
+            clase="editar"
             logo="Add"
             texto="Agregar Escuela"
             type="button"
@@ -46,6 +47,15 @@ export const PaginaEscuela = () => {
           />
         </div>
       </header>
+
+      <div className="pagina_escuelas_filtros">
+        <FiltroEscuelas
+          apellido={state.filtros.apellido}
+          razon_social={state.filtros.razon_social}
+          estado={state.filtros.estado}
+          cachearFiltros={cachearFiltros}
+        />
+      </div>
 
       {state.modalAbierto && (
         <div
@@ -111,6 +121,14 @@ export const PaginaEscuela = () => {
             carga={state.carga}
           />
         ) : null}
+      </div>
+
+      <div>
+        <Paginacion
+          paginaActual={state.paginacion.pagina}
+          contadorPagina={state.paginacion.contadorPagina}
+          onPaginaCambiada={cachearPagina}
+        />
       </div>
     </section>
   );

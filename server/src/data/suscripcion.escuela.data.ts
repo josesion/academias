@@ -49,10 +49,6 @@ const verificarSuscripcion = async ( id_escuela : number )
 };
 
 
-
-
-
-
 const vencerPlanesEscuelas  = async () => {
   const sql = `UPDATE suscripciones_escuelas 
                             SET estado = 'vencido' 

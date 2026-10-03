@@ -78,7 +78,7 @@ export interface ListadoEscuelasParams  {
   apellido: string;
   dni: string;
   razon_social: string;
-  baja?: "activos" | "vencidos"
+  baja?: "activos" | "vencidos" | "inactivos"
   pagina: number | string;
   limit: number;
   offset?: number;
@@ -130,10 +130,7 @@ export const getEscuelas = async (
         params.append("razon_social", parametro.razon_social);
     }
 
-    if (parametro.baja) {
-        params.append("estado", parametro.baja);
-    }
-
+    params.append("estado", parametro.baja || "activos");
     params.append("pagina", parametro.pagina.toString());
     params.append("limit", parametro.limit.toString());
 
@@ -235,6 +232,7 @@ export const estadoEscuelas  = async ( datos : EstadoEscuelasInputs )
     const {estado, id_escuela} =  datos;
    
     const ruta = `${PAGINA}api/estado_escuela/${estado}/${id_escuela}`;
+    console.log(ruta)
 
     return await apiFetch(ruta, {
         method: "PUT",

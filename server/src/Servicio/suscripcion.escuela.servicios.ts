@@ -3,6 +3,8 @@ import { method as dataSuscripcion }  from "../data/suscripcion.escuela.data";
 import { SuscripcionInputs, SuscripcionSchema } from "../squemas/suscripciones.escuela";
 import { TipadoData } from "../tipados/tipado.data";
 
+
+
 const postSuscripcion = async ( data : SuscripcionInputs)
 :Promise<TipadoData< {}>> =>{
 

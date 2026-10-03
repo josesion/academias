@@ -73,10 +73,67 @@
   line-height: var(--linea-texto);
 }
 
+/* =====================================
+   ACCIONES (botón de la cabecera)
+===================================== */
+
 .pagina_escuelas_acciones {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+.pagina_escuelas_acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 12px 22px;
+
+  color: var(--fondo-secundario);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition: var(--transicion);
+}
+
+.pagina_escuelas_acciones button:hover {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+
+  box-shadow: var(--sombra-md);
+  transform: translateY(-1px);
+}
+
+.pagina_escuelas_acciones button:active {
+  box-shadow: var(--sombra-sm);
+  transform: translateY(0);
+}
+
+.pagina_escuelas_acciones button:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+/* =====================================
+   FILTROS
+===================================== */
+
+.pagina_escuelas_filtros {
+  width: 100%;
+  min-width: 0;
 }
 
 /* =====================================
@@ -107,6 +164,7 @@
 
   background: rgba(27, 28, 27, 0.45);
   backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 
   animation: pagina_escuelas_fondo_entrada 0.25s ease both;
 }
@@ -180,11 +238,22 @@
     justify-content: flex-start;
   }
 
+  .pagina_escuelas_acciones button {
+    width: 100%;
+  }
+
   .pagina_escuelas_modal_fondo {
     padding: 12px;
   }
 
   .pagina_escuelas_modal {
     max-height: calc(100vh - 24px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina_escuelas_modal_fondo,
+  .pagina_escuelas_modal {
+    animation: none;
   }
 }

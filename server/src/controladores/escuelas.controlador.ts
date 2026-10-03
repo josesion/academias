@@ -95,6 +95,8 @@ const estadoEscuela = async ( req: Request, res: Response ) =>{
         id_escuela : Number(req.params.id_escuela)
     }    
 
+    console.log(data)
+
     await handleControladores<EstadoEscuelasInputs , RetornoEstado>(
         res, data, serviciosEscuelas.estadoEscuela, MAPA_ESTADO_ESCUELA
     );
