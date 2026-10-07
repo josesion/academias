@@ -276,7 +276,7 @@ const listaEscuela = async ( data :  ListadoEscuelasInputs )
     }
 
     const resultListado = await dataEscuela.listadoEscuelas(info, String(pagina));
-
+ 
     if ( resultListado.code === "LISTADO_ESCUELA_LISTED") {
         return {
             error: false,

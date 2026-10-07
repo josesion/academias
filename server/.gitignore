@@ -1,3 +1,15 @@
 .env 
 node_modules
 /build
+
+# Archivos de uso interno de agentes / info del sistema / con credenciales
+AGENTS.md
+MEMORY.md
+RUTAS.md
+CONTROLADORES_SERVICIOS_DATA.md
+opencode.json
+.agents/
+.opencode/
+Skills/
+manual_uso/
+logs/

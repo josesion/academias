@@ -97,4 +97,4 @@ export const MAPA_FECHA_VENCIMIENTO : Record<string , { status : CodigoEstadoHTT
             msg: "Fecha vencimiento ok."
         },
 
-};
+}; 

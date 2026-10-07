@@ -1,0 +1,265 @@
+/* ==========================================================================
+   FORMULARIO DE SUSCRIPCIONES
+   Espejo de formularioescuel.css, con prefijo .form-susp
+   ========================================================================== */
+
+/* =====================================
+   CONTENEDOR
+   ===================================== */
+.form-susp {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+
+  transition: var(--transicion);
+}
+
+.form-susp:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-lg);
+}
+
+/* =====================================
+   ENCABEZADO
+   ===================================== */
+.form-susp__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-susp__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  color: var(--texto-principal);
+}
+
+.form-susp__subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   GRUPO DE DATOS
+   ===================================== */
+.form-susp__grupo--datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+/* Academia y plan ocupan todo el ancho */
+.form-susp__grupo--datos > :nth-child(1),
+.form-susp__grupo--datos > :nth-child(2) {
+  grid-column: 1 / -1;
+}
+
+/* Estado cierra la grilla en una fila completa */
+.form-susp__campo--completo {
+  grid-column: 1 / -1;
+}
+
+/* Campo propio de los <SelectorOpt />, que no traen label */
+.form-susp__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+/* =====================================
+   ETIQUETAS (<Inputs /> y SelectorOpt)
+   ===================================== */
+.form-susp label,
+.form-susp__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+/* El label del SelectorOpt va dentro de .form-susp__campo, sin margen extra */
+.form-susp__campo .form-susp__label {
+  margin-bottom: 0;
+}
+
+/* =====================================
+   ELEMENTOS <Inputs />
+   ===================================== */
+.form-susp input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  transition: var(--transicion);
+}
+
+.form-susp input::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+.form-susp input:hover {
+  border-color: var(--borde-hover);
+}
+
+.form-susp input:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-susp input:disabled,
+.form-susp input[readonly] {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+.form-susp input:invalid:not(:placeholder-shown) {
+  border-color: var(--color-error);
+}
+
+/* Flechitas del input date */
+.form-susp input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.55;
+  transition: var(--transicion);
+}
+
+.form-susp input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* =====================================
+   SELECTORES (<SelectorOpt />)
+   ===================================== */
+.form-susp select.input_caja {
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  font-size: var(--texto-md);
+  background-color: var(--fondo-principal);
+}
+
+.form-susp select.input_caja:focus {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+   ===================================== */
+.form-susp__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-susp__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.form-susp__acciones button:active {
+  transform: scale(0.98);
+}
+
+/* Guardar: primario sólido */
+.form-susp__acciones .agregar {
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+}
+
+.form-susp__acciones .agregar:hover {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: var(--sombra-md);
+}
+
+/* Cancelar: secundario contorno */
+.form-susp__acciones .cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+.form-susp__acciones .cancelar:hover {
+  color: var(--color-error);
+  background: var(--fondo-hover);
+  border-color: var(--color-error);
+}
+
+/* =====================================
+   RESPONSIVE
+   ===================================== */
+@media (max-width: 640px) {
+  .form-susp {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: var(--radio-md);
+  }
+
+  .form-susp__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .form-susp__grupo--datos {
+    grid-template-columns: 1fr;
+  }
+
+  .form-susp__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .form-susp__acciones button {
+    width: 100%;
+  }
+}

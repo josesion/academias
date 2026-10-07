@@ -50,3 +50,9 @@ export type FiltrosSuscripcionesInputs = z.input<typeof filtrosSuscripcionesSche
 export type FiltrosSuscripciones = z.output<typeof filtrosSuscripcionesSchema>;
 
 export type SuscripcionInputs = z.infer<typeof SuscripcionSchema>;
+
+export const AnularSuscripcionSchema = z.object({
+    id_suscripcion: z.number().int().positive()
+});
+
+export type AnularSuscripcionInputs = z.infer<typeof AnularSuscripcionSchema>;

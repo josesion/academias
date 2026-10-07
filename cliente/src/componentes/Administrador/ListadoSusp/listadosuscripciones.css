@@ -1,0 +1,166 @@
+.listado_suscripciones {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  background: var(--fondo-principal);
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+.listado_suscripciones_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-titulo);
+}
+
+.listado_suscripciones_lista {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.listado_suscripciones_vacio {
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  background: var(--fondo-secundario);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+}
+
+/* ---------- Fila ---------- */
+.suscripcion_row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  transition: var(--transicion);
+}
+
+.suscripcion_row:hover {
+  background: var(--fondo-secundario);
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-2px);
+}
+
+.suscripcion_principal {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 0;
+}
+
+.suscripcion_escuela {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suscripcion_plan_desc {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---------- Datos ---------- */
+.suscripcion_dato {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.suscripcion_label {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+}
+
+.suscripcion_valor {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+}
+
+.suscripcion_plan_tipo {
+  align-self: flex-start;
+  padding: .15rem .6rem;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  text-transform: capitalize;
+  color: var(--color-secundario);
+  background: var(--fondo-superficie);
+  border-radius: var(--radio-sm);
+}
+
+/* ---------- Estado ---------- */
+.suscripcion_estado {
+  justify-self: end;
+  padding: .3rem .85rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.suscripcion_estado--activa {
+  color: var(--color-exito);
+  background: rgba(91, 123, 110, .12);
+  border-color: rgba(91, 123, 110, .3);
+}
+
+.suscripcion_estado--vencida {
+  color: var(--color-error);
+  background: rgba(179, 71, 71, .1);
+  border-color: rgba(179, 71, 71, .3);
+}
+
+.suscripcion_estado--otro {
+  color: var(--color-advertencia);
+  background: rgba(194, 155, 56, .12);
+  border-color: rgba(194, 155, 56, .3);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .listado_suscripciones {
+    padding: 1.25rem;
+  }
+
+  .suscripcion_row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .suscripcion_principal {
+    grid-column: 1 / -1;
+  }
+
+  .suscripcion_estado {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}

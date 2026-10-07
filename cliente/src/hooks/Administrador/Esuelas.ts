@@ -6,6 +6,7 @@ import { useEffectServicio } from "../../utils/useEfectServicio";
 import { type EscuelasTipado } from "../../reducers/escuelas.reducer";
 import type { EscuelaListadoRow, PutEscuelasInputs } from "../../servicio/escuelas.fetch";
 
+
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
 export interface EscuelasProps {
@@ -309,17 +310,19 @@ export const EscuelasLogica = (config: EscuelasProps) => {
     };
 
     // ---------- Llamada al servicio (listado) ----------
-
+ 
     // Parámetros que se envían a getEscuelas
     const parametrosListado = {
         apellido: state.filtros.apellido.value,
         dni: "",
         razon_social: state.filtros.razon_social.value,
-        estado: state.filtros.estado,
+        baja: state.filtros.estado,
         pagina: state.paginacion.pagina,
         limit: state.paginacion.limite,
         offset: (state.paginacion.pagina - 1) * state.paginacion.limite,
     };
+
+
 
     // Pide el listado al montar y cada vez que cambia algo de las dependencias
     useEffectServicio<any, any, EscuelasAction>({

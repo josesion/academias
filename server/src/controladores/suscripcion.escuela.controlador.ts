@@ -5,9 +5,10 @@ import { handleControladores } from "../utils/handleControladores";
 
 import { method as servicioSuspcripcion } from "../Servicio/suscripcion.escuela.servicios";
 
-import { SuscripcionInputs, FiltrosSuscripcionesInputs } from "../squemas/suscripciones.escuela";
-import { MAPA_POST_SUSCRIPCION, MAPA_GET_SUSCRIPCION  } from "../respuestas/suscripcion.escuela";
-import { SuscripcionEscuelaDto } from "../data/suscripcion.escuela.data";
+import { SuscripcionInputs, FiltrosSuscripcionesInputs, AnularSuscripcionInputs } from "../squemas/suscripciones.escuela";
+import { MAPA_POST_SUSCRIPCION, MAPA_GET_SUSCRIPCION, MAPA_GET_ESC_PLAN, MAPA_ANULAR_SUSCRIPCION, MAPA_METRICAS_SIMPLES } from "../respuestas/suscripcion.escuela";
+import { SuscripcionEscuelaDto, SuscripcionEstadoDto, MetricasSimples } from "../data/suscripcion.escuela.data";
+import { EscPlanDTO } from "../Servicio/suscripcion.escuela.servicios";
 
 const postSuscripcion = async ( req : Request , res : Response) =>{
     
@@ -44,7 +45,62 @@ const getSupcripcion = async (req : Request , res : Response) =>{
 };    
 
 
+/**
+ * Devuelve los dos arreglos del formulario de suscripciones: escuelas
+ * activas (id + razón social) y planes SaaS activos (id + descripción).
+ * No recibe parámetros: todo el trabajo lo hace el servicio.
+ *
+ * @param __req - Request de Express (sin uso).
+ * @param res - Response de Express.
+ */
+const getEscPlan = async (__req : Request , res : Response) : Promise<void> =>{
+
+    await handleControladores<{}, EscPlanDTO>(
+        res, {}, servicioSuspcripcion.getEscPlan, MAPA_GET_ESC_PLAN
+    );
+};
+
+
+/**
+ * Anula una suscripción: toma el id de la URL y deja el estado en "anulado"
+ * (el estado no viaja en la ruta, es una acción única).
+ *
+ * @param req - Request de Express (se lee `req.params.id`).
+ * @param res - Response de Express.
+ */
+const anularSuscripcion = async ( req : Request , res : Response) : Promise<void> =>{
+
+    const data : AnularSuscripcionInputs = {
+        id_suscripcion : Number(req.params.id)
+    };
+
+    await handleControladores<AnularSuscripcionInputs, SuscripcionEstadoDto>(
+        res, data, servicioSuspcripcion.anularSuscripcion, MAPA_ANULAR_SUSCRIPCION
+    );
+};
+
+
+/**
+ * Controlador de las métricas simples del administrador (alcance global): suscripciones
+ * por vencer, suscripciones vencidas, plata del mes (sin anuladas) y suscripciones
+ * vigentes. No lee parámetros de la request.
+ *
+ * @param __req - Request de Express (sin uso: la métrica es global).
+ * @param res - Response de Express.
+ * @returns {Promise<void>} Resuelve tras enviar la respuesta HTTP.
+ */
+const metricasSimples = async ( __req : Request , res : Response) : Promise<void> =>{
+
+    await handleControladores<{}, MetricasSimples>(
+        res, {}, servicioSuspcripcion.metricasSimples, MAPA_METRICAS_SIMPLES
+    );
+};
+
+
 export const method = {
     postSuscripcion : tryCatch( postSuscripcion ),
-    getSupcripcion  : tryCatch( getSupcripcion )
+    getSupcripcion  : tryCatch( getSupcripcion ),
+    getEscPlan      : tryCatch( getEscPlan ),
+    anularSuscripcion : tryCatch( anularSuscripcion ),
+    metricasSimples : tryCatch( metricasSimples )
 }

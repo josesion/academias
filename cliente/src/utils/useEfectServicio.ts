@@ -57,10 +57,10 @@ export const useEffectServicio = <T, R, A>(
         dispatch(accionCarga(true));
 
         const result = await servicios(valores, controller?.signal);
-
+      
         if (result.statusCode >= 200 && result.statusCode < 300) {
           dispatch(accionResultado(result.data));
-
+       
           // Solo si el hook recibió la acción Y la respuesta trae paginación
           if (accionPaginacion && result.paginacion) {
             dispatch(accionPaginacion(result.paginacion));

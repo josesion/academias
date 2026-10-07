@@ -25,4 +25,13 @@ dist-ssr
 
 .env
 
+# Archivos de uso interno de agentes / info del sistema / con credenciales
+AGENTS.md
+MEMORY.md
+ESTRUCTURA.md
+opencode.json
+specs
+.agents/
+.opencode/
+skills-lock.json
 

@@ -115,7 +115,7 @@ const listadoEscuela = async ( req: Request, res: Response ) =>{
         limit: req.query.limit ? Number(req.query.limit) : 10,
         offset: 0
     };
-
+ 
     await handleControladores<any, any>(
         res,
         data,
