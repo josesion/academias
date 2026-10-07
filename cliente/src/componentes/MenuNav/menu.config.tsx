@@ -163,6 +163,12 @@ export const SECCIONES_ADMINISTRADOR: SeccionMenu[] = [
         ruta: "/admin/planes_saas",
         color: VERDE,
       },
+      {
+        etiqueta: "Usuarios ",
+        icono: LuCreditCard,
+        ruta: "/admin/usuarios_admin",
+        color: AZUL_CLARO,
+      },
     ],
   },
 ];

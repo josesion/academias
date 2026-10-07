@@ -40,7 +40,7 @@ import { ProtectRutasProv } from "./contexto/protectRutas";
 //------------------------------Seccion para alumnos -------------------------------------
 
 import { PrincipalAlumnos } from "./pagina/privado/SecionAlumnos/PrincipalAlumnos/PrincipalAlumnos";
-
+import { PaginaUsuarios } from "./pagina/privado/Admin/PaginaUsuarios/PaginaUsuarios";
 import { DataEscuela } from "./pagina/privado/SecionAlumnos/DataEscuela/DataEscual";
 
 // -----------------------------Seccion Administrador -------------------------------------
@@ -130,6 +130,10 @@ function App() {
 
                 <Route path="/admin/planes_saas" element={<PaginaPlanes />} />
                 <Route path="/admin/escuelas" element={<PaginaEscuela />} />
+                <Route
+                  path="/admin/usuarios_admin"
+                  element={<PaginaUsuarios />}
+                />
               </Route>
             </Route>
           </Routes>

@@ -42,7 +42,7 @@ const loginUsuario =  async ( data : LoginInputs)
     let token ;
     const loginData : LoginInputs = loginSchema.parse( data );
     const loginResult = await dataLogin.loginDataGenerico( loginData );
-   
+    
     if ( loginResult.code === "USUARIO_EXISTE" && loginResult.data){
 
         const passwordValida = await bcrypt.compare(data.contrasena, loginResult.data.contrasena);

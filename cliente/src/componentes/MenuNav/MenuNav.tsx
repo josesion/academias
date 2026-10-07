@@ -15,6 +15,7 @@ import "./menuNav.css";
 
 export const MenuNav = () => {
   const {
+    autenticado,
     rol,
     menuMobileAbierto,
     seccionAbierta,
@@ -49,8 +50,12 @@ export const MenuNav = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setSeccionAbierta, setMenuMobileAbierto]);
 
-  const esUsuario = dataVisualMenu?.rol === "usuario";
-  const mostrarMiCuenta = rol?.rol === "alumno" || esUsuario;
+  // Sin sesión no se pinta NADA del usuario logueado (red de seguridad:
+  // aunque `rol` quedara con datos viejos, la barra muestra solo "visita")
+  const sinSesion = !autenticado;
+  const esVisitante = sinSesion || dataVisualMenu?.rol === "visita";
+  const esUsuario = !sinSesion && dataVisualMenu?.rol === "usuario";
+  const mostrarMiCuenta = !sinSesion && (rol?.rol === "alumno" || esUsuario);
   // console.log(rol?.tipo);
   return (
     <nav className="menu_nav" ref={navRef}>
@@ -58,18 +63,20 @@ export const MenuNav = () => {
         <Logo size={60} />
         <div className="app-user-info">
           <span className="app-user-label">
-            {dataVisualMenu.usuario ? "Usuario" : ""}
+            {!sinSesion && dataVisualMenu.usuario ? "Usuario" : ""}
           </span>
-          <span className="app-user-name">{dataVisualMenu.usuario ?? ""}</span>
+          <span className="app-user-name">
+            {sinSesion ? "" : (dataVisualMenu.usuario ?? "")}
+          </span>
         </div>
       </div>
 
       <ul
         className={`menu_nav_lista ${menuMobileAbierto ? "abierto" : "menu"}`}
       >
-        {dataVisualMenu?.rol === "visita" && <VistaVisita irA={irA} />}
+        {esVisitante && <VistaVisita irA={irA} />}
 
-        {rol?.rol === "administrador" && (
+        {!sinSesion && rol?.rol === "administrador" && (
           <VistaAdministrador
             irA={irA}
             alternarSeccion={alternarSeccion}

@@ -7,7 +7,8 @@ interface ValidarToken {
     rol : string,
     razon_social: string;
     tipo : string;
-    estado_suscripcion : string;
+    /** `null` cuando la escuela todavía no tiene ninguna suscripción en la BD */
+    estado_suscripcion : string | null;
 }
 
 export const VerificarPermisos = async() : Promise<ApiResponse<ValidarToken>> =>{

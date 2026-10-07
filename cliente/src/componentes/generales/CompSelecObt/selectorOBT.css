@@ -36,8 +36,15 @@
     background-size: 12px;
 }
 
-.input_caja:hover {
+.input_caja:hover:not(:disabled) {
     border-color: var(--borde-hover);
+}
+
+/* Solo lectura (spec 008): grisado y fuera de tab, sin cambiar la flecha */
+.input_caja:disabled {
+    background-color: var(--fondo-superficie);
+    color: var(--texto-deshabilitado);
+    cursor: not-allowed;
 }
 
 .input_caja:focus {

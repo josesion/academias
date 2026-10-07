@@ -8,7 +8,8 @@
   background: var(--fondo-secundario);
   box-shadow: var(--sombra-sm);
   font-family: var(--fuente-principal);
-  transition: var(--transicion);
+  /* Propiedades exactas: `--transicion` de app.css es `all .3s` */
+  transition: box-shadow 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
 }
 
 .tarjeta_clase:hover {

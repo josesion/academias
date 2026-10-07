@@ -1,0 +1,169 @@
+/* =====================================
+   CONTENEDOR (patrón paginaescuelas.css)
+===================================== */
+
+.pagina_usuarios {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  padding: 40px 32px 64px;
+
+  box-sizing: border-box;
+
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENCABEZADO (títulos + bloque de acciones)
+===================================== */
+
+.pagina_usuarios_encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding-bottom: 24px;
+
+  border-bottom: 1px solid var(--borde);
+}
+
+/* Botón "Nueva cuenta": a la derecha del encabezado (alineado al párrafo) */
+.pagina_usuarios_acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+/* Feedback de press del botón: el `<Boton>` compartido no trae `:active`
+   (propuesta en MEMORY: llevarlo a boton.css). Propiedades exactas, nunca
+   `all` — skill emil-design-eng. */
+.pagina_usuarios_acciones button {
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+.pagina_usuarios_acciones button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.pagina_usuarios_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.pagina_usuarios_etiqueta {
+  color: var(--color-secundario);
+
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.pagina_usuarios_titulos h1 {
+  margin: 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+}
+
+.pagina_usuarios_titulos p {
+  margin: 0;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+}
+
+/* =====================================
+   FILTROS
+===================================== */
+
+.pagina_usuarios_filtros {
+  width: 100%;
+  min-width: 0;
+
+  /* el select es 100%: lo acotamos a un ancho razonable */
+  max-width: 320px;
+}
+
+/* =====================================
+   LISTADOS (apilados: Usuarios arriba, Alumnos abajo)
+===================================== */
+
+.pagina_usuarios_listas {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+
+@media (max-width: 1000px) {
+  .pagina_usuarios {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (max-width: 650px) {
+  .pagina_usuarios {
+    gap: 20px;
+    padding: 24px 16px 40px;
+  }
+
+  .pagina_usuarios_encabezado {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+
+    padding-bottom: 18px;
+  }
+
+  .pagina_usuarios_titulos h1 {
+    font-size: 1.9rem;
+  }
+
+  .pagina_usuarios_filtros {
+    max-width: none;
+  }
+}
+
+/* =====================================
+   PREFERS-REDUCED-MOTION (skill emil-design-eng)
+   Sin movimiento: el botón conserva los estados de color y foco.
+   ===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina_usuarios_acciones button {
+    transition-duration: 0ms;
+  }
+
+  .pagina_usuarios_acciones button:active:not(:disabled) {
+    transform: none;
+  }
+}

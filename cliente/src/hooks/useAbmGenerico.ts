@@ -1,4 +1,5 @@
-import { useState , useEffect} from "react";
+import { useState , useEffect, useContext} from "react";
+import { useNavigate } from "react-router-dom";
 // Seccion de typados
 import type { PaginacionProps } from "../tipadosTs/genericos";
 import type { ErrorBackend } from "./erroresZod";
@@ -6,7 +7,8 @@ import type { ErrorBackend } from "./erroresZod";
 // Seccion de hooks
 import { transformErrores } from "./erroresZod";
 import { peticiones } from "../utils/peticiones";
-import { verificarAutenticacion } from "./verificacionUsuario";
+import { verificarAutenticacion, esSesionVencida } from "./verificacionUsuario";
+import { RutasProtegidasContext } from "../contexto/protectRutas";
 
 
 /**
@@ -56,7 +58,10 @@ interface AbmConfig {
  */
 export const useAbmGenerico = <TData>( config : AbmConfig) =>{
 
-   
+    // Sesión: si el token venció se cierra desde el contexto (limpieza única:
+    // rol, autenticado, localStorage y cookie) y se navega sin recargar.
+    const { cerrarSesion } = useContext(RutasProtegidasContext);
+    const navegar = useNavigate();
 
 // --- Estado para actulizar el estado al entrar en focus
     const [actualizarGenerico , setActualizarGernerico ] = useState<number>(0);
@@ -396,8 +401,14 @@ useEffect(() => {
             
             const verificarUser= await verificarAutenticacion();
 
+            // Sesión vencida (401/403): limpieza completa + login SIN recarga
+            // (así la barra no queda con el usuario anterior ni se rehidrata
+            // nada desde localStorage). La red caída no desloguea.
             if (verificarUser.autenticado === false) {
-                window.location.href = "/login" // por defecto en esta app es login
+                if (esSesionVencida(verificarUser)) {
+                    cerrarSesion();
+                    navegar("/login");
+                }
                 return;
             };     
         };

@@ -1,0 +1,223 @@
+/* ============================================================
+   MODAL SIN SUSCRIPCIÓN — bloqueo de ruta, respeta el nav
+   Animación según skill emil-design-eng:
+   · ease-out fuerte (--ease-ui), nunca `all` en las transiciones
+   · entrada desde scale(.96) + opacity (nunca desde scale(0))
+   · stagger de 50ms entre título / descripción / botón
+   · :active con scale(.97) y hover gateado con @media (hover)
+   ============================================================ */
+
+.modal-sin-susp-overlay {
+  position: fixed;
+  top: var(--alto-menu-nav, 0px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 950; /* por debajo del nav (1000) */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+
+  background: rgba(8, 10, 16, .72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  animation: sinSuspOverlayEntrada 200ms var(--ease-ui) both;
+}
+
+.modal-sin-susp-tarjeta {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+
+  padding: 40px 32px 32px;
+  border-radius: var(--radio-lg, 20px);
+  background: var(--fondo-secundario);
+  box-shadow: var(--sombra-lg);
+  overflow: hidden;
+
+  /* los modales quedan centrados: no son anclados a un trigger */
+  transform-origin: center;
+  animation: sinSuspTarjetaEntrada 350ms var(--ease-ui) both;
+}
+
+.modal-sin-susp-tarjeta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% -10%,
+    rgba(179, 71, 71, .18),
+    transparent 60%
+  );
+  pointer-events: none;
+}
+
+/* ---------- ÍCONO ---------- */
+
+.modal-sin-susp-icono {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: rgba(179, 71, 71, .12);
+  color: var(--color-error);
+}
+
+.modal-sin-susp-icono svg {
+  width: 32px;
+  height: 32px;
+}
+
+.modal-sin-susp-anillo {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid var(--color-error);
+  opacity: 0;
+  animation: sinSuspOnda 2.6s var(--ease-ui) infinite;
+}
+
+.modal-sin-susp-anillo.retraso {
+  animation-delay: 1.3s;
+}
+
+/* ---------- TEXTO (stagger) ---------- */
+
+.modal-sin-susp-titulo,
+.modal-sin-susp-desc,
+.modal-sin-susp-acciones {
+  animation: sinSuspItemEntrada 300ms var(--ease-ui) both;
+}
+
+.modal-sin-susp-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm, 1.4rem);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+  animation-delay: 60ms;
+}
+
+.modal-sin-susp-desc {
+  margin: 0;
+  max-width: 34ch;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  line-height: 1.5;
+  color: var(--texto-secundario);
+  animation-delay: 110ms;
+}
+
+/* ---------- ACCIONES ---------- */
+
+.modal-sin-susp-acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  animation-delay: 160ms;
+}
+
+.modal-sin-susp-btn-primario {
+  position: relative;
+  padding: 13px 20px;
+  border: none;
+  border-radius: var(--radio-sm);
+  background: var(--color-error);
+  color: #fff;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-negrita);
+  cursor: pointer;
+
+  transition:
+    transform 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+/* press feedback: la interfaz escucha el click */
+.modal-sin-susp-btn-primario:active {
+  transform: scale(.97);
+}
+
+/* hover solo en dispositivos con puntero real (toca-toca en táctil) */
+@media (hover: hover) and (pointer: fine) {
+  .modal-sin-susp-btn-primario:hover {
+    transform: translateY(-1px);
+    background-color: #c14f4f;
+    box-shadow: 0 8px 20px rgba(179, 71, 71, .28);
+  }
+}
+
+/* ============================================================
+   KEYFRAMES
+   ============================================================ */
+
+@keyframes sinSuspOverlayEntrada {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sinSuspTarjetaEntrada {
+  from { opacity: 0; transform: translateY(16px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sinSuspItemEntrada {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sinSuspOnda {
+  0%   { opacity: .6; transform: scale(.85); }
+  70%  { opacity: 0;  transform: scale(1.4); }
+  100% { opacity: 0;  transform: scale(1.4); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 480px) {
+  .modal-sin-susp-tarjeta {
+    padding: 32px 22px 26px;
+  }
+}
+
+/* ============================================================
+   ACCESIBILIDAD
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-sin-susp-overlay,
+  .modal-sin-susp-tarjeta,
+  .modal-sin-susp-titulo,
+  .modal-sin-susp-desc,
+  .modal-sin-susp-acciones,
+  .modal-sin-susp-anillo {
+    animation: none !important;
+  }
+
+  .modal-sin-susp-btn-primario {
+    transition: background-color 160ms var(--ease-ui);
+  }
+
+  .modal-sin-susp-btn-primario:active,
+  .modal-sin-susp-btn-primario:hover {
+    transform: none;
+  }
+}

@@ -62,7 +62,7 @@ export const loginLogica = () : LoginLogicaReturn =>{
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const respuesta = await LoginFetch(dataLogin);
-        
+       
         if (
           respuesta.error === true &&
           respuesta.code === "VALIDATION_ERROR" &&

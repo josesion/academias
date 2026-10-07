@@ -1,0 +1,357 @@
+/* ==========================================================================
+   FORMULARIO DE CUENTAS — ALTA (POST) y MODIFICACIÓN (PUT)
+   Espejo de formulariosuscripcion.css con prefijo .form-cuenta.
+
+   ANIMACIÓN (skill emil-design-eng):
+   · ease-out fuerte (--ease-ui, token de app.css) en todas las entradas,
+     nunca `ease-in`
+   · `transition` con PROPIEDADES EXACTAS (nada de `all`)
+   · entrada escalonada de los campos: 30ms entre ellos, 200ms cada uno
+   · botones con `scale(0.97)` al apretar y hover solo en ratón
+   · `prefers-reduced-motion` apaga el movimiento, deja el contenido
+   · los selectores llevan `button` + `:not(:disabled)` para que ganenle a
+     `.boton_personalizado*` de boton.css (misma especificidad → ganaría el
+     orden de carga del CSS, que cambia con cada import)
+   ========================================================================== */
+
+/* =====================================
+   CONTENEDOR
+   ===================================== */
+.form-cuenta {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENTRADA ESCALONADA
+   Nada aparece de la nada: opacity + un leve subido. Los delays van de 30 en
+   30ms (límite de la skill) y el último campo cierra cerca de los 450ms —
+   dentro de la franja de un modal (200-500ms).
+   ===================================== */
+@keyframes form_cuenta_entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-cuenta__encabezado,
+.form-cuenta__grupo--datos > *,
+.form-cuenta__acciones {
+  animation: form_cuenta_entra 200ms var(--ease-ui) both;
+}
+
+.form-cuenta__encabezado {
+  animation-delay: 0ms;
+}
+
+/* Los 8 campos del form, de a 30ms */
+.form-cuenta__grupo--datos > :nth-child(1) { animation-delay: 40ms; }
+.form-cuenta__grupo--datos > :nth-child(2) { animation-delay: 70ms; }
+.form-cuenta__grupo--datos > :nth-child(3) { animation-delay: 100ms; }
+.form-cuenta__grupo--datos > :nth-child(4) { animation-delay: 130ms; }
+.form-cuenta__grupo--datos > :nth-child(5) { animation-delay: 160ms; }
+.form-cuenta__grupo--datos > :nth-child(6) { animation-delay: 190ms; }
+.form-cuenta__grupo--datos > :nth-child(7) { animation-delay: 220ms; }
+.form-cuenta__grupo--datos > :nth-child(8) { animation-delay: 250ms; }
+
+.form-cuenta__acciones {
+  animation-delay: 300ms;
+}
+
+/* =====================================
+   ENCABEZADO
+   ===================================== */
+.form-cuenta__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-cuenta__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  color: var(--texto-principal);
+}
+
+.form-cuenta__subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   GRUPO DE DATOS (2 columnas → 1 en mobile)
+   ===================================== */
+.form-cuenta__grupo--datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+/* Campo propio de los <SelectorOpt />, que no traen label */
+.form-cuenta__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+/* =====================================
+   ETIQUETAS (<Inputs /> y SelectorOpt)
+   ===================================== */
+.form-cuenta label,
+.form-cuenta__label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+/* El label del SelectorOpt va dentro de .form-cuenta__campo, sin margen extra */
+.form-cuenta__campo .form-cuenta__label {
+  margin-bottom: 0;
+}
+
+/* =====================================
+   ELEMENTOS <Inputs />
+   ===================================== */
+.form-cuenta input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  /* Propiedades exactas (nunca `all`): el foco se siente inmediato */
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+.form-cuenta input::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+/* Hover solo en dispositivos con puntero real: en táctil se pega al tocar */
+@media (hover: hover) and (pointer: fine) {
+  .form-cuenta input:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-cuenta input:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-cuenta input:disabled,
+.form-cuenta input[readonly] {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+/* =====================================
+   SELECTORES (<SelectorOpt />)
+   ===================================== */
+.form-cuenta select.input_caja {
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  font-size: var(--texto-md);
+  background-color: var(--fondo-principal);
+
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-cuenta select.input_caja:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-cuenta select.input_caja:focus {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+/* Solo lectura (spec 008): academia y rol en modo modificación.
+   Los overrides de hover/foco van con más especificidad que las reglas de
+   arriba, así el gris no se pierde al pasar el ratón. */
+.form-cuenta select.input_caja:disabled {
+  color: var(--texto-deshabilitado);
+  background-color: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-cuenta select.input_caja:hover:disabled {
+    border-color: var(--borde);
+  }
+}
+
+.form-cuenta select.input_caja:focus:disabled {
+  border-color: var(--borde);
+  box-shadow: none;
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+   ===================================== */
+.form-cuenta__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-cuenta__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+
+  /* Feedback de press: 140ms (bote de 100-160ms de la skill) */
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+/* El botón escucha el click: escala apenas y vuelve solo */
+.form-cuenta__acciones button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Guardar: primario sólido (le gana al `background` de .boton_personalizado) */
+.form-cuenta__acciones button.agregar {
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+}
+
+/* Cancelar: secundario contorno */
+.form-cuenta__acciones button.cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-cuenta__acciones button.agregar:hover:not(:disabled) {
+    background: var(--color-secundario);
+    border-color: var(--color-secundario);
+    box-shadow: var(--sombra-md);
+  }
+
+  .form-cuenta__acciones button.cancelar:hover:not(:disabled) {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+/* =====================================
+   RESPONSIVE — 1 columna y aire (≤650px)
+   ===================================== */
+@media (max-width: 650px) {
+  .form-cuenta {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: var(--radio-md);
+  }
+
+  .form-cuenta__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .form-cuenta__grupo--datos {
+    grid-template-columns: 1fr;
+  }
+
+  .form-cuenta__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .form-cuenta__acciones button {
+    width: 100%;
+  }
+}
+
+/* =====================================
+   PREFERS-REDUCED-MOTION
+   Sin movimiento: el contenido queda visible desde el principio (la skill
+   pide apagar el desplazamiento, no los estados de color ni el foco).
+   ===================================== */
+@media (prefers-reduced-motion: reduce) {
+  .form-cuenta__encabezado,
+  .form-cuenta__grupo--datos > *,
+  .form-cuenta__acciones {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .form-cuenta input,
+  .form-cuenta select.input_caja,
+  .form-cuenta__acciones button {
+    transition-duration: 0ms;
+  }
+
+  .form-cuenta__acciones button:active:not(:disabled) {
+    transform: none;
+  }
+}

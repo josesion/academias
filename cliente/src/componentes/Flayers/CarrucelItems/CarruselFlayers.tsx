@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FocusEvent } from "react";
 import { LuChevronLeft, LuChevronRight, LuImageOff } from "react-icons/lu";
 import { EstadoVacio } from "../../SeccionAlumnos/EstadoVacio/EstadoVacio";
 
@@ -44,6 +44,9 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
 
   const total = flayers.length;
 
+  // * Con más de un flyer el carrusel avanza solo; con uno solo no tiene sentido
+  const enAutomatico = total > 1;
+
   const irAnterior = () =>
     setIndiceActual(indiceActual === 0 ? total - 1 : indiceActual - 1);
   const irSiguiente = () =>
@@ -51,11 +54,27 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
 
   const flayerActual = flayers[indiceActual];
 
+  // * Al tabular dentro del carrusel se pausa; al salir del todo se reanuda.
+  //   (onBlurCapture salta entre hijos, por eso se chequea relatedTarget)
+  const alPerderFoco = (e: FocusEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+      setPausado(false);
+    }
+  };
+
   return (
     <div
-      className="carrusel_lineal_contenedor"
+      className={[
+        "carrusel_lineal_contenedor",
+        enAutomatico ? "carrusel_lineal_auto" : "",
+        pausado ? "carrusel_lineal_pausado" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
       onMouseEnter={() => setPausado(true)}
       onMouseLeave={() => setPausado(false)}
+      onFocusCapture={() => setPausado(true)}
+      onBlurCapture={alPerderFoco}
     >
       {/* PISTA */}
       <div className="carrusel_lineal_marco">
@@ -63,8 +82,13 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
           className="carrusel_lineal_pista"
           style={{ transform: `translateX(-${indiceActual * 100}%)` }}
         >
-          {flayers.map((flayer) => (
-            <div key={flayer.id_flayer} className="carrusel_lineal_slide">
+          {flayers.map((flayer, i) => (
+            <div
+              key={flayer.id_flayer}
+              className={`carrusel_lineal_slide${
+                i === indiceActual ? " activo" : ""
+              }`}
+            >
               <div
                 className="carrusel_lineal_fondo_blur"
                 style={{ backgroundImage: `url(${flayer.imagen_url})` }}
@@ -95,24 +119,41 @@ export const CarruselSolo = ({ flayers }: CarruselProps) => {
         )}
       </div>
 
+      {/* BARRA DE PROGRESO DEL AVANCE AUTOMÁTICO (se re-monta en cada
+          cambio de índice para reiniciar la animación) */}
+      {enAutomatico && (
+        <i className="carrusel_lineal_barra" key={indiceActual} aria-hidden="true" />
+      )}
+
       {/* INFORMACIÓN + DOTS */}
       <div className="carrusel_lineal_pie">
         <div className="carrusel_lineal_info">
-          <h3 className="carrusel_lineal_titulo">{flayerActual?.titulo}</h3>
-          <p className="carrusel_lineal_descripcion">
+          <h3
+            className="carrusel_lineal_titulo"
+            key={`titulo-${flayerActual?.id_flayer}`}
+          >
+            {flayerActual?.titulo}
+          </h3>
+          <p
+            className="carrusel_lineal_descripcion"
+            key={`descripcion-${flayerActual?.id_flayer}`}
+          >
             {flayerActual?.descripcion}
           </p>
         </div>
 
         {total > 1 && (
           <div className="carrusel_lineal_dots">
-            {flayers.map((_, i) => (
-              <span
-                key={i}
-                className={`carrusel_lineal_dot ${
-                  i === indiceActual ? "activo" : ""
+            {flayers.map((flayer, i) => (
+              <button
+                key={flayer.id_flayer}
+                type="button"
+                className={`carrusel_lineal_dot${
+                  i === indiceActual ? " activo" : ""
                 }`}
                 onClick={() => setIndiceActual(i)}
+                aria-label={`Ir al flyer ${i + 1}`}
+                aria-current={i === indiceActual ? "true" : undefined}
               />
             ))}
           </div>

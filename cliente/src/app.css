@@ -95,6 +95,11 @@
 
     --transicion:all .3s cubic-bezier(0.16, 1, 0.3, 1);
 
+    /* Salida fuerte para interacciones de UI: arranca rápido y frena suave
+       (más punch que un ease-out genérico). Usar con propiedades exactas:
+       transition: transform 140ms var(--ease-ui) */
+    --ease-ui:cubic-bezier(0.23, 1, 0.32, 1);
+
 }
 
 * {

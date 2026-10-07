@@ -29,26 +29,11 @@
 }
 
 /* --- GRILLAS --- */
-.grilla-escuelas {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  width: 100%;
-}
-
+.grilla-escuelas,
 .grilla-clases {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
-  width: 100%;
-}
-
-/* --- GRILLA COMBINADA DE FLAYERS Y COMUNIDAD (Lado a lado) --- */
-.media-comunidad-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
   width: 100%;
 }
 
@@ -105,13 +90,89 @@
   color: var(--texto-secundario, #6b7280);
 }
 
-/* --- RESPONSIVE ADJUSTMENTS --- */
-@media (max-width: 960px) {
-  .media-comunidad-grid {
-    grid-template-columns: 1fr;
+/* --- ENTRADA DE LA PÁGINA ---
+   Las 4 secciones suben escalonadas al montar la ruta.
+   Las keyframes solo declaran `from`, así que con `animation: none`
+   (reduced-motion) el contenido queda visible. */
+
+@keyframes seccion_entra {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
   }
 }
 
+@keyframes seccion_entra_opacity {
+  from {
+    opacity: 0;
+  }
+}
+
+.principal-alumno-container > * {
+  animation: seccion_entra 700ms var(--ease-ui) backwards;
+}
+
+.principal-alumno-container > :nth-child(2) {
+  animation-delay: 70ms;
+}
+
+/* La 3ª sección (Comunidad) contiene el widget flotante, que es
+   `position: fixed`. Un `transform` en el ancestro lo convierte en
+   absoluto de ese ancestro y saltaría de lugar al terminar la animación,
+   por eso esta entra solo con opacity (no crea containing block). */
+.principal-alumno-container > :nth-child(3) {
+  animation-name: seccion_entra_opacity;
+  animation-delay: 140ms;
+}
+
+.principal-alumno-container > :nth-child(4) {
+  animation-delay: 210ms;
+}
+
+/* Las tarjetas se montan recién cuando llega el fetch (después del
+   spinner), así que entran solas con un stagger de 40ms. El alcance es
+   específico para no pisar la animación propia de EstadoVacio. */
+.grilla-escuelas > .tarjeta_escuela,
+.grilla-clases > .tarjeta_clase {
+  animation: seccion_entra 550ms var(--ease-ui) backwards;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(2),
+.grilla-clases > .tarjeta_clase:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(3),
+.grilla-clases > .tarjeta_clase:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(4),
+.grilla-clases > .tarjeta_clase:nth-child(4) {
+  animation-delay: 120ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(5),
+.grilla-clases > .tarjeta_clase:nth-child(5) {
+  animation-delay: 160ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(6),
+.grilla-clases > .tarjeta_clase:nth-child(6) {
+  animation-delay: 200ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(7),
+.grilla-clases > .tarjeta_clase:nth-child(7) {
+  animation-delay: 240ms;
+}
+
+.grilla-escuelas > .tarjeta_escuela:nth-child(8),
+.grilla-clases > .tarjeta_clase:nth-child(8) {
+  animation-delay: 280ms;
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
 @media (max-width: 640px) {
   .principal-alumno-container {
     padding: 16px 12px;
@@ -121,5 +182,17 @@
   .grilla-escuelas,
   .grilla-clases {
     grid-template-columns: 1fr;
+  }
+}
+
+/* --- ACCESIBILIDAD: sin movimiento, pero todo visible ---
+   El selector de la 3ª sección va explícito: su regla de `animation-name`
+   tiene más especificidad que este bloque y si no, seguiría animando. */
+@media (prefers-reduced-motion: reduce) {
+  .principal-alumno-container > *,
+  .principal-alumno-container > :nth-child(3),
+  .grilla-escuelas > .tarjeta_escuela,
+  .grilla-clases > .tarjeta_clase {
+    animation: none;
   }
 }

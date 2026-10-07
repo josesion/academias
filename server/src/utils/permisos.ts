@@ -70,7 +70,25 @@ const validarPermiso = tryCatch(async (req: Request, res: Response, next: NextFu
 
 export { validarPermiso };
 
+/**
+ * Middleware de AUTORIZACIÓN: solo deja pasar a `rol === 'administrador'`.
+ *
+ * Va DESPUÉS de `validarPermiso`, que es quien llena `req.usuario` con el payload
+ * del token. Si el rol no coincide responde 403 `PROHIBIDO`.
+ *
+ * @returns {Promise<void>} Resuelve tras llamar a `next()` o tras enviar el 403.
+ */
+const soloAdministrador = async (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.usuario?.rol !== "administrador") {
+        return enviarResponseError(res, 403, "No autorizado : se requiere rol administrador.", "PROHIBIDO");
+    };
+
+    next();
+};
+
 
 export const method = { 
-    validarPermiso: tryCatch(validarPermiso)
+    validarPermiso: tryCatch(validarPermiso),
+    soloAdministrador: tryCatch(soloAdministrador)
 }

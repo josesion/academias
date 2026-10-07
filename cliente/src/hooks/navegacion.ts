@@ -3,11 +3,10 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { RutasProtegidasContext } from "../contexto/protectRutas";
 
-import Cookies from "js-cookie";
-
 export const useMenuNav = () => {
   const navegar = useNavigate();
-  const { rol, setRol } = useContext(RutasProtegidasContext);
+  const { autenticado, rol, cerrarSesion: cerrarSesionContexto } =
+    useContext(RutasProtegidasContext);
  
   // Estado para el menú en dispositivos móviles (abierto/cerrado)
   const  [menuMobileAbierto, setMenuMobileAbierto] = useState<boolean>(false);
@@ -52,21 +51,23 @@ export const useMenuNav = () => {
   };
   
     /**
-   *  Funcion para lograr eliminar el token y mandar al login eliminado los permisos
-   */
+     * Logout MANUAL: solo acomoda el menú/local y delega la limpieza real
+     * de la sesión en el contexto (`cerrarSesion`: rol, autenticado,
+     * usuario, localStorage y cookie). Un solo camino para los 2 casos:
+     * logout manual y token vencido.
+     */
   const cerrarSesion = ()=>{
-    Cookies.remove("token");
     setMenuMobileAbierto(false);
     setDataVisualMenu({ rol : "visita", usuario :  null });
-    setRol({rol : "visita", usuario :  "" , razon_social : "" , tipo : "basico", estado_suscripcion : ""})
-    setSeccionAbierta(null);;
+    cerrarSesionContexto();
+    setSeccionAbierta(null);
     navegar("/login");
-
   };
 
   
 
   return {
+    autenticado,
     rol,
     menuMobileAbierto,
     seccionAbierta,

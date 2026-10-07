@@ -6,18 +6,25 @@
   margin: 0 auto; /* Centrado horizontal automático */
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center; /* Centrado vertical en la pantalla */
-  justify-content: center;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: flex-start;
   gap: 20px;
   width: 99%;
-  height: 100%; /* Evita que se estire demasiado en pantallas gigantes */
+  height: auto; /* Deja crecer según contenido en lugar de forzarse */
+  min-height: 0; /* Permite que el container se ajuste a su contenido */
   padding: 20px 10px 50px 10px; /* Padding extra abajo para dar respiro */
-  min-height: 85vh; /* Ocupa buena altura para lucir bien centrado verticalmente */
   box-sizing: border-box;
-  
-  /* Efecto fundido/desvanecido al final de la página para que no corte de golpe */
 
+  /* Transición suave de layout al cambiar de viewport */
+  transition: margin 0.2s var(--ease-ui), padding 0.2s var(--ease-ui);
+}
+
+/* Reduce motion si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas {
+    transition: none;
+  }
 }
 
 /* ==========================================================================
@@ -28,8 +35,23 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  flex: 0 0 70%;
-  min-width: 0;
+  flex: 1 1 auto; /* 1: crecer, 1: encoger, auto: tamaño natural */
+  min-width: 0; /* Esencial para que los items flexibles no se rompan */
+
+  /* Micro-interacciones con la skill emil-design-eng */
+  transition: transform 0.2s var(--ease-ui);
+}
+
+@media (hover:hover) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo1:hover {
+    transform: scale(0.98); /* Ligero "push" al hover en puntero preciso */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo1 {
+    transition: none;
+  }
 }
 
 /* Tarjetas: ancho mínimo más generoso para que no corten el texto */
@@ -37,6 +59,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 14px;
+  width: 100%; /* Asegura que las tarjetas ocupen todo el ancho disponible */
+
+  /* Las tarjetas tendrán :active scale en su propio regla */
 }
 
 /* Info de clases (InfoClases + Asistencia): en columna */
@@ -44,24 +69,99 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%; /* Ocupa el ancho completo de su padre */
+
+  transition: margin 0.2s var(--ease-ui);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenido_clases {
+    transition: none;
+  }
 }
 
 /* ==========================================================================
-   GRUPO 2 (historial) — al lado de grupo1, misma altura que grupo1
+   GRUPO 2 (historial) — debajo de grupo1 en mobile, al lado en desktop
    ========================================================================== */
 
 .usuario_contenedor_metricas .usuario_metricas_grupo2 {
   display: flex;
   flex-direction: column;
-  flex: 0 0 30%;
+  flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden; /* el height lo pone el inline style de React */
+  overflow: visible; /* Quitado: hidden cortaba el contenido en mobile */
+
+  /* Micro-interacción suave */
+  transition: transform 0.2s var(--ease-ui);
 }
 
-.usuario_contenedor_metricas .usuario_contenido_historial {
+@media (hover:hover) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo2:hover {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo2 {
+    transition: none;
+  }
+}
+
+/* Contenido del historial con scrolling solo cuando es necesario */
+.usuario_contenido_historial {
   flex: 1;
   overflow-y: auto;
-  min-height: 0;
+  min-height: 0; /* Permite contraerse en mobile */
+
+  /* Scrollbar aesthetic opcional */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-border, #ccc);
+    border-radius: 3px;
+  }
+}
+
+/* ==========================================================================
+   ESTADOS ACTIVOS Y HOVER (skill emil-design-eng)
+   ========================================================================== */
+
+/* Efecto :active scale(0.97) en elementos interactivos del panel */
+.usuario_contenedor_metricas [role="button"],
+.usuario_contenedor_metricas button,
+.usuario_contenedor_metricas [onclick] {
+  user-select: none;
+
+  /* Transición base */
+  transition: transform 0.1s var(--ease-ui), background-color 0.1s var(--ease-ui),
+    color 0.1s var(--ease-ui);
+
+  /* :active solo en dispositivos con puntero preciso */
+  @media (hover:hover) and (pointer: fine) {
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* Hover sutil solo en puntero preciso */
+  @media (hover:hover) and (pointer: fine) {
+    &:hover {
+      /* No se añade transform masivo aquí para evitar duplicados;
+         cada componente define su propio efecto sutil */
+    }
+  }
+
+  /* Reducir motion */
+  @media (prefers-reduced-motion: reduce) {
+    transition: background-color 0.1s ease-out, color 0.1s ease-out;
+    &:active {
+      transform: none;
+    }
+    &:hover {
+      transform: none;
+    }
+  }
 }
 
 /* ==========================================================================
@@ -83,10 +183,16 @@
   .usuario_contenedor_metricas .usuario_metricas_grupo2 {
     flex: 1 1 auto;
     width: 100%;
+    /* Quitado height explícito: cada uno toma el espacio que necesita */
+    /* :active y hover se aplican vía las reglas generales arriba */
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
   }
 
-  .usuario_contenedor_metricas .usuario_contenido_historial {
-    max-height: 400px; /* en mobile sí conviene un tope, porque ya no están lado a lado */
+  .usuario_contenido_historial {
+    max-height: none; /* Sin tope artificial en mobile; scrolla solo si es necesario */
   }
 }
 

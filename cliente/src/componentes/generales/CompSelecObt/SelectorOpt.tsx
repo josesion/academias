@@ -9,6 +9,8 @@ interface CompoIEProps<T> {
   name?: string;
   value?: string | number;
   labelDefault?: string;
+  /** Solo lectura: pinta el select grisado y fuera de tab (spec 008) */
+  disabled?: boolean;
 }
 
 // Usamos <T,> para que el compilador sepa que es un Generic
@@ -20,6 +22,7 @@ export const SelectorOpt = <T,>({
   name,
   value,
   labelDefault = "Seleccionar",
+  disabled,
 }: CompoIEProps<T>) => {
   return (
     <div className="grupo_input_caja">
@@ -28,6 +31,7 @@ export const SelectorOpt = <T,>({
         name={name}
         value={value ?? ""}
         onChange={onChangeSelector}
+        disabled={disabled}
       >
         <option value="">{labelDefault}</option>
         {categorias.map((item, index) => (

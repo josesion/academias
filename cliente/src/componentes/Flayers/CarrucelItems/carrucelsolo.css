@@ -11,7 +11,8 @@
   border: 1px solid var(--borde);
   box-shadow: var(--sombra-md);
   overflow: hidden;
-  transition: var(--transicion);
+  /* Propiedades exactas: `--transicion` de app.css es `all .3s` */
+  transition: box-shadow 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
 }
 
 .carrusel_lineal_contenedor:hover {
@@ -26,6 +27,8 @@
   aspect-ratio: 16 / 8;
   overflow: hidden;
   background: var(--fondo-superficie);
+  /* ENTRADA: la cortina revela la foto de abajo hacia arriba */
+  animation: carrusel_cortina 600ms var(--ease-ui) backwards;
 }
 
 .carrusel_lineal_pista {
@@ -61,6 +64,12 @@
   margin: 0 auto;
 }
 
+/* KEN BURNS: solo el slide activo respira. `linear` porque es movimiento
+   constante; se reinicia solo cuando cambia la clase `.activo`. */
+.carrusel_lineal_slide.activo img {
+  animation: carrusel_kenburns 5s linear both;
+}
+
 /* ===== FLECHAS ===== */
 
 .carrusel_lineal_btn {
@@ -80,7 +89,8 @@
   cursor: pointer;
   opacity: 0;
   transform: translateY(-50%) scale(0.92);
-  transition: var(--transicion);
+  transition: opacity 180ms var(--ease-ui), transform 180ms var(--ease-ui),
+    background-color 180ms var(--ease-ui), border-color 180ms var(--ease-ui);
 }
 
 .carrusel_lineal_marco:hover .carrusel_lineal_btn {
@@ -88,9 +98,31 @@
   transform: translateY(-50%) scale(1);
 }
 
+/* En táctil no hay hover: sin esto las flechas nunca se verían */
+@media (hover: none), (pointer: coarse) {
+  .carrusel_lineal_btn {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
 .carrusel_lineal_btn:hover {
   border-color: var(--borde-hover);
   background: var(--fondo-secundario);
+}
+
+.carrusel_lineal_btn:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+.carrusel_lineal_btn:active {
+  transform: translateY(-50%) scale(0.94);
+}
+
+/* Igual especificidad que la regla de hover, si no el hover gana */
+.carrusel_lineal_marco:hover .carrusel_lineal_btn:active {
+  transform: translateY(-50%) scale(0.94);
 }
 
 .carrusel_lineal_btn_izq {
@@ -111,6 +143,37 @@
   padding: 18px 22px;
   border-top: 1px solid var(--borde);
   background: var(--fondo-secundario);
+  /* ENTRADA: el pie sube después de que la cortina terminó */
+  animation: carrusel_pie_entra 450ms var(--ease-ui) 120ms backwards;
+}
+
+/* ===== BARRA DE PROGRESO DEL AVANCE AUTOMÁTICO ===== */
+
+.carrusel_lineal_barra {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--color-secundario);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Solo con más de un flyer; la re-monta el `key` del índice */
+.carrusel_lineal_auto .carrusel_lineal_barra {
+  animation: carrusel_progreso 5000ms linear both;
+}
+
+.carrusel_lineal_pausado .carrusel_lineal_barra {
+  animation-play-state: paused;
+}
+
+/* Al pausar el avance, el slide activo también se congela */
+.carrusel_lineal_pausado .carrusel_lineal_slide.activo img {
+  animation-play-state: paused;
 }
 
 .carrusel_lineal_info {
@@ -127,6 +190,9 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  /* TEXTO CINÉTICO: se redibuja en cada cambio de flyer (el `key` del TSX
+     remonta el nodo y reinicia la animación) */
+  animation: carrusel_texto_entra 220ms var(--ease-ui) backwards;
 }
 
 .carrusel_lineal_descripcion {
@@ -138,6 +204,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  animation: carrusel_texto_entra 220ms var(--ease-ui) 60ms backwards;
 }
 
 .carrusel_lineal_dots {
@@ -150,14 +217,26 @@
 .carrusel_lineal_dot {
   width: 7px;
   height: 7px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
   border-radius: 50%;
   background: var(--borde-hover);
   cursor: pointer;
-  transition: var(--transicion);
+  transition: width 220ms var(--ease-ui), background-color 220ms var(--ease-ui);
 }
 
 .carrusel_lineal_dot:hover {
   background: var(--texto-secundario);
+}
+
+.carrusel_lineal_dot:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 3px;
+}
+
+.carrusel_lineal_dot:active {
+  transform: scale(0.9);
 }
 
 .carrusel_lineal_dot.activo {
@@ -183,5 +262,92 @@
   .carrusel_lineal_btn {
     width: 32px;
     height: 32px;
+  }
+}
+
+/* =====================================
+   ANIMACIONES
+   Todas declaran el estado final: si no,
+   `clip-path` no puede interpolar contra `none`.
+===================================== */
+
+/* ENTRADA: la cortina revela el marco de abajo hacia arriba */
+@keyframes carrusel_cortina {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* El slide activo respira durante la ventana de los 5s */
+@keyframes carrusel_kenburns {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes carrusel_pie_entra {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* TEXTO CINÉTICO: título y descripción se redibujan en cada flyer */
+@keyframes carrusel_texto_entra {
+  from {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Progreso del avance automático: siempre lineal (movimiento constante) */
+@keyframes carrusel_progreso {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* =====================================
+   ACCESIBILIDAD
+   Se apaga el movimiento, nunca se deja
+   el contenido oculto (las keyframes solo
+   declaran `from`, así que `none` = visible).
+===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .carrusel_lineal_marco,
+  .carrusel_lineal_pie,
+  .carrusel_lineal_titulo,
+  .carrusel_lineal_descripcion,
+  .carrusel_lineal_slide.activo img {
+    animation: none;
+  }
+
+  .carrusel_lineal_barra {
+    display: none;
+  }
+
+  .carrusel_lineal_pista,
+  .carrusel_lineal_contenedor,
+  .carrusel_lineal_btn,
+  .carrusel_lineal_dot {
+    transition: none;
   }
 }
