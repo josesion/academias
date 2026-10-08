@@ -21,7 +21,12 @@ export const obtenerRuta = (req: Request): string => {
  *
  * Se engancha al evento `finish` de la respuesta, cuando ya se conoce el
  * resultado: estado HTTP, duración total y `req.usuario` (que lo completa
- * `permisos.validarPermiso` durante el recorrido de la ruta).
+ * `permisos.validarPermiso` durante el recorrido de la ruta): de ahí salen
+ * `id_escuela`, `id_usuario` y el snapshot `usuario_nom`.
+ *
+ * En las rutas **públicas** (`POST /api/login`, `GET /api/verificar`) no hay
+ * `validarPermiso`, así que `req.usuario` es `undefined` y la fila se guarda
+ * sin escuela ni usuario: es lo correcto, no hubo sesión validada.
  *
  * Nunca frena ni rompe la petición: solo agrega un listener y dispara el log.
  * **No** se persisten headers, cookies (ahí vive el JWT) ni el body.
@@ -48,7 +53,13 @@ export const registroPeticion = (req: Request, res: Response, next: NextFunction
                 estado_http: res.statusCode,
                 duracion_ms: duracion,
                 id_escuela: req.usuario?.id_escuela,
-                id_usuario: req.usuario?.id
+                id_usuario: req.usuario?.id,
+                // Snapshot del login en el momento del hecho: si después se
+                // renombra o se borra la cuenta, la fila lo conserva (la tabla
+                // no tiene FK a propósito). Es `undefined` en las rutas
+                // públicas (login, /api/verificar) y en los tokens anteriores
+                // a la spec 011 → el listado lo resuelve con el LEFT JOIN
+                usuario_nom: req.usuario?.usuario
             });
         } catch (error) {
             // Un problema al registrar no debe afectar a la respuesta ya enviada

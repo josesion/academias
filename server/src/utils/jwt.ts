@@ -17,11 +17,16 @@ dotenv.config();
  * @returns Token JWT como string
  * @throws ClientError si hay un fallo durante la generación del token
  */
-// Modificamos el tipado para que acepte id, rol e id_escuela
-export const generateToken = (payload: { id: number; rol: string; id_escuela: number }): string => {
+// Modificamos el tipado para que acepte id, rol, id_escuela y el login.
+// Ojo: el `tokenData` de los dos caminos del login manda además `tipo`,
+// `flayer` y `estado_suscripcion`, que viajan en el token aunque no estén
+// declarados acá (es una variable, no un literal, así que TS no lo exige).
+// `usuario` sí se declara porque `permisos.validarPermiso` lo lee para
+// completar `req.usuario` y de ahí sale el nombre real en `logs_eventos`.
+export const generateToken = (payload: { id: number; rol: string; id_escuela: number; usuario: string }): string => {
     try {
         const token = jwt.sign(
-            payload, // Ahora viaja: { id: 3, rol: "usuario", id_escuela: 107 }
+            payload, // Ahora viaja: { id: 3, rol: "usuario", id_escuela: 107, usuario: "josejefe" }
             process.env.JWT_CLAVE || "jjsskkss", 
             { expiresIn: "60m" }
         );

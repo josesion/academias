@@ -23,8 +23,11 @@ CREATE TABLE logs_eventos (
 
     id_escuela    INT           NULL,
     id_usuario    INT           NULL,
-    usuario_nom   VARCHAR(100)  NULL,       -- snapshot del usuario; hoy vacío (el JWT no trae el
-                                            -- nombre) y el listado lo completa con un LEFT JOIN
+    usuario_nom   VARCHAR(100)  NULL,       -- snapshot del login en el momento del hecho (spec 011:
+                                            -- el JWT ya lo trae). Queda NULL en las rutas públicas
+                                            -- (login, /api/verificar), en los crons y correos, y en
+                                            -- las filas viejas: ahí el listado lo completa con el
+                                            -- LEFT JOIN a `usuarios`
 
     resuelto      TINYINT(1)    NOT NULL DEFAULT 0,   -- 0 = pendiente | 1 = revisado
     fecha         DATETIME      DEFAULT CURRENT_TIMESTAMP

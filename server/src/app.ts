@@ -50,6 +50,20 @@ import  usuarioAdmin from "./rutas/usuarioAdmin.ruta";
 
 const app : Express = express();
 
+// Sin ETag: el de Express (weak) hace que el navegador cachee los GET y
+// revalide con `If-None-Match`, y el server le conteste 304 SIN CUERPO. El
+// `apiFetch` del cliente ve `!response.ok` y lo trata como error, así que las
+// métricas y los listados se vaciaban al azar con un "Error HTTP 304". Sin
+// ETag no hay revalidación y el `logs_eventos` registra el status real (200).
+app.disable("etag");
+
+// Y sin caché, para que el browser no reintente nunca contra el servidor.
+// Se aplica a TODO (incluido el 204 de "sin eventos"), que no tiene ETag igual.
+app.use(( _req , res , next )=>{
+    res.setHeader("Cache-Control", "no-store");
+    next();
+});
+
 
 
 import logger from "./utils/logger";
@@ -143,20 +157,31 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
              message    =  "Error de sintaxis JSON: El cuerpo de la solicitud no es un JSON válido.", 
              code = "INVALID_JSON_SYNTAX"          
         }else{
-            // 1. Buscamos el ID de la escuela en el body o en la URL (query)
-                const id_escuela = __req.body?.id_escuela || __req.query?.id_escuela || "N/A";
-                
-                // 2. Buscamos el nombre del usuario si lo tenés
-                const usuario = __req.body?.usuario_nom || "Anónimo";
+            // 1. La identidad sale SIEMPRE del token (`req.usuario`, que completa
+                //    `permisos.validarPermiso`), nunca del body ni del query: esos
+                //    los manda el cliente y en un GET no existen. Sin sesión
+                //    (rutas públicas: login, /api/verificar) queda N/A + Anónimo.
+                const id_escuela = __req.usuario?.id_escuela ?? null;
+                const id_usuario = __req.usuario?.id ?? null;
+
+                // Snapshot del login: así el evento conserva el nombre aunque la
+                // cuenta se renombre o se borre después (la tabla no tiene FK)
+                const usuarioNom = __req.usuario?.usuario ?? null;
+
+                // 2. Para el texto del mensaje los ausentes se leen mejor así
+                const escuelaTexto = id_escuela ?? "N/A";
+                const usuarioTexto = usuarioNom ?? "Anónimo";
 
                 // 3. El logger ahora guarda todo el "ADN" del error
                 const rutaError = obtenerRuta(__req);
 
-                logger.error(`[${__req.method}] ${rutaError} | Escuela: ${id_escuela} | User: ${usuario}`, { 
+                logger.error(`[${__req.method}] ${rutaError} | Escuela: ${escuelaTexto} | User: ${usuarioTexto}`, { 
                     origen: "peticion",
                     metodo_http: __req.method,
                     ruta: rutaError,
                     id_escuela,
+                    id_usuario,
+                    usuario_nom: usuarioNom,
                     mensaje: err.message,
                     stack: err.stack 
                 });

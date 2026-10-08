@@ -17,8 +17,8 @@ let pendientes = 0;
 const SQL_INSERT = `INSERT INTO logs_eventos
                         (nivel, origen, mensaje, detalle,
                          metodo_http, ruta, estado_http, duracion_ms,
-                         id_escuela, id_usuario)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+                         id_escuela, id_usuario, usuario_nom)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
 /**
  * Recorta un texto al largo máximo que admite la columna.
@@ -50,13 +50,18 @@ const aEntero = (valor: unknown): number | null => {
  * Arma la fila que se va a insertar en `logs_eventos` a partir de la info de winston.
  *
  * - `mensaje` y `ruta` se recortan a los largos de sus columnas.
+ * - `usuario_nom` va a su PROPIA columna (VARCHAR 100), no al `detalle`: es el
+ *   snapshot del login en el momento del hecho. Viene en el meta de
+ *   `registroPeticion` y del handler global de errores de `app.ts`; si no hay
+ *   sesión (rutas públicas, crons, correos) queda NULL y el listado lo resuelve
+ *   con su `LEFT JOIN usuarios`.
  * - Del meta solo se toman los campos esperados (`origen`, `metodo_http`, `ruta`,
- *   `estado_http`, `duracion_ms`, `id_escuela`, `id_usuario`) más la lista blanca
- *   de `detalle`. Nunca se persisten cookies, headers ni body.
+ *   `estado_http`, `duracion_ms`, `id_escuela`, `id_usuario`, `usuario_nom`) más
+ *   la lista blanca de `detalle`. Nunca se persisten cookies, headers ni body.
  *
  * @function armarFila
  * @param {Record<string, unknown>} info - Objeto que winston arma con `level`, `message` y el meta.
- * @returns {{ valores: unknown[] }} Los 10 valores en el orden del `INSERT`.
+ * @returns {{ valores: unknown[] }} Los 11 valores en el orden del `INSERT`.
  */
 const armarFila = (info: Record<string, unknown>): { valores: unknown[] } => {
 
@@ -80,7 +85,9 @@ const armarFila = (info: Record<string, unknown>): { valores: unknown[] } => {
             aEntero(info.estado_http),
             aEntero(info.duracion_ms),
             aEntero(info.id_escuela),
-            aEntero(info.id_usuario)
+            aEntero(info.id_usuario),
+            // `recortar` devuelve "" si no es texto → se manda null, no vacío
+            recortar(info.usuario_nom, 100) || null
         ]
     };
 };

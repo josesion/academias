@@ -27,8 +27,9 @@ export interface FilaLogEventos {
  * Listado paginado de `logs_eventos`, del hecho más reciente al más viejo.
  *
  * - `usuario_nom` sale de `COALESCE(e.usuario_nom, u.usuario)`: la columna guarda el
- *   nombre en el momento del hecho (hoy siempre vacía porque el JWT no lo trae) y el
- *   `LEFT JOIN` a `usuarios` aporta el login mientras no haya snapshot.
+ *   snapshot del login en el momento del hecho (spec 011) y el `LEFT JOIN` a
+ *   `usuarios` cubre los tres casos en que no hay snapshot: filas anteriores a esa
+ *   spec, rutas públicas (que no validan token) y crons/correos.
  * - Cada filtro se agrega solo si llegó: sin parámetros la SQL no tiene `WHERE`.
  * - Usa el hook genérico `listarEntidad`, por lo que la SQL trae
  *   `COUNT(*) OVER() AS total_registros` para el cálculo de paginación.

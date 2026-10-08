@@ -64,6 +64,10 @@ const loginUsuario =  async ( data : LoginInputs)
                     id: loginResult.data.id_usuario,
                     rol: loginResult.data.rol,
                     id_escuela: loginResult.data.id_escuela,
+                    // El login viaja en el token: lo usa `permisos.validarPermiso`
+                    // para completar `req.usuario` y desde ahí los errores se
+                    // guardan en `logs_eventos` con el nombre real (spec 011)
+                    usuario : loginResult.data.usuario,
                     tipo : tipoResult ,
                     flayer : 0,
             };
@@ -98,6 +102,7 @@ const loginUsuario =  async ( data : LoginInputs)
                                 id: loginResult.data.id_usuario,
                                 rol: loginResult.data.rol,
                                 id_escuela: loginResult.data.id_escuela,
+                                usuario : loginResult.data.usuario,
                                 tipo : usuarioLogin.data.plan_tipo,
                                 flayer : usuarioLogin.data.flayer ,
                                 estado_suscripcion : usuarioLogin.data.estado_suscripcion               

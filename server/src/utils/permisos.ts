@@ -17,6 +17,12 @@ declare global {
         id_escuela: number;
         tipo : string
         flayer : number
+        /** Login del usuario. OpcIONAL a propósito: los tokens emitidos antes
+         *  de la spec 011 no lo traen y siguen siendo válidos hasta que expiren
+         *  (60 min el JWT, 1 día la cookie). Cuando falta, `logs_eventos`
+         *  guarda `usuario_nom` NULL y el listado lo resuelve con el
+         *  `LEFT JOIN usuarios`. */
+        usuario?: string;
       };
     }
   }
@@ -46,18 +52,25 @@ const validarPermiso = tryCatch(async (req: Request, res: Response, next: NextFu
             // usuario.id ahora viene como número desde el payload del login
             const idUsuario = usuario.id; 
 
+            // El login solo se copia si viene como texto: si el token es viejo
+            // (sin `usuario`) queda `undefined` en vez de un string basura
+            const nombreUsuario = typeof usuario.usuario === 'string' ? usuario.usuario : undefined;
+
             // Validamos contra la BD si el usuario sigue existiendo/está activo
             const id = await validar.buscarIdUsuario(idUsuario);
 
             if (id.error === false) {
                 // 4. ¡LA MAGIA!  todo el payload decodificado en el objeto req
-                // Ahora viajan el ID, el ROL y la ESCUELA directo al controlador
+                // Ahora viajan el ID, el ROL, la ESCUELA y el LOGIN directo al
+                // controlador. El login es lo que permite que los errores se
+                // registren con el nombre real en `logs_eventos` (spec 011)
                 req.usuario = {
                     id: usuario.id,
                     rol: usuario.rol,
                     id_escuela: usuario.id_escuela,
                     tipo : usuario.tipo,
-                    flayer : usuario.flayer
+                    flayer : usuario.flayer,
+                    usuario: nombreUsuario
                 };
 
                 next(); // Pase libre al controlador
