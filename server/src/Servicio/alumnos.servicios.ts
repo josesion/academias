@@ -1,7 +1,8 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataAlumno } from "../data/alumno.data";
+import { method as dataEscuela } from "../data/escuela.data";
 import { registroHistorial } from "../utils/postHistorial";
-import { enviarCorreo, generarPlantillaBienvenida } from "../utils/emailService";
+import { enviarCorreoEnBackground, generarPlantillaBienvenida, generarTextoBienvenida } from "../utils/emailService";
 
 
 import {CrearAlumnoSchema, AlumnosInputs,
@@ -49,7 +50,7 @@ const altaAlumno = async (data: AlumnosInputs)
                 code: "CORREO_EXISTENTE"
             };
         };
-
+        
         const registrarAlumno = await dataAlumno.altaAlumnoTransaccion(alumnoData);
 
 
@@ -63,18 +64,35 @@ const altaAlumno = async (data: AlumnosInputs)
 
         if (registrarAlumno.code === "TRANSACCION_OK") {
 
+            // Nombre de la academia para personalizar el correo (si no se encuentra, se omite)
+            const escuela = await dataEscuela.localizarNombreEscuela(alumnoData.id_escuela);
+            const nombreEscuela = escuela.data?.razon_social;
+
             const htmlContenido = generarPlantillaBienvenida(
                 alumnoData.nombre, 
                 alumnoData.email,
-                registrarAlumno.data?.contrasenaTemporal
-            );            
+                registrarAlumno.data?.contrasenaTemporal,
+                nombreEscuela
+            );
 
-            await enviarCorreo({
-                from : 'onboarding@resend.dev',
-                to: 'josesion1388@gmail.com',
+            // Modo prueba: mientras `RESEND_DESTINO` esté seteada, el correo va a esa
+            // casilla en vez de al alumno. Se vacía para enviar a los alumnos reales.
+            const destino = process.env.RESEND_DESTINO?.trim() || alumnoData.email;
+
+            // En segundo plano: el alta ya quedó hecha y no debe frenarse por el correo.
+            // Un fallo queda en `logs/errores.log` y avisa a `CORREO_ADMIN`.
+            enviarCorreoEnBackground({
+                to: destino,
                 subject: "¡Tus credenciales de acceso a la Academia!",
-                html: htmlContenido
-            });
+                html: htmlContenido,
+                text: generarTextoBienvenida(
+                    alumnoData.nombre,
+                    alumnoData.email,
+                    registrarAlumno.data?.contrasenaTemporal,
+                    nombreEscuela
+                ),
+                replyTo: process.env.CORREO_ADMIN?.trim() || undefined
+            }, `Alta alumno ${alumnoData.dni}`);
 
             return {
                 error: false, // Corregido para que devuelva éxito correctamente

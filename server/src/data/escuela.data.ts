@@ -75,13 +75,30 @@ const localizarPublicIdEscuela = async (
 };
 
 /**
- * Inserta una nueva escuela en la base de datos.
+ * Localiza la razón social (nombre comercial) de una escuela a partir de su identificador.
+ * Se usa para personalizar los correos automáticos con el nombre de la academia.
  *
  * @async
- * @function altaEscuela
- * @param {PostEscuelasInputs} datos - Datos validados de la escuela a registrar.
- * @returns {Promise<TipadoData<EscuelaResumen>>} Resultado de la operación de escritura.
+ * @function localizarNombreEscuela
+ * @param {number} id_escuela - ID de la escuela a consultar.
+ * @returns {Promise<TipadoData<{ razon_social: string }>>} El nombre de la escuela en `data` si existe.
  */
+const localizarNombreEscuela = async (
+    id_escuela: number
+): Promise<TipadoData<{ razon_social: string }>> => {
+    const sql: string = `SELECT id_escuela, razon_social
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [id_escuela];
+
+    return await buscarExistenteEntidad<{ razon_social: string }>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_NOMBRE",
+    });
+};
+
 /**
  * Inserta una nueva escuela en la base de datos.
  *
@@ -319,6 +336,7 @@ export const method = {
     altaEscuela : tryCatchDatos( altaEscuela),
     verificarRazonSocialEscuela : tryCatchDatos( verificarRazonSocialEscuela),
     localizarPublicIdEscuela : tryCatchDatos( localizarPublicIdEscuela),
+    localizarNombreEscuela : tryCatchDatos( localizarNombreEscuela),
     modificarEscuela : tryCatchDatos( modificarEscuela),
     estadoEscuela : tryCatchDatos( estadoEscuela ),
     listadoEscuelas: tryCatchDatos( listadoEscuelas )
