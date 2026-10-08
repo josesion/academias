@@ -24,7 +24,7 @@ const listar = async ( req : Request , res : Response ) : Promise<void> => {
 
     const data : ListadoLogEventosQuery = {
         pagina     : req.query.pagina     ? Number(req.query.pagina)     : 1,
-        limit      : req.query.limit      ? Number(req.query.limit)      : 10,
+        limit      : req.query.limit      ? Number(req.query.limit)      : 6,
         nivel      : typeof req.query.nivel      === "string" ? req.query.nivel      : undefined,
         origen     : typeof req.query.origen     === "string" ? req.query.origen     : undefined,
         ruta       : typeof req.query.ruta       === "string" ? req.query.ruta       : undefined,

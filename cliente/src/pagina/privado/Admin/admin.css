@@ -12,7 +12,10 @@
 
 .admin_pagina {
   width: 100%;
-  max-width: 1200px;
+  /* Más ancha que antes (1200px) porque la página lleva DOS paneles al lado:
+     a 1200 cada uno quedaba en ~560px y las filas no respiraban. El grid de
+     métricas es `auto-fit`, así que se adapta solo. */
+  max-width: 1400px;
   margin: 0 auto;
 
   box-sizing: border-box;
@@ -160,6 +163,79 @@
 }
 
 /* =====================================
+   LOS DOS PANELES — suscripciones y bitácora
+
+   Con espacio van al lado (la bitácora, que tiene más datos, se queda con
+   algo menos); sin espacio, una sola columna y la bitácora cae abajo.
+   ===================================== */
+
+.admin_paneles {
+  display: grid;
+
+  /* 1.35fr / 1fr: el listado de suscripciones es el dueño de la pantalla,
+     pero el de logs necesita más ancho para que la ruta no se corte */
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 20px;
+
+  /* Cada columna toma su propia altura: si la bitácora tiene 3 filas, el
+     panel de suscripciones no estira su tarjeta para igualar */
+  align-items: start;
+}
+
+/* Cada panel es un contenedor de container queries: el reflow de sus filas
+   depende del ANCHO DEL PANEL y no del viewport (a 1400px de pantalla los dos
+   paneles están en ~560px, así que un @media de 860px nunca se dispararía).
+   Ojo: `container-type` activa `contain: layout style`, así que dentro de un
+   panel no puede haber modales posicionados de forma absoluta (los de alta y
+   anulación viven fuera, en el nivel de la página). */
+.admin_panel {
+  container-type: inline-size;
+  container-name: panel;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  min-width: 0;
+}
+
+/* =====================================
+   FILTROS DE LA BITÁCORA
+   ===================================== */
+
+.admin_filtros_logs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  margin-bottom: 1rem;
+}
+
+.admin_filtros_logs .grupo_input_caja,
+.admin_filtros_logs .input_caja {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.admin_input_ruta {
+  /* El buscador de ruta va a lo ancho de toda la fila de filtros */
+  grid-column: 1 / -1;
+}
+
+/* Sin espacio para los 5 filtros en una línea: dos columnas */
+@container panel (max-width: 420px) {
+  .admin_filtros_logs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin_input_fecha,
+  .admin_input_ruta {
+    grid-column: 1 / -1;
+  }
+}
+
+/* =====================================
    PANEL DEL LISTADO
    ===================================== */
 
@@ -182,6 +258,12 @@
 
 /* Fondo del componente transparente: el color lo pone el panel */
 .admin_listado .listado_suscripciones {
+  padding: 1.25rem;
+  background: transparent;
+}
+
+/* Mismo aire para la bitácora dentro de su panel */
+.admin_listado .listado_logs {
   padding: 1.25rem;
   background: transparent;
 }
@@ -285,6 +367,14 @@
   }
 }
 
+/* Sin ancho para dos columnas: la bitácora pasa abajo de las suscripciones */
+@media (max-width: 1080px) {
+  .admin_paneles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
 @media (max-width: 650px) {
   .admin_pagina {
     gap: 20px;
@@ -304,6 +394,10 @@
   }
 
   .admin_listado .listado_suscripciones {
+    padding: 1rem 0.85rem;
+  }
+
+  .admin_listado .listado_logs {
     padding: 1rem 0.85rem;
   }
 

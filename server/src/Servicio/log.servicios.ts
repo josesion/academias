@@ -15,7 +15,8 @@ import { EsquemaListadoLogEventos, EsquemaMarcarLogEventos,
  * 3. Consulta la data y traduce sus códigos a los de `MAPA_LISTAR_LOG_EVENTOS`.
  *
  * @param data - Query de la request (paginación y filtros opcionales).
- * @returns {Promise<TipadoData<FilaLogEventos[]>>} Listado o `SIN_LOG_EVENTOS` (404).
+ * @returns {Promise<TipadoData<FilaLogEventos[]>>} Listado o `SIN_LOG_EVENTOS` (204:
+ *   "no hay eventos para ese filtro", que viaja **sin cuerpo**).
  */
 const listar = async (data: ListadoLogEventosInput): Promise<TipadoData<FilaLogEventos[]>> => {
 

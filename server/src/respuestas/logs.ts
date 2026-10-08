@@ -14,7 +14,7 @@ export const MAPA_LISTAR_LOG_EVENTOS : Record<string , { status : CodigoEstadoHT
     },
 
     "SIN_LOG_EVENTOS" : {
-            status: CodigoEstadoHTTP.NO_ENCONTRADO,
+            status: CodigoEstadoHTTP.SIN_CONTENIDO,
             msg: "Sin eventos para ese filtro."
     },
 
@@ -35,3 +35,4 @@ export const MAPA_MARCAR_LOG_EVENTOS : Record<string , { status : CodigoEstadoHT
     },
 
 };
+

@@ -8,6 +8,9 @@ const ruta = Router();
     ruta.put("/api/mod_planes_saas/:id", validarPermiso, controladorPlanesSass.modPlanesSass);
     ruta.put("/api/baja_planes_saas/:id/:estado", validarPermiso, controladorPlanesSass.bajaPlanesSass); 
     ruta.delete("/api/delete_planes_saas/:id", validarPermiso, controladorPlanesSass.deletPlanesSaas);
-    ruta.get("/api/lista_planes_saas/:estado", validarPermiso, controladorPlanesSass.listaPlanesSaas);
+    // Listado público: la landing (`/`, pantalla "Planes") lo consume sin
+    // sesión, así que NO lleva `validarPermiso`. Es catálogo comercial, no
+    // dato de tenant (la SQL de `listaPlanesSaas` no usa `id_escuela`).
+    ruta.get("/api/lista_planes_saas/:estado", controladorPlanesSass.listaPlanesSaas);
 
  export default ruta    

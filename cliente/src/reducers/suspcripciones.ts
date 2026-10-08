@@ -8,14 +8,16 @@
    3. LISTADO                  -> datos de la tabla, carga, errores, paginación
    4. FILTROS                  -> buscador del listado
    5. MÉTRICAS                 -> tarjetas del panel (GET /api/metricas_simples)
+   6. EVENTOS                  -> bitácora del sistema (GET /api/logs_eventos)
 
-   Nota: los 5 bloques están implementados.
+   Nota: los 6 bloques están implementados.
    ========================================================================== */
 
 /* ==========================================================================
    TIPOS AUXILIARES
    ========================================================================== */
 import type { SuscripcionEscuelaDto, FiltrosSuscripcionesInputs, EscPlanDTO, MetricasSimples } from "../servicio/suspcripciones.fetch";
+import type { FilaLogEventos, FiltrosQuery } from "../servicio/logs.fetch";
 import { fechaHoy } from "../utils/fecha";
 
 export interface CeldasInput {
@@ -43,6 +45,7 @@ export interface SuspcripcionesTipado {
         opciones : boolean,
         estado : boolean,
         metricas : boolean,
+        logs : boolean,
     },
     error : {
         listado : string | null,
@@ -50,6 +53,7 @@ export interface SuspcripcionesTipado {
         opciones : string | null,
         estado : string |  null,
         metricas : string | null,
+        logs : string | null,
     },
     modal : {
         listado : boolean,
@@ -87,6 +91,21 @@ export interface SuspcripcionesTipado {
     /* ---------- 5. MÉTRICAS ---------- */
     // Tarjetas del panel: null hasta que el server responde
     metricas : MetricasSimples | null,
+
+    /* ---------- 6. EVENTOS (bitácora del sistema) ---------- */
+    // Filtros de la bitácora: pagina y limit viajan siempre; los otros cinco
+    // se mandan solo si tienen valor (vacío = sin filtro en el server).
+    filtroLogs : FiltrosQuery,
+
+    listadoLogs : FilaLogEventos[] | null,
+
+    // Paginación propia: la bitácora tiene su propio contador, independiente
+    // del de suscripciones
+    paginacionLogs : Paginacion,
+
+    // Contador de refresco de la bitácora (sube al marcar un evento o al
+    // cambiar un filtro: vuelve a pedir los datos desde la página 1)
+    actualizarLogs : number,
 }
 
 /* ==========================================================================
@@ -102,6 +121,7 @@ export const initialSuspcripciones = (): SuspcripcionesTipado => ({
         opciones : false,
         estado : false,
         metricas : false,
+        logs : false,
     },
     error : {
         listado : null,
@@ -109,6 +129,7 @@ export const initialSuspcripciones = (): SuspcripcionesTipado => ({
         opciones : null,
         estado :  null,
         metricas : null,
+        logs : null,
     },
     modal : {
         listado : false,
@@ -135,20 +156,43 @@ export const initialSuspcripciones = (): SuspcripcionesTipado => ({
         id_plan_saas : "",
         fecha_inscripcion : "",
         estado : "activo",
-        limit : 10,
+        limit : 6,
         pagina : 1
     },
     
     listadoSuspcripcop : [],
 
     paginacion : {
-        pagina : 1 , limite : 10 , contadorPagina : 1,
+        pagina : 1 , limite : 6 , contadorPagina : 1,
     },
 
     actualizar : 0,
 
     /* ---------- 5. MÉTRICAS ---------- */
     metricas : null,
+
+    /* ---------- 6. EVENTOS ---------- */
+    // Sin filtros puestos: "traeme todo", del hecho más reciente al más viejo
+    filtroLogs : {
+        pagina : 1,
+        limit : 6,
+        nivel : "",
+        origen : "",
+        ruta : "",
+        // "Todos" = undefined (NO vacío ni -1): `listaLogs` solo manda el
+        // parámetro cuando `resuelto !== undefined`, así que vacío ("") llegaría
+        // al server como 0 y filtraría solo los pendientes.
+        resuelto : undefined,
+        fecha_desde : "",
+    },
+
+    listadoLogs : [],
+
+    paginacionLogs : {
+        pagina : 1 , limite : 6 , contadorPagina : 1,
+    },
+
+    actualizarLogs : 0,
 
 });
 
@@ -180,6 +224,9 @@ export type CampoFormularioKey = keyof SuspcripcionesTipado["formulario"];
 
 // Campos del filtro del listado (incluye pagina y limit, que viven adentro)
 export type CampoFiltroKey = keyof FiltrosSuscripcionesInputs;
+
+// Campos del filtro de la bitácora (nivel, origen, ruta, resuelto, fecha_desde)
+export type CampoFiltroLogsKey = keyof FiltrosQuery;
 
 /* ==========================================================================
    ACCIONES
@@ -216,7 +263,17 @@ export type SuspcripcionesAction =
     | { type: "RESET_FILTROS" }
 
     /* ---------- 5. MÉTRICAS ---------- */
-    | { type: "SET_METRICAS"; payload: MetricasSimples | null };
+    | { type: "SET_METRICAS"; payload: MetricasSimples | null }
+
+    /* ---------- 6. EVENTOS (bitácora del sistema) ---------- */
+    // El payload admite null: el server responde 204 (SIN_LOG_EVENTOS) sin
+    // cuerpo cuando no hay eventos para el filtro, y apiFetch lo deja como null
+    | { type: "SET_LISTADO_LOGS"; payload: FilaLogEventos[] | null }
+    | { type: "SET_PAGINACION_LOGS"; payload: Partial<Paginacion> }
+    // Refresco de la bitácora desde la página 1 (marcar evento o cambiar filtro)
+    | { type: "ACTUALIZAR_LOGS" }
+    | { type: "SET_CAMPO_FILTRO_LOGS"; payload: { campo: CampoFiltroLogsKey; valor: string | number | undefined } }
+    | { type: "RESET_FILTROS_LOGS" };
 
 
 /* ==========================================================================
@@ -466,6 +523,80 @@ export const SuspcripcionesReducers = (
             return {
                 ...state,
                 metricas: action.payload,
+            };
+
+        /* ==================================================================
+           6. EVENTOS (bitácora del sistema)
+           ================================================================== */
+
+        /**
+         * Filas de la bitácora.
+         *
+         * Cuando el payload es `null` (204 SIN_LOG_EVENTOS: no hay eventos para
+         * ese filtro) también resetea la paginación: esa respuesta **no trae**
+         * `paginacion`, así que sin este reset el contador de páginas se
+         * quedaría con el valor viejo y se podrían pedir páginas que ya no
+         * existen. Con 0 filas hay una sola página, que es la 1.
+         *
+         * `pagina` se copia de `filtroLogs.pagina` (no se pone a mano) para
+         * mantener los dos hogares de la página en sincronía: es el filtro el
+         * que manda el `?pagina=N` al server.
+         */
+        case "SET_LISTADO_LOGS":
+            return {
+                ...state,
+                listadoLogs: action.payload,
+                paginacionLogs: action.payload === null
+                    ? {
+                        pagina: state.filtroLogs.pagina,
+                        limite: state.filtroLogs.limit,
+                        contadorPagina: 1,
+                    }
+                    : state.paginacionLogs,
+            };
+
+        // Recibe el objeto paginacion de ApiResponse o un parcial
+        case "SET_PAGINACION_LOGS":
+            return {
+                ...state,
+                paginacionLogs: {
+                    ...state.paginacionLogs,
+                    ...action.payload,
+                },
+            };
+
+        // Mismo criterio que ACTUALIZAR del listado de suscripciones: sube el
+        // contador y vuelve a la página 1 en sus dos hogares (el filtro que
+        // viaja al server y el del paginador) → las 3 despachadas salen
+        // batched y es un solo request.
+        case "ACTUALIZAR_LOGS":
+            return {
+                ...state,
+                actualizarLogs: state.actualizarLogs + 1,
+                filtroLogs: {
+                    ...state.filtroLogs,
+                    pagina: 1,
+                },
+                paginacionLogs: {
+                    ...state.paginacionLogs,
+                    pagina: 1,
+                },
+            };
+
+        case "SET_CAMPO_FILTRO_LOGS":
+            return {
+                ...state,
+                filtroLogs: {
+                    ...state.filtroLogs,
+                    [action.payload.campo]: action.payload.valor,
+                },
+            };
+
+        case "RESET_FILTROS_LOGS":
+            return {
+                ...state,
+                // Objeto nuevo en cada reset (no se comparte referencia)
+                filtroLogs: initialSuspcripciones().filtroLogs,
             };
 
         default:

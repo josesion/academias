@@ -1,7 +1,8 @@
 import { useReducer } from "react";
-import { SuspcripcionesReducers, initialSuspcripciones, type SuspcripcionesAction, type CampoFormularioKey } from "../../reducers/suspcripciones";
+import { SuspcripcionesReducers, initialSuspcripciones, type SuspcripcionesAction, type CampoFormularioKey, type CampoFiltroLogsKey } from "../../reducers/suspcripciones";
 import { useEffectServicio } from "../../utils/useEfectServicio";
 import type { SuscripcionEscuelaDto, FiltrosSuscripcionesInputs, EscPlanDTO, MetricasSimples} from "../../servicio/suspcripciones.fetch";
+import type { FilaLogEventos, FiltrosQuery, MarcarLogEventosInput } from "../../servicio/logs.fetch";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 interface PropsSuscripciones {
@@ -12,6 +13,8 @@ interface PropsSuscripciones {
         getEscPlanes : ServicioCrud,
         putEstadoSuspc : ServicioCrud,
         metricasSuspcripcion : ServicioCrud,
+        listaLogs: ServicioCrud,
+        putLogs: ServicioCrud,
     },
 
 };
@@ -111,6 +114,113 @@ export const SuscripcionesLogica = (  config : PropsSuscripciones) =>{
         useAbort: true,
         dependencias: [state.actualizar],
     });
+
+    /* ======================================================================
+       6. EVENTOS — bitácora del sistema (GET /api/logs_eventos)
+
+       `useEffectServicio` sirve tal cual porque el "no hay eventos" del server
+       es un **204** (no un 404): cae en la rama 2xx y despacha
+       `SET_LISTADO_LOGS` con `null` sin tocar `error.logs`. Con `null` el
+       reducer además resetea la paginación, porque esa respuesta no la trae.
+       ====================================================================== */
+
+    useEffectServicio<FiltrosQuery, FilaLogEventos[], SuspcripcionesAction>({
+        dispatch,
+        servicios: config.servicios.listaLogs,
+        valores: state.filtroLogs,
+        accionResultado: (filas) => ({ type: "SET_LISTADO_LOGS", payload: filas }),
+        accionCarga:     (carga)    => ({ type: "SET_CARGA", payload: { campo: "logs", valor: carga } }),
+        accionError:     (mensaje)  => ({ type: "SET_ERROR", payload: { campo: "logs", valor: mensaje } }),
+        accionPaginacion:(p)        => ({ type: "SET_PAGINACION_LOGS", payload: p }),
+        useAbort: true,
+        // `actualizarLogs` entra en deps: al subir (marcar un evento o
+        // cambiar un filtro) se vuelve a pedir desde la página 1
+        dependencias: [state.filtroLogs, state.actualizarLogs],
+    });
+
+    /**
+     * Cambia cualquier filtro de la bitácora y la refresca (2 despachadas
+     * batched → un solo request):
+     *
+     * - `SET_CAMPO_FILTRO_LOGS`: el `name` del control como campo y su `value`
+     *   como valor. Los selects mandan texto, así que `resuelto` (que viaja
+     *   como número) se castea; el "Todos" llega como `""` y se guarda como
+     *   `undefined`, que es lo único que `listaLogs` NO manda al server.
+     * - `ACTUALIZAR_LOGS`: refresca y vuelve a la página 1.
+     *
+     * @param event - ChangeEvent del <select> o del <input> del filtro.
+     */
+    const cambiarFiltroLogs = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+        const { name, value } = event.target;
+
+        // "Todos" de los selects = sin filtro: `undefined` ("" llegaría al
+        // server como 0 en `resuelto` y filtraría solo los pendientes)
+        const valor: string | number | undefined =
+            name === "resuelto" ? (value === "" ? undefined : Number(value)) : value;
+
+        dispatch({ type: "SET_CAMPO_FILTRO_LOGS", payload: { campo: name as CampoFiltroLogsKey, valor } });
+        dispatch({ type: "ACTUALIZAR_LOGS" });
+    };
+
+    /**
+     * Cambia de página de la bitácora: el número vive en dos lados y hay que
+     * mover los dos en el mismo evento (React 18 los agrupa → un solo request).
+     *
+     * @param pagina - Página a pedir.
+     */
+    const cachearPaginaLogs = (pagina: number) => {
+        dispatch({ type: "SET_CAMPO_FILTRO_LOGS", payload: { campo: "pagina", valor: pagina } });
+        dispatch({ type: "SET_PAGINACION_LOGS", payload: { pagina } });
+    };
+
+    /**
+     * Marca (o desmarca) un evento como revisado (PUT /api/logs_eventos_marcar).
+     *
+     * Es un **toggle**: el server solo cambia la bandera `resuelto`, así que
+     * se le manda el valor contrario al que tiene la fila (0 ↔ 1). El registro
+     * no se edita ni se borra nunca.
+     *
+     * Éxito: refresca la bitácora para repintar la fila. Error: el aviso queda
+     * en `error.logs` y la fila sigue como estaba.
+     *
+     * @param evento - Fila de la bitácora que disparó el botón.
+     */
+    const marcarLog = async (evento: FilaLogEventos) => {
+        try {
+            dispatch({ type: "SET_ERROR", payload: { campo: "logs", valor: null } });
+            dispatch({ type: "SET_CARGA", payload: { campo: "logs", valor: true } });
+
+            const cuerpo: MarcarLogEventosInput = {
+                id_log: evento.id_log,
+                resuelto: evento.resuelto === 1 ? 0 : 1,
+            };
+
+            const resultado = await config.servicios.putLogs(cuerpo);
+
+            if (resultado.code === "LOG_MARCADO_OK") {
+                // la fila se repinta con la bandera nueva
+                dispatch({ type: "ACTUALIZAR_LOGS" });
+
+            } else if (resultado.code === "LOG_NO_ENCONTRADO") {
+
+                dispatch({ type: "SET_ERROR", payload: { campo: "logs",
+                    valor: "Ese evento ya no existe." }});
+
+            } else {
+
+                dispatch({ type: "SET_ERROR", payload: { campo: "logs",
+                    valor: resultado.message || "No se pudo actualizar el evento." }});
+            };
+
+        } catch {
+            // Red de seguridad: apiFetch nunca lanza, esto es por si falla algo nuestro
+            dispatch({ type: "SET_ERROR", payload: { campo: "logs",
+                valor: "No se pudo procesar la operación, intente de nuevo." } });
+
+        } finally {
+            dispatch({ type: "SET_CARGA", payload: { campo: "logs", valor: false } });
+        }
+    };
 
     // Abre el modal en modo alta
     const abrirFormulario = () => {
@@ -282,6 +392,11 @@ export const SuscripcionesLogica = (  config : PropsSuscripciones) =>{
         // 3. Listado
         cachearPagina,
         cambiarFiltroEstado,
+
+        // 6. Eventos (bitácora)
+        cambiarFiltroLogs,
+        cachearPaginaLogs,
+        marcarLog,
     }
 };
 //@

@@ -1,5 +1,6 @@
 import "./inicio.css";
 import "./inicio.scroll.css";
+import { usePlanesPublicos } from "../../../hooks/publico/usePlanesPublicos";
 import {
   useCallback,
   useEffect,
@@ -73,28 +74,16 @@ const BENEFICIOS = [
   "Actualizaciones constantes.",
 ];
 
-const PLAN_MENSUAL = [
-  "Gestión de alumnos",
-  "Caja",
-  "Asistencias",
-  "Horarios",
-  "Reportes",
-  "Actualizaciones",
-];
-
-const PLAN_LANZAMIENTO = [
-  "Todas las funciones",
-  "Soporte prioritario",
-  "Actualizaciones",
-  "Sin límite de crecimiento",
-];
-
 /* ==========================================================================
    AUXILIARES
    ========================================================================== */
 
 // Orden de entrada de cada elemento dentro de su pantalla (escalonado)
 const d = (n: number) => ({ "--i": n }) as CSSProperties;
+
+// Escalonado de las cards de planes. El tope evita que, con 4 planes, la
+// última tarde ~1.5s en entrar (`--i` sin tope daba 0.45s + 5×80ms).
+const dPlan = (i: number) => d(2 + Math.min(i, 3));
 
 const indiceDesdeHash = () => {
   if (typeof window === "undefined") return 0;
@@ -184,6 +173,7 @@ const TituloSeccion = ({
    ========================================================================== */
 
 export const Inicio = () => {
+  const { planes, carga, error } = usePlanesPublicos();
   const [indice, setIndice] = useState(indiceDesdeHash);
   // Cada cambio monta una línea de luz que viaja con el corte
   const [corte, setCorte] = useState<{ n: number; dir: "subir" | "bajar" }>({
@@ -374,6 +364,13 @@ export const Inicio = () => {
   };
 
   const heroActivo = indice === 0;
+
+  // El plan más caro es el destacado. No se usa el índice porque con datos del
+  // server la posición del listado ya no significa nada.
+  const idMasCaro = planes.reduce(
+    (mayor, plan) => (plan.precio > mayor.precio ? plan : mayor),
+    planes[0]
+  )?.id_plan;
 
   return (
     <div
@@ -578,43 +575,43 @@ export const Inicio = () => {
               titulo="Elegí el plan ideal para tu academia."
             />
 
-            <div className="planes_grid">
-              <article className="plan_card anim" style={d(2)}>
-                <span className="plan_tipo">Profesional</span>
+            {carga || error ? (
+              <p className="planes_mensaje anim" style={d(2)}>
+                {error ?? "Cargando planes…"}
+              </p>
+            ) : (
+              <div className="planes_grid">
+                {planes.map((plan, i) => (
+                  <article
+                    key={plan.id_plan}
+                    className={`plan_card anim${
+                      plan.id_plan === idMasCaro ? " destacado" : ""
+                    }`}
+                    style={dPlan(i)}
+                  >
+                    <span className="plan_tipo">{plan.tipo}</span>
 
-                <h3>Plan Mensual</h3>
+                    <h3>{plan.descripcion}</h3>
 
-                <div className="plan_precio">Consultar</div>
+                    <div className="plan_precio">
+                      $ {plan.precio.toLocaleString("es-AR")}
+                    </div>
 
-                <ul>
-                  {PLAN_MENSUAL.map((t) => (
-                    <li key={t}>✔ {t}</li>
-                  ))}
-                </ul>
+                    <ul>
+                      {plan.caracteristicas.map((caracteristica, j) => (
+                        <li key={`${caracteristica.clave}-${j}`}>
+                          ✔ {caracteristica.clave}: {caracteristica.valor}
+                        </li>
+                      ))}
+                    </ul>
 
-                <a href="/login" className="plan_boton">
-                  Comenzar
-                </a>
-              </article>
-
-              <article className="plan_card destacado anim" style={d(3)}>
-                <span className="plan_oferta">50% OFF · Primeros 3 meses</span>
-
-                <h3>Lanzamiento ELPIS</h3>
-
-                <div className="plan_precio">Promoción Especial</div>
-
-                <ul>
-                  {PLAN_LANZAMIENTO.map((t) => (
-                    <li key={t}>✔ {t}</li>
-                  ))}
-                </ul>
-
-                <a href="/login" className="plan_boton">
-                  Quiero la promoción
-                </a>
-              </article>
-            </div>
+                    <a href="/login" className="plan_boton">
+                      Comenzar
+                    </a>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -23,6 +23,64 @@ export const fechaHoy = () :string   =>{
 }
 
 /**
+ * Convierte la fecha de un evento del sistema a texto legible.
+ *
+ * El DTO `FilaLogEventos.fecha` viene como `string | Date` (así la entrega
+ * mysql2) y puede llegar en tres formatos distintos según de dónde venga la
+ * fila, así que esta función normaliza los tres a `DD/MM/AAAA HH:mm`:
+ *
+ * - `Date` → se formatea local (es lo habitual).
+ * - `"2026-10-08 14:22:31"` → el formato crudo de MySQL. Se reemplaza el
+ *   primer guion por "/" **a propósito**: `new Date("2026-10-08")` se parsea
+ *   como UTC y en Uruguay (UTC-3) se mostraría el día anterior.
+ * - `"2026-10-08T14:22:31.000Z"` → ISO de `JSON.stringify`: acá el desfase
+ *   no se toca porque la fecha ya viene convertida a UTC.
+ *
+ * @param {string | Date} fecha - Fecha del evento.
+ * @returns {string} `DD/MM/AAAA HH:mm`, o `""` si no hay fecha.
+ *
+ * @example
+ * formatearFechaHora("2026-10-08 14:22:31");  // "08/10/2026 14:22"
+ * formatearFechaHora(new Date());            // "08/10/2026 14:22"
+ */
+export const formatearFechaHora = ( fecha : string | Date ) : string => {
+
+        if ( !fecha ) return "";
+
+        // La ISO ya viene en UTC: no hay que corregir nada
+        if ( typeof fecha === "string" && fecha.includes("T") ){
+                const fechaIso = new Date( fecha );
+                if ( Number.isNaN( fechaIso.getTime() ) ) return "";
+                return completarFechaHora( fechaIso );
+        };
+
+        // Fecha MySQL: el guion se cambia por barra para evitar el parseo en UTC
+        const fechaMySQL = typeof fecha === "string" ? fecha.replace(/-/g,"/") : fecha;
+        const fechaLocal = new Date( fechaMySQL );
+
+        return Number.isNaN( fechaLocal.getTime() ) ? "" : completarFechaHora( fechaLocal );
+};
+
+/**
+ * Extrae `DD/MM/AAAA HH:mm` de un `Date` ya parseado.
+ *
+ * @function completarFechaHora
+ * @param {Date} fecha - Fecha a formatear.
+ * @returns {string} El texto con día, mes, año, hora y minutos.
+ */
+const completarFechaHora = ( fecha : Date ) : string => {
+
+        const anio   = fecha.getFullYear();
+        const mes    = ( fecha.getMonth() + 1 ).toString().padStart( 2, "0" );
+        const dia    = fecha.getDate().toString().padStart( 2, "0" );
+        const hora   = fecha.getHours().toString().padStart( 2, "0" );
+        const minuto = fecha.getMinutes().toString().padStart( 2, "0" );
+
+        return `${dia}/${mes}/${anio} ${hora}:${minuto}`;
+};
+
+
+/**
  * Calcula la fecha de vencimiento sumando una cantidad de meses
  * a la fecha actual.  
  * 
@@ -73,7 +131,7 @@ export const fechaVencimiento = ( meses : number) : string=>{
 export const calcularSeisMesesAtras = (fechaBase: string): string => {
     // 1. Creamos el objeto Date a partir del string recibido
     // Usamos el reemplazo de '-' por '/' para evitar problemas de zona horaria en JS
-    const date = new Date(fechaBase.replace(/-/g, '\/')); 
+    const date = new Date(fechaBase.replace(/-/g, '/')); 
 
     // 2. Restamos los 6 meses
     date.setMonth(date.getMonth() - 6);

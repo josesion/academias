@@ -1,6 +1,7 @@
 import { setAbmSuspcripciones } from "../../../hookNegocios/suscripcion";
 import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
 import { ListadoSuscripciones } from "../../../componentes/Administrador/ListadoSusp/ListadoSusp";
+import { ListadoLogs } from "../../../componentes/Administrador/ListadoLogs/ListadoLogs";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { FormularioSuscripciones } from "../../../componentes/Administrador/formularioSuso/SuscripcionesFormulario";
 import { EstadoSuscripcion } from "../../../componentes/Administrador/EstadoSusp/EstadoSuscripcion";
@@ -9,7 +10,7 @@ import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/Tar
 
 import "./admin.css";
 
-/** Opción del filtro de estado: `valor` es el que existe en la BD */
+/** Opción de un filtro del panel: `valor` es el que viaja al server */
 interface OpcionEstado {
   valor: string;
   etiqueta: string;
@@ -20,6 +21,28 @@ const ESTADOS_SUSCRIPCION: OpcionEstado[] = [
   { valor: "activo", etiqueta: "Activos" },
   { valor: "vencido", etiqueta: "Vencidos" },
   { valor: "anulado", etiqueta: "Anulados" },
+];
+
+// Niveles de `logs_eventos` (enum del schema del server). "" = "Todos"
+const NIVELES_LOG: OpcionEstado[] = [
+  { valor: "error", etiqueta: "Error" },
+  { valor: "warn", etiqueta: "Advertencia" },
+  { valor: "info", etiqueta: "Info" },
+];
+
+// Origenes de `logs_eventos` (enum del schema del server). "" = "Todos"
+const ORIGENES_LOG: OpcionEstado[] = [
+  { valor: "peticion", etiqueta: "Petición" },
+  { valor: "correo", etiqueta: "Correo" },
+  { valor: "cron", etiqueta: "Cron" },
+  { valor: "arranque", etiqueta: "Arranque" },
+  { valor: "servidor", etiqueta: "Servidor" },
+];
+
+// `resuelto` viaja como número: "" = "Todos" (el hook lo pasa a undefined)
+const ESTADO_REVISADO_LOG: OpcionEstado[] = [
+  { valor: "0", etiqueta: "Pendientes" },
+  { valor: "1", etiqueta: "Revisados" },
 ];
 
 export const DashboardAdministrador = () => {
@@ -35,6 +58,9 @@ export const DashboardAdministrador = () => {
     postSuscripcion,
     anularSuscripcion,
     putSuscripcion,
+    cambiarFiltroLogs,
+    cachearPaginaLogs,
+    marcarLog,
   } = setAbmSuspcripciones();
 
   const { pagina, contadorPagina } = state.paginacion;
@@ -124,20 +150,108 @@ export const DashboardAdministrador = () => {
         </p>
       )}
 
-      <div className="admin_listado">
-        <ListadoSuscripciones
-          suscripciones={state.listadoSuspcripcop ?? []}
-          carga={state.carga.listado}
-          onEstado={abrirFormularioAnular}
-        />
-      </div>
+      {/* ==============================================================
+          LOS DOS PANELES — suscripciones (izq.) y bitácora (der.)
 
-      <div className="admin_pie">
-        <Paginacion
-          paginaActual={pagina}
-          contadorPagina={contadorPagina}
-          onPaginaCambiada={cachearPagina}
-        />
+          Cada `.admin_panel` es un contenedor de container queries: sus filas
+          se rearman según el ANCHO DEL PANEL, no el de la pantalla. Con
+          espacio van al lado; si no, `.admin_paneles` pasa a una columna y
+          la bitácora queda abajo.
+          ============================================================== */}
+      <div className="admin_paneles">
+        {/* ---------- Panel 1: suscripciones ---------- */}
+        <div className="admin_panel">
+          <div className="admin_listado">
+            <ListadoSuscripciones
+              suscripciones={state.listadoSuspcripcop ?? []}
+              carga={state.carga.listado}
+              onEstado={abrirFormularioAnular}
+            />
+          </div>
+
+          <div className="admin_pie">
+            <Paginacion
+              paginaActual={pagina}
+              contadorPagina={contadorPagina}
+              onPaginaCambiada={cachearPagina}
+            />
+          </div>
+        </div>
+
+        {/* ---------- Panel 2: bitácora del sistema ---------- */}
+        <div className="admin_panel">
+          <div className="admin_listado">
+            {/* Filtros de la bitácora: 3 select + fecha + ruta. "Todos" viaja
+                como valor vacío y el hook lo traduce a "sin filtro" */}
+            <div className="admin_filtros_logs">
+              <SelectorOpt
+                categorias={NIVELES_LOG}
+                itemKey="valor"
+                itemLabel="etiqueta"
+                onChangeSelector={cambiarFiltroLogs}
+                name="nivel"
+                value={state.filtroLogs.nivel}
+                labelDefault="Todos"
+              />
+
+              <SelectorOpt
+                categorias={ORIGENES_LOG}
+                itemKey="valor"
+                itemLabel="etiqueta"
+                onChangeSelector={cambiarFiltroLogs}
+                name="origen"
+                value={state.filtroLogs.origen}
+                labelDefault="Todos"
+              />
+
+              <SelectorOpt
+                categorias={ESTADO_REVISADO_LOG}
+                itemKey="valor"
+                itemLabel="etiqueta"
+                onChangeSelector={cambiarFiltroLogs}
+                name="resuelto"
+                value={state.filtroLogs.resuelto ?? ""}
+                labelDefault="Todos"
+              />
+
+              {/* El server exige el formato AAAA-MM-DD: lo da input[type=date] */}
+              <input
+                className="input_caja admin_input_fecha"
+                type="date"
+                name="fecha_desde"
+                value={state.filtroLogs.fecha_desde ?? ""}
+                onChange={cambiarFiltroLogs}
+                aria-label="Eventos desde la fecha"
+              />
+
+              {/* La ruta se busca con LIKE: es una búsqueda parcial */}
+              <input
+                className="input_caja admin_input_ruta"
+                type="text"
+                name="ruta"
+                value={state.filtroLogs.ruta ?? ""}
+                onChange={cambiarFiltroLogs}
+                placeholder="Buscar por ruta"
+                aria-label="Buscar por ruta"
+              />
+            </div>
+
+            <ListadoLogs
+              eventos={state.listadoLogs ?? []}
+              carga={state.carga.logs}
+              error={state.error.logs}
+              onMarcar={marcarLog}
+            />
+          </div>
+
+          <div className="admin_pie">
+            <Paginacion
+              paginaActual={state.paginacionLogs.pagina}
+              contadorPagina={state.paginacionLogs.contadorPagina}
+              onPaginaCambiada={cachearPaginaLogs}
+            />
+          </div>
+        </div>
       </div>
 
       {/* ==============================================================
