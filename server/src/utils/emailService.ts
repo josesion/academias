@@ -329,7 +329,8 @@ export const enviarCorreoEnBackground = (params: EnviarCorreoParams, contexto = 
         const motivo = obtenerMotivo(resultado.error);
 
         logger.error(
-            `CORREO NO ENVIADO${contexto ? ` (${contexto})` : ''} | para: ${params.to} | asunto: "${params.subject}" | motivo: ${motivo}`
+            `CORREO NO ENVIADO${contexto ? ` (${contexto})` : ''} | para: ${params.to} | asunto: "${params.subject}" | motivo: ${motivo}`,
+            { origen: 'correo', motivo, destino: params.to, asunto: params.subject }
         );
 
         avisarFalloCorreo(params, motivo, contexto);
@@ -366,7 +367,9 @@ const avisarFalloCorreo = async (
     });
 
     if (!resultado.success) {
-        logger.error(`CORREO DE AVISO NO ENVIADO | para: ${destino} | motivo: ${obtenerMotivo(resultado.error)}`);
+        const motivo = obtenerMotivo(resultado.error);
+        logger.error(`CORREO DE AVISO NO ENVIADO | para: ${destino} | motivo: ${motivo}`,
+            { origen: 'correo', motivo, destino });
     }
 };
 
@@ -379,7 +382,8 @@ const avisarFalloCorreo = async (
  */
 export const verificarConfiguracionCorreo = (): void => {
     if (!process.env.RESEND_API_KEY) {
-        logger.error('RESEND_API_KEY no está definida en el .env: no se enviará ningún correo.');
+        logger.error('RESEND_API_KEY no está definida en el .env: no se enviará ningún correo.',
+            { origen: 'arranque', codigo: 'RESEND_API_KEY_FALTANTE' });
     }
 
     const destinoPrueba = process.env.RESEND_DESTINO?.trim();
@@ -388,7 +392,8 @@ export const verificarConfiguracionCorreo = (): void => {
         logger.error(
             'RESEND_FROM usa el dominio de prueba resend.dev y no hay RESEND_DESTINO definida: ' +
             'los correos irían a la casilla del alumno y Resend los rechaza. ' +
-            'Setear RESEND_DESTINO (modo prueba) o verificar el dominio.'
+            'Setear RESEND_DESTINO (modo prueba) o verificar el dominio.',
+            { origen: 'arranque', codigo: 'RESEND_SIN_DESTINO_DE_PRUEBA' }
         );
     }
 };

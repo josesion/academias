@@ -6,6 +6,7 @@ import cors from "cors";
 
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
+import { registroPeticion, obtenerRuta } from "./middleware/registroPeticion";
 
 
 /**  RUTAS PARA EL ADMINISTRATIVO DE LA APP */
@@ -32,6 +33,7 @@ import listaCajas from "./rutas/listaCaja.ruta";
 
 import historial from "./rutas/historial.ruta";
 import flayer   from "./rutas/flayer.ruta";
+import logEventosRutas from "./rutas/log.ruta";
 
 
 import protectRutas from "./rutas/protegida.rutas";
@@ -70,6 +72,11 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Registra TODA petición en `logs_eventos` (sale de acá solo el método, la ruta,
+// el estado y la duración; nunca headers, cookies ni body)
+app.use(registroPeticion);
+
 app.use(alumnoRutas);
 app.use(profesorRutas)
 app.use(adminRutas);
@@ -102,6 +109,9 @@ app.use(principalAlumnos);
 app.use(administradorPlanes);
 app.use(subcripciones);
 app.use(usuarioAdmin);
+
+// RUTA DE EVENTOS DEL SISTEMA (logs)
+app.use(logEventosRutas);
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
@@ -140,7 +150,13 @@ app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=
                 const usuario = __req.body?.usuario_nom || "Anónimo";
 
                 // 3. El logger ahora guarda todo el "ADN" del error
-                logger.error(`[${__req.method}] ${__req.url} | Escuela: ${id_escuela} | User: ${usuario}`, { 
+                const rutaError = obtenerRuta(__req);
+
+                logger.error(`[${__req.method}] ${rutaError} | Escuela: ${id_escuela} | User: ${usuario}`, { 
+                    origen: "peticion",
+                    metodo_http: __req.method,
+                    ruta: rutaError,
+                    id_escuela,
                     mensaje: err.message,
                     stack: err.stack 
                 });

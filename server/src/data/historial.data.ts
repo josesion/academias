@@ -1,3 +1,4 @@
+import pool from "../bd";
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { iudEntidad } from "../hooks/iudEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
@@ -164,7 +165,33 @@ const getHistorial  = async ( id_escuela : GetHistorialInputs)
    }); 
 }; 
 
+/**
+ * Elimina del historial las acciones con más de N días de antigüedad.
+ *
+ * La retención viene de `RETENCION_HISTORIAL_DIAS` del `.env` (60 días por defecto),
+ * leída **dentro** de la función: `dotenv` corre tarde en `index.ts` y a nivel de
+ * módulo `process.env` todavía estaría vacío.
+ *
+ * Usa `pool.execute` directamente (igual que `vencerInscripciones` y la purga de
+ * `logs_eventos`): que no haya nada viejo **no es un error**, y el hook `iudEntidad`
+ * lanzaría excepción con 0 filas afectadas. La columna `fecha` está indexada
+ * (`idx_historial_fecha`), así el barrido es barato.
+ *
+ * @async
+ * @function limpiarHistorialViejo
+ * @returns {Promise<void>} Se descarta el resultado: importa que no lance excepción.
+ */
+const limpiarHistorialViejo = async (): Promise<void> => {
+    const dias = Number(process.env.RETENCION_HISTORIAL_DIAS) || 60;
+
+    const sql = `DELETE FROM historial
+                 WHERE fecha < DATE_SUB(NOW(), INTERVAL ? DAY);`;
+
+    await pool.execute(sql, [dias]);
+};
+
 export const method = {
     postHistorial : tryCatchDatos( postHistorial), 
     getHistorial  : tryCatchDatos( getHistorial ),
+    limpiarHistorialViejo : tryCatchDatos( limpiarHistorialViejo ),
 };
