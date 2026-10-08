@@ -15,6 +15,7 @@ const pool: Pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: DB_NAME_ACTUAL,
     port: Number(process.env.DB_PORT) || 3306,
+    timezone: '-03:00' // para establecar la zona horario
 });
 
 export default pool;

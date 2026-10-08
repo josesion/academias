@@ -3,8 +3,8 @@
 CREATE TABLE planes_pago (
     id_plan INT AUTO_INCREMENT PRIMARY KEY,
     descripcion_plan VARCHAR(255) NOT NULL,
-    cantidad_clases INT NOT NULL,
-    cantidad_meses INT NOT NULL,
+    cantidad_clases INT DEFAULT NULL,
+    cantidad_meses INT DEFAULT NULL,
     monto DECIMAL(10, 2) NOT NULL,
     estado VARCHAR(20) DEFAULT 'activos'
 );

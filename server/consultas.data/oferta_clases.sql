@@ -1,3 +1,5 @@
+-- LEGACY: la tabla `oferta_de_clases` NO existe en la BD real (academia_danzas_db).
+-- queda solo como referencia histórica; no la crees.
 -- creacion de la tabla con sus resticciones --
 CREATE TABLE oferta_de_clases (
     id_oferta INT PRIMARY KEY AUTO_INCREMENT,

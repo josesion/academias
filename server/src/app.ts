@@ -3,8 +3,6 @@ import { z } from "zod";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import { method as asistenciaData} from "./data/asistencia.data";
-import { method as dataSuscripcion} from "./data/suscripcion.escuela.data";
 
 import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
@@ -37,9 +35,6 @@ import flayer   from "./rutas/flayer.ruta";
 
 
 import protectRutas from "./rutas/protegida.rutas";
-import { iniciarCronVencimientoInscripciones } from "./scripts/vencerInscripciones.cron";
-import { iniciarCronVencimientoSuscripcion } from "./scripts/vencimientoSuscripciones.cron";
-
 /** RUTAS PARA EL ALUMNO  */
 
 import  principalAlumnos from "./rutas/metricas.alumnos.principal.rutas";
@@ -53,10 +48,7 @@ import  usuarioAdmin from "./rutas/usuarioAdmin.ruta";
 
 const app : Express = express();
 
-iniciarCronVencimientoInscripciones();
-iniciarCronVencimientoSuscripcion();
-asistenciaData.vencerInscripciones();
-dataSuscripcion.vencerPlanesEscuelas();
+
 
 import logger from "./utils/logger";
 

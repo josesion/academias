@@ -2,7 +2,7 @@
 -- Creacion de la tabla usuarios --
 CREATE TABLE usuarios (
     id_usuario INT PRIMARY KEY AUTO_INCREMENT, -- El ID numérico que usaremos en Cajas
-    usuario VARCHAR(50) NOT NULL UNIQUE,       -- El nombre de login (sigue siendo único)
+    usuario VARCHAR(50) NOT NULL,              -- El nombre de login (la BD real NO tiene UNIQUE: el duplicado se chequea por código)
     contrasena VARCHAR(255) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
@@ -25,8 +25,8 @@ VALUES (
     'Perez',                                       -- apellido (VARCHAR(100) NOT NULL)
     '3871234567',                                  -- celular (VARCHAR(20), opcional, pero incluido)
     'alumno',                                      -- rol (VARCHAR(50) NOT NULL, DEFAULT 'alumno')
-    'juan.perez@example.com',                      -- correo (VARCHAR(255) UNIQUE NOT NULL)
-    'activos'                                       -- estado (VARCHAR(20) NOT NULL, DEFAULT 'activo')
+    'juan.perez@example.com',                      -- correo (VARCHAR(255) NOT NULL, sin UNIQUE en la BD real)
+    'activos'                                       -- estado (VARCHAR(20) NOT NULL, DEFAULT 'activos')
 );
 
 

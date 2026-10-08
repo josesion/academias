@@ -10,8 +10,8 @@ nombre VARCHAR(255) NOT NULL,
 -- Apellido del alumno
 apellido VARCHAR(255) NOT NULL,
 
--- Correo electrónico del alumno (único y obligatorio para el login)
-email VARCHAR(255) NOT NULL UNIQUE,
+-- Correo electrónico del alumno (nullable y SIN UNIQUE: así está en la BD real)
+email VARCHAR(255) DEFAULT NULL,
 
 -- Número de celular
 numero_celular BIGINT,

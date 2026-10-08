@@ -1,3 +1,5 @@
+-- LEGACY: la tabla `inscripcion_alumno` NO existe en la BD real (academia_danzas_db).
+-- queda solo como referencia histórica; no la crees.
 -- creacion de la tabla --
 
 CREATE TABLE inscripcion_alumno (

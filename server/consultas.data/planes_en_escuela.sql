@@ -11,15 +11,14 @@ CREATE TABLE planes_en_escuela (
     -- Campos de control de estado y fechas
     estado VARCHAR(20) DEFAULT 'activos', -- 'activos' o 'inactivo' (para baja lógica)
     fecha_creacion DATE NOT NULL,
-    fecha_baja DATE NULL, -- Registra la fecha de inactivación para trazabilidad
 
     -- herda descripcion del plan global
     nombre_personalizado VARCHAR(255) NULL,
 
-    -- Campos para el detalle de la asignación
-    monto_asignado DECIMAL(10, 2) NOT NULL,
-    clases_asignadas INT NOT NULL,
-    meses_asignados INT NOT NULL,
+    -- Campos para el detalle de la asignación (con DEFAULT: si no se mandan, valen 0)
+    monto_asignado DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    clases_asignadas INT NOT NULL DEFAULT 0,
+    meses_asignados INT NOT NULL DEFAULT 0,
 
 
     -- Definición de Claves

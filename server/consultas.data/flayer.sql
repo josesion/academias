@@ -6,7 +6,7 @@ CREATE TABLE flyers (
     imagen_url VARCHAR(500) NOT NULL,
     public_id VARCHAR(255) NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_flayer_escuela FOREIGN KEY (id_escuela) REFERENCES escuelas (id_escuela)
 );
 

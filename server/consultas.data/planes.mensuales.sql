@@ -1,4 +1,6 @@
 
+-- LEGACY: la tabla `planes_mensuales_admin` NO existe en la BD real (academia_danzas_db).
+-- queda solo como referencia histórica; no la crees.
 -- SQL para crear la tabla de planes mensuales--
 
 CREATE TABLE planes_mensuales_admin (
