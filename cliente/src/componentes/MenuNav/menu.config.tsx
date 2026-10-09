@@ -7,6 +7,8 @@ import {
   MdOutlineCategory,
   MdOutlineAdminPanelSettings,
   MdOutlineSchool,
+  MdOutlineStorefront,
+  MdOutlineCampaign,
 } from "react-icons/md";
 import {
   PiStudentBold,
@@ -168,6 +170,21 @@ export const SECCIONES_ADMINISTRADOR: SeccionMenu[] = [
         icono: LuCreditCard,
         ruta: "/admin/usuarios_admin",
         color: AZUL_CLARO,
+      },
+      // Empresas y anuncios (spec 017). Sin `planes` ni `planMinimo`: la
+      // sección se renderiza solo cuando el rol es "administrador"
+      // (MenuNav elige la vista por rol), así que no hace falta filtrar.
+      {
+        etiqueta: "Empresas",
+        icono: MdOutlineStorefront,
+        ruta: "/admin/empresas",
+        color: VERDE,
+      },
+      {
+        etiqueta: "Anuncios",
+        icono: MdOutlineCampaign,
+        ruta: "/admin/anuncios",
+        color: VERDE,
       },
     ],
   },

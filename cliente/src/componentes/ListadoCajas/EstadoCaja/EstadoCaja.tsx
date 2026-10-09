@@ -1,4 +1,3 @@
-import { Boton } from "../../generales/Boton/Boton";
 import { ComponenteCargando } from "../../generales/Cargando/Cargando";
 import { Clock3, UserRound, Wallet } from "lucide-react";
 
@@ -103,17 +102,7 @@ export const EstadoCaja = (props: EstadoCajaData) => {
                           ACCIÓN
         ================================================= */}
 
-            <div className="cuerpo_estado_botones">
-              <Boton
-                logo="List"
-                clase="listar"
-                texto="Ver Movimientos en Vivo"
-                disable={false}
-                onClick={() => {
-                  console.log("ir a caja");
-                }}
-              />
-            </div>
+            <div className="cuerpo_estado_botones"></div>
           </div>
         </div>
       )}

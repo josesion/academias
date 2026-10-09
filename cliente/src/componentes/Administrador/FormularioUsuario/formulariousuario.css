@@ -116,30 +116,45 @@
 }
 
 /* Campo propio de los <SelectorOpt />, que no traen label */
+/* Este wrapper envuelve al <SelectorOpt />. El `gap` tiene que ser el MISMO
+   que el de `.inputs_contenedor` (6px): con 0.4rem el select quedaba a ~6px
+   del rótulo y el input a ~12px, así que en una misma fila los dos controles
+   no caían a la misma altura (este es el form donde se copió el bug). */
 .form-cuenta__campo {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 6px;
   min-width: 0;
 }
 
 /* =====================================
    ETIQUETAS (<Inputs /> y SelectorOpt)
+
+   SIN `margin-bottom` a propósito: el espaciado lo pone el `gap` del
+   contenedor (`6px` en `.inputs_contenedor` y en `.form-cuenta__campo`), nunca
+   los dos a la vez.
+
+   SIN `color` ni `font-family` a propósito: los <label> de `Inputs` los maneja
+   `inputs.css` (`.inputs_contenedor label`). Esta regla empata con esa en
+   especificidad (0,1,1), así que si los pisa acá gana el ORDEN DE CARGA DEL
+   CSS, que cambia según los imports de cada página.
    ===================================== */
 .form-cuenta label,
 .form-cuenta__label {
   display: block;
-  margin-bottom: 0.4rem;
   font-size: var(--texto-xs);
   font-weight: var(--peso-semi-negrita);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--texto-secundario);
 }
 
-/* El label del SelectorOpt va dentro de .form-cuenta__campo, sin margen extra */
-.form-cuenta__campo .form-cuenta__label {
-  margin-bottom: 0;
+/* El rótulo que se escribe a mano (el del <SelectorOpt>) tiene que verse
+   IGUAL al de `Inputs`: misma fuente y mismo color. Si el texto se viera
+   distinto, las cajas de los rótulos tendrían distinta altura y los controles
+   seguirían sin alinearse aunque el `gap` sea el mismo. */
+.form-cuenta__label {
+  font-family: var(--fuente-codigo);
+  color: var(--texto-deshabilitado);
 }
 
 /* =====================================

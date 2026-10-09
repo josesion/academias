@@ -1,0 +1,450 @@
+/* ==========================================================================
+   FORMULARIO DE EMPRESAS — ALTA (POST) y MODIFICACIÓN (PUT)
+   Espejo de formulariousuario.css con prefijo .form-empresa, más el bloque
+   del logo (input de archivo + vista previa).
+
+   ANIMACIÓN (skill emil-design-eng):
+   · ease-out fuerte (--ease-ui, token de app.css) en todas las entradas
+   · `transition` con PROPIEDADES EXACTAS (nada de `all`)
+   · entrada escalonada de los campos: 30ms entre ellos, 200ms cada uno
+   · botones con `scale(0.97)` al apretar
+   · `prefers-reduced-motion` apaga el movimiento, deja el contenido
+   · los selectores llevan `button` + `:not(:disabled)` para que ganenle a
+     `.boton_personalizado*` de boton.css (misma especificidad → ganaría el
+     orden de carga del CSS, que cambia con cada import)
+   ========================================================================== */
+
+/* =====================================
+   CONTENEDOR
+   ===================================== */
+.form-empresa {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENTRADA ESCALONADA
+   Los delays van de 30 en 30ms y el último cierra cerca de los 400ms:
+   dentro de la franja de un modal (200-500ms).
+   ===================================== */
+@keyframes form_empresa_entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-empresa__encabezado,
+.form-empresa__grupo--datos > *,
+.form-empresa__grupo--logo,
+.form-empresa__acciones {
+  animation: form_empresa_entra 200ms var(--ease-ui) both;
+}
+
+.form-empresa__encabezado {
+  animation-delay: 0ms;
+}
+
+/* Los 5 campos de datos, de a 30ms */
+.form-empresa__grupo--datos > :nth-child(1) { animation-delay: 40ms; }
+.form-empresa__grupo--datos > :nth-child(2) { animation-delay: 70ms; }
+.form-empresa__grupo--datos > :nth-child(3) { animation-delay: 100ms; }
+.form-empresa__grupo--datos > :nth-child(4) { animation-delay: 130ms; }
+.form-empresa__grupo--datos > :nth-child(5) { animation-delay: 160ms; }
+
+.form-empresa__grupo--logo {
+  animation-delay: 190ms;
+}
+
+.form-empresa__acciones {
+  animation-delay: 220ms;
+}
+
+/* =====================================
+   ENCABEZADO
+   ===================================== */
+.form-empresa__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-empresa__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  color: var(--texto-principal);
+}
+
+.form-empresa__subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   GRUPO DE DATOS (2 columnas → 1 en mobile)
+   ===================================== */
+.form-empresa__grupo--datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+/* El campo de razón social ocupa la fila entera: es el dato principal */
+.form-empresa__grupo--datos > :first-child {
+  grid-column: 1 / -1;
+}
+
+/* =====================================
+   ETIQUETAS
+
+   SIN `margin-bottom` a propósito: el espaciado entre el rótulo y el input lo
+   pone el `gap: 6px` de `.inputs_contenedor` (inputs.css). Con el margen
+   además del gap el campo quedaba a ~12px del rótulo, y como el formulario de
+   anuncios usa 6px, los dos formularios no se veían igual.
+
+   SIN `color` ni `font-family` a propósito: los <label> de `Inputs` los maneja
+   `inputs.css` (`.inputs_contenedor label`). Esta regla empata con esa en
+   especificidad (0,1,1), así que si los pisa acá gana el ORDEN DE CARGA DEL
+   CSS, que cambia según los imports de cada página.
+   ===================================== */
+.form-empresa label {
+  display: block;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* =====================================
+   ELEMENTOS <Inputs />
+   ===================================== */
+.form-empresa input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+.form-empresa input::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+/* El input de archivo no toma el padding de un input de texto: el botón
+   nativo se ve mejor con el suyo */
+.form-empresa input[type="file"] {
+  padding: 0.6rem;
+  font-size: var(--texto-sm);
+  cursor: pointer;
+}
+
+.form-empresa input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.45rem 0.9rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-secundario);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-empresa input[type="file"]::file-selector-button:hover {
+    color: var(--texto-principal);
+    border-color: var(--color-secundario);
+  }
+}
+
+/* Hover solo en dispositivos con puntero real: en táctil se pega al tocar */
+@media (hover: hover) and (pointer: fine) {
+  .form-empresa input:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-empresa input:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-empresa input:disabled,
+.form-empresa input[readonly] {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+/* =====================================
+   LOGO — input de archivo + vista previa
+   ===================================== */
+.form-empresa__grupo--logo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1.5rem;
+
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-empresa__logo-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+/* Quitar el logo nuevo: solo aparece cuando hay uno elegido */
+.form-empresa__logo-quitar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-empresa__logo-quitar:hover {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+.form-empresa__logo-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.form-empresa__logo-marco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 96px;
+  height: 96px;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.form-empresa__logo-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.form-empresa__logo-vacio {
+  font-size: var(--texto-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+}
+
+.form-empresa__logo-leyenda {
+  font-size: var(--texto-xs);
+  text-align: center;
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+   ===================================== */
+.form-empresa__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-empresa__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+.form-empresa__acciones button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Guardar: primario sólido (le gana al `background` de .boton_personalizado) */
+.form-empresa__acciones button.agregar {
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+}
+
+/* Cancelar: secundario contorno */
+.form-empresa__acciones button.cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-empresa__acciones button.agregar:hover:not(:disabled) {
+    background: var(--color-secundario);
+    border-color: var(--color-secundario);
+    box-shadow: var(--sombra-md);
+  }
+
+  .form-empresa__acciones button.cancelar:hover:not(:disabled) {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+/* =====================================
+   RESPONSIVE — 1 columna y aire (≤650px)
+   ===================================== */
+@media (max-width: 650px) {
+  .form-empresa {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: var(--radio-md);
+  }
+
+  .form-empresa__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .form-empresa__grupo--datos {
+    grid-template-columns: 1fr;
+  }
+
+  /* El logo baja y se centra: la vista previa ya no tiene lado */
+  .form-empresa__grupo--logo {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .form-empresa__logo-input {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .form-empresa__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .form-empresa__acciones button {
+    width: 100%;
+  }
+}
+
+/* =====================================
+   PREFERS-REDUCED-MOTION
+   ===================================== */
+@media (prefers-reduced-motion: reduce) {
+  .form-empresa__encabezado,
+  .form-empresa__grupo--datos > *,
+  .form-empresa__grupo--logo,
+  .form-empresa__acciones {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .form-empresa input,
+  .form-empresa__acciones button,
+  .form-empresa__logo-quitar {
+    transition-duration: 0ms;
+  }
+
+  .form-empresa__acciones button:active:not(:disabled) {
+    transform: none;
+  }
+}

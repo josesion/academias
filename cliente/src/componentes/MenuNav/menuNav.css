@@ -153,6 +153,34 @@
 
 }
 
+/* --- Ruta activa (spec 018) -----------------------------------------------
+   `NavLink` agrega `.activo` al item cuya ruta coincide con la actual y pone
+   `aria-current="page"`. Reusa `--fondo-hover` (el mismo del :hover): no se
+   suma ningun color nuevo. La cabecera de la seccion abierta lleva
+   `.menu_control--abierto`. */
+
+.menu_nav_lista .activo{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+.menu_nav_lista .menu_control--abierto{
+
+    background:var(--fondo-hover);
+
+}
+
+/* En el submenu el activo lleva ademas una barra a la izquierda, para que se
+   distinga del :hover cuando el puntero esta encima. */
+.submenu .activo{
+
+    box-shadow:inset 3px 0 0 var(--color-primario);
+
+}
+
 .menu-item{
 
     min-width:170px;

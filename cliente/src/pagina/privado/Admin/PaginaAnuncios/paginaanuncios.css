@@ -1,0 +1,251 @@
+/* =====================================
+   CONTENEDOR (patrón paginausuario.css)
+   ===================================== */
+
+.pagina_anuncios {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  padding: 40px 32px 64px;
+
+  box-sizing: border-box;
+
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENCABEZADO (títulos + bloque de acciones)
+   ===================================== */
+
+.pagina_anuncios_encabezado {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  padding-bottom: 24px;
+
+  border-bottom: 1px solid var(--borde);
+}
+
+.pagina_anuncios_acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+/* Feedback de press del botón: el `<Boton>` compartido no trae `:active`
+   (propuesta en MEMORY: llevarlo a boton.css). Propiedades exactas, nunca
+   `all` — skill emil-design-eng. */
+.pagina_anuncios_acciones button {
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+.pagina_anuncios_acciones button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.pagina_anuncios_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.pagina_anuncios_etiqueta {
+  color: var(--color-secundario);
+
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.pagina_anuncios_titulos h1 {
+  margin: 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+}
+
+.pagina_anuncios_titulos p {
+  margin: 0;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+}
+
+/* =====================================
+   FILTROS (buscador + 2 selects + fechas + limpiar)
+   ===================================== */
+
+.pagina_anuncios_filtros {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  width: 100%;
+  min-width: 0;
+}
+
+.pagina_anuncios_buscador {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 380px;
+}
+
+.pagina_anuncios_select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 160px;
+}
+
+/* El `SelectorOpt` no trae label: el texto va en un `<span>` aparte */
+.pagina_anuncios_select_label {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+  font-family: var(--fuente-codigo);
+}
+
+/* El `FiltroFechas` trae su propio título y botón, así que solo se lo alinea
+   con el resto de la fila de filtros */
+.pagina_anuncios_fechas {
+  min-width: 0;
+}
+
+/* Solo aparece cuando hay algo filtrado */
+.pagina_anuncios_limpiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 0.6rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+.pagina_anuncios_limpiar:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pagina_anuncios_limpiar:hover {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+/* =====================================
+   RESPONSIVE
+   ===================================== */
+
+@media (max-width: 1000px) {
+  .pagina_anuncios {
+    padding: 32px 24px 48px;
+  }
+}
+
+@media (max-width: 650px) {
+  .pagina_anuncios {
+    gap: 20px;
+    padding: 24px 16px 40px;
+  }
+
+  .pagina_anuncios_encabezado {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+
+    padding-bottom: 18px;
+  }
+
+  .pagina_anuncios_titulos h1 {
+    font-size: 1.9rem;
+  }
+
+  .pagina_anuncios_buscador {
+    max-width: none;
+  }
+
+  .pagina_anuncios_select {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* =====================================
+   PREFERS-REDUCED-MOTION (skill emil-design-eng)
+   Sin movimiento: los botones conservan los estados de color y foco.
+   ===================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .pagina_anuncios_acciones button,
+  .pagina_anuncios_limpiar {
+    transition-duration: 0ms;
+  }
+
+  .pagina_anuncios_acciones button:active:not(:disabled),
+  .pagina_anuncios_limpiar:active {
+    transform: none;
+  }
+}
+
+/* =====================================
+   FILTROS — alinear la fila (spec 017)
+
+   El <Inputs> trae SIEMPRE un <div class="error_espacio"> con
+   min-height: 16px (inputs.css), aunque no haya ningun error. Los wrappers de
+   los <SelectorOpt> no tienen ese hueco, asi que en esta fila el buscador
+   quedaba 22px mas alto que los selects, y con lign-items: flex-end los
+   controles caian a distinta altura (input 22px mas arriba que los selects).
+
+   En los filtros el error no se muestra ahi — los avisos van en el <CompoError>
+   del listado — asi que ese hueco es espacio muerto y se oculta.
+   ===================================== */
+.pagina_anuncios_filtros .error_espacio {
+  display: none;
+}

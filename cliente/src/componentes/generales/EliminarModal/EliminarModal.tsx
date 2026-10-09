@@ -22,6 +22,10 @@ type ComponenteEliminar<T extends object> = {
   accion: string;
   mensaje?: string | null;
   cargando?: boolean;
+  /** Aclaración bajo la acción. Por defecto "Esta acción no se puede
+   *  deshacer"; se cambia cuando la acción SÍ es reversible (spec 017: la
+   *  baja lógica de empresa, que después se puede reactivar). */
+  nota?: string;
 };
 
 /**
@@ -40,8 +44,8 @@ export function EliminarVentana<T extends object>({
   onCancelar,
   accion,
   mensaje,
-
   cargando,
+  nota = "Esta acción no se puede deshacer.",
 }: ComponenteEliminar<T>) {
   return (
     <div className={`componente_eliminar ${cargando ? "estado_cargando" : ""}`}>
@@ -58,7 +62,7 @@ export function EliminarVentana<T extends object>({
 
       <div className="datos_eliminar">
         <p className="datos_eliminar">{accion}</p>
-        <span className="nota_eliminar">Esta acción no se puede deshacer.</span>
+        <span className="nota_eliminar">{nota}</span>
       </div>
 
       <div className="botonera_eliminar">

@@ -30,6 +30,19 @@ export const UsuarioPage = () => {
 
   return (
     <div className="usuario_contenedor_metricas" ref={containerRef}>
+
+      {/* Encabezado de la pagina: sin esto la pantalla arranca directo con las
+          tarjetas y no hay ni jerarquia ni referencia de donde estas. Es el
+          mismo patron (eyebrow + h1 + bajada) que usan las paginas de Admin. */}
+      <header className="usuario_encabezado">
+        <div className="usuario_encabezado_titulos">
+          <span className="usuario_encabezado_etiqueta">Principal</span>
+
+          <h1>Panel de la academia</h1>
+
+          <p>Alumnos, asistencia y actividad reciente de tu escuela.</p>
+        </div>
+      </header>
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
@@ -90,7 +103,8 @@ export const UsuarioPage = () => {
         className="usuario_metricas_grupo2"
         style={altoGrupo1 ? { height: altoGrupo1 } : undefined}
       >
-        <div className="usuario_contenido_historial">
+        {/* `con_alerta` reserva ~250px al final del scroll para que la tarjetaflotante (ahora en portal) no tape la Ultima entrada del historial. */}
+        <div className={`usuario_contenido_historial ${state.fechaVencimiento ? "con_alerta" : ""}`}>
           <MetricasHistorial historial={state.historial} />
         </div>
 

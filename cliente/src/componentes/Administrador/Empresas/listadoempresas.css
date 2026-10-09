@@ -1,0 +1,338 @@
+/* ==========================================================================
+   LISTADO DE EMPRESAS
+   Espejo de listadousuario.css con prefijo .empresa_, más el bloque del logo y
+   el de las acciones de fila (que ahí era un solo botón).
+
+   ANIMACIÓN (skill emil-design-eng): propiedades exactas, nunca `all`; hover
+   gateado con `@media (hover: hover)`; `prefers-reduced-motion` respetado.
+   ========================================================================== */
+
+.listado_empresas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  background: var(--fondo-principal);
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+.listado_empresas_lista {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.listado_empresas_vacio {
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  background: var(--fondo-secundario);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+}
+
+/* ---------- Fila ---------- */
+.empresa_row {
+  display: grid;
+  /* logo | principal | redes | estado | acciones */
+  grid-template-columns: auto minmax(0, 2fr) minmax(0, 1.3fr) auto auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  transition: var(--transicion);
+}
+
+.empresa_row:hover {
+  background: var(--fondo-secundario);
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-2px);
+}
+
+/* ---------- Logo ---------- */
+.empresa_logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  padding: .4rem;
+  box-sizing: border-box;
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.empresa_logo_img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.empresa_logo_vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-deshabilitado);
+}
+
+/* ---------- Principal ---------- */
+.empresa_principal {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 0;
+}
+
+.empresa_nombre {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  margin: 0;
+  padding: 0;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+
+  text-align: left;
+
+  background: none;
+  border: none;
+  cursor: default;
+
+  overflow: hidden;
+}
+
+/* La razón social con botón: el hover tiene que verse en el texto, no en la
+   fila entera, para que se entienda que es clickeable */
+.empresa_nombre--accion {
+  color: var(--color-secundario);
+  cursor: pointer;
+
+  transition: color 160ms var(--ease-ui);
+}
+
+.empresa_nombre--accion:hover {
+  color: var(--color-primario);
+  text-decoration: underline;
+}
+
+/* "ver sus anuncios": la pista de que el nombre abre el panel */
+.empresa_nombre_pista {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-normal);
+
+  color: var(--texto-deshabilitado);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+
+  white-space: nowrap;
+}
+
+.empresa_domicilio {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Datos ---------- */
+.empresa_dato {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  min-width: 0;
+}
+
+.empresa_label {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+}
+
+.empresa_valor {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Estado ---------- */
+.empresa_estado {
+  justify-self: end;
+  padding: .3rem .85rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.empresa_estado--activo {
+  color: var(--color-exito);
+  background: rgba(91, 123, 110, .12);
+  border-color: rgba(91, 123, 110, .3);
+}
+
+.empresa_estado--inactivo {
+  color: var(--color-error);
+  background: rgba(179, 71, 71, .1);
+  border-color: rgba(179, 71, 71, .3);
+}
+
+.empresa_estado--otro {
+  color: var(--color-advertencia);
+  background: rgba(194, 155, 56, .12);
+  border-color: rgba(194, 155, 56, .3);
+}
+
+/* ---------- Acciones ---------- */
+.empresa_acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: .5rem;
+}
+
+.empresa_accion {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+
+  padding: .5rem .9rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+.empresa_accion:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .empresa_accion:hover {
+    color: var(--texto-principal);
+    background: var(--fondo-hover);
+    border-color: var(--texto-secundario);
+  }
+
+  .empresa_accion--peligro:hover {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+
+  .empresa_accion--reactivar:hover {
+    color: var(--color-exito);
+    background: var(--fondo-hover);
+    border-color: var(--color-exito);
+  }
+}
+
+/* ---------- Responsive: fila → TARJETA ---------- */
+@media (max-width: 860px) {
+  .listado_empresas {
+    padding: 1.25rem;
+  }
+
+  .empresa_row {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: .85rem;
+    padding: 1.25rem;
+    border-radius: var(--radio-lg);
+  }
+
+  /* la tarjeta: logo + principal arriba */
+  .empresa_principal {
+    grid-column: 2 / -1;
+  }
+
+  .empresa_domicilio {
+    white-space: normal;
+  }
+
+  /* el nombre con botón puede partir en dos líneas */
+  .empresa_nombre--accion {
+    flex-wrap: wrap;
+  }
+
+  /* las redes y el chip, en 2 columnas dentro de la tarjeta */
+  .empresa_dato {
+    grid-column: 1 / -1;
+  }
+
+  .empresa_valor {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .empresa_estado {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  /* las acciones, abajo a lo ancho (3 botones = 1 columna) */
+  .empresa_acciones {
+    grid-column: 1 / -1;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .empresa_accion {
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   PREFERS-REDUCED-MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .empresa_accion,
+  .empresa_nombre--accion {
+    transition-duration: 0ms;
+  }
+
+  .empresa_accion:active {
+    transform: none;
+  }
+
+  .empresa_row:hover {
+    transform: none;
+  }
+}

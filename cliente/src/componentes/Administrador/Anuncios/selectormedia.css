@@ -1,0 +1,206 @@
+/* ==========================================================================
+   SELECTOR DE MEDIA DEL ANUNCIO
+   Input de archivo (oculto, se muestra su propia etiqueta) + vista previa.
+
+   El input real queda oculto con `sr`-like: NO se usa `display:none` porque
+   el lector de voz y el teclado lo necesitan para llegar al botón de archivo.
+   Por eso la etiqueta es un `<label>` con `for` apuntando al input.
+   ========================================================================== */
+
+.selector_media {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .85rem;
+  min-width: 0;
+}
+
+/* ---------- El input real, oculto pero alcanzable ---------- */
+.selector_media_input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Etiqueta que abre el diálogo de archivos ---------- */
+.selector_media_boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+
+  padding: .7rem 1.4rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-principal);
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+.selector_media_boton:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .selector_media_boton:hover {
+    border-color: var(--color-secundario);
+    background: var(--fondo-hover);
+  }
+}
+
+/* El input deshabilitado (mientras guarda): el botón se ve apagado y no
+   dispara nada. La etiqueta no lee el `:disabled` del input, así que se usa
+   `:has()`. */
+.selector_media:has(.selector_media_input:disabled) .selector_media_boton {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  border-color: var(--borde);
+  cursor: not-allowed;
+}
+
+/* El foco real está en el input oculto: el anillo se dibuja en el botón, que
+   es lo que ve el usuario (el input es de 1px y no se nota). */
+.selector_media_input:focus-visible ~ .selector_media_boton {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+/* ---------- Vista previa ---------- */
+.selector_media_panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+
+  margin: 0;
+}
+
+.selector_media_marco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 220px;
+  height: 165px;
+  overflow: hidden;
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.selector_media_img,
+.selector_media_video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.selector_media_vacio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-deshabilitado);
+}
+
+.selector_media_leyenda {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+}
+
+.selector_media_ayuda {
+  margin: 0;
+  max-width: 220px;
+
+  font-size: var(--texto-xs);
+  line-height: var(--linea-texto);
+  text-align: center;
+  color: var(--texto-deshabilitado);
+
+  /* El nombre del archivo puede ser largo: que corte y no rompa el layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Quitar ---------- */
+.selector_media_quitar {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+
+  padding: .35rem .75rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+.selector_media_quitar:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .selector_media_quitar:hover {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 650px) {
+  .selector_media_marco {
+    width: 100%;
+    height: 200px;
+  }
+
+  .selector_media_ayuda {
+    max-width: 100%;
+  }
+}
+
+/* ---------- PREFERS-REDUCED-MOTION ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .selector_media_quitar {
+    transition-duration: 0ms;
+  }
+
+  .selector_media_quitar:active {
+    transform: none;
+  }
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 import { Logo } from "../Logo/logo";
 import { HiChevronDown, HiChevronUp } from "react-icons/hi";
@@ -29,9 +30,14 @@ export const MenuNav = () => {
     setDataVisualMenu,
     setSeccionAbierta,
     setMenuMobileAbierto,
+    cerrarMenu,
   } = useMenuNav();
 
   const navRef = useRef<HTMLElement>(null);
+
+  // Ruta actual: avisa el cambio de página para cerrar el menú (spec 018) y es
+  // lo que marca cuál ítem está activo.
+  const { pathname: rutaActual } = useLocation();
 
   useEffect(() => {
     setDataVisualMenu({
@@ -51,6 +57,18 @@ export const MenuNav = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [setSeccionAbierta, setMenuMobileAbierto]);
+
+  // Cierra el submenú y el menú móvil al cambiar de ruta, y NO solo cuando se
+  // navega desde un ítem del menú (spec 018). Cubre los dos caminos que el
+  // `onClick` no alcanza:
+  //   - la navegación con teclado desde un ítem ya cubierto por el `onClick`;
+  //   - cualquier otra navegación de la app (el botón "volver" de un formulario,
+  //     un `navigate` desde un `useEffect`, el login que redirige al panel, o el
+  //     logo de la barra), donde el menú se quedaba abierto tapando la pantalla.
+  useEffect(() => {
+    setSeccionAbierta(null);
+    setMenuMobileAbierto(false);
+  }, [rutaActual]);
 
   // Sin sesión no se pinta NADA del usuario logueado (red de seguridad:
   // aunque `rol` quedara con datos viejos, la barra muestra solo "visita")
@@ -77,12 +95,13 @@ export const MenuNav = () => {
         className={`menu_nav_lista ${menuMobileAbierto ? "abierto" : "menu"}`}
         id={ID_LISTA_MENU}
       >
-        {esVisitante && <VistaVisita />}
+        {esVisitante && <VistaVisita cerrarMenu={cerrarMenu} />}
 
         {!sinSesion && rol?.rol === "administrador" && (
           <VistaAdministrador
             alternarSeccion={alternarSeccion}
             seccionAbierta={seccionAbierta}
+            cerrarMenu={cerrarMenu}
             onLogout={cerrarSesion}
             cerrar={() => setSeccionAbierta(null)}
             usuario={dataVisualMenu.usuario ?? ""}
@@ -94,6 +113,7 @@ export const MenuNav = () => {
             tipo={(rol?.tipo as TipoPlan) || "basico"}
             seccionAbierta={seccionAbierta}
             alternarSeccion={alternarSeccion}
+            cerrarMenu={cerrarMenu}
           />
         )}
 

@@ -1,0 +1,283 @@
+/* ==========================================================================
+   PANEL DE ANUNCIOS DE UNA EMPRESA
+   Tarjetas de solo lectura dentro del modal `.admin_modal`.
+
+   ANIMACIÓN (skill emil-design-eng): entrada escalonada de 40ms con
+   translateY(8px) + opacity, propiedades exactas, y `prefers-reduced-motion`
+   que la apaga dejando el contenido visible.
+   ========================================================================== */
+
+.panel_anuncios {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+/* ---------- Encabezado ---------- */
+.panel_anuncios_encabezado {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+
+  padding-bottom: 1.25rem;
+
+  border-bottom: 1px solid var(--borde);
+}
+
+.panel_anuncios_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  min-width: 0;
+}
+
+.panel_anuncios_etiqueta {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-secundario);
+}
+
+.panel_anuncios_titulos h2 {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.panel_anuncios_titulos p {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.panel_anuncios_cerrar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  width: 36px;
+  height: 36px;
+
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui);
+}
+
+.panel_anuncios_cerrar:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel_anuncios_cerrar:hover {
+    color: var(--texto-principal);
+    background: var(--fondo-hover);
+    border-color: var(--borde-hover);
+  }
+}
+
+/* ---------- Estado vacío ---------- */
+.panel_anuncios_vacio {
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  background: var(--fondo-secundario);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+}
+
+/* ---------- Lista de tarjetas ---------- */
+.panel_anuncios_lista {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  max-height: 55vh;
+  overflow-y: auto;
+}
+
+@keyframes panel_anuncios_entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel_anuncios_card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+
+  padding: .9rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+
+  /* Entrada escalonada: cada tarjeta se demora un poco más (40ms) */
+  animation: panel_anuncios_entra 200ms var(--ease-ui) both;
+}
+
+.panel_anuncios_card:nth-child(1) { animation-delay: 0ms; }
+.panel_anuncios_card:nth-child(2) { animation-delay: 40ms; }
+.panel_anuncios_card:nth-child(3) { animation-delay: 80ms; }
+.panel_anuncios_card:nth-child(4) { animation-delay: 120ms; }
+.panel_anuncios_card:nth-child(n + 5) { animation-delay: 160ms; }
+
+/* ---------- Miniatura ---------- */
+.panel_anuncios_media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 96px;
+  height: 72px;
+  overflow: hidden;
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+}
+
+.panel_anuncios_media_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.panel_anuncios_media_icono {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  color: var(--texto-deshabilitado);
+}
+
+.panel_anuncios_media_tipo {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+/* ---------- Datos ---------- */
+.panel_anuncios_datos {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  min-width: 0;
+}
+
+.panel_anuncios_titulo_card {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.panel_anuncios_descripcion {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+
+  /* La descripción puede llegar hasta 1000 caracteres: se recorta a 2 líneas */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.panel_anuncios_pie {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: .15rem;
+}
+
+.panel_anuncios_contacto {
+  padding: .2rem .6rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--color-secundario);
+  background: rgba(56, 189, 248, .1);
+  border: 1px solid rgba(56, 189, 248, .28);
+  border-radius: 999px;
+}
+
+.panel_anuncios_fecha {
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+}
+
+/* ---------- Nota al pie ---------- */
+.panel_anuncios_nota {
+  margin: 0;
+  padding-top: .85rem;
+  border-top: 1px solid var(--borde);
+
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 650px) {
+  .panel_anuncios {
+    padding: 1.25rem;
+  }
+
+  .panel_anuncios_card {
+    grid-template-columns: 1fr;
+  }
+
+  .panel_anuncios_media {
+    width: 100%;
+    height: 140px;
+  }
+}
+
+/* ---------- PREFERS-REDUCED-MOTION ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .panel_anuncios_card {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .panel_anuncios_cerrar {
+    transition-duration: 0ms;
+  }
+
+  .panel_anuncios_cerrar:active {
+    transform: none;
+  }
+}

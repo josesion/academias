@@ -37,13 +37,36 @@ export const useMenuNav = () => {
   };
 
   /**
+   * Cierra el menú SIN navegar (spec 018).
+   *
+   * Es lo que se pone en el `onClick` de los ítems, que son `<NavLink>`: la
+   * navegación la hace el propio enlace, así que acá solo hace falta cerrar.
+   *
+   * Antes de esto la cierre lo hacía `irA`, pero la spec 014 convirtió los
+   * `<li onClick>` en `<Link>` puros (para que fueran enfocables y anunciables
+   * como enlaces) y `irA` quedó sin un solo llamador: al hacer click en un ítem
+   * el submenú y el menú móvil seguían abiertos.
+   *
+   * No se puede resolver con el "click fuera" de `MenuNav`: compara contra
+   * `navRef` y los ítems están DENTRO del `<nav>`, así que nunca cuentan como
+   * click externo.
+   */
+  const cerrarMenu = () => {
+    setMenuMobileAbierto(false);
+    setSeccionAbierta(null);
+  };
+
+  /**
    * Función centralizada para navegar.
    * Al cambiar de página, asegura que el menú mobile se cierre.
+   *
+   * @deprecated Los ítems son `<NavLink>` y usan `cerrarMenu` en su `onClick`.
+   * Se conserva para navegación programática (por ejemplo desde un `navigate`
+   * que no pasa por el menú).
    */
   const irA = (ruta: string) => {
     navegar(ruta);
-    setMenuMobileAbierto(false); 
-    setSeccionAbierta(null);
+    cerrarMenu();
   };
 
   const alternarMenuMobile = () => {
@@ -57,10 +80,9 @@ export const useMenuNav = () => {
      * logout manual y token vencido.
      */
   const cerrarSesion = ()=>{
-    setMenuMobileAbierto(false);
+    cerrarMenu();
     setDataVisualMenu({ rol : "visita", usuario :  null });
     cerrarSesionContexto();
-    setSeccionAbierta(null);
     navegar("/login");
   };
 
@@ -74,6 +96,7 @@ export const useMenuNav = () => {
     alternarSeccion,
     alternarMenuMobile,
     irA,
+    cerrarMenu,
     cerrarSesion,
     dataVisualMenu,
     setDataVisualMenu,

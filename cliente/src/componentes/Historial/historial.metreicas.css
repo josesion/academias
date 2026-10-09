@@ -93,10 +93,10 @@
   position: relative;
 
   display: flex;
-  gap: 16px;
+  gap: 12px;
 
-  padding-left: 28px;
-  padding-bottom: 18px;
+  padding-left: 26px;
+  padding-bottom: 9px;
 }
 
 .historial_item:last-child {
@@ -148,7 +148,7 @@
 .historial_tarjeta {
   flex: 1;
 
-  padding: 14px 16px;
+  padding: 10px 13px;
 
   border-radius: var(--radio-md);
   border: 1px solid var(--borde);
@@ -156,7 +156,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
-  transition: var(--transicion);
+  transition: transform 160ms var(--ease-ui), border-color 200ms var(--ease-ui);
 }
 
 .historial_item:hover .historial_tarjeta {
@@ -168,9 +168,9 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 
-  margin-bottom: 8px;
+  margin-bottom: 5px;
 }
 
 .historial_pill {

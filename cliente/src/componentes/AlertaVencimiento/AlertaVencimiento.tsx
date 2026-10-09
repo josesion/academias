@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import "./AlertaVencimiento.css";
 
 interface AlertaVencimientoProps {
@@ -63,7 +64,15 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
       : 0;
   const dashOffset = 163.36 * (1 - progreso);
 
-  return (
+  // Se renderiza en un PORTAL a document.body, igual que `ModalVencimiento`.
+  // Motivo: esta tarjeta es `position: fixed`, y un elemento con `transform`
+  // (≠ none) se vuelve el bloque contenedor de sus descendientes fijos. La
+  // pagina de usuario hace `.usuario_metricas_grupo2:hover { scale(0.98) }`, y como
+  // esta alerta vivia DENTRO de esa seccion, al hacer hover sobre el historial
+  // la seccion se escalaba y la alerta se movia y se encogia con ella
+  // (360 x 0.98 = 352.8px). Con el portal queda colgada del body y no la
+  // captura ningun ancestro.
+  return createPortal(
     <div
       className={`alerta-vencimiento ${claseUrgencia} ${carga ? "es-cargando" : ""}`}
     >
@@ -167,6 +176,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
           </>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

@@ -30,6 +30,9 @@ interface InputsProps {
   readonly: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string | null;
+  // Filtro de archivos del input type=file (spec 017). Aditiva: sin esta prop
+  // el input se comporta exactamente como antes.
+  accept?: string;
 }
 
 /**
@@ -81,6 +84,10 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
           onChange={parametros.onChange}
           className="inputs"
           readOnly={parametros.readonly}
+          // Solo tiene efecto con type=file (spec 017): filtra el diálogo de
+          // archivos que abre el navegador. No previene que se suba otra cosa,
+          // eso lo valida el server.
+          accept={parametros.accept}
           aria-invalid={tieneError ? true : undefined}
           aria-describedby={tieneError ? idError : undefined}
         />

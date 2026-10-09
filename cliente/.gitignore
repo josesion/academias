@@ -35,3 +35,6 @@ specs
 .opencode/
 skills-lock.json
 
+# Salida del MCP de navegador (Playwright MCP): snapshots y capturas
+.playwright-mcp/
+

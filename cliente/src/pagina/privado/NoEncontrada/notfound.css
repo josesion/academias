@@ -1,0 +1,85 @@
+/* Página 404 (spec 018) — ruta privada sin menú: `App.tsx` la registra dentro
+   de `RutasPrivadas`, y no dentro de `LayoutConMenu` ni de `LayoutSinMenu`
+   anidados. */
+
+.notfound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  min-height: 100vh;
+  padding: 24px 20px;
+
+  text-align: center;
+  color: var(--texto-principal);
+}
+
+.notfound_codigo {
+  margin: 0;
+  font-size: 4rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-primario);
+}
+
+.notfound_titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.notfound_texto {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--texto-secundario, #a1a1aa);
+}
+
+.notfound_botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.notfound_botones .boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+
+  font-size: 1rem;
+  font-family: inherit;
+  text-decoration: none;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.notfound_botones .boton:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .notfound_codigo {
+    font-size: 3rem;
+  }
+
+  .notfound_botones {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .notfound_botones .boton {
+    width: 100%;
+  }
+}

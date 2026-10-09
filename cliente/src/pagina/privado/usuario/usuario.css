@@ -7,15 +7,15 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: stretch;
+  /* `flex-start` y NO `stretch`, y esto es importante: con `stretch` el
+     contenedor estiraba grupo1 al alto de grupo2, y el ResizeObserver de
+     Usuario.tsx copia el alto de grupo1 de vuelta a grupo2. Las dos columnas
+     quedaban clavadas en ~1382px con solo 641px de contenido real. Con
+     `stretch` es un bucle; con `flex-start` cada una mide lo que tiene. */
+  align-items: flex-start;
   justify-content: flex-start;
   gap: 20px;
-  width: 99%;
-  height: auto; /* Deja crecer según contenido en lugar de forzarse */
-  min-height: 0; /* Permite que el container se ajuste a su contenido */
-  padding: 20px 10px 50px 10px; /* Padding extra abajo para dar respiro */
   box-sizing: border-box;
-
   /* Transición suave de layout al cambiar de viewport */
   transition: margin 0.2s var(--ease-ui), padding 0.2s var(--ease-ui);
 }
@@ -200,4 +200,180 @@
   .usuario_contenedor_metricas .usuario_metricas_tarjetas {
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   }
+}
+
+/* ==========================================================================
+   PANEL DE LA ACADEMIA — AJUSTES DE ESTA PAGINA (spec 018)
+
+   Todo lo de abajo va SCOPEADO bajo `.usuario_contenedor_metricas` a
+   proposito: `.tarjeta_metrica_contenedor` (y su CSS) lo usan TAMBIEN las
+   tarjetas del panel Admin, asi que tocar `tarjetametricas.css` aca
+   seria un efecto colateral en otra pantalla.
+
+   1. ENCABEZADO — la pagina no tenia titulo: arrancaba directo con las
+      tarjetas, sin jerarquia ni referencia de donde estas.
+   2. TARJETAS DE METRICA — la marca de agua era invisible (110px a
+      `opacity: .06`, mas grande que el propio dato) y el numero estaba en
+      19.2px serif, o sea mas chico que el icono.
+   3. CONTENEDOR — `width: 99%` descentraba la pagina.
+   ========================================================================== */
+
+/* ---------- 1. ENCABEZADO ---------- */
+/* `flex-basis: 100%` para que ocupe su propia linea: el contenedor es un
+   flex-wrap de dos columnas, asi que sin esto se pelearia con grupo1. */
+.usuario_encabezado {
+  flex: 0 0 100%;
+  width: 100%;
+
+  margin-bottom: 4px;
+}
+
+.usuario_encabezado_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.usuario_encabezado_etiqueta {
+  color: var(--color-secundario);
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.usuario_encabezado h1 {
+  margin: 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+}
+
+.usuario_encabezado p {
+  margin: 0;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+}
+
+/* ---------- 2. TARJETAS DE METRICA (scoped) ---------- */
+
+/* `transition` con PROPIEDADES EXACTAS. El original era
+   `transition: var(--transicion)` y ese token es `all .3s`: animaba tambien
+   padding/box-shadow por layout, que se percibe lento. */
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor {
+  padding: 20px 22px;
+
+  /* El borde base es `rgba(116,120,120,.15)` sobre fondo `#f9f9f9`: las
+     tarjetas blancas casi no se separaban del fondo. */
+  border-color: rgba(116, 120, 120, 0.24);
+
+  transition:
+    transform 160ms var(--ease-ui),
+    border-color 200ms var(--ease-ui),
+    box-shadow 200ms var(--ease-ui);
+}
+
+/* La marca de agua pasa de 110px/.06 a 72px/.14: a 6% no se leia como
+   nada y ocupaba mas que el dato. */
+.usuario_contenedor_metricas .tarjeta_metrica_logo {
+  right: 6px;
+  bottom: 6px;
+
+  width: 72px;
+  height: 72px;
+
+  opacity: 0.14;
+
+  transition:
+    opacity 200ms var(--ease-ui),
+    transform 260ms var(--ease-ui);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_logo svg {
+  width: 56px;
+  height: 56px;
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+  opacity: 0.22;
+  /* Se saca el `rotate(-5deg)` del hover: en un numero de datos se lee como
+     un erro, no como un detalle. */
+  transform: scale(1.06);
+}
+
+/* Tinte por tipo: los dos estados de riesgo se distinguen de un vistazo sin
+   depender de leer el numero. */
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
+  color: var(--color-advertencia);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
+  color: var(--color-error);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
+  color: var(--color-exito);
+}
+
+/* El numero es EL dato de la tarjeta. En serif (`--fuente-titulos`) a tamano
+   de titular se ve editorial a proposito, en vez de accidental. */
+.usuario_contenedor_metricas .tarjeta_metrica_valor {
+  font-family: var(--fuente-titulos);
+  font-size: 2.375rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Rotulo: mono en mayusculas (identidad de la casa) pero con mas aire y un
+   poco mas de contraste, que estaba en 60% de negro. */
+.usuario_contenedor_metricas .tarjeta_metrica_titulo {
+  margin-bottom: 2px;
+
+  color: var(--texto-secundario);
+  letter-spacing: 0.16em;
+}
+
+/* ---------- 3. CONTENEDOR ---------- */
+.usuario_contenedor_metricas {
+  /* Estaba en 99%: descentraba la pagina respecto del nav. */
+  width: 100%;
+  max-width: 1440px;
+  padding: 24px 32px 56px;
+}
+
+/* ---------- 4. RESPONSIVE DEL ENCABEZADO ---------- */
+@media (max-width: 650px) {
+  .usuario_contenedor_metricas {
+    padding: 20px 16px 40px;
+  }
+
+  .usuario_encabezado h1 {
+    font-size: 1.9rem;
+  }
+}
+
+/* ==========================================================================
+   AVISO DE VENCIMIENTO — espacio reservado
+
+   La tarjeta es `position: fixed` abajo a la derecha (va en portal al body).
+   Como el panel de la academia entra en pantalla y el historial scrollea
+   adentro, sin esto la última entrada queda siempre tapada por la alerta.
+   ========================================================================== */
+
+.usuario_contenido_historial.con_alerta {
+  padding-bottom: 252px;
 }
