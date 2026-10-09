@@ -35,6 +35,11 @@ import historial from "./rutas/historial.ruta";
 import flayer   from "./rutas/flayer.ruta";
 import logEventosRutas from "./rutas/log.ruta";
 
+/** RUTAS DE LA PLATAFORMA (spec 015) - solo rol administrador */
+
+import anuncioRuta from "./rutas/anuncio.ruta";
+import empresaRuta from "./rutas/empresa.ruta";
+
 
 import protectRutas from "./rutas/protegida.rutas";
 /** RUTAS PARA EL ALUMNO  */
@@ -126,6 +131,10 @@ app.use(usuarioAdmin);
 
 // RUTA DE EVENTOS DEL SISTEMA (logs)
 app.use(logEventosRutas);
+
+// RUTAS DE LA PLATAFORMA (spec 015): anuncios y empresas
+app.use(anuncioRuta);
+app.use(empresaRuta);
 
 app.use((err : Error , __req : Request, res : Response , __next : NextFunction)=>{
 
