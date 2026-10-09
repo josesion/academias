@@ -54,7 +54,9 @@ export const FormularioEscuelas = (data: PropsFormEscuelas) => {
   return (
     <form action="" className="form-escuela">
       <header className="form-escuela__encabezado">
-        <h2 className="form-escuela__titulo">Datos de la Academia</h2>
+        <h2 className="form-escuela__titulo" id="form_escuela_titulo">
+          Datos de la Academia
+        </h2>
         <p className="form-escuela__subtitulo">
           Completá la información del propietario y de la academia.
         </p>

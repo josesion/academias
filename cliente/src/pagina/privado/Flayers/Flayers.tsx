@@ -1,4 +1,5 @@
 import { confiFlayer } from "../../../hookNegocios/flayers";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 
 import { SpinnerTarjeta } from "../../../componentes/Metricas/SipinnerMetricas/SpinnerTajetas";
 import { LienzoImagen } from "../../../componentes/Flayers/ImagenSector/ImagenSector";
@@ -26,6 +27,13 @@ export const FlayersPag = () => {
     cerrarModalEliminar,
   } = confiFlayer();
 
+  // Teclado del modal de creación (spec 014): Escape cierra y el foco entra,
+  // queda atrapado y vuelve al botón que lo abrió
+  const { refDialog: refFormulario } = useModalAccesible({
+    abierto: state.modalFormulario,
+    onCerrar: cerrarFormulario,
+  });
+
   return (
     <section className="flayers_pagina">
       {/* 1. MODAL DE CONFIRMACIÓN (Ubicado arriba de todo para evitar solapamientos) */}
@@ -50,8 +58,12 @@ export const FlayersPag = () => {
         {state.modalFormulario && (
           <div className="flayers_modal_overlay" onClick={cerrarFormulario}>
             <div
+              ref={refFormulario}
               className="flayers_seccion_creacion"
               onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="flayers_creacion_titulo"
             >
               <button
                 className="flayers_modal_btn_cerrar"
@@ -63,7 +75,9 @@ export const FlayersPag = () => {
               </button>
 
               <div className="flayers_creacion_header">
-                <h3 className="flayers_creacion_titulo">Nuevo Flyer</h3>
+                <h3 className="flayers_creacion_titulo" id="flayers_creacion_titulo">
+                  Nuevo Flyer
+                </h3>
                 <p className="flayers_creacion_subtitulo">
                   Carga tu imagen y completa los datos para publicar
                 </p>

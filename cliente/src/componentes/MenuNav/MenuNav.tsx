@@ -13,6 +13,9 @@ import { BloqueMiCuenta } from "./partes/BloqueMiCuenta";
 import { type TipoPlan } from "./menu.types";
 import "./menuNav.css";
 
+/** `id` de la lista del menú: lo anuncia el `aria-controls` del botón de móvil. */
+const ID_LISTA_MENU = "menu_nav_lista_principal";
+
 export const MenuNav = () => {
   const {
     autenticado,
@@ -21,7 +24,6 @@ export const MenuNav = () => {
     seccionAbierta,
     alternarSeccion,
     alternarMenuMobile,
-    irA,
     cerrarSesion,
     dataVisualMenu,
     setDataVisualMenu,
@@ -58,7 +60,7 @@ export const MenuNav = () => {
   const mostrarMiCuenta = !sinSesion && (rol?.rol === "alumno" || esUsuario);
   // console.log(rol?.tipo);
   return (
-    <nav className="menu_nav" ref={navRef}>
+    <nav className="menu_nav" ref={navRef} aria-label="Navegación principal">
       <div className="app-name-container">
         <Logo size={60} />
         <div className="app-user-info">
@@ -73,12 +75,12 @@ export const MenuNav = () => {
 
       <ul
         className={`menu_nav_lista ${menuMobileAbierto ? "abierto" : "menu"}`}
+        id={ID_LISTA_MENU}
       >
-        {esVisitante && <VistaVisita irA={irA} />}
+        {esVisitante && <VistaVisita />}
 
         {!sinSesion && rol?.rol === "administrador" && (
           <VistaAdministrador
-            irA={irA}
             alternarSeccion={alternarSeccion}
             seccionAbierta={seccionAbierta}
             onLogout={cerrarSesion}
@@ -92,7 +94,6 @@ export const MenuNav = () => {
             tipo={(rol?.tipo as TipoPlan) || "basico"}
             seccionAbierta={seccionAbierta}
             alternarSeccion={alternarSeccion}
-            irA={irA}
           />
         )}
 
@@ -107,7 +108,15 @@ export const MenuNav = () => {
         )}
       </ul>
 
-      <button className="btn_menu" onClick={alternarMenuMobile}>
+      {/* Botón del menú en móvil: es un ícono solo, así que sin `aria-label`
+          no tendría nombre accesible (spec 014) */}
+      <button
+        className="btn_menu"
+        onClick={alternarMenuMobile}
+        aria-expanded={menuMobileAbierto}
+        aria-controls={ID_LISTA_MENU}
+        aria-label={menuMobileAbierto ? "Cerrar el menú" : "Abrir el menú"}
+      >
         {menuMobileAbierto ? (
           <HiChevronUp size={25} />
         ) : (

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { RutasProtegidasContext } from "../../contexto/protectRutas";
+import { useModalAccesible } from "../../hooks/useModalAccesible";
 
 import "./ModalSinSuscripcion.css";
 
@@ -27,8 +28,6 @@ export const ModalSinSuscripcion = ({ abierto }: ModalSinSuscripcionProps) => {
   const { cerrarSesion } = useContext(RutasProtegidasContext);
   const navegar = useNavigate();
 
-  if (!abierto) return null;
-
   /**
    * 🔒 Cierre de sesión vía contexto (el mismo camino del logout del menú)
    * y navegación al login sin `window.location.href`.
@@ -38,9 +37,26 @@ export const ModalSinSuscripcion = ({ abierto }: ModalSinSuscripcionProps) => {
     navegar("/login");
   };
 
+  /**
+   * 🔒 Bloqueo sin salida: es el único modal con `cerrable: false`, porque la
+   * regla del negocio es que no se pueda esquivar (spec 014). El foco igual
+   * entra, queda atrapado y vuelve al elemento que lo abrió.
+   *
+   * Va ANTES del `if (!abierto) return null` de abajo por las Rules of Hooks:
+   * los hooks se tienen que llamar siempre y en el mismo orden.
+   */
+  const { refDialog } = useModalAccesible({
+    abierto,
+    onCerrar: handleCerrarSesion,
+    cerrable: false,
+  });
+
+  if (!abierto) return null;
+
   return createPortal(
     <div className="modal-sin-susp-overlay">
       <div
+        ref={refDialog}
         className="modal-sin-susp-tarjeta"
         role="alertdialog"
         aria-modal="true"

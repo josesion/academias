@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { LuMapPin, LuPhone, LuIdCard } from "react-icons/lu";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 
@@ -12,9 +13,25 @@ export interface TarjetaEscuelaProps {
   direccion: string;
   celular: string;
   carga: boolean;
-  onClickEscuela: (id_escuela: number) => void;
 }
 
+/**
+ * Tarjeta de una academia, en la pantalla "Mis Academias" del alumno.
+ *
+ * La tarjeta es un `<Link to="/data_escuela" state={{ id_escuela }}>` (spec
+ * 014): antes era un `<div onClick>`, que no se podía tabular ni activar con
+ * Enter. `DataEscual` sigue leyendo el id de `location.state`, así que la
+ * navegación es idéntica.
+ *
+ * @param id_escuela - Id de la academia (viaja en el state del Link).
+ * @param dniPropietario - DNI del propietario.
+ * @param nombrePropietario - Nombre del propietario.
+ * @param apellidoPropietario - Apellido del propietario.
+ * @param razonSocial - Nombre de la academia.
+ * @param direccion - Dirección.
+ * @param celular - Celular de contacto.
+ * @param carga - Si está cargando.
+ */
 export const TarjetaEscuela = ({
   id_escuela,
   dniPropietario,
@@ -24,13 +41,15 @@ export const TarjetaEscuela = ({
   direccion,
   celular,
   carga,
-  onClickEscuela,
 }: TarjetaEscuelaProps) => {
   const iniciales = `${nombrePropietario.charAt(0)}${apellidoPropietario.charAt(0)}`;
 
   return (
-    /* Usamos una función flecha para cachear/capturar el id_escuela al hacer clic */
-    <div className="tarjeta_escuela" onClick={() => onClickEscuela(id_escuela)}>
+    <Link
+      className="tarjeta_escuela"
+      to="/data_escuela"
+      state={{ id_escuela }}
+    >
       {carga ? (
         <SpinnerTarjeta />
       ) : (
@@ -63,6 +82,6 @@ export const TarjetaEscuela = ({
           </ul>
         </div>
       )}
-    </div>
+    </Link>
   );
 };

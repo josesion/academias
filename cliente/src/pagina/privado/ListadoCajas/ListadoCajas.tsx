@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { BookOpen } from "lucide-react";
 // Componentes
 import { EstadoCaja } from "../../../componentes/ListadoCajas/EstadoCaja/EstadoCaja";
@@ -73,6 +74,13 @@ export const ListadoCajas = () => {
       setEstaCerrando(false);
     }, 300); // Coincide con la duración de la animación CSS de salida
   };
+
+  // Teclado del modal del libro diario (spec 014): Escape cierra (con la misma
+  // animación de salida que el botón) y el foco entra, queda atrapado y vuelve
+  const { refDialog: refLibroDiario } = useModalAccesible({
+    abierto: stateListadoCaja.modal.libroDiario,
+    onCerrar: manejarCierreConAnimacion,
+  });
 
   // Partimos los métodos de pago en bloques de 3
   const bloquesMetodosPago = dividirEnBloques(
@@ -171,12 +179,18 @@ export const ListadoCajas = () => {
         <div
           className={`modal-overlay-finanzas ${estaCerrando ? "saliendo" : ""}`}
         >
-          <div className="modal-contenido-finanzas">
+          <div
+          ref={refLibroDiario}
+          className="modal-contenido-finanzas"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="titulo_libro_diario"
+        >
             <header className="modal_finanzas_header">
               <div className="libro_diario_titulo">
                 <BookOpen size={20} />
                 <div className="libro_diario_titulo_texto">
-                  <h2>Libro diario</h2>
+                  <h2 id="titulo_libro_diario">Libro diario</h2>
                   <span>Registro cronológico de caja</span>
                 </div>
               </div>

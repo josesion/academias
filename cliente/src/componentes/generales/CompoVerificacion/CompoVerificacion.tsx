@@ -1,4 +1,5 @@
 import { Boton } from "../Boton/Boton";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import "./compo.verificacion.css";
 
 interface PropsVerificacion {
@@ -9,8 +10,26 @@ interface PropsVerificacion {
   modal?: boolean;
 }
 
+/**
+ * Confirmación "¿estás seguro…?" reutilizada por varias pantallas.
+ *
+ * En modo `modal` es un diálogo de verdad: Escape cierra, el foco entra y
+ * queda atrapado, y vuelve al botón que lo abrió (spec 014). Fuera del modo
+ * modal es un bloque normal y no lleva `role`.
+ *
+ * @param props.texto - Qué se va a confirmar (va en el texto).
+ * @param props.onConfirmar - Confirma la acción.
+ * @param props.onCancelar - Cancela y cierra.
+ * @param props.enviando - Estado de carga: deshabilita los botones.
+ * @param props.modal - Si se muestra como diálogo.
+ */
 export const CompoVerificacion = (props: PropsVerificacion) => {
   const { modal = false } = props;
+
+  const { refDialog } = useModalAccesible({
+    abierto: modal,
+    onCerrar: props.onCancelar,
+  });
 
   const contenido = (
     <div className="contenedor_verificacion">
@@ -31,8 +50,12 @@ export const CompoVerificacion = (props: PropsVerificacion) => {
     return (
       <div className="modal_verificacion_overlay" onClick={props.onCancelar}>
         <div
+          ref={refDialog}
           className="modal_verificacion_contenedor"
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Confirmar acción"
         >
           {contenido}
         </div>

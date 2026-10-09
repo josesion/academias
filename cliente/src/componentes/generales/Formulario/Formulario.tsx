@@ -66,9 +66,16 @@ export const Formulario = (props: FormularioProps) => {
 
         return isSelect ? (
           <div key={inputKey} style={{ width: "100%" }}>
-            <p>{input.label || "Tipo"}</p>
+            {/* El rótulo tiene que ser un <label> con `htmlFor` (spec 016): antes
+                era un <p>, así que el lector de voz no anunciaba el nombre del
+                campo. El id sale del `name` del campo, igual que en `Inputs`. */}
+            <label className="formulario_label_select" htmlFor={inputKey}>
+              {input.label || "Tipo"}
+            </label>
+
             <select
               className="buscador_estado"
+              id={inputKey}
               name={input.name}
               value={props.formData ? props.formData[input.name ?? ""] : ""}
               onChange={props.onItemsFormulario}

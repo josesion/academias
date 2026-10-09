@@ -173,6 +173,26 @@
     color: var(--texto-deshabilitado);
 }
 
+/* Rótulo del <select> (spec 016): era un <p> y pasó a ser un <label> para que
+   el lector de voz anunciara el nombre del campo. Replica el estilo de arriba y
+   fuerza `display:block` porque <label> viene inline por defecto y, sin esto,
+   el rótulo se pegaría al select en la misma línea.
+   NO se extiende la regla anterior a `label` a propósito: los <label> de
+   `Inputs` también son hijos directos de un <div> del form y tienen su propio
+   estilo. */
+.formulario_label_select {
+    display: block;
+
+    margin: 0 0 6px 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
 .buscador_estado {
     width: 100%;
     box-sizing: border-box;

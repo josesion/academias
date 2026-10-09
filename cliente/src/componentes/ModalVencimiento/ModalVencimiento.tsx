@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 
 import { RutasProtegidasContext } from "../../contexto/protectRutas";
+import { useModalAccesible } from "../../hooks/useModalAccesible";
 
 import "./ModalVencimiento.css";
 
@@ -31,8 +32,6 @@ export const ModalVencimiento = ({
   const { cerrarSesion } = useContext(RutasProtegidasContext);
   const navegar = useNavigate();
 
-  if (!abierto) return null;
-
   /**
    * 🔒 Cierre de sesión vía contexto (mismo camino que el logout del menú):
    * limpia el estado y la sesión local, y navega al login sin recargar.
@@ -46,9 +45,25 @@ export const ModalVencimiento = ({
     navegar("/login");
   };
 
+  // Teclado del modal (spec 014). Va antes del `return null` de abajo por las
+  // Rules of Hooks. Si no hay `onCerrar` (solo puede haber salida con la X),
+  // Escape queda sin efecto.
+  const { refDialog: refTarjeta } = useModalAccesible({
+    abierto,
+    onCerrar: onCerrar ? handleCerrarSesion : () => {},
+  });
+
+  if (!abierto) return null;
+
   return createPortal(
     <div className="modal-vencimiento-overlay">
-      <div className="modal-vencimiento-tarjeta">
+      <div
+        ref={refTarjeta}
+        className="modal-vencimiento-tarjeta"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo_vencimiento"
+      >
         {/* Botón de cerrar de la esquina (X) */}
         {onCerrar && (
           <button
@@ -80,7 +95,9 @@ export const ModalVencimiento = ({
           </svg>
         </div>
 
-        <h2 className="modal-vencimiento-titulo">Tu plan se venció</h2>
+        <h2 className="modal-vencimiento-titulo" id="titulo_vencimiento">
+          Tu plan se venció
+        </h2>
         <p className="modal-vencimiento-desc">
           Para seguir usando todas las funciones, renová tu suscripción. Tus
           datos siguen guardados y disponibles apenas la actives de nuevo.

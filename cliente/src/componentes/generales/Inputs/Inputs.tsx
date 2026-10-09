@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useId } from "react";
 //Seccion Estilos
 import "../Inputs/inputs.css";
 
@@ -44,12 +44,22 @@ interface InputsProps {
 export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
   (parametros, ref) => {
     // Genera un ID único para asociar la etiqueta con el input.
-    // Utiliza el nombre, la etiqueta (limpiándola) o un ID aleatorio como fallback.
+    // Se prefiere el `name` y después el texto de la etiqueta; si no hay
+    // ninguno se usa el id de React (`useId`), que es estable entre renders
+    // (spec 016). Antes caía en `Math.random()`, que cambiaba en cada render y
+    // rompía la asociación.
+    const idUnico = useId();
+
     const inputId =
       parametros.name ||
       (parametros.label &&
         parametros.label.toLowerCase().replace(/\s/g, "-")) ||
-      `input-${Math.random().toString(36).substr(2, 9)}`;
+      idUnico;
+
+    // El aviso de error se anuncia al lector de voz: el input lo referencia con
+    // `aria-describedby` y se marca como inválido (spec 016).
+    const idError = `${inputId}_error`;
+    const tieneError = Boolean(parametros.error);
 
     // Define valores por defecto si las propiedades no están presentes.
     const inputType = parametros.type || "text";
@@ -71,12 +81,16 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
           onChange={parametros.onChange}
           className="inputs"
           readOnly={parametros.readonly}
+          aria-invalid={tieneError ? true : undefined}
+          aria-describedby={tieneError ? idError : undefined}
         />
 
         {/* Contenedor para el mensaje de error. Se muestra solo si la propiedad `error` tiene un valor. */}
         <div className="error_espacio">
           {parametros.error && (
-            <p className="mensaje_error">{parametros.error}</p>
+            <p className="mensaje_error" id={idError}>
+              {parametros.error}
+            </p>
           )}
         </div>
       </div>

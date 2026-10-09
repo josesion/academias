@@ -63,7 +63,7 @@ export const FormularioSuscripciones = (props: PropsFormSuscripciones) => {
   return (
     <form className="form-susp" action="">
       <header className="form-susp__encabezado">
-        <h2 className="form-susp__titulo">
+        <h2 className="form-susp__titulo" id="form_susp_titulo">
           {metodo === "PUT" ? "Editar suscripción" : "Nueva suscripción"}
         </h2>
         <p className="form-susp__subtitulo">

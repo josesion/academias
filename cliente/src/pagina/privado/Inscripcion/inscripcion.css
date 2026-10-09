@@ -1,0 +1,29 @@
+/* ==========================================================================
+   INSCRIPCIÓN DE ALUMNOS — título de la página
+
+   La regla vive acá (y no en un CSS de componente) porque es de la página:
+   es la única que no tenía encabezado. Usa los mismos tokens que los títulos
+   de las demás páginas (`--fuente-titulos`, `--titulo-lg`, `--peso-medio`), que
+   es lo que hace `.pagina_escuelas_titulos h1` en `paginaescuelas.css`.
+   ========================================================================== */
+
+.pagina_inscripcion_titulo {
+  margin: 0 0 20px 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+
+  text-align: center;
+}
+
+/* En pantallas chicas se usa el mismo tamaño que los demás títulos de página
+   (1.9rem), para que no quede desbalanceado contra el formulario de abajo */
+@media (max-width: 650px) {
+  .pagina_inscripcion_titulo {
+    font-size: 1.9rem;
+  }
+}

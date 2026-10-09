@@ -3,6 +3,7 @@ import { FormularioUsuario } from "../../../../componentes/Administrador/Formula
 import { SelectorOpt } from "../../../../componentes/generales/CompSelecObt/SelectorOpt";
 import { Boton } from "../../../../componentes/generales/Boton/Boton";
 import { useAmbUsuarios } from "../../../../hookNegocios/abmUsuarios";
+import { useModalAccesible } from "../../../../hooks/useModalAccesible";
 // Tipos de las opciones del selector (mismos que el form de suscripciones)
 import type { EscuelaSelect } from "../../../../servicio/suspcripciones.fetch";
 import "./paginausuario.css";
@@ -28,6 +29,13 @@ export const PaginaUsuarios = () => {
     postUsuario,
     putUsuario,
   } = useAmbUsuarios();
+
+  // Teclado del modal de alta/modificación (spec 014): Escape cierra y el foco
+  // entra, queda atrapado y vuelve al botón que lo abrió
+  const { refDialog: refFormulario } = useModalAccesible({
+    abierto: state.modal.formulario,
+    onCerrar: cerrarFormulario,
+  });
 
   return (
     <section className="pagina_usuarios">
@@ -95,9 +103,11 @@ export const PaginaUsuarios = () => {
       {state.modal.formulario && (
         <div className="admin_modal_fondo" onClick={cerrarFormulario}>
           <div
+            ref={refFormulario}
             className="admin_modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="form_cuenta_titulo"
             onClick={(e) => e.stopPropagation()}
           >
             <FormularioUsuario

@@ -37,7 +37,9 @@ export const EstadoSuscripcion = (props: PropsEstadoSuscripcion) => {
   return (
     <div className="estado-susp">
       <header className="estado-susp__encabezado">
-        <h2 className="estado-susp__titulo">Anular suscripción</h2>
+        <h2 className="estado-susp__titulo" id="estado_susp_titulo">
+          Anular suscripción
+        </h2>
 
         <p className="estado-susp__texto">
           <strong className="estado-susp__destacado">

@@ -160,6 +160,58 @@
 }
 
 /* ============================================================
+   CONTROL INTERNO DEL ITEM (spec 014)
+
+   Los items dejaron de ser `<li onClick>`: ahora el `<li>` es la
+   estructura (y aporta layout, padding y hover) y adentro hay un
+   `<Link>` o un `<button>` de verdad, para que se puedan usar con
+   teclado y los anuncie el lector de voz.
+
+   Estas reglas hacen que el control se vea EXACTAMENTE igual que el
+   `<li>`: sin fondo, sin borde, con la misma tipografía y ocupando
+   todo el ancho (así el hover del `<li>` sigue cubriéndolo entero).
+   ============================================================ */
+
+.menu_control{
+
+    display:flex;
+
+    align-items:center;
+
+    /* Ocupa todo el ancho para que el fondo del hover del <li> quede parejo */
+    flex:1;
+
+    min-width:0;
+
+    gap:8px;
+
+    padding:0;
+
+    background:none;
+
+    border:none;
+
+    color:inherit;
+
+    font:inherit;
+
+    text-align:left;
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+}
+
+/* Cabecera de una sección: ícono a la izquierda y chevron a la derecha,
+   como antes (el reparto lo hace el botón y no el <li>) */
+.menu_control--cabecera{
+
+    justify-content:space-between;
+
+}
+
+/* ============================================================
    ICONOS
    ============================================================ */
 

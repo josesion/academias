@@ -1,13 +1,30 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <meta charset="UTF-8" />
+    <!-- maximum-scale=5 (spec 013): sin un tope, el zoom por pinza queda bloqueado
+         en la mayoría de navegadores (WCAG 1.4.4). El 5 deja ampliar al 500% sin
+         activar el modo "escritorio" al girar la pantalla. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
+
+    <title>ELPIS — Sistema integral para academias de danza</title>
+
+    <meta
+      name="description"
+      content="ELPIS reúne alumnos, profesores, horarios, caja, asistencias e inscripciones en un solo sistema para academias de danza."
+    />
+
+    <!-- Color de la barra del navegador en móvil: el --fondo-principal de app.css -->
+    <meta name="theme-color" content="#f9f9f9" />
+
+    <!-- Emblema de la marca recortado de src/componentes/Logo/logo.png (512×512 → 64×64) -->
+    <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
+
+    <!-- iOS no acepta SVG y no escala bien: por eso el PNG de 180×180 -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+</body>
 </html>

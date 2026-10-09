@@ -1,5 +1,6 @@
 import { InscripcionForm } from "../../../componentes/Inscripciones/FormInscripcion/Inscripcion";
 import { useIncripcionesUsuarios } from "../../../hookNegocios/Inscripciones";
+import "./inscripcion.css";
 
 export const InscripcionPage = () => {
   // Hooks de inscripciones
@@ -22,6 +23,10 @@ export const InscripcionPage = () => {
 
   return (
     <div className="usuario_contenedor">
+      {/* Esta página no tenía ningún encabezado (spec 016): el título principal
+          se lo agrega el componente de arriba del todo. */}
+      <h1 className="pagina_inscripcion_titulo">Inscripción de alumnos</h1>
+
       <InscripcionForm
         errorGenerico={state.errorGenerico}
         listadoPlan={state.listadoPlan}

@@ -1,6 +1,7 @@
 import "./paginaescuelas.css";
 
 import { setAmbEscuelas } from "../../../../hookNegocios/abmEscuelas";
+import { useModalAccesible } from "../../../../hooks/useModalAccesible";
 
 import { FormularioEscuelas } from "../../../../componentes/Administrador/Escuelas/EscuelasFormulario";
 import { ListadoEscuelas } from "../../../../componentes/Administrador/ListadoEscuelas/ListadoEscuela";
@@ -25,6 +26,18 @@ export const PaginaEscuela = () => {
     cachearPagina,
     cacharFormularioPut,
   } = setAmbEscuelas();
+
+  // Teclado de los 2 modales (spec 014): Escape cierra, el foco entra, queda
+  // atrapado dentro y vuelve al botón que los abrió
+  const { refDialog: refFormulario } = useModalAccesible({
+    abierto: state.modalAbierto,
+    onCerrar: handleCerrarFormulario,
+  });
+
+  const { refDialog: refEstado } = useModalAccesible({
+    abierto: state.modalEstado,
+    onCerrar: handleCerrarModalEstado,
+  });
 
   return (
     <section className="pagina_escuelas">
@@ -63,9 +76,11 @@ export const PaginaEscuela = () => {
           onClick={handleCerrarFormulario}
         >
           <div
+            ref={refFormulario}
             className="pagina_escuelas_modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="form_escuela_titulo"
             onClick={(e) => e.stopPropagation()}
           >
             <FormularioEscuelas
@@ -90,9 +105,11 @@ export const PaginaEscuela = () => {
           onClick={handleCerrarModalEstado}
         >
           <div
+            ref={refEstado}
             className="pagina_escuelas_modal"
             role="dialog"
             aria-modal="true"
+            aria-label="Confirmar cambio de estado de la escuela"
             onClick={(e) => e.stopPropagation()}
           >
             <EliminarVentana

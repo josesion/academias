@@ -1,4 +1,5 @@
 import { setAbmSuspcripciones } from "../../../hookNegocios/suscripcion";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
 import { ListadoSuscripciones } from "../../../componentes/Administrador/ListadoSusp/ListadoSusp";
 import { ListadoLogs } from "../../../componentes/Administrador/ListadoLogs/ListadoLogs";
@@ -65,6 +66,18 @@ export const DashboardAdministrador = () => {
 
   const { pagina, contadorPagina } = state.paginacion;
   const errorListado = state.error.listado;
+
+  // Teclado de los 2 modales de esta página (spec 014): Escape cierra y el
+  // foco entra, queda atrapado y vuelve al botón que los abrió
+  const { refDialog: refFormulario } = useModalAccesible({
+    abierto: state.modal.formulario,
+    onCerrar: cerrarFormulario,
+  });
+
+  const { refDialog: refAnulacion } = useModalAccesible({
+    abierto: state.modal.estado,
+    onCerrar: cerrarFormularioAnular,
+  });
 
   return (
     <section className="admin_pagina">
@@ -255,14 +268,18 @@ export const DashboardAdministrador = () => {
       </div>
 
       {/* ==============================================================
-          MODAL DEL FORMULARIO — abierto/cerrado por el reducer
+          MODAL DEL FORMULARIO — abierto/cerrado por el reducer.
+          Escape, foco inicial, foco devuelto y trampa de foco los
+          aporta `useModalAccesible` (spec 014)
           ============================================================== */}
       {state.modal.formulario && (
         <div className="admin_modal_fondo" onClick={cerrarFormulario}>
           <div
+            ref={refFormulario}
             className="admin_modal"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="form_susp_titulo"
             onClick={(e) => e.stopPropagation()}
           >
             <FormularioSuscripciones
@@ -288,9 +305,11 @@ export const DashboardAdministrador = () => {
       {state.modal.estado && (
         <div className="admin_modal_fondo" onClick={cerrarFormularioAnular}>
           <div
+            ref={refAnulacion}
             className="admin_modal admin_modal--compacto"
             role="dialog"
             aria-modal="true"
+            aria-labelledby="estado_susp_titulo"
             onClick={(e) => e.stopPropagation()}
           >
             <EstadoSuscripcion

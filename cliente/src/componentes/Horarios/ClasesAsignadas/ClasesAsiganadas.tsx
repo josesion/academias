@@ -23,14 +23,22 @@ interface ClaseAsignadaProps {
   dia: DiaSemana;
   hora: Horas;
   Horarios_Clases?: ClaseHorario[];
-  onSelect?: (clase: ClaseHorario) => void;
 }
 
+/**
+ * Contenido visual de una celda **con clase asignada**.
+ *
+ * Ya NO es interactivo: el `onClick` y el `tabIndex` viven en el `<td>` de
+ * `Calendario`, que es el único elemento accionable de la celda (spec 014).
+ *
+ * @param dia - Día de la celda.
+ * @param hora - Franja horaria de la celda.
+ * @param Horarios_Clases - Todas las clases, para ubicar la de esta celda.
+ */
 export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
   dia,
   hora,
   Horarios_Clases,
-  onSelect,
 }) => {
   const clase = Horarios_Clases?.find(
     (horario) => horario.dia === dia && horario.hora_inicio === hora,
@@ -38,16 +46,8 @@ export const ClaseAsignada: React.FC<ClaseAsignadaProps> = ({
 
   if (!clase) return null;
 
-  const handleClick = () => {
-    onSelect?.(clase);
-  };
-
   return (
-    <div
-      className="tarjeta_clase_asignada"
-      onClick={handleClick}
-      title="Click para ver o modificar"
-    >
+    <div className="tarjeta_clase_asignada" title="Ver o modificar la clase">
       <div className="clase_indicador_lateral" />
 
       <div className="clase_contenido_interno">

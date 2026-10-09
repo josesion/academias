@@ -7,6 +7,7 @@ import { SelectorOpt } from "../../../../componentes/generales/CompSelecObt/Sele
 import { type PlanSaasItem } from "../../../../componentes/Administrador/ListadoPlanesSaas/ListadoPlanes";
 
 import { setAbmPlanes } from "../../../../hookNegocios/admin.plames";
+import { useModalAccesible } from "../../../../hooks/useModalAccesible";
 
 import "./paginaplanes.css";
 
@@ -34,6 +35,13 @@ export const PaginaPlanes = () => {
     setPanelAbierto(false);
     dispatch({ type: "LIMPIAR_TODO" });
   };
+
+  // Teclado del modal de confirmación (spec 014): Escape cierra y el foco
+  // entra, queda atrapado y vuelve al botón que lo abrió
+  const { refDialog: refEstadoPlan } = useModalAccesible({
+    abierto: state.modalEstado,
+    onCerrar: cerrarModalEstado,
+  });
 
   const textoConfirmacion =
     state.planSeleccionado.estado === "activo"
@@ -97,10 +105,12 @@ export const PaginaPlanes = () => {
       {state.modalEstado && (
         <div className="planes-modal-backdrop" onClick={cerrarModalEstado}>
           <div
+            ref={refEstadoPlan}
             className="planes-modal"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
+            aria-label="Confirmar cambio de estado del plan"
           >
             <EliminarVentana
               data={{ id: state.planSeleccionado.id_plan ?? 0 }}

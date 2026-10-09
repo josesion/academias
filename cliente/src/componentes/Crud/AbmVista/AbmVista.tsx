@@ -92,7 +92,12 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
     <div className="amb_master_wrapper">
       <header>
         <div>
-          <h2>Gestion : {entidad}</h2>
+          {/* Era un <h2> y arrancaba la página sin un <h1> (spec 016). Como este
+              componente lo usan 7 páginas (nivel, planes, profesores, tipos,
+              cuentas, categorías de caja y alumnos), este solo cambio les da el
+              título principal a todas. El selector del CSS se actualizó junto
+              con el tag, así que se ve igual. */}
+          <h1>Gestion : {entidad}</h1>
         </div>
       </header>
 

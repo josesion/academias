@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LuPlus, LuTrash2, LuX } from "react-icons/lu";
 import { EliminarVentana } from "../../generales/EliminarModal/EliminarModal";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { type Flayer } from "../Carrucel/CarruselFlayers";
 
 import "./galeria.css";
@@ -17,6 +18,19 @@ interface GaleriaProps {
   planFlayers?: number; // Límite máximo de flyers permitidos según el plan
 }
 
+/**
+ * Galería de flyers con su modal de confirmación de borrado.
+ *
+ * @param flayers - Flyers a mostrar.
+ * @param onEliminar - Callback al confirmar el borrado.
+ * @param onAgregar - Callback del botón "Agregar flyer".
+ * @param onAbrirModalEliminar - Abre la confirmación de borrado.
+ * @param onCerrarModalEliminar - Cierra la confirmación.
+ * @param moodalEliminar - Si la confirmación está abierta.
+ * @param carga - Si está cargando.
+ * @param mensaje - Aviso de la última operación.
+ * @param planFlayers - Máximo de flyers según el plan.
+ */
 export const GaleriaFlayers = ({
   flayers,
   onEliminar,
@@ -42,6 +56,13 @@ export const GaleriaFlayers = ({
     onAbrirModalEliminar();
   };
 
+  // Teclado del modal de borrado (spec 014): Escape cierra y el foco entra,
+  // queda atrapado y vuelve al botón que lo abrió
+  const { refDialog: refModalEliminar } = useModalAccesible({
+    abierto: moodalEliminar,
+    onCerrar: onCerrarModalEliminar,
+  });
+
   const cerrarModalEliminar = () => {
     setFlayerAEliminar(null);
     onCerrarModalEliminar();
@@ -57,8 +78,17 @@ export const GaleriaFlayers = ({
     <div className="galeria_contenedor_principal">
       {/* * MODAL: confirmación de eliminación */}
       {moodalEliminar && flayerAEliminar && (
-        <div className="carrusel_modal_overlay" onClick={cerrarModalEliminar}>
-          <div onClick={(e) => e.stopPropagation()}>
+        <div
+            ref={refModalEliminar}
+            className="carrusel_modal_overlay"
+            onClick={cerrarModalEliminar}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Confirmar eliminación"
+            >
             <EliminarVentana
               data={flayerAEliminar}
               accion={`eliminar el flyer "${flayerAEliminar.titulo}"`}

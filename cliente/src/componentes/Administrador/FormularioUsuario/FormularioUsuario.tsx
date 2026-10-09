@@ -79,7 +79,7 @@ export const FormularioUsuario = (props: PropsFormularioUsuario) => {
             onSubmit={(event) => event.preventDefault()}
         >
             <header className="form-cuenta__encabezado">
-                <h2 className="form-cuenta__titulo">
+                <h2 className="form-cuenta__titulo" id="form_cuenta_titulo">
                     {esModificacion ? "Modificar cuenta" : "Nueva cuenta"}
                 </h2>
 

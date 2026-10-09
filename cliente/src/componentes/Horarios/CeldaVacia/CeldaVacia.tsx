@@ -13,13 +13,12 @@ import "./celdavacia.css";
  *
  * Comportamiento:
  * - Si no se provee un mensaje, se muestra "Sin clase" por defecto.
- * - Al hacer click, notifica al componente padre con la información
- *   contextual (día, hora y mensaje).
+ * - La celda NO tiene click propio: el `<td>` de `Calendario` maneja el click
+ *   y el teclado (spec 014).
  *
  * @param mensaje Texto a mostrar dentro de la celda.
  * @param dia Día de la semana de la celda.
  * @param hora Hora asociada a la celda.
- * @param onSelect Callback ejecutado al seleccionar la celda.
  */
 
 export interface MensajeCelda {
@@ -32,23 +31,22 @@ interface CeldaVaciaProps {
   mensaje?: string;
   dia: DiaSemana;
   hora: Horas;
-  onSelect?: (data: MensajeCelda) => void;
 }
 
+/**
+ * Contenido visual de una celda **libre** del calendario.
+ *
+ * Ya NO es interactivo: el `onClick` y el `tabIndex` viven en el `<td>` de
+ * `Calendario`, que es el único elemento accionable de la celda (spec 014).
+ * Antes esta celda era un `<div onClick>` sin foco, dentro de una grilla de 112
+ * celdas: ni se podía tabular ni activar con el teclado.
+ *
+ * @param mensaje - Texto a mostrar dentro de la celda ("+", "Sin clase"…).
+ * @param dia - Día de la semana de la celda.
+ * @param hora - Hora asociada a la celda.
+ */
 export const CeldaVacia: React.FC<CeldaVaciaProps> = ({
   mensaje = "Sin clase",
-  dia,
-  hora,
-  onSelect,
 }) => {
-  // Emite el contexto de la celda para acciones de alta
-  const handleClick = () => {
-    onSelect?.({ mensaje, dia, hora });
-  };
-
-  return (
-    <div className="celda_vacia" onClick={handleClick}>
-      {mensaje || "Sin clase"}
-    </div>
-  );
+  return <div className="celda_vacia">{mensaje || "Sin clase"}</div>;
 };

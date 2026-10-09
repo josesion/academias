@@ -109,6 +109,97 @@
 }
 
 
+/* ==========================================================================
+   FOCUS VISIBLE — WCAG 2.4.7 (spec 013)
+
+   16 CSS del proyecto tienen `outline: none` en la regla base de sus controles,
+   incluidos los dos componentes de los que está hecho casi todo:
+   `boton.css` (que NO tiene ninguna regla de foco en todo el archivo) y
+   `inputs.css`. `paginacion.css` tampoco: su foco solo existe dentro de dos
+   pantallas. Resultado: al tabular no se veía dónde estabas.
+
+   - El `:root` sube la regla a (0,2,0). Un `:focus-visible` pelado (0,1,0)
+     empataría con `.boton_personalizado { outline: none }` y ganaría el que
+     quedara último en el bundle: así no depende del orden de Vite.
+   - Sigue PERDIENDO contra los `:focus-visible` locales más específicos
+     ((0,2,1) en `admin.css`, `paginaescuelas.css` y `compo.verificacion.css`:
+     llevan un `button` de por medio), que mantienen su propio diseño.
+   - Los que empatan (0,2,0) quedan cubiertos por esta regla, y casi todos declaran lo
+     mismo: `carrucelsolo.css` usa estos mismos 2px de salvia (el `_dot` con
+     offset 3px) y `imagensector.css` ni siquiera define `outline`. Los dos que
+     sí cambian son `logout.css` (pasa de rojo a salvia) y `inicio.scroll.css`
+     (de 1px negro offset 4px a 2px salvia offset 2px).
+   - Token, grosor y offset idénticos a los de esas reglas locales, para que el
+     anillo se vea igual en toda la app.
+   - Los `outline: none` NO se borran: al sacarlos aparecería el anillo del
+     navegador en cada click de mouse, encima del `box-shadow` que cada input ya
+     dibuja (doble indicador). Acá la especificidad los neutraliza.
+   - No cambia nada para quien usa mouse: `:focus-visible` solo se activa con
+     teclado.
+   ========================================================================== */
+
+:root :focus-visible {
+    outline: 2px solid var(--color-secundario);
+    outline-offset: 2px;
+}
+
+
+/* ==========================================================================
+   ENLACE DE SALTO — WCAG 2.4.1 (spec 016)
+
+   Primer elemento enfocable de la página (va antes del <nav> en
+   `LayoutConMenu`). Está SIEMPRE en el DOM pero escondido muy arriba con
+   `translateY(-200%)`, así que solo aparece cuando recibe el foco — que es
+   justo cuando lo está buscando el usuario de teclado.
+
+   Se anima SOLO `transform` (no `top`/`height`): es lo único que no fuerza
+   recálculo de layout.
+   ========================================================================== */
+
+.salto_contenido{
+    position:absolute;
+
+    top:8px;
+    left:8px;
+
+    /* Por encima del nav (que va en 1000) y del overlay de los modales (1000) */
+    z-index:1100;
+
+    /* Escondido hasta que recibe foco */
+    transform:translateY(-200%);
+
+    padding:10px 16px;
+
+    font-family:var(--fuente-principal);
+    font-size:var(--texto-sm);
+    font-weight:var(--peso-medio);
+
+    color:var(--texto-principal);
+
+    text-decoration:none;
+    white-space:nowrap;
+
+    background:var(--fondo-secundario);
+    border:1px solid var(--borde);
+    border-radius:var(--radio-sm);
+
+    box-shadow:var(--sombra-md);
+
+    transition:transform 180ms var(--ease-ui);
+}
+
+.salto_contenido:focus-visible{
+    transform:translateY(0);
+}
+
+/* Con movimiento reducido el enlace aparece de golpe, sin deslizarse */
+@media (prefers-reduced-motion: reduce){
+    .salto_contenido{
+        transition:none;
+    }
+}
+
+
 /* =======================================================
    APP
 ======================================================= */

@@ -29,7 +29,9 @@ html, body {
     padding-bottom: 12px;
 }
 
-.amb_master_wrapper header h2 {
+/* El título pasó de <h2> a <h1> (spec 016): este selector cambió con el tag, así
+   que el aspecto es exactamente el mismo. */
+.amb_master_wrapper header h1 {
     font-family: var(--fuente-titulos);
     font-size: 2rem;
     font-weight: 400;

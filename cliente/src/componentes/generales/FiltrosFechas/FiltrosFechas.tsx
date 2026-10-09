@@ -43,20 +43,35 @@ export const FiltroFechas: React.FC<FiltroFechasProps> = ({
       <div className="filtro_fechas_colapsable">
         <div className="filtro_fechas_contenedor">
           <div className="filtro_input_group">
-            <label>Desde</label>
+            {/* El `htmlFor` + el `id` del input son los que asocian el rótulo con
+                el campo (spec 016): sin ellos el lector de voz no anuncia de
+                qué campo se trata. */}
+            <label htmlFor="filtro_fecha_desde">Desde</label>
             <div className="input_wrapper">
               <Calendar size={16} className="input_icon" />
-              <input type="date" value={fechaDesde} onChange={onDesdeChange} />
+              <input
+                id="filtro_fecha_desde"
+                type="date"
+                aria-label="Filtrar desde la fecha"
+                value={fechaDesde}
+                onChange={onDesdeChange}
+              />
             </div>
           </div>
 
           <div className="filtro_separador">-</div>
 
           <div className="filtro_input_group">
-            <label>Hasta</label>
+            <label htmlFor="filtro_fecha_hasta">Hasta</label>
             <div className="input_wrapper">
               <Calendar size={16} className="input_icon" />
-              <input type="date" value={fechaHasta} onChange={onHastaChange} />
+              <input
+                id="filtro_fecha_hasta"
+                type="date"
+                aria-label="Filtrar hasta la fecha"
+                value={fechaHasta}
+                onChange={onHastaChange}
+              />
             </div>
           </div>
         </div>

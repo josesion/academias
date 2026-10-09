@@ -53,7 +53,7 @@ export const emprendedoresMockData: EmprendedorItem[] = [
 ];
 
 export const PrincipalAlumnos = () => {
-  const { state, cachearEscuela } = configMetricasAlumnos();
+  const { state } = configMetricasAlumnos();
   const { data } = state;
 
   return (
@@ -74,7 +74,6 @@ export const PrincipalAlumnos = () => {
                 razonSocial={escuela.razon_social}
                 direccion={escuela.direccion}
                 celular={escuela.celular}
-                onClickEscuela={cachearEscuela}
               />
             ))
           ) : (
