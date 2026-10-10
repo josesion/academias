@@ -4,7 +4,6 @@ import { Inicio } from "./pagina/publico/inicio/Inicios";
 //import { Admin } from "./pagina/privado/Admin/Admin";
 import { Login } from "./pagina/publico/Login/Login";
 import { UsuarioPage } from "./pagina/privado/usuario/Usuario";
-import { AlumnoPage } from "./pagina/publico/alumno/Alumno";
 
 //Paginas AMB
 import { AmbAlumnos } from "./pagina/privado/Alumnos/Alumnos";
@@ -29,7 +28,7 @@ import { ListadoInscripcionPage } from "./pagina/privado/Listado_inscripcion/Lis
 
 // seccion de componentes de logicas
 import { RutasPrivadas } from "./Rutas.Protegidas";
-import { LayoutConMenu, LayoutSinMenu } from "./hooks/menuManager";
+import { LayoutConMenu } from "./hooks/menuManager";
 
 // Flayers
 import { FlayersPag } from "./pagina/privado/Flayers/Flayers";
@@ -50,7 +49,7 @@ import { NotFound } from "./pagina/privado/NoEncontrada/NotFound";
 
 // Guard de rol para /admin/* (spec 018): evita la pantalla vacía cuando alguien
 // escribe la URL a mano sin ser administrador. El bloqueo real es del server.
-import { SoloAdministrador } from "./utils/guardAdmin";
+import { SoloAdministrador, SoloUsuario, SoloAlumno } from "./utils/guardAdmin";
 
 import { DashboardAdministrador } from "./pagina/privado/Admin/Admin";
 import { PaginaPlanes } from "./pagina/privado/Admin/PaginaPlanes/PaginaPlanes";
@@ -77,75 +76,68 @@ function App() {
       <ProtectRutasProv>
         <BrowserRouter>
           <Routes>
-            {/*RUTAS SIN MENÚ */}
-
-            <Route element={<LayoutSinMenu />}>
-              <Route element={<RutasPrivadas />}>
-                <Route path="/asistencia" element={<FormularioAsistencia />} />
-              </Route>
-            </Route>
-
             {/* 🔒 RUTAS CON MENÚ */}
             <Route element={<LayoutConMenu />}>
-              {/* 🔒 Aca iria el condicional el modal de vencimietno  */}
-
+              {/* Rutas públicas (sin autenticación) */}
               <Route path="/" element={<Inicio />} />
               <Route path="/login" element={<Login />} />
               <Route path="/assistant_login" element={<Login />} />
 
+              {/* 🔒 BLOQUE USUARIO — dueño de escuela (rol "usuario") */}
               <Route element={<RutasPrivadas />}>
-                <Route path="/user_manager_priv" element={<UsuarioPage />} />
-                <Route path="/user_alumno" element={<AmbAlumnos />} />
-                <Route path="/user_planes" element={<AmbPlanesUsuarios />} />
-                <Route
-                  path="/user_tipo_cuenta"
-                  element={<AmbTipoCuentasUsuario />}
-                />
-                <Route
-                  path="/user_profesores"
-                  element={<AmbProfesorUsuarios />}
-                />
-                <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
-                <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
-                <Route path="/caja_usuario" element={<CajaArqueo />} />
-                <Route path="/caja_listado" element={<ListadoCajas />} />
-                <Route path="/inscrip_page" element={<InscripcionPage />} />
-                <Route path="/horario_page" element={<HorarioPagina />} />
-                <Route path="/flayers" element={<FlayersPag />} />
-                <Route
-                  path="/list_inscrip"
-                  element={<ListadoInscripcionPage />}
-                />
-                <Route
-                  path="/user_categoria_caja"
-                  element={<AmbCategoriasCajaUsuarios />}
-                />
-                <Route path="/alum_manager_priv" element={<AlumnoPage />} />
+                <Route element={<SoloUsuario />}>
+                  <Route path="/user_manager_priv" element={<UsuarioPage />} />
+                  <Route path="/user_alumno" element={<AmbAlumnos />} />
+                  <Route path="/user_planes" element={<AmbPlanesUsuarios />} />
+                  <Route
+                    path="/user_tipo_cuenta"
+                    element={<AmbTipoCuentasUsuario />}
+                  />
+                  <Route
+                    path="/user_profesores"
+                    element={<AmbProfesorUsuarios />}
+                  />
+                  <Route path="/user_nivel" element={<AbmNivelUsuarios />} />
+                  <Route path="/user_tipo" element={<AbmTipoUsuarios />} />
+                  <Route path="/caja_usuario" element={<CajaArqueo />} />
+                  <Route path="/caja_listado" element={<ListadoCajas />} />
+                  <Route path="/inscrip_page" element={<InscripcionPage />} />
+                  <Route path="/horario_page" element={<HorarioPagina />} />
+                  <Route path="/flayers" element={<FlayersPag />} />
+                  <Route
+                    path="/list_inscrip"
+                    element={<ListadoInscripcionPage />}
+                  />
+                  <Route
+                    path="/user_categoria_caja"
+                    element={<AmbCategoriasCajaUsuarios />}
+                  />
+                  <Route path="/asistencia" element={<FormularioAsistencia />} />
+                </Route>
+              </Route>
 
-                {/* 🔒 RUTAS para el alumno */}
-                <Route path="/data_escuela" element={<DataEscuela />} />
-                <Route
-                  path="/alumno_principal"
-                  element={<PrincipalAlumnos />}
-                />
+              {/* 🔒 BLOQUE ALUMNO (rol "alumno") */}
+              <Route element={<RutasPrivadas />}>
+                <Route element={<SoloAlumno />}>
+                  <Route path="/alumno_principal" element={<PrincipalAlumnos />} />
+                  <Route path="/data_escuela" element={<DataEscuela />} />
+                </Route>
+              </Route>
 
-                {/* 🔒 RUTAS  Administrativa */}
-                <Route
-                  path="/assistant_manager_priv"
-                  element={<DashboardAdministrador />}
-                />
-
-                {/* Guard de rol (spec 018): el bloqueo real sigue siendo del
-                    server (`soloAdministrador`); esto evita pintar la pantalla
-                    de administración a quien no tiene ese rol. */}
+              {/* 🔒 BLOQUE ADMINISTRADOR (rol "administrador") */}
+              <Route element={<RutasPrivadas />}>
                 <Route element={<SoloAdministrador />}>
+                  <Route
+                    path="/assistant_manager_priv"
+                    element={<DashboardAdministrador />}
+                  />
                   <Route path="/admin/planes_saas" element={<PaginaPlanes />} />
                   <Route path="/admin/escuelas" element={<PaginaEscuela />} />
                   <Route
                     path="/admin/usuarios_admin"
                     element={<PaginaUsuarios />}
                   />
-                {/* Empresas y anuncios (spec 017) */}
+                  {/* Empresas y anuncios (spec 017) */}
                   <Route path="/admin/empresas" element={<PaginaEmpresas />} />
                   <Route path="/admin/anuncios" element={<PaginaAnuncios />} />
                 </Route>

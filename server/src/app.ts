@@ -16,6 +16,7 @@ import adminRutas from "./rutas/admin.ruta";
 import usuarioRutas from "./rutas/usuario.ruta";
 import planesRutas from "./rutas/plan.ruta";
 import loginRutas from "./rutas/login.rutas";
+import authRutas from "./rutas/auth.ruta";
 import alumnoRutas from "./rutas/alumno.ruta";
 import profesorRutas from "./rutas/profesores.ruta";
 import nivelRutas from "./rutas/nivel.ruta";
@@ -77,7 +78,7 @@ import logger from "./utils/logger";
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "http://192.168.0.26:5173"
+        "http://192.168.0.22:5173"
     ],
     credentials: true
 }));
@@ -101,7 +102,8 @@ app.use(profesorRutas)
 app.use(adminRutas);
 app.use(planesRutas);
 app.use(usuarioRutas);
-app.use(loginRutas);    
+app.use(loginRutas);
+app.use(authRutas);
 app.use(planesUsuariosRuta);
 app.use(nivelRutas);
 app.use(tipoRutas);

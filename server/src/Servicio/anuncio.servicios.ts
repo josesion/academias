@@ -7,9 +7,11 @@ import { method as dataEmpresa } from "../data/empresa.data";
 import { TipadoData } from "../tipados/tipado.data";
 import {
     EsquemaAnuncioAlta, EsquemaAnuncioMod, EsquemaAnuncioBaja,
-    EsquemaAnuncioLista, EsquemaAnuncioListaEmpresa, EsquemaMediaAnuncio,
+    EsquemaAnuncioLista, EsquemaAnuncioListaEmpresa, EsquemaAnuncioListaPublico, EsquemaMediaAnuncio,
     InputAnuncioAlta, InputAnuncioMod, InputAnuncioBaja,
-    ListadoAnuncioInput, ListadoAnuncioEmpresaInput, ListadoAnuncioParametros,
+    ListadoAnuncioInput, ListadoAnuncioEmpresaInput,
+    ListadoAnuncioPublicoInput, ListadoAnuncioPublicoParametros,
+    ListadoAnuncioParametros,
     MediaAnuncioArchivo, MediaAnuncioInput,
 } from "../squemas/anuncio";
 
@@ -446,10 +448,52 @@ const listarAnunciosPorEmpresa = async (
     return { error: true, message: "Error en el servidor , listar anuncios de la empresa.", code: "ERROR_SERVIDOR" };
 };
 
+/**
+ * Listado PUBLICO de anuncios: el que ve el alumno en su pantalla principal.
+ *
+ * 1. Valida la query con `EsquemaAnuncioListaPublico` (Zod vive solo en esta
+ *    capa). El schema NO tiene filtros: el frontend del alumno solo pagina, y
+ *    cualquier otro parametro que mande se descarta en el `.parse()`.
+ * 2. Calcula el `offset` y consulta la data.
+ *
+ * Es una funcion separada de `listarAnuncios` (el del administrador) porque
+ * aunque comparta la SQL, no comparten las reglas: el publico no filtra y el
+ * del administrador si. Asi se pueden cambiar por separado.
+ *
+ * @param data - Query de la peticion (`pagina`, `limit`).
+ * @returns {Promise<TipadoData<FilaAnuncio[]>>} `ANUNCIO_LISTA_PUBLICO_OK` (200) o
+ *   `SIN_ANUNCIOS` (204).
+ */
+const listarPublico = async (data: ListadoAnuncioPublicoInput): Promise<TipadoData<FilaAnuncio[]>> => {
+
+    const base = EsquemaAnuncioListaPublico.parse(data);
+
+    const parametros: ListadoAnuncioPublicoParametros = { ...base, offset: (base.pagina - 1) * base.limit };
+
+    const resultado = await dataAnuncio.listarPublico(parametros);
+
+    if (resultado.code === "ANUNCIOS_LISTED") {
+        return {
+            error: false,
+            message: "Listado de anuncios.",
+            data: resultado.data,
+            paginacion: resultado.paginacion,
+            code: "ANUNCIO_LISTA_PUBLICO_OK",
+        };
+    }
+
+    if (resultado.code === "NO_ACTIVE_ANUNCIOS") {
+        return { error: true, message: "Sin anuncios para mostrar.", code: "SIN_ANUNCIOS" };
+    }
+
+    return { error: true, message: "Error en el servidor , listar anuncios.", code: "ERROR_SERVIDOR" };
+};
+
 export const method = {
     altaAnuncio: tryCatchDatos(altaAnuncio),
     modificarAnuncio: tryCatchDatos(modificarAnuncio),
     bajaAnuncio: tryCatchDatos(bajaAnuncio),
     listarAnuncios: tryCatchDatos(listarAnuncios),
     listarAnunciosPorEmpresa: tryCatchDatos(listarAnunciosPorEmpresa),
+    listarPublico: tryCatchDatos(listarPublico),
 };

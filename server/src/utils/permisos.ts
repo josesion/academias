@@ -100,8 +100,30 @@ const soloAdministrador = async (req: Request, res: Response, next: NextFunction
     next();
 };
 
+/**
+ * Middleware de AUTORIZACION: solo deja pasar a `rol === 'alumno'`.
+ *
+ * Va DESPUES de `validarPermiso`, que es quien llena `req.usuario` con el
+ * payload del token. Si el rol no coincide responde 403 `PROHIBIDO`.
+ *
+ * Es el de `GET /api/anuncio_lista_publico`: el listado que se muestra en la
+ * pantalla principal del alumno. A deliberidad NO usa el endpoint del
+ * administrador: ese trae filtros, paginacion y escribe/borra, y el alumno solo
+ * tiene que LEER. Asi el dia que se quieran cambiar las reglas del listado
+ * publico no hay que tocar la pantalla del administrador (spec 019).
+ */
+const soloAlumno = async (req: Request, res: Response, next: NextFunction) => {
 
-export const method = { 
+    if (req.usuario?.rol !== "alumno") {
+        return enviarResponseError(res, 403, "No autorizado : se requiere rol alumno.", "PROHIBIDO");
+    };
+
+    next();
+};
+
+
+export const method = {
     validarPermiso: tryCatch(validarPermiso),
-    soloAdministrador: tryCatch(soloAdministrador)
+    soloAdministrador: tryCatch(soloAdministrador),
+    soloAlumno: tryCatch(soloAlumno)
 }

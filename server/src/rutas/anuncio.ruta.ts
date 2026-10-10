@@ -57,4 +57,15 @@ ruta.get(
     controladorAnuncio.listarPorEmpresa
 );
 
+/** Listado PUBLICO paginado: el que ve el alumno en su pantalla principal
+ *  (spec 019). Solo rol alumno: un usuario o un administrador reciben 403.
+ *  Es un endpoint aparte del del administrador a proposito, aunque los dos
+ *  golpeen contra la misma tabla: el publico no filtra y no escribe. */
+ruta.get(
+    "/api/anuncio_lista_publico",
+    permisos.validarPermiso,
+    permisos.soloAlumno,
+    controladorAnuncio.listarPublico
+);
+
 export default ruta;

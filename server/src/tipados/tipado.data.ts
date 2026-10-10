@@ -5,9 +5,14 @@ export type TipadoData<T> ={
     message : string;
     data ?: T ;
     paginacion ? : {
-                    pagina : number , 
+                    pagina : number ,
                     limite : number,
-                    contadorPagina : number};
+                    contadorPagina : number,
+                    /** TOTAL de filas de la consulta, no solo las de esta pagina.
+                     *  Lo despacha `hooks/funcionListar.ts` cuando la SQL lleva
+                     *  `COUNT(*) OVER()`. Lo usa el carrusel de anuncios del
+                     *  alumno para el contador "X de Y" (spec 019). */
+                    totalRegistros? : number};
     code : string;
     errorsDetails?: any;
 }

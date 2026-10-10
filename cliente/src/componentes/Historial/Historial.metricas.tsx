@@ -1,4 +1,4 @@
-import "./historial.metreicas.css";
+﻿import "./historial.metreicas.css";
 import type { ResultHistorial } from "../../servicio/historial.fetch";
 import {
   PlusCircle,
@@ -12,12 +12,29 @@ import {
   XCircle,
   LogIn,
   LogOut,
+  Users,
+  Building,
+  BookOpen,
+  User,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 
-interface PropsMetricasHistorial {
-  historial: ResultHistorial[] | null;
-}
+const capitalizarModulo = (modulo: string) =>
+  modulo.charAt(0) + modulo.slice(1).toLowerCase();
+
+const ICONO_MODULO: Record<string, LucideIcon> = {
+  usuario: Users,
+  escuela: Building,
+  alumno: Users,
+  profesor: User,
+  plan: BookOpen,
+  caja: Users,
+  inscripcion: BookOpen,
+  horario: BookOpen,
+  configuracion: Settings,
+  default: Settings,
+};
 
 const ESTILO_ACCION: Record<
   ResultHistorial["accion"],
@@ -40,8 +57,21 @@ const ESTILO_ACCION: Record<
   LOGOUT: { color: "gris", etiqueta: "Cerró sesión", icono: LogOut },
 };
 
-const capitalizarModulo = (modulo: string) =>
-  modulo.charAt(0) + modulo.slice(1).toLowerCase();
+const formatearFechaRelativa = (fecha: Date): string => {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  const f = new Date(fecha);
+  f.setHours(0, 0, 0, 0);
+  const diff = Math.round((f.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff === 0) return "Hoy";
+  if (diff === -1) return "Ayer";
+  if (diff === 1) return "Mañana";
+  return new Date(fecha).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
 const formatearHora = (fecha: Date) =>
   new Date(fecha).toLocaleTimeString("es-AR", {
@@ -56,7 +86,7 @@ const formatearFecha = (fecha: Date) =>
     year: "numeric",
   });
 
-// Agrupa el historial en bloques por día
+// Agrupa el historial en bloques por dia
 const agruparPorDia = (historial: ResultHistorial[]) => {
   const grupos: { fecha: string; items: ResultHistorial[] }[] = [];
 
@@ -73,6 +103,16 @@ const agruparPorDia = (historial: ResultHistorial[]) => {
 
   return grupos;
 };
+
+// Componente para renderizar el icono del modulo dinamico
+const IconoModulo = ({ modulo, size }: { modulo: string; size: number }) => {
+  const Icono = ICONO_MODULO[modulo] || ICONO_MODULO.default;
+  return <Icono size={size} />;
+};
+
+interface PropsMetricasHistorial {
+  historial: ResultHistorial[] | null;
+}
 
 export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
   if (!historial || historial.length === 0) {
@@ -92,7 +132,7 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
       {grupos.map((grupo) => (
         <div className="historial_grupo_dia" key={grupo.fecha}>
           <div className="historial_separador_dia">
-            <span>{grupo.fecha}</span>
+            <span>{formatearFechaRelativa(new Date(grupo.items[0].fecha))}</span>
           </div>
 
           <ol className="historial_linea_tiempo">
@@ -116,6 +156,7 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
                         {estilo.etiqueta}
                       </span>
                       <span className="historial_modulo">
+                        <IconoModulo modulo={item.modulo} size={12} />
                         {capitalizarModulo(item.modulo)}
                       </span>
                       <time className="historial_hora">
@@ -138,3 +179,4 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
     </div>
   );
 };
+

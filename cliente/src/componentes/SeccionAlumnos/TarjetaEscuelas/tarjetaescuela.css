@@ -1,4 +1,5 @@
 .tarjeta_escuela {
+  display: block;
   width: 100%;
   max-width: 320px;
   padding: 20px;
@@ -11,9 +12,25 @@
   transition: box-shadow 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
 }
 
+/* Anula el subrayado y el color de link en todos los estados */
+.tarjeta_escuela,
+.tarjeta_escuela:hover,
+.tarjeta_escuela:focus,
+.tarjeta_escuela:focus-visible,
+.tarjeta_escuela:active,
+.tarjeta_escuela:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
 .tarjeta_escuela:hover {
   box-shadow: var(--sombra-md);
   border-color: var(--borde-hover);
+}
+
+.tarjeta_escuela:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
 }
 
 .tarjeta_escuela_header {

@@ -8,7 +8,7 @@ import { handleControladores } from "../utils/handleControladores";
 
 import {
     MAPA_ANUNCIO_ALTA, MAPA_ANUNCIO_MOD, MAPA_ANUNCIO_BAJA,
-    MAPA_ANUNCIO_LISTA, MAPA_ANUNCIO_LISTA_EMPRESA,
+    MAPA_ANUNCIO_LISTA, MAPA_ANUNCIO_LISTA_EMPRESA, MAPA_ANUNCIO_LISTA_PUBLICO,
 } from "../respuestas/anuncios";
 
 import { InputAnuncioBaja, ListadoAnuncioQuery } from "../squemas/anuncio";
@@ -171,10 +171,35 @@ const listarPorEmpresa = async (req: Request, res: Response): Promise<void> => {
     );
 };
 
+/**
+ * Controlador del listado PUBLICO (`GET /api/anuncio_lista_publico`).
+ *
+ * El que consume la pantalla principal del alumno. A diferencia del listado del
+ * administrador, aca NO se leen filtros de la query: solo `pagina` y `limit`.
+ * Un alumno no puede buscar ni filtrar, y cualquier otro parametro que mande se
+ * descarta en el `.parse()` del Servicio en vez de llegar a la SQL.
+ *
+ * @param req - Peticion de Express: `pagina` y `limit` opcionales en `req.query`.
+ * @param res - Respuesta de Express.
+ * @returns {Promise<void>} Resuelve tras enviar la respuesta HTTP.
+ */
+const listarPublico = async (req: Request, res: Response): Promise<void> => {
+
+    const data = {
+        pagina: req.query.pagina !== undefined ? Number(req.query.pagina) : 1,
+        limit: req.query.limit !== undefined ? Number(req.query.limit) : 10,
+    };
+
+    await handleControladores<typeof data, FilaAnuncio[]>(
+        res, data, servicioAnuncio.listarPublico, MAPA_ANUNCIO_LISTA_PUBLICO
+    );
+};
+
 export const method = {
     crear: tryCatch(crear),
     actualizar: tryCatch(actualizar),
     eliminar: tryCatch(eliminar),
     listar: tryCatch(listar),
     listarPorEmpresa: tryCatch(listarPorEmpresa),
+    listarPublico: tryCatch(listarPublico),
 };

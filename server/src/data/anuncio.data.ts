@@ -5,7 +5,8 @@ import { listarEntidad } from "../hooks/funcionListar";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 
 import { TipadoData } from "../tipados/tipado.data";
-import { InputAnuncioAlta, InputAnuncioMod, ListadoAnuncioParametros } from "../squemas/anuncio";
+import { InputAnuncioAlta, InputAnuncioMod, ListadoAnuncioParametros,
+         ListadoAnuncioPublicoParametros } from "../squemas/anuncio";
 
 /**
  * Fila de `anuncios` tal como la devuelve la BD, con el `razon_social` de la
@@ -16,6 +17,12 @@ export interface FilaAnuncio {
     id_anuncio: number;
     id_empresa: number;
     razon_social: string | null;
+    /** Redes de la empresa dueña (vienen del JOIN de los listados).
+     *  Nullable: si la empresa no la tiene cargada, el botón de
+     *  contacto del anuncio no se muestra (spec 018). */
+    whatsapp: string | null;
+    instagram: string | null;
+    facebook: string | null;
     titulo: string;
     descripcion: string;
     tipo_contacto: string;
@@ -236,6 +243,9 @@ const listarAnuncios = async (
     const sql: string = `SELECT a.id_anuncio,
                                 a.id_empresa,
                                 e.razon_social,
+                                e.whatsapp,
+                                e.instagram,
+                                e.facebook,
                                 a.titulo,
                                 a.descripcion,
                                 a.tipo_contacto,
@@ -275,6 +285,9 @@ const listarAnunciosPorEmpresa = async (
     const sql: string = `SELECT a.id_anuncio,
                                 a.id_empresa,
                                 e.razon_social,
+                                e.whatsapp,
+                                e.instagram,
+                                e.facebook,
                                 a.titulo,
                                 a.descripcion,
                                 a.tipo_contacto,
@@ -298,6 +311,59 @@ const listarAnunciosPorEmpresa = async (
     });
 };
 
+/**
+ * Listado publico de anuncios (GET /api/anuncio_lista_publico), del mas nuevo
+ * al mas viejo.
+ *
+ * Es el que consume la pantalla principal del alumno (spec 019). Comparte la
+ * SQL del `listarAnuncios` del administrador, pero a proposito es OTRA funcion:
+ *
+ * - NO acepta NINGUN filtro (ni empresa, ni tipo de media/contacto, ni fecha):
+ *   el `valores` llega siempre vacio y la SQL no tiene `WHERE`. El frontend del
+ *   alumno no puede buscar, asi que no se le dan parametros para eso.
+ * - Trae `COUNT(*) OVER() AS total_registros`: el contador "X de Y" del
+ *   carrusel muestra el TOTAL de anuncios, y sin esa columna el front solo
+ *   podria contar los que ya cargo en pantalla.
+ *
+ * @param parametros - Lo validado por Zod en el Servicio mas el `offset` calculado alla.
+ * @returns {Promise<TipadoData<FilaAnuncio[]>>} Listado paginado o el error asociado.
+ */
+const listarPublico = async (
+    parametros: ListadoAnuncioPublicoParametros
+): Promise<TipadoData<FilaAnuncio[]>> => {
+
+    const { pagina, limit, offset } = parametros;
+
+    const sql: string = `SELECT a.id_anuncio,
+                                a.id_empresa,
+                                e.razon_social,
+                                e.whatsapp,
+                                e.instagram,
+                                e.facebook,
+                                a.titulo,
+                                a.descripcion,
+                                a.tipo_contacto,
+                                a.tipo_media,
+                                a.media_url,
+                                a.public_id,
+                                a.fecha_creacion,
+                                a.fecha_actualizacion,
+                                COUNT(*) OVER() AS total_registros
+                         FROM anuncios a
+                         JOIN empresas e ON a.id_empresa = e.id_empresa
+                         ORDER BY a.fecha_creacion DESC, a.id_anuncio DESC
+                         LIMIT ${limit} OFFSET ${offset};`;
+
+    return listarEntidad<FilaAnuncio>({
+        slqListado: sql,
+        valores: [],
+        entidad: "ANUNCIOS",
+        estado: "publicados",
+        limit,
+        pagina: String(pagina),
+    });
+};
+
 export const method = {
     altaAnuncio: tryCatchDatos(altaAnuncio),
     modificarAnuncio: tryCatchDatos(modificarAnuncio),
@@ -305,4 +371,5 @@ export const method = {
     buscarAnuncioPorId: tryCatchDatos(buscarAnuncioPorId),
     listarAnuncios: tryCatchDatos(listarAnuncios),
     listarAnunciosPorEmpresa: tryCatchDatos(listarAnunciosPorEmpresa),
+    listarPublico: tryCatchDatos(listarPublico),
 };

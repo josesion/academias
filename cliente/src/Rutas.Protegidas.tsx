@@ -100,6 +100,12 @@ export const RutasPrivadas = () => {
     return <ComponenteCargando />;
   }
 
+  // Defensa: estado inconsistente (ej. logout cosmético dejó rol residual sin autenticar)
+  if (!autenticado && rol?.rol !== "visita") {
+    cerrarSesion();
+    return <Navigate to="/login" replace />;
+  }
+
   if (!autenticado) {
     return <Navigate to="/login" replace />;
   }

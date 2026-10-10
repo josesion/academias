@@ -14,6 +14,9 @@ import { RutasProtegidasContext } from "../contexto/protectRutas";
  * @returns Un `<Navigate>` al panel correspondiente.
  */
 const IrAlPanelPropio = ({ rol }: { rol?: string }) => {
+  if (rol === "administrador") {
+    return <Navigate to="/assistant_manager_priv" replace />;
+  }
   if (rol === "alumno") {
     return <Navigate to="/alumno_principal" replace />;
   }
@@ -74,6 +77,55 @@ export const SoloAdministradorWrapper = ({
 
   if (rol?.rol === "administrador") {
     return <>{children}</>;
+  }
+
+  return <IrAlPanelPropio rol={rol?.rol} />;
+};
+
+/**
+ * Guard de rol para las rutas de USUARIO (dueño de escuela).
+ *
+ * Protege: `/user_*`, `/caja_*`, `/inscrip_*`, `/horario_*`, `/flayers`,
+ * `/list_inscrip`, `/asistencia`, `/user_categoria_caja`, `/user_tipo_cuenta`.
+ *
+ * El bloqueo REAL sigue siendo del server (`validarPermiso` + `verificarPlan`);
+ * este guard es solo de experiencia, para no mostrar una pantalla vacía.
+ *
+ * @returns `Outlet` si el rol es `usuario`; un `<Navigate>` a su panel en otro caso.
+ */
+export const SoloUsuario = () => {
+  const { autenticado, rol } = useContext(RutasProtegidasContext);
+
+  if (!autenticado) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (rol?.rol === "usuario") {
+    return <Outlet />;
+  }
+
+  return <IrAlPanelPropio rol={rol?.rol} />;
+};
+
+/**
+ * Guard de rol para las rutas de ALUMNO.
+ *
+ * Protege: `/alumno_principal`, `/data_escuela`.
+ *
+ * El bloqueo REAL sigue siendo del server (`validarPermiso` + `soloAlumno`);
+ * este guard es solo de experiencia.
+ *
+ * @returns `Outlet` si el rol es `alumno`; un `<Navigate>` a su panel en otro caso.
+ */
+export const SoloAlumno = () => {
+  const { autenticado, rol } = useContext(RutasProtegidasContext);
+
+  if (!autenticado) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (rol?.rol === "alumno") {
+    return <Outlet />;
   }
 
   return <IrAlPanelPropio rol={rol?.rol} />;

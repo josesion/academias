@@ -136,3 +136,21 @@ export const MAPA_ANUNCIO_LISTA_EMPRESA: Record<string, { status: CodigoEstadoHT
         msg: "Sin anuncios para mostrar.",
     },
 };
+
+/** Listado PUBLICO, paginado (GET /api/anuncio_lista_publico). Solo rol alumno. */
+export const MAPA_ANUNCIO_LISTA_PUBLICO: Record<string, { status: CodigoEstadoHTTP; msg: string }> = {
+
+    ERROR_SERVIDOR,
+
+    "ANUNCIO_LISTA_PUBLICO_OK": {
+        status: CodigoEstadoHTTP.OK,
+        msg: "Listado de anuncios.",
+    },
+
+    // 204 y NO 404: "no hay anuncios" no es un error. Es lo que ve un alumno
+    // cuando el administrador todavia no publico ninguno.
+    "SIN_ANUNCIOS": {
+        status: CodigoEstadoHTTP.SIN_CONTENIDO,
+        msg: "Sin anuncios para mostrar.",
+    },
+};

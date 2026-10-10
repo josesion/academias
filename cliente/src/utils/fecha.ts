@@ -166,3 +166,41 @@ export const obtenerEstadoVigencia =  (fechaVigencia: string, clasesUsadas: numb
   // C. Todo ok
   return "activa";
 };
+
+/**
+ * Calcula los días que faltan para una fecha de vencimiento.
+ *
+ * Es la misma cuenta que usa `AlertaVencimiento` para decidir si se muestra:
+ * la fecha se parsea en hora local (el DTO llega como "YYYY-MM-DD" o como
+ * ISO con "T") y se redondea la diferencia en días contra hoy a medianoche.
+ *
+ * @param {string | Date | null | undefined} fecha - Fecha de vencimiento.
+ * @returns {number | null} Días restantes (negativo si ya venció) o `null`
+ * si no hay fecha o es inválida.
+ *
+ * @example
+ * diasHastaVencimiento("2026-10-09"); // 0
+ * diasHastaVencimiento("2026-10-16"); // 7
+ * diasHastaVencimiento(null);          // null
+ */
+export const diasHastaVencimiento = (
+  fecha: string | Date | null | undefined
+): number | null => {
+  if (!fecha) return null;
+
+  const [anio, mes, dia] =
+    typeof fecha === "string"
+      ? String(fecha).split("T")[0].split("-").map(Number)
+      : [fecha.getFullYear(), fecha.getMonth() + 1, fecha.getDate()];
+
+  if (!anio || !mes || !dia) return null;
+
+  const vencimiento = new Date(anio, mes - 1, dia);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  vencimiento.setHours(0, 0, 0, 0);
+
+  return Math.round(
+    (vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+  );
+};

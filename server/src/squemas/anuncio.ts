@@ -136,6 +136,26 @@ export const EsquemaAnuncioListaEmpresa = z.object({
         .positive({ message: "id_empresa debe ser un numero positivo." }),
 });
 
+// --- 6. LISTADO PUBLICO (GET /api/anuncio_lista_publico) ---
+// El que consume la pantalla principal del alumno (spec 019). A proposito es
+// OTRO schema y no el del listado del administrador: el publico NO tiene
+// filtros (ni razon social, ni fecha, ni tipo): solo pagina. El frontend del
+// alumno no puede buscar ni filtrar, asi que no se le aceptan esos parametros.
+//
+// El `offset` lo calcula el Servicio.
+export const EsquemaAnuncioListaPublico = z.object({
+    pagina: z.coerce.number({ message: "pagina debe ser de tipo numerico" })
+        .int({ message: "pagina debe ser un numero entero." })
+        .min(1, { message: "pagina debe ser un numero mayor o igual a 1." })
+        .default(1),
+
+    limit: z.coerce.number({ message: "limit debe ser de tipo numerico" })
+        .int({ message: "limit debe ser un numero entero." })
+        .positive({ message: "limit debe ser un numero positivo." })
+        .max(100, { message: "limit no puede superar los 100 registros." })
+        .default(10),
+});
+
 // --- 6. EL ARCHIVO (viene de `req.file`, no del body) ---
 // No se valida con `.parse()` en el mismo esquema que los datos de la tabla:
 // se arma aparte, como hace `flayer.servicio.ts` con `GuardarImagenSchema`.
@@ -157,7 +177,11 @@ export type InputAnuncioMod = z.infer<typeof EsquemaAnuncioMod>;
 export type InputAnuncioBaja = z.infer<typeof EsquemaAnuncioBaja>;
 export type ListadoAnuncioInput = z.infer<typeof EsquemaAnuncioLista>;
 export type ListadoAnuncioEmpresaInput = z.infer<typeof EsquemaAnuncioListaEmpresa>;
+export type ListadoAnuncioPublicoInput = z.infer<typeof EsquemaAnuncioListaPublico>;
 export type MediaAnuncioInput = z.infer<typeof EsquemaMediaAnuncio>;
+
+/** Lo que recibe la `data` del listado publico: lo validado + el `offset`. */
+export type ListadoAnuncioPublicoParametros = ListadoAnuncioPublicoInput & { offset: number };
 
 /** Lo que recibe la `data` del listado paginado: lo validado + el `offset`. */
 export type ListadoAnuncioParametros = ListadoAnuncioInput & { offset: number };

@@ -5,9 +5,28 @@ import { Formulario } from "../../../componentes/generales/Formulario/Formulario
 //seccion de Stilos
 import "../Login/login.css";
 
+import { useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { RutasProtegidasContext } from "../../../contexto/protectRutas";
 import { loginLogica } from "../../../hooks/login";
 
 export const Login = () => {
+  const navegar = useNavigate();
+  const { autenticado, rol } = useContext(RutasProtegidasContext);
+
+  // Si ya hay sesión válida, redirige a su panel (evita ver login logueado)
+  useEffect(() => {
+    if (autenticado) {
+      if (rol?.rol === "administrador") {
+        navegar("/assistant_manager_priv", { replace: true });
+      } else if (rol?.rol === "alumno") {
+        navegar("/alumno_principal", { replace: true });
+      } else {
+        navegar("/user_manager_priv", { replace: true });
+      }
+    }
+  }, [autenticado, rol, navegar]);
+
   const {
     errorGenerico,
     errorsZod,

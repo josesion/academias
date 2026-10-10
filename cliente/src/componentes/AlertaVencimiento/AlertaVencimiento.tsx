@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+
+import { diasHastaVencimiento } from "../../utils/fecha";
 import "./AlertaVencimiento.css";
 
 interface AlertaVencimientoProps {
@@ -23,27 +25,10 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
   useEffect(() => {
     if (!fechaVencimiento || carga || mensajeError) return;
 
-    const hoy = new Date();
-    const [anio, mes, dia] = String(fechaVencimiento)
-      .split("T")[0]
-      .split("-")
-      .map(Number);
-
-    const vencimiento = new Date(anio, mes - 1, dia);
-
-    hoy.setHours(0, 0, 0, 0);
-    vencimiento.setHours(0, 0, 0, 0);
-
-    const diferenciaMilisegundos = vencimiento.getTime() - hoy.getTime();
-    const dias = Math.round(diferenciaMilisegundos / (1000 * 60 * 60 * 24));
+    const dias = diasHastaVencimiento(fechaVencimiento);
 
     setDiasRestantes(dias);
-
-    if (dias <= 7) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
+    setIsVisible(dias !== null && dias <= 7);
   }, [fechaVencimiento, carga, mensajeError]);
 
   if (!isVisible && !carga && !mensajeError) return null;

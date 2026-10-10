@@ -6,6 +6,8 @@ import {
   useCallback,
 } from "react";
 import Cookies from "js-cookie";
+import { apiFetch } from "../utils/apiFetch";
+import { PAGINA } from "../servicio/variables.globales";
 
 interface AuthContextType {
   autenticado: boolean;
@@ -72,8 +74,17 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
   /**
    * Limpieza única del cierre de sesión: sirve tanto para el logout manual
    * como para cuando el server responde 401/403 (token vencido).
+   * Ahora llama a POST /api/logout para borrar la cookie httpOnly en el server.
    */
-  const cerrarSesion = useCallback(() => {
+  const cerrarSesion = useCallback(async () => {
+    // Fire-and-forget: si falla (red caída), igual limpiamos estado local.
+    // La cookie expira sola en el server.
+    try {
+      await apiFetch(`${PAGINA}api/logout`, { method: "POST" });
+    } catch {
+      // Silencioso: el logout local sigue adelante.
+    }
+
     setAutenticado(false);
     setUsuarioInfo(null);
     setRol(ROL_VISITA);
@@ -81,8 +92,7 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
     localStorage.removeItem("usuarioEscuela");
     // `Cookies.remove` NO puede borrar la cookie `token` real: es `httpOnly`
     // (server: `crearCookie()` → `jwt.ts`) y el JS no la ve. Se deja igual por
-    // compatibilidad; el logout completo depende de un endpoint del server con
-    // `res.clearCookie` (pendiente de decidir).
+    // compatibilidad; el logout real lo hace el server con `clearCookie`.
     Cookies.remove("token");
   }, []);
 

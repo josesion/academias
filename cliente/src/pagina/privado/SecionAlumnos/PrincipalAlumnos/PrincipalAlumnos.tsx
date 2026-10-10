@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { LuImageOff, LuBuilding2, LuCalendarX } from "react-icons/lu";
 
 import { TarjetaEscuela } from "../../../../componentes/SeccionAlumnos/TarjetaEscuelas/TarjetasEscuelas";
@@ -8,53 +9,128 @@ import {
   GaleriaComunidad,
   type EmprendedorItem,
 } from "../../../../componentes/SeccionAlumnos/Publicidad/BanerPublicitario";
+import { useAmbAnunciosPublicos } from "../../../../hookNegocios/abmAnunciosPublicos";
+import type { FilaAnuncioPublico, TipoContacto } from "../../../../servicio/anuncios.publico.fetch";
 
 import "./principalalumno.css";
 
 import { configMetricasAlumnos } from "../../../../hookNegocios/metricas.alumnos";
 
-// Mock temporal o podés traerlo de tu backend/hook global
-export const emprendedoresMockData: EmprendedorItem[] = [
-  {
-    id: 1,
-    nombre_emprendedor: "Zetta Calzados de Baile",
-    titulo: "Nuevos zapatos de taco flexible para Bachata",
-    descripcion:
-      "Livianos, con suela de descarne especial para giros perfectos en la pista. Pedí tu catálogo en recepción.",
-    tipo: "imagen",
-    url_media:
-      "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80",
-    texto_boton: "Consultar WhatsApp",
-    link_accion: "https://whatsapp.com",
-  },
-  {
-    id: 2,
-    nombre_emprendedor: "Kallpa Indumentaria",
-    titulo: "Revisá los conjuntos para ensayos y shows",
-    descripcion:
-      "Mirá el reel exclusivo probando la elasticidad y comodidad de la nueva línea de ropa urbana y de salsa.",
-    tipo: "video",
-    url_media: "https://www.w3schools.com/html/mov_bbb.mp4",
-    texto_boton: "Ver Instagram",
-    link_accion: "https://instagram.com",
-  },
-  {
-    id: 3,
-    nombre_emprendedor: "Accesorios Ritmo & Estilo",
-    titulo: "Rodilleras y fajas protectoras para coreos",
-    descripcion:
-      "Ideales para entrenamientos de piso, saltos y suelo en ritmos urbanos y bachata sensual.",
-    tipo: "imagen",
-    url_media:
-      "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80",
-    texto_boton: "Ver Catálogo Web",
-    link_accion: "https://google.com",
-  },
-];
+/**
+ * Normaliza el valor crudo que viene de la BD (username, handle, número)
+ * a una URL completa y válida para la red social correspondiente.
+ *
+ * @param tipo - Tipo de red social (whatsapp | instagram | facebook)
+ * @param valor - Valor crudo de la BD (puede ser null, username, o ya una URL)
+ * @returns URL completa lista para usar en `href`, o `undefined` si no hay valor
+ */
+const normalizarUrlRed = (tipo: TipoContacto, valor: string | null): string | undefined => {
+  if (!valor || !valor.trim()) return undefined;
+
+  const limpio = valor.trim();
+
+  // Si ya es una URL completa (http/https), respetarla tal cual
+  if (limpio.startsWith("http")) return limpio;
+
+  switch (tipo) {
+    case "instagram": {
+      // Quitar @ inicial si viene
+      const user = limpio.replace(/^@/, "");
+      return `https://instagram.com/${user}`;
+    }
+    case "facebook": {
+      const user = limpio.replace(/^@/, "");
+      return `https://facebook.com/${user}`;
+    }
+    case "whatsapp": {
+      // Quitar espacios, guiones, paréntesis y + inicial
+      const num = limpio.replace(/[\s\-\(\)]/g, "").replace(/^\+/, "");
+      return `https://wa.me/${num}`;
+    }
+    default:
+      return undefined;
+  }
+};
+
+/**
+ * Mapea una fila de `GET /api/anuncio_lista_publico` al item que
+ * pinta la galería de anuncios (spec 018).
+ *
+ * El botón de contacto apunta a la red que dice `tipo_contacto`: la
+ * URL real sale de la columna de esa red en `empresas`, y si la
+ * empresa no la tiene cargada (NULL) el botón no se muestra.
+ *
+ * `texto_boton` no se setea: `GaleriaComunidad` ya tiene el texto
+ * por defecto de cada red (lo define el mapa `REDES` del componente),
+ * así que no hace falta duplicar los strings acá.
+ *
+ * @param fila - Anuncio con el `razon_social` y las redes de la empresa.
+ * @returns Item de la galería (`EmprendedorItem`).
+ */
+const aItemDeGaleria = (fila: FilaAnuncioPublico): EmprendedorItem => {
+  const red = fila.tipo_contacto;
+  const valorRed =
+    red === "whatsapp"
+      ? fila.whatsapp
+      : red === "instagram"
+        ? fila.instagram
+        : fila.facebook;
+
+  return {
+    id: fila.id_anuncio,
+    nombre_emprendedor: fila.razon_social ?? "",
+    titulo: fila.titulo,
+    descripcion: fila.descripcion,
+    tipo: fila.tipo_media,
+    url_media: fila.media_url,
+    tipo_contacto: fila.tipo_contacto,
+    link_accion: normalizarUrlRed(red, valorRed),
+  };
+};
 
 export const PrincipalAlumnos = () => {
   const { state } = configMetricasAlumnos();
   const { data } = state;
+
+  // Estado de visibilidad del banner publicitario (solo sesión actual, sin localStorage)
+  const [bannerVisible, setBannerVisible] = useState(true);
+
+  // Anuncios reales del carrusel (spec 018): reemplazan al mock.
+  // El listado ACUMULA páginas (no reemplaza) para que el carrusel
+  // no se reinicie cuando el usuario llega al final.
+  const { state: anuncios, cargarMas } = useAmbAnunciosPublicos();
+
+  const itemsDeGaleria = anuncios.listado.map(aItemDeGaleria);
+
+  const handleBannerClose = () => {
+    setBannerVisible(false);
+  };
+
+  // Centinela del carrusel: cuando el usuario se acerca al final
+  // (200px antes) y todavía hay más anuncios, se pide la página
+  // siguiente. Se reconecta solo cuando cambian esas condiciones.
+  const centinelaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const centinela = centinelaRef.current;
+    if (!centinela) return;
+
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        if (
+          entradas[0].isIntersecting &&
+          anuncios.hayMas &&
+          !anuncios.carga.listado
+        ) {
+          cargarMas();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observador.observe(centinela);
+    return () => observador.disconnect();
+  }, [anuncios.hayMas, anuncios.carga.listado, cargarMas]);
 
   return (
     <div className="principal-alumno-container">
@@ -109,9 +185,20 @@ export const PrincipalAlumnos = () => {
         )}
       </div>
 
-      {/* 3. Sección de Comunidad y Emprendedores (Nuevo espacio global) */}
+      {/* 3. Sección de anuncios (espacio publicitario global) */}
       <div className="seccion-contenedor">
-        <GaleriaComunidad items={emprendedoresMockData} />
+        <GaleriaComunidad
+          items={itemsDeGaleria}
+          cargando={anuncios.carga.listado}
+          error={anuncios.error.listado}
+          total={anuncios.paginacion.totalRegistros}
+          initiallyVisible={bannerVisible}
+          onClose={handleBannerClose}
+        />
+
+        {/* Centinela invisible: marca el final del carrusel para el
+            IntersectionObserver (spec 018). */}
+        <div ref={centinelaRef} className="anuncios_centinela" />
       </div>
 
       {/* 4. Sección de Clases de Hoy */}

@@ -7,6 +7,7 @@ import { AlertaVencimiento } from "../../../componentes/AlertaVencimiento/Alerta
 import { Asistencia } from "../../../componentes/Horarios/Asistencias/Asistencias";
 import { MetricasHistorial } from "../../../componentes/Historial/Historial.metricas";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
+import { diasHastaVencimiento } from "../../../utils/fecha";
 
 export const UsuarioPage = () => {
   const containerRef = useRef<HTMLDivElement>(null); // <-- Referencia principal para el scope de GSAP
@@ -27,6 +28,27 @@ export const UsuarioPage = () => {
   }, []);
 
   const { state, rolTipo } = metricasUsuarioSeting();
+
+  // La tarjeta de vencimiento solo se pinta con carga (skeleton), con error
+  // o con 7 días o menos para el vencimiento. El padding de reserva del
+  // historial (`con_alerta`) se aplica solo en esos casos: con más días la
+  // alerta no se ve y el padding sería espacio vacío escrolleable al final
+  // del historial.
+  const [alertaVisible, setAlertaVisible] = useState(false);
+
+  useEffect(() => {
+    const dias = diasHastaVencimiento(state.fechaVencimiento?.fecha_vencimiento);
+
+    setAlertaVisible(
+      Boolean(state.carga.vencimiento) ||
+        Boolean(state.error.vencimiento) ||
+        (dias !== null && dias <= 7)
+    );
+  }, [
+    state.fechaVencimiento,
+    state.carga.vencimiento,
+    state.error.vencimiento,
+  ]);
 
   return (
     <div className="usuario_contenedor_metricas" ref={containerRef}>
@@ -103,8 +125,14 @@ export const UsuarioPage = () => {
         className="usuario_metricas_grupo2"
         style={altoGrupo1 ? { height: altoGrupo1 } : undefined}
       >
-        {/* `con_alerta` reserva ~250px al final del scroll para que la tarjetaflotante (ahora en portal) no tape la Ultima entrada del historial. */}
-        <div className={`usuario_contenido_historial ${state.fechaVencimiento ? "con_alerta" : ""}`}>
+        {/* `con_alerta` reserva ~245px al final del scroll para que la tarjeta
+            flotante (en portal al body) no tape la última entrada del
+            historial. Solo se aplica cuando la alerta se muestra de verdad
+            (carga, error o ≤ 7 días): con más días sería espacio vacío
+            escrolleable. */}
+        <div
+          className={`usuario_contenido_historial ${alertaVisible ? "con_alerta" : ""}`}
+        >
           <MetricasHistorial historial={state.historial} />
         </div>
 

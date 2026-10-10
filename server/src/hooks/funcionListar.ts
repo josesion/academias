@@ -22,7 +22,6 @@ interface ParametrosListaGenerica extends PaginacionBase {
     entidad     :   string,
     estado      :   string
 }
-
 export const listarEntidad = async <TRespuesta>(
     parametros: ParametrosListaGenerica 
 ) : Promise<TipadoData<TRespuesta[]>>=> {
@@ -63,7 +62,8 @@ export const listarEntidad = async <TRespuesta>(
         paginacion: {
             pagina: Number(pagina),
             limite: Number(limit),
-            contadorPagina: totalPagina
+            contadorPagina: totalPagina,
+            totalRegistros: Number(totalRegistro)
         },
         code:  `${entidadM}_LISTED`,
         errorsDetails: undefined

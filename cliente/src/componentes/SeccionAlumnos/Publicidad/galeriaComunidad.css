@@ -181,6 +181,105 @@
   transform: translateY(-1px);
 }
 
+/* ------------------------------------------------------------------ */
+/* Botón de contacto por red (spec 019)                                */
+/*                                                                     */
+/* El backend dice a qué red apunta el anuncio (`tipo_contacto`), y el  */
+/* color del botón sale de esa clase. Los tres colores son los de la   */
+/* marca de cada red, y solo aparecen si el anuncio trae `tipo_contacto`; */
+/* sin ese campo el botón se queda con el estilo de arriba.             */
+/* ------------------------------------------------------------------ */
+
+/* Píldora: los botones de redes se leen mejor ovalados */
+.btn-emprendedor-accion.whatsapp,
+.btn-emprendedor-accion.instagram,
+.btn-emprendedor-accion.facebook {
+  border-radius: 999px;
+  border: none;
+  color: #fff;
+  padding: 8px 16px;
+}
+
+.btn-emprendedor-accion.whatsapp {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.btn-emprendedor-accion.whatsapp:hover {
+  background: #1ebe5a;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+/* Instagram es degradado (de la marca), no color plano */
+.btn-emprendedor-accion.instagram {
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
+  color: #ffffff;
+}
+
+.btn-emprendedor-accion.instagram:hover {
+  box-shadow: 0 4px 12px rgba(220, 39, 67, 0.4);
+}
+
+.btn-emprendedor-accion.facebook {
+  background: #1877f2;
+  color: #ffffff;
+}
+
+.btn-emprendedor-accion.facebook:hover {
+  background: #166fe5;
+  box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+}
+
+/* ------------------------------------------------------------------ */
+/* Estados del listado público de anuncios (spec 019)                  */
+/* ------------------------------------------------------------------ */
+
+/* Cargando la primera tanda: la galería todavía no tiene nada que mostrar. */
+.galeria-comunidad-wrapper.galeria-cargando {
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+}
+
+.galeria-cargando_texto {
+  font-size: 0.85rem;
+  color: var(--texto-secundario, #a1a1aa);
+}
+
+/* El listado falló: aviso en rojo en lugar de la galería. */
+.galeria-comunidad-wrapper.galeria-error {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px;
+  border-left: 3px solid #ef4444;
+}
+
+.galeria-error_titulo {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.galeria-error_mensaje {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Pie: "Cargando más anuncios…" mientras llega la página siguiente. */
+.galeria-cargando-mas {
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--texto-secundario, #a1a1aa);
+}
+
 /* --- Indicadores (Dots) --- */
 .galeria-dots {
   display: flex;

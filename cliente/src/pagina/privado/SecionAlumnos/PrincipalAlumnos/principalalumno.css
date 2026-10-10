@@ -196,3 +196,10 @@
     animation: none;
   }
 }
+/* Centinela del carrusel de anuncios (spec 019).
+   No se ve: solo marca el final de la galería para que el
+   IntersectionObserver sepa cuándo pedir la página siguiente. */
+.anuncios_centinela {
+  height: 1px;
+  width: 100%;
+}
