@@ -34,11 +34,19 @@ export const MenuUsuario = ({
 }: PropsMenuUsuario) => {
   return (
     <>
-      <div className="menu_usuario_backdrop" onClick={onCerrar} />
+      {/* El backdrop es decorativo: no aporta nada al lector de voz y si
+          fuera enfocable crearia un segundo boton "invisible" en el tabulador. */}
+      <div className="menu_usuario_backdrop" onClick={onCerrar} aria-hidden="true" />
 
-      <div className="menu_usuario_panel" id={id}>
+      <div
+        className="menu_usuario_panel"
+        id={id}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menú de usuario"
+      >
         <div className="menu_usuario_header">
-          <div className="menu_usuario_avatar">
+          <div className="menu_usuario_avatar" aria-hidden="true">
             <VscAccount size={28} />
           </div>
 
@@ -49,10 +57,10 @@ export const MenuUsuario = ({
           </div>
         </div>
 
-        <div className="menu_usuario_divider" />
+        <div className="menu_usuario_divider" aria-hidden="true" />
 
         <button className="menu_usuario_logout" onClick={onLogout}>
-          <ImExit size={18} />
+          <ImExit size={18} aria-hidden="true" />
 
           <span>Cerrar sesión</span>
         </button>

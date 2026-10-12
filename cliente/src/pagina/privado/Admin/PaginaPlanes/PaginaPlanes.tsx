@@ -48,14 +48,26 @@ export const PaginaPlanes = () => {
       ? "dar de baja este plan SaaS"
       : "dar de alta este plan SaaS";
 
+  // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+  // `main` de la pagina. Un segundo `main` anidado es invalido.
   return (
     <div className="pagina-planes-container">
+      {/* Esta pagina arrancaba directo en un <h2> ("Administración de
+          Planes SaaS"), sin ningun <h1>: el lector de voz la anunciaba como
+          "encabezado nivel 2" al abrir. */}
+      <header>
+        <h1 className="visually-hidden">Planes SaaS</h1>
+      </header>
+
       {/* Overlay para cerrar tocando afuera (solo mobile/cuando está abierto) */}
       {panelAbierto && (
-        <div className="planes-overlay" onClick={cerrarPaleta} />
+        <div className="planes-overlay" onClick={cerrarPaleta} aria-hidden="true" />
       )}
 
-      <aside className={`section-formulario ${panelAbierto ? "abierto" : ""}`}>
+      <aside
+        className={`section-formulario ${panelAbierto ? "abierto" : ""}`}
+        aria-label="Formulario de plan"
+      >
         <button
           className="lengueta-planes"
           onClick={() => setPanelAbierto((prev) => !prev)}
@@ -80,8 +92,8 @@ export const PaginaPlanes = () => {
         </div>
       </aside>
 
-      <div className="section-listado">
-        <h2>Administración de Planes SaaS</h2>
+      <section className="section-listado" aria-labelledby="planes-listado-titulo">
+        <h2 id="planes-listado-titulo">Administración de Planes SaaS</h2>
 
         <div className="planes-filtro-estado">
           <SelectorOpt
@@ -100,7 +112,7 @@ export const PaginaPlanes = () => {
           onSeleccionarPlan={cachearEditarPlan}
           onCambiarEstado={cachearEstadoPlan}
         />
-      </div>
+      </section>
 
       {state.modalEstado && (
         <div className="planes-modal-backdrop" onClick={cerrarModalEstado}>

@@ -28,7 +28,9 @@ export const HorarioPagina = () => {
   const cargandoGlobal = state.cargaAbm || state.carga;
 
   return (
-    <main className="horarios_pagina" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina. Un segundo `main` anidado es invalido.
+    <div className="horarios_pagina">
       {/* Carga global inicial */}
       {cargandoGlobal && (
         <div className="carga-global" aria-live="polite" aria-busy="true">
@@ -76,6 +78,6 @@ export const HorarioPagina = () => {
         <h2 id={calendarioId} className="visually-hidden">Calendario semanal</h2>
         {/* El calendario se renderiza dentro de FormHorario */}
       </section>
-    </main>
+    </div>
   );
 };

@@ -55,7 +55,10 @@ export const UsuarioPage = () => {
   const cargandoGlobal = state.carga.tarjeta || state.carga.clases || state.carga.historial || state.carga.vencimiento;
 
   return (
-    <main className="usuario_contenedor_metricas" ref={containerRef} role="main">
+    // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
+    // el unico `<main id="contenido_principal">` de la pagina (y es el destino
+    // del skip link). Un segundo landmark `main` anidado es invalido.
+    <div className="usuario_contenedor_metricas" ref={containerRef}>
       {/* Carga global inicial */}
       {cargandoGlobal && (
         <div className="carga-global" aria-live="polite" aria-busy="true">
@@ -157,6 +160,6 @@ export const UsuarioPage = () => {
           />
         )}
       </section>
-    </main>
+    </div>
   );
 };

@@ -14,6 +14,13 @@
   transition: var(--transicion);
 }
 
+/* Reduced motion: desactivar animación de flotado */
+@media (prefers-reduced-motion: reduce) {
+  .estado-vacio-ilustracion {
+    animation: none !important;
+  }
+}
+
 .estado-vacio-contenedor:hover {
   border-color: var(--borde-hover);
 }

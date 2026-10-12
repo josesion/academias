@@ -39,6 +39,8 @@ export const PaginaEscuela = () => {
     onCerrar: handleCerrarModalEstado,
   });
 
+  // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+  // `main` de la pagina. Un segundo `main` anidado es invalido.
   return (
     <section className="pagina_escuelas">
       <header className="pagina_escuelas_encabezado">
@@ -61,14 +63,17 @@ export const PaginaEscuela = () => {
         </div>
       </header>
 
-      <div className="pagina_escuelas_filtros">
+      <section aria-labelledby="escuelas-filtros-titulo" className="pagina_escuelas_filtros">
+        <h2 id="escuelas-filtros-titulo" className="visually-hidden">
+          Filtros de escuelas
+        </h2>
         <FiltroEscuelas
           apellido={state.filtros.apellido}
           razon_social={state.filtros.razon_social}
           estado={state.filtros.estado}
           cachearFiltros={cachearFiltros}
         />
-      </div>
+      </section>
 
       {state.modalAbierto && (
         <div
@@ -128,7 +133,10 @@ export const PaginaEscuela = () => {
         </div>
       )}
 
-      <div className="pagina_escuelas_contenido">
+      <section aria-labelledby="escuelas-listado-titulo" className="pagina_escuelas_contenido">
+        <h2 id="escuelas-listado-titulo" className="visually-hidden">
+          Listado de escuelas
+        </h2>
         {state.listadoEscuelas != null ? (
           <ListadoEscuelas
             escuelas={state.listadoEscuelas}
@@ -138,15 +146,15 @@ export const PaginaEscuela = () => {
             carga={state.carga}
           />
         ) : null}
-      </div>
+      </section>
 
-      <div>
+      <nav aria-label="Paginación de escuelas">
         <Paginacion
           paginaActual={state.paginacion.pagina}
           contadorPagina={state.paginacion.contadorPagina}
           onPaginaCambiada={cachearPagina}
         />
-      </div>
+      </nav>
     </section>
   );
 };

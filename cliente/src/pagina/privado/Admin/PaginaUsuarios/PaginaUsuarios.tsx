@@ -37,6 +37,8 @@ export const PaginaUsuarios = () => {
     onCerrar: cerrarFormulario,
   });
 
+  // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+  // `main` de la pagina. Un segundo `main` anidado es invalido.
   return (
     <section className="pagina_usuarios">
       <header className="pagina_usuarios_encabezado">
@@ -59,7 +61,10 @@ export const PaginaUsuarios = () => {
         </div>
       </header>
 
-      <div className="pagina_usuarios_filtros">
+      <section aria-labelledby="cuenta-filtros-titulo" className="pagina_usuarios_filtros">
+        <h2 id="cuenta-filtros-titulo" className="visually-hidden">
+          Filtros de cuentas
+        </h2>
         <SelectorOpt<EscuelaSelect>
           categorias={state.opciones?.escuelas ?? []}
           itemKey="id_escuela"
@@ -69,30 +74,40 @@ export const PaginaUsuarios = () => {
           labelDefault="Todas las escuelas"
           onChangeSelector={cambiarEscuela}
         />
-      </div>
+      </section>
 
       <div className="pagina_usuarios_listas">
-        <ListadoUsuario
-          titulo="Usuarios"
-          filtros={state.filtrosUsuarios}
-          filas={state.listadoUsuarios}
-          carga={state.carga.usuarios}
-          error={state.error.usuarios}
-          contadorPagina={state.paginacionUsuarios.contadorPagina}
-          onCambioPagina={(pagina) => cachearPagina("usuarios", pagina)}
-          onModificar={abrirModificacion}
-        />
+        <section aria-labelledby="cuentas-usuarios-titulo">
+          <h2 id="cuentas-usuarios-titulo" className="visually-hidden">
+            Listado de usuarios
+          </h2>
+          <ListadoUsuario
+            titulo="Usuarios"
+            filtros={state.filtrosUsuarios}
+            filas={state.listadoUsuarios}
+            carga={state.carga.usuarios}
+            error={state.error.usuarios}
+            contadorPagina={state.paginacionUsuarios.contadorPagina}
+            onCambioPagina={(pagina) => cachearPagina("usuarios", pagina)}
+            onModificar={abrirModificacion}
+          />
+        </section>
 
-        <ListadoUsuario
-          titulo="Alumnos"
-          filtros={state.filtrosAlumnos}
-          filas={state.listadoAlumnos}
-          carga={state.carga.alumnos}
-          error={state.error.alumnos}
-          contadorPagina={state.paginacionAlumnos.contadorPagina}
-          onCambioPagina={(pagina) => cachearPagina("alumnos", pagina)}
-          onModificar={abrirModificacion}
-        />
+        <section aria-labelledby="cuentas-alumnos-titulo">
+          <h2 id="cuentas-alumnos-titulo" className="visually-hidden">
+            Listado de alumnos
+          </h2>
+          <ListadoUsuario
+            titulo="Alumnos"
+            filtros={state.filtrosAlumnos}
+            filas={state.listadoAlumnos}
+            carga={state.carga.alumnos}
+            error={state.error.alumnos}
+            contadorPagina={state.paginacionAlumnos.contadorPagina}
+            onCambioPagina={(pagina) => cachearPagina("alumnos", pagina)}
+            onModificar={abrirModificacion}
+          />
+        </section>
       </div>
 
       {/* ==============================================================

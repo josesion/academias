@@ -54,34 +54,36 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
       ) : (
         <>
           <div
-            className={`estado-plan-card ${agotado ? "estado-agotado" : ""} ${
-              porAgotarse ? "estado-por-agotarse" : ""
-            }`}
+            className={`estado-plan-card ${agotado ? "estado-agotado" : ""} ${porAgotarse ? "estado-por-agotarse" : ""}`}
           >
             {/* Cabecera de la tarjeta */}
             <div className="estado-plan-header">
               <div className="estado-plan-titulo-box">
                 <span className="badge-vigente">
-                  <CheckCircle2 size={14} /> {inscripcion.estado.toUpperCase()}
+                  <CheckCircle2 size={14} aria-hidden="true" /> {inscripcion.estado.toUpperCase()}
                 </span>
                 <h3>{inscripcion.descripcion_plan}</h3>
               </div>
               <span className="vencimiento-texto">
-                <Clock size={14} /> Vence el:{" "}
+                <Clock size={14} aria-hidden="true" /> Vence el:{" "}
                 <strong>{formatearFecha(inscripcion.fecha_fin)}</strong>
               </span>
             </div>
 
             {/* Aviso de clases por agotarse / agotadas */}
             {(porAgotarse || agotado) && (
-              <div className={`aviso-clases ${agotado ? "aviso-agotado" : ""}`}>
-                {agotado ? <XCircle size={16} /> : <AlertTriangle size={16} />}
+              <div
+                className={`aviso-clases ${agotado ? "aviso-agotado" : ""}`}
+                role="alert"
+                aria-live={agotado ? "assertive" : "polite"}
+              >
+                {agotado ? <XCircle size={16} aria-hidden="true" /> : <AlertTriangle size={16} aria-hidden="true" />}
                 <span>
                   {agotado
                     ? "Ya usaste todas tus clases de este plan."
                     : clasesRestantes === 1
-                      ? "¡Te queda 1 sola clase disponible!"
-                      : `¡Te quedan solo ${clasesRestantes} clases disponibles!`}
+                    ? "¡Te queda 1 sola clase disponible!"
+                    : `¡Te quedan solo ${clasesRestantes} clases disponibles!`}
                 </span>
               </div>
             )}
@@ -97,17 +99,9 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
               <div className="info-metrica">
                 <span className="metrica-label">Clases disponibles</span>
                 <span
-                  className={`metrica-valor destacar ${
-                    agotado
-                      ? "valor-agotado"
-                      : porAgotarse
-                        ? "valor-alerta"
-                        : ""
-                  }`}
+                  className={`metrica-valor destacar ${agotado ? "valor-agotado" : porAgotarse ? "valor-alerta" : ""}`}
                 >
-                  {clasesRestantes > 0
-                    ? `${clasesRestantes} clases restantes`
-                    : "Cupo agotado"}
+                  {clasesRestantes > 0 ? `${clasesRestantes} clases restantes` : "Cupo agotado"}
                 </span>
               </div>
             </div>
@@ -115,11 +109,16 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
             {/* Barra de progreso basada en el snapshot de clases */}
             <div className="barra-progreso-container">
               <div
-                className={`barra-progreso-fill ${
-                  agotado ? "fill-agotado" : porAgotarse ? "fill-alerta" : ""
-                }`}
+                role="progressbar"
+                aria-valuenow={porcentaje}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label={`Progreso del plan: ${porcentaje}% (${clasesUsadas} de ${clasesTotales} clases)`}
+                className={`barra-progreso-fill ${agotado ? "fill-agotado" : porAgotarse ? "fill-alerta" : ""}`}
                 style={{ width: `${porcentaje}%` }}
-              ></div>
+              >
+                <span className="visually-hidden">{porcentaje}% (${clasesUsadas} de ${clasesTotales} clases)</span>
+              </div>
             </div>
           </div>
         </>

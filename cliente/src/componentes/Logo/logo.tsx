@@ -1,11 +1,11 @@
 import "./logo.css";
-import logoImage from "./logo.png";
+import logoImage from "./logohorizontal.png";
 
 type LogoProps = {
   size?: number; // Representará el ancho en este formato horizontal
 };
 
-export const Logo = ({ size = 180 }: LogoProps) => {
+export const Logo = ({ size = 250 }: LogoProps) => {
   return (
     <div
       className="logo_contenedor"

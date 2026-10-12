@@ -43,8 +43,9 @@ const normalizarUrlRed = (tipo: TipoContacto, valor: string | null): string | un
       return `https://facebook.com/${user}`;
     }
     case "whatsapp": {
-      // Quitar espacios, guiones, paréntesis y + inicial
-      const num = limpio.replace(/[\s\-\(\)]/g, "").replace(/^\+/, "");
+      // Quitar espacios, guiones, parentesis y + inicial. Los parentesis van sin
+      // barra: dentro de una clase de caracteres no hace falta escaparlos.
+      const num = limpio.replace(/[\s\-()]/g, "").replace(/^\+/, "");
       return `https://wa.me/${num}`;
     }
     default:
@@ -143,7 +144,10 @@ export const PrincipalAlumnos = () => {
   const clasesHoy = data?.clasesHoy ?? [];
 
   return (
-    <main className="principal-alumno-container" id="contenido-principal" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina (y es el destino del skip link). Un segundo `main`
+    // anidado es invalido.
+    <div className="principal-alumno-container">
       {/* Encabezado de página con título principal para jerarquía semántica */}
       <header className="pagina-header" hidden>
         <h1>Panel del Alumno</h1>
@@ -265,6 +269,6 @@ export const PrincipalAlumnos = () => {
           </section>
         </>
       )}
-    </main>
+    </div>
   );
 };

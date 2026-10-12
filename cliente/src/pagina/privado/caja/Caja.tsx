@@ -77,7 +77,9 @@ export const CajaArqueo = () => {
   const cargandoGlobal = state.carga.aperturaCaja || state.carga.cierreCaja || state.carga.movimientosExtas || state.enviando;
 
   return (
-    <main className="caja_arqueo_grid" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina. Un segundo `main` anidado es invalido.
+    <div className="caja_arqueo_grid">
       {/* Carga global inicial */}
       {cargandoGlobal && (
         <div className="carga-global" aria-live="polite" aria-busy="true">
@@ -283,6 +285,6 @@ export const CajaArqueo = () => {
           <PanelMetodoPago cuentas={state.metricasTipoCuentas ?? []} />
         </aside>
       </section>
-    </main>
+    </div>
   );
 };

@@ -221,3 +221,30 @@
     transform: none;
   }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024) — high-contrast / print
+   (el reduced-motion ya estaba desde la spec que creo el modal)
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+  .modal-sin-susp-tarjeta {
+    border-width: 3px !important;
+  }
+  .modal-sin-susp-btn-primario {
+    border-width: 2px !important;
+  }
+  .modal-sin-susp-btn-primario:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .modal-sin-susp-icono {
+    border: 2px solid currentColor;
+  }
+}
+
+@media print {
+  .modal-sin-susp-overlay {
+    display: none !important;
+  }
+}

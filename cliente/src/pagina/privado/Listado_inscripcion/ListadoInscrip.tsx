@@ -56,7 +56,9 @@ export const ListadoInscripcionPage = () => {
   }, [filtrosAbiertos]);
 
   return (
-    <main className="contenedor_listado" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina. Un segundo `main` anidado es invalido.
+    <div className="contenedor_listado">
       <header className="gestion_inscripciones_header">
         <h1 className="gestion_inscripciones_titulo">
           Gestión de Inscripciones :
@@ -139,6 +141,6 @@ export const ListadoInscripcionPage = () => {
           onPaginaCambiada={handlePaginaCambiada}
         />
       </nav>
-    </main>
+    </div>
   );
 };

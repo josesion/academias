@@ -27,7 +27,10 @@ interface ModalVencimientoProps {
 export const ModalVencimiento = ({
   abierto,
   onCerrar,
-  onRenovar,
+  // `onRenovar` NO se destructura a proposito: sigue en `ModalVencimientoProps`
+  // (los que montan el modal lo pasan) pero todavia no hay flujo de renovacion
+  // conectado al server, asi que el componente no lo invoca. Destructurarlo
+  // dejaba la variable sin usar y rompia el lint.
 }: ModalVencimientoProps) => {
   const { cerrarSesion } = useContext(RutasProtegidasContext);
   const navegar = useNavigate();

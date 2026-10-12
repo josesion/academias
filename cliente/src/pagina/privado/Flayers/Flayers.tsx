@@ -38,7 +38,9 @@ export const FlayersPag = () => {
   const galeriaId = useId();
 
   return (
-    <main className="flayers_pagina" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina. Un segundo `main` anidado es invalido.
+    <div className="flayers_pagina">
       {/* 1. MODAL DE CONFIRMACIÓN (Ubicado arriba de todo para evitar solapamientos) */}
       <ModalConfirmacion
         abierto={state.modalConfirmacion}
@@ -155,6 +157,6 @@ export const FlayersPag = () => {
           </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 };

@@ -225,3 +225,33 @@
     animation: none !important;
   }
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024) — high-contrast / print
+   (el reduced-motion ya estaba desde la spec que creo el modal)
+   ========================================================================== */
+
+@media (prefers-contrast: high) {
+  .modal-vencimiento {
+    border-width: 3px !important;
+  }
+  .modal-vencimiento-cerrar {
+    border-width: 2px !important;
+  }
+  .modal-vencimiento-cerrar:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .modal-vencimiento-boton {
+    border-width: 2px !important;
+  }
+  .modal-vencimiento-boton:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .modal-vencimiento {
+    display: none !important;
+  }
+}

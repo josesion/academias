@@ -80,6 +80,8 @@ export const PaginaAnuncios = () => {
     state.filtros.fecha_hasta
   );
 
+  // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+  // `main` de la pagina. Un segundo `main` anidado es invalido.
   return (
     <section className="pagina_anuncios">
       <header className="pagina_anuncios_encabezado">
@@ -106,7 +108,13 @@ export const PaginaAnuncios = () => {
       </header>
 
       {/* ---------- Los 5 filtros del listado ---------- */}
-      <div className="pagina_anuncios_filtros">
+      <section
+        aria-labelledby="anuncios-filtros-titulo"
+        className="pagina_anuncios_filtros"
+      >
+        <h2 id="anuncios-filtros-titulo" className="visually-hidden">
+          Filtros de anuncios
+        </h2>
         <div className="pagina_anuncios_buscador">
           <Inputs
             type="text"
@@ -164,22 +172,27 @@ export const PaginaAnuncios = () => {
             className="pagina_anuncios_limpiar"
             onClick={limpiarFiltros}
           >
-            <LuX size={14} />
+            <LuX size={14} aria-hidden="true" />
             Limpiar filtros
           </button>
         )}
-      </div>
+      </section>
 
-      <ListadoAnuncios
-        filas={state.listado}
-        filtros={state.filtros}
-        carga={state.carga.listado}
-        contadorPagina={state.paginacion.contadorPagina}
+      <section aria-labelledby="anuncios-listado-titulo">
+        <h2 id="anuncios-listado-titulo" className="visually-hidden">
+          Listado de anuncios
+        </h2>
+        <ListadoAnuncios
+          filas={state.listado}
+          filtros={state.filtros}
+          carga={state.carga.listado}
+          contadorPagina={state.paginacion.contadorPagina}
         error={state.error.listado}
-        onCambioPagina={cachearPagina}
-        onModificar={abrirModificacion}
-        onEliminar={abrirEliminar}
-      />
+          onCambioPagina={cachearPagina}
+          onModificar={abrirModificacion}
+          onEliminar={abrirEliminar}
+        />
+      </section>
 
       {/* ==============================================================
           MODAL DEL FORMULARIO — alta o modificación

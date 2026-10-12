@@ -233,3 +233,56 @@
     transform: none;
   }
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton_personalizado,
+  .input_caja,
+  .cuenta_row,
+  .admin_suscripcion_row,
+  .admin_log_row,
+  .anuncio_row,
+  .escuela_row,
+  .plan_row {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .input_caja {
+    border-width: 2px !important;
+  }
+  .input_caja:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .pagina_usuarios_acciones,
+  .pagina_escuelas_acciones,
+  .pagina_anuncios_acciones {
+    display: none !important;
+  }
+}

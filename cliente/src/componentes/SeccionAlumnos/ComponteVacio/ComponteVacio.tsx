@@ -26,12 +26,12 @@ export const EstadoVacio = ({
 }: EstadoVacioProps) => {
   return (
     <div className={`estado-vacio-contenedor estado-vacio--${variante}`}>
-      <div className="estado-vacio-ilustracion">
+      <div className="estado-vacio-ilustracion" aria-hidden="true">
         <IlustracionVacio variante={variante} />
       </div>
-      <p className="estado-vacio-mensaje">
+      <h3 className="estado-vacio-mensaje">
         {mensaje ?? mensajesDefault[variante]}
-      </p>
+      </h3>
       {accion && (
         <button className="estado-vacio-boton" onClick={accion.onClick}>
           {accion.texto}
@@ -56,7 +56,9 @@ const IlustracionVacio = ({ variante }: { variante: VarianteVacio }) => {
 
 /* --- Escuela: fachada de academia con puerta, esperando datos --- */
 const IlustracionEscuela = () => (
-  <svg viewBox="0 0 120 100" width="88" height="74" fill="none">
+  <svg viewBox="0 0 120 100" width="88" height="74" fill="none" aria-label="Ilustración de academia sin datos">
+    <title>Academia sin datos</title>
+    <desc>Fachada de academia con puerta cerrada, indicando que faltan datos por cargar</desc>
     <path
       d="M20 92V45L60 18L100 45V92"
       stroke="var(--texto-deshabilitado)"
@@ -104,7 +106,9 @@ const IlustracionEscuela = () => (
 
 /* --- Flayers: tarjetas apiladas ligeramente desprolijas, vacías --- */
 const IlustracionFlayers = () => (
-  <svg viewBox="0 0 120 100" width="88" height="74" fill="none">
+  <svg viewBox="0 0 120 100" width="88" height="74" fill="none" aria-label="Ilustración de novedades/publicaciones vacías">
+    <title>Novedades/publicaciones vacías</title>
+    <desc>Tarjetas apiladas ligeramente desprolijas, indicando que no hay novedades o anuncios publicados por el momento</desc>
     <rect
       x="18"
       y="38"
@@ -169,7 +173,9 @@ const IlustracionFlayers = () => (
 
 /* --- Inscripción: carnet/ticket con espacio vacío en vez de datos --- */
 const IlustracionInscripcion = () => (
-  <svg viewBox="0 0 120 100" width="88" height="74" fill="none">
+  <svg viewBox="0 0 120 100" width="88" height="74" fill="none" aria-label="Ilustración de inscripción sin plan activo">
+    <title>Inscripción sin plan activo</title>
+    <desc>Carnet/ticket con espacio vacío en vez de datos, indicando que no tenés un plan activo en esta academia</desc>
     <rect
       x="20"
       y="30"
@@ -226,7 +232,9 @@ const IlustracionInscripcion = () => (
 
 /* --- Planes: lista/checklist con casilleros sin marcar --- */
 const IlustracionPlanes = () => (
-  <svg viewBox="0 0 120 100" width="88" height="74" fill="none">
+  <svg viewBox="0 0 120 100" width="88" height="74" fill="none" aria-label="Ilustración de planes disponibles">
+    <title>Planes disponibles</title>
+    <desc>Lista/checklist con casilleros sin marcar, indicando que esta academia todavía no publicó planes disponibles</desc>
     <rect
       x="24"
       y="20"

@@ -18,11 +18,7 @@ interface PlanesEscuelaListProps {
   carga: boolean;
 }
 
-export const PlanesEscuelaList: React.FC<PlanesEscuelaListProps> = ({
-  planes,
-  idPlanActual,
-  carga,
-}) => {
+export const PlanesEscuelaList: React.FC<PlanesEscuelaListProps> = ({ planes, idPlanActual, carga }) => {
   // Función para formatear el monto en pesos argentinos
   const formatearMonto = (monto: number) => {
     return new Intl.NumberFormat("es-AR", {
@@ -40,7 +36,7 @@ export const PlanesEscuelaList: React.FC<PlanesEscuelaListProps> = ({
         <SpinnerTarjeta />
       ) : (
         <>
-          <div className="grilla-planes">
+          <div className="grilla-planes" role="list" aria-label="Planes disponibles">
             {planes.map((plan) => {
               const esActivo = plan.id_plan === idPlanActual;
 
@@ -48,9 +44,13 @@ export const PlanesEscuelaList: React.FC<PlanesEscuelaListProps> = ({
                 <div
                   key={plan.id_plan}
                   className={`plan-card ${esActivo ? "activo" : ""}`}
+                  role="listitem"
+                  aria-describedby={`plan-detalle-${plan.id_plan}`}
                 >
                   {esActivo && (
-                    <span className="badge-plan-activo">Tu Plan Actual</span>
+                    <span className="badge-plan-activo" aria-label={`Plan actual: ${plan.descripcion_plan}`}>
+                      Tu Plan Actual
+                    </span>
                   )}
 
                   <h3 className="plan-nombre">{plan.descripcion_plan}</h3>
@@ -67,16 +67,12 @@ export const PlanesEscuelaList: React.FC<PlanesEscuelaListProps> = ({
                     </span>
                   </div>
 
-                  <ul className="plan-lista">
+                  <ul className="plan-lista" role="list" aria-label={`Detalles del plan ${plan.descripcion_plan}`}>
                     <li>
-                      {plan.cantidad_clases > 22
-                        ? "Clases ilimitadas"
-                        : `${plan.cantidad_clases} clases incluidas`}
+                      {plan.cantidad_clases > 22 ? "Clases ilimitadas" : `${plan.cantidad_clases} clases incluidas`}
                     </li>
                     <li>
-                      {plan.cantidad_clases > 0
-                        ? `Vigencia de ${plan.cantidad_meses} mes/es`
-                        : "Pago por única vez"}
+                      {plan.cantidad_clases > 0 ? `Vigencia de ${plan.cantidad_meses} mes/es` : "Pago por única vez"}
                     </li>
                   </ul>
                 </div>

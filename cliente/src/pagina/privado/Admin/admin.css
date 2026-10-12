@@ -428,3 +428,123 @@
     animation: none;
   }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+/* visually-hidden: solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga global: overlay que tapa la pagina mientras cargan metricas/listados */
+.carga-global {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  background: color-mix(in srgb, var(--fondo-principal) 85%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  text-align: center;
+}
+
+.carga-global .spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+@keyframes spinner_girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carga-global .spinner {
+    animation: none !important;
+  }
+  .admin_cabecera,
+  .admin_titulo,
+  .admin_panel {
+    transition: none !important;
+    animation: none !important;
+  }
+  .tarjeta_metrica_contenedor,
+  .admin_suscripcion_row,
+  .admin_log_row {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .carga-global .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+  .admin_cabecera {
+    border-bottom-width: 2px;
+  }
+  .admin_panel {
+    border-width: 2px !important;
+  }
+  .tarjeta_metrica_contenedor,
+  .admin_suscripcion_row,
+  .admin_log_row {
+    border-width: 2px !important;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .input_caja {
+    border-width: 2px !important;
+  }
+  .input_caja:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .carga-global {
+    display: none !important;
+  }
+  .admin_cabecera_acciones {
+    display: none !important;
+  }
+  .admin_panel {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .admin_pie {
+    display: none !important;
+  }
+  .admin_filtros_logs {
+    display: none !important;
+  }
+}

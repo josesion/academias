@@ -1,4 +1,23 @@
 /* --- MODAL GRILLA HORARIOS --- */
+
+/* Reduced motion: desactivar animaciones cuando el usuario las tenga preferencia */
+@media (prefers-reduced-motion: reduce) {
+  .modal-grilla-card {
+    animation: none !important;
+  }
+
+  .tarjeta-clase-calendario,
+  .tarjeta-clase-item {
+    transition: none !important;
+  }
+
+  .tarjeta-clase-calendario:hover,
+  .tarjeta-clase-item:hover {
+    border-color: var(--borde) !important;
+    background-color: var(--fondo-superficie) !important;
+  }
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;

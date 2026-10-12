@@ -1,8 +1,13 @@
 /* Página 404 (spec 018) — ruta privada sin menú: `App.tsx` la registra dentro
    de `RutasPrivadas`, y no dentro de `LayoutConMenu` ni de `LayoutSinMenu`
-   anidados. */
+   anidados.
+   Concepto: "diste un paso en falso" — rastro de pasos de baile + reflector. */
 
 .notfound {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,16 +21,67 @@
   color: var(--texto-principal);
 }
 
+/* Reflector de escenario: cono de luz que cae desde arriba */
+.notfound::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 55% 60% at 50% 0%,
+    color-mix(in srgb, var(--color-primario) 26%, transparent),
+    transparent 72%
+  );
+  animation: notfound-luz 800ms var(--ease-ui) both;
+}
+
+/* ---------- Rastro de pasos ---------- */
+
+.notfound_pasos {
+  width: min(330px, 80vw);
+  height: auto;
+  margin-bottom: 8px;
+  overflow: visible;
+}
+
+.paso {
+  fill: var(--color-primario);
+  opacity: 0;
+  animation: notfound-paso 400ms var(--ease-ui) both;
+  /* Coreografía: cada paso entra tras el anterior (inicia con el reflector) */
+  animation-delay: calc(500ms + var(--i, 0) * 140ms);
+}
+
+/* El paso que falta: solo contorno punteado */
+.paso--falta {
+  fill: none;
+  stroke: var(--color-primario);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+}
+
+/* ---------- Texto ---------- */
+
 .notfound_codigo {
   margin: 0;
-  font-size: 4rem;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(4.5rem, 18vw, 8.5rem);
   font-weight: 700;
   line-height: 1;
+  letter-spacing: -0.02em;
   color: var(--color-primario);
+}
+
+/* El cero es un escenario vacío: solo contorno */
+.notfound_cero {
+  color: transparent;
+  -webkit-text-stroke: 2px var(--color-primario);
 }
 
 .notfound_titulo {
   margin: 0;
+  font-family: var(--fuente-titulos);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -37,6 +93,8 @@
   line-height: 1.6;
   color: var(--texto-secundario, #a1a1aa);
 }
+
+/* ---------- Botones ---------- */
 
 .notfound_botones {
   display: flex;
@@ -61,7 +119,14 @@
   text-decoration: none;
 
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 200ms var(--ease-ui),
+    border-color 200ms var(--ease-ui),
+    transform 120ms var(--ease-ui);
+}
+
+.notfound_botones .boton:active {
+  transform: scale(0.97);
 }
 
 .notfound_botones .boton:focus-visible {
@@ -69,9 +134,21 @@
   outline-offset: 2px;
 }
 
+/* ---------- Animaciones ---------- */
+
+@keyframes notfound-luz {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes notfound-paso {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 @media (max-width: 480px) {
-  .notfound_codigo {
-    font-size: 3rem;
+  .notfound_titulo {
+    font-size: 1.3rem;
   }
 
   .notfound_botones {
@@ -81,5 +158,69 @@
 
   .notfound_botones .boton {
     width: 100%;
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .notfound::before,
+  .paso {
+    animation: none !important;
+  }
+  .paso {
+    opacity: 1;
+  }
+  .notfound_botones .boton {
+    transition: none !important;
+  }
+  .notfound_botones .boton:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .notfound_cero {
+    -webkit-text-stroke-width: 3px;
+  }
+  .paso--falta {
+    stroke-width: 2.5;
+  }
+  .notfound .boton {
+    border-width: 2px !important;
+  }
+  .notfound .boton:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+/* Modo de alto contraste de Windows: colores del sistema */
+@media (forced-colors: active) {
+  .notfound_codigo,
+  .notfound_cero {
+    color: CanvasText;
+    -webkit-text-stroke-color: CanvasText;
+  }
+  .paso {
+    fill: CanvasText;
+  }
+  .paso--falta {
+    fill: none;
+    stroke: CanvasText;
+  }
+}
+
+@media print {
+  .notfound_botones {
+    display: none !important;
+  }
+  .notfound::before {
+    display: none;
+  }
+  .notfound {
+    min-height: auto;
   }
 }

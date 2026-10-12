@@ -203,3 +203,39 @@
         font-size: var(--texto-md);
     }
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .menu_usuario_panel {
+    animation: none !important;
+    transition: none !important;
+  }
+  .menu_usuario_logout {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .menu_usuario_panel {
+    border-width: 2px !important;
+  }
+  .menu_usuario_divider {
+    height: 2px;
+  }
+  .menu_usuario_logout {
+    border-width: 2px !important;
+  }
+  .menu_usuario_logout:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .menu_usuario_backdrop,
+  .menu_usuario_panel {
+    display: none !important;
+  }
+}

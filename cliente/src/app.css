@@ -460,3 +460,275 @@
     }
 
 }
+
+/* ============================================================
+   TOKENS ADICIONALES — Spec 026 (Sección Alumnos)
+   ============================================================ */
+
+:root {
+    /* Focus ring unificado */
+    --focus-ring: 2px solid var(--color-secundario);
+    --focus-offset: 2px;
+    --focus-ring-high-contrast: 3px solid var(--color-primario);
+    --focus-offset-high-contrast: 3px;
+
+    /* Botones unificados */
+    --btn-padding: 10px 18px;
+    --btn-radius: var(--radio-sm);
+    --btn-font: var(--fuente-principal);
+    --btn-size: var(--texto-sm);
+    --btn-font-weight: var(--peso-medio);
+    --btn-gap: 8px;
+
+    /* Card base */
+    --card-padding: 16px;
+    --card-gap: 12px;
+    --card-border: 1px solid var(--borde);
+    --card-radius: var(--radio-md);
+    --card-bg: var(--fondo-secundario);
+    --card-shadow: var(--sombra-sm);
+    --card-hover-border: var(--borde-hover);
+    --card-hover-shadow: var(--sombra-md);
+
+    /* Skip link (ya existe .salto_contenido, solo aseguramos variables) */
+    --skip-link-z: 1100;
+    --skip-link-bg: var(--fondo-secundario);
+    --skip-link-border: var(--borde);
+    --skip-link-radius: var(--radio-sm);
+    --skip-link-padding: 10px 16px;
+    --skip-link-shadow: var(--sombra-md);
+}
+
+/* ============================================================================
+   BOTONES UNIFICADOS
+   ============================================================================ */
+
+.btn-principal,
+.btn-secundario,
+.btn-ghost,
+.btn-ghost-sm {
+    font-family: var(--btn-font);
+    font-size: var(--btn-size);
+    font-weight: var(--btn-font-weight);
+    border-radius: var(--btn-radius);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--btn-gap);
+    cursor: pointer;
+    transition: background-color 140ms var(--ease-ui),
+                border-color 140ms var(--ease-ui),
+                color 140ms var(--ease-ui),
+                transform 140ms var(--ease-ui);
+    border: 1px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-principal {
+    background-color: var(--color-primario);
+    color: var(--fondo-secundario);
+    border-color: var(--color-primario);
+    padding: var(--btn-padding);
+}
+
+.btn-principal:hover {
+    background-color: var(--color-secundario);
+    border-color: var(--color-secundario);
+}
+
+.btn-secundario {
+    background-color: var(--fondo-superficie);
+    color: var(--texto-principal);
+    border-color: var(--borde);
+    padding: var(--btn-padding);
+}
+
+.btn-secundario:hover {
+    border-color: var(--borde-hover);
+    color: var(--color-secundario);
+}
+
+.btn-ghost {
+    background-color: transparent;
+    color: var(--texto-principal);
+    border-color: transparent;
+    padding: calc(var(--btn-padding) - 2px) calc(var(--btn-padding) - 4px);
+}
+
+.btn-ghost:hover {
+    background-color: var(--fondo-hover);
+    color: var(--color-secundario);
+}
+
+.btn-ghost-sm {
+    padding: 6px 12px;
+    font-size: var(--texto-xs);
+}
+
+:root :focus-visible,
+.btn-principal:focus-visible,
+.btn-secundario:focus-visible,
+.btn-ghost:focus-visible,
+.btn-ghost-sm:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
+}
+
+/* ============================================================================
+   CARD BASE
+   ============================================================================ */
+
+.card-base {
+    padding: var(--card-padding);
+    gap: var(--card-gap);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    transition: border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+}
+
+.card-base:hover {
+    border-color: var(--card-hover-border);
+    box-shadow: var(--card-hover-shadow);
+}
+
+/* ============================================================================
+   REDUCED MOTION GLOBAL — Spec 026
+   ============================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    /* Spinner específico */
+    .carga-global_spinner,
+    .spinner,
+    .ComponenteCargando {
+        animation: none !important;
+        opacity: 0.6;
+    }
+}
+
+/* ============================================================================
+   HIGH CONTRAST MODE
+   ============================================================================ */
+
+@media (prefers-contrast: high) {
+    :root {
+        --borde: var(--texto-principal);
+    }
+
+    .card-base,
+    .btn-principal,
+    .btn-secundario,
+    .btn-ghost,
+    .btn-ghost-sm,
+    .tarjeta-clase-item,
+    .tarjeta-clase-calendario,
+    .plan-card,
+    .estado-plan-card,
+    .card-horarios-lateral,
+    .modal-grilla-card,
+    .robot-error-flotante,
+    .estado-plan-card,
+    .plan-card,
+    .buscador_contenedor_comp {
+        border-width: 2px !important;
+        border-style: solid !important;
+    }
+
+    :root :focus-visible,
+    .btn-principal:focus-visible,
+    .btn-secundario:focus-visible,
+    .btn-ghost:focus-visible,
+    .btn-ghost-sm:focus-visible {
+        outline: var(--focus-ring-high-contrast) !important;
+        outline-offset: var(--focus-offset-high-contrast) !important;
+    }
+
+    .seccion-titulo,
+    .seccion-titulo-inline,
+    .section-title {
+        border-bottom: 2px solid currentColor !important;
+    }
+
+    .btn-principal,
+    .btn-secundario,
+    .btn-ghost,
+    .btn-ghost-sm {
+        border-width: 2px !important;
+    }
+}
+
+/* ============================================================================
+   PRINT STYLES
+   ============================================================================ */
+
+@media print {
+    .nav-superior,
+    .btn-principal,
+    .btn-secundario,
+    .btn-ghost,
+    .btn-ghost-sm,
+    .btn-volver,
+    .btn-cerrar-modal,
+    .modal-overlay,
+    .modal-overlay-finanzas,
+    .robot-error-flotante,
+    .aviso-clases,
+    .nav-superior,
+    .buscador_contenedor_comp,
+    .area_buscador_lateral,
+    .modal-overlay-finanzas,
+    .modal-overlay,
+    .paginacion,
+    .area_paginacion,
+    .historico_paginacion,
+    .export_buttons,
+    .density_toggle {
+        display: none !important;
+    }
+
+    .skip-link,
+    .salto_contenido,
+    .visually-hidden {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        clip: auto !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+
+    .seccion-bloque,
+    .seccion-bloque > *,
+    .estado-plan-card,
+    .plan-card,
+    .tarjeta-clase-item,
+    .tarjeta-clase-calendario,
+    .item_card_editorial,
+    .detalle_caja_card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .data-escuela-container,
+    .amb_master_wrapper {
+        background: var(--fondo-principal) !important;
+    }
+
+    .visually-hidden {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        clip: auto !important;
+        margin: 0 !important;
+        overflow: visible !important;
+    }
+}

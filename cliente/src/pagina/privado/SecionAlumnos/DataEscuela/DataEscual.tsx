@@ -40,7 +40,9 @@ export const DataEscuela = () => {
   const grillaId = useId();
 
   return (
-    <main className="data-escuela-container" role="main">
+    // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+    // `main` de la pagina. Un segundo `main` anidado es invalido.
+    <div className="data-escuela-container">
       {/* Encabezado de la pagina (solo para lectores de pantalla): el nombre de
           la academia viene del `HeroEscuela`, pero hace falta un <h1> propio
           para que la pagina tenga un titulo principal. */}
@@ -128,47 +130,29 @@ export const DataEscuela = () => {
       {/* --- MODAL DE HORARIOS --- */}
       {modalHorario &&
         (state.carga.horario ? (
-          <div className="modal-overlay">
-            <div
-              className="modal-grilla-card"
-              style={{ padding: "2rem", textAlign: "center" }}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Cargando horarios"
-              id={grillaId}
-            >
-              <p role="status" aria-live="polite">Cargando horarios...</p>
-            </div>
-          </div>
+          <GrillaHorarios
+            horarios={[]}
+            onCerrar={() => {
+              setModalHorario(false);
+            }}
+            abierto
+          />
         ) : state.horario ? (
           <GrillaHorarios
             horarios={state.horario}
             onCerrar={() => {
               setModalHorario(false);
             }}
+            abierto
           />
         ) : (
-          <div className="modal-overlay">
-            <div
-              className="modal-grilla-card"
-              style={{ padding: "2rem", textAlign: "center" }}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="sin-horarios-titulo"
-              id={grillaId}
-            >
-              <h3 id="sin-horarios-titulo" style={{ marginBottom: "8px" }}>Sin Horarios</h3>
-              <p className="sin-horarios" style={{ marginBottom: "16px" }}>
-                No existe horario registrado en esta academia.
-              </p>
-              <button
-                className="btn-principal"
-                onClick={() => setModalHorario(false)}
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
+          <GrillaHorarios
+            horarios={[]}
+            onCerrar={() => {
+              setModalHorario(false);
+            }}
+            abierto
+          />
         ))}
 
       {/* --- AVISO DE ERROR FLOTANTE (robot roto) --- */}
@@ -180,6 +164,6 @@ export const DataEscuela = () => {
           />
         </div>
       )}
-    </main>
+    </div>
   );
 };

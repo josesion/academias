@@ -7,7 +7,48 @@
     justify-content: center;
     width: 100%;
     height: 89.5dvh;
-    
+
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+/* visually-hidden: solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login_pagina_contenedor {
+    transition: none !important;
+  }
+  /* El Formulario tiene sus propias animaciones (partículas, fadeInForm) y las
+     respeta por su cuenta en formularios.css: no hace falta duplicar la regla
+     acá, pero se deja el contenedor explícito por si se le suma algo. */
+}
+
+@media (prefers-contrast: high) {
+  .login_pagina_contenedor {
+    /* El formulario ya se encarga de sus propios bordes (formularios.css).
+           Acá solo se fuerza un fondo sin transparencia para que el texto
+           no quede sobre la imagen de fondo. */
+    background: var(--fondo-principal);
+  }
+}
+
+@media print {
+  .login_pagina_contenedor {
+    display: none !important;
+  }
 }
 
 

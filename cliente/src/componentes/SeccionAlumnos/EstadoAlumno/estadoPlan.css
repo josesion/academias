@@ -144,6 +144,13 @@
   animation: aviso_clases_pulso 2s ease-in-out infinite;
 }
 
+/* Reduced motion: desactivar animación de pulso */
+@media (prefers-reduced-motion: reduce) {
+  .aviso-clases {
+    animation: none !important;
+  }
+}
+
 .aviso-clases.aviso-agotado {
   background: rgba(179, 71, 71, 0.1);
   color: var(--color-error);

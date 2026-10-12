@@ -79,8 +79,29 @@ export const DashboardAdministrador = () => {
     onCerrar: cerrarFormularioAnular,
   });
 
+  // Carga global: se muestra mientras haya cualquier carga critica de la
+  // pagina. Cada seccion mantiene su propio estado para cuando una recarga
+  // parcial (ej: solo los logs).
+  const cargandoGlobal =
+    state.carga.metricas || state.carga.listado || state.carga.logs;
+
+  // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
+  // `main` de la pagina. Un segundo `main` anidado es invalido.
   return (
     <section className="admin_pagina">
+      {/* Carga global inicial */}
+      {cargandoGlobal && (
+        <div
+          className="carga-global"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="spinner" aria-hidden="true" />
+          <span className="visually-hidden">Cargando panel de administración...</span>
+        </div>
+      )}
+
       <header className="admin_cabecera">
         <div className="admin_cabecera_titulos">
           <span className="admin_etiqueta">Administración</span>
@@ -119,7 +140,10 @@ export const DashboardAdministrador = () => {
           MÉTRICAS — bloque 5 del reducer (GET /api/metricas_simples)
           Se refrescan solas: el alta y la anulación mandan ACTUALIZAR
           ============================================================== */}
-      <section className="admin_metricas" aria-label="Métricas de suscripciones">
+      <section className="admin_metricas" aria-labelledby="admin-metricas-titulo">
+        <h2 id="admin-metricas-titulo" className="visually-hidden">
+          Métricas de suscripciones
+        </h2>
         <TarjetaMetrica
           carga={state.carga.metricas}
           tipo="activos"
@@ -173,7 +197,10 @@ export const DashboardAdministrador = () => {
           ============================================================== */}
       <div className="admin_paneles">
         {/* ---------- Panel 1: suscripciones ---------- */}
-        <div className="admin_panel">
+        <section className="admin_panel" aria-labelledby="admin-suscripciones-titulo">
+          <h2 id="admin-suscripciones-titulo" className="visually-hidden">
+            Listado de suscripciones
+          </h2>
           <div className="admin_listado">
             <ListadoSuscripciones
               suscripciones={state.listadoSuspcripcop ?? []}
@@ -182,17 +209,20 @@ export const DashboardAdministrador = () => {
             />
           </div>
 
-          <div className="admin_pie">
+          <nav aria-label="Paginación de suscripciones" className="admin_pie">
             <Paginacion
               paginaActual={pagina}
               contadorPagina={contadorPagina}
               onPaginaCambiada={cachearPagina}
             />
-          </div>
-        </div>
+          </nav>
+        </section>
 
         {/* ---------- Panel 2: bitácora del sistema ---------- */}
-        <div className="admin_panel">
+        <section className="admin_panel" aria-labelledby="admin-logs-titulo">
+          <h2 id="admin-logs-titulo" className="visually-hidden">
+            Bitácora del sistema
+          </h2>
           <div className="admin_listado">
             {/* Filtros de la bitácora: 3 select + fecha + ruta. "Todos" viaja
                 como valor vacío y el hook lo traduce a "sin filtro" */}
@@ -257,14 +287,14 @@ export const DashboardAdministrador = () => {
             />
           </div>
 
-          <div className="admin_pie">
+          <nav aria-label="Paginación de la bitácora" className="admin_pie">
             <Paginacion
               paginaActual={state.paginacionLogs.pagina}
               contadorPagina={state.paginacionLogs.contadorPagina}
               onPaginaCambiada={cachearPaginaLogs}
             />
-          </div>
-        </div>
+          </nav>
+        </section>
       </div>
 
       {/* ==============================================================

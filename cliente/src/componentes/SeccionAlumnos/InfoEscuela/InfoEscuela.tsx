@@ -1,5 +1,6 @@
 import React from "react";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
+import { useId } from "react";
 import "./infoescuela.css";
 
 export interface EscuelaData {
@@ -27,17 +28,19 @@ export const HeroEscuela: React.FC<HeroEscuelaProps> = ({ escuela, carga }) => {
     return texto.substring(0, 2).toUpperCase();
   };
 
+  const heroId = useId();
+
   return (
-    <div className="hero-escuela">
+    <div className="hero-escuela" aria-labelledby={heroId} tabIndex={0}>
       {carga ? (
         <SpinnerTarjeta />
       ) : (
         <>
-          <div className="hero-avatar">
+          <div className="hero-avatar" aria-hidden="true">
             {obtenerIniciales(escuela.razon_social)}
           </div>
           <div className="hero-info">
-            <h1 className="hero-titulo">{escuela.razon_social}</h1>
+            <h2 id={heroId} className="hero-titulo">{escuela.razon_social}</h2>
             <p className="hero-sub">
               Propietario: {escuela.nombre_propietario}{" "}
               {escuela.apellido_propietario} • {escuela.direccion} • Tel:{" "}
