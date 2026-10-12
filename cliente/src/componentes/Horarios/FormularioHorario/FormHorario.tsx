@@ -83,10 +83,19 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
     <div className="contenedor_formulario_horario">
       {modalInterno && (
         <div className="formulario_overlay">
-          <div className="formulario_horario">
+          <div
+            className="formulario_horario"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="form_horario_titulo"
+          >
+            <h2 id="form_horario_titulo" className="visually-hidden">
+              {metodo === "ALTA" ? "Agregar horario" : "Modificar horario"}
+            </h2>
+
             <div className="formulario_horario_filtro_primario">
               <div className="filtro_primario_titulo">
-                <SlidersHorizontal size={13} />
+                <SlidersHorizontal size={13} aria-hidden="true" />
                 <span>Filtros</span>
               </div>
 
@@ -177,8 +186,8 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
 
       <div className="formulario_horario_filtro_secundario">
         <div className="calendario_header">
-          <CalendarDays size={14} />
-          <span>Horario semanal</span>
+          <CalendarDays size={14} aria-hidden="true" />
+          <h2 id="calendario_horario_titulo">Horario semanal</h2>
         </div>
 
         <Calendario

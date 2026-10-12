@@ -21,14 +21,21 @@ export const TarjetasNormales = ({
     .toString()
     .padStart(2, "0");
 
+  const ariaLabel = `${titulo}: $${monto.toLocaleString("es-AR", { minimumFractionDigits: 2 })}`;
+
   return (
-    <div className={`tarjeta_normal_contenedor ${claseColor || ""}`}>
+    <div
+      className={`tarjeta_normal_contenedor ${claseColor || ""}`}
+      role="status"
+      aria-live="polite"
+      aria-label={ariaLabel}
+    >
       <div className="tarjeta_header">
         <span className="tarjeta_titulo">{titulo}</span>
-        {icono && <div className="tarjeta_icono">{icono}</div>}
+        {icono && <div className="tarjeta_icono" aria-hidden="true">{icono}</div>}
       </div>
       <div className="tarjeta_monto_wrapper">
-        <span className="tarjeta_simbolo">$</span>
+        <span className="tarjeta_simbolo" aria-hidden="true">$</span>
 
         {/* CountUp solo anima la parte entera limpiamente */}
         <CountUp
@@ -40,7 +47,7 @@ export const TarjetasNormales = ({
         />
 
         {/* Los decimales van al lado con su clase para achicarlos y desvanecerlos */}
-        <span className="monto_decimal">,{decimales}</span>
+        <span className="monto_decimal" aria-hidden="true">,{decimales}</span>
       </div>
     </div>
   );

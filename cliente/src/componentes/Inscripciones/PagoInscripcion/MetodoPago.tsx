@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
 
 import "./metodoPago.css";
@@ -19,10 +17,9 @@ interface MetodoPagoProps {
 export const MetodoPagoInscripcion: React.FC<MetodoPagoProps> = (props) => {
   const { handleCachearMetodoPago, handleTextAreaNotas, notas } = props;
 
-  const [descripcion, setDescripcion] = useState("");
-
   return (
     <div className="contenedor_detalle_caja">
+      <h2 className="section-title section-title--card">Opciones de Pago</h2>
       <div className="contenedor_detalle_caja_filtros">
         {/* Usamos las clases de la tarjeta para los selectores */}
 
@@ -43,11 +40,11 @@ export const MetodoPagoInscripcion: React.FC<MetodoPagoProps> = (props) => {
             className="tarjeta_textarea"
             value={notas}
             onChange={handleTextAreaNotas}
-            placeholder="Añadir observaciones..."
+            placeholder="Observaciones para el pago (opcional)..."
             maxLength={255}
-            rows={3}
+            rows={4}
           />
-          <div className="tarjeta_contador">{descripcion.length} / 255</div>
+          <div className="tarjeta_contador">{notas.length} / 255</div>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import React, { useId } from "react";
 import "./selectorOBT.css";
 
 interface CompoIEProps<T> {
@@ -11,6 +12,10 @@ interface CompoIEProps<T> {
   labelDefault?: string;
   /** Solo lectura: pinta el select grisado y fuera de tab (spec 008) */
   disabled?: boolean;
+  /** Etiqueta accesible cuando no hay label visible externo */
+  ariaLabel?: string;
+  /** Mensaje de error para anunciar con aria-describedby */
+  error?: string | null;
 }
 
 // Usamos <T,> para que el compilador sepa que es un Generic
@@ -23,15 +28,26 @@ export const SelectorOpt = <T,>({
   value,
   labelDefault = "Seleccionar",
   disabled,
+  ariaLabel,
+  error,
 }: CompoIEProps<T>) => {
+  const idUnico = useId();
+  const selectId = name || `selector-${idUnico}`;
+  const idError = `${selectId}_error`;
+  const tieneError = Boolean(error);
+
   return (
     <div className="grupo_input_caja">
       <select
         className="input_caja"
+        id={selectId}
         name={name}
         value={value ?? ""}
         onChange={onChangeSelector}
         disabled={disabled}
+        aria-label={ariaLabel}
+        aria-invalid={tieneError ? true : undefined}
+        aria-describedby={tieneError ? idError : undefined}
       >
         <option value="">{labelDefault}</option>
         {categorias.map((item, index) => (
@@ -43,6 +59,11 @@ export const SelectorOpt = <T,>({
           </option>
         ))}
       </select>
+      {error && (
+        <p className="mensaje_error" id={idError} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 };

@@ -21,14 +21,18 @@
     border-radius: var(--radio-sm);
     
     cursor: pointer;
-    transition: var(--transicion);
+    transition: transform 120ms var(--ease-ui), box-shadow 120ms var(--ease-ui), background 120ms var(--ease-ui), border-color 120ms var(--ease-ui);
     outline: none;
 }
 
 .boton_personalizado:hover:not(:disabled) {
     border-color: var(--borde-hover);
-    background: rgb(92, 89, 89);
+    background: color-mix(in srgb, var(--fondo-secundario) 85%, var(--color-primario) 15%);
     box-shadow: var(--sombra-sm);
+}
+
+.boton_personalizado:not(:disabled):active {
+    transform: scale(0.98);
 }
 
 /* ============================================================
@@ -44,6 +48,8 @@
 }
 .boton_personalizado.aceptar:hover:not(:disabled),
 .boton_personalizado.editar:hover:not(:disabled) {
+    background: var(--color-exito);
+    color: #ffffff;
     filter: brightness(1.1);
     box-shadow: 0 4px 12px rgba(91, 123, 110, 0.2);
 }
@@ -66,10 +72,12 @@
 .boton_personalizado.listar {
     background: var(--fondo-superficie);
     border: 1px solid var(--borde);
+    color: var(--texto-principal);
 }
 .boton_personalizado.agregar:hover:not(:disabled),
 .boton_personalizado.listar:hover:not(:disabled) {
-    background: #fff;
+    background: #2e2d2d;
+    color: #ffffff;
     border-color: var(--texto-secundario);
 }
 
@@ -80,6 +88,7 @@
     color: var(--texto-secundario);
 }
 .boton_personalizado.flechas:hover:not(:disabled) {
+    background: transparent;
     color: var(--texto-principal);
 }
 
@@ -95,6 +104,11 @@
     color: var(--texto-deshabilitado);
 }
 
+/* Estado cargando (enviando) — cursor wait, mantiene spinner */
+.boton_personalizado[disabled] .spinner_girando {
+    cursor: wait;
+}
+
 .spinner_girando {
     animation: girar 0.8s linear infinite;
 }
@@ -102,4 +116,52 @@
 @keyframes girar {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .boton_personalizado {
+    transition: none !important;
+  }
+  .boton_personalizado:not(:disabled):active {
+    transform: none !important;
+  }
+  .spinner_girando {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .boton_personalizado.aceptar,
+  .boton_personalizado.editar,
+  .boton_personalizado.eliminar:hover:not(:disabled),
+  .boton_personalizado.cancelar:hover:not(:disabled),
+  .boton_personalizado.agregar:hover:not(:disabled),
+  .boton_personalizado.listar:hover:not(:disabled) {
+    border-width: 2px !important;
+  }
+  .boton_personalizado.boton_deshabilitado,
+  .boton_personalizado:disabled {
+    border-width: 2px !important;
+    border-color: var(--borde) !important;
+  }
+}
+
+@media print {
+  .boton_personalizado {
+    display: none;
+  }
+  .boton_personalizado[type="submit"] {
+    display: inline-flex;
+  }
 }

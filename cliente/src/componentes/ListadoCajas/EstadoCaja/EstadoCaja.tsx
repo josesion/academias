@@ -19,7 +19,7 @@ interface EstadoCajaData {
 
 export const EstadoCaja = (props: EstadoCajaData) => {
   return (
-    <section className="estado_caja_contenedor">
+    <section className="estado_caja_contenedor" role="region" aria-label="Estado de caja actual">
       {props.carga ? (
         <ComponenteCargando />
       ) : (

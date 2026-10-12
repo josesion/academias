@@ -123,3 +123,32 @@
         opacity: 0;
     }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_icono_animado {
+    animation: none !important;
+  }
+  .radar_anillo {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .halo_ambiental_busqueda {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .sin_resultado_card {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .sin_resultado_contenedor {
+    display: none;
+  }
+}

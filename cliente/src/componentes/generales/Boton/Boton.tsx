@@ -73,28 +73,32 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Un icono de carga
 
 export const Boton = (parametros: BotonProps) => {
   const IconComponent = parametros.logo ? logoMap[parametros.logo] : null;
+  const estaDeshabilitado = Boolean(parametros.disable);
 
   return (
     <button
-      className={`boton_personalizado ${parametros.clase} ${parametros.disable ? "boton_deshabilitado" : ""}`}
+      className={`boton_personalizado ${parametros.clase} ${estaDeshabilitado ? "boton_deshabilitado" : ""}`}
       onClick={parametros.onClick}
       autoFocus={parametros.focus}
-      disabled={parametros.disable}
+      disabled={estaDeshabilitado}
       type={parametros.type || "submit"}
+      aria-busy={estaDeshabilitado}
+      aria-disabled={estaDeshabilitado}
     >
       {/* Si está enviando, mostramos el spinner girando */}
-      {parametros.disable ? (
+      {estaDeshabilitado ? (
         <AiOutlineLoading3Quarters
           className="spinner_girando"
           size={parametros.size || 20}
+          aria-hidden="true"
         />
       ) : (
-        IconComponent && <IconComponent size={parametros.size || 20} />
+        IconComponent && <IconComponent size={parametros.size || 20} aria-hidden="true" />
       )}
 
       {/* Cambiamos el texto dinámicamente */}
       <span style={{ marginLeft: "8px" }}>
-        {parametros.disable ? "Procesando..." : parametros.texto}
+        {estaDeshabilitado ? "Procesando..." : parametros.texto}
       </span>
     </button>
   );

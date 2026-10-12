@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SELECTOR PLEGABLE — ESTESTICA EDITORIAL / LUJO
+   SELECTOR PLEGABLE — ESTETICA EDITORIAL / LUJO
    ========================================================================== */
 
 .caja_contenedor {
@@ -28,8 +28,8 @@
 
 .selector_input_cyber {
     width: 100%;
-    height: 42px;
-    padding: 0 38px 0 38px; /* Espacio para los iconos de los costados */
+    height: 44px;
+    padding: 0 44px 0 44px; /* Espacio para los iconos de los costados */
     
     background: var(--fondo-superficie);
     border: 1px solid var(--borde);
@@ -41,7 +41,7 @@
     outline: none;
     box-sizing: border-box;
 
-    transition: var(--transicion);
+    transition: border-color 120ms var(--ease-ui), box-shadow 120ms var(--ease-ui), background 120ms var(--ease-ui);
 }
 
 .selector_input_cyber::placeholder {
@@ -70,15 +70,39 @@
 }
 
 .selector_icono_izq {
-    left: 12px;
+    left: 14px;
 }
 
 .selector_icono_der {
-    right: 12px;
+    right: 14px;
+}
+
+/* Texto de ayuda (aria-describedby) */
+.selector_hint {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
 }
 
 /* Ajustes opcionales para la lista nativa del datalist (limitado por navegadores pero estilizable en algunos contextos modernos) */
 .selector_contenedor {
     background-color: var(--fondo-principal);
     color: var(--texto-principal);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .selector_input_cyber {
+        height: 48px;
+        padding: 0 48px 0 48px;
+        font-size: var(--texto-md);
+    }
+    
+    .selector_icono_izq { left: 16px; }
+    .selector_icono_der { right: 16px; }
 }

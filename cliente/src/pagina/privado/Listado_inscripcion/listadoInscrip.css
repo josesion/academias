@@ -185,3 +185,62 @@
         width: 92vw;
     }
 }
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .contenedor_filtros {
+        transition: none;
+    }
+
+    .filtros_lengueta {
+        transition: none;
+    }
+
+    .filtros_flecha {
+        transition: none;
+    }
+
+    .filtros_cuerpo {
+        transition: none;
+    }
+}
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_filtros,
+  .filtros_lengueta,
+  .filtros_flecha {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .gestion_inscripciones_header {
+    border-bottom-width: 2px;
+  }
+  .filtros_lengueta {
+    border-width: 2px;
+  }
+  .filtros_lengueta:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .filtros_cuerpo {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .contenedor_filtros,
+  .gestion_inscripciones_header {
+    display: none !important;
+  }
+  .listado_inscrip_paginacion {
+    display: none !important;
+  }
+}

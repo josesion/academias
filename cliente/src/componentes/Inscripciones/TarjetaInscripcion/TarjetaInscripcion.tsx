@@ -15,7 +15,7 @@ export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
 
   return (
     <div className="tarjeta_card">
-      <p className="tarjeta_titulo">Estado de inscripción</p>
+      <p className="section-title section-title--card">Estado de inscripción</p>
 
       {/* Datos principales */}
       <div className="tarjeta_card_body">

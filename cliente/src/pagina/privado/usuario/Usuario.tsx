@@ -1,6 +1,5 @@
 import "./usuario.css";
-import { useRef, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRef, useState, useEffect, useId } from "react";
 
 import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/TarjetaMetrica";
 import { AlertaVencimiento } from "../../../componentes/AlertaVencimiento/AlertaVencimiento";
@@ -10,11 +9,13 @@ import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 import { diasHastaVencimiento } from "../../../utils/fecha";
 
 export const UsuarioPage = () => {
-  const containerRef = useRef<HTMLDivElement>(null); // <-- Referencia principal para el scope de GSAP
+  const containerRef = useRef<HTMLDivElement>(null);
   const refGrupo1 = useRef<HTMLElement>(null);
   const [altoGrupo1, setAltoGrupo1] = useState<number>();
 
-  const navegar = useNavigate();
+  const metricasId = useId();
+  const clasesId = useId();
+  const historialId = useId();
 
   useEffect(() => {
     if (!refGrupo1.current) return;
@@ -50,12 +51,20 @@ export const UsuarioPage = () => {
     state.error.vencimiento,
   ]);
 
-  return (
-    <div className="usuario_contenedor_metricas" ref={containerRef}>
+  // Carga global: se muestra mientras haya cualquier carga crítica inicial
+  const cargandoGlobal = state.carga.tarjeta || state.carga.clases || state.carga.historial || state.carga.vencimiento;
 
-      {/* Encabezado de la pagina: sin esto la pantalla arranca directo con las
-          tarjetas y no hay ni jerarquia ni referencia de donde estas. Es el
-          mismo patron (eyebrow + h1 + bajada) que usan las paginas de Admin. */}
+  return (
+    <main className="usuario_contenedor_metricas" ref={containerRef} role="main">
+      {/* Carga global inicial */}
+      {cargandoGlobal && (
+        <div className="carga-global" aria-live="polite" aria-busy="true">
+          <div className="spinner" aria-hidden="true" />
+          <span className="visually-hidden">Cargando panel de la academia...</span>
+        </div>
+      )}
+
+      {/* Encabezado: h1 visible */}
       <header className="usuario_encabezado">
         <div className="usuario_encabezado_titulos">
           <span className="usuario_encabezado_etiqueta">Principal</span>
@@ -68,34 +77,35 @@ export const UsuarioPage = () => {
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
-      <section className="usuario_metricas_grupo1" ref={refGrupo1}>
-        <div className="usuario_metricas_tarjetas">
+      <section aria-labelledby={metricasId} className="usuario_metricas_grupo1" ref={refGrupo1}>
+        <h2 id={metricasId} className="visually-hidden">Métricas principales</h2>
+        <div className="usuario_metricas_tarjetas" role="list" aria-label="Tarjetas de métricas de la academia">
           <TarjetaMetrica
             carga={state.carga.tarjeta}
             tipo="activos"
             titulo="Alumnos"
-            valor={state.tarjetas?.total_activos || 0}
+            valor={state.tarjetas?.total_activos ?? 0}
             leyenda="Con planes activos."
           />
           <TarjetaMetrica
             carga={state.carga.tarjeta}
             tipo="nuevos"
             titulo="Alumnos Nuevos"
-            valor={state.tarjetas?.nuevos_este_mes || 0}
+            valor={state.tarjetas?.nuevos_este_mes ?? 0}
             porcentaje={state.tarjetas?.porcentaje_nuevos}
           />
           <TarjetaMetrica
             carga={state.carga.tarjeta}
             tipo="por_vencer"
             titulo="Prox. vencimientos"
-            valor={state.tarjetas?.vencen_proximos || 0}
+            valor={state.tarjetas?.vencen_proximos ?? 0}
             leyenda="En 7 dias"
           />
           <TarjetaMetrica
             carga={state.carga.tarjeta}
             tipo="vencidos"
             titulo="Vencidos"
-            valor={state.tarjetas?.vencidos_este_mes || 0}
+            valor={state.tarjetas?.vencidos_este_mes ?? 0}
             leyenda="De este mes"
           />
           {rolTipo === "intermedio" && (
@@ -103,28 +113,29 @@ export const UsuarioPage = () => {
               carga={state.carga.tarjeta}
               tipo="caja"
               titulo="Total caja"
-              valor={state.tarjetas?.total_caja || 0}
+              valor={state.tarjetas?.total_caja ?? 0}
               leyenda="En esta sesion"
             />
           )}
         </div>
         <div className="usuario_contenido_clases">
-          <Asistencia
-            asistencia={state.asistencias ? state.asistencias : []}
-            clases={state.clases}
-            estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
-            cargaClases={state.carga.clases}
-          />
+          <section aria-labelledby={clasesId} className="usuario_clases_section">
+            <h2 id={clasesId} className="visually-hidden">Clases y asistencia</h2>
+            <Asistencia
+              asistencia={state.asistencias ?? []}
+              clases={state.clases}
+              estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
+              cargaClases={state.carga.clases}
+            />
+          </section>
         </div>
       </section>
 
       {/* =======================
-          CONTENIDO PRINCIPAL
+          CONTENIDO PRINCIPAL - HISTORIAL
       ======================== */}
-      <section
-        className="usuario_metricas_grupo2"
-        style={altoGrupo1 ? { height: altoGrupo1 } : undefined}
-      >
+      <section aria-labelledby={historialId} className="usuario_metricas_grupo2" style={altoGrupo1 ? { height: altoGrupo1 } : undefined}>
+        <h2 id={historialId} className="visually-hidden">Historial de movimientos</h2>
         {/* `con_alerta` reserva ~245px al final del scroll para que la tarjeta
             flotante (en portal al body) no tape la última entrada del
             historial. Solo se aplica cuando la alerta se muestra de verdad
@@ -132,8 +143,10 @@ export const UsuarioPage = () => {
             escrolleable. */}
         <div
           className={`usuario_contenido_historial ${alertaVisible ? "con_alerta" : ""}`}
+          role="region"
+          aria-label="Historial de movimientos"
         >
-          <MetricasHistorial historial={state.historial} />
+          <MetricasHistorial historial={state.historial ?? []} />
         </div>
 
         {state.fechaVencimiento && (
@@ -144,6 +157,6 @@ export const UsuarioPage = () => {
           />
         )}
       </section>
-    </div>
+    </main>
   );
 };

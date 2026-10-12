@@ -10,23 +10,6 @@
     box-sizing: border-box;
 }
 
-/* ===== TÍTULO DE SECCIÓN ===== */
-.tarjeta_titulo {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    font-weight: var(--peso-negrita);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-
-    color: var(--texto-secundario);
-
-    border-bottom: 1px solid var(--borde);
-}
-
 /* ===== CUERPO DE LA TARJETA ===== */
 .tarjeta_card_body {
     position: relative;
@@ -48,11 +31,10 @@
     box-sizing: border-box;
 
     transition: var(--transicion);
-    animation: fadeInTarjeta 0.35s ease;
+    animation: fadeInTarjeta 0.25s ease;
 }
 
 .tarjeta_card_body:hover {
-    transform: translateY(-4px);
     border-color: var(--borde-hover);
     box-shadow: var(--sombra-lg);
 }
@@ -85,6 +67,12 @@
     background: color-mix(in srgb, var(--texto-principal) 5%, var(--fondo-hover));
 }
 
+/* Focus visible para navegación por teclado entre filas */
+.tarjeta_row:focus-visible {
+    outline: 2px solid var(--color-secundario);
+    outline-offset: 2px;
+}
+
 .tarjeta_key {
     font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
@@ -111,7 +99,7 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .tarjeta_card {
         min-width: 100%;
     }
@@ -139,7 +127,7 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
     .tarjeta_card_body {
         padding: 16px 16px 16px 26px;
     }
@@ -147,5 +135,28 @@
     .tarjeta_card_body::before {
         left: 8px;
         width: 3px;
+    }
+
+    .tarjeta_row {
+        padding: 6px;
+    }
+
+    .tarjeta_key {
+        font-size: 0.62rem;
+    }
+
+    .tarjeta_value {
+        font-size: var(--texto-xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .tarjeta_card_body {
+        padding: 14px 14px 14px 22px;
+    }
+
+    .tarjeta_card_body::before {
+        left: 6px;
+        width: 2px;
     }
 }

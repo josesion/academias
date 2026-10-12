@@ -1,3 +1,8 @@
+/* ==========================================================================
+   PRINCIPAL ALUMNOS — Panel del Alumno
+   Estructura semántica, accesibilidad, y diseño editorial
+   ========================================================================== */
+
 /* --- CONTENEDOR GENERAL DE LA VISTA ALUMNO --- */
 .principal-alumno-container {
   width: 100%;
@@ -7,6 +12,75 @@
   flex-direction: column;
   gap: 32px;
   padding: 24px 16px;
+}
+
+/* Encabezado de página (oculto visualmente, accesible para lectores de pantalla) */
+.pagina-header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pagina-header h1 {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  margin: 0;
+}
+
+/* --- INDICADOR DE CARGA GLOBAL --- */
+.carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 24px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-sm);
+  text-align: center;
+}
+
+.carga-global_spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--borde);
+  border-top-color: var(--color-secundario);
+  border-radius: 50%;
+  animation: carga_spin 1s linear infinite;
+}
+
+.carga-global_texto {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+}
+
+@keyframes carga_spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- UTILIDAD: TEXTO SOLO PARA LECTORES DE PANTALLA --- */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --- SECCIONES GENERALES --- */
@@ -26,6 +100,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  line-height: var(--linea-titulo);
 }
 
 /* --- GRILLAS --- */
@@ -40,33 +115,53 @@
 /* --- SECCIÓN CARRUSEL / FLAYERS --- */
 .seccion-carrucel {
   width: 100%;
-  border-radius: var(--radio-md, 12px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Título del carrusel (visualmente oculto pero accesible) */
+.seccion-carrucel .seccion-titulo.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
   overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --- ESTADO VACÍO COMPACTO (FLAYERS) --- */
 .flayers_vacio_compacto {
-  background-color: var(--fondo-secundario, #f8f9fa);
-  border: 1px dashed var(--borde, #e5e7eb);
-  border-radius: var(--radio-md, 12px);
-  padding: 16px 20px;
+  background-color: var(--fondo-superficie);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio-md);
+  padding: 20px 24px;
   display: flex;
   align-items: center;
   gap: 16px;
   width: 100%;
   min-height: 120px;
+  transition: border-color 200ms var(--ease-ui), background-color 200ms var(--ease-ui);
+}
+
+.flayers_vacio_compacto:hover {
+  border-color: var(--borde-hover);
+  background-color: var(--fondo-hover);
 }
 
 .flayers_vacio_icono_box {
-  background-color: var(--fondo-principal, #ffffff);
-  border: 1px solid var(--borde, #e5e7eb);
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--texto-secundario, #6b7280);
+  color: var(--texto-secundario);
   flex-shrink: 0;
   box-shadow: var(--sombra-sm);
 }
@@ -74,20 +169,27 @@
 .flayers_vacio_info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .flayers_vacio_titulo {
   font-family: var(--fuente-titulos);
-  font-size: var(--texto-sm, 0.875rem);
-  font-weight: var(--peso-medio, 500);
-  color: var(--texto-principal, #111827);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .flayers_vacio_sub {
   font-family: var(--fuente-principal);
-  font-size: var(--texto-xs, 0.75rem);
-  color: var(--texto-secundario, #6b7280);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- ENTRADA DE LA PÁGINA ---
@@ -108,11 +210,12 @@
   }
 }
 
-.principal-alumno-container > * {
+.principal-alumno-container > section,
+.principal-alumno-container > header {
   animation: seccion_entra 700ms var(--ease-ui) backwards;
 }
 
-.principal-alumno-container > :nth-child(2) {
+.principal-alumno-container > section:nth-of-type(2) {
   animation-delay: 70ms;
 }
 
@@ -120,12 +223,12 @@
    `position: fixed`. Un `transform` en el ancestro lo convierte en
    absoluto de ese ancestro y saltaría de lugar al terminar la animación,
    por eso esta entra solo con opacity (no crea containing block). */
-.principal-alumno-container > :nth-child(3) {
+.principal-alumno-container > section:nth-of-type(3) {
   animation-name: seccion_entra_opacity;
   animation-delay: 140ms;
 }
 
-.principal-alumno-container > :nth-child(4) {
+.principal-alumno-container > section:nth-of-type(4) {
   animation-delay: 210ms;
 }
 
@@ -179,27 +282,171 @@
     gap: 24px;
   }
 
+  .seccion-titulo {
+    font-size: 1.125rem;
+  }
+
   .grilla-escuelas,
   .grilla-clases {
     grid-template-columns: 1fr;
   }
+
+  .flayers_vacio_compacto {
+    padding: 16px 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .flayers_vacio_info {
+    align-items: center;
+  }
+
+  .carga-global {
+    padding: 32px 16px;
+  }
 }
 
-/* --- ACCESIBILIDAD: sin movimiento, pero todo visible ---
+@media (min-width: 641px) and (max-width: 1024px) {
+  .principal-alumno-container {
+    padding: 20px 16px;
+  }
+
+  .grilla-escuelas,
+  .grilla-clases {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* --- ACCESIBILIDAD: SIN MOVIMIENTO, PERO TODO VISIBLE ---
    El selector de la 3ª sección va explícito: su regla de `animation-name`
    tiene más especificidad que este bloque y si no, seguiría animando. */
 @media (prefers-reduced-motion: reduce) {
   .principal-alumno-container > *,
-  .principal-alumno-container > :nth-child(3),
+  .principal-alumno-container > section:nth-of-type(3),
   .grilla-escuelas > .tarjeta_escuela,
-  .grilla-clases > .tarjeta_clase {
-    animation: none;
+  .grilla-clases > .tarjeta_clase,
+  .carga-global_spinner,
+  .flayers_vacio_icono_box {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .carga-global_spinner {
+    border-top-color: var(--color-secundario);
+    opacity: 0.6;
   }
 }
-/* Centinela del carrusel de anuncios (spec 019).
-   No se ve: solo marca el final de la galer�a para que el
-   IntersectionObserver sepa cu�ndo pedir la p�gina siguiente. */
+
+/* --- FOCO VISIBLE MEJORADO PARA SECCIONES INTERACTIVAS --- */
+.seccion-contenedor:focus-within,
+.seccion-carrucel:focus-within {
+  outline: none; /* La regla global de app.css maneja el focus-visible */
+}
+
+/* Asegurar que los elementos interactivos dentro de secciones tengan foco visible */
+.grilla-escuelas > *:focus-visible,
+.grilla-clases > *:focus-visible,
+.flayers_vacio_compacto:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+/* --- CENTINELA DEL CARRUSEL DE ANUNCIOS (spec 018/019) ---
+   No se ve: solo marca el final de la galería para que el
+   IntersectionObserver sepa cuándo pedir la página siguiente. */
 .anuncios_centinela {
   height: 1px;
   width: 100%;
+}
+
+/* --- MEJORAS VISUALES ADICIONALES --- */
+
+/* Separador visual sutil entre secciones (opcional, descomentar si se desea) */
+/*
+.seccion-contenedor + .seccion-contenedor::before,
+.seccion-contenedor + .seccion-carrucel::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--borde), transparent);
+  margin-bottom: 16px;
+}
+*/
+
+/* Mejora del contraste en hover para tarjetas (las tarjetas propias ya lo tienen) */
+.grilla-escuelas > .tarjeta_escuela:focus-visible,
+.grilla-clases > .tarjeta_clase:focus-visible {
+  box-shadow: var(--sombra-md), 0 0 0 4px var(--fondo-secundario);
+  z-index: 1;
+}
+
+/* Estado de carga dentro de las grillas (cuando state.carga.metricas es true) */
+.grilla-escuelas:empty::before,
+.grilla-clases:empty::before {
+  content: "";
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 280px;
+  margin: 0 auto;
+  background: linear-gradient(90deg, var(--fondo-superficie) 25%, var(--fondo-hover) 50%, var(--fondo-superficie) 75%);
+  background-size: 200% 100%;
+  animation: skeleton_load 1.5s ease-in-out infinite;
+  border-radius: var(--radio-md);
+}
+
+@keyframes skeleton_load {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Print styles - ocultar animaciones y elementos decorativos */
+@media print {
+  .principal-alumno-container > * {
+    animation: none !important;
+    break-inside: avoid;
+  }
+
+  .carga-global,
+  .anuncios_centinela,
+  .flayers_vacio_compacto {
+    display: none !important;
+  }
+
+  .seccion-titulo.visually-hidden {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip: auto !important;
+    margin: 0 0 12px !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .principal-alumno-container {
+    gap: 24px;
+  }
+
+  .seccion-titulo {
+    border-bottom: 2px solid currentColor;
+    padding-bottom: 8px;
+  }
+
+  .flayers_vacio_compacto {
+    border-width: 2px;
+    border-style: solid;
+  }
+
+  .tarjeta_escuela,
+  .tarjeta_clase {
+    border-width: 2px;
+  }
+
+  :root :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
 }

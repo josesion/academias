@@ -87,3 +87,30 @@
         transform: translateY(0);
     }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .error-contenedor {
+    animation: none !important;
+  }
+  .radar-anillo_error {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .error-contenedor {
+    border-width: 2px !important;
+    border-left-width: 4px !important;
+  }
+}
+
+@media print {
+  .error-contenedor {
+    display: none;
+  }
+}

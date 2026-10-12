@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { BookOpen } from "lucide-react";
@@ -67,6 +67,20 @@ export const ListadoCajas = () => {
   // Estado local para manejar la animación fluida de salida del modal
   const [estaCerrando, setEstaCerrando] = useState(false);
 
+  // Estado para la vista: "listado" (grid 50/50) | "graficos" (solo gráficos ancho completo)
+  const [vista, setVista] = useState<"listado" | "graficos">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("listadoCajasVista");
+      if (saved === "listado" || saved === "graficos") return saved;
+    }
+    return "listado";
+  });
+
+  // Persistir preferencia en localStorage
+  useEffect(() => {
+    localStorage.setItem("listadoCajasVista", vista);
+  }, [vista]);
+
   const manejarCierreConAnimacion = () => {
     setEstaCerrando(true);
     setTimeout(() => {
@@ -87,6 +101,10 @@ export const ListadoCajas = () => {
     historialCajas?.dataMetodo || [],
     3,
   );
+
+  const handleCambiarVista = () => {
+    setVista((v) => (v === "listado" ? "graficos" : "listado"));
+  };
 
   return (
     <div className="listado_cajas_pagina">
@@ -121,8 +139,25 @@ export const ListadoCajas = () => {
         <EstadoCajaCerrada />
       )}
 
+      {/* Switch para alternar vista: Listado ↔ Gráficos */}
+      <div className="vista_switch_wrapper" role="group" aria-label="Alternar vista del listado de cajas">
+        <span className="vista_switch_label">Listado</span>
+        <label className="vista_switch">
+          <input
+            type="checkbox"
+            role="switch"
+            aria-checked={vista === "graficos"}
+            checked={vista === "graficos"}
+            onChange={handleCambiarVista}
+            aria-label="Alternar vista: listado de cajas o gráficos"
+          />
+          <span className="vista_switch_thumb" aria-hidden="true" />
+        </label>
+        <span className="vista_switch_label">Gráficos</span>
+      </div>
+
       {/* 2. Sección Inferior: Detalle de Cajas al lado de los Gráficos */}
-      <div className="listado_cajas_grid_inferior">
+      <div className={`listado_cajas_grid_inferior ${vista === "graficos" ? "vista-graficos" : "vista-listado"}`}>
         <div className="listado_cajas_panel">
           {historialCajas ? (
             <DetalleCajas
@@ -180,12 +215,12 @@ export const ListadoCajas = () => {
           className={`modal-overlay-finanzas ${estaCerrando ? "saliendo" : ""}`}
         >
           <div
-          ref={refLibroDiario}
-          className="modal-contenido-finanzas"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="titulo_libro_diario"
-        >
+            ref={refLibroDiario}
+            className="modal-contenido-finanzas"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo_libro_diario"
+          >
             <header className="modal_finanzas_header">
               <div className="libro_diario_titulo">
                 <BookOpen size={20} />

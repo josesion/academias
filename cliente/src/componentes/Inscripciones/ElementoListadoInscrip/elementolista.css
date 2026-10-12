@@ -17,6 +17,19 @@
     background: var(--fondo-hover);
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .fila_inscripcion_desktop:active {
+        transform: scale(0.99);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fila_inscripcion_desktop,
+    .barra_progreso_tabla {
+        transition: none;
+    }
+}
+
 .fila_inscripcion_desktop td {
     padding: 1rem 1rem;
     font-size: var(--texto-sm);
@@ -98,7 +111,9 @@
 
 /* Sellos de estado en tabla */
 .sello_estado {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 3px 8px;
     border: 1.5px solid currentColor;
     border-radius: 3px;
@@ -114,18 +129,31 @@
 .sello_ambar { color: var(--color-advertencia); }
 .sello_neutro { color: var(--texto-deshabilitado); }
 
+/* Screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 
 /* ==========================================================================
    ADAPTACIÓN RESPONSIVE (MOBILE)
    ========================================================================== */
 
-@media (max-width: 768px) {
-    /* Ocultamos la fila de tabla en mobile */
+@media (max-width: 1024px) {
+    /* Ocultamos la fila de tabla en tablet */
     .fila_inscripcion_desktop {
         display: none;
     }
 
-    /* Mostramos la tarjeta vertical en mobile */
+    /* Mostramos la tarjeta vertical en tablet */
     .tarjeta_inscripcion_mobile {
         display: flex;
         flex-direction: column;
@@ -133,8 +161,8 @@
 
         width: 100%;
         max-width: 450px;
-        margin: 0 auto 12px auto;
-        padding: 22px;
+        margin: 0 auto 10px auto;
+        padding: 20px;
 
         background: var(--fondo-secundario);
         border: 1px solid var(--borde);
@@ -159,12 +187,25 @@
         border-left-color: var(--color-exito);
     }
 
-    /* Estilos internos de la tarjeta mobile (igual que antes) */
+    @media (hover: hover) and (pointer: fine) {
+        .tarjeta_inscripcion_mobile:active {
+            transform: scale(0.98);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .tarjeta_inscripcion_mobile,
+        .barra_progreso {
+            transition: none;
+        }
+    }
+
+    /* Estilos internos de la tarjeta mobile */
     .tarjeta_header_superior {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
     }
 
     .tarjeta_id {
@@ -177,12 +218,12 @@
     .tarjeta_body_principal {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
     }
 
     .alumno_nombre {
-        font-family: var(--fuente-titulos);
-        font-size: 1.4rem;
+        font-family: var(--fuente-principal);
+        font-size: 1.25rem;
         font-weight: var(--peso-negrita);
         color: var(--texto-principal);
     }
@@ -196,8 +237,8 @@
     .plan_y_consumo {
         display: flex;
         flex-direction: column;
-        gap: 8px;
-        padding: 10px 0;
+        gap: 6px;
+        padding: 8px 0;
         border-top: 1px dashed var(--borde);
         border-bottom: 1px dashed var(--borde);
     }
@@ -212,7 +253,7 @@
     .consumo_contenedor {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 3px;
     }
 
     .consumo_header {
@@ -234,7 +275,7 @@
     .consumo_numeros {
         color: var(--texto-secundario);
         font-family: var(--fuente-codigo);
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
 
     .barra_fondo {
@@ -261,25 +302,175 @@
     .pago_monto {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
         color: var(--color-exito);
         font-family: var(--fuente-codigo);
         font-weight: var(--peso-negrita);
     }
 
     .pago_metodo {
-        padding: 1px 5px;
+        padding: 1px 4px;
         border-radius: var(--radio-sm);
         background: var(--fondo-superficie);
         border: 1px solid var(--borde);
         color: var(--texto-deshabilitado);
-        font-size: 0.55rem;
-        text-transform: uppercase;
+        font-size: 0.5rem;
+        text-transform: uppercase.
     }
 
     .vigencia_fecha {
         font-family: var(--fuente-codigo);
         color: var(--texto-secundario);
-        font-size: 0.65rem;
+        font-size: 0.6rem.
+    }
+}
+
+/* Mobile: 768px */
+@media (max-width: 768px) {
+    .tarjeta_inscripcion_mobile {
+        margin: 0 auto 8px auto;
+        padding: 18px;
+    }
+
+    .alumno_nombre {
+        font-size: 1.15rem;
+    }
+
+    .plan_nombre {
+        font-size: var(--texto-xs);
+    }
+
+    .consumo_numeros {
+        font-size: 0.55rem.
+    }
+
+    .pago_metodo {
+        font-size: 0.48rem.
+    }
+
+    .vigencia_fecha {
+        font-size: 0.55rem.
+    }
+}
+
+/* Mobile small: 640px */
+@media (max-width: 640px) {
+    .tarjeta_inscripcion_mobile {
+        margin: 0 auto 6px auto;
+        padding: 16px;
+        border-radius: var(--radio-md);
+    }
+
+    .tarjeta_header_superior {
+        margin-bottom: 10px;
+    }
+
+    .tarjeta_body_principal {
+        gap: 8px;
+    }
+
+    .alumno_nombre {
+        font-size: 1.05rem;
+    }
+
+    .alumno_dni {
+        font-size: 0.6rem;
+    }
+
+    .plan_y_consumo {
+        gap: 4px;
+        padding: 6px 0;
+    }
+
+    .consumo_titulo {
+        font-size: 0.5rem.
+    }
+
+    .consumo_numeros {
+        font-size: 0.5rem.
+    }
+
+    .barra_fondo {
+        height: 4px.
+    }
+
+    .tarjeta_detalles_inferiores {
+        font-size: 0.55rem.
+    }
+
+    .pago_monto {
+        gap: 4px.
+    }
+
+    .pago_metodo {
+        padding: 1px 3px.
+        font-size: 0.45rem.
+    }
+
+    .vigencia_fecha {
+        font-size: 0.5rem.
+    }
+}
+
+/* Small mobile: 480px */
+@media (max-width: 480px) {
+    .tarjeta_inscripcion_mobile {
+        margin: 0 auto 4px auto;
+        padding: 14px;
+        border-radius: var(--radio-md);
+        max-width: 100%;
+    }
+
+    .tarjeta_header_superior {
+        margin-bottom: 8px;
+    }
+
+    .tarjeta_body_principal {
+        gap: 6px.
+    }
+
+    .alumno_nombre {
+        font-size: 1rem.
+    }
+
+    .alumno_dni {
+        font-size: 0.55rem.
+    }
+
+    .plan_nombre {
+        font-size: 0.55rem.
+    }
+
+    .consumo_titulo {
+        font-size: 0.48rem.
+        gap: 2px.
+    }
+
+    .consumo_numeros {
+        font-size: 0.48rem.
+    }
+
+    .barra_fondo {
+        height: 3px.
+    }
+
+    .tarjeta_detalles_inferiores {
+        font-size: 0.5rem.
+        flex-direction: column.
+        align-items: flex-start.
+        gap: 2px.
+    }
+
+    .pago_monto {
+        gap: 3px.
+    }
+
+    .pago_metodo {
+        padding: 0 2px.
+        font-size: 0.42rem.
+    }
+
+    .vigencia_fecha {
+        font-size: 0.48rem.
     }
 }

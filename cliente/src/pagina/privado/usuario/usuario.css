@@ -2,6 +2,51 @@
    LAYOUT PANEL USUARIO — MÉTRICAS
    ========================================================================== */
 
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga global inicial */
+.carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-align: center;
+}
+
+.carga-global .spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+@keyframes spinner_girar {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carga-global .spinner {
+    animation: none;
+  }
+}
+
 .usuario_contenedor_metricas {
   margin: 0 auto; /* Centrado horizontal automático */
   display: flex;
@@ -376,4 +421,79 @@
 
 .usuario_contenido_historial.con_alerta {
   padding-bottom: 245px;
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas {
+    transition: none !important;
+  }
+  .usuario_metricas_grupo1,
+  .usuario_metricas_grupo2,
+  .usuario_contenido_clases {
+    transition: none !important;
+  }
+  .tarjeta_metrica_contenedor {
+    transition: none !important;
+  }
+  .tarjeta_metrica_logo {
+    transition: none !important;
+  }
+  .carga-global .spinner {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .usuario_contenedor_metricas {
+    border: 2px solid var(--borde);
+  }
+  .usuario_encabezado {
+    border-bottom: 2px solid var(--borde);
+  }
+  .tarjeta_metrica_contenedor {
+    border-width: 2px !important;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .usuario_contenido_historial {
+    border: 2px solid var(--borde);
+  }
+  .carga-global {
+    border-width: 2px;
+  }
+  .carga-global .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .carga-global {
+    display: none;
+  }
+  .usuario_encabezado {
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 1rem;
+  }
+  .usuario_metricas_tarjetas {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .usuario_contenido_clases {
+    display: none;
+  }
+  .AlertaVencimiento,
+  .alerta_vencimiento {
+    display: none;
+  }
+  .usuario_contenido_historial.con_alerta {
+    padding-bottom: 0;
+  }
 }

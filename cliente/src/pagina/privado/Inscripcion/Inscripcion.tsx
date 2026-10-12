@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { InscripcionForm } from "../../../componentes/Inscripciones/FormInscripcion/Inscripcion";
 import { useIncripcionesUsuarios } from "../../../hookNegocios/Inscripciones";
 import "./inscripcion.css";
@@ -21,28 +22,42 @@ export const InscripcionPage = () => {
     handleCancelar,
   } = useIncripcionesUsuarios();
 
-  return (
-    <div className="usuario_contenedor">
-      {/* Esta página no tenía ningún encabezado (spec 016): el título principal
-          se lo agrega el componente de arriba del todo. */}
-      <h1 className="pagina_inscripcion_titulo">Inscripción de alumnos</h1>
+  const formId = useId();
 
-      <InscripcionForm
-        errorGenerico={state.errorGenerico}
-        listadoPlan={state.listadoPlan}
-        plan={state.plan}
-        handleCachearPlan={handleCachearPlan}
-        listadoAlumno={state.listadoAlumno}
-        alumno={state.alumno}
-        handleCachearAlumno={handleCachearAlumno}
-        inscribir={handleInscribir}
-        cancelar={handleCancelar}
-        handleCachearMetodoPago={handleCachearMetodoPago}
-        handleTextAreaNotas={handleTextAreaNotas}
-        notas={state.notas}
-        enviando={state.enviando}
-        listaMetodo={state.listadoMetodoPago}
-      />
-    </div>
+  return (
+    <main className="usuario_contenedor" role="main">
+      {/* Carga global mientras se envia la inscripcion */}
+      {state.enviando && (
+        <div className="carga-global" aria-live="polite" aria-busy="true">
+          <div className="spinner" aria-hidden="true" />
+          <span className="visually-hidden">Procesando inscripcion...</span>
+        </div>
+      )}
+
+      {/* Encabezado de la pagina. El <h1> visible ya estaba (spec 016). */}
+      <header className="pagina_inscripcion_encabezado">
+        <h1 className="pagina_inscripcion_titulo">Inscripción de alumnos</h1>
+      </header>
+
+      <section aria-labelledby={formId} className="pagina_inscripcion_seccion">
+        <h2 id={formId} className="visually-hidden">Formulario de inscripcion</h2>
+        <InscripcionForm
+          errorGenerico={state.errorGenerico}
+          listadoPlan={state.listadoPlan}
+          plan={state.plan}
+          handleCachearPlan={handleCachearPlan}
+          listadoAlumno={state.listadoAlumno}
+          alumno={state.alumno}
+          handleCachearAlumno={handleCachearAlumno}
+          inscribir={handleInscribir}
+          cancelar={handleCancelar}
+          handleCachearMetodoPago={handleCachearMetodoPago}
+          handleTextAreaNotas={handleTextAreaNotas}
+          notas={state.notas}
+          enviando={state.enviando}
+          listaMetodo={state.listadoMetodoPago}
+        />
+      </section>
+    </main>
   );
 };

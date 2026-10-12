@@ -29,6 +29,51 @@
   to   { opacity: 1; }
 }
 
+/* Visually hidden utility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga global */
+.carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-align: center;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: color-mix(in srgb, var(--fondo-principal) 85%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.carga-global .spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+@keyframes spinner_girar {
+  to { transform: rotate(360deg); }
+}
+
 /* ==========================================================================
    CONTENEDOR GENERAL
    ========================================================================== */
@@ -130,9 +175,8 @@
 
 .caja_resumen_cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 16px;
-
   width: 100%;
 }
 
@@ -140,7 +184,7 @@
    HISTORIAL + SIDEBAR — tu boceto: tarjetas arriba, detalle/métodos abajo
    ========================================================================== */
 
-.caja_historial {
+.caja_historial_wrapper {
   display: grid;
   grid-template-columns: 1fr 320px;
   grid-template-areas:
@@ -165,8 +209,7 @@
   width: 100%;
 }
 
-.historial_header h3,
-.caja_sidebar_pagos h3 {
+.historial_header h2 {
   margin: 0;
 
   font-family: var(--fuente-titulos);
@@ -242,7 +285,7 @@
    ========================================================================== */
 
 @media (max-width: 960px) {
-  .caja_historial {
+  .caja_historial_wrapper {
     grid-template-columns: 1fr;
     grid-template-areas:
       "header"
@@ -285,7 +328,7 @@
     gap: 10px;
   }
 
-  .historial_header h3 {
+  .historial_header h2 {
     text-align: center;
   }
 
@@ -307,5 +350,117 @@
 
   .caja_sidebar_pagos {
     text-align: center;
+  }
+
+  /* 2 columnas en móvil para que no quede en 1 */
+  .caja_resumen_cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .caja_arqueo_grid {
+    transition: none !important;
+  }
+  .caja_header {
+    transition: none !important;
+  }
+  .status_pill {
+    transition: none !important;
+  }
+  .formulario_overlay {
+    animation: none !important;
+  }
+  .carga-global .spinner {
+    animation: none !important;
+  }
+  .scroll_movimientos {
+    transition: none !important;
+  }
+  .caja_sidebar_pagos {
+    transition: none !important;
+  }
+  /* Animaciones de modales propios se manejan en sus CSS respectivos */
+}
+
+@media (prefers-contrast: high) {
+  .caja_arqueo_grid {
+    border: 2px solid var(--borde);
+  }
+  .caja_header {
+    border-bottom-width: 2px;
+  }
+  .status_pill {
+    border-width: 2px;
+  }
+  .caja_resumen_cards > div {
+    border-width: 2px !important;
+  }
+  .caja_resumen_cards > div:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .historial_contenido {
+    border-width: 2px;
+  }
+  .caja_sidebar_pagos > div {
+    border-width: 2px !important;
+  }
+  .btn_operativos button {
+    border-width: 2px !important;
+  }
+  .btn_operativos button:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .carga-global {
+    border-width: 2px;
+  }
+  .carga-global .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .caja_arqueo_grid {
+    min-height: auto;
+    padding: 0;
+  }
+  .formulario_overlay {
+    display: none !important;
+  }
+  .carga-global {
+    display: none !important;
+  }
+  .caja_header {
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 1rem;
+  }
+  .acciones_principales {
+    display: none;
+  }
+  .btn_operativos {
+    display: none;
+  }
+  .historial_contenido {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+  }
+  .caja_historial_wrapper {
+    display: block;
+  }
+  .caja_sidebar_pagos {
+    break-inside: avoid;
+  }
+  .scroll_movimientos {
+    max-height: none;
+    overflow: visible;
   }
 }

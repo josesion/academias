@@ -175,3 +175,49 @@
 .tarjeta_metrica_contenedor.caja .tarjeta_metrica_logo {
     color: var(--color-primario);
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta_metrica_contenedor,
+  .tarjeta_metrica_logo {
+    transition: none !important;
+    animation: none !important;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    transform: none !important;
+  }
+  .tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+    transform: none !important;
+    opacity: 0.06;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .tarjeta_metrica_contenedor {
+    border-width: 2px;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    border-width: 2px;
+    box-shadow: none;
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .tarjeta_metrica_contenedor {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .tarjeta_metrica_logo {
+    display: none;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

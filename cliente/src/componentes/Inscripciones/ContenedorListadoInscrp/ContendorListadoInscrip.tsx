@@ -5,7 +5,6 @@ import {
   type InscripcionListado,
 } from "../ElementoListadoInscrip/ElementoListado";
 
-import { ComponenteCargando } from "../../generales/Cargando/Cargando";
 import { SinResultado } from "../../generales/SinItemsListado/SinResultado";
 import { obtenerEstadoVigencia } from "../../../utils/fecha";
 
@@ -25,14 +24,20 @@ interface Props {
     vigencia: string,
     estado: string,
   ) => void;
+  abrirInscribir?: () => void;
 }
+
+const SKELETON_ROWS = 5;
+const SKELETON_CARDS = 3;
 
 export const ContenedorListadoInscripciones: React.FC<Props> = ({
   data,
   carga,
   onSeleccionarInscripcion,
+  abrirInscribir,
 }) => {
-  const sinContenido = carga || data.length === 0;
+  const sinContenido = !carga && data.length === 0;
+  const estaCargando = carga;
 
   return (
     <div className="listado_wrapper">
@@ -40,72 +45,94 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
           VISTA DESKTOP — Solo el header vive siempre dentro de la tabla
       ============================== */}
       <table className="tabla_inscripciones">
+        <caption className="sr-only">Listado de inscripciones</caption>
         <thead className="tabla_header">
           <tr>
-            <th>Alumno</th>
-            <th>Plan y Pago</th>
-            <th>Estado de Consumo</th>
-            <th className="text-right">Inicio</th>
-            <th className="text-right">Vigencia</th>
-            <th className="text-center">Estado</th>
+            <th scope="col">Alumno</th>
+            <th scope="col">Plan y Pago</th>
+            <th scope="col">Estado de Consumo</th>
+            <th scope="col" className="text-right">Inicio</th>
+            <th scope="col" className="text-right">Vigencia</th>
+            <th scope="col" className="text-center">Estado</th>
           </tr>
         </thead>
 
-        {!sinContenido && (
-          <tbody className="tabla_body">
-            {data.map((inscripcion) => (
-              <ElementoLista
-                key={inscripcion.id_inscripcion}
-                inscripcion={inscripcion}
-                mostrarDesktop={true}
-                mostrarMobile={false}
-                onSeleccionar={(
-                  id,
-                  metodo_pago,
-                  monto_pagado,
-                  nombre_completo,
-                  clases_totales,
-                  clases_tomadas,
-                  dni_alumno,
-                  vigencia,
-                  estado,
-                ) => {
-                  onSeleccionarInscripcion(
-                    id,
-                    metodo_pago,
-                    monto_pagado,
-                    nombre_completo,
-                    clases_totales,
-                    clases_tomadas,
-                    dni_alumno,
-                    vigencia,
-                    estado,
-                  );
-                }}
-                vigencia={obtenerEstadoVigencia(
-                  inscripcion.vigencia,
-                  inscripcion.clases_usadas,
-                  inscripcion.clases_totales,
-                )}
-              />
+        {estaCargando ? (
+          <tbody className="tabla_body" aria-busy="true" aria-live="polite">
+            {Array.from({ length: SKELETON_ROWS }, (_, i) => (
+              <tr key={`skeleton-${i}`} className="skeleton-row">
+                <td><div className="skeleton-cell skeleton-cell--text" /></td>
+                <td><div className="skeleton-cell skeleton-cell--text" /></td>
+                <td><div className="skeleton-cell skeleton-cell--progress" /></td>
+                <td className="text-right"><div className="skeleton-cell skeleton-cell--text" /></td>
+                <td className="text-right"><div className="skeleton-cell skeleton-cell--text" /></td>
+                <td className="text-center"><div className="skeleton-cell skeleton-cell--badge" /></td>
+              </tr>
             ))}
+          </tbody>
+        ) : (
+          <>
+            {data.length > 0 && (
+              <tbody className="tabla_body">
+                {data.map((inscripcion) => (
+                  <ElementoLista
+                    key={inscripcion.id_inscripcion}
+                    inscripcion={inscripcion}
+                    mostrarDesktop={true}
+                    mostrarMobile={false}
+                    onSeleccionar={(id, metodo_pago, monto_pagado, nombre_completo, clases_totales, clases_tomadas, dni_alumno, vigencia, estado) => {
+                      onSeleccionarInscripcion(id, metodo_pago, monto_pagado, nombre_completo, clases_totales, clases_tomadas, dni_alumno, vigencia, estado);
+                    }}
+                    vigencia={obtenerEstadoVigencia(inscripcion.vigencia, inscripcion.clases_usadas, inscripcion.clases_totales)}
+                  />
+                ))}
+              </tbody>
+            )}
+          </>
+        )}
+
+        {sinContenido && (
+          <tbody className="tabla_body">
+            <tr>
+              <td colSpan={6}>
+                <div className="listado_estado_vacio">
+                  <SinResultado
+                    mensaje="No hay inscripciones con los filtros actuales"
+                    accion={abrirInscribir ? { label: "Nueva inscripción", onClick: abrirInscribir } : undefined}
+                  />
+                </div>
+              </td>
+            </tr>
           </tbody>
         )}
       </table>
 
       {/* ==============================
-          ESTADO VACÍO / CARGANDO — fuera de la tabla, centrado real
-      ============================== */}
-      {sinContenido && (
-        <div className="listado_estado_vacio">
-          {carga ? <ComponenteCargando /> : <SinResultado />}
-        </div>
-      )}
-
-      {/* ==============================
           VISTA MOBILE
       ============================== */}
-      {!sinContenido && (
+      {estaCargando ? (
+        <div className="listado_mobile" aria-busy="true" aria-live="polite">
+          {Array.from({ length: SKELETON_CARDS }, (_, i) => (
+            <div key={`skeleton-card-${i}`} className="skeleton-card">
+              <div className="skeleton-card__header">
+                <div className="skeleton-cell skeleton-cell--id" />
+                <div className="skeleton-cell skeleton-cell--badge" />
+              </div>
+              <div className="skeleton-card__title" />
+              <div className="skeleton-card__name" />
+              <div className="skeleton-card__dni" />
+              <div className="skeleton-card__plan" />
+              <div className="skeleton-card__progress">
+                <div className="skeleton-cell skeleton-cell--progress" />
+              </div>
+              <div className="skeleton-card__footer">
+                <div className="skeleton-cell skeleton-cell--text" />
+                <div className="skeleton-cell skeleton-cell--text" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : data.length > 0 ? (
         <div className="listado_mobile">
           {data.map((inscripcion) => (
             <ElementoLista
@@ -113,38 +140,21 @@ export const ContenedorListadoInscripciones: React.FC<Props> = ({
               inscripcion={inscripcion}
               mostrarDesktop={false}
               mostrarMobile={true}
-              onSeleccionar={(
-                id,
-                metodo_pago,
-                monto_pagado,
-                nombre_completo,
-                clases_totales,
-                clases_tomadas,
-                dni_alumno,
-                vigencia,
-                estado,
-              ) => {
-                onSeleccionarInscripcion(
-                  id,
-                  metodo_pago,
-                  monto_pagado,
-                  nombre_completo,
-                  clases_totales,
-                  clases_tomadas,
-                  dni_alumno,
-                  vigencia,
-                  estado,
-                );
+              onSeleccionar={(id, metodo_pago, monto_pagado, nombre_completo, clases_totales, clases_tomadas, dni_alumno, vigencia, estado) => {
+                onSeleccionarInscripcion(id, metodo_pago, monto_pagado, nombre_completo, clases_totales, clases_tomadas, dni_alumno, vigencia, estado);
               }}
-              vigencia={obtenerEstadoVigencia(
-                inscripcion.vigencia,
-                inscripcion.clases_usadas,
-                inscripcion.clases_totales,
-              )}
+              vigencia={obtenerEstadoVigencia(inscripcion.vigencia, inscripcion.clases_usadas, inscripcion.clases_totales)}
             />
           ))}
         </div>
-      )}
+      ) : sinContenido ? (
+        <div className="listado_mobile">
+          <SinResultado
+            mensaje="No hay inscripciones con los filtros actuales"
+            accion={abrirInscribir ? { label: "Nueva inscripción", onClick: abrirInscribir } : undefined}
+          />
+        </div>
+      ) : null}
     </div>
   );
 };

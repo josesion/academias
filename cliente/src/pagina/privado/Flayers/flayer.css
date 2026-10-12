@@ -209,3 +209,79 @@
     padding: 56px 48px 80px;
   }
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+/* visually-hidden: solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga de la galeria: contenedor accesible que envuelve al spinner */
+.carga_flayers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 2rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flayers_modal_overlay,
+  .flayers_seccion_creacion {
+    animation: none !important;
+  }
+  .flayers_modal_btn_cerrar {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .flayers_vista_header {
+    border-bottom-width: 2px;
+  }
+  .flayers_seccion_creacion {
+    border: 2px solid var(--borde);
+  }
+  .flayers_modal_btn_cerrar {
+    border: 2px solid var(--borde);
+  }
+  .flayers_modal_btn_cerrar:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .flayers_pagina_lienzo {
+    border-width: 2px;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .flayers_modal_overlay {
+    display: none !important;
+  }
+  .flayers_vista_header {
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 1rem;
+  }
+  .carrusel_flayers_contenendor {
+    break-inside: avoid;
+  }
+}

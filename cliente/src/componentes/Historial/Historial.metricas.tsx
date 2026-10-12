@@ -115,9 +115,11 @@ interface PropsMetricasHistorial {
 }
 
 export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
-  if (!historial || historial.length === 0) {
+  const items = historial ?? [];
+
+  if (items.length === 0) {
     return (
-      <div className="metrica_historial_contenedor">
+      <div className="metrica_historial_contenedor" role="status" aria-live="polite" aria-label="Aún no hay actividad registrada">
         <div className="historial_vacio">
           <p>Aún no hay actividad registrada.</p>
         </div>
@@ -125,10 +127,10 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
     );
   }
 
-  const grupos = agruparPorDia(historial);
+  const grupos = agruparPorDia(items);
 
   return (
-    <div className="metrica_historial_contenedor">
+    <div className="metrica_historial_contenedor" role="list" aria-label="Historial de movimientos">
       {grupos.map((grupo) => (
         <div className="historial_grupo_dia" key={grupo.fecha}>
           <div className="historial_separador_dia">
@@ -141,8 +143,8 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
               const IconoComponente = estilo.icono;
 
               return (
-                <li className="historial_item" key={item.id_historial}>
-                  <div className={`historial_punto punto_${estilo.color}`}>
+                <li className="historial_item" key={item.id_historial} role="listitem" aria-label={`${estilo.etiqueta} en ${capitalizarModulo(item.modulo)} a las ${formatearHora(item.fecha)}`}>
+                  <div className={`historial_punto punto_${estilo.color}`} aria-hidden="true">
                     <IconoComponente
                       size={12}
                       className="historial_punto_icono"
@@ -152,11 +154,11 @@ export const MetricasHistorial = ({ historial }: PropsMetricasHistorial) => {
                   <div className="historial_tarjeta">
                     <div className="historial_tarjeta_encabezado">
                       <span className={`historial_pill pill_${estilo.color}`}>
-                        <IconoComponente size={13} />
+                        <IconoComponente size={13} aria-hidden="true" />
                         {estilo.etiqueta}
                       </span>
                       <span className="historial_modulo">
-                        <IconoModulo modulo={item.modulo} size={12} />
+                        <IconoModulo modulo={item.modulo} size={12} aria-hidden="true" />
                         {capitalizarModulo(item.modulo)}
                       </span>
                       <time className="historial_hora">

@@ -226,6 +226,33 @@
   color: var(--texto-secundario);
 }
 
+/* El <span> "Horario semanal" paso a <h2> (spec 024): el lector de voz lo
+   anuncia como encabezado de seccion. Se le saca el margen por defecto. */
+.calendario_header h2 {
+  margin: 0;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+
+  color: var(--texto-secundario);
+}
+
+/* visually-hidden: solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ================= RESPONSIVE ================= */
 
 @media (max-width: 768px) {
@@ -305,4 +332,84 @@
     left: -6px;
   }
 
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .formulario_overlay {
+    animation: none !important;
+  }
+  .formulario_horario {
+    animation: none !important;
+    transition: none !important;
+  }
+  .formulario_horario_filtro_primario,
+  .formulario_horario_filtro_secundario {
+    animation: none !important;
+    transition: none !important;
+  }
+  .filtro_campo_icono {
+    animation: none !important;
+    transition: none !important;
+  }
+  .boton_personalizado {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .formulario_horario_filtro_primario {
+    border-width: 2px;
+  }
+  .formulario_horario_filtro_secundario {
+    border-width: 2px;
+  }
+  .calendario_header {
+    border-bottom-width: 2px;
+  }
+  .filtro_campo_icono {
+    border: 2px solid var(--fondo-principal);
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  /* Los inputs del SelectorPlegable */
+  .formulario_horario_filtro_primario input,
+  .formulario_horario_filtro_primario select {
+    border-width: 2px !important;
+  }
+  .formulario_horario_filtro_primario input:focus-visible,
+  .formulario_horario_filtro_primario select:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .formulario_overlay {
+    display: none !important;
+  }
+  .contenedor_formulario_horario {
+    background: var(--fondo-principal);
+    min-height: auto;
+    padding: 0;
+  }
+  .formulario_horario_filtro_secundario {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .formulario_horario_filtro_primario {
+    box-shadow: none;
+  }
+  .calendario_header {
+    border-bottom: 1px solid var(--borde);
+  }
 }

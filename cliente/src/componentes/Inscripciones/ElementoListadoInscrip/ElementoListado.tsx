@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useId } from "react";
 
-import { Activity } from "lucide-react";
+import { Activity, CheckCircle2, XCircle, PauseCircle } from "lucide-react";
 
 import "./elementolista.css";
 
@@ -50,6 +50,12 @@ const TEXTO_SELLO: Record<string, string> = {
   suspendido: "Suspendida",
 };
 
+const ICONO_SELLO: Record<string, React.ReactNode> = {
+  activos: <CheckCircle2 size={10} aria-hidden="true" />,
+  vencidos: <XCircle size={10} aria-hidden="true" />,
+  suspendido: <PauseCircle size={10} aria-hidden="true" />,
+};
+
 export const ElementoLista: React.FC<ElementoListaProps> = ({
   inscripcion,
   vigencia,
@@ -57,12 +63,18 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
   mostrarDesktop,
   mostrarMobile,
 }) => {
-  const porcentajeUso =
-    (inscripcion.clases_usadas / inscripcion.clases_totales) * 100;
+  const porcentajeUso = Math.round(
+    (inscripcion.clases_usadas / inscripcion.clases_totales) * 100,
+  );
 
   const claseSello = CLASE_SELLO[inscripcion.estado] ?? "sello_neutro";
-
   const textoSello = TEXTO_SELLO[inscripcion.estado] ?? inscripcion.estado;
+  const iconoSello = ICONO_SELLO[inscripcion.estado] ?? null;
+
+  const filaId = useId();
+  const progressId = useId();
+
+  const ariaLabelFila = `Inscripción de ${inscripcion.nombre_completo}, plan ${inscripcion.nombre_plan}, ${inscripcion.clases_usadas} de ${inscripcion.clases_totales} clases consumidas, estado ${textoSello}`;
 
   const handleClick = () =>
     onSeleccionar(
@@ -77,17 +89,28 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
       inscripcion.estado,
     );
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
   return (
     <>
       {/* VISTA DESKTOP */}
-
       {mostrarDesktop && (
         <tr
+          id={filaId}
           className={`fila_inscripcion_desktop ${vigencia}`}
+          role="button"
+          tabIndex={0}
           onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          aria-label={ariaLabelFila}
         >
           {/* Alumno */}
-          <td>
+          <td scope="row">
             <div className="celda_alumno">
               <span className="nombre_tabla">
                 {inscripcion.nombre_completo}
@@ -122,11 +145,17 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
 
               <div className="barra_fondo_tabla">
                 <div
+                  id={progressId}
                   className="barra_progreso_tabla"
-                  style={{
-                    width: `${porcentajeUso}%`,
-                  }}
-                />
+                  role="progressbar"
+                  aria-valuenow={porcentajeUso}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-labelledby={filaId}
+                  style={{ width: `${porcentajeUso}%` }}
+                >
+                  <span className="sr-only">{porcentajeUso}% consumido</span>
+                </div>
               </div>
             </div>
           </td>
@@ -143,25 +172,37 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
 
           {/* Estado */}
           <td className="text-center">
-            <div className={`sello_estado ${claseSello}`}>{textoSello}</div>
+            <div className={`sello_estado ${claseSello}`}>
+              {iconoSello}
+              <span>{textoSello}</span>
+            </div>
           </td>
         </tr>
       )}
 
       {/* VISTA MOBILE */}
-
       {mostrarMobile && (
         <div
+          id={filaId}
           className={`tarjeta_inscripcion_mobile group ${vigencia}`}
+          role="button"
+          tabIndex={0}
           onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          aria-label={ariaLabelFila}
         >
           <div className="tarjeta_header_superior">
             <span className="tarjeta_id">
               #{String(inscripcion.id_inscripcion).padStart(4, "0")}
             </span>
 
-            <div className={`sello_estado ${claseSello}`}>{textoSello}</div>
+            <div className={`sello_estado ${claseSello}`}>
+              {iconoSello}
+              <span>{textoSello}</span>
+            </div>
           </div>
+
+          <h3 className="section-title section-title--card">Detalle de inscripción</h3>
 
           <div className="tarjeta_body_principal">
             <div className="alumno_info">
@@ -180,7 +221,7 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
               <div className="consumo_contenedor">
                 <div className="consumo_header">
                   <div className="consumo_titulo">
-                    <Activity size={10} />
+                    <Activity size={10} aria-hidden="true" />
                     <span>Consumo</span>
                   </div>
 
@@ -191,11 +232,17 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
 
                 <div className="barra_fondo">
                   <div
+                    id={progressId}
                     className="barra_progreso"
-                    style={{
-                      width: `${porcentajeUso}%`,
-                    }}
-                  />
+                    role="progressbar"
+                    aria-valuenow={porcentajeUso}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-labelledby={filaId}
+                    style={{ width: `${porcentajeUso}%` }}
+                  >
+                    <span className="sr-only">{porcentajeUso}% consumido</span>
+                  </div>
                 </div>
               </div>
             </div>

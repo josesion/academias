@@ -141,3 +141,61 @@
     justify-content: flex-start;
     padding-top: 4px;
 }
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_calendario {
+    transition: none !important;
+  }
+  .celda_interactiva {
+    transition: none !important;
+  }
+  .celda_interactiva:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .contenedor_calendario {
+    border-width: 2px;
+  }
+  .th_hora_label,
+  .th_dia_sticky,
+  .celda_hora_lateral {
+    border-width: 2px !important;
+  }
+  .celda_interactiva {
+    border-width: 2px !important;
+  }
+  /* La celda con el foco rotativo (spec 014) necesita un contorno fuerte:
+     sin esto el usuario de teclado no sabe donde esta. */
+  .celda_interactiva:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: -3px;
+    box-shadow: none;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .seccion_footer_calendario {
+    display: none !important;
+  }
+  .contenedor_calendario {
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    border: 1px solid var(--borde);
+  }
+  .contenedor_calendario_completo {
+    break-inside: avoid;
+  }
+}

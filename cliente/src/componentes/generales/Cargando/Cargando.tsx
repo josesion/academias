@@ -7,12 +7,18 @@ export const ComponenteCargando = () => {
   const cartelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Respetar prefers-reduced-motion: si el usuario quiere menos movimiento, no animar
+    const prefiereMenosMovimiento = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+    if (prefiereMenosMovimiento) return;
+
     const ctx = gsap.context(() => {
       // Animación de entrada fluida y elástica
       gsap.fromTo(
         cartelRef.current,
         { y: 20, opacity: 0, scale: 0.9 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" },
+        { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }
       );
 
       // Loop de flotación suave y orgánico
@@ -30,9 +36,16 @@ export const ComponenteCargando = () => {
   }, []);
 
   return (
-    <div className="overlay_cargando" ref={containerRef}>
+    <div
+      className="overlay_cargando"
+      ref={containerRef}
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label="Cargando contenido"
+    >
       <div className="cartel_cargando" ref={cartelRef}>
-        <div className="spinner" />
+        <div className="spinner" aria-hidden="true" />
         <p className="texto_cargando">
           Cargando
           <span className="punto" />

@@ -1,19 +1,29 @@
-/* --- Sello por estado, mismo mapeo que ElementoLista --- */
+/* --- Sello por estado, mismo mapeo que ElementoLista ---
+   Usan tokens de app.css (--color-exito, --color-error, --color-advertencia, --texto-deshabilitado)
+   Las clases base .sello_estado y variantes vienen de elementolista.css;
+   aquí solo se asegura que los colores apunten a tokens válidos.
+*/
+
+.sello_estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
 
 .sello_verde {
-    color: var(--verde);
+    color: var(--color-exito);
 }
 
 .sello_rojo {
-    color: var(--rojo);
+    color: var(--color-error);
 }
 
 .sello_ambar {
-    color: var(--ambar);
+    color: var(--color-advertencia);
 }
 
 .sello_neutro {
-    color: var(--tinta_media);
+    color: var(--texto-deshabilitado);
 }
 
 /* --- Nota de solo lectura --- */
@@ -36,4 +46,14 @@
 
 .panel_solo_lectura_nota svg {
     flex-shrink: 0;
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .recibo_ticket.ticket_inscripcion {
+        animation: none;
+    }
 }

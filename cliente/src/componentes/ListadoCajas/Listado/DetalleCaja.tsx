@@ -61,6 +61,9 @@ export const DetalleCajas = ({
     );
   }
 
+  // Texto para aria-label del contenedor lista
+  const labelLista = `Histórico de cajas cerradas (${props.length} cajas)`;
+
   return (
     <div className="detalle_caja_marco">
       <div className="detalle_caja_titulo">
@@ -71,14 +74,30 @@ export const DetalleCajas = ({
       {carga ? (
         <ComponenteCargando />
       ) : (
-        <div className="detalle_caja_lista">
+        <div
+          className="detalle_caja_lista"
+          role="list"
+          aria-label={labelLista}
+        >
           {props.map((detalle) => {
             const estado = calcularEstado(detalle.monto_faltante);
+            const idSello = `sello-${detalle.id_caja}`;
+            const idMontos = `montos-${detalle.id_caja}`;
+            const sistema = detalle.monto_sistema.toLocaleString("es-AR");
+            const real = detalle.monto_real.toLocaleString("es-AR");
+            const diferencia =
+              estado === "exacta"
+                ? "$0"
+                : `${estado === "sobrante" ? "+" : "-"}$${Math.abs(
+                    detalle.monto_faltante,
+                  ).toLocaleString("es-AR")}`;
 
             return (
               <article
                 key={detalle.id_caja}
                 className={`detalle_caja_card ${estado}`}
+                role="listitem"
+                aria-labelledby={idSello}
               >
                 <header className="detalle_caja_cabecera">
                   <div className="detalle_caja_fechas">
@@ -94,7 +113,11 @@ export const DetalleCajas = ({
                     </span>
                   </div>
 
-                  <div className={`detalle_caja_sello sello_${estado}`}>
+                  <div
+                    id={idSello}
+                    className={`detalle_caja_sello sello_${estado}`}
+                    aria-live="polite"
+                  >
                     {TEXTO_SELLO[estado]}
                   </div>
                 </header>
@@ -102,16 +125,12 @@ export const DetalleCajas = ({
                 <div className="detalle_caja_montos">
                   <div className="monto_item">
                     <span className="monto_label">Sistema</span>
-                    <span className="monto_valor">
-                      ${detalle.monto_sistema.toLocaleString("es-AR")}
-                    </span>
+                    <span className="monto_valor">${sistema}</span>
                   </div>
 
                   <div className="monto_item">
                     <span className="monto_label">Real</span>
-                    <span className="monto_valor">
-                      ${detalle.monto_real.toLocaleString("es-AR")}
-                    </span>
+                    <span className="monto_valor">${real}</span>
                   </div>
 
                   <div className="monto_item">
@@ -119,13 +138,14 @@ export const DetalleCajas = ({
                       {TEXTO_LABEL_DIFERENCIA[estado]}
                     </span>
                     <span className={`monto_valor monto_${estado}`}>
-                      {estado === "exacta"
-                        ? "$0"
-                        : `${estado === "sobrante" ? "+" : "-"}$${Math.abs(
-                            detalle.monto_faltante,
-                          ).toLocaleString("es-AR")}`}
+                      {diferencia}
                     </span>
                   </div>
+                </div>
+
+                {/* Resumen para lectores de pantalla en el botón */}
+                <div id={idMontos} className="visually-hidden">
+                  Sistema: ${sistema}, Real: ${real}, Diferencia: ${diferencia}
                 </div>
 
                 {detalle.observaciones && (
@@ -140,6 +160,7 @@ export const DetalleCajas = ({
                   texto="Ver detalle de arqueo"
                   logo="Go"
                   disable={false}
+                  aria-describedby={idMontos}
                   onClick={() => {
                     onAbrirLibroDiario(detalle.id_caja);
                   }}

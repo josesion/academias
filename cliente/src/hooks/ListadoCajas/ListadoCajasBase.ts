@@ -61,7 +61,12 @@ export const useListaCajaBase = ( config : HistorialCajasConfig ) => {
 //  Abrir y cerrar el modal del libro diario
 // ────────────────────────────────────────────────────────────── 
 
-
+    const abrirModalGlobal = () =>{
+      dispatchListadoCaja({ type : "SET_MODAL_GRFICOS_GLOBALES", payload : true });
+    };
+    const cerrarModalGlobal = () =>{
+      dispatchListadoCaja({ type : "SET_MODAL_GRFICOS_GLOBALES", payload : false });
+    }
 // ──────────────────────────────────────────────────────────────
 //  Funciones para cachear los filtros de busqueda
 // ──────────────────────────────────────────────────────────────  
@@ -206,5 +211,6 @@ useEffect(()=>{
             stateListadoCaja, abrirLibroDiario : resumenDetalle.abrirLibroDiario, cerrarLibroDiario : resumenDetalle.cerrarLibroDiario,
             cachearUsuario, cachearEstado, cachearFechaD, cachearFechaH,
             handlePaginaCambiada,
+            abrirModalGlobal, cerrarModalGlobal,
         };
 };

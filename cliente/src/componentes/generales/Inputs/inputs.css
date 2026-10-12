@@ -45,6 +45,46 @@
     transition: var(--transicion);
 }
 
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .inputs,
+  .inputs[type="file"]::file-selector-button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .inputs {
+    border-width: 2px;
+  }
+  .inputs:focus:not(:read-only) {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .inputs_contenedor:has(.mensaje_error) .inputs:focus {
+    outline: 3px solid var(--color-error);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+@media print {
+  .inputs_contenedor label:empty {
+    display: none;
+  }
+  .mensaje_error {
+    display: none;
+  }
+  .inputs[type="file"]::file-selector-button {
+    display: none;
+  }
+}
+
 .inputs::placeholder {
     color: var(--texto-deshabilitado);
 }

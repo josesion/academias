@@ -30,6 +30,7 @@ interface PropsBuscador {
   cachearEstado: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   cachearFechaD: (event: React.ChangeEvent<HTMLInputElement>) => void;
   cachearFechaH: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  ariaControls?: string;
 }
 
 const listaEstadosCaja: EstadoCajaOption[] = [
@@ -45,6 +46,7 @@ export const BuscadorLateral = ({
   cachearEstado,
   cachearFechaD,
   cachearFechaH,
+  ariaControls = "filtros-busqueda-panel",
 }: PropsBuscador) => {
   const [abierto, setAbierto] = useState(false);
   const listaUsusarios = usuario === null ? [] : usuario;
@@ -57,13 +59,19 @@ export const BuscadorLateral = ({
         onClick={() => setAbierto((prev) => !prev)}
         aria-expanded={abierto}
         aria-label={abierto ? "Ocultar filtros" : "Mostrar filtros"}
+        aria-controls={ariaControls}
       >
         <Search size={16} />
         <span className="buscador_lateral_lengueta_texto">Filtro</span>
         <ChevronRight size={14} className="buscador_lateral_flecha" />
       </button>
 
-      <div className="buscador_lateral_cuerpo">
+      <div
+        className="buscador_lateral_cuerpo"
+        role="region"
+        aria-label="Filtros de búsqueda"
+        id={ariaControls}
+      >
         <div className="buscador_lateral_fila">
           <div className="buscador_lateral_campo">
             <SelectorOpt<UsuarioOption>

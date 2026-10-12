@@ -42,7 +42,6 @@ interface InscripcionProps {
 
 export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
   const { rol } = useContext(RutasProtegidasContext);
-  console.log(rol?.tipo);
 
   const {
     plan,
@@ -61,10 +60,17 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
   } = props;
 
   return (
-    <form className="formulario_inscripcion_contenedor" onSubmit={inscribir}>
-      <p className="tarjeta_titulo_pago">
+    <form
+      className="formulario_inscripcion_contenedor"
+      onSubmit={inscribir}
+      role="form"
+      aria-labelledby="form_inscripcion_titulo"
+      aria-describedby={errorGenerico ? "form_inscripcion_error" : undefined}
+      noValidate
+    >
+      <h2 id="form_inscripcion_titulo" className="section-title">
         Contratación e Pago Inicial del Plan
-      </p>
+      </h2>
       <div className="formulario_inscripcion_filtros">
         <SelectorPlegable<DataPlan>
           titulo="Planes activos"
@@ -74,10 +80,11 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
           valueKey="descripcion"
           tipo="text"
           name="descripcion"
+          hint="Escribe el nombre del plan para filtrar..."
         />
 
         <SelectorPlegable<DataAlumno>
-          titulo="Alumnos activos "
+          titulo="Alumnos activos"
           objetoListado={listadoAlumno}
           onChange={handleCachearAlumno}
           input_list="list_alumnos"
@@ -85,6 +92,7 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
           displayKey="persona"
           tipo="text"
           name="dni"
+          hint="Escribe nombre, apellido o DNI para filtrar..."
         />
       </div>
 
@@ -101,8 +109,13 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
         )}
       </div>
 
-      <div className="formulario_inscripcion_mensaje_error">
-        {errorGenerico && <p className="mensaje_error"> {errorGenerico}</p>}
+      <div
+        className="formulario_inscripcion_mensaje_error"
+        role="alert"
+        aria-live="assertive"
+        id="form_inscripcion_error"
+      >
+        {errorGenerico && <p className="mensaje_error">{errorGenerico}</p>}
       </div>
 
       <div className="formulario_inscripcion_botones">

@@ -14,6 +14,7 @@ interface Paginacion {
 export interface ListadoCajas{
     modal :{
         libroDiario : boolean,
+        modalGraficos : boolean,
     },
 
     carga : {
@@ -46,7 +47,10 @@ export interface ListadoCajas{
 
 
 export const initialStateListadoCaja = () : ListadoCajas =>({
-    modal : { libroDiario : false},
+    modal : { 
+        libroDiario : false,
+        modalGraficos : false,
+    },
 
     carga : {
         encabezado : false,
@@ -92,7 +96,7 @@ export const initialStateListadoCaja = () : ListadoCajas =>({
 export type ListadoCajaAction =
 
    | { type : "SET_MODAL_LIBRO_DIARIO" , payload : boolean}
-
+   | { type : "SET_MODAL_GRFICOS_GLOBALES" , payload : boolean}
 // ──────────────────────────────────────────────────────────────
 // Encabezado del historial de caja 
 // ──────────────────────────────────────────────────────────────  
@@ -142,9 +146,17 @@ export const listadoCajaReducer = ( state : ReturnType< typeof initialStateLista
             return {
                 ...state , 
                 modal : {
+                    ...state.modal,
                     libroDiario : action.payload
             }}
 
+        case "SET_MODAL_GRFICOS_GLOBALES" :
+            return {
+                ...state , 
+                modal : {
+                    ...state.modal,
+                    modalGraficos : action.payload
+            }}
 // ──────────────────────────────────────────────────────────────
 // Encabezado del historial de caja 
 // ──────────────────────────────────────────────────────────────              

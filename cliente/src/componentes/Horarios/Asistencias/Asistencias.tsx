@@ -78,36 +78,36 @@ export const Asistencia = ({
   const profesorClase = clases?.nombre_profesor || "Sin Profesor.";
 
   return (
-    <section className="asistencia_contenedor">
+    <section className="asistencia_contenedor" role="list" aria-label="Lista de asistencia de la clase">
       {/* BLOQUE DE INFORMACIÓN DE CLASE (SUPERIOR) */}
       <div className="asistencia_bloque_info">
         <div className="info_clases_datos">
           <div className="info_clases_item">
             <span className="info_clases_label">Clase</span>
             {cargaClases ? (
-              <SpinnerTarjeta />
+              <SpinnerTarjeta aria-label="Cargando clase" />
             ) : (
               <h2 title={nombreClase}>{nombreClase}</h2>
             )}
           </div>
 
-          <div className="info_clases_divisor"></div>
+          <div className="info_clases_divisor" aria-hidden="true"></div>
 
           <div className="info_clases_item">
             <span className="info_clases_label">Horario</span>
             {cargaClases ? (
-              <SpinnerTarjeta />
+              <SpinnerTarjeta aria-label="Cargando horario" />
             ) : (
               <p title={horarioClase}>{horarioClase}</p>
             )}
           </div>
 
-          <div className="info_clases_divisor"></div>
+          <div className="info_clases_divisor" aria-hidden="true"></div>
 
           <div className="info_clases_item">
             <span className="info_clases_label">Profesor</span>
             {cargaClases ? (
-              <SpinnerTarjeta />
+              <SpinnerTarjeta aria-label="Cargando profesor" />
             ) : (
               <p title={profesorClase}>{profesorClase}</p>
             )}
@@ -118,14 +118,16 @@ export const Asistencia = ({
           className={`info_clases_estado ${
             estadoClase === "EN CURSO" ? "curso" : "sin_curso"
           }`}
+          role="status"
+          aria-live="polite"
         >
-          <span className="estado_punto"></span>
+          <span className="estado_punto" aria-hidden="true"></span>
           {estadoClase}
         </div>
       </div>
 
       {/* LÍNEA DIVISORIA ENTRE LA CLASE Y LA ASISTENCIA */}
-      <div className="asistencia_seccion_divisor"></div>
+      <div className="asistencia_seccion_divisor" aria-hidden="true"></div>
 
       {/* BLOQUE DE CONTROL DE ASISTENCIA (INFERIOR) */}
       <div className="asistencia_bloque_principal">
@@ -135,14 +137,14 @@ export const Asistencia = ({
             <p>Listado de alumnos de la clase</p>
           </div>
           <div className="asistencia_contador_badge">
-            <span className="punto_activo"></span>
+            <span className="punto_activo" aria-hidden="true"></span>
             <strong>{presentes}</strong> presentes
           </div>
         </header>
 
         {asistencia.length === 0 ? (
-          <div className="asistencia_vacio">
-            <div className="asistencia_vacio_icono">
+          <div className="asistencia_vacio" role="status" aria-live="polite" aria-label="Sin alumnos registrados en esta clase">
+            <div className="asistencia_vacio_icono" aria-hidden="true">
               <UserPlus size={44} />
             </div>
             <h3>Sin alumnos registrados</h3>
@@ -154,11 +156,12 @@ export const Asistencia = ({
         ) : (
           <div className="asistencia_lista">
             {asistencia.map((alumno, index) => (
-              <article className="asistencia_item" key={index}>
+              <article className="asistencia_item" role="listitem" key={index} aria-label={`${alumno.nombre} ${alumno.apellido}`}>
                 <div
                   className={`asistencia_icono ${
                     variantesAvatar[index % variantesAvatar.length]
                   }`}
+                  aria-hidden="true"
                 >
                   {obtenerIniciales(alumno.nombre, alumno.apellido)}
                 </div>

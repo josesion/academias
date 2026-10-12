@@ -76,3 +76,33 @@
     content: "";
   }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none !important;
+  }
+  .texto_cargando::after {
+    animation: none !important;
+    content: "..." !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .cartel_cargando {
+    border-width: 2px;
+  }
+  .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .overlay_cargando {
+    display: none;
+  }
+}

@@ -21,7 +21,9 @@ interface CarruselProps {
   carga?: boolean; // Opcional por si no se usa en el carrusel simple
   mensaje?: string;
   plan?: number;
-  cargaSpiner: boolean;
+  /** Opcional: la página de Flayers ya muestra su propio spinner antes de
+   *  montar el carrusel, asi que no siempre hace falta el interno. */
+  cargaSpiner?: boolean;
 }
 
 export const CarruselFlayers = ({

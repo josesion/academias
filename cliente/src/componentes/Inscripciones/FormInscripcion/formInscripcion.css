@@ -18,12 +18,13 @@
 
     box-shadow: var(--sombra-lg);
 
-    max-height: 88vh;
+    max-height: calc(100vh - 120px);
     overflow-y: auto;
     overflow-x: hidden;
+    scroll-padding-top: 20px;
 
     transition: var(--transicion);
-    animation: fadeInForm 0.4s ease;
+    animation: fadeInForm 0.3s ease;
 }
 
 /* Scrollbar de marca */
@@ -42,28 +43,10 @@
     filter: brightness(1.15);
 }
 
-/* ===== TITULO ===== */
-/* ===== TÍTULO DE SECCIÓN ===== */
-.tarjeta_titulo_pago {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    font-weight: var(--peso-negrita);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-
-    color: var(--texto-secundario);
-
-    border-bottom: 1px solid var(--borde);
-}
-
 /* ===== SECCIÓN DE FILTROS (SELECTORES SUPERIORES) ===== */
 .formulario_inscripcion_filtros {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 20px;
     width: 100%;
 }
@@ -71,7 +54,7 @@
 /* ===== SECCIÓN DE INFORMACIÓN (TARJETAS CENTRALES) ===== */
 .formulario_inscripcion_info {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
+    grid-template-columns: minmax(350px, 1.2fr) minmax(300px, 0.8fr);
     gap: 25px;
     align-items: start;
     width: 100%;
@@ -84,8 +67,7 @@
 
 /* ===== MENSAJES DE ERROR ===== */
 .formulario_inscripcion_mensaje_error {
-    min-height: 20px;
-    text-align: center;
+    min-height: 0;
 }
 
 .mensaje_error {
@@ -95,12 +77,21 @@
     font-size: var(--texto-sm);
     font-weight: var(--peso-semi-negrita);
 
-    background: color-mix(in srgb, var(--color-error) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
-    border-radius: var(--radio-sm);
-    padding: 10px 14px;
+    background: color-mix(in srgb, var(--color-error) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-error) 25%, transparent);
+    border-radius: var(--radio-md);
+    padding: 12px 16px;
 
-    display: inline-block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    animation: slideDown 0.2s var(--ease-ui);
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== BOTONERA FINAL ===== */
@@ -117,24 +108,24 @@
 
 /* ------------------- RESPONSIVE ------------------- */
 
-@media (max-width: 1000px) {
+@media (max-width: 1024px) {
     .formulario_inscripcion_info {
         grid-template-columns: 1fr;
         gap: 20px;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
     .formulario_inscripcion_contenedor {
         width: 100%;
         padding: 20px 15px;
         border-radius: 0;
-        max-height: 100vh;
+        max-height: calc(100vh - 60px);
         margin: 0;
     }
 
-    .tarjeta_titulo_pago {
-        font-size: var(--texto-lg);
+    .formulario_inscripcion_filtros {
+        grid-template-columns: 1fr;
     }
 
     .formulario_inscripcion_botones {
@@ -147,7 +138,72 @@
     }
 }
 
+@media (max-width: 480px) {
+    .formulario_inscripcion_contenedor {
+        padding: 16px 12px;
+        gap: 20px;
+    }
+}
+
 @keyframes fadeInForm {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
+}
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024) — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .formulario_inscripcion_contenedor {
+    animation: none !important;
+    transition: none !important;
+  }
+  .formulario_inscripcion_filtros,
+  .formulario_inscripcion_info {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .formulario_inscripcion_contenedor {
+    border-width: 2px !important;
+  }
+  .section-title {
+    border-bottom-width: 2px;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  /* Los inputs del SelectorPlegable */
+  .formulario_inscripcion_filtros input,
+  .formulario_inscripcion_filtros select {
+    border-width: 2px !important;
+  }
+  .formulario_inscripcion_filtros input:focus-visible,
+  .formulario_inscripcion_filtros select:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .formulario_inscripcion_mensaje_error {
+    border: 2px solid var(--color-error);
+    padding: 8px;
+  }
+}
+
+@media print {
+  .formulario_inscripcion_botones {
+    display: none !important;
+  }
+  .formulario_inscripcion_contenedor {
+    animation: none !important;
+    box-shadow: none !important;
+    border: 1px solid var(--borde);
+  }
+  .formulario_inscripcion_mensaje_error {
+    display: none !important;
+  }
 }

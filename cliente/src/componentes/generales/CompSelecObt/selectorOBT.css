@@ -61,3 +61,50 @@
 .input_caja option:hover {
     background-color: var(--color-primario);
 }
+
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .input_caja {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .input_caja {
+    border-width: 2px;
+  }
+  .input_caja:focus {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .input_caja:disabled {
+    border-width: 2px;
+    border-color: var(--borde);
+  }
+}
+
+@media print {
+  .mensaje_error {
+    display: none;
+  }
+  .input_caja {
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    background-image: none;
+    padding-right: 14px;
+  }
+}
+
+.mensaje_error {
+  margin: 4px 0 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--color-error);
+}

@@ -152,3 +152,62 @@
     max-width: none;
   }
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .data-escuela-container * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .btn-volver,
+  .btn-principal {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .btn-volver,
+  .btn-principal {
+    border-width: 2px !important;
+  }
+  .btn-volver:focus-visible,
+  .btn-principal:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .card-horarios-lateral,
+  .modal-grilla-card {
+    border: 2px solid var(--borde);
+  }
+  .seccion-titulo,
+  .seccion-titulo-inline {
+    border-bottom: 2px solid var(--borde);
+  }
+}
+
+@media print {
+  .nav-superior,
+  .btn-principal {
+    display: none !important;
+  }
+  .data-escuela-container {
+    background: var(--fondo-principal);
+  }
+  .seccion-bloque {
+    break-inside: avoid;
+  }
+}

@@ -42,6 +42,7 @@ export const TarjetaMetrica = ({
   leyenda,
 }: MetricasProps) => {
   const tieneDetalle = porcentaje !== undefined || leyenda !== undefined;
+  const ariaLabel = `${titulo}: ${valor.toLocaleString("es-AR")}${leyenda ? `, ${leyenda}` : ""}${porcentaje !== undefined ? `, ${porcentaje > 0 ? "+" : ""}${porcentaje}% vs mes pasado` : ""}`;
 
   const iconoPorcentaje =
     porcentaje !== undefined ? (
@@ -64,21 +65,25 @@ export const TarjetaMetrica = ({
       : "";
 
   return (
-    <div className={`tarjeta_metrica_contenedor ${tipo}`}>
+    <div
+      className={`tarjeta_metrica_contenedor ${tipo}`}
+      role="status"
+      aria-live={carga ? "polite" : "off"}
+      aria-label={carga ? `Cargando ${titulo}` : ariaLabel}
+      aria-busy={carga}
+    >
       {carga ? (
-        <SpinnerTarjeta />
+        <SpinnerTarjeta aria-hidden="true" />
       ) : (
         <div
-          className={`tarjeta_metrica_contenido ${
-            !tieneDetalle ? "centrado" : ""
-          }`}
+          className={`tarjeta_metrica_contenido ${!tieneDetalle ? "centrado" : ""}`}
         >
-          <div className="tarjeta_metrica_logo">{iconos[tipo]}</div>
+          <div className="tarjeta_metrica_logo" aria-hidden="true">
+            {iconos[tipo]}
+          </div>
 
           <div
-            className={`tarjeta_metrica_info ${
-              !tieneDetalle ? "centrado" : ""
-            }`}
+            className={`tarjeta_metrica_info ${!tieneDetalle ? "centrado" : ""}`}
           >
             <p className="tarjeta_metrica_titulo">{titulo}</p>
 

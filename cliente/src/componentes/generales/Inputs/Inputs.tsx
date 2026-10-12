@@ -92,10 +92,11 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
           aria-describedby={tieneError ? idError : undefined}
         />
 
-        {/* Contenedor para el mensaje de error. Se muestra solo si la propiedad `error` tiene un valor. */}
+        {/* Contenedor para el mensaje de error. Se muestra solo si la propiedad `error` tiene un valor.
+            role="alert" anuncia el error inmediatamente a lectores de pantalla (WCAG 2.1 AA). */}
         <div className="error_espacio">
           {parametros.error && (
-            <p className="mensaje_error" id={idError}>
+            <p className="mensaje_error" id={idError} role="alert">
               {parametros.error}
             </p>
           )}

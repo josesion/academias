@@ -2,15 +2,151 @@
    LISTADO DE INSCRIPCIONES — TOKENS DE MARCA
    ============================================================ */
 
+/* Screen-reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==========================================================================
+   SKELETON LOADERS
+   ========================================================================== */
+
+@keyframes skeletonPulse {
+    0% { background-color: var(--fondo-superficie); }
+    50% { background-color: var(--fondo-hover); }
+    100% { background-color: var(--fondo-superficie); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @keyframes skeletonPulse {
+        0%, 100% { background-color: var(--fondo-superficie); }
+    }
+}
+
+.skeleton-row {
+    animation: none;
+}
+
+.skeleton-cell {
+    background: var(--fondo-superficie);
+    border-radius: 4px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-cell--text {
+    height: 12px;
+    width: 80%;
+    min-width: 60px;
+}
+
+.skeleton-cell--progress {
+    height: 4px;
+    width: 60%;
+    border-radius: 10px;
+}
+
+.skeleton-cell--badge {
+    height: 18px;
+    width: 50px;
+    border-radius: 3px;
+}
+
+.skeleton-cell--id {
+    height: 10px;
+    width: 40px;
+    border-radius: 2px;
+}
+
+.skeleton-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-left: 4px solid transparent;
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeleton-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.skeleton-card__title {
+    height: 14px;
+    width: 60%;
+    border-radius: 4px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    background: var(--fondo-superficie);
+}
+
+.skeleton-card__name {
+    height: 20px;
+    width: 50%;
+    border-radius: 4px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    background: var(--fondo-superficie);
+}
+
+.skeleton-card__dni {
+    height: 12px;
+    width: 30%;
+    border-radius: 4px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    background: var(--fondo-superficie);
+}
+
+.skeleton-card__plan {
+    height: 14px;
+    width: 40%;
+    border-radius: 4px;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    background: var(--fondo-superficie);
+    margin-top: 8px;
+}
+
+.skeleton-card__progress {
+    margin: 8px 0;
+    padding: 8px 0;
+    border-top: 1px dashed var(--borde);
+    border-bottom: 1px dashed var(--borde);
+}
+
+.skeleton-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+}
+
+/* ============================================================
+   LISTADO WRAPPER
+   ============================================================ */
+
 .listado_wrapper {
     width: 100%;
-    height: 450px;
+    height: calc(100vh - 200px);
+    max-height: calc(100vh - 200px);
 
     display: flex;
     flex-direction: column;
 
     overflow-y: auto;
     overflow-x: hidden;
+    scroll-padding-top: 20px;
 
     background: color-mix(
         in srgb,
@@ -53,10 +189,13 @@
 
     flex-shrink: 0; /* el header nunca se achica, aunque no haya tbody */
 
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     table-layout: fixed;
 
     font-family: var(--fuente-principal);
+    border-radius: var(--radio-sm);
+    overflow: hidden;
 }
 
 /* --- Encabezados Sticky (Desktop) --- */
@@ -65,7 +204,8 @@
     top: 0;
     z-index: 20;
 
-    background: var(--fondo-principal);
+    background: var(--fondo-secundario);
+    backdrop-filter: blur(8px);
     padding: 1.2rem 1rem;
 
     font-family: var(--fuente-codigo);
@@ -79,12 +219,25 @@
     border-bottom: 2px solid var(--borde);
 }
 
+/* Primera y última celda del header: radio para esquinas */
+.tabla_header th:first-child {
+    border-top-left-radius: var(--radio-sm);
+}
+.tabla_header th:last-child {
+    border-top-right-radius: var(--radio-sm);
+}
+
 /* --- Cuerpo de Tabla --- */
 .tabla_body { position: relative; }
 .tabla_body::after {
     content: "";
     display: block;
     height: 30px;
+}
+
+/* Filas: borde inferior sutil */
+.tabla_body tr:not(:last-child) td {
+    border-bottom: 1px solid var(--borde);
 }
 
 /* ==========================================================================
@@ -114,10 +267,10 @@
    AJUSTES RESPONSIVE
    ============================================================ */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .listado_wrapper {
         height: auto;
-        max-height: 80vh;
+        max-height: calc(100vh - 200px);
 
         background: transparent;
         border: none;
@@ -131,9 +284,67 @@
         display: flex;
         flex-direction: column;
         width: 100%;
+        gap: 8px;
+        padding: 0 4px;
     }
 
     .listado_estado_vacio {
         min-height: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .listado_wrapper {
+        max-height: calc(100vh - 120px);
+    }
+
+    .listado_mobile {
+        gap: 6px;
+        padding: 0 2px;
+    }
+}
+
+@media (max-width: 640px) {
+    .listado_wrapper {
+        max-height: calc(100vh - 100px);
+    }
+
+    .listado_mobile {
+        gap: 4px;
+        padding: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .listado_wrapper {
+        max-height: calc(100vh - 80px);
+    }
+
+    .listado_mobile {
+        gap: 4px;
+        padding: 0;
+    }
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .listado_wrapper {
+        scroll-behavior: auto;
+    }
+
+    .tabla_header th {
+        transition: none;
+    }
+
+    .skeleton-cell,
+    .skeleton-card,
+    .skeleton-card__title,
+    .skeleton-card__name,
+    .skeleton-card__dni,
+    .skeleton-card__plan {
+        animation: none;
     }
 }

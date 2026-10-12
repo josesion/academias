@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { EstadoVacio } from "../../../../componentes/SeccionAlumnos/ComponteVacio/ComponteVacio";
 import { RobotError } from "../../../../componentes/SeccionAlumnos/RobotRoto/RobotError";
-import { RobotTrabajando } from "../../../../componentes/SeccionAlumnos/RobotTrabajando/RobotTrabajando";
 
 import { HeroEscuela } from "../../../../componentes/SeccionAlumnos/InfoEscuela/InfoEscuela";
 
@@ -35,18 +34,30 @@ export const DataEscuela = () => {
 
   const [modalHorario, setModalHorario] = useState(false);
 
+  const horariosId = useId();
+  const novedadesId = useId();
+  const planesId = useId();
+  const grillaId = useId();
+
   return (
-    <div className="data-escuela-container">
+    <main className="data-escuela-container" role="main">
+      {/* Encabezado de la pagina (solo para lectores de pantalla): el nombre de
+          la academia viene del `HeroEscuela`, pero hace falta un <h1> propio
+          para que la pagina tenga un titulo principal. */}
+      <header className="data-escuela-encabezado">
+        <h1 className="visually-hidden">Datos de la academia</h1>
+      </header>
+
       {/* 1. Navegación Superior */}
-      <div className="nav-superior">
+      <nav className="nav-superior" aria-label="Navegación de la academia">
         <button className="btn-volver" onClick={() => navigate(-1)}>
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} aria-hidden="true" />
           <span>Volver al Panel Principal</span>
         </button>
-      </div>
+      </nav>
 
       {/* 2. Cabecera Institucional y Horarios Juntos Arriba (Grid Superior) */}
-      <div className="top-dashboard-grid">
+      <section className="top-dashboard-grid" aria-label="Informacion de la academia">
         {data?.heroEscuela ? (
           <HeroEscuela
             escuela={data.heroEscuela}
@@ -58,22 +69,24 @@ export const DataEscuela = () => {
 
         <div className="card-horarios-lateral">
           <div className="horarios-texto">
-            <h3 className="seccion-titulo-inline">Horarios de Clases</h3>
+            <h2 id={horariosId} className="seccion-titulo-inline">Horarios de Clases</h2>
             <p>Consultá días, salones y niveles de la academia.</p>
           </div>
           <button
             className="btn-principal"
             onClick={() => setModalHorario(true)}
+            aria-haspopup="dialog"
+            aria-controls={grillaId}
           >
-            <Calendar size={18} />
+            <Calendar size={18} aria-hidden="true" />
             <span>Ver Grilla</span>
           </button>
         </div>
-      </div>
+      </section>
 
       {/* 3. Sección de Novedades / Flyers */}
-      <div className="seccion-bloque">
-        <h2 className="seccion-titulo">Novedades y Anuncios</h2>
+      <section className="seccion-bloque" aria-labelledby={novedadesId}>
+        <h2 id={novedadesId} className="seccion-titulo">Novedades y Anuncios</h2>
         {data?.flayer ? (
           <CarruselFlayers
             flayers={data.flayer}
@@ -83,10 +96,12 @@ export const DataEscuela = () => {
         ) : (
           <EstadoVacio variante="flayers" />
         )}
-      </div>
+      </section>
 
       {/* 5. Sección de Planes de Pago y Estado del Alumno */}
-      <div className="seccion-bloque">
+      <section className="seccion-bloque" aria-labelledby={planesId}>
+        <h2 id={planesId} className="visually-hidden">Planes de pago</h2>
+
         <div className="">
           {data?.inscripcion ? (
             <EstadoPlanActual
@@ -108,7 +123,7 @@ export const DataEscuela = () => {
         ) : (
           <EstadoVacio variante="planes" />
         )}
-      </div>
+      </section>
 
       {/* --- MODAL DE HORARIOS --- */}
       {modalHorario &&
@@ -117,8 +132,12 @@ export const DataEscuela = () => {
             <div
               className="modal-grilla-card"
               style={{ padding: "2rem", textAlign: "center" }}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Cargando horarios"
+              id={grillaId}
             >
-              <p>Cargando horarios...</p>
+              <p role="status" aria-live="polite">Cargando horarios...</p>
             </div>
           </div>
         ) : state.horario ? (
@@ -133,8 +152,12 @@ export const DataEscuela = () => {
             <div
               className="modal-grilla-card"
               style={{ padding: "2rem", textAlign: "center" }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sin-horarios-titulo"
+              id={grillaId}
             >
-              <h3 style={{ marginBottom: "8px" }}>Sin Horarios</h3>
+              <h3 id="sin-horarios-titulo" style={{ marginBottom: "8px" }}>Sin Horarios</h3>
               <p className="sin-horarios" style={{ marginBottom: "16px" }}>
                 No existe horario registrado en esta academia.
               </p>
@@ -150,13 +173,13 @@ export const DataEscuela = () => {
 
       {/* --- AVISO DE ERROR FLOTANTE (robot roto) --- */}
       {state.error && (
-        <div className="robot-error-flotante">
+        <div className="robot-error-flotante" role="alert">
           <RobotError
             mensaje="Algo salió mal al cargar los datos de la academia. Por favor, intentá nuevamente."
             onReintentar={cerrarMensajeError}
           />
         </div>
       )}
-    </div>
+    </main>
   );
 };

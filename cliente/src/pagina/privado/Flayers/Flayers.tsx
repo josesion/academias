@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { confiFlayer } from "../../../hookNegocios/flayers";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
 
@@ -34,23 +35,26 @@ export const FlayersPag = () => {
     onCerrar: cerrarFormulario,
   });
 
+  const galeriaId = useId();
+
   return (
-    <section className="flayers_pagina">
+    <main className="flayers_pagina" role="main">
       {/* 1. MODAL DE CONFIRMACIÓN (Ubicado arriba de todo para evitar solapamientos) */}
       <ModalConfirmacion
         abierto={state.modalConfirmacion}
         onCerrar={handleCerrarModal}
       />
 
-      {/* HEADER DE LA VISTA + BOTÓN 100% VISUAL */}
-      <div className="flayers_vista_header">
+      {/* HEADER DE LA VISTA — el <h2> visible pasa a <h1>: es el titulo de la
+          pagina y no habia ningun <h1> en toda la vista (spec 024). */}
+      <header className="flayers_vista_header">
         <div>
-          <h2 className="flayers_creacion_titulo">Gestión de Flyers</h2>
+          <h1 className="flayers_creacion_titulo">Gestión de Flyers</h1>
           <p className="flayers_creacion_subtitulo">
             Administra tus publicaciones y carrusel
           </p>
         </div>
-      </div>
+      </header>
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="flayers_pagina_contenido">
@@ -71,13 +75,13 @@ export const FlayersPag = () => {
                 onClick={cerrarFormulario}
                 aria-label="Cerrar formulario"
               >
-                <LuX size={18} />
+                <LuX size={18} aria-hidden="true" />
               </button>
 
               <div className="flayers_creacion_header">
-                <h3 className="flayers_creacion_titulo" id="flayers_creacion_titulo">
+                <h2 className="flayers_creacion_titulo" id="flayers_creacion_titulo">
                   Nuevo Flyer
-                </h3>
+                </h2>
                 <p className="flayers_creacion_subtitulo">
                   Carga tu imagen y completa los datos para publicar
                 </p>
@@ -115,17 +119,25 @@ export const FlayersPag = () => {
           </div>
         )}
 
-        {/* GALERÍA / CARRUSEL */}
-        <div className="flayers_pagina_galeria">
+        {/* GALERÍA / CARRUSEL — <section> con <h2> propio (spec 024). */}
+        <section aria-labelledby={galeriaId} className="flayers_pagina_galeria">
           <div className="flayers_galeria_header">
-            <p className="flayers_galeria_subtitulo">
+            <h2 id={galeriaId} className="flayers_galeria_titulo">
               Flyers publicados recientemente
-            </p>
+            </h2>
           </div>
 
           <div className="carrusel_flayers_contenendor">
             {state.carga.galeria ? (
-              <SpinnerTarjeta />
+              <div
+                className="carga_flayers"
+                role="status"
+                aria-live="polite"
+                aria-busy="true"
+              >
+                <SpinnerTarjeta aria-hidden="true" />
+                <span className="visually-hidden">Cargando flyers...</span>
+              </div>
             ) : (
               <CarruselFlayers
                 plan={state.planFlayers}
@@ -141,8 +153,8 @@ export const FlayersPag = () => {
               />
             )}
           </div>
-        </div>
+        </section>
       </div>
-    </section>
+    </main>
   );
 };

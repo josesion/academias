@@ -388,3 +388,58 @@
         align-self: flex-start;
     }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .asistencia_contenedor {
+    transition: none !important;
+  }
+  .asistencia_item {
+    transition: none !important;
+  }
+  .asistencia_ecualizador span {
+    animation: none !important;
+    transform: scaleY(1) !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .asistencia_contenedor {
+    border: 2px solid var(--borde);
+  }
+  .asistencia_item {
+    border-width: 2px;
+  }
+  .asistencia_item:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    border-color: var(--color-primario);
+  }
+  .asistencia_icono {
+    border: 2px solid var(--texto-principal);
+  }
+  .asistencia_vacio_icono {
+    border: 2px solid var(--borde);
+  }
+  .info_clases_estado {
+    border: 2px solid currentColor;
+  }
+  .asistencia_contador_badge {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .asistencia_contenedor {
+    background-image: none !important;
+  }
+  .asistencia_contenedor::before {
+    display: none;
+  }
+  .asistencia_vacio {
+    display: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useId } from "react";
 import { Search, ChevronRight } from "lucide-react";
 
 import { Formulario } from "../../generales/Formulario/Formulario";
@@ -87,9 +87,11 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
   } = props;
 
   const [buscadorAbierto, setBuscadorAbierto] = useState(false);
+  const listadoId = useId();
+  const buscadorId = useId();
 
   return (
-    <div className="amb_master_wrapper">
+    <div className="amb_master_wrapper" role="main">
       <header>
         <div>
           {/* Era un <h2> y arrancaba la página sin un <h1> (spec 016). Como este
@@ -97,7 +99,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
               cuentas, categorías de caja y alumnos), este solo cambio les da el
               título principal a todas. El selector del CSS se actualizó junto
               con el tag, así que se ve igual. */}
-          <h1>Gestion : {entidad}</h1>
+          <h1>Gestión: {entidad}</h1>
         </div>
       </header>
 
@@ -141,6 +143,10 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
         {/* BUSCADOR: ahora es un panel lateral que se esconde */}
         <div
           className={`area_buscador_lateral ${buscadorAbierto ? "abierto" : ""}`}
+          id={buscadorId}
+          role="search"
+          aria-controls={listadoId}
+          aria-expanded={buscadorAbierto}
         >
           <button
             type="button"
@@ -170,7 +176,8 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
         </div>
 
         {/* LISTADO: ocupa todo el centro, ahora arranca más arriba */}
-        <main className="area_listado">
+        <section aria-labelledby="listado-titulo" className="area_listado" id={listadoId}>
+          <h2 id="listado-titulo" className="visually-hidden">Listado de {entidad}</h2>
           <ListadoMolde
             items={dataAlumnosListado}
             onEditar={onModificar}
@@ -180,16 +187,16 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             statusCode={statuscode}
             botonEstado={botonTexto}
           />
-        </main>
+        </section>
 
         {/* PAGINACIÓN */}
-        <footer className="area_paginacion">
+        <nav aria-label={`Paginación del listado de ${entidad}`} className="area_paginacion">
           <Paginacion
             contadorPagina={barraPaginacion.contadorPagina || 0}
             paginaActual={barraPaginacion.pagina || 1}
             onPaginaCambiada={onHandlePaginaCambiada}
           />
-        </footer>
+        </nav>
       </div>
     </div>
   );

@@ -200,6 +200,34 @@
 }
 
 
+/* ==========================================================================
+   TÍTULOS DE SECCIÓN COMPARTIDOS — Estética Editorial
+   Usar en lugar de clases duplicadas (.tarjeta_titulo, .tarjeta_titulo_pago, ::before)
+========================================================================== */
+
+.section-title {
+    text-align: center;
+    margin: 0 0 20px 0; /* el margen de arriba lo pone el gap del contenedor */
+    padding-bottom: 10px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    color: var(--texto-secundario);
+
+    border-bottom: 1px solid var(--borde);
+}
+
+/* Variante para títulos de sección dentro de tarjetas (mismo estilo, menos margen) */
+.section-title--card {
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+}
+
+
 /* =======================================================
    APP
 ======================================================= */

@@ -327,11 +327,186 @@
 
 
 /* ==========================================
-   RESPONSIVIDAD Y MEDIA QUERIES
+   VISTA SWITCH (Listado ↔ Gráficos)
+   ========================================== */
+
+.vista_switch_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.vista_switch_label {
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.vista_switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 72px;
+  height: 44px;
+  flex-shrink: 0;
+  background-color: var(--fondo-terciario);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio-full);
+  cursor: pointer;
+  transition:
+    background-color var(--transicion),
+    border-color var(--transicion),
+    box-shadow var(--transicion);
+}
+
+.vista_switch:hover {
+  border-color: var(--borde-hover);
+}
+
+.vista_switch:focus-within {
+  outline: none;
+}
+
+.vista_switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.vista_switch input:focus-visible + .vista_switch_thumb {
+  box-shadow:
+    0 0 0 2px var(--fondo-principal),
+    0 0 0 4px var(--color-secundario);
+}
+
+.vista_switch_thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 36px;
+  height: 36px;
+  background-color: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-full);
+  box-shadow: var(--sombra-sm);
+  transition:
+    transform var(--transicion) var(--ease-ui),
+    background-color var(--transicion),
+    border-color var(--transicion);
+  pointer-events: none;
+}
+
+.vista_switch input:checked + .vista_switch_thumb {
+  transform: translateX(28px);
+  background-color: var(--color-secundario);
+  border-color: var(--color-secundario);
+}
+
+.vista_switch input:checked:hover + .vista_switch_thumb {
+  background-color: color-mix(in srgb, var(--color-secundario) 85%, white);
+}
+
+/* Estado deshabilitado */
+.vista_switch:has(input:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vista_switch:has(input:disabled):hover {
+  border-color: var(--borde);
+}
+
+/* ==========================================
+   GRID VARIANTES SEGÚN VISTA
+   ========================================== */
+
+.listado_cajas_grid_inferior.vista-listado {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.listado_cajas_grid_inferior.vista-graficos {
+  grid-template-columns: 1fr;
+}
+
+.vista-graficos .listado_cajas_panel {
+  display: none;
+}
+
+/* ==========================================
+   PREFERENCIAS DE USUARIO
+   ========================================== */
+
+/* Reduced Motion: desactivar transiciones del switch */
+@media (prefers-reduced-motion: reduce) {
+  .vista_switch,
+  .vista_switch_thumb {
+    transition: none !important;
+  }
+}
+
+/* High Contrast: bordes más visibles, foco más grueso */
+@media (prefers-contrast: high) {
+  .vista_switch {
+    border-width: 2px;
+  }
+  .vista_switch_thumb {
+    border-width: 2px;
+  }
+  .vista_switch input:focus-visible + .vista_switch_thumb {
+    box-shadow:
+      0 0 0 3px var(--fondo-principal),
+      0 0 0 3px var(--color-secundario);
+  }
+}
+
+/* Print: ocultar switch, forzar vista listado completa */
+@media print {
+  .vista_switch_wrapper {
+    display: none;
+  }
+  .listado_cajas_grid_inferior {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+  .listado_cajas_panel {
+    display: flex !important;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE: Switch apilado en móvil (<700px)
+   ========================================== */
+
+@media (max-width: 700px) {
+  .vista_switch_wrapper {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .vista_switch_label {
+    order: -1;
+  }
+  
+  .vista_switch_label:last-of-type {
+    order: 1;
+  }
+}
+
+/* ==========================================
+   RESPONSIVIDAD Y MEDIA QUERIES (Grid Principal)
    ========================================== */
 
 @media (min-width: 1400px) {
-  .listado_cajas_grid_inferior {
+  .listado_cajas_grid_inferior.vista-listado {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 28px;
   }
@@ -348,7 +523,7 @@
     padding: 16px;
   }
 
-  .listado_cajas_grid_inferior {
+  .listado_cajas_grid_inferior.vista-listado {
     grid-template-columns: 1fr;
     gap: 24px;
   }
@@ -379,7 +554,7 @@
     padding: 16px;
   }
 
-  .listado_cajas_grid_inferior {
+  .listado_cajas_grid_inferior.vista-listado {
     display: flex;
     flex-direction: column;
     gap: 18px;

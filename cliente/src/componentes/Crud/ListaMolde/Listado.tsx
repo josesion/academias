@@ -166,7 +166,12 @@ export function ListadoMolde<T extends object>({
   );
 
   return (
-    <div className="rueda_contenedor" ref={containerRef}>
+    <div
+      className="rueda_contenedor"
+      ref={containerRef}
+      role="list"
+      aria-label="Listado de registros"
+    >
       {carga === true ? (
         <ComponenteCargando />
       ) : statusCode === 404 ? (
@@ -185,7 +190,7 @@ export function ListadoMolde<T extends object>({
                 : idx;
 
             return (
-              <div className="rueda_item" key={key} ref={setItemRef(key)}>
+              <div className="rueda_item" key={key} ref={setItemRef(key)} role="listitem">
                 <ItemGenerico
                   data={item}
                   textoBoton={botonEstado}

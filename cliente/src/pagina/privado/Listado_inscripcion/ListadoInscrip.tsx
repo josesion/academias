@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Search, ChevronRight } from "lucide-react";
 
 import { Buscadores } from "../../../componentes/generales/Buscadores/Buscador";
@@ -37,13 +37,30 @@ export const ListadoInscripcionPage = () => {
   } = state;
 
   const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
+  const filtroPanelRef = useRef<HTMLDivElement>(null);
+  const lengüetaRef = useRef<HTMLButtonElement>(null);
+
+  // Focus management: al abrir panel → focus en primer elemento focusable; al cerrar → focus en lengüeta
+  useEffect(() => {
+    if (filtrosAbiertos && filtroPanelRef.current) {
+      const timeout = setTimeout(() => {
+        const focusable = filtroPanelRef.current?.querySelector<HTMLElement>(
+          'input, select, button, [tabindex]:not([tabindex="-1"])',
+        );
+        focusable?.focus();
+      }, 350);
+      return () => clearTimeout(timeout);
+    } else {
+      lengüetaRef.current?.focus();
+    }
+  }, [filtrosAbiertos]);
 
   return (
-    <div className="contenedor_listado">
+    <main className="contenedor_listado" role="main">
       <header className="gestion_inscripciones_header">
-        <h2 className="gestion_inscripciones_titulo">
+        <h1 className="gestion_inscripciones_titulo">
           Gestión de Inscripciones :
-        </h2>
+        </h1>
       </header>
 
       {dataAnularInscripcion.modalAnular && (
@@ -69,17 +86,23 @@ export const ListadoInscripcionPage = () => {
       )}
 
       {/* FILTROS: panel lateral que se esconde a la izquierda */}
-      <div className={`contenedor_filtros ${filtrosAbiertos ? "abierto" : ""}`}>
+      <div
+        ref={filtroPanelRef}
+        className={`contenedor_filtros ${filtrosAbiertos ? "abierto" : ""}`}
+        role="search"
+        aria-label="Filtros de inscripciones"
+      >
         <button
+          ref={lengüetaRef}
           type="button"
           className="filtros_lengueta"
           onClick={() => setFiltrosAbiertos((prev) => !prev)}
           aria-expanded={filtrosAbiertos}
           aria-label={filtrosAbiertos ? "Ocultar filtros" : "Mostrar filtros"}
         >
-          <Search size={16} />
+          <Search size={16} aria-hidden="true" />
           <span className="filtros_lengueta_texto">Filtro</span>
-          <ChevronRight size={14} className="filtros_flecha" />
+          <ChevronRight size={14} className="filtros_flecha" aria-hidden="true" />
         </button>
 
         <div className="filtros_cuerpo">
@@ -106,13 +129,16 @@ export const ListadoInscripcionPage = () => {
         data={state.listadoInscripcion}
         carga={state.carga}
         onSeleccionarInscripcion={manejarSeleccionInscripcion}
+        abrirInscribir={abrirInscribir}
       />
 
-      <Paginacion
-        paginaActual={state.barraPaginacion.pagina as number}
-        contadorPagina={state.barraPaginacion.contadorPagina as number}
-        onPaginaCambiada={handlePaginaCambiada}
-      />
-    </div>
+      <nav aria-label="Paginación de inscripciones" className="listado_inscrip_paginacion">
+        <Paginacion
+          paginaActual={state.barraPaginacion.pagina as number}
+          contadorPagina={state.barraPaginacion.contadorPagina as number}
+          onPaginaCambiada={handlePaginaCambiada}
+        />
+      </nav>
+    </main>
   );
 };

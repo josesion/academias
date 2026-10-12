@@ -1,6 +1,8 @@
 // PanelDetalleInscripSoloLectura.tsx
+import { useId } from "react";
 import { Boton } from "../../generales/Boton/Boton";
 import { Calendar, Wallet, Hash, User, Lock } from "lucide-react";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 
 import "./infoSoloLectura.css";
 
@@ -32,6 +34,12 @@ const TEXTO_SELLO: Record<string, string> = {
   suspendido: "Suspendida",
 };
 
+const ICONO_SELLO: Record<string, React.ReactNode> = {
+  activos: <span aria-hidden="true">✓</span>,
+  vencidos: <span aria-hidden="true">✕</span>,
+  suspendido: <span aria-hidden="true">⏸</span>,
+};
+
 export const PanelDetalleInscripSoloLectura = ({
   infoDetalle,
   estado,
@@ -39,32 +47,53 @@ export const PanelDetalleInscripSoloLectura = ({
 }: PropsSoloLectura) => {
   const claseSello = CLASE_SELLO[estado] ?? "sello_neutro";
   const textoSello = TEXTO_SELLO[estado] ?? estado;
+  const iconoSello = ICONO_SELLO[estado] ?? null;
+
+  const tituloId = useId();
+  const descripcionId = useId();
+
+  const { refDialog } = useModalAccesible({
+    abierto: true,
+    onCerrar: onCerrar ?? (() => {}),
+    cerrable: true,
+  });
 
   return (
-    <div className="recibo_ticket ticket_inscripcion">
+    <div
+      ref={refDialog}
+      className="recibo_ticket ticket_inscripcion"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={tituloId}
+      aria-describedby={descripcionId}
+    >
       <header className="recibo_header">
         <div className="recibo_marca">
-          <User size={14} />
-          <span>{infoDetalle?.nombre_completo}</span>
+          <User size={14} aria-hidden="true" />
+          <span id={tituloId}>{infoDetalle?.nombre_completo}</span>
         </div>
 
-        <div className={`recibo_stamp ${claseSello}`}>{textoSello}</div>
+        <div className={`recibo_stamp ${claseSello}`}>
+          {iconoSello}
+          <span>{textoSello}</span>
+        </div>
       </header>
 
       <div className="recibo_total">
-        <span className="recibo_total_label">Monto pagado</span>
+        <h3 className="section-title section-title--card">Monto pagado</h3>
 
         <div className="recibo_monto monto_neutro">
           <span>${infoDetalle?.monto_pagado ?? "—"}</span>
         </div>
       </div>
 
-      <div className="recibo_perforado" />
+      <div className="recibo_perforado" aria-hidden="true" />
 
-      <div className="recibo_body">
+      <div id={descripcionId} className="recibo_body">
+        <h4 className="section-title section-title--card">Detalle de inscripción</h4>
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Hash size={14} /> DNI
+            <Hash size={14} aria-hidden="true" /> DNI
           </span>
           <span className="recibo_fila_valor">
             {infoDetalle?.dni_alumno?.toLocaleString("es-AR") ?? "—"}
@@ -73,7 +102,7 @@ export const PanelDetalleInscripSoloLectura = ({
 
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Calendar size={14} /> Vence
+            <Calendar size={14} aria-hidden="true" /> Vence
           </span>
           <span className="recibo_fila_valor">
             {infoDetalle?.vigencia ?? "—"}
@@ -82,7 +111,7 @@ export const PanelDetalleInscripSoloLectura = ({
 
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Wallet size={14} /> Pago original
+            <Wallet size={14} aria-hidden="true" /> Pago original
           </span>
           <span className="recibo_fila_valor">
             {infoDetalle?.metodo_pago_descrip ?? "—"}
@@ -91,7 +120,7 @@ export const PanelDetalleInscripSoloLectura = ({
 
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Hash size={14} /> Consumo
+            <Hash size={14} aria-hidden="true" /> Consumo
           </span>
           <span className="recibo_fila_valor">
             {infoDetalle?.clases_tomadas ?? 0} /{" "}
@@ -99,10 +128,10 @@ export const PanelDetalleInscripSoloLectura = ({
           </span>
         </div>
 
-        <div className="recibo_linea_punteada" />
+        <div className="recibo_linea_punteada" aria-hidden="true" />
 
         <div className="panel_solo_lectura_nota">
-          <Lock size={13} />
+          <Lock size={13} aria-hidden="true" />
           <span>
             Esta inscripción no está activa — solo podés consultar sus datos.
           </span>

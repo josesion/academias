@@ -101,3 +101,38 @@
     transform: scale(1);
   }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .modal_overlay {
+    animation: none !important;
+  }
+  .modal_card {
+    animation: none !important;
+  }
+  .modal_icono {
+    animation: none !important;
+  }
+  .modal_btn_cerrar {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .modal_card {
+    border: 2px solid var(--borde);
+  }
+  .modal_btn_cerrar:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .modal_overlay {
+    display: none;
+  }
+}

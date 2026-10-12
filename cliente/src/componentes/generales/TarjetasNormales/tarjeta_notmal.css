@@ -75,3 +75,41 @@
     color: var(--texto-deshabilitado);
     opacity: 0.65; /* Efecto visual de desvanecimiento como pediste */
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta_normal_contenedor {
+    transition: none !important;
+  }
+  .tarjeta_normal_contenedor:hover {
+    transform: none !important;
+    box-shadow: var(--sombra-sm);
+  }
+}
+
+@media (prefers-contrast: high) {
+  .tarjeta_normal_contenedor {
+    border-width: 2px;
+  }
+  .tarjeta_normal_contenedor:hover {
+    border-width: 2px;
+    box-shadow: none;
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .tarjeta_normal_contenedor {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .tarjeta_normal_contenedor:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

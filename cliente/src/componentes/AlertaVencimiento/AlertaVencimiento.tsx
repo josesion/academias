@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useId } from "react";
 import { createPortal } from "react-dom";
 
 import { diasHastaVencimiento } from "../../utils/fecha";
@@ -21,6 +21,9 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
 }) => {
   const [diasRestantes, setDiasRestantes] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(true); // Por defecto visible si hay error o carga
+
+  const tituloId = useId();
+  const descId = useId();
 
   useEffect(() => {
     if (!fechaVencimiento || carga || mensajeError) return;
@@ -60,6 +63,11 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
   return createPortal(
     <div
       className={`alerta-vencimiento ${claseUrgencia} ${carga ? "es-cargando" : ""}`}
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby={tituloId}
+      aria-describedby={descId}
+      aria-live={mensajeError || (diasRestantes !== null && diasRestantes <= 3) ? "assertive" : "polite"}
     >
       <div className="alerta-contenido">
         {/* ESTADO DE CARGA (SKELETON) */}
@@ -78,6 +86,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2.5"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"
@@ -86,8 +95,8 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
                 />
               </svg>
             </div>
-            <h2 className="alerta-titulo">Error de Verificación</h2>
-            <p className="alerta-desc">
+            <h2 id={tituloId} className="alerta-titulo">Error de Verificación</h2>
+            <p id={descId} className="alerta-desc">
               {typeof mensajeError === "string"
                 ? mensajeError
                 : "No se pudo comprobar el estado de la suscripción con el servidor."}
@@ -107,7 +116,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
               <div className="alerta-onda"></div>
               <div className="alerta-onda retraso"></div>
 
-              <svg className="alerta-anillo" viewBox="0 0 60 60">
+              <svg className="alerta-anillo" viewBox="0 0 60 60" aria-hidden="true">
                 <circle className="anillo-base" cx="30" cy="30" r="26" />
                 <circle
                   className="anillo-progreso"
@@ -131,7 +140,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
               </div>
             </div>
 
-            <h2 className="alerta-titulo">
+            <h2 id={tituloId} className="alerta-titulo">
               {diasRestantes !== null && diasRestantes < 0
                 ? "¡Suscripción Vencida!"
                 : diasRestantes === 0
@@ -139,7 +148,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
                   : "Tu plan está por vencer"}
             </h2>
 
-            <p className="alerta-desc">
+            <p id={descId} className="alerta-desc">
               {diasRestantes !== null && diasRestantes < 0
                 ? "El periodo de acceso ha finalizado. Por favor, regularizá tu situación para continuar operando."
                 : `Te quedan ${diasRestantes} ${diasRestantes === 1 ? "día" : "días"} hábiles para renovar tu suscripción y evitar interrupciones.`}

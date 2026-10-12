@@ -132,100 +132,139 @@ export const PrincipalAlumnos = () => {
     return () => observador.disconnect();
   }, [anuncios.hayMas, anuncios.carga.listado, cargarMas]);
 
+  const hayEscuelas = data?.escuelas && data.escuelas.length > 0;
+  const hayFlayers = data?.flayers && data.flayers.length > 0;
+  const hayClases = data?.clasesHoy && data.clasesHoy.length > 0;
+  const cargandoInicial = state.carga.metricas;
+
+  // Arrays tipados para TypeScript (evita "possibly null" en los map)
+  const escuelas = data?.escuelas ?? [];
+  const flayers = data?.flayers ?? [];
+  const clasesHoy = data?.clasesHoy ?? [];
+
   return (
-    <div className="principal-alumno-container">
-      {/* 1. Sección de Escuelas */}
-      <div className="seccion-contenedor">
-        <h2 className="seccion-titulo">Mis Academias</h2>
-        <div className="grilla-escuelas">
-          {data?.escuelas && data.escuelas.length > 0 ? (
-            data.escuelas.map((escuela) => (
-              <TarjetaEscuela
-                carga={state.carga.metricas}
-                id_escuela={escuela.id_escuela}
-                key={escuela.id_escuela}
-                dniPropietario={escuela.dni_propietario}
-                nombrePropietario={escuela.nombre_propietario}
-                apellidoPropietario={escuela.apellido_propietario}
-                razonSocial={escuela.razon_social}
-                direccion={escuela.direccion}
-                celular={escuela.celular}
-              />
-            ))
-          ) : (
-            <EstadoVacio
-              icono={<LuBuilding2 size={26} />}
-              titulo="Todavía no estás inscripto en ninguna academia"
-              mensaje="Explorá las academias disponibles para empezar."
-            />
-          )}
+    <main className="principal-alumno-container" id="contenido-principal" role="main">
+      {/* Encabezado de página con título principal para jerarquía semántica */}
+      <header className="pagina-header" hidden>
+        <h1>Panel del Alumno</h1>
+      </header>
+
+      {/* Indicador de carga global (solo en carga inicial) */}
+      {cargandoInicial && (
+        <div className="carga-global" role="status" aria-live="polite" aria-label="Cargando panel del alumno">
+          <div className="carga-global_spinner" aria-hidden="true" />
+          <span className="carga-global_texto">Cargando tu panel…</span>
         </div>
-      </div>
+      )}
 
-      {/* 2. Sección de Carrusel / Flayers (En el medio) */}
-      <div className="seccion-carrucel">
-        {data?.flayers && data.flayers.length > 0 ? (
-          <CarruselFlayers
-            flayers={data.flayers}
-            tipo="carrusel"
-            cargaSpiner={state.carga.metricas}
-          />
-        ) : (
-          <div className="flayers_vacio_compacto">
-            <div className="flayers_vacio_icono_box">
-              <LuImageOff size={18} />
+      {!cargandoInicial && (
+        <>
+          {/* 1. Sección de Escuelas */}
+          <section className="seccion-contenedor" aria-labelledby="escuelas-titulo">
+            <h2 id="escuelas-titulo" className="seccion-titulo">Mis Academias</h2>
+            <div
+              className="grilla-escuelas"
+              role="list"
+              aria-label={hayEscuelas ? "Lista de academias donde estás inscripto" : "Sin academias inscriptas"}
+            >
+              {hayEscuelas ? (
+                escuelas.map((escuela) => (
+                  <TarjetaEscuela
+                    carga={state.carga.metricas}
+                    id_escuela={escuela.id_escuela}
+                    key={escuela.id_escuela}
+                    dniPropietario={escuela.dni_propietario}
+                    nombrePropietario={escuela.nombre_propietario}
+                    apellidoPropietario={escuela.apellido_propietario}
+                    razonSocial={escuela.razon_social}
+                    direccion={escuela.direccion}
+                    celular={escuela.celular}
+                  />
+                ))
+              ) : (
+                <EstadoVacio
+                  icono={<LuBuilding2 size={26} />}
+                  titulo="Todavía no estás inscripto en ninguna academia"
+                  mensaje="Explorá las academias disponibles para empezar."
+                  variante="compacto"
+                />
+              )}
             </div>
-            <div className="flayers_vacio_info">
-              <span className="flayers_vacio_titulo">Sin novedades</span>
-              <span className="flayers_vacio_sub">
-                Las academias aún no publicaron flyers
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
+          </section>
 
-      {/* 3. Sección de anuncios (espacio publicitario global) */}
-      <div className="seccion-contenedor">
-        <GaleriaComunidad
-          items={itemsDeGaleria}
-          cargando={anuncios.carga.listado}
-          error={anuncios.error.listado}
-          total={anuncios.paginacion.totalRegistros}
-          initiallyVisible={bannerVisible}
-          onClose={handleBannerClose}
-        />
-
-        {/* Centinela invisible: marca el final del carrusel para el
-            IntersectionObserver (spec 018). */}
-        <div ref={centinelaRef} className="anuncios_centinela" />
-      </div>
-
-      {/* 4. Sección de Clases de Hoy */}
-      <div className="seccion-contenedor">
-        <h2 className="seccion-titulo">Clases Programadas para Hoy</h2>
-        <div className="grilla-clases">
-          {data?.clasesHoy && data.clasesHoy.length > 0 ? (
-            data.clasesHoy.map((clase, index) => (
-              <TarjetaClaseHoy
-                carga={state.carga.metricas}
-                key={index}
-                hora={clase.hora}
-                academia={clase.academia}
-                tipoBaile={clase.tipoBaile}
-                nivel={clase.nivel}
-                profesor={clase.profesor}
+          {/* 2. Sección de Carrusel / Flayers */}
+          <section className="seccion-carrucel" aria-labelledby="flayers-titulo">
+            <h2 id="flayers-titulo" className="seccion-titulo visually-hidden">Novedades y Flyers</h2>
+            {hayFlayers ? (
+              <CarruselFlayers
+                flayers={flayers}
+                tipo="carrusel"
+                cargaSpiner={state.carga.metricas}
               />
-            ))
-          ) : (
-            <EstadoVacio
-              icono={<LuCalendarX size={26} />}
-              titulo="No tenés clases programadas para hoy"
-              mensaje="Revisá tus horarios para ver las próximas fechas."
+            ) : (
+              <div className="flayers_vacio_compacto" role="status" aria-label="Sin novedades disponibles">
+                <div className="flayers_vacio_icono_box" aria-hidden="true">
+                  <LuImageOff size={18} />
+                </div>
+                <div className="flayers_vacio_info">
+                  <span className="flayers_vacio_titulo">Sin novedades</span>
+                  <span className="flayers_vacio_sub">
+                    Las academias aún no publicaron flyers
+                  </span>
+                </div>
+              </div>
+            )}
+          </section>
+
+          {/* 3. Sección de anuncios (espacio publicitario global) */}
+          <section className="seccion-contenedor" aria-labelledby="anuncios-titulo">
+            <h2 id="anuncios-titulo" className="seccion-titulo visually-hidden">Espacio Publicitario</h2>
+            <GaleriaComunidad
+              items={itemsDeGaleria}
+              cargando={anuncios.carga.listado}
+              error={anuncios.error.listado}
+              total={anuncios.paginacion.totalRegistros}
+              initiallyVisible={bannerVisible}
+              onClose={handleBannerClose}
             />
-          )}
-        </div>
-      </div>
-    </div>
+
+            {/* Centinela invisible: marca el final del carrusel para el
+                IntersectionObserver (spec 018). */}
+            <div ref={centinelaRef} className="anuncios_centinela" aria-hidden="true" />
+          </section>
+
+          {/* 4. Sección de Clases de Hoy */}
+          <section className="seccion-contenedor" aria-labelledby="clases-titulo">
+            <h2 id="clases-titulo" className="seccion-titulo">Clases Programadas para Hoy</h2>
+            <div
+              className="grilla-clases"
+              role="list"
+              aria-label={hayClases ? "Clases programadas para hoy" : "Sin clases programadas para hoy"}
+            >
+              {hayClases ? (
+                clasesHoy.map((clase, index) => (
+                  <TarjetaClaseHoy
+                    carga={state.carga.metricas}
+                    key={index}
+                    hora={clase.hora}
+                    academia={clase.academia}
+                    tipoBaile={clase.tipoBaile}
+                    nivel={clase.nivel}
+                    profesor={clase.profesor}
+                  />
+                ))
+              ) : (
+                <EstadoVacio
+                  icono={<LuCalendarX size={26} />}
+                  titulo="No tenés clases programadas para hoy"
+                  mensaje="Revisá tus horarios para ver las próximas fechas."
+                  variante="compacto"
+                />
+              )}
+            </div>
+          </section>
+        </>
+      )}
+    </main>
   );
 };

@@ -406,3 +406,71 @@
     width: 100%;
   }
 }
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .historial_item {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .historial_tarjeta {
+    transition: none !important;
+  }
+  .historial_punto {
+    transition: none !important;
+  }
+  .historial_item:hover .historial_punto {
+    transform: none !important;
+    box-shadow: 0 0 0 2px currentColor, 0 0 0 4px color-mix(in srgb, currentColor 15%, transparent);
+  }
+  .historial_item:hover .historial_tarjeta {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .metrica_historial_contenedor {
+    border: 2px solid var(--borde);
+  }
+  .historial_tarjeta {
+    border-width: 2px;
+  }
+  .historial_item:hover .historial_tarjeta {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+    border-color: var(--color-primario);
+  }
+  .historial_punto {
+    border-width: 3px;
+  }
+  .historial_separador_dia span {
+    border: 2px solid var(--texto-deshabilitado);
+  }
+  .historial_pill {
+    border: 2px solid currentColor;
+  }
+}
+
+@media print {
+  .metrica_historial_contenedor {
+    max-width: none;
+  }
+  .historial_tarjeta {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .historial_item:hover .historial_tarjeta {
+    transform: none;
+    box-shadow: none;
+  }
+  .historial_linea_tiempo::before {
+    background: var(--borde);
+  }
+}

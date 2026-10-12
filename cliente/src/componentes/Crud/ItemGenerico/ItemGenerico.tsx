@@ -42,10 +42,15 @@ export function ItemGenerico<T extends object>({
     return key.replace(/_/g, " ");
   };
 
+  // Texto que identifica al item dentro del listado. Se usa en los
+  // `aria-label` de los botones: sin esto el lector de voz anuncia solo
+  // "EDITAR" / "DAR DE BAJA" sin decir sobre QUE fila (WCAG 2.4.6).
+  const identificador = idEntry ? `#${idEntry[1]}` : "";
+
   return (
     <div className="item_card_editorial">
       {/* Indicador superior derecho estilo etiqueta */}
-      <div className="item_indicador_punto" />
+      <div className="item_indicador_punto" aria-hidden="true" />
 
       <div className="item_card_body">
         {/* Identificador / ID superior (Ej: #0842) */}
@@ -85,8 +90,9 @@ export function ItemGenerico<T extends object>({
           type="button"
           className="item_link_editar"
           onClick={() => onEditarButton && data && onEditarButton(data)}
+          aria-label={identificador ? `Editar ${identificador}` : "Editar"}
         >
-          ✏️ EDITAR
+          <span aria-hidden="true">✏️</span> EDITAR
         </button>
 
         {onEliminarButton && (
@@ -94,6 +100,11 @@ export function ItemGenerico<T extends object>({
             type="button"
             className="item_link_eliminar"
             onClick={() => onEliminarButton && data && onEliminarButton(data)}
+            aria-label={
+              identificador
+                ? `${textoBoton} ${identificador}`
+                : textoBoton
+            }
           >
             {textoBoton.toUpperCase()}
           </button>

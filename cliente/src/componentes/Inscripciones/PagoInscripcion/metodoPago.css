@@ -8,24 +8,6 @@
     flex-direction: column;
 }
 
-/* Título espejo del de TarjetaInscripcion */
-.contenedor_detalle_caja::before {
-    content: "Opciones de Pago";
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-
-    font-family: var(--fuente-codigo);
-    font-size: var(--texto-xs);
-    font-weight: var(--peso-negrita);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-
-    color: var(--texto-secundario);
-
-    border-bottom: 1px solid var(--borde);
-}
-
 .contenedor_detalle_caja_filtros {
     position: relative;
     display: flex;
@@ -95,7 +77,7 @@
 .tarjeta_textarea {
     flex: 1;
     width: 100%;
-    min-height: 150px;
+    min-height: 100px;
 
     background: var(--fondo-superficie);
     border: 1px solid var(--borde);
@@ -107,10 +89,10 @@
     line-height: var(--linea-texto);
 
     padding: 14px;
-    resize: none;
+    resize: vertical;
     outline: none;
 
-    transition: var(--transicion);
+    transition: var(--transicion), height 0.2s ease;
 }
 
 .tarjeta_textarea::placeholder {
@@ -140,7 +122,7 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
     .contenedor_detalle_caja_filtros {
         padding: 20px 20px 20px 32px;
         border-radius: var(--radio-md);
@@ -155,7 +137,7 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
     .contenedor_detalle_caja_filtros {
         padding: 16px 16px 16px 26px;
     }
@@ -163,5 +145,31 @@
     .contenedor_detalle_caja_filtros::before {
         left: 8px;
         width: 3px;
+    }
+
+    .tarjeta_textarea {
+        min-height: 80px;
+        font-size: var(--texto-xs);
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedor_detalle_caja_filtros {
+        padding: 14px 14px 14px 22px;
+    }
+
+    .contenedor_detalle_caja_filtros::before {
+        left: 6px;
+        width: 2px;
+    }
+
+    .tarjeta_textarea {
+        min-height: 70px;
+        padding: 10px;
+    }
+
+    .tarjeta_contador {
+        font-size: 0.62rem;
     }
 }

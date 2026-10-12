@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import { ChevronDown, Search } from "lucide-react";
 import "./selector.css";
 
@@ -11,10 +11,15 @@ interface PropSelector<T> {
   valueKey: string;
   displayKey?: string;
   tipo: "text" | "number";
-  value?: string | number; // Agregado opcional por si se usa controlado
+  value?: string | number;
+  /** Texto de ayuda para accesibilidad (se usa en aria-describedby) */
+  hint?: string;
 }
 
 export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
+  const hintId = useId();
+  const hintText = parametros.hint ?? `Escribe para filtrar por ${parametros.valueKey.toLowerCase()}...`;
+
   return (
     <div className="caja_contenedor">
       <label
@@ -25,7 +30,7 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
       </label>
 
       <div className="selector_input_wrapper">
-        <span className="selector_icono_izq">
+        <span className="selector_icono_izq" aria-hidden="true">
           <Search size={16} />
         </span>
 
@@ -33,17 +38,25 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
           list={parametros.input_list}
           id={parametros.input_list + "-input"}
           name={parametros.name}
-          placeholder={`Buscar ${parametros.valueKey}...`}
+          placeholder={hintText}
           onChange={parametros.onChange}
           type={parametros.tipo}
           value={parametros.value}
           className="selector_input_cyber"
+          aria-describedby={hintId}
+          autoComplete="off"
         />
 
-        <span className="selector_icono_der">
+        <span className="selector_icono_der" aria-hidden="true">
           <ChevronDown size={16} />
         </span>
       </div>
+
+      {parametros.hint && (
+        <span id={hintId} className="selector_hint" aria-hidden="true">
+          {parametros.hint}
+        </span>
+      )}
 
       <datalist id={parametros.input_list} className="selector_contenedor">
         {parametros.objetoListado.map((item: T, index) => {

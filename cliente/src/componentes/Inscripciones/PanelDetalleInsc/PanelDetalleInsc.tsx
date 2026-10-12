@@ -1,8 +1,10 @@
+import { useId } from "react";
 import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
 import { Boton } from "../../generales/Boton/Boton";
 import { CompoError } from "../../generales/Error/Error";
+import { useModalAccesible } from "../../../hooks/useModalAccesible";
 
-import { Calendar, Wallet, Hash, Info, User } from "lucide-react";
+import { Calendar, Wallet, Hash, User } from "lucide-react";
 
 import "./paneldetalleinsc.css";
 
@@ -30,12 +32,28 @@ export interface DataDetalle {
 }
 
 export const PanelDetalleInscrip = (props: DataDetalle) => {
+  const tituloId = useId();
+  const descripcionId = useId();
+
+  const { refDialog } = useModalAccesible({
+    abierto: true,
+    onCerrar: props.cancelarPanel ?? (() => {}),
+    cerrable: true,
+  });
+
   return (
-    <div className="recibo_ticket ticket_inscripcion">
+    <div
+      ref={refDialog}
+      className="recibo_ticket ticket_inscripcion"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={tituloId}
+      aria-describedby={descripcionId}
+    >
       <header className="recibo_header">
         <div className="recibo_marca">
-          <User size={14} />
-          <span>{props.infoDetalle?.nombre_completo}</span>
+          <User size={14} aria-hidden="true" />
+          <span id={tituloId}>{props.infoDetalle?.nombre_completo}</span>
         </div>
 
         <div className="recibo_stamp stamp_neutro">
@@ -44,19 +62,19 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
       </header>
 
       <div className="recibo_total">
-        <span className="recibo_total_label">Monto pagado</span>
+        <h3 className="section-title section-title--card">Monto pagado</h3>
 
         <div className="recibo_monto monto_neutro">
           <span>${props.infoDetalle?.monto_pagado}</span>
         </div>
       </div>
 
-      <div className="recibo_perforado" />
+      <div className="recibo_perforado" aria-hidden="true" />
 
-      <div className="recibo_body">
+      <div id={descripcionId} className="recibo_body">
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Calendar size={14} /> Vence
+            <Calendar size={14} aria-hidden="true" /> Vence
           </span>
           <span className="recibo_fila_valor">
             {props.infoDetalle?.vigencia}
@@ -65,7 +83,7 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
 
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Wallet size={14} /> Pago original
+            <Wallet size={14} aria-hidden="true" /> Pago original
           </span>
           <span className="recibo_fila_valor">
             {props.infoDetalle?.metodo_pago_descrip}
@@ -74,7 +92,7 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
 
         <div className="recibo_fila">
           <span className="recibo_fila_label">
-            <Hash size={14} /> Consumo
+            <Hash size={14} aria-hidden="true" /> Consumo
           </span>
           <span className="recibo_fila_valor">
             {props.infoDetalle?.clases_tomadas} /{" "}
@@ -82,12 +100,10 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
           </span>
         </div>
 
-        <div className="recibo_linea_punteada" />
+        <div className="recibo_linea_punteada" aria-hidden="true" />
 
         <div className="panel_anular_bloque">
-          <span className="panel_anular_label">
-            <Info size={12} /> Anular inscripción
-          </span>
+          <h4 className="section-title section-title--card">Anular inscripción</h4>
 
           <SelectorOpt
             categorias={props.listaMetodoPago ?? []}

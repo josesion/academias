@@ -134,3 +134,44 @@
 .item_link_eliminar {
     color: #c94a4a;
 }
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024) — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .item_card_editorial {
+    transition: none !important;
+    animation: none !important;
+  }
+  .item_link_editar,
+  .item_link_eliminar {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .item_card_editorial {
+    border-width: 2px !important;
+  }
+  .item_link_editar,
+  .item_link_eliminar {
+    border: 2px solid currentColor;
+    padding: 4px 8px;
+  }
+  .item_link_editar:focus-visible,
+  .item_link_eliminar:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .item_card_actions {
+    display: none !important;
+  }
+  .item_card_editorial {
+    box-shadow: none !important;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+}

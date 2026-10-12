@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 // Seccion iconos
 import { CgChevronLeft, CgChevronRight } from "react-icons/cg";
@@ -12,6 +12,8 @@ type PaginacionProps = {
   onPaginaCambiada: (pagina: number) => void;
 };
 
+type PageItem = number | "...";
+
 export const Paginacion = ({
   paginaActual,
   contadorPagina,
@@ -23,9 +25,8 @@ export const Paginacion = ({
   };
 
   // Lógica para generar los números de página visibles
-  const generarPaginasVisibles = () => {
-    const paginas = new Set();
-    //        const maxBotones = 5; // Número máximo de botones de página visibles
+  const generarPaginasVisibles = (): PageItem[] => {
+    const paginas = new Set<number>();
 
     // Siempre incluimos la primera y la última página
     paginas.add(1);
@@ -33,54 +34,65 @@ export const Paginacion = ({
 
     // Agregamos un rango de páginas alrededor de la página actual
     for (let i = -1; i <= 1; i++) {
-      if (paginaActual + i >= 1 && paginaActual + i <= contadorPagina) {
-        paginas.add(paginaActual + i);
+      const p = paginaActual + i;
+      if (p >= 1 && p <= contadorPagina) {
+        paginas.add(p);
       }
     }
 
-    // Agregamos los puntos suspensivos (...)
-    const pagesArray = Array.from(paginas).sort((a, b) => a - b);
+    // Convertir a array ordenado de números
+    const numerosOrdenados = Array.from(paginas).sort((a, b) => a - b);
 
-    // Verificamos si necesitamos agregar '...' en el inicio
-    if (pagesArray[1] > 2) {
-      pagesArray.splice(1, 0, "...");
-    }
+    // Agregar "..." donde corresponda
+    const resultado: PageItem[] = [];
+    numerosOrdenados.forEach((num, idx) => {
+      if (idx > 0) {
+        const prev = numerosOrdenados[idx - 1];
+        if (num - prev > 1) {
+          resultado.push("...");
+        }
+      }
+      resultado.push(num);
+    });
 
-    // Verificamos si necesitamos agregar '...' al final
-    if (pagesArray[pagesArray.length - 2] < contadorPagina - 1) {
-      pagesArray.splice(pagesArray.length - 1, 0, "...");
-    }
-
-    return pagesArray;
+    return resultado;
   };
 
   const paginasVisibles = generarPaginasVisibles();
 
   return (
-    <div className="paginacion_contenedor">
+    <nav
+      className="paginacion_contenedor"
+      role="navigation"
+      aria-label="Paginación del listado de inscripciones"
+    >
       <div className="paginacion_componente">
         <div className="paginacion_izquierda">
           <button
             onClick={() => handleClick(paginaActual - 1)}
             disabled={paginaActual === 1}
             className="btn_nav"
+            aria-label="Página anterior"
+            aria-disabled={paginaActual === 1}
           >
-            <CgChevronLeft size={22} />
+            <CgChevronLeft size={22} aria-hidden="true" />
           </button>
         </div>
         <div className="paginacion_centro">
           {paginasVisibles.map((item, index) => (
             <React.Fragment key={index}>
               {item === "..." ? (
-                <span className="puntos_suspensivos">...</span>
+                <span className="puntos_suspensivos" aria-hidden="true">
+                  ...
+                </span>
               ) : (
                 <button
-                  onClick={() => handleClick(Number(item))}
+                  onClick={() => handleClick(item)}
                   className={
-                    Number(item) === paginaActual
-                      ? "btn_seleccionado"
-                      : "btn_generico"
+                    item === paginaActual ? "btn_seleccionado" : "btn_generico"
                   }
+                  aria-label={`Página ${item}`}
+                  aria-current={item === paginaActual ? "page" : undefined}
                 >
                   {item}
                 </button>
@@ -93,11 +105,13 @@ export const Paginacion = ({
             onClick={() => handleClick(paginaActual + 1)}
             disabled={paginaActual === contadorPagina}
             className="btn_nav"
+            aria-label="Página siguiente"
+            aria-disabled={paginaActual === contadorPagina}
           >
-            <CgChevronRight size={22} />
+            <CgChevronRight size={22} aria-hidden="true" />
           </button>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };

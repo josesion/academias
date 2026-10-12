@@ -2,16 +2,24 @@
    ESTRUCTURA DE FLUJO CONTINUO
    ============================================================ */
 
+/* El `overflow: hidden` que estaba en `html, body` se movió ABAJO, a
+   `.amb_master_wrapper`. Motivo: Vite hoistea los imports de CSS, así que
+   desde acá alcanzaba a TODAS las páginas de la app (no solo las del CRUD) y
+   mataba el scroll global. Entre otras cosas dejaba muerto el skip link
+   "Ir al contenido" (spec 016): el destino ya estaba en pantalla, así que no
+   había nada que scrollear. Acá solo queda `min-height` para no pisar nada. */
 html, body {
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100%;
 }
 
 .amb_master_wrapper {
     width: 100%;
     height: 100vh;
+    /* El CRUD sigue con altura fija: el scroll ocurre adentro de
+       `.area_listado` (`overflow-y: auto`), no en el body. */
+    overflow: hidden;
     background: var(--fondo-principal);
     display: flex;
     flex-direction: column;

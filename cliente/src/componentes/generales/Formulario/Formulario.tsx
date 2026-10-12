@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useId } from "react";
 // Seccion de componentes
 import { Inputs } from "../Inputs/Inputs";
 import { Boton } from "../Boton/Boton";
@@ -41,6 +41,7 @@ interface FormularioProps {
 
 export const Formulario = (props: FormularioProps) => {
   const primerInputRef = useRef<HTMLInputElement>(null);
+  const tituloId = useId();
 
   useEffect(() => {
     if (primerInputRef.current) {
@@ -48,10 +49,13 @@ export const Formulario = (props: FormularioProps) => {
     }
   }, []);
 
+  const idErrorGenerico = `${tituloId}-error`;
+  const tieneErrorGenerico = Boolean(props.errorGenerico);
+
   return (
-    <form className="formulario" onSubmit={props.onSubmit}>
+    <form className="formulario" onSubmit={props.onSubmit} role="form" aria-labelledby={tituloId} aria-describedby={tieneErrorGenerico ? idErrorGenerico : undefined} noValidate>
       <div className="formulario_titulo_container">
-        <p className="formulario_titulo">{props.tituloFormulario}</p>
+        <p id={tituloId} className="formulario_titulo">{props.tituloFormulario}</p>
 
         {/* Partículas animadas */}
         <span className="particula_titulo tp-1"></span>
@@ -126,7 +130,7 @@ export const Formulario = (props: FormularioProps) => {
         />
       </div>
 
-      <div className="errores_genericos">
+      <div className="errores_genericos" id={`${tituloId}-error`}>
         {props.errorGenerico && <CompoError mensaje={props.errorGenerico} />}
       </div>
     </form>

@@ -22,10 +22,25 @@ interface MetodosPagoProps {
   props: MetodoPagoData[];
 }
 
+// Genera aria-label dinámico para el gráfico
+const generarAriaLabel = (data: MetodoPagoData[]): string => {
+  if (!data || data.length === 0) {
+    return "Gráfico de distribución de métodos de pago: sin datos";
+  }
+  const total = data.reduce((sum, item) => sum + item.total, 0);
+  const partes = data.map((item) => {
+    const pct = total > 0 ? Math.round((item.total / total) * 100) : 0;
+    return `${item.metodo} ${pct}%`;
+  });
+  return `Gráfico de distribución: ${partes.join(", ")}`;
+};
+
 export const GraficoMetodosPago = ({ carga, props }: MetodosPagoProps) => {
+  const ariaLabel = generarAriaLabel(props);
+
   return (
-    <div className="grafico_metodos_pago">
-      <h4>📊 Totales por Método de Pago</h4>
+    <figure className="grafico_metodos_pago">
+      <figcaption className="grafico_subtitulo">Totales por Método de Pago</figcaption>
       {carga ? (
         <ComponenteCargando />
       ) : (
@@ -72,6 +87,12 @@ export const GraficoMetodosPago = ({ carga, props }: MetodosPagoProps) => {
           </ResponsiveContainer>
         </div>
       )}
-    </div>
+      <svg
+        role="img"
+        aria-label={ariaLabel}
+        className="visually-hidden"
+        aria-hidden="true"
+      />
+    </figure>
   );
 };
