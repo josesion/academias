@@ -10,11 +10,11 @@ const DB_NAME_ACTUAL = process.env.NODE_ENV === 'test'
     : process.env.DATABASE;    // Usará la BD de DESARROLLO
 
 const pool: Pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    host: process.env.HOST,
+    user: process.env.USER,
+    password: process.env.PASSWORD,
     database: DB_NAME_ACTUAL,
-    port: Number(process.env.DB_PORT) || 3306,
+    port: Number(process.env.PORT) || 3306,
     timezone: '-03:00' // para establecar la zona horario
 });
 
