@@ -21,6 +21,8 @@ export interface LoginRequest {
 
 export const LoginFetch =async ( params: LoginRequest ): Promise<ApiResponse<UserData>>  =>{
     const ruta  = `${PAGINA}api/login`;
+    console.log(ruta)
+
     return await apiFetch(ruta, { 
         method: "POST" ,
         body :{
