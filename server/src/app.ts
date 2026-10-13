@@ -77,10 +77,10 @@ import logger from "./utils/logger";
  
 
 
-// Configuración de CORS compatible con todas las versiones de Express y dominios de Vercel
+
+
 app.use(cors({
     origin: (origin, callback) => {
-        // Permitir requests sin origin (como Postman o apps móviles) y cualquier subdominio de vercel o localhost
         if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost') || origin.includes('192.168.')) {
             callback(null, true);
         } else {
@@ -91,9 +91,6 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
-// Asegurarte de que Express maneje correctamente el preflight en todas las rutas
-app.options('*', cors());
 /** 
 app.use(cors({
     origin: "https://academias-client-production.up.railway.app",
