@@ -75,10 +75,25 @@ app.use(( _req , res , next )=>{
 import logger from "./utils/logger";
 
  
+
+
+// Permitir peticiones de cualquier dominio de Vercel y localhost
 app.use(cors({
-    origin: ["https://academias-tau.vercel.app", "http://localhost:5173", "http://localhost:3000"], // poné acá la URL exacta de tu Vercel
-    credentials: true
+    origin: (origin, callback) => {
+        // Permitir requests sin origin (como apps móviles o Postman) y cualquier dominio de vercel o localhost
+        if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+            callback(null, true);
+        } else {
+            callback(new Error('No permitido por CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Asegurarte de que Express maneje correctamente el preflight en todas las rutas
+app.options('*', cors());
 /** 
 app.use(cors({
     origin: "https://academias-client-production.up.railway.app",
