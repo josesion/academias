@@ -55,6 +55,7 @@ export function crearCookie() {
         path: "/",
         httpOnly: true,
         secure: usaHttpsSeguro,
+        domain: '.elphis.lat',
         sameSite: usaHttpsSeguro ? "none" as const : "lax" as const
     };
 

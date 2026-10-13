@@ -75,10 +75,6 @@ app.use(( _req , res , next )=>{
 import logger from "./utils/logger";
 
  
-
-
-
-
 app.use(cors({
     origin: (origin, callback) => {
         const frontendUrl = process.env.URL_CLIENTE?.replace(/\/+$/, '');
@@ -93,6 +89,7 @@ app.use(cors({
             || allowedOrigins.includes(origin)
             || origin.endsWith('.vercel.app')
             || origin.endsWith('.up.railway.app')
+            || origin.endsWith('elphis.lat')
             || origin.includes('localhost')
             || origin.includes('127.0.0.1')
             || origin.includes('192.168.');
