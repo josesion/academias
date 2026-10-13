@@ -45,18 +45,16 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
  * @returns Objeto con las opciones de configuración de la cookie
  */
 export function crearCookie() {
-
-    const esProduccion = process.env.NODE_ENV === "production";
-    const frontendUrl = (process.env.URL_CLIENTE || "").trim();
-    const usaHttpsSeguro = esProduccion && /^https:\/\//i.test(frontendUrl) && !frontendUrl.includes("localhost");
+    // Si no estamos en local, asumimos producción con HTTPS y subdominio compartido
+    const esLocal = process.env.URL_CLIENTE?.includes("localhost") || process.env.NODE_ENV === "development";
 
     const cookieOpcion = {
-        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+        expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 día
         path: "/",
         httpOnly: true,
-        secure: usaHttpsSeguro,
-        domain: usaHttpsSeguro ? '.elphis.lat' : undefined, // Dominio compartido en producción
-        sameSite: "lax" as const // Con subdominio propio, "lax" funciona perfecto y sin bloqueos
+        secure: !esLocal, // true en producción, false solo en local
+        domain: !esLocal ? '.elphis.lat' : undefined, // Comparte el dominio en producción
+        sameSite: "lax" as const
     };
 
     return cookieOpcion;
