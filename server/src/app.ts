@@ -95,7 +95,7 @@ app.use(cors({
             || origin.includes('192.168.');
 
         if (isAllowed) {
-            callback(null, true);
+            callback(null, origin);
         } else {
             callback(new Error('Bloqueado por CORS'));
         }
