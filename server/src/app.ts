@@ -81,7 +81,23 @@ import logger from "./utils/logger";
 
 app.use(cors({
     origin: (origin, callback) => {
-        if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost') || origin.includes('192.168.')) {
+        const frontendUrl = process.env.URL_CLIENTE?.replace(/\/+$/, '');
+        const allowedOrigins = [
+            frontendUrl,
+            'http://localhost:5173',
+            'http://127.0.0.1:5173',
+            'http://192.168.0.26:5173'
+        ].filter(Boolean) as string[];
+
+        const isAllowed = !origin
+            || allowedOrigins.includes(origin)
+            || origin.endsWith('.vercel.app')
+            || origin.endsWith('.up.railway.app')
+            || origin.includes('localhost')
+            || origin.includes('127.0.0.1')
+            || origin.includes('192.168.');
+
+        if (isAllowed) {
             callback(null, true);
         } else {
             callback(new Error('Bloqueado por CORS'));
