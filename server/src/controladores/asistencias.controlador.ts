@@ -39,7 +39,6 @@ const altaAsistencia = async( req : Request , res: Response)=> {
     const dataAsitencia = {id_horario_clase :  Number(req.body.id_horario_clase),}
     const respuestaAsistencia = await asistenciaServicio.asistencia(data, dataAsitencia);
 
-
     const config =  MAPA_ALTA_ASISTENCIA[ respuestaAsistencia.code]  || ERROR_INTERNO_SERVIDOR;
 
     if (config.status === CodigoEstadoHTTP.OK){

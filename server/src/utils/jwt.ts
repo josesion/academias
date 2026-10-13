@@ -46,15 +46,14 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
  */
 export function crearCookie() {
     // Si no estamos en local, asumimos producción con HTTPS y subdominio compartido
-    const esLocal = process.env.URL_CLIENTE?.includes("localhost") || process.env.NODE_ENV === "development";
+    
 
     const cookieOpcion = {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 día
         path: "/",
         httpOnly: true,
-        secure: !esLocal, // true en producción, false solo en local
-        domain: !esLocal ? '.elphis.lat' : undefined, // Comparte el dominio en producción
-        sameSite: "lax" as const
+        secure: true, // true en producción, false solo en local// Comparte el dominio en producción
+        sameSite: "none" as const, // sin "domain"
     };
 
     return cookieOpcion;
