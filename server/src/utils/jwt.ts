@@ -55,8 +55,8 @@ export function crearCookie() {
         path: "/",
         httpOnly: true,
         secure: usaHttpsSeguro,
-        domain: '.elphis.lat',
-        sameSite: usaHttpsSeguro ? "none" as const : "lax" as const
+        domain: usaHttpsSeguro ? '.elphis.lat' : undefined, // Dominio compartido en producción
+        sameSite: "lax" as const // Con subdominio propio, "lax" funciona perfecto y sin bloqueos
     };
 
     return cookieOpcion;
