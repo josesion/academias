@@ -47,13 +47,15 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
 export function crearCookie() {
 
     const esProduccion = process.env.NODE_ENV === "production";
+    const frontendUrl = (process.env.URL_CLIENTE || "").trim();
+    const usaHttpsSeguro = esProduccion && /^https:\/\//i.test(frontendUrl) && !frontendUrl.includes("localhost");
 
     const cookieOpcion = {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
         path: "/",
         httpOnly: true,
-        secure: esProduccion,
-        sameSite: esProduccion ? "none" as const : "lax" as const
+        secure: usaHttpsSeguro,
+        sameSite: usaHttpsSeguro ? "none" as const : "lax" as const
     };
 
     return cookieOpcion;
