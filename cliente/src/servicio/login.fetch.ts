@@ -26,7 +26,8 @@ export const LoginFetch =async ( params: LoginRequest ): Promise<ApiResponse<Use
         body :{
             "usuario"    : params.usuario,
             "contrasena" : params.contrasena
-        }
+        },
+           credentials: "include",
     });
 };
 
