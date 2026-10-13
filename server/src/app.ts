@@ -75,11 +75,14 @@ app.use(( _req , res , next )=>{
 import logger from "./utils/logger";
 
  
+const allowedOrigins: string[] = [
+    "http://localhost:5173",
+    "http://192.168.0.22:5173",
+    process.env.FRONTEND_URL
+].filter((origin): origin is string => typeof origin === 'string');
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "http://192.168.0.22:5173"
-    ],
+    origin: allowedOrigins,
     credentials: true
 }));
 
