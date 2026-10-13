@@ -73,7 +73,7 @@ const loginUsuario =  async ( data : LoginInputs)
             };
 
              token = generateToken(tokenData);
-
+              console.log(token)  
              return{
                 error: false,
                 message : "El usuario existe en el sistema",
