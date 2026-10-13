@@ -77,14 +77,14 @@ import logger from "./utils/logger";
  
 
 
-// Permitir peticiones de cualquier dominio de Vercel y localhost
+// Configuración de CORS compatible con todas las versiones de Express y dominios de Vercel
 app.use(cors({
     origin: (origin, callback) => {
-        // Permitir requests sin origin (como apps móviles o Postman) y cualquier dominio de vercel o localhost
-        if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+        // Permitir requests sin origin (como Postman o apps móviles) y cualquier subdominio de vercel o localhost
+        if (!origin || origin.endsWith('.vercel.app') || origin.includes('localhost') || origin.includes('192.168.')) {
             callback(null, true);
         } else {
-            callback(new Error('No permitido por CORS'));
+            callback(new Error('Bloqueado por CORS'));
         }
     },
     credentials: true,
