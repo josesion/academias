@@ -27,6 +27,34 @@ const buscarUsuario= async (usuario : string) : Promise<TipadoData<DataUsuarioNu
         throw new ClientError("Verificar el Usuario", 404, "USER_FOUND");
     }
 
+// funcion para verificar si un correo ya existe en la base de datos
+// permite excluir un usuario por ID (para que pueda mantener su propio correo)
+const buscarPorCorreo = async (correo: string, excluirId?: number): Promise<TipadoData<{ id_usuario: number; correo: string }>> => {
+    let sql = `SELECT id_usuario, correo FROM usuarios WHERE correo = ?`;
+    const valores = [correo];
+    // @ts-ignore
+    
+    if (excluirId !== undefined) {
+        sql += ` AND id_usuario != ?`;
+        // @ts-ignore
+        valores.push(excluirId);
+    }
+    
+    const resultado = await select(sql, valores);
+    
+    if (resultado.length <= 0) {
+        return {
+            error: false,
+            message: "Correo disponible",
+            data: undefined,
+            code: "EMAIL_AVAILABLE",
+            errorsDetails: undefined
+        };
+    }
+    
+    throw new ClientError("El correo ya esta en uso", 409, "EMAIL_TAKEN");
+};
+
 const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> => {
     
     // 1. Cambiamos la consulta SQL para que busque por ID (esto es vital)
@@ -220,12 +248,8 @@ const modMiPerfil = async (parametro: ModMiPerfilInput): Promise<TipadoData<Data
         usuarioFinal = nuevo_usuario;
     }
 
-    // 4. Si se quiere cambiar el correo, verificar que no exista y actualizar
+    // 4. Si se quiere cambiar el correo, actualizar (validacion ya hecha en Service)
     if (correo !== undefined && correo !== correoBD) {
-        const existeCorreo = await select<{ correo: string }>(`SELECT correo FROM usuarios WHERE correo = ?;`, [correo]);
-        if (existeCorreo.length > 0) {
-            throw new ClientError("El correo electrónico ya está en uso.", 409, "EMAIL_TAKEN");
-        }
         await iud(`UPDATE usuarios SET correo = ? WHERE id_usuario = ?;`, [correo, usuario_id]);
         correoFinal = correo;
     }
@@ -339,6 +363,7 @@ const listadoUsuario = async(
 export const method = {
     crearUsuario            : tryCatchDatos(crearUsuario),
     buscarUsuario           : tryCatchDatos(buscarUsuario),
+    buscarPorCorreo         : tryCatchDatos(buscarPorCorreo),
     buscarIdUsuario         : tryCatchDatos(buscarIdUsuario),
     modUsuarioPublico       : tryCatchDatos(modUsuarioPublico),
     modUsuarioPrivado       : tryCatchDatos(modUsuarioPrivado),

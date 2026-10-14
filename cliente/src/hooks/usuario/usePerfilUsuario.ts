@@ -1,5 +1,6 @@
-import { useReducer, useCallback } from "react";
+import { useReducer } from "react";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { RutasProtegidasContext } from "../../contexto/protectRutas";
 
 import {
@@ -32,6 +33,7 @@ interface PropsPerfil {
 export const useLogicaPerfil = (config: PropsPerfil) => {
 
     const { rol, setRol, setUsuarioInfo } = useContext(RutasProtegidasContext);
+    const navigate = useNavigate();
 
     const [state, dispatch] = useReducer(PerfilReducers, initialPerfil());
 
@@ -171,6 +173,9 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                     setRol(nuevoRol);
                     setUsuarioInfo({ usuario: resultado.data.usuario, error: false });
                 }
+
+                // Volver a la página anterior tras guardar exitosamente
+                navigate(-1);
 
             } else {
                 // Mapear códigos de error

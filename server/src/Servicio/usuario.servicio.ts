@@ -60,7 +60,19 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
     // 1. Validación Zod (primera línea)
     const parametros = modMiPerfilSchema.parse(data);
 
-    // 2. Ejecutar modificación en data layer
+    // 2. Validación de unicidad de correo EN SERVICE (antes de tocar BD)
+    if (parametros.correo !== undefined) {
+        const existeCorreo = await dataUsuario.buscarPorCorreo(parametros.correo, data.usuario_id);
+        if (existeCorreo.code === "EMAIL_TAKEN") {
+            return {
+                error: true,
+                message: "El correo electrónico ya está en uso",
+                code: "EMAIL_TAKEN"
+            };
+        }
+    }
+
+    // 3. Ejecutar modificación en data layer
     const resultado = await dataUsuario.modMiPerfil({
         usuario_id: data.usuario_id,
         nuevo_usuario: parametros.nuevo_usuario,

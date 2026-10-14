@@ -123,6 +123,7 @@ function App() {
                 <Route element={<SoloAlumno />}>
                   <Route path="/alumno_principal" element={<PrincipalAlumnos />} />
                   <Route path="/data_escuela" element={<DataEscuela />} />
+                  <Route path="/user_perfil" element={<PerfilUsuarioPage />} />
                 </Route>
               </Route>
 
