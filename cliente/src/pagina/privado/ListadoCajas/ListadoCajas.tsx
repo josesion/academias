@@ -64,6 +64,9 @@ export const ListadoCajas = () => {
     detalleCaja,
   } = stateListadoCaja;
 
+  // Carga global: mientras haya cualquier carga crítica (encabezado, historial, usuarios)
+  const cargandoGlobal = carga.encabezado || carga.historial || carga.usuarios;
+
   // Estado local para manejar la animación fluida de salida del modal
   const [estaCerrando, setEstaCerrando] = useState(false);
 
@@ -108,6 +111,14 @@ export const ListadoCajas = () => {
 
   return (
     <div className="listado_cajas_pagina">
+      {/* Carga global inicial */}
+      {cargandoGlobal && (
+        <div className="carga-global" aria-live="polite" aria-busy="true">
+          <div className="spinner" aria-hidden="true" />
+          <span className="visually-hidden">Cargando listado de cajas...</span>
+        </div>
+      )}
+
       {/* 1. Caja Activa / Buscador */}
       <BuscadorLateral
         filtros={filtrosBusqueda}

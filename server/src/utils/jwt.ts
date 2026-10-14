@@ -41,19 +41,20 @@ export const generateToken = (payload: { id: number; rol: string; id_escuela: nu
  * Esta cookie:
  * - Expira en 1 día
  * - Tiene como ruta raíz "/"
+ * - En producción (HTTPS): secure=true, sameSite="none"
+ * - En desarrollo (HTTP): secure=false, sameSite="lax"
  * 
  * @returns Objeto con las opciones de configuración de la cookie
  */
 export function crearCookie() {
-    // Si no estamos en local, asumimos producción con HTTPS y subdominio compartido
-    
+    const esProduccion = process.env.NODE_ENV === "production";
 
     const cookieOpcion = {
         expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 día
         path: "/",
         httpOnly: true,
-        secure: true, // true en producción, false solo en local// Comparte el dominio en producción
-        sameSite: "none" as const, // sin "domain"
+        secure: esProduccion,                    // true solo en prod (HTTPS)
+        sameSite: (esProduccion ? "none" : "lax") as "none" | "lax", // "lax" en local/dev
     };
 
     return cookieOpcion;

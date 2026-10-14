@@ -45,9 +45,12 @@ const metricaInscripcion = async( req : Request , res : Response ) => {
  */
 const encabezadoClases = async ( req : Request , res : Response ) =>{
 
-    const data = { id_escuela : req.usuario?.id_escuela || 0};
+    const data = { 
+        id_escuela : req.usuario?.id_escuela || 0,
+        tipo : req.usuario?.tipo || "basico"
+    };
 
-    await handleControladores<{ id_escuela : number }, ResultClase >(
+    await handleControladores<{ id_escuela : number, tipo: string }, ResultClase >(
         res, data , servicioMetrica.encabezadoClases , MAPA_METRICAS_CLASES
     );
 };
@@ -62,10 +65,13 @@ const encabezadoClases = async ( req : Request , res : Response ) =>{
  * @returns {Promise<void>} Promesa que resuelve tras enviar el listado de asistencias al cliente.
  */
 const asistenciaClases = async (  req : Request , res : Response  ) =>{
-    
-     const data = { id_escuela : req.usuario?.id_escuela || 0 };
      
-     await  handleControladores<{ id_escuela : number }, ResultAsistencia[] >(
+     const data = { 
+        id_escuela : req.usuario?.id_escuela || 0,
+        tipo : req.usuario?.tipo || "basico"
+     };
+     
+     await  handleControladores<{ id_escuela : number, tipo: string }, ResultAsistencia[] >(
         res, data  , servicioMetrica.asistenciaClases ,MAPA_METRICAS_ASISTENCIAS
      ); 
 };

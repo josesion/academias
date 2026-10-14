@@ -38,6 +38,11 @@ const validarPermiso = tryCatch(async (req: Request, res: Response, next: NextFu
         return enviarResponseError(res, 401, "Sin token, no autorizado");
     }
 
+    // Guard clause: token debe ser string no vacío (evita excepción síncrona en jwt.verify)
+    if (typeof token !== 'string' || token.trim() === '') {
+        return enviarResponseError(res, 401, "Token inválido");
+    }
+
     if (!clave) {
         return enviarResponseError(res, 500, "Clave JWT no configurada en el servidor");
     }
