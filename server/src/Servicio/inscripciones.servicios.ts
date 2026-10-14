@@ -245,7 +245,8 @@ const anularInscripcionServicio = async (
     dataInsc: AnularInscripcionInputs,
     dataDetalle: Omit<DetalleCajaInputs, 'referencia_id'>
 ): Promise<TipadoData<{ id_inscripcion: number }>> => {
-
+    console.log("dataInsci", dataInsc)
+    console.log("datadetalle", dataDetalle)
     // 1. Validamos datos de entrada
     const verificacionInsc : AnularInscripcionInputs = AnularInscripcionSchema.parse(dataInsc);
     const id_escuela = verificacionInsc.id_escuela || 1;
