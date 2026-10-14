@@ -50,7 +50,7 @@ import { NotFound } from "./pagina/privado/NoEncontrada/NotFound";
 
 // Guard de rol para /admin/* (spec 018): evita la pantalla vacía cuando alguien
 // escribe la URL a mano sin ser administrador. El bloqueo real es del server.
-import { SoloAdministrador, SoloUsuario, SoloAlumno } from "./utils/guardAdmin";
+import { SoloAdministrador, SoloUsuario, SoloAlumno, SoloUsuarioOAlumno } from "./utils/guardAdmin";
 
 import { DashboardAdministrador } from "./pagina/privado/Admin/Admin";
 import { PaginaPlanes } from "./pagina/privado/Admin/PaginaPlanes/PaginaPlanes";
@@ -114,7 +114,6 @@ function App() {
                     element={<AmbCategoriasCajaUsuarios />}
                   />
                   <Route path="/asistencia" element={<FormularioAsistencia />} />
-                  <Route path="/user_perfil" element={<PerfilUsuarioPage />} />
                 </Route>
               </Route>
 
@@ -123,6 +122,12 @@ function App() {
                 <Route element={<SoloAlumno />}>
                   <Route path="/alumno_principal" element={<PrincipalAlumnos />} />
                   <Route path="/data_escuela" element={<DataEscuela />} />
+                </Route>
+              </Route>
+
+              {/* 🔒 BLOQUE USUARIO + ALUMNO — rutas compartidas */}
+              <Route element={<RutasPrivadas />}>
+                <Route element={<SoloUsuarioOAlumno />}>
                   <Route path="/user_perfil" element={<PerfilUsuarioPage />} />
                 </Route>
               </Route>

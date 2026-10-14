@@ -108,6 +108,24 @@ export const SoloUsuario = () => {
 };
 
 /**
+ * Guard de rol para rutas que pueden acceder TANTO usuario como alumno.
+ * Protege: `/user_perfil` (perfil editable por ambos roles).
+ */
+export const SoloUsuarioOAlumno = () => {
+  const { autenticado, rol } = useContext(RutasProtegidasContext);
+
+  if (!autenticado) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (rol?.rol === "usuario" || rol?.rol === "alumno") {
+    return <Outlet />;
+  }
+
+  return <IrAlPanelPropio rol={rol?.rol} />;
+};
+
+/**
  * Guard de rol para las rutas de ALUMNO.
  *
  * Protege: `/alumno_principal`, `/data_escuela`.
