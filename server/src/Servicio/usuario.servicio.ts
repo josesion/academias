@@ -8,10 +8,10 @@ import { type HistorialInputs } from "../squemas/historial";
 /**
  * Obtiene el perfil completo del usuario autenticado.
  * 
- * @param usuario_id - ID del usuario (viene del token, validado por middleware)
+ * @param data - Objeto con usuario_id (viene del token via handleControladores)
  * @returns Perfil con usuario, nombre, apellido, correo, celular, rol, id_escuela
  */
-const obtenerMiPerfil = async (usuario_id: number): Promise<TipadoData<{
+const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData<{
     usuario: string;
     nombre: string;
     apellido: string;
@@ -20,6 +20,7 @@ const obtenerMiPerfil = async (usuario_id: number): Promise<TipadoData<{
     rol: string;
     id_escuela: number;
 }>> => {
+    const usuario_id = data.usuario_id;
     const resultado = await dataUsuario.obtenerMiPerfil(usuario_id);
 
     if (resultado.code === "PROFILE_FETCHED") {
