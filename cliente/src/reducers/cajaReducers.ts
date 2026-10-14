@@ -37,7 +37,6 @@ export interface CajaTipado {
     enviando: boolean;
     errorGenerico: string | null;
     errorCanal : string | null;
-
     
     // Validadores de Formulario
     verificadorSelector: boolean;
@@ -219,7 +218,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
         case 'SET_ERROR':
             return { ...state, errorGenerico: action.payload, enviando: false };
 
-        case 'SET_ERROR_CANAL':
+        case 'SET_ERROR_CANL':
             return { ...state, errorCanal: action.payload };            
 
         case 'ABRIR_MODAL':
@@ -397,7 +396,6 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 }))
             };
 
-
         case 'FORMATEAR_MOV_EXTRAORDINARIOS':
             return {
                 ...state,
@@ -409,7 +407,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                     monto: "",
                     descripcion: "",
                     referencia_id: 0,
-      
+          
                     tipo: ""
                 }
             };  
@@ -461,9 +459,54 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                         movimientosExtas : action.payload
                     }
                };    
-               
-         case "ACTUALIZAR_METODO_PAGO" : 
-              return { ...state, actualizarMetodoPago : state.actualizarMetodoPago + 1 }      
+
+        case "SET_CARGA_MOVIMIENTOS" : 
+                return { 
+                     ...state, 
+                     carga : {
+                         ...state.carga,
+                         movimientos : action.payload
+                     }
+                };    
+
+        case "SET_CARGA_METRICAS_TIPOS" : 
+                return { 
+                     ...state, 
+                     carga : {
+                         ...state.carga,
+                         metricasTipoCuentas : action.payload
+                     }
+                };    
+
+        case "SET_CARGA_PANEL_PRINCIPAL" : 
+                return { 
+                     ...state, 
+                     carga : {
+                         ...state.carga,
+                         panelPrincipal : action.payload
+                     }
+                };    
+
+        case "SET_CARGA_CUENTAS_ACTIVAS" : 
+                return { 
+                     ...state, 
+                     carga : {
+                         ...state.carga,
+                         cuentasActivas : action.payload
+                     }
+                };    
+
+        case "SET_CARGA_CUENTAS_SESION" : 
+                return { 
+                     ...state, 
+                     carga : {
+                         ...state.carga,
+                         cuentasSesion : action.payload
+                     }
+                };    
+                
+          case "ACTUALIZAR_METODO_PAGO" : 
+               return { ...state, actualizarMetodoPago : state.actualizarMetodoPago + 1 }      
 
         default:
             return state;

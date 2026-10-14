@@ -319,15 +319,20 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
 // ────────────────────────────────────────────────────────────── 
 useEffect(() => {
         if (state.dataCaja.id_caja) {
-            // 1. Reseteamos el scroll state a offset 0 y hasMore true antes de cargar
+            // 1. Despachar carga antes de iniciar
+            dispatch({ type: "SET_CARGA_MOVIMIENTOS", payload: true });
+            
+            // 2. Reseteamos el scroll state a offset 0 y hasMore true antes de cargar
             setScrollState(prev => ({
                 ...prev,
                 offset: 0,
                 hasMore: true
             }));
             
-            // 2. Llamamos a cargar pasando "true" para que limpie y traiga fresco
-            cargarMovimientos(true);
+            // 3. Llamamos a cargar pasando "true" para que limpie y traiga fresco
+            cargarMovimientos(true).finally(() => {
+                dispatch({ type: "SET_CARGA_MOVIMIENTOS", payload: false });
+            });
         
         } else {
             setMovimientos([]);
@@ -337,6 +342,7 @@ useEffect(() => {
                 offset: 0,
                 limite: 5
             });
+            dispatch({ type: "SET_CARGA_MOVIMIENTOS", payload: false });
         }
     }, [state.dataCaja.id_caja, state.actualizarCaja, state.disparadorRefresco]); 
 

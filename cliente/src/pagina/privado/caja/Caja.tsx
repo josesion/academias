@@ -74,7 +74,15 @@ export const CajaArqueo = () => {
   const metodosId = useId();
 
   // Carga global: mientras haya cualquier carga crítica
-  const cargandoGlobal = state.carga.aperturaCaja || state.carga.cierreCaja || state.carga.movimientosExtas || state.enviando;
+  const cargandoGlobal = state.carga.aperturaCaja 
+    || state.carga.cierreCaja 
+    || state.carga.movimientosExtas 
+    || state.carga.movimientos
+    || state.carga.metricasTipoCuentas
+    || state.carga.panelPrincipal
+    || state.carga.cuentasActivas
+    || state.carga.cuentasSesion
+    || state.enviando;
 
   return (
     // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark

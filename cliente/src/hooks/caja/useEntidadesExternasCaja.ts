@@ -35,6 +35,7 @@ export const useEntidadesExternasCaja = ( config : EntidadesExternasCajaConfig) 
 useEffect( ()=> {
 
     const obtenerListadoCuentas = async () => {
+        dispatch({ type: "SET_CARGA_CUENTAS_ACTIVAS", payload: true });
         const servicioApiFetch = config.servicios.listadoTipoCuentas;
         const resultListacoCuentas = await servicioApiFetch( filtroCuentasEstatica);
 
@@ -43,7 +44,7 @@ useEffect( ()=> {
                 type : "SET_LISTADO_CUENTAS_ACTIVAS",
                 payload : resultListacoCuentas.data
             });
-         //   setListadoCuentasActivas(resultListacoCuentas.data);
+          //   setListadoCuentasActivas(resultListacoCuentas.data);
             const detallesIniciales = resultListacoCuentas.data.map((cuenta: ListadoTipoCuentas) => ({
                 id_cuenta: cuenta.id_cuenta,
                 nombre_cuenta: cuenta.nombre_cuenta,
@@ -52,7 +53,6 @@ useEffect( ()=> {
 
             dispatch({ type : "SET_APERTURA_DETALLE" , payload : detallesIniciales})
 
-        
         }else{
             dispatch({
                 type : "SET_LISTADO_CUENTAS_ACTIVAS",
@@ -63,6 +63,7 @@ useEffect( ()=> {
                 payload : resultListacoCuentas.message || "Error sin listado cuentas" 
             });
         };
+        dispatch({ type: "SET_CARGA_CUENTAS_ACTIVAS", payload: false });
     };
 
     obtenerListadoCuentas();
@@ -76,6 +77,7 @@ useEffect( ()=> {
 useEffect( ()=> {
 
     const obtenerListadoCuentasSession = async () => {
+        dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: true });
         const servicioApiFetch = config.servicios.cuentasSesion;
         const resultListacoCuentas = await servicioApiFetch({});
        
@@ -103,6 +105,7 @@ useEffect( ()=> {
                 payload : resultListacoCuentas.message || "Error sin listado cuentas" 
             });
         };
+        dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: false });
     };
 
     obtenerListadoCuentasSession();

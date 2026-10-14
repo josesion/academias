@@ -279,7 +279,7 @@ const anularInscripcion = async(
 
     // 2. Definimos las SQL
     const sqlInsc = `update inscripciones 
-                        set inscripciones.estado = "suspendido"
+                        set inscripciones.estado = 'suspendido'
                         where 
                         inscripciones. id_escuela = ?
                         and
@@ -357,7 +357,7 @@ const anularInscripcionBasico = async ( dataInsc : AnularInscripcionInputs )
     const {id_escuela, id_inscripcion} = dataInsc;
 
     const sql : string = `update inscripciones 
-                                set inscripciones.estado = "suspendido"
+                                set inscripciones.estado = 'suspendido'
                                 where 
                                 inscripciones. id_escuela = ?
                                 and

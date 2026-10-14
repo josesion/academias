@@ -53,6 +53,7 @@ export const useCajaMetricas = ( config : MetricasCajaConfig) => {
 
 useEffect( ()=> {
     const metricas = async () => {
+        dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: true });
         const servicioApiFetch = config.servicios.metricasPanelCaja;
         const data = {
             id_caja : state.dataCaja.id_caja,
@@ -69,6 +70,7 @@ useEffect( ()=> {
            dispatch({ type : "SET_METRICAS_TIPO_CUENTAS" , payload : null });
 
         };
+        dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: false });
     };
 
     metricas();
@@ -83,6 +85,7 @@ useEffect( ()=> {
 useEffect( ()=> {
 
     const metricasPrincipalCaja = async () =>{
+        dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: true });
         const servicioApiFetch = config.servicios.metricasPanelPrincipal;
         const metricasResult = await servicioApiFetch(state.dataCaja);
       
@@ -93,6 +96,7 @@ useEffect( ()=> {
             dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : null });
 
         };
+        dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: false });
     };
 
     metricasPrincipalCaja();
