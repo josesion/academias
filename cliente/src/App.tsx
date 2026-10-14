@@ -4,6 +4,7 @@ import { Inicio } from "./pagina/publico/inicio/Inicios";
 //import { Admin } from "./pagina/privado/Admin/Admin";
 import { Login } from "./pagina/publico/Login/Login";
 import { UsuarioPage } from "./pagina/privado/usuario/Usuario";
+import { PerfilUsuarioPage } from "./pagina/privado/usuario/PerfilUsuario";
 
 //Paginas AMB
 import { AmbAlumnos } from "./pagina/privado/Alumnos/Alumnos";
@@ -113,6 +114,7 @@ function App() {
                     element={<AmbCategoriasCajaUsuarios />}
                   />
                   <Route path="/asistencia" element={<FormularioAsistencia />} />
+                  <Route path="/user_perfil" element={<PerfilUsuarioPage />} />
                 </Route>
               </Route>
 

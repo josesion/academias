@@ -1,5 +1,6 @@
 import { ImExit } from "react-icons/im";
 import { MenuUsuario } from "../../Logout/Logout";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   usuario: string;
@@ -28,7 +29,12 @@ export const BloqueMiCuenta = ({
   cerrar,
   onLogout,
 }: Props) => {
+  const navigate = useNavigate();
   const idPanel = "menu_usuario_cliente";
+
+  const irAPerfil = () => {
+    navigate("/user_perfil");
+  };
 
   return (
     <>
@@ -51,6 +57,7 @@ export const BloqueMiCuenta = ({
           usuario={usuario}
           onCerrar={cerrar}
           onLogout={onLogout}
+          onPerfil={irAPerfil}
         />
       )}
     </>

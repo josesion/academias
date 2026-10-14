@@ -103,10 +103,62 @@
    DIVISOR
 =========================================================== */
 
-.menu_usuario_divisor {
+.menu_usuario_divider {
     width: 100%;
     height: 1px;
     background: var(--borde);
+}
+
+/* ===========================================================
+   OPCIONES DEL MENU (Mi Perfil, etc.)
+=========================================================== */
+
+.menu_usuario_opcion {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    width: 100%;
+    padding: 12px 14px;
+
+    border: none;
+    border-radius: var(--radio-md);
+
+    cursor: pointer;
+
+    background: transparent;
+    color: var(--texto-principal);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-medio);
+
+    transition: var(--transicion);
+}
+
+.menu_usuario_opcion svg {
+    flex-shrink: 0;
+    color: var(--color-secundario);
+    transition: var(--transicion);
+}
+
+.menu_usuario_opcion:hover {
+    background: var(--fondo-hover);
+    color: var(--color-secundario);
+}
+
+.menu_usuario_opcion:hover svg {
+    transform: translateX(2px);
+}
+
+.menu_usuario_opcion:active {
+    transform: scale(0.98);
+}
+
+/* foco de teclado */
+.menu_usuario_opcion:focus-visible {
+    outline: 2px solid var(--color-secundario);
+    outline-offset: 2px;
 }
 
 /* ===========================================================
@@ -224,9 +276,11 @@
   .menu_usuario_divider {
     height: 2px;
   }
+  .menu_usuario_opcion,
   .menu_usuario_logout {
     border-width: 2px !important;
   }
+  .menu_usuario_opcion:focus-visible,
   .menu_usuario_logout:focus-visible {
     outline: 3px solid var(--color-primario);
     outline-offset: 2px;

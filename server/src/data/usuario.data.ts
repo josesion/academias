@@ -4,7 +4,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { ClientError } from "../utils/error";
 import { iud, select } from "../utils/baseDatos";
 import {  CrearInputsUsuario, ModInputsUsuario, VerificarUsuario, ModInputsUsuarioPriv, ModInputsContrasena, FiltroUsuarios } from "../squemas/usuario";
-import { TipadoData, DataUsuarioNuevo, DataModPublico, DataIdUsuario, DataModPrivado ,UsuarioListado} from "../tipados/tipado.data";
+import { TipadoData, DataUsuarioNuevo, DataModPublico, DataIdUsuario, DataModPrivado ,UsuarioListado, DataMiPerfil, ModMiPerfilInput } from "../tipados/tipado.data";
 
 
 
@@ -181,6 +181,107 @@ const modUsuarioContrasena = async(parametro : ModInputsContrasena): Promise<Tip
     }
 };
 
+/**
+ * Permite al usuario autenticado modificar su propio usuario, contraseña, correo y/o celular.
+ * Requiere verificar la contraseña actual.
+ */
+const modMiPerfil = async (parametro: ModMiPerfilInput): Promise<TipadoData<DataMiPerfil>> => {
+    const { usuario_id, nuevo_usuario, nueva_contrasena, correo, celular, contrasena_actual } = parametro;
+
+    // 1. Obtener contraseña actual hasheada y datos del usuario
+    const sqlSelect = `SELECT contrasena, usuario, nombre, apellido, correo, celular, rol, id_escuela FROM usuarios WHERE id_usuario = ?;`;
+    const resultado = await select<{ contrasena: string; usuario: string; nombre: string; apellido: string; correo: string; celular: string; rol: string; id_escuela: number }>(sqlSelect, [usuario_id]);
+    
+    if (resultado.length <= 0) {
+        throw new ClientError("Usuario no encontrado", 404, "USER_NOT_FOUND");
+    }
+
+    const { contrasena: hashActual, usuario: usuarioBD, nombre: nombreBD, apellido: apellidoBD, correo: correoBD, celular: celularBD, rol, id_escuela } = resultado[0];
+
+    // 2. Verificar contraseña actual
+    const passwordValida = await bcrypt.compare(contrasena_actual, hashActual);
+    if (!passwordValida) {
+        throw new ClientError("La contraseña actual es incorrecta.", 401, "INVALID_PASSWORD");
+    }
+
+    let usuarioFinal = usuarioBD;
+    let nombreFinal = nombreBD;
+    let apellidoFinal = apellidoBD;
+    let correoFinal = correoBD;
+    let celularFinal = celularBD;
+
+    // 3. Si se quiere cambiar el usuario, verificar que no exista y actualizar
+    if (nuevo_usuario && nuevo_usuario !== usuarioBD) {
+        const existe = await select<{ usuario: string }>(`SELECT usuario FROM usuarios WHERE usuario = ?;`, [nuevo_usuario]);
+        if (existe.length > 0) {
+            throw new ClientError("El nombre de usuario ya está en uso.", 409, "USERNAME_TAKEN");
+        }
+        await iud(`UPDATE usuarios SET usuario = ? WHERE id_usuario = ?;`, [nuevo_usuario, usuario_id]);
+        usuarioFinal = nuevo_usuario;
+    }
+
+    // 4. Si se quiere cambiar el correo, verificar que no exista y actualizar
+    if (correo !== undefined && correo !== correoBD) {
+        const existeCorreo = await select<{ correo: string }>(`SELECT correo FROM usuarios WHERE correo = ?;`, [correo]);
+        if (existeCorreo.length > 0) {
+            throw new ClientError("El correo electrónico ya está en uso.", 409, "EMAIL_TAKEN");
+        }
+        await iud(`UPDATE usuarios SET correo = ? WHERE id_usuario = ?;`, [correo, usuario_id]);
+        correoFinal = correo;
+    }
+
+    // 5. Si se quiere cambiar el celular, actualizar (sin validación de unicidad)
+    if (celular !== undefined && celular !== celularBD) {
+        await iud(`UPDATE usuarios SET celular = ? WHERE id_usuario = ?;`, [celular, usuario_id]);
+        celularFinal = celular;
+    }
+
+    // 6. Si se quiere cambiar la contraseña, hashear y actualizar
+    if (nueva_contrasena) {
+        const nuevoHash = await bcrypt.hash(nueva_contrasena, 10);
+        await iud(`UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?;`, [nuevoHash, usuario_id]);
+    }
+
+    return {
+        error: false,
+        message: "Perfil actualizado correctamente",
+        data: { usuario: usuarioFinal, nombre: nombreFinal, apellido: apellidoFinal, correo: correoFinal, celular: celularFinal, rol, id_escuela },
+        code: "PROFILE_UPDATED",
+        errorsDetails: undefined
+    };
+};
+
+/**
+ * Obtiene el perfil completo del usuario autenticado.
+ */
+const obtenerMiPerfil = async (usuario_id: number): Promise<TipadoData<DataMiPerfil>> => {
+    const sql = `SELECT usuario, nombre, apellido, correo, celular, rol, id_escuela 
+                 FROM usuarios WHERE id_usuario = ?;`;
+    const resultado = await select<{ 
+        usuario: string; 
+        nombre: string; 
+        apellido: string; 
+        correo: string; 
+        celular: string; 
+        rol: string; 
+        id_escuela: number 
+    }>(sql, [usuario_id]);
+
+    if (resultado.length <= 0) {
+        throw new ClientError("Usuario no encontrado", 404, "USER_NOT_FOUND");
+    }
+
+    const { usuario, nombre, apellido, correo, celular, rol, id_escuela } = resultado[0];
+
+    return {
+        error: false,
+        message: "Perfil obtenido correctamente",
+        data: { usuario, nombre, apellido, correo, celular, rol, id_escuela },
+        code: "PROFILE_FETCHED",
+        errorsDetails: undefined
+    };
+};
+
 const listadoUsuario = async( 
     parametros : FiltroUsuarios, 
     pagina : number 
@@ -242,5 +343,7 @@ export const method = {
     modUsuarioPublico       : tryCatchDatos(modUsuarioPublico),
     modUsuarioPrivado       : tryCatchDatos(modUsuarioPrivado),
     modUsuarioContrasena    : tryCatchDatos(modUsuarioContrasena),
+    modMiPerfil             : tryCatchDatos(modMiPerfil),
+    obtenerMiPerfil         : tryCatchDatos(obtenerMiPerfil),
     listadoUsuario          : tryCatchDatos(listadoUsuario)
 }

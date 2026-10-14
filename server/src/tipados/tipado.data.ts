@@ -75,6 +75,25 @@ export interface DataModPrivado {
     estado? : string
 }
 
+export interface DataMiPerfil {
+    usuario: string;
+    nombre: string;
+    apellido: string;
+    correo: string;
+    celular: string;
+    rol: string;
+    id_escuela: number;
+}
+
+export interface ModMiPerfilInput {
+    usuario_id: number;
+    nuevo_usuario?: string;
+    nueva_contrasena?: string;
+    correo?: string;
+    celular?: string;
+    contrasena_actual: string;
+}
+
 export interface UsuarioListado {
     usuario: string;
     contrasena: string;

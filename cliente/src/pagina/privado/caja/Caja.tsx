@@ -115,7 +115,7 @@ export const CajaArqueo = () => {
             onChangeMontoDinamico={cachearMontoIniciales}
             onAbrirCaja={handleAbrirCaja}
             onCancelar={handleAbrirCajaModalCerrar}
-            enviado={state.enviando}
+            enviado={state.carga.aperturaCaja}
             errorGenerico={state.errorGenerico}
           />
         </div>

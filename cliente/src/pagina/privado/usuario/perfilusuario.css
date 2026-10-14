@@ -1,0 +1,372 @@
+/* ============================================================
+   PERFIL USUARIO — Estilos
+   Tokens de app.css: --color-*, --fondo-*, --texto-*, --borde,
+   --radio-*, --sombra-*, --ease-ui, --btn-*, --card-*
+   ============================================================ */
+
+.perfil_contenedor {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  animation: entradaSuave 300ms var(--ease-ui);
+}
+
+@keyframes entradaSuave {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   CARGA GLOBAL
+   ============================================================ */
+
+.perfil_contenedor .carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 12px;
+  color: var(--texto-secundario);
+  font-size: var(--texto-md);
+}
+
+.perfil_contenedor .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--borde);
+  border-top-color: var(--color-secundario);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfil_contenedor .spinner {
+    animation: none;
+    border-top-color: var(--color-secundario);
+    opacity: 0.6;
+  }
+  .perfil_contenedor {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+
+.perfil_encabezado {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.perfil_encabezado_etiqueta {
+  display: inline-block;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-secundario);
+  margin-bottom: 8px;
+}
+
+.perfil_encabezado h1 {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  margin-bottom: 6px;
+}
+
+.perfil_encabezado p {
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  line-height: var(--linea-texto);
+}
+
+/* ============================================================
+   ALERTAS
+   ============================================================ */
+
+.perfil_alerta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radio-md);
+  font-size: var(--texto-sm);
+  margin-bottom: 20px;
+  animation: alertaEntrada 250ms var(--ease-ui);
+}
+
+@keyframes alertaEntrada {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.perfil_alerta--exito {
+  background: rgba(91, 123, 110, 0.12);
+  border: 1px solid var(--color-exito);
+  color: var(--color-exito);
+}
+
+.perfil_alerta--error {
+  background: rgba(179, 71, 71, 0.12);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+}
+
+.perfil_alerta_cerrar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radio-sm);
+  transition: background-color 140ms var(--ease-ui);
+}
+
+.perfil_alerta_cerrar:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-contrast: high) {
+  .perfil_alerta {
+    border-width: 2px !important;
+  }
+}
+
+/* ============================================================
+   FORMULARIO — SECCIONES
+   ============================================================ */
+
+.perfil_formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.perfil_seccion {
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 24px;
+  box-shadow: var(--sombra-sm);
+  transition: border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+}
+
+.perfil_seccion:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+}
+
+.perfil_seccion .section-title {
+  margin-bottom: 20px;
+  color: var(--texto-secundario);
+}
+
+/* ============================================================
+   CAMPOS DEL FORMULARIO
+   ============================================================ */
+
+.perfil_grupo {
+  margin-bottom: 20px;
+}
+
+.perfil_grupo:last-child {
+  margin-bottom: 0;
+}
+
+.perfil_label {
+  display: block;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  margin-bottom: 8px;
+}
+
+.perfil_requerido {
+  color: var(--color-error);
+  margin-left: 2px;
+}
+
+.perfil_input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+}
+
+.perfil_input:hover:not(:disabled):not(:read-only) {
+  border-color: var(--borde-hover);
+}
+
+.perfil_input:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-color: var(--color-secundario);
+}
+
+.perfil_input:disabled,
+.perfil_input:read-only {
+  background: var(--fondo-superficie);
+  color: var(--texto-deshabilitado);
+  cursor: not-allowed;
+}
+
+.perfil_input--error {
+  border-color: var(--color-error);
+}
+
+.perfil_input--error:focus-visible {
+  outline-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.perfil_error {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--texto-xs);
+  color: var(--color-error);
+  animation: errorEntrada 180ms var(--ease-ui);
+}
+
+@keyframes errorEntrada {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.perfil_ayuda {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+/* ============================================================
+   ACCIONES
+   ============================================================ */
+
+.perfil_acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--borde);
+}
+
+/* Botón con spinner de carga */
+.btn-principal,
+.btn-secundario {
+  position: relative;
+}
+
+.btn_spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn_spinner {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.6;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .perfil_contenedor {
+    padding: 16px 12px;
+  }
+
+  .perfil_encabezado h1 {
+    font-size: var(--titulo-md);
+  }
+
+  .perfil_seccion {
+    padding: 20px 16px;
+  }
+
+  .perfil_acciones {
+    flex-direction: column-reverse;
+  }
+
+  .perfil_acciones button {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   HIGH CONTRAST
+   ============================================================ */
+
+@media (prefers-contrast: high) {
+  .perfil_seccion,
+  .perfil_input {
+    border-width: 2px !important;
+  }
+
+  .perfil_input:focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+  }
+}
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+@media print {
+  .perfil_acciones,
+  .perfil_alerta_cerrar {
+    display: none !important;
+  }
+
+  .perfil_seccion {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-color: var(--texto-principal) !important;
+  }
+
+  .perfil_input {
+    border-color: var(--texto-principal) !important;
+    color: var(--texto-principal) !important;
+  }
+}

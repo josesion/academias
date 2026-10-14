@@ -11,8 +11,8 @@ import type {
 
 //Seccion de Tipados--------------------------------------
 import type{  
-           DetalleCajaMovimientoResult ,  scrollStateData,  RegistroDetalleCaja,  
-        } from "../../tipadosTs/caja.typado";
+            DetalleCajaMovimientoResult ,  scrollStateData,  RegistroDetalleCaja,  
+         } from "../../tipadosTs/caja.typado";
 
 interface MovimientosCajaConfig {    
     servicios : {
@@ -81,10 +81,6 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
     }, [state.dataCaja.id_caja, scrollState.offset, scrollState.limite, scrollState.hasMore, scrollState.loading]);
 
 
-
-
-
-
     // ──────────────────────────────────────────────────────────────
     // Configuración del IntersectionObserver para el scroll infinito
     // ────────────────────────────────────────────────────────────── 
@@ -108,8 +104,6 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
         if (node) observer.current.observe(node); 
 
     }, [scrollState.loading, scrollState.hasMore, cargarMovimientos, state.dataCaja.id_caja]);
-
-
 
 
     // ──────────────────────────────────────────────────────────────
@@ -180,6 +174,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
             }); 
 
         };
+
     };
 
     // --- capturamos  la descroipcion si es q se le coloca algo en ella     
@@ -217,7 +212,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
     };
 
 
-        // --- Registramos el movimiento INGRESO/EGRESO 
+    // --- Registramos el movimiento INGRESO/EGRESO (loading local en botón del modal)
    
     const handRegistarMovimientoExtraordinario = async () => {
         try{
@@ -235,6 +230,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                     });
 
             }else{
+                dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : true });
 
                 const data = {
                     id_caja       : state.dataCaja.id_caja,
@@ -247,7 +243,7 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                     referencia_id : 0       
                 };
         
-
+        
                 const servicioApiFetch =config.servicios.registrarMovimientoCaja;
                 const registroMovimientoResult = await servicioApiFetch(data); 
 
@@ -284,7 +280,6 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                         limite: 5
                     });
              
-
                     dispatch({ type : "RESET_MOVIMIENTO_EXTRA" , payload : ""});           
 
                     dispatch({ type : "CERRAR_MODALES_IE" })
@@ -303,13 +298,11 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                 payload : "Error en la carga en el servidor."
             });
         }finally{
+           dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : false });
         };    
 
 
-
     };
-
-
 
 
 // ──────────────────────────────────────────────────────────────
@@ -343,7 +336,6 @@ useEffect(() => {
             dispatch({ type: "SET_CARGA_MOVIMIENTOS", payload: false });
         }
     }, [state.dataCaja.id_caja, state.actualizarCaja, state.disparadorRefresco]); 
-
 
 
 // ──────────────────────────────────────────────────────────────
@@ -388,5 +380,3 @@ useEffect( ()=>{
 
 
 };
-
-

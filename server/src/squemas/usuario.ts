@@ -103,6 +103,32 @@ export const modContrasenaSchema = z.object({
   contrasena_nueva: z.string().min(8)
 });
 
+// Esquema para que el usuario autenticado modifique su propio usuario/contraseña/email/celular
+export const modMiPerfilSchema = z.object({
+  nuevo_usuario: z.string()
+    .min(4, { message: 'El nombre de usuario debe tener al menos 4 caracteres.' })
+    .max(50, { message: 'El nombre de usuario no puede exceder los 50 caracteres.' })
+    .optional(),
+  nueva_contrasena: z.string()
+    .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
+    .max(50, { message: 'La contraseña no puede exceder los 50 caracteres.' })
+    .optional(),
+  correo: z.string()
+    .email({ message: 'El formato del correo electrónico no es válido.' })
+    .max(255, { message: 'El correo electrónico no puede exceder los 255 caracteres.' })
+    .optional(),
+  celular: z.string()
+    .max(20, { message: 'El celular no puede exceder los 20 caracteres.' })
+    .optional()
+    .or(z.literal('')),
+  contrasena_actual: z.string().min(8, { message: 'La contraseña actual es requerida.' }),
+}).refine(data => data.nuevo_usuario || data.nueva_contrasena || data.correo !== undefined || data.celular !== undefined, {
+  message: 'Debe proporcionar al menos un campo para modificar.',
+  path: ['general']
+});
+
+export type ModInputsMiPerfil = z.infer<typeof modMiPerfilSchema>;
+
 
 export const listaUsuariosSchema = z.object({
   // Campos para búsqueda parcial (LIKE)
