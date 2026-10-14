@@ -7,6 +7,7 @@ import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 import { listarEntidad } from "../hooks/funcionListar";
+import pool from "../bd";  // pool de MySQL para validaciones previas directas
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -240,7 +241,43 @@ const anularInscripcion = async(
     dataInsc : AnularInscripcionInputs, 
     dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
 ) =>{
-    //1. Definimos las SQL (las mismas que ya tenés)
+    // 1. Validaciones previas de FKs ANTES de entrar en transacción
+    // Esto evita entrar en transacción solo para fallar por FK y da error claro al servicio
+
+    // Verificar que la caja existe y está abierta
+    const sqlVerifCaja = `SELECT id_caja FROM cajas WHERE id_caja = ? AND estado = 'abierta' AND id_escuela = ? LIMIT 1`;
+    const [rowsCaja]: any = await pool.execute(sqlVerifCaja, [dataCaja.id_caja, dataInsc.id_escuela]);
+    if (rowsCaja.length === 0) {
+        return {
+            error: true,
+            message: "Caja no encontrada o no está abierta para esta escuela",
+            code: "CAJA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // Verificar que la categoría existe, es de egreso y pertenece a la escuela
+    const sqlVerifCat = `SELECT id_categoria FROM categorias_caja WHERE id_categoria = ? AND id_escuela = ? AND tipo_movimiento = 'egreso' LIMIT 1`;
+    const [rowsCat]: any = await pool.execute(sqlVerifCat, [dataCaja.id_categoria, dataInsc.id_escuela]);
+    if (rowsCat.length === 0) {
+        return {
+            error: true,
+            message: "Categoría de anulación inválida o no pertenece a esta escuela",
+            code: "CATEGORIA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // Verificar que la cuenta existe y pertenece a la escuela
+    const sqlVerifCuenta = `SELECT id_cuenta FROM cuentas_escuela WHERE id_cuenta = ? AND id_escuela = ? LIMIT 1`;
+    const [rowsCuenta]: any = await pool.execute(sqlVerifCuenta, [dataCaja.id_cuenta, dataInsc.id_escuela]);
+    if (rowsCuenta.length === 0) {
+        return {
+            error: true,
+            message: "Cuenta/método de pago inválido o no pertenece a esta escuela",
+            code: "CUENTA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // 2. Definimos las SQL
     const sqlInsc = `update inscripciones 
                         set inscripciones.estado = "suspendido"
                         where 
@@ -293,10 +330,12 @@ const anularInscripcion = async(
             };
         };
 
+        // Propagar detail del hook si existe (error MySQL real)
         return {
                 error : true,
-                message : "Transaccion fallida",
-                code : "TRANSACCION_FALLIDA"
+                message : resultado.message || "Transaccion fallida",
+                code : "TRANSACCION_FALLIDA",
+                detail: resultado.detail
         };              
 };
 

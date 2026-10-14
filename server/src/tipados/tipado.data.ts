@@ -15,6 +15,8 @@ export type TipadoData<T> ={
                     totalRegistros? : number};
     code : string;
     errorsDetails?: any;
+    /** Metadatos extra (ej: error MySQL detail en transacciones fallidas) */
+    detail?: any;
 }
 
 // --------------- PLANES ------------------

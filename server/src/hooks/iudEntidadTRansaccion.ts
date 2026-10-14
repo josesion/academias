@@ -60,10 +60,27 @@ export const iudEntidadTransaction = async <T>(
     await conn.rollback();
     conn.release();
 
+    // LOG DETALLADO para diagnosticar errores de transacción (FK, deadlock, constraints, etc.)
+    console.error("[TRANSACCION_FALLIDA]", {
+      message: error.message,
+      code: error.code,           // ej: 'ER_NO_REFERENCED_ROW_2'
+      errno: error.errno,         // ej: 1452
+      sqlState: error.sqlState,   // ej: '23000'
+      sqlMessage: error.sqlMessage,
+      stack: error.stack
+    });
+
     return {
       error: true,
       message: error.message || "Error en transacción",
-      code: "TRANSACCION_FALLIDA"
+      code: "TRANSACCION_FALLIDA",
+      // metadata para que el servicio pueda actuar distinto según el error MySQL
+      detail: {
+        mysqlCode: error.code,
+        errno: error.errno,
+        sqlMessage: error.sqlMessage,
+        sqlState: error.sqlState
+      }
     };
   }
 };

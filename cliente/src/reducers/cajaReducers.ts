@@ -17,6 +17,11 @@ export interface CajaTipado {
         movimientosExtas : boolean,
         aperturaCaja : boolean,
         cierreCaja : boolean,
+        movimientos : boolean,
+        metricasTipoCuentas : boolean,
+        panelPrincipal : boolean,
+        cuentasActivas : boolean,
+        cuentasSesion : boolean,
     };
     // UI y Control de Modales
     estadoCaja: EstadoCaja;
@@ -75,6 +80,11 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
         aperturaCaja : false,
         cierreCaja   : false,
         movimientosExtas : false,
+        movimientos : false,
+        metricasTipoCuentas : false,
+        panelPrincipal : false,
+        cuentasActivas : false,
+        cuentasSesion : false,
     },
 
     estadoCaja: "cerrada",
@@ -145,7 +155,12 @@ export type CajaAction =
 
     | { type : "CARGA_MOVIEMENTO_EXTRAS" ; payload : boolean }
     | { type : "CARGA_MOVIEMENTO_APERTURA" ; payload : boolean }
-    | { type : "CARGA_MOVIEMENTO_CIERRE" ; payload : boolean }    
+    | { type : "CARGA_MOVIEMENTO_CIERRE" ; payload : boolean }
+    | { type : "SET_CARGA_MOVIMIENTOS" ; payload : boolean }
+    | { type : "SET_CARGA_METRICAS_TIPOS" ; payload : boolean }
+    | { type : "SET_CARGA_PANEL_PRINCIPAL" ; payload : boolean }
+    | { type : "SET_CARGA_CUENTAS_ACTIVAS" ; payload : boolean }
+    | { type : "SET_CARGA_CUENTAS_SESION" ; payload : boolean }    
 
     | { type: 'INICIAR_OPERACION' }
     | { type: 'FINALIZAR_OPERACION' }   

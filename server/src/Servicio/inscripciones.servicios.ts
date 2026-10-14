@@ -347,11 +347,37 @@ const anularInscripcionServicio = async (
             // 9. Impactamos la Base de Datos con la transacción
             const anularInscripcion = await inscripcionesData.anularInscripcion(verificacionInsc, validarCaja);
 
-            if (anularInscripcion.code === "TRANSACCION_FALLIDA") {
+            // Manejar errores de pre-validación (FKs inválidas detectadas ANTES de transacción)
+            if (anularInscripcion.code === "CAJA_NO_VALIDA_ANULAR" ||
+                anularInscripcion.code === "CATEGORIA_NO_VALIDA_ANULAR" ||
+                anularInscripcion.code === "CUENTA_NO_VALIDA_ANULAR") {
                 return {
                     error: true,
-                    message: "Error en la transacción, intentar más tarde",
-                    code: "TRANSACCION_FALLIDA_ANULAR_INCRIPCION"
+                    message: anularInscripcion.message,
+                    code: anularInscripcion.code
+                };
+            }
+
+            if (anularInscripcion.code === "TRANSACCION_FALLIDA") {
+                // Usar detail del hook para dar mensaje específico según error MySQL
+                const detail = anularInscripcion.detail || {};
+                let msg = "Error en la transacción, intentar más tarde";
+                
+                if (detail.mysqlCode === 'ER_NO_REFERENCED_ROW_2') {
+                    msg = "Datos inválidos: caja, categoría o cuenta inexistente (FK)";
+                } else if (detail.mysqlCode === 'ER_LOCK_DEADLOCK') {
+                    msg = "Deadlock en base de datos, reintente en unos segundos";
+                } else if (detail.mysqlCode === 'ER_DUP_ENTRY') {
+                    msg = "Entrada duplicada en la transacción";
+                } else if (detail.sqlMessage) {
+                    msg = detail.sqlMessage;
+                }
+                
+                return {
+                    error: true,
+                    message: msg,
+                    code: "TRANSACCION_FALLIDA_ANULAR_INCRIPCION",
+                    detail
                 };
             };
 

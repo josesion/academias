@@ -7,7 +7,7 @@
     margin-top: 10px;
     
     /* Tu estética oscura con neón */
-    background: #1d1d2b; /* Fondo oscuro sólido */
+    background: #1d1d2b !important; /* Fondo oscuro sólido - FORZADO para legibilidad en cualquier contexto */
     border: 1px solid rgba(255, 77, 77, 0.2); /* Borde suave */
     border-left: 4px solid #ff4d4d; /* La barra distintiva de error */
     border-radius: 8px;
@@ -55,7 +55,7 @@
 
 /* --- TEXTO --- */
 .error-mensaje {
-    color: #f2f2f2; /* Blanco limpio para lectura rápida */
+    color: #f2f2f2 !important; /* Blanco limpio para lectura rápida - FORZADO para legibilidad en cualquier contexto */
     font-size: 13px;
     margin: 0;
     font-weight: 500;
