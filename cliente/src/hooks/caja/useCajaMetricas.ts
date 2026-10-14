@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
@@ -9,7 +9,7 @@ import type {
 } from "../../reducers/cajaReducers";
 
 interface MetricasCajaConfig {
-      
+       
     servicios : {
          metricasPanelCaja : ServicioCrud,
          movimientoCajaDetalle : ServicioCrud,
@@ -27,6 +27,9 @@ export const useCajaMetricas = ( config : MetricasCajaConfig) => {
 
    // VER EL TEMA DE Q CUANDO SE HAGA UNA INSCRIPCION ACTULIZT EL LISTADO  
    // const { actualizarIngresoInscipcion } = useIncripcionesUsuarios();
+
+   // Track initial load to show global spinner only once
+   const initialLoadRef = useRef({ metricas: true, panel: true });
 
 // ──────────────────────────────────────────────────────────────
 //Obtener el monto real contado por el usuario
@@ -53,7 +56,11 @@ export const useCajaMetricas = ( config : MetricasCajaConfig) => {
 
 useEffect( ()=> {
     const metricas = async () => {
-        dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: true });
+        // Solo loading global en carga inicial
+        if (initialLoadRef.current.metricas) {
+            dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: true });
+            initialLoadRef.current.metricas = false;
+        }
         const servicioApiFetch = config.servicios.metricasPanelCaja;
         const data = {
             id_caja : state.dataCaja.id_caja,
@@ -70,7 +77,9 @@ useEffect( ()=> {
            dispatch({ type : "SET_METRICAS_TIPO_CUENTAS" , payload : null });
 
         };
-        dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: false });
+        if (initialLoadRef.current.metricas === false) {
+            dispatch({ type: "SET_CARGA_METRICAS_TIPOS", payload: false });
+        }
     };
 
     metricas();
@@ -85,7 +94,11 @@ useEffect( ()=> {
 useEffect( ()=> {
 
     const metricasPrincipalCaja = async () =>{
-        dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: true });
+        // Solo loading global en carga inicial
+        if (initialLoadRef.current.panel) {
+            dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: true });
+            initialLoadRef.current.panel = false;
+        }
         const servicioApiFetch = config.servicios.metricasPanelPrincipal;
         const metricasResult = await servicioApiFetch(state.dataCaja);
       
@@ -96,7 +109,9 @@ useEffect( ()=> {
             dispatch({ type : "SET_PANEL_PRINCIPAL" , payload : null });
 
         };
-        dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: false });
+        if (initialLoadRef.current.panel === false) {
+            dispatch({ type: "SET_CARGA_PANEL_PRINCIPAL", payload: false });
+        }
     };
 
     metricasPrincipalCaja();
@@ -106,8 +121,7 @@ useEffect( ()=> {
 
 
 
+
     return ;
 
-}; 
-
-
+};

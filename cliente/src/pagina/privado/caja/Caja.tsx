@@ -73,16 +73,13 @@ export const CajaArqueo = () => {
   const historialId = useId();
   const metodosId = useId();
 
-  // Carga global: mientras haya cualquier carga crítica
-  const cargandoGlobal = state.carga.aperturaCaja 
-    || state.carga.cierreCaja 
-    || state.carga.movimientosExtas 
-    || state.carga.movimientos
+  // Carga global SOLO en primera carga (id_caja null) y datos críticos pendientes
+  const cargandoGlobal = !state.dataCaja.id_caja && (
+    state.carga.movimientos
     || state.carga.metricasTipoCuentas
     || state.carga.panelPrincipal
     || state.carga.cuentasActivas
-    || state.carga.cuentasSesion
-    || state.enviando;
+  );
 
   return (
     // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark

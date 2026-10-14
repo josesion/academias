@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -27,6 +27,8 @@ export const useEntidadesExternasCaja = ( config : EntidadesExternasCajaConfig) 
         estado : "activos"
    }; 
 
+   // Track initial load for cuentasSesion (cuentasActivas runs once on mount)
+   const initialLoadRef = useRef({ cuentasSesion: true });
 
 // ──────────────────────────────────────────────────────────────
 // Obtener el listado de tipo cuentas activas para el selector de movimiento extraordinario
@@ -77,7 +79,11 @@ useEffect( ()=> {
 useEffect( ()=> {
 
     const obtenerListadoCuentasSession = async () => {
-        dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: true });
+        // Solo loading global en carga inicial
+        if (initialLoadRef.current.cuentasSesion) {
+            dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: true });
+            initialLoadRef.current.cuentasSesion = false;
+        }
         const servicioApiFetch = config.servicios.cuentasSesion;
         const resultListacoCuentas = await servicioApiFetch({});
        
@@ -86,7 +92,7 @@ useEffect( ()=> {
                 type : "SET_LISTADO_CUENTAS_SESION",
                 payload : resultListacoCuentas.data
             });
-    
+     
             const detallesIniciales = resultListacoCuentas.data.map((cuenta: ListadoTipoCuentas) => ({
                 id_cuenta: cuenta.id_cuenta,
                 nombre_cuenta: cuenta.nombre_cuenta,
@@ -105,7 +111,9 @@ useEffect( ()=> {
                 payload : resultListacoCuentas.message || "Error sin listado cuentas" 
             });
         };
-        dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: false });
+        if (initialLoadRef.current.cuentasSesion === false) {
+            dispatch({ type: "SET_CARGA_CUENTAS_SESION", payload: false });
+        }
     };
 
     obtenerListadoCuentasSession();

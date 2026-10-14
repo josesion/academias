@@ -221,7 +221,6 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
    
     const handRegistarMovimientoExtraordinario = async () => {
         try{
-            dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : true });
             if (state.dataCaja.id_caja === null){
                 return   dispatch({
                     type : "SET_ERROR",
@@ -304,7 +303,6 @@ export const useCajaMovimientos = ( config : MovimientosCajaConfig ) => {
                 payload : "Error en la carga en el servidor."
             });
         }finally{
-           dispatch({ type : "CARGA_MOVIEMENTO_EXTRAS", payload : false });
         };    
 
 
