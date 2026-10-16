@@ -92,7 +92,7 @@
 .btn-cerrar-modal {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: var(--titulo-md);
   color: var(--texto-secundario);
   cursor: pointer;
   transition: var(--transicion);
@@ -179,7 +179,7 @@
 
 .clase-tipo {
   font-family: var(--fuente-titulos);
-  font-size: 1rem;
+  font-size: var(--texto-lg);
   font-weight: var(--peso-semi-negrita);
   color: var(--texto-principal);
   margin: 0;
@@ -298,7 +298,7 @@
 }
 
 .clase-detalles-meta-calendario .meta-badge {
-  font-size: 0.68rem;
+  font-size: var(--texto-xs);
   gap: 4px;
   color: var(--texto-secundario);
 }

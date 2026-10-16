@@ -1,8 +1,10 @@
-import { coloresSobrios } from "./ListadoCajasBase"; 
+import { coloresSobrios } from "./ListadoCajasBase";
 
 import { type ListadoCajas , type ListadoCajaAction} from "../../reducers/listadoCajaReducer";
+import type { CajasResumenResponse, DataResumen } from "../../servicio/historial.cajas.fetch";
+import type { ApiSuccessResponse } from "../../utils/apiFetch";
 
-type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
+type ServicioCrud = (data: DataResumen, signal?: AbortSignal) => Promise<ApiSuccessResponse<CajasResumenResponse>>;
 
 interface LibroDiarioCongif {
 
@@ -20,32 +22,35 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
     const abrirLibroDiario =async (idCaja: number) =>{
   
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
+      dispatchLibroDiario({ type : "SET_CARGA_DETALLE", payload : true });
 
       const detalle = config.servicios.detalleCajaResumen;
       
-      const resultDetalle = await detalle({ id_caja : idCaja });
-   
-      
-      const metodoPago = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' ? resultDetalle.data.dataMetodo : null ;
+      try {
+        const resultDetalle = await detalle({ id_caja : idCaja });
+    
+        const metodoPago = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' ? resultDetalle.data.dataMetodo : null ;
 
-      const metodoPagoSet = metodoPago.map( ( item :{id_cuenta : number, metodo : string, total : number} , index : number ) =>({
-        ...item,
-        color : coloresSobrios[index % coloresSobrios.length]
-      }));
+        const metodoPagoSet = metodoPago?.map( ( item :{id_cuenta : number, metodo : string, total : number} , index : number ) =>({
+          ...item,
+          color : coloresSobrios[index % coloresSobrios.length]
+        })) ?? [];
 
-      const result = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' 
-                     ? { 
-                          dataDetalle: resultDetalle.data.dataDetalle,
-                          dataMetodo : metodoPagoSet
-                     } : null; 
-                     
-
-      dispatchLibroDiario({ 
-            type : "SET_DETALLE_CAJA", 
-            payload : result 
-            ? result
-            : null  
-      }); 
+        const result = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' 
+                       ? { 
+                            dataDetalle: resultDetalle.data.dataDetalle,
+                            dataMetodo : metodoPagoSet
+                       } : null;
+                       
+        dispatchLibroDiario({ 
+              type : "SET_DETALLE_CAJA", 
+              payload : result 
+              ? result
+              : null  
+        }); 
+      } finally {
+        dispatchLibroDiario({ type : "SET_CARGA_DETALLE", payload : false });
+      }
 
     };
 
@@ -53,6 +58,7 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : false });
       // y aca lo borramos
       dispatchLibroDiario({ type : "SET_DETALLE_CAJA", payload : null });
+      dispatchLibroDiario({ type : "SET_CARGA_DETALLE", payload : false });
     };
 
 

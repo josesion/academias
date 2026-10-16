@@ -110,11 +110,12 @@ const listarUsuarios = async (data: ListadoUsuarioAdminQuery): Promise<TipadoDat
  * 1. Valida el body con `EsquemaCrearUsuarioAdmin` (Zod vive solo en esta capa):
  *    si algo falla lanza `ZodError` y **no se consulta ni inserta nada** (400 VALIDATION_ERROR).
  * 2. Comprueba que el nombre de login no esté ocupado (`USUARIO_EXISTE`) → corta con 409.
- * 3. Si está libre, delega en la data, que hashea la contraseña con bcrypt antes del INSERT.
+ * 3. Si el rol es "alumno", valida que el usuario sea email válido.
+ * 4. Si está libre, delega en la data, que hashea la contraseña con bcrypt antes del INSERT.
  *
  * @param data - Datos del usuario: los 8 campos del body (`id_escuela` también, ver `AGENTS.md`).
  * @returns {Promise<TipadoData<DataCrearResultUsuarioAdmin>>} `CREAR_USUARIO_ADMIN_OK`,
- *   `USUARIO_YA_REGISTRADO` (409) o `ERROR_SERVIDOR`.
+ *   `USUARIO_YA_REGISTRADO` (409), `USERNAME_MUST_BE_EMAIL` (409) o `ERROR_SERVIDOR`.
  */
 const crear = async (data: InputCrearUsuarioAdmin): Promise<TipadoData<DataCrearResultUsuarioAdmin>> => {
 
@@ -131,7 +132,19 @@ const crear = async (data: InputCrearUsuarioAdmin): Promise<TipadoData<DataCrear
         };
     };
 
-    // 2. Alta con la contraseña hasheada (el hash se hace en la data, antes del INSERT)
+    // 2. Si el rol es alumno, el usuario debe ser email válido
+    if ( parametros.rol === "alumno" ){
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if ( !emailRegex.test(parametros.usuario) ){
+            return {
+                error : true,
+                message : "Para rol alumno el usuario debe ser un email válido",
+                code : "USERNAME_MUST_BE_EMAIL"
+            };
+        }
+    };
+
+    // 3. Alta con la contraseña hasheada (el hash se hace en la data, antes del INSERT)
     const resultado = await dataUsuarioAdmin.crear(parametros);
 
     if ( resultado.code === "USUARIOS_CREAR" ){
@@ -193,6 +206,18 @@ const actualizar = async (data: unknown): Promise<TipadoData<DataActualizarResul
                 message : "Ese nombre de usuario ya está en uso.",
                 code : "USUARIO_YA_REGISTRADO"
             };
+        };
+
+        // 2b. Si el usuario objetivo es alumno, el nuevo usuario debe ser email válido
+        if ( objetivo.data.rol === "alumno" ){
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if ( !emailRegex.test(parametros.usuario) ){
+                return {
+                    error : true,
+                    message : "Para rol alumno el usuario debe ser un email válido",
+                    code : "USERNAME_MUST_BE_EMAIL"
+                };
+            }
         };
     };
 

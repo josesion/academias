@@ -1,5 +1,5 @@
 /* ============================================================
-   ELPIS — INICIO / LANDING PAGE
+   ELPHIS — INICIO / LANDING PAGE
    PARTE 1
    ============================================================ */
 
@@ -183,7 +183,7 @@
 
     color:var(--texto-secundario);
 
-    font-size:1rem;
+    font-size:var(--texto-lg);
 
     line-height:1.75;
 
@@ -337,7 +337,7 @@
 
     color:var(--texto-secundario);
 
-    font-size:.68rem;
+    font-size:var(--texto-xs);
 
     white-space:nowrap;
 
@@ -559,7 +559,7 @@
 
     color:var(--color-primario);
 
-    font-size:.68rem;
+    font-size:var(--texto-xs);
 
     font-weight:var(--peso-negrita);
 
@@ -718,7 +718,7 @@
 
     font-family:var(--fuente-titulos);
 
-    font-size:1rem;
+    font-size:var(--texto-lg);
 
     font-weight:var(--peso-negrita);
 
@@ -739,7 +739,7 @@
 }
 
 /* ============================================================
-   ELPIS — INICIO / LANDING PAGE
+   ELPHIS — INICIO / LANDING PAGE
    PARTE 2
    ============================================================ */
 
@@ -791,7 +791,7 @@
 
     font-size:.82rem;
 
-    line-height:1.5;
+    line-height:var(--linea-texto);
 
     transition:var(--transicion);
 
@@ -1053,7 +1053,7 @@
 
     font-size:.8rem;
 
-    line-height:1.5;
+    line-height:var(--linea-texto);
 
 }
 
@@ -1208,7 +1208,7 @@
 
     font-family:var(--fuente-titulos);
 
-    font-size:1.15rem;
+    font-size:var(--titulo-sm);
 
     font-weight:var(--peso-negrita);
 
@@ -1417,7 +1417,7 @@
 
     .estadistica strong{
 
-        font-size:1rem;
+        font-size:var(--texto-lg);
 
     }
 
@@ -1453,7 +1453,7 @@
 
     .dashboard_item strong{
 
-        font-size:1rem;
+        font-size:var(--texto-lg);
 
     }
 

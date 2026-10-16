@@ -133,7 +133,7 @@
 
     font-family: var(--fuente-codigo);
 
-    font-size: 0.68rem;
+    font-size: var(--texto-xs);
 
     font-weight: var(--peso-negrita);
 
@@ -410,7 +410,7 @@
     }
 
     .estado_caja_titulo h2 {
-        font-size: 1rem;
+        font-size: var(--texto-lg);
     }
 
     .estado_caja_icono {
@@ -431,6 +431,6 @@
     }
 
     .estado_caja_monto strong {
-        font-size: 1rem;
+        font-size: var(--texto-lg);
     }
 }

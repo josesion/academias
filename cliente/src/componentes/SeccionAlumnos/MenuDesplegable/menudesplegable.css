@@ -26,7 +26,7 @@
   position: fixed;
   inset: 0;
   z-index: 950;
-  background: rgba(27, 28, 27, 0.4);
+  background: var(--texto-deshabilitado);
   backdrop-filter: blur(2px);
   animation: overlay_fade_in 0.25s ease forwards;
 }

@@ -1,18 +1,4 @@
 /* ========================================= */
-/* RESET Y FONDO GLOBAL */
-/* ========================================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: #050505;
-    overflow: hidden;
-}
-
-/* ========================================= */
 /* CONTENEDOR PRINCIPAL */
 /* ========================================= */
 .contenedor_logo {

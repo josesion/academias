@@ -18,7 +18,7 @@
   color: var(--color-secundario);
   font-family: var(--fuente-titulos);
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: var(--peso-negrita);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,7 +36,7 @@
 .hero-titulo {
   font-family: var(--fuente-titulos);
   font-size: 1.6rem;
-  font-weight: 600;
+  font-weight: var(--peso-semi-negrita);
   line-height: var(--linea-titulo);
   color: var(--texto-principal);
 }

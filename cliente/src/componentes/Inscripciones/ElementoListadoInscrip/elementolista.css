@@ -93,14 +93,14 @@
     height: 4px;
     width: 100%;
     background: var(--fondo-superficie);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
     overflow: hidden;
 }
 
 .barra_progreso_tabla {
     height: 100%;
     background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 .fecha_tabla {
@@ -282,14 +282,14 @@
         height: 5px;
         width: 100%;
         background: var(--fondo-superficie);
-        border-radius: 10px;
+        border-radius: var(--radio-sm);
         overflow: hidden;
     }
 
     .barra_progreso {
         height: 100%;
         background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
-        border-radius: 10px;
+        border-radius: var(--radio-sm);
     }
 
     .tarjeta_detalles_inferiores {
@@ -333,7 +333,7 @@
     }
 
     .alumno_nombre {
-        font-size: 1.15rem;
+        font-size: var(--titulo-sm);
     }
 
     .plan_nombre {
@@ -430,7 +430,7 @@
     }
 
     .alumno_nombre {
-        font-size: 1rem.
+        font-size: var(--texto-lg).
     }
 
     .alumno_dni {

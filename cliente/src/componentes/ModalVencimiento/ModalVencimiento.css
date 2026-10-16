@@ -34,7 +34,7 @@
   gap: 14px;
 
   padding: 40px 32px 32px;
-  border-radius: var(--radio-lg, 20px);
+  border-radius: var(--radio-lg);
   background: var(--fondo-secundario);
   box-shadow: var(--sombra-lg);
   overflow: hidden;
@@ -92,7 +92,7 @@
 .modal-vencimiento-titulo {
   margin: 0;
   font-family: var(--fuente-titulos);
-  font-size: var(--titulo-sm, 1.4rem);
+  font-size: var(--titulo-sm);
   font-weight: var(--peso-negrita);
   color: var(--texto-principal);
 }
@@ -102,7 +102,7 @@
   max-width: 34ch;
   font-family: var(--fuente-principal);
   font-size: var(--texto-sm);
-  line-height: 1.5;
+  line-height: var(--linea-texto);
   color: var(--texto-secundario);
 }
 
@@ -230,7 +230,7 @@
    (el reduced-motion ya estaba desde la spec que creo el modal)
    ========================================================================== */
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .modal-vencimiento {
     border-width: 3px !important;
   }

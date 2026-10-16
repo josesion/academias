@@ -91,7 +91,9 @@ export interface ModMiPerfilInput {
     nueva_contrasena?: string;
     correo?: string;
     celular?: string;
-    contrasena_actual: string;
+    /** Opcional: requerida únicamente cuando se envía `nueva_contrasena`
+     *  (lo garantiza el refine de modMiPerfilSchema). */
+    contrasena_actual?: string;
 }
 
 export interface UsuarioListado {

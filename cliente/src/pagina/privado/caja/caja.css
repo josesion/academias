@@ -248,12 +248,12 @@
 
 .scroll_movimientos::-webkit-scrollbar-track {
   background: var(--fondo-hover);
-  border-radius: 10px;
+  border-radius: var(--radio-sm);
 }
 
 .scroll_movimientos::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-  border-radius: 10px;
+  border-radius: var(--radio-sm);
 }
 
 .scroll_movimientos::-webkit-scrollbar-thumb:hover {
@@ -388,7 +388,7 @@
   /* Animaciones de modales propios se manejan en sus CSS respectivos */
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .caja_arqueo_grid {
     border: 2px solid var(--borde);
   }

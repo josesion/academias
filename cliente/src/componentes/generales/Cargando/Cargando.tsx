@@ -2,7 +2,13 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import "./cargando.css";
 
-export const ComponenteCargando = () => {
+/**
+ * Componente de carga con spinner animado.
+ * @param local - Si es true, el spinner se posiciona RELATIVE al contenedor padre
+ *                en vez de fixed full-screen. Usar cuando el loading es de una
+ *                sección específica (no de toda la pantalla).
+ */
+export const ComponenteCargando = ({ local = false }: { local?: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const cartelRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +43,7 @@ export const ComponenteCargando = () => {
 
   return (
     <div
-      className="overlay_cargando"
+      className={local ? "overlay_cargando--local" : "overlay_cargando"}
       ref={containerRef}
       role="status"
       aria-live="polite"

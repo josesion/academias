@@ -42,9 +42,9 @@
 }
 
 .section-title {
-  font-family: var(--fuente-titulos, serif);
-  font-size: var(--texto-lg, 1.1rem);
-  font-weight: var(--peso-semi-negrita, 600);
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semi-negrita);
   color: var(--texto-principal);
   margin: 0;
 }
@@ -62,7 +62,7 @@
 
 .caracteristicas-list-wrapper {
   border: 1px solid var(--borde);
-  border-radius: var(--radio-md, 16px);
+  border-radius: var(--radio-md);
   background-color: var(--fondo-superficie);
   padding: 0.9rem;
   /* sin flex/overflow propio: la lista crece con su contenido y el

@@ -50,7 +50,7 @@
 .skeleton-cell--progress {
     height: 4px;
     width: 60%;
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 .skeleton-cell--badge {
@@ -167,11 +167,11 @@
 .listado_wrapper::-webkit-scrollbar { width: 8px; }
 .listado_wrapper::-webkit-scrollbar-track {
     background: var(--fondo-hover);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 .listado_wrapper::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 .listado_wrapper::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(

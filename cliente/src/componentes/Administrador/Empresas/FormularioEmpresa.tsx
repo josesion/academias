@@ -104,7 +104,7 @@ export const FormularioEmpresa = (props: PropsFormularioEmpresa) => {
                 <Inputs
                     type="text"
                     label="Razón social"
-                    placeholder="ej: ELPIS Comunicación"
+                    placeholder="ej: ELPHIS Comunicación"
                     readonly={false}
                     name={formulario.razon_social.name}
                     value={formulario.razon_social.value}

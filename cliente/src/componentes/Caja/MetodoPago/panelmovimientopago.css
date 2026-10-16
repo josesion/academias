@@ -140,7 +140,7 @@
 }
 
 .metodo_monto_total .monto_decimal {
-    font-size: 1rem;
+    font-size: var(--texto-lg);
     font-weight: var(--peso-normal);
     color: var(--texto-deshabilitado);
     opacity: 0.65; /* Efecto desvanecido */
@@ -166,7 +166,7 @@
     color: var(--texto-secundario);
     font-family: var(--fuente-codigo);
     text-transform: uppercase;
-    font-size: 0.68rem;
+    font-size: var(--texto-xs);
 }
 
 .dato_valor {

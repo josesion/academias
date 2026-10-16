@@ -197,7 +197,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .boton_personalizado {
     border-width: 2px !important;
   }

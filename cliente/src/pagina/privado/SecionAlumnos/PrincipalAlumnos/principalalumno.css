@@ -425,7 +425,7 @@
 }
 
 /* High contrast mode support */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .principal-alumno-container {
     gap: 24px;
   }

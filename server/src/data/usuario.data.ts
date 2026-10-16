@@ -226,10 +226,14 @@ const modMiPerfil = async (parametro: ModMiPerfilInput): Promise<TipadoData<Data
 
     const { contrasena: hashActual, usuario: usuarioBD, nombre: nombreBD, apellido: apellidoBD, correo: correoBD, celular: celularBD, rol, id_escuela } = resultado[0];
 
-    // 2. Verificar contraseña actual
-    const passwordValida = await bcrypt.compare(contrasena_actual, hashActual);
-    if (!passwordValida) {
-        throw new ClientError("La contraseña actual es incorrecta.", 401, "INVALID_PASSWORD");
+    // 2. Verificar contraseña actual SOLO si se envía.
+    //    Es obligatoria únicamente al cambiar la contraseña (lo garantiza el refine
+    //    de modMiPerfilSchema); para modificar otros datos no se requiere.
+    if (contrasena_actual !== undefined) {
+        const passwordValida = await bcrypt.compare(contrasena_actual, hashActual);
+        if (!passwordValida) {
+            throw new ClientError("La contraseña actual es incorrecta.", 401, "INVALID_PASSWORD");
+        }
     }
 
     let usuarioFinal = usuarioBD;

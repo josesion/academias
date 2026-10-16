@@ -27,7 +27,7 @@
     /* NUEVO: Mantiene el título fijo arriba al hacer scroll */
     position: sticky;
     top: 0;
-    background-color: var(--fondo-principal, #0f172a); 
+    background-color: var(--fondo-principal); 
     z-index: 10;
     padding-top: 4px;
 

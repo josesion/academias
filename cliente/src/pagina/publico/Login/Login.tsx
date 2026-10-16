@@ -49,7 +49,7 @@ export const Login = () => {
           título visible ("Iniciar Sesión"); lo que faltaba era el <h1> de la
           página, para que el lector de voz anuncie un título nivel 1. */}
       <header>
-        <h1 className="visually-hidden">Iniciar sesión en ELPIS</h1>
+        <h1 className="visually-hidden">Iniciar sesión en ELPHIS</h1>
       </header>
 
       <section aria-labelledby={formId} className="login_pagina_seccion">

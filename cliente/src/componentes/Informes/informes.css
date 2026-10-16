@@ -57,7 +57,7 @@
     min-width: 0;
     color: var(--texto-deshabilitado);
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: var(--peso-semi-negrita);
     letter-spacing: 0.06em;
 }
 
@@ -68,7 +68,7 @@
     border: 2px solid currentColor;
     border-radius: 3px;
     font-size: 0.65rem;
-    font-weight: 700;
+    font-weight: var(--peso-negrita);
     letter-spacing: 0.1em;
     transform: rotate(-5deg);
     opacity: 0.9;
@@ -92,7 +92,7 @@
 .recibo_total_label {
     color: var(--texto-deshabilitado);
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: var(--peso-semi-negrita);
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
@@ -106,7 +106,7 @@
     margin-top: 6px;
     max-width: 100%;
     font-size: 2.3rem;
-    font-weight: 700;
+    font-weight: var(--peso-negrita);
     letter-spacing: -1px;
 }
 
@@ -166,7 +166,7 @@
 
 .recibo_fila_valor {
     min-width: 0;
-    font-weight: 700;
+    font-weight: var(--peso-negrita);
     text-align: right;
     color: var(--texto-principal);
     overflow: hidden;
@@ -215,8 +215,8 @@
     align-items: center;
     gap: 5px;
     color: var(--color-advertencia);
-    font-size: 0.68rem;
-    font-weight: 700;
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -226,7 +226,7 @@
     color: var(--texto-principal);
     font-size: 0.82rem;
     font-style: italic;
-    line-height: 1.5;
+    line-height: var(--linea-texto);
 }
 
 /* ==========================================================================
@@ -286,7 +286,7 @@
     width: 100%;
     min-height: 44px;
     border-radius: var(--radio-md);
-    font-weight: 700;
+    font-weight: var(--peso-negrita);
 }
 
 /* ==========================================================================

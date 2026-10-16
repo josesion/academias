@@ -249,7 +249,7 @@
 
     font-size:.72rem;
 
-    font-weight:700;
+    font-weight:var(--peso-negrita);
 
     letter-spacing:.18em;
 
@@ -265,7 +265,7 @@
 
     font-size:1.55rem;
 
-    font-weight:700;
+    font-weight:var(--peso-negrita);
 
     color:var(--texto-principal);
 
@@ -279,7 +279,7 @@
 
     max-width:300px;
 
-    font-size:.92rem;
+    font-size:var(--texto-md);
 
     color:var(--texto-secundario);
 
@@ -447,7 +447,7 @@
 
         gap:22px;
 
-        border-radius:22px;
+        border-radius:var(--radio-lg);
 
     }
 

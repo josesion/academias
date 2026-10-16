@@ -45,7 +45,7 @@
 .info_clases_item h2 {
     margin: 0;
     font-family: var(--fuente-titulos);
-    font-size: 1.15rem;
+    font-size: var(--titulo-sm);
     font-weight: var(--peso-negrita);
     color: var(--texto-principal);
 }

@@ -411,7 +411,7 @@ export const Inicio = () => {
               </h1>
 
               <p className="hero_descripcion anim" style={d(3)}>
-                ELPIS reúne alumnos, profesores, horarios, caja, asistencias,
+                ELPHIS reúne alumnos, profesores, horarios, caja, asistencias,
                 inscripciones, reportes y mucho más en una plataforma moderna,
                 rápida y fácil de utilizar.
               </p>
@@ -539,7 +539,7 @@ export const Inicio = () => {
         <div className="pantalla_contenido">
           <div className="beneficios">
             <TituloSeccion
-              etiqueta="¿POR QUÉ ELPIS?"
+              etiqueta="¿POR QUÉ ELPHIS?"
               titulo="Trabajá menos y controlá más."
             />
 
@@ -635,7 +635,7 @@ export const Inicio = () => {
             </h2>
 
             <p className="anim" style={d(2)}>
-              Probá ELPIS y descubrí una forma más simple de administrar
+              Probá ELPHIS y descubrí una forma más simple de administrar
               alumnos, clases y finanzas.
             </p>
 
@@ -645,11 +645,11 @@ export const Inicio = () => {
           </div>
 
           <footer className="footer anim" style={d(4)}>
-            <h3>ELPIS</h3>
+            <h3>ELPHIS</h3>
 
             <p>Sistema integral para academias de danza.</p>
 
-            <small>© 2026 ELPIS · Todos los derechos reservados.</small>
+            <small>© 2026 ELPHIS · Todos los derechos reservados.</small>
           </footer>
         </div>
       </section>

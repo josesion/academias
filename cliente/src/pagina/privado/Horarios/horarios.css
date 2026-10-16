@@ -87,7 +87,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .horarios_encabezado {
     border-bottom-width: 2px;
   }

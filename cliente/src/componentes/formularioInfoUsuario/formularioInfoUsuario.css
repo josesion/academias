@@ -1,0 +1,315 @@
+/* ============================================================
+   FORMULARIO INFO USUARIO — Estilos
+   Estiliza la salida del componente Inputs (generales) para
+   mantener el diseño original del formulario de perfil.
+   Tokens de app.css: --color-*, --fondo-*, --texto-*, --borde,
+   --radio-*, --sombra-*, --ease-ui, --focus-ring, --focus-offset
+   ============================================================ */
+
+/* ============================================================
+   FORMULARIO — SECCIONES
+   Bordes delicados: uno para Datos Personales, otro para Seguridad
+   ============================================================ */
+
+.perfil_formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;  /* espacio entre las dos secciones */
+}
+
+.perfil_seccion {
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 24px;
+  box-shadow: var(--sombra-sm);
+  transition: border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+}
+
+/* Datos Personales - borde sutil superior */
+.perfil_seccion:first-of-type {
+  border-top: 3px solid var(--color-secundario);
+}
+
+/* Seguridad - borde sutil superior diferente */
+.perfil_seccion:last-of-type {
+  border-top: 3px solid var(--color-primario);
+}
+
+.perfil_seccion:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+}
+
+.perfil_seccion .section-title {
+  margin-bottom: 20px;
+  color: var(--texto-secundario);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semi-negrita);
+}
+
+/* ============================================================
+   GRUPOS DE CAMPOS — Adaptación de Inputs (generales)
+   ============================================================ */
+
+.perfil_grupo {
+  margin-bottom: 20px;
+}
+
+.perfil_grupo:last-child {
+  margin-bottom: 0;
+}
+
+.perfil_grupo .inputs_contenedor {
+  width: 100%;
+}
+
+/* Label: sobrescribir el estilo de Inputs */
+.perfil_grupo .inputs_contenedor label {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.perfil_grupo .inputs_contenedor label:empty {
+  display: none;
+}
+
+/* Asterisco de requerido */
+.perfil_grupo .inputs_contenedor label .inputs_requerido,
+.inputs_requerido {
+  color: var(--color-error);
+  margin-left: 2px;
+  font-family: var(--fuente-principal);
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* Input principal */
+.perfil_grupo .inputs {
+  padding: 12px 14px;
+  font-size: var(--texto-md);
+  border-radius: var(--radio-md);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+}
+
+.perfil_grupo .inputs:hover:not(:disabled):not(:read-only) {
+  border-color: var(--borde-hover);
+}
+
+.perfil_grupo .inputs:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-color: var(--color-secundario);
+  box-shadow: none;
+}
+
+/* Read-only / disabled */
+.perfil_grupo .inputs:disabled,
+.perfil_grupo .inputs:read-only {
+  background: var(--fondo-superficie);
+  color: var(--texto-deshabilitado);
+  cursor: not-allowed;
+  border-color: var(--borde);
+}
+
+.perfil_grupo .inputs::placeholder {
+  color: var(--texto-deshabilitado);
+  opacity: 0.7;
+}
+
+/* Estado de error */
+.perfil_grupo .inputs_contenedor:has(.mensaje_error) .inputs {
+  border-color: var(--color-error);
+}
+
+.perfil_grupo .inputs_contenedor:has(.mensaje_error) .inputs:focus-visible {
+  outline-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+/* Mensaje de error (renderizado por Inputs) */
+.perfil_grupo .mensaje_error {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--color-error);
+  animation: errorEntrada 180ms var(--ease-ui);
+}
+
+@keyframes errorEntrada {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Texto de ayuda */
+.perfil_ayuda {
+  display: block;
+  margin-top: 6px;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.perfil_grupo .error_espacio {
+  min-height: 16px;
+}
+
+/* ============================================================
+   ALERTAS (éxito / error)
+   ============================================================ */
+
+.perfil_alerta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radio-md);
+  font-size: var(--texto-sm);
+  margin-bottom: 20px;
+  animation: alertaEntrada 250ms var(--ease-ui);
+}
+
+@keyframes alertaEntrada {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.perfil_alerta--exito {
+  background: rgba(91, 123, 110, 0.12);
+  border: 1px solid var(--color-exito);
+  color: var(--color-exito);
+}
+
+.perfil_alerta--error {
+  background: rgba(179, 71, 71, 0.12);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+}
+
+.perfil_alerta_cerrar {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radio-sm);
+  transition: background-color 140ms var(--ease-ui);
+}
+
+.perfil_alerta_cerrar:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-contrast: more) {
+  .perfil_alerta {
+    border-width: 2px !important;
+  }
+}
+
+/* ============================================================
+   ACCIONES (Botones) - separados, con espacio
+   ============================================================ */
+
+.perfil_acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px !important;  /* espacio FORZADO entre botones */
+  padding-top: 24px;
+  margin-top: 24px;
+  border-top: 1px solid var(--borde);
+}
+
+/* Resetear cualquier margin del Boton interno */
+.perfil_acciones .boton_personalizado {
+  min-width: 160px;
+  padding: 14px 28px;
+  margin: 0 !important;  /* quitar márgenes si los tiene */
+  flex-shrink: 0;  /* no encoger */
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .perfil_seccion {
+    padding: 20px 16px;
+  }
+
+  .perfil_acciones {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .perfil_acciones .boton_personalizado {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
+/* ============================================================
+   HIGH CONTRAST
+   ============================================================ */
+
+@media (prefers-contrast: more) {
+  .perfil_seccion,
+  .perfil_grupo .inputs {
+    border-width: 2px !important;
+  }
+
+  .perfil_grupo .inputs:focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+  }
+
+  .perfil_alerta {
+    border-width: 2px !important;
+  }
+}
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+@media print {
+  .perfil_acciones,
+  .perfil_alerta_cerrar {
+    display: none !important;
+  }
+
+  .perfil_seccion {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-color: var(--texto-principal) !important;
+  }
+
+  .perfil_grupo .inputs {
+    border-color: var(--texto-principal) !important;
+    color: var(--texto-principal) !important;
+  }
+
+  .perfil_alerta {
+    border-color: var(--texto-principal) !important;
+    color: var(--texto-principal) !important;
+  }
+
+  .perfil_grupo .mensaje_error {
+    display: none;
+  }
+}

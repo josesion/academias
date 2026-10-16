@@ -8,11 +8,6 @@
    mataba el scroll global. Entre otras cosas dejaba muerto el skip link
    "Ir al contenido" (spec 016): el destino ya estaba en pantalla, así que no
    había nada que scrollear. Acá solo queda `min-height` para no pisar nada. */
-html, body {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
-}
 
 .amb_master_wrapper {
     width: 100%;
@@ -42,7 +37,7 @@ html, body {
 .amb_master_wrapper header h1 {
     font-family: var(--fuente-titulos);
     font-size: 2rem;
-    font-weight: 400;
+    font-weight: var(--peso-normal);
     text-transform: capitalize;
     letter-spacing: -0.02em;
     color: var(--texto-principal);
@@ -121,7 +116,7 @@ html, body {
     transform: rotate(180deg);
 
     font-family: var(--fuente-codigo);
-    font-size: 0.68rem;
+    font-size: var(--texto-xs);
     font-weight: var(--peso-semi-negrita);
     letter-spacing: 0.12em;
     text-transform: uppercase;

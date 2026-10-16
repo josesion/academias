@@ -120,7 +120,7 @@
 .card-exito p {
     color: #4CAF50; /* Verde éxito */
     margin: 0;
-    font-weight: 600;
+    font-weight: var(--peso-semi-negrita);
     font-size: 1.1rem;
     text-transform: uppercase;
 }

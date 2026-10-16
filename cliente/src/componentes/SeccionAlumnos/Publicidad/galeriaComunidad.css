@@ -7,10 +7,10 @@
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
-  font-family: var(--fuente-principal, inherit);
-  background: var(--fondo-secundario, #1e1e1e);
-  border: 1px solid var(--borde, #333);
-  border-radius: var(--radio-lg, 16px);
+  font-family: var(--fuente-principal);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
@@ -26,8 +26,8 @@
 .comunidad-tag {
   display: inline-block;
   font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-secundario, #aaa);
+  font-weight: var(--peso-negrita);
+  color: var(--color-secundario);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -40,16 +40,16 @@
 
 .galeria-contador {
   font-size: 0.8rem;
-  color: var(--texto-secundario, #888);
+  color: var(--texto-secundario);
 }
 
 .btn-control {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid var(--borde, #333);
-  background: var(--fondo-principal, #111);
-  color: var(--texto-principal, #fff);
+  border: 1px solid var(--borde);
+  background: var(--fondo-principal);
+  color: var(--texto-principal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -58,17 +58,17 @@
 }
 
 .btn-control:hover {
-  background: var(--color-primario, #fff);
-  color: var(--fondo-principal, #000);
+  background: var(--color-primario);
+  color: var(--fondo-principal);
 }
 
 /* --- Viewport y Track --- */
 .galeria-viewport {
   width: 100%;
   overflow: hidden;
-  border-radius: var(--radio-md, 12px);
-  background: var(--fondo-superficie, #161616);
-  border: 1px solid var(--borde, #333);
+  border-radius: var(--radio-md);
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde);
 }
 
 .galeria-track {
@@ -82,7 +82,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--fondo-superficie, #161616);
+  background: var(--fondo-superficie);
 }
 
 /* --- Multimedia (Imagen / Video) --- */
@@ -117,7 +117,7 @@
   border-radius: 20px;
   color: #fff;
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: var(--peso-medio);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -131,8 +131,8 @@
 
 .nombre-emprendedor {
   font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-secundario, #888);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--color-secundario);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -140,9 +140,9 @@
 .item-titulo {
   margin: 0;
   font-family: var(--fuente-titulos);
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--texto-principal, #fff);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -151,7 +151,7 @@
 .item-descripcion {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--texto-secundario, #aaa);
+  color: var(--texto-secundario);
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -166,11 +166,11 @@
   gap: 6px;
   margin-top: 10px;
   padding: 8px 14px;
-  background: var(--color-primario, #fff);
-  color: var(--fondo-principal, #000);
-  border-radius: var(--radio-sm, 8px);
+  background: var(--color-primario);
+  color: var(--fondo-principal);
+  border-radius: var(--radio-sm);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: var(--peso-semi-negrita);
   text-decoration: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
   width: fit-content;
@@ -250,7 +250,7 @@
 
 .galeria-cargando_texto {
   font-size: 0.85rem;
-  color: var(--texto-secundario, #a1a1aa);
+  color: var(--texto-secundario);
 }
 
 /* El listado falló: aviso en rojo en lugar de la galería. */
@@ -263,7 +263,7 @@
 }
 
 .galeria-error_titulo {
-  font-weight: 600;
+  font-weight: var(--peso-semi-negrita);
   font-size: 0.9rem;
 }
 
@@ -277,7 +277,7 @@
   padding: 10px 16px;
   text-align: center;
   font-size: 0.8rem;
-  color: var(--texto-secundario, #a1a1aa);
+  color: var(--texto-secundario);
 }
 
 /* --- Indicadores (Dots) --- */
@@ -294,14 +294,14 @@
   height: 6px;
   border: none;
   border-radius: 50%;
-  background: var(--borde, #444);
+  background: var(--borde);
   cursor: pointer;
   padding: 0;
   transition: all 0.2s ease;
 }
 
 .dot.active {
-  background: var(--color-secundario, #fff);
+  background: var(--color-secundario);
   width: 18px;
   border-radius: 4px;
 }
@@ -332,9 +332,9 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--fondo-principal, #111);
-  border: 1px solid var(--borde, #444);
-  color: var(--texto-principal, #fff);
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  color: var(--texto-principal);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -344,8 +344,8 @@
 }
 
 .btn-cerrar-flotante:hover {
-  background: var(--color-primario, #fff);
-  color: var(--fondo-principal, #000);
+  background: var(--color-primario);
+  color: var(--fondo-principal);
 }
 
 /* Forzar estructura horizontal en la tarjeta flotante */

@@ -129,7 +129,7 @@
   background-color: var(--fondo-secundario);
   border: 1px solid var(--borde);
   border-radius: var(--radio-md);
-  box-shadow: var(--sombra-lg, 0 15px 35px rgba(0, 0, 0, 0.25));
+  box-shadow: var(--sombra-lg);
   animation: robotErrorEntrada 0.35s ease;
 }
 
@@ -179,7 +179,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .btn-volver,
   .btn-principal {
     border-width: 2px !important;

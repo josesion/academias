@@ -164,7 +164,7 @@
    ACCESIBILIDAD — high-contrast / print
    ========================================================================== */
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .formulario {
     border-width: 2px;
   }
@@ -335,12 +335,12 @@
 
 .formulario::-webkit-scrollbar-track {
     background: var(--fondo-hover);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 .formulario::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 .formulario::-webkit-scrollbar-thumb:hover {

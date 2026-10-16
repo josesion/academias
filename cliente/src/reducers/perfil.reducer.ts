@@ -25,7 +25,7 @@ export type CampoFormularioKey =
 export const CAMPOS_OBLIGATORIOS: { campo: CampoFormularioKey; etiqueta: string }[] = [
     { campo: "usuario", etiqueta: "el usuario" },
     { campo: "correo", etiqueta: "el correo" },
-    { campo: "contrasena_actual", etiqueta: "la contraseña actual" },
+    // contrasena_actual NO es obligatoria global: solo se requiere si se cambia la contraseña
 ];
 
 /* ==========================================================================

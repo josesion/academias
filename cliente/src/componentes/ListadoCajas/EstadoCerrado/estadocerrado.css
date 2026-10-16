@@ -262,7 +262,7 @@
 
     font-size: var(--texto-sm);
 
-    line-height: 1.5;
+    line-height: var(--linea-texto);
 
     color: var(--texto-secundario);
 }
@@ -377,7 +377,7 @@
     }
 
     .caja_cerrada_contenido h2 {
-        font-size: 1rem;
+        font-size: var(--texto-lg);
     }
 
     .caja_cerrada_contenido p {

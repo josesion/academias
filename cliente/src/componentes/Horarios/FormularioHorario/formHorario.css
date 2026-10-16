@@ -65,12 +65,12 @@
 
 .formulario_horario::-webkit-scrollbar-track {
   background: var(--fondo-hover);
-  border-radius: 10px;
+  border-radius: var(--radio-sm);
 }
 
 .formulario_horario::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-  border-radius: 10px;
+  border-radius: var(--radio-sm);
 }
 
 .formulario_horario::-webkit-scrollbar-thumb:hover {
@@ -360,7 +360,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .formulario_horario_filtro_primario {
     border-width: 2px;
   }

@@ -51,7 +51,7 @@
   color: var(--texto-principal);
   font-family: var(--fuente-principal);
   font-size: var(--texto-xs);
-  font-weight: var(--peso-medio, 500);
+  font-weight: var(--peso-medio);
   cursor: pointer;
   transition: var(--transicion);
 }

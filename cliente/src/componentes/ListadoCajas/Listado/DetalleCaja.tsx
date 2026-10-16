@@ -72,7 +72,7 @@ export const DetalleCajas = ({
       </div>
 
       {carga ? (
-        <ComponenteCargando />
+        <ComponenteCargando local />
       ) : (
         <div
           className="detalle_caja_lista"

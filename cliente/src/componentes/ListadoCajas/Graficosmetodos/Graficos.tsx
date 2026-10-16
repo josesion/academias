@@ -42,7 +42,7 @@ export const GraficoMetodosPago = ({ carga, props }: MetodosPagoProps) => {
     <figure className="grafico_metodos_pago">
       <figcaption className="grafico_subtitulo">Totales por Método de Pago</figcaption>
       {carga ? (
-        <ComponenteCargando />
+        <ComponenteCargando local />
       ) : (
         <div className="grafico_metodos_pago_contenido">
           <ResponsiveContainer width="100%" height={260}>

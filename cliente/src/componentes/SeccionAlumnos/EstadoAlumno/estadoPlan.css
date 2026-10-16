@@ -42,7 +42,7 @@
 
 .estado-plan-titulo-box h3 {
   font-family: var(--fuente-titulos);
-  font-size: 1.15rem;
+  font-size: var(--titulo-sm);
   font-weight: var(--peso-semi-negrita);
   color: var(--texto-principal);
   margin: 0;

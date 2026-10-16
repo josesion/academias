@@ -36,7 +36,7 @@
      acá, pero se deja el contenedor explícito por si se le suma algo. */
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .login_pagina_contenedor {
     /* El formulario ya se encarga de sus propios bordes (formularios.css).
            Acá solo se fuerza un fondo sin transparencia para que el texto

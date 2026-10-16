@@ -44,6 +44,11 @@ export const MAPA_CREAR_USUARIO_ADMIN : Record<string , { status : CodigoEstadoH
             msg: "Ese nombre de usuario ya está en uso."
     },
 
+    "USERNAME_MUST_BE_EMAIL" : {
+            status: CodigoEstadoHTTP.CONFLICTO,
+            msg: "Para rol alumno el usuario debe ser un email válido"
+    },
+
 }; 
 
 export const MAPA_ACTUALIZAR_USUARIO_ADMIN : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
@@ -68,6 +73,11 @@ export const MAPA_ACTUALIZAR_USUARIO_ADMIN : Record<string , { status : CodigoEs
     "USUARIO_YA_CORREO" : {
             status: CodigoEstadoHTTP.CONFLICTO,
             msg: "Ese correo ya está en uso por otro usuario."
+    },
+
+    "USERNAME_MUST_BE_EMAIL" : {
+            status: CodigoEstadoHTTP.CONFLICTO,
+            msg: "Para rol alumno el usuario debe ser un email válido"
     },
 
 }; 

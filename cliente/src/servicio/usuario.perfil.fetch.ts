@@ -3,8 +3,8 @@ import { apiFetch, type ApiResponse } from "../utils/apiFetch";
 
 /** Datos que el usuario puede modificar de su propio perfil */
 export interface MiPerfilInputs {
-  /** Contraseña actual (requerida para cualquier cambio) */
-  contrasena_actual: string;
+  /** Contraseña actual (requerida solo si se cambia la contraseña) */
+  contrasena_actual?: string;
   /** Nuevo nombre de usuario (opcional) */
   nuevo_usuario?: string;
   /** Nuevo correo (opcional) */

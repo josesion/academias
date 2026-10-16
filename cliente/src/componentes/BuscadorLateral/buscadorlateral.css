@@ -69,7 +69,7 @@
     transform: rotate(180deg);
 
     font-family: var(--fuente-codigo);
-    font-size: 0.68rem;
+    font-size: var(--texto-xs);
     font-weight: var(--peso-semi-negrita);
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -163,7 +163,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .buscador_lateral_lengueta {
     border-width: 2px;
   }

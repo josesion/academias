@@ -81,7 +81,7 @@
 
 .listado_cajas_graficos_columna::-webkit-scrollbar-thumb {
   background: var(--borde-hover);
-  border-radius: 10px;
+  border-radius: var(--radio-sm);
 }
 
 .listado_cajas_graficos_columna::-webkit-scrollbar-thumb:hover {
@@ -123,9 +123,9 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(27, 29, 34, 0.75); /* Oscurece el fondo de atrás */
-  backdrop-filter: blur(6px);                /* Efecto borroso prolijo */
-  z-index: 9999;                             /* Lo manda por encima de todo */
+  background-color: color-mix(in srgb, var(--color-primario) 75%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
   
   display: flex;
   justify-content: center;
@@ -148,11 +148,11 @@
   max-height: 90vh;
   overflow-y: auto;
   
-  background-color: var(--fondo-principal, #0f172a);
+  background-color: var(--fondo-principal);
   border: 1px solid var(--borde);
   border-radius: var(--radio-lg);
   padding: 32px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--sombra-lg);
   box-sizing: border-box;
 
   /* Animación zarpada desde el costado */
@@ -454,7 +454,7 @@
 }
 
 /* High Contrast: bordes más visibles, foco más grueso */
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .vista_switch {
     border-width: 2px;
   }
@@ -573,53 +573,6 @@
   .listado_cajas_panel .detalle_caja_marco {
     max-height: 750px;
     overflow-y: auto;
-  }
-}
-
-/* ==========================================
-   CARGA GLOBAL (Spinner inicial)
-   ========================================== */
-
-.carga-global {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(27, 28, 27, 0.35);
-  backdrop-filter: blur(4px);
-}
-
-.carga-global .spinner {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid var(--fondo-superficie);
-  border-top-color: var(--color-secundario);
-  animation: spinner_girar 0.9s linear infinite;
-}
-
-.carga-global .visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-@keyframes spinner_girar {
-  to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .carga-global .spinner {
-    animation: none !important;
-    border-top-color: var(--color-secundario);
   }
 }
 

@@ -100,6 +100,19 @@
        transition: transform 140ms var(--ease-ui) */
     --ease-ui:cubic-bezier(0.23, 1, 0.32, 1);
 
+    /* ============================================================
+       TOKENS ADICIONALES — Spec 031 (Unificar estilos hardcoded)
+       ============================================================ */
+
+    /* ----- Error component ----- */
+    /* Fondo oscuro original era #1d1d2b; --color-primario (#1B1C1B) es el token oscuro más cercano */
+    --fondo-error: var(--color-primario);
+    --color-error-neon: #ff4d4d;
+    --borde-error: color-mix(in srgb, var(--color-error-neon) 20%, transparent);
+    --borde-error-fuerte: var(--color-error-neon);
+    --texto-error: var(--fondo-secundario);
+    --sombra-error: color-mix(in srgb, var(--color-error-neon) 70%, transparent);
+
 }
 
 * {
@@ -619,7 +632,7 @@
    HIGH CONTRAST MODE
    ============================================================================ */
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
     :root {
         --borde: var(--texto-principal);
     }

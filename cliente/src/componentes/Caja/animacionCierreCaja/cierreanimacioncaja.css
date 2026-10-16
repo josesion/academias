@@ -119,7 +119,7 @@
     justify-content:center;
     align-items:center;
     background:rgba(59,130,246,.12); /* Tono azulado/neutro de cierre, o podés usar var(--color-exito) */
-    color:var(--color-primario, #3b82f6);
+    color:var(--color-primario);
     font-size:26px;
     animation:popSuccess .35s ease;
 }
@@ -145,7 +145,7 @@
 
 .estado_pequeño{
     font-size:.72rem;
-    font-weight:700;
+    font-weight:var(--peso-negrita);
     letter-spacing:.18em;
     text-transform:uppercase;
     color:var(--texto-secundario);
@@ -154,7 +154,7 @@
 .contenido_estado h2{
     margin:0;
     font-size:1.55rem;
-    font-weight:700;
+    font-weight:var(--peso-negrita);
     color:var(--texto-principal);
     line-height:1.25;
 }
@@ -162,13 +162,13 @@
 .contenido_estado p{
     margin:0;
     max-width:300px;
-    font-size:.92rem;
+    font-size:var(--texto-md);
     color:var(--texto-secundario);
     line-height:1.6;
 }
 
 .finalizada_cierre .contenido_estado h2{
-    color:var(--color-primario, #3b82f6);
+    color:var(--color-primario);
 }
 
 /*=========================================================
@@ -242,7 +242,7 @@
     .card_apertura{
         padding:30px 22px;
         gap:22px;
-        border-radius:22px;
+        border-radius:var(--radio-lg);
     }
     .estado_icono{
         width:90px;

@@ -157,7 +157,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .contenedor_calendario {
     border-width: 2px;
   }

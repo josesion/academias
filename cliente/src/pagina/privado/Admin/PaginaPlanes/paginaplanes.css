@@ -10,7 +10,7 @@
   padding: 2.5rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  font-family: var(--fuente-principal, sans-serif);
+  font-family: var(--fuente-principal);
   color: var(--texto-principal);
 }
 
@@ -34,8 +34,8 @@
   background-color: var(--fondo-secundario);
   border: 1px solid var(--borde);
   border-left: none;
-  border-radius: 0 var(--radio-lg, 22px) var(--radio-lg, 22px) 0;
-  box-shadow: var(--sombra-lg, 0 20px 50px rgba(0, 0, 0, .18));
+  border-radius: 0 var(--radio-lg) var(--radio-lg) 0;
+  box-shadow: var(--sombra-lg);
 
   transform: translateX(-100%);
   transition: var(--transicion);
@@ -77,16 +77,16 @@
 }
 
 .lengueta-planes:hover {
-  background-color: var(--fondo-hover, rgba(27, 28, 27, .04));
+  background-color: var(--fondo-hover);
   border-color: var(--borde-hover);
 }
 
 .lengueta-planes span {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-family: var(--fuente-titulos, serif);
-  font-size: var(--texto-sm, .85rem);
-  font-weight: var(--peso-semi-negrita, 600);
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
   letter-spacing: .04em;
   color: var(--texto-principal);
   white-space: nowrap;
@@ -176,9 +176,9 @@
 }
 
 .section-listado h2 {
-  font-family: var(--fuente-titulos, serif);
-  font-size: var(--titulo-lg, 1.75rem);
-  font-weight: var(--peso-semi-negrita, 600);
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-semi-negrita);
   color: var(--texto-principal);
   letter-spacing: -0.02em;
   margin: 0;
@@ -262,7 +262,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .boton_personalizado {
     border-width: 2px !important;
   }

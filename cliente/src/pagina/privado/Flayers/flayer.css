@@ -247,7 +247,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .flayers_vista_header {
     border-bottom-width: 2px;
   }

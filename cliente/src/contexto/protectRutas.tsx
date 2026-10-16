@@ -74,17 +74,15 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
   /**
    * Limpieza única del cierre de sesión: sirve tanto para el logout manual
    * como para cuando el server responde 401/403 (token vencido).
-   * Ahora llama a POST /api/logout para borrar la cookie httpOnly en el server.
+   * Dispara POST /api/logout (fire-and-forget) y limpia estado local INMEDIATO
+   * sin await → evita race condition en prod (latencia de red).
    */
-  const cerrarSesion = useCallback(async () => {
-    // Fire-and-forget: si falla (red caída), igual limpiamos estado local.
-    // La cookie expira sola en el server.
-    try {
-      await apiFetch(`${PAGINA}api/logout`, { method: "POST" });
-    } catch {
-      // Silencioso: el logout local sigue adelante.
-    }
+  const cerrarSesion = useCallback(() => {
+    // Fire-and-forget: dispara request al server (borra cookie httpOnly)
+    // NO await → no bloquea limpieza local ni navegación
+    apiFetch(`${PAGINA}api/logout`, { method: "POST" }).catch(() => {});
 
+    // Limpieza local INMEDIATA (síncrona)
     setAutenticado(false);
     setUsuarioInfo(null);
     setRol(ROL_VISITA);

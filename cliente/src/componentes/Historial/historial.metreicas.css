@@ -433,7 +433,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .metrica_historial_contenedor {
     border: 2px solid var(--borde);
   }

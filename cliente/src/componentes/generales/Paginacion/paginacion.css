@@ -125,7 +125,7 @@
    ACCESIBILIDAD — high-contrast / print
    ========================================================================== */
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .paginacion_componente {
     border-width: 2px;
   }

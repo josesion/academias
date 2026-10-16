@@ -67,7 +67,7 @@
   margin: 0;
   font-family: var(--fuente-titulos);
   font-size: clamp(4.5rem, 18vw, 8.5rem);
-  font-weight: 700;
+  font-weight: var(--peso-negrita);
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--color-primario);
@@ -83,15 +83,15 @@
   margin: 0;
   font-family: var(--fuente-titulos);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: var(--peso-semi-negrita);
 }
 
 .notfound_texto {
   margin: 0;
   max-width: 46ch;
-  font-size: 1rem;
+  font-size: var(--texto-lg);
   line-height: 1.6;
-  color: var(--texto-secundario, #a1a1aa);
+  color: var(--texto-secundario);
 }
 
 /* ---------- Botones ---------- */
@@ -114,7 +114,7 @@
   border-radius: 6px;
   border: 1px solid transparent;
 
-  font-size: 1rem;
+  font-size: var(--texto-lg);
   font-family: inherit;
   text-decoration: none;
 
@@ -181,7 +181,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .notfound_cero {
     -webkit-text-stroke-width: 3px;
   }

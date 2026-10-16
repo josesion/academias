@@ -82,7 +82,7 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
     const guardarPerfil = async () => {
         const f = state.formulario;
 
-        // Validación obligatoria en cliente
+        // Validación obligatoria en cliente (usuario y correo siempre)
         const faltantes = CAMPOS_OBLIGATORIOS.filter((c) => !f[c.campo].value.trim());
 
         if (faltantes.length > 0) {
@@ -132,12 +132,53 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
             return;
         }
 
+        // Validar contraseña actual SOLO si hay cambio de contraseña
+        const hayCambioPassword = f.nueva_contrasena.value.length > 0;
+        if (hayCambioPassword && !f.contrasena_actual.value.trim()) {
+            dispatch({
+                type: "SET_ERROR_CAMPO",
+                payload: { campo: "contrasena_actual", valor: "La contraseña actual es requerida para cambiar la contraseña" },
+            });
+            dispatch({
+                type: "SET_ERROR_GUARDAR",
+                payload: "La contraseña actual es requerida para cambiar la contraseña",
+            });
+            return;
+        }
+
+        // Validar longitud de nueva contraseña si se llena
+        if (hayCambioPassword && f.nueva_contrasena.value.length < 8) {
+            dispatch({
+                type: "SET_ERROR_CAMPO",
+                payload: { campo: "nueva_contrasena", valor: "Mínimo 8 caracteres" },
+            });
+            dispatch({
+                type: "SET_ERROR_GUARDAR",
+                payload: "La nueva contraseña debe tener al menos 8 caracteres",
+            });
+            return;
+        }
+
+        // Validar email si se llena
+        if (f.correo.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.correo.value)) {
+            dispatch({
+                type: "SET_ERROR_CAMPO",
+                payload: { campo: "correo", valor: "Formato de correo inválido" },
+            });
+            dispatch({
+                type: "SET_ERROR_GUARDAR",
+                payload: "Correo inválido",
+            });
+            return;
+        }
+
         try {
             dispatch({ type: "SET_ERROR_GUARDAR", payload: null });
             dispatch({ type: "SET_CARGA_GUARDAR", payload: true });
 
             const payload: MiPerfilInputs = {
-                contrasena_actual: f.contrasena_actual.value,
+                // Solo enviar contraseña actual si hay cambio de contraseña
+                contrasena_actual: hayCambioPassword ? f.contrasena_actual.value : undefined,
             };
 
             // Solo enviar campos que cambiaron (el server ignora undefined)
@@ -152,9 +193,25 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                 if (f.celular.value.trim() !== (datosOriginales.celular ?? "")) {
                     payload.celular = f.celular.value.trim() || undefined;
                 }
-                if (f.nueva_contrasena.value) {
+                if (hayCambioPassword) {
                     payload.nueva_contrasena = f.nueva_contrasena.value;
                 }
+            }
+
+            // Verificar si hay al menos un cambio real para enviar
+            const hayCambiosReales = 
+                payload.nuevo_usuario !== undefined ||
+                payload.correo !== undefined ||
+                payload.celular !== undefined ||
+                payload.nueva_contrasena !== undefined;
+
+            if (!hayCambiosReales) {
+                dispatch({
+                    type: "SET_ERROR_GUARDAR",
+                    payload: "No hay cambios para guardar",
+                });
+                dispatch({ type: "SET_CARGA_GUARDAR", payload: false });
+                return;
             }
 
             const resultado = await config.servicios.putMiPerfil(payload);

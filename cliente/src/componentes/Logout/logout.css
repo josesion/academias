@@ -1,5 +1,5 @@
 /* ===========================================================
-   MENU USUARIO — ELPIS SOBRIO
+   MENU USUARIO — ELPHIS SOBRIO
 =========================================================== */
 
 .menu_usuario_backdrop {
@@ -269,7 +269,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .menu_usuario_panel {
     border-width: 2px !important;
   }

@@ -17,7 +17,7 @@ export const Logo = ({ size = 250 }: LogoProps) => {
 
       <img
         src={logoImage}
-        alt="Logo Elpis"
+        alt="Logo Elphis"
         className="logo_imagen"
         // Relación de aspecto aproximada para el logo horizontal (ej: 4:1 -> 180x45)
         width={size}

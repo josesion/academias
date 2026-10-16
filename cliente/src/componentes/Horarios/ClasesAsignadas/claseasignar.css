@@ -59,7 +59,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 1.2;
+    line-height: var(--linea-titulo);
 }
 
 .clase_nivel_badge {

@@ -1,5 +1,5 @@
 /* ============================================================
-   ELPIS — INICIO / SCROLL POR PANTALLAS
+   ELPHIS — INICIO / SCROLL POR PANTALLAS
    Importar DESPUÉS de inicio.css (ya lo hace Inicio.tsx)
    ============================================================ */
 
@@ -585,7 +585,7 @@
 
     color:var(--texto-secundario);
 
-    font-size:.68rem;
+    font-size:var(--texto-xs);
     white-space:nowrap;
 
     opacity:0;

@@ -73,7 +73,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .input_caja {
     border-width: 2px;
   }

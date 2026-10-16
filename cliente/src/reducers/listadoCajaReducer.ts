@@ -21,6 +21,7 @@ export interface ListadoCajas{
         encabezado : boolean,
         historial  : boolean,
         usuarios   : boolean,
+        detalle    : boolean,
     },
 
     error : {
@@ -56,6 +57,7 @@ export const initialStateListadoCaja = () : ListadoCajas =>({
         encabezado : false,
         historial  : false,
         usuarios   : false,
+        detalle    : false,
     },
 
     error : {
@@ -136,6 +138,7 @@ export type ListadoCajaAction =
  // LIBRO DIARIO ----------------------------------------------
 
  | { type : "SET_DETALLE_CAJA", payload : CajasResumenResponse | null }
+ | { type : "SET_CARGA_DETALLE", payload : boolean }
 
 export const listadoCajaReducer = ( state : ReturnType< typeof initialStateListadoCaja>, action : ListadoCajaAction )
 :ReturnType< typeof initialStateListadoCaja> =>{
@@ -272,7 +275,13 @@ export const listadoCajaReducer = ( state : ReturnType< typeof initialStateLista
        return {
         ...state,
         detalleCaja : action.payload 
-       }    
+       }
+
+    case "SET_CARGA_DETALLE" :
+       return {
+        ...state,
+        carga : { ...state.carga, detalle : action.payload }
+       }
 
      default:
             return state;

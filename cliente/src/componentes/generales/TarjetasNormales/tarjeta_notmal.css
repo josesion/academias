@@ -57,20 +57,20 @@
 }
 
 .tarjeta_simbolo {
-    font-size: 1.2rem;
+    font-size: var(--titulo-md);
     font-weight: var(--peso-negrita);
     letter-spacing: -0.03em;
 }
 
 .monto_entero {
-    font-size: 1.2rem;
+    font-size: var(--titulo-md);
     font-weight: var(--peso-negrita);
     letter-spacing: -0.03em;
 }
 
 /* --- Decimales más chicos y desvanecidos --- */
 .monto_decimal {
-    font-size: 1.2rem;
+    font-size: var(--titulo-md);
     font-weight: var(--peso-normal);
     color: var(--texto-deshabilitado);
     opacity: 0.65; /* Efecto visual de desvanecimiento como pediste */
@@ -90,7 +90,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .tarjeta_normal_contenedor {
     border-width: 2px;
   }

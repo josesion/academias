@@ -59,6 +59,16 @@ estado: z.string()
 
 id_escuela : z.number({message:"el ID de escuela debe ser numerico"})
             .min(1, { message: 'el ID de escuela debe tener al menos un digito' })
+}).refine(data => {
+    // Solo validar email si el rol es explícitamente "alumno"
+    if (data.rol === "alumno") {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(data.usuario);
+    }
+    return true;
+}, {
+    message: "Para rol alumno el usuario debe ser un email válido",
+    path: ["usuario"]
 });
 
 export const verificarUsuarioSchema = z.object({
@@ -121,10 +131,19 @@ export const modMiPerfilSchema = z.object({
     .max(20, { message: 'El celular no puede exceder los 20 caracteres.' })
     .optional()
     .or(z.literal('')),
-  contrasena_actual: z.string().min(8, { message: 'La contraseña actual es requerida.' }),
+  contrasena_actual: z.string().min(8).optional(),
 }).refine(data => data.nuevo_usuario || data.nueva_contrasena || data.correo !== undefined || data.celular !== undefined, {
   message: 'Debe proporcionar al menos un campo para modificar.',
   path: ['general']
+}).refine(data => {
+  // Si se envía nueva_contrasena, contrasena_actual es obligatoria
+  if (data.nueva_contrasena && !data.contrasena_actual) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'La contraseña actual es requerida para cambiar la contraseña',
+  path: ['contrasena_actual']
 });
 
 export type ModInputsMiPerfil = z.infer<typeof modMiPerfilSchema>;

@@ -96,7 +96,7 @@
   color: #c7cdff;
   font-size: 0.8rem;
   line-height: 1.4;
-  font-family: "Inter", sans-serif;
+  font-family: var(--fuente-principal);
   margin: 0;
 }
 

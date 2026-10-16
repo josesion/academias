@@ -97,7 +97,7 @@
     font-family: var(--fuente-codigo);
     font-size: 0.75rem;
     color: var(--texto-secundario);
-    line-height: 1.5;
+    line-height: var(--linea-texto);
     font-weight: var(--peso-medio);
     letter-spacing: 0.02em;
 }
@@ -141,7 +141,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .sin_resultado_card {
     border-width: 2px;
   }

@@ -6,6 +6,14 @@ import { registroHistorial } from "../utils/postHistorial";
 import { type HistorialInputs } from "../squemas/historial";
 
 /**
+ * Valida si un string es un email válido.
+ */
+const esEmailValido = (str: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(str);
+};
+
+/**
  * Obtiene el perfil completo del usuario autenticado.
  * 
  * @param data - Objeto con usuario_id (viene del token via handleControladores)
@@ -43,6 +51,7 @@ const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData
  * Modifica el perfil del usuario autenticado (usuario, contraseña, correo, celular).
  * Requiere contraseña actual para verificación.
  * Valida unicidad de usuario y correo.
+ * Si el rol es "alumno", el username debe ser email válido.
  * Registra en historial.
  * 
  * @param data - Datos del body + usuario_id del token
@@ -60,7 +69,28 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
     // 1. Validación Zod (primera línea)
     const parametros = modMiPerfilSchema.parse(data);
 
-    // 2. Validación de unicidad de correo EN SERVICE (antes de tocar BD)
+    // 2. Obtener datos actuales del usuario para conocer su rol
+    const perfilActual = await dataUsuario.obtenerMiPerfil(data.usuario_id);
+    if (perfilActual.code !== "PROFILE_FETCHED" || !perfilActual.data) {
+        return {
+            error: true,
+            message: "Usuario no encontrado",
+            code: "USER_NOT_FOUND"
+        };
+    }
+
+    // 3. Validar formato email para alumno si se cambia el usuario
+    if (parametros.nuevo_usuario !== undefined && perfilActual.data.rol === "alumno") {
+        if (!esEmailValido(parametros.nuevo_usuario)) {
+            return {
+                error: true,
+                message: "Para rol alumno el usuario debe ser un email válido",
+                code: "USERNAME_MUST_BE_EMAIL"
+            };
+        }
+    }
+
+    // 4. Validación de unicidad de correo EN SERVICE (antes de tocar BD)
     if (parametros.correo !== undefined) {
         const existeCorreo = await dataUsuario.buscarPorCorreo(parametros.correo, data.usuario_id);
         if (existeCorreo.code === "EMAIL_TAKEN") {
@@ -72,7 +102,7 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         }
     }
 
-    // 3. Ejecutar modificación en data layer
+    // 5. Ejecutar modificación en data layer
     const resultado = await dataUsuario.modMiPerfil({
         usuario_id: data.usuario_id,
         nuevo_usuario: parametros.nuevo_usuario,
@@ -82,9 +112,9 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         contrasena_actual: parametros.contrasena_actual,
     });
 
-    // 3. Traducir códigos de data a códigos de servicio
+    // 6. Traducir códigos de data a códigos de servicio
     if (resultado.code === "PROFILE_UPDATED" && resultado.data) {
-        // 4. Registrar historial (async, no bloqueante)
+        // 7. Registrar historial (async, no bloqueante)
         const dataHistorial: HistorialInputs = {
             id_escuela: resultado.data.id_escuela,
             id_usuario: data.usuario_id,

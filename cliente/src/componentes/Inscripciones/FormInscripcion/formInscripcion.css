@@ -33,11 +33,11 @@
 }
 .formulario_inscripcion_contenedor::-webkit-scrollbar-track {
     background: var(--fondo-hover);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 .formulario_inscripcion_contenedor::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 .formulario_inscripcion_contenedor::-webkit-scrollbar-thumb:hover {
     filter: brightness(1.15);
@@ -164,7 +164,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .formulario_inscripcion_contenedor {
     border-width: 2px !important;
   }

@@ -65,12 +65,12 @@
 
 .movimiento_lista::-webkit-scrollbar-track {
     background: var(--fondo-hover);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 .movimiento_lista::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 /* ============================================================
@@ -172,7 +172,7 @@
 }
 
 .monto_valor {
-    font-size: 1.15rem;
+    font-size: var(--titulo-sm);
     letter-spacing: -0.01em;
 }
 

@@ -1,5 +1,5 @@
 /* ============================================================
-   LIBRO DIARIO — formato clásico oscuro ELPIS
+   LIBRO DIARIO — formato clásico oscuro ELPHIS
    ============================================================ */
 
 .libro_diario_contenedor {
@@ -398,7 +398,7 @@
 
     font-family: var(--fuente-principal);
 
-    font-size: 0.68rem;
+    font-size: var(--texto-xs);
 
     font-style: italic;
 
@@ -519,7 +519,7 @@
 
     font-size: 0.9rem;
 
-    font-weight: 600;
+    font-weight: var(--peso-semi-negrita);
 
     letter-spacing: 0.5px;
 
@@ -804,7 +804,7 @@
 
         overflow: visible !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
     }
 
 
@@ -824,7 +824,7 @@
 
         overflow: visible !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
     }
 
 
@@ -849,7 +849,7 @@
 
         overflow: visible !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
     }
@@ -867,7 +867,7 @@
 
         margin-bottom: 20px !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
     }
@@ -907,7 +907,7 @@
 
         overflow: visible !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         border: none !important;
     }
@@ -922,7 +922,7 @@
 
         border-collapse: collapse !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
     }
@@ -938,7 +938,7 @@
 
         border-bottom: 1px solid #777777 !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
 
@@ -954,7 +954,7 @@
     .fila_asiento {
         display: table-row !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
 
@@ -969,7 +969,7 @@
 
         padding: 7px 10px !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
 
@@ -1036,7 +1036,7 @@
 
         border-top: 1px solid #777777 !important;
 
-        background: #ffffff !important;
+        background: var(--fondo-secundario) !important;
 
         color: #000000 !important;
     }

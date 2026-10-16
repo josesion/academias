@@ -26,6 +26,10 @@ export const MAPA_MODIFICAR_PERFIL: Record<string, { status: CodigoEstadoHTTP, m
         status: CodigoEstadoHTTP.CONFLICTO,
         msg: "El correo electrónico ya está en uso"
     },
+    "USERNAME_MUST_BE_EMAIL": {
+        status: CodigoEstadoHTTP.CONFLICTO,
+        msg: "Para rol alumno el usuario debe ser un email válido"
+    },
     "INVALID_PASSWORD": {
         status: CodigoEstadoHTTP.NO_AUTORIZADO,
         msg: "La contraseña actual es incorrecta"

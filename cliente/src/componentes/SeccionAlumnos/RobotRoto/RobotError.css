@@ -16,7 +16,7 @@
   background: none;
   border: none;
   font-size: 0.75rem;
-  color: var(--texto-deshabilitado, rgba(255, 255, 255, 0.4));
+  color: var(--texto-deshabilitado);
   cursor: pointer;
   padding: 2px 4px;
   line-height: 1;
@@ -24,7 +24,7 @@
 }
 
 .robot_error_cerrar:hover {
-  color: var(--texto-principal, #fff);
+  color: var(--texto-principal);
 }
 
 .robot_error_glow {
@@ -117,19 +117,19 @@
   color: var(--texto-secundario);
   font-size: 0.8rem;
   line-height: 1.4;
-  font-family: var(--fuente-principal, "Inter", sans-serif);
+  font-family: var(--fuente-principal);
   margin: 0;
 }
 
 .robot_error_boton {
   align-self: flex-start;
   padding: 0.35rem 0.85rem;
-  border-radius: var(--radio-sm, 8px);
+  border-radius: var(--radio-sm);
   border: 1px solid rgba(123, 140, 255, 0.35);
   background: rgba(91, 107, 255, 0.12);
-  color: var(--texto-principal, #d6dbff);
+  color: var(--texto-principal);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--peso-semi-negrita);
   cursor: pointer;
   transition: all 0.2s ease;
 }

@@ -1,5 +1,5 @@
 /* ==========================================================
-   KIOSCO DE ASISTENCIA - ELPIS
+   KIOSCO DE ASISTENCIA - ELPHIS
    PARTE 1
    Fondo - Header - Panel - Tarjetas de clases
    ========================================================== */
@@ -47,7 +47,7 @@
 
 .asistencia_kiosco::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #4f46e5, #4e2da0);
-    border-radius: 10px;
+    border-radius: var(--radio-sm);
 }
 
 /* ===========================
@@ -413,7 +413,7 @@
 
     color:var(--color-secundario);
 
-    font-weight:700;
+    font-weight:var(--peso-negrita);
 
 }
 
@@ -706,7 +706,7 @@
 
     .clase_contenido h2{
 
-        font-size:1.2rem;
+        font-size:var(--titulo-md);
 
     }
 
@@ -790,7 +790,7 @@
 
     .estado_card strong{
 
-        font-size:1.2rem;
+        font-size:var(--titulo-md);
 
     }
 

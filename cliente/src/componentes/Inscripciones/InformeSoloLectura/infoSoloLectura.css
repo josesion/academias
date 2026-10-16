@@ -41,7 +41,7 @@
 
     color: var(--tinta_media);
     font-size: 0.78rem;
-    line-height: 1.5;
+    line-height: var(--linea-texto);
 }
 
 .panel_solo_lectura_nota svg {

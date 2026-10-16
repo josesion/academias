@@ -195,7 +195,7 @@
   }
 }
 
-@media (prefers-contrast: high) {
+@media (prefers-contrast: more) {
   .tarjeta_metrica_contenedor {
     border-width: 2px;
   }
