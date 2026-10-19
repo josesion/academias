@@ -1,5 +1,5 @@
 
-const BASE_API_RAW = (import.meta.env.VITE_API_URL ?? "http://192.168.0.22:4000").trim();
+const BASE_API_RAW = (import.meta.env.VITE_API_URL ?? "http://192.168.0.19:4000").trim();
 
 export const PAGINA = `${BASE_API_RAW.replace(/\/+$/, "").replace(/\/api$/, "")}/`;
 

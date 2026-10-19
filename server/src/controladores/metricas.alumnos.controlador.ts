@@ -4,10 +4,10 @@ import { handleControladores } from "../utils/handleControladores";
 
 import { method as servicioMetricasAlumno } from "../Servicio/metricas.alumnos.servicios";
 
-import { MAPA_METRICAS_ALUMNOS, MAPA_INFO_ESCUELA, MAPA_HORARIO_ESCUELA } from "../respuestas/metricas.alumno";
+import { MAPA_METRICAS_ALUMNOS, MAPA_INFO_ESCUELA, MAPA_HORARIO_ESCUELA, MAPA_ASISTENCIAS_INSCRIPCION } from "../respuestas/metricas.alumno";
 import { RespuestaMetricasAlumnos, ResultInfoEscuela } from "../Servicio/metricas.alumnos.servicios";
-import { HorarioClaseData } from "../data/metricas.alumnos.data";
-import { DataEscuelaInputs, MetricasAlumnosInputs } from "../squemas/metricas.alumno";
+import { HorarioClaseData, AsistenciaInscripcionRow } from "../data/metricas.alumnos.data";
+import { DataEscuelaInputs, MetricasAlumnosInputs, AsistenciasInscripcionInputs } from "../squemas/metricas.alumno";
 
 
 const metricasPrincipal = async ( req : Request , res : Response ) =>{
@@ -49,6 +49,29 @@ const horarioEscuela = async ( req : Request , res : Response ) =>{
 };
 
 
+/**
+ * Controlador del historial de asistencias de una inscripción.
+ *
+ * El `id_inscripcion` viaja por params como texto y el controlador lo pasa
+ * a `Number()`: un valor no numérico da `NaN` y lo frena el Zod del
+ * Servicio con un 400 (Zod solo vive en la capa Servicio).
+ *
+ * @param {Request} req - Petición con `params.id_inscripcion`.
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Resuelve tras enviar la respuesta vía `handleControladores`.
+ */
+const asistenciasInscripcion = async ( req : Request , res : Response ) =>{
+
+    const data : AsistenciasInscripcionInputs = {
+        id_inscripcion : Number(req.params.id_inscripcion),
+    };
+
+    await handleControladores<AsistenciasInscripcionInputs, AsistenciaInscripcionRow[] | null>(
+        res, data, servicioMetricasAlumno.asistenciasInscripcionServicio , MAPA_ASISTENCIAS_INSCRIPCION
+    );
+};
+
+
 
 
 
@@ -58,5 +81,6 @@ export const method = {
     metricasPrincipal : tryCatch( metricasPrincipal ),
     dataEscuelaAlumno : tryCatch( dataEscuelaAlumno),
     horarioEscuela : tryCatch(horarioEscuela),
+    asistenciasInscripcion : tryCatch( asistenciasInscripcion ),
 
 };

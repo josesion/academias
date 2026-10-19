@@ -94,11 +94,16 @@ export interface ModMiPerfilInput {
     /** Opcional: requerida únicamente cuando se envía `nueva_contrasena`
      *  (lo garantiza el refine de modMiPerfilSchema). */
     contrasena_actual?: string;
+    /** Resuelto por el Servicio fuera de la transacción para rol alumno */
+    dni_alumno?: number;
+    /** Email final sincronizado en usuarios.usuario, usuarios.correo y alumnos.email (solo rol alumno) */
+    emailFinal?: string;
 }
 
+// Sin `contrasena`: el hash NUNCA se selecciona ni sale por la API
+// (mismo criterio que `FilaUsuarioAdmin` en data/usuarioAdmin.data.ts).
 export interface UsuarioListado {
     usuario: string;
-    contrasena: string;
     nombre: string;
     apellido: string;
     celular: string;

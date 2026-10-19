@@ -84,6 +84,7 @@ const crear = async ( req : Request , res : Response ) : Promise<void> => {
         id_escuela : Number(req.body.id_escuela)
     };
 
+
     await handleControladores<InputCrearUsuarioAdmin, DataCrearResultUsuarioAdmin>(     
         res, data, servicioUsuarioAdmin.crear, MAPA_CREAR_USUARIO_ADMIN
     );

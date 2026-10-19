@@ -115,6 +115,7 @@ export const modContrasenaSchema = z.object({
 
 // Esquema para que el usuario autenticado modifique su propio usuario/contraseña/email/celular
 export const modMiPerfilSchema = z.object({
+  rol: z.string().trim().min(1, 'El rol no puede estar vacío.').optional(),
   nuevo_usuario: z.string()
     .min(4, { message: 'El nombre de usuario debe tener al menos 4 caracteres.' })
     .max(50, { message: 'El nombre de usuario no puede exceder los 50 caracteres.' })

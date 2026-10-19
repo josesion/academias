@@ -71,3 +71,22 @@ export const obtenerDataAsistencia = async( data : TipadoAsistencia.DataAsistenc
         signal
     });
 };
+
+export const asistenciasPorInscripcion = async( data : { id_inscripcion : number }, signal?: AbortSignal )
+: Promise<ApiResponse<TipadoAsistencia.AsistenciaInscripcionRow[]>> => {
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };  
+    const ruta = `${PAGINA}api/asistencias_inscripcion/${data.id_inscripcion}`;    
+    return await apiFetch( ruta ,{
+        method: "GET",
+        signal
+    });
+};

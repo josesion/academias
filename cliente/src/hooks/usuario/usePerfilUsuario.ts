@@ -35,6 +35,13 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
     const { rol, setRol, setUsuarioInfo } = useContext(RutasProtegidasContext);
     const navigate = useNavigate();
 
+    /**
+     * True si el rol del usuario logueado es "alumno".
+     * Para alumno: el campo "correo" está oculto en el formulario y su valor en el
+     * PUT sale SIEMPRE del campo "usuario" (spec 036). `rol` puede ser `null`.
+     */
+    const esAlumno = rol?.rol === "alumno";
+
     const [state, dispatch] = useReducer(PerfilReducers, initialPerfil());
 
     /* ======================================================================
@@ -78,12 +85,20 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
      * Valida campos obligatorios y envía el PUT.
      * Maneja: loading, errores de validación, errores del server, éxito.
      * Se llama desde el botón Guardar (onClick) — el componente pone e.preventDefault() en el form.
+     *
+     * Por rol (spec 036): para alumno `correo` no es obligatorio (se filtra aquí,
+     * sin tocar el reducer), no se valida su formato y el payload siempre lleva
+     * `correo` = valor del campo "usuario".
      */
     const guardarPerfil = async () => {
         const f = state.formulario;
 
-        // Validación obligatoria en cliente (usuario y correo siempre)
-        const faltantes = CAMPOS_OBLIGATORIOS.filter((c) => !f[c.campo].value.trim());
+        // Validación obligatoria en cliente (usuario y correo; para alumno el
+        // correo NO aplica porque es el propio usuario — el reducer no se toca)
+        const obligatorios = CAMPOS_OBLIGATORIOS.filter(
+            (c) => !(esAlumno && c.campo === "correo")
+        );
+        const faltantes = obligatorios.filter((c) => !f[c.campo].value.trim());
 
         if (faltantes.length > 0) {
             dispatch({
@@ -119,8 +134,9 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
             return;
         }
 
-        // Validar email si se llena
-        if (f.correo.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.correo.value)) {
+        // Validar email si se llena (solo usuario/admin: para alumno el campo
+        // "correo" está oculto y no participa en la validación — spec 036)
+        if (!esAlumno && f.correo.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.correo.value)) {
             dispatch({
                 type: "SET_ERROR_CAMPO",
                 payload: { campo: "correo", valor: "Formato de correo inválido" },
@@ -159,8 +175,9 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
             return;
         }
 
-        // Validar email si se llena
-        if (f.correo.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.correo.value)) {
+        // Validar email si se llena (solo usuario/admin: para alumno el campo
+        // "correo" está oculto y no participa en la validación — spec 036)
+        if (!esAlumno && f.correo.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.correo.value)) {
             dispatch({
                 type: "SET_ERROR_CAMPO",
                 payload: { campo: "correo", valor: "Formato de correo inválido" },
@@ -187,7 +204,10 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                 if (f.usuario.value.trim() !== datosOriginales.usuario) {
                     payload.nuevo_usuario = f.usuario.value.trim();
                 }
-                if (f.correo.value.trim() !== (datosOriginales.correo ?? "")) {
+                // Alumno: el campo "correo" está oculto, mantiene el valor del GET
+                // y NO participa en la comparación (spec 036) — su valor se fuerza
+                // más abajo con el campo "usuario".
+                if (!esAlumno && f.correo.value.trim() !== (datosOriginales.correo ?? "")) {
                     payload.correo = f.correo.value.trim();
                 }
                 if (f.celular.value.trim() !== (datosOriginales.celular ?? "")) {
@@ -198,12 +218,14 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                 }
             }
 
-            // Verificar si hay al menos un cambio real para enviar
+            // Verificar si hay al menos un cambio real para enviar.
+            // El "correo" que se fuerza para alumno NO cuenta como cambio:
+            // sin ningún otro cambio sigue cortando con "No hay cambios para guardar".
             const hayCambiosReales = 
                 payload.nuevo_usuario !== undefined ||
-                payload.correo !== undefined ||
                 payload.celular !== undefined ||
-                payload.nueva_contrasena !== undefined;
+                payload.nueva_contrasena !== undefined ||
+                (!esAlumno && payload.correo !== undefined);
 
             if (!hayCambiosReales) {
                 dispatch({
@@ -212,6 +234,13 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                 });
                 dispatch({ type: "SET_CARGA_GUARDAR", payload: false });
                 return;
+            }
+
+            // Spec 036 (decisión #1): para alumno SIEMPRE se envía
+            // correo = valor del campo "usuario", en todo PUT (aunque solo
+            // cambie celular o contraseña). Sincroniza alumnos antiguos.
+            if (esAlumno) {
+                payload.correo = f.usuario.value.trim();
             }
 
             const resultado = await config.servicios.putMiPerfil(payload);
@@ -248,7 +277,14 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                     campoError = "usuario";
                 } else if (code === "EMAIL_TAKEN") {
                     mensaje = "Ese correo ya está registrado";
-                    campoError = "correo";
+                    // Alumno: el campo "correo" está oculto → el error se muestra
+                    // sobre el campo visible "usuario" (+ alerta global — spec 036)
+                    campoError = esAlumno ? "usuario" : "correo";
+                } else if (esAlumno && code === "USERNAME_MUST_BE_EMAIL") {
+                    // El server exige que el username de un alumno sea email;
+                    // el campo "correo" está oculto → va al campo visible "usuario"
+                    mensaje = resultado.message || "El usuario debe ser un correo válido";
+                    campoError = "usuario";
                 }
 
                 if (campoError) {

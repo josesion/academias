@@ -1,6 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataUsuario } from "../data/usuario.data";
-import { TipadoData } from "../tipados/tipado.data";
+import { TipadoData, DataMiPerfil } from "../tipados/tipado.data";
 import { ModInputsMiPerfil, modMiPerfilSchema } from "../squemas/usuario";
 import { registroHistorial } from "../utils/postHistorial";
 import { type HistorialInputs } from "../squemas/historial";
@@ -15,23 +15,18 @@ const esEmailValido = (str: string): boolean => {
 
 /**
  * Obtiene el perfil completo del usuario autenticado.
- * 
+ *
+ * La data (hook `buscarExistenteEntidad`, entidad "PERFIL") devuelve
+ * `PERFIL_EXISTE` con la fila o `PERFIL_NO_EXISTE`. Acá se traduce al código
+ * que espera `MAPA_OBTENER_PERFIL`.
+ *
  * @param data - Objeto con usuario_id (viene del token via handleControladores)
  * @returns Perfil con usuario, nombre, apellido, correo, celular, rol, id_escuela
  */
-const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData<{
-    usuario: string;
-    nombre: string;
-    apellido: string;
-    correo: string;
-    celular: string;
-    rol: string;
-    id_escuela: number;
-}>> => {
-    const usuario_id = data.usuario_id;
-    const resultado = await dataUsuario.obtenerMiPerfil(usuario_id);
+const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData<DataMiPerfil>> => {
+    const resultado = await dataUsuario.obtenerMiPerfil(data.usuario_id);
 
-    if (resultado.code === "PROFILE_FETCHED") {
+    if (resultado.code === "PERFIL_EXISTE") {
         return {
             error: false,
             message: "Perfil obtenido correctamente",
@@ -40,6 +35,15 @@ const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData
         };
     }
 
+    if (resultado.code === "PERFIL_NO_EXISTE") {
+        return {
+            error: true,
+            message: "Usuario no encontrado",
+            code: "USER_NOT_FOUND"
+        };
+    }
+
+    // Salvavidas: ningún code conocido llegó desde la data
     return {
         error: true,
         message: "Error en el servidor al obtener perfil",
@@ -71,7 +75,7 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
 
     // 2. Obtener datos actuales del usuario para conocer su rol
     const perfilActual = await dataUsuario.obtenerMiPerfil(data.usuario_id);
-    if (perfilActual.code !== "PROFILE_FETCHED" || !perfilActual.data) {
+    if (perfilActual.code !== "PERFIL_EXISTE" || !perfilActual.data) {
         return {
             error: true,
             message: "Usuario no encontrado",
@@ -93,7 +97,7 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
     // 4. Validación de unicidad de correo EN SERVICE (antes de tocar BD)
     if (parametros.correo !== undefined) {
         const existeCorreo = await dataUsuario.buscarPorCorreo(parametros.correo, data.usuario_id);
-        if (existeCorreo.code === "EMAIL_TAKEN") {
+        if (existeCorreo.code === "CORREO_EXISTE") {
             return {
                 error: true,
                 message: "El correo electrónico ya está en uso",

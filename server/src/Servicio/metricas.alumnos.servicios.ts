@@ -2,10 +2,11 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataMetricasAlumno } from "../data/metricas.alumnos.data";
 import { method as dataFlayer } from "../data/flayer.data";
 
-import { EscuelaAlumnoRow, ClaseHoyRow, EscuelaData, InscripcionActualData, PlanEscuelaData,  HorarioClaseData} from "../data/metricas.alumnos.data";
+import { EscuelaAlumnoRow, ClaseHoyRow, EscuelaData, InscripcionActualData, PlanEscuelaData,  HorarioClaseData, AsistenciaInscripcionRow} from "../data/metricas.alumnos.data";
 import { MetricasAlumnoSchema, MetricasAlumnosInputs,
          DataEscuelaInputs, DataEscuelaSchema,
          IdEscuelaInputs, IdEscuelaSchema,
+         AsistenciasInscripcionSchema, AsistenciasInscripcionInputs,
  } from "../squemas/metricas.alumno"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { FlayerDataResult  } from "../data/flayer.data";
@@ -89,7 +90,7 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
     const validarData : DataEscuelaInputs = DataEscuelaSchema.parse( data);
    
     const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( validarData.correo);
-
+console.log(validarCorreo)
     if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
         return {
             error : true,
@@ -97,7 +98,7 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
             code : "CORREO_INVALIDO_SERVIDOR" // ESTO ES ASI POR Q SI O SI TENDRIA Q TENER CORREO ASOCIADO A UN DNI
         };
     }
-
+    
     const dataInscripcion ={
         ...validarData,
         dni_alumno : validarCorreo.data?.dni_alumno,
@@ -181,10 +182,65 @@ const horarioEscuelaServicio = async ( data : IdEscuelaInputs)
 
 
 
+/**
+ * Servicio del historial de asistencias de una inscripción.
+ *
+ * Valida el input con Zod (el `id_inscripcion` viaja por params como texto:
+ * un `Number("abc")` da `NaN` y Zod responde 400), y traduce los códigos
+ * del hook a los del MAPA.
+ *
+ * @param {AsistenciasInscripcionInputs} data - Input validado por `AsistenciasInscripcionSchema`.
+ * @returns {Promise<TipadoData<AsistenciaInscripcionRow[] | null>>}
+ * Retorna un objeto tipado con el resultado de la consulta.
+ *
+ * @returns.code ASISTENCIAS_INSCRIPCION_OK - Hay asistencias registradas.
+ * @returns.code SIN_ASISTENCIAS_INSCRIPCION - La inscripción no tiene asistencias.
+ * @returns.code ERROR_SERVIDOR - Respaldo ante cualquier code inesperado.
+ */
+const asistenciasInscripcionServicio = async ( data : AsistenciasInscripcionInputs )
+:Promise<TipadoData<AsistenciaInscripcionRow[] | null >> =>{
+
+    const validarData : AsistenciasInscripcionInputs = AsistenciasInscripcionSchema.parse( data );
+
+    const resultAsistencias = await dataMetricasAlumno.asistenciasPorInscripcion( validarData.id_inscripcion );
+
+    // Sin filas el hook responde NO_ACTIVE_* (error true + data []).
+    if ( resultAsistencias.code === "NO_ACTIVE_ASISTENCIAS_INSCRIPCION" ){
+        return {
+            error : true,
+            message : "La inscripción no tiene asistencias registradas.",
+            code : "SIN_ASISTENCIAS_INSCRIPCION"
+        };
+    };
+
+    const asistencias : AsistenciaInscripcionRow[] | null | undefined  = resultAsistencias.code === 'ASISTENCIAS_INSCRIPCION_LISTED' 
+                        ? resultAsistencias.data
+                        : null;
+
+    if ( asistencias !== undefined && asistencias !== null ){
+        return {
+            error : false, 
+            message : "Asistencias de la inscripción ok.",
+            data : asistencias,
+            code : "ASISTENCIAS_INSCRIPCION_OK"
+        };
+    }; 
+
+    return {
+        error: true, 
+        message : "Error en el servidor, asistencias de inscripción.",
+        code : "ERROR_SERVIDOR"
+    };     
+};
+
+
+
+
 export const method = {
 
     metricasAlumnoPrincipal : tryCatchDatos( metricasAlumnoPrincipal ),
     dataEscuelaServicio : tryCatchDatos( dataEscuelaServicio),
     horarioEscuelaServicio : tryCatchDatos( horarioEscuelaServicio),
+    asistenciasInscripcionServicio : tryCatchDatos( asistenciasInscripcionServicio ),
 
 };

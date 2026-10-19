@@ -21,12 +21,14 @@ interface EstadoPlanActualProps {
   inscripcion: InscripcionActualData;
   umbralAlerta?: number; // cantidad de clases restantes para disparar la alerta
   carga: boolean;
+  onVerClases?: () => void;
 }
 
 export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
   inscripcion,
   umbralAlerta = 2,
   carga,
+  onVerClases,
 }) => {
   const clasesUsadas = inscripcion.clases_utilizadas;
   const clasesTotales = inscripcion.clases_asignadas_inscritas;
@@ -120,6 +122,16 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
                 <span className="visually-hidden">{porcentaje}% (${clasesUsadas} de ${clasesTotales} clases)</span>
               </div>
             </div>
+
+            {onVerClases && (
+              <button
+                type="button"
+                className="btn-ver-clases-asistidas"
+                onClick={onVerClases}
+              >
+                Ver clases asistidas
+              </button>
+            )}
           </div>
         </>
       )}

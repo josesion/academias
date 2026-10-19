@@ -296,6 +296,62 @@ const horarioEscuela =async ( id_escuela : number )
 };
 
 
+export interface AsistenciaInscripcionRow {
+  fecha: string;              // "YYYY-MM-DD" (fecha real de la asistencia)
+  id_horario_clase: number;
+  dia_semana: string;         // lunes..domingo
+  hora: string;               // "16:00 - 17:00" (CONCAT de hora_inicio y hora_fin)
+  tipo_clase: string;         // tipo_clase.tipo (Ej: Bachata)
+  nivel: string;              // niveles.nivel (Ej: Principiante)
+  profesor: string;           // nombre y apellido concatenados
+}
+
+/**
+ * Historial de asistencias PERSISTIDAS de una inscripción, con los datos
+ * del horario al que el alumno asistió (clase, nivel, día, hora y profesor).
+ *
+ * Se filtra por `estado = 'presente'` porque es la única que consume clase
+ * de la inscripción. NO se filtra `estado` ni `vigente` de `horarios_clases`:
+ * es un historial, la clase pudo desactivarse después de que asistió.
+ *
+ * @param {number} id_inscripcion - Inscripción a consultar.
+ * @returns {Promise<TipadoData<AsistenciaInscripcionRow[]>>}
+ * Retorna un objeto tipado con el resultado de la consulta.
+ *
+ * @returns.code ASISTENCIAS_INSCRIPCION_LISTED - Hay asistencias registradas.
+ * @returns.code NO_ACTIVE_ASISTENCIAS_INSCRIPCION - La inscripción no tiene asistencias.
+ */
+const asistenciasPorInscripcion = async ( id_inscripcion : number )
+:Promise<TipadoData<AsistenciaInscripcionRow[]>> => {
+
+    const sql : string = `SELECT 
+                                DATE_FORMAT(a.fecha, '%Y-%m-%d') AS fecha,
+                                hc.id AS id_horario_clase,
+                                hc.dia_semana,
+                                CONCAT(hc.hora_inicio, ' - ', hc.hora_fin) AS hora,
+                                tc.tipo AS tipo_clase,
+                                n.nivel AS nivel,
+                                CONCAT(p.nombre, ' ', p.apellido) AS profesor
+                            FROM asistencias a
+                            INNER JOIN horarios_clases hc ON a.id_horario_clase = hc.id
+                            INNER JOIN tipo_clase tc ON hc.id_tipo_clase = tc.id
+                            INNER JOIN niveles n ON hc.id_nivel = n.id
+                            INNER JOIN profesores p ON hc.dni_profesor = p.dni
+                            WHERE a.id_inscripcion = ?
+                            AND a.estado = 'presente'
+                            ORDER BY a.fecha DESC, hc.hora_inicio ASC;`;
+
+    const valor : unknown[] = [ id_inscripcion ];
+
+    return await listarEntidadSinPaginacion({
+        slqListado : sql,
+        valores    : valor,
+        entidad    : "ASISTENCIAS_INSCRIPCION",
+        estado : ""
+    });
+};
+
+
 export const method = {
 
     obtenerEscuelasPorAlumno : tryCatchDatos( obtenerEscuelasPorAlumno ),
@@ -305,5 +361,6 @@ export const method = {
     inscripcionActual : tryCatchDatos( inscripcionActual),
     planesActivos : tryCatchDatos( planesActivos),
     horarioEscuela : tryCatchDatos( horarioEscuela),
+    asistenciasPorInscripcion : tryCatchDatos( asistenciasPorInscripcion ),
 
 };

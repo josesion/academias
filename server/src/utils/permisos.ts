@@ -33,7 +33,7 @@ const validarPermiso = tryCatch(async (req: Request, res: Response, next: NextFu
     // Obtiene el token de las cookies de la petición.
     const { token } = req.cookies;
     const clave = process.env.JWT_CLAVE;
-    
+       
     if (!token) {
         return enviarResponseError(res, 401, "Sin token, no autorizado");
     }

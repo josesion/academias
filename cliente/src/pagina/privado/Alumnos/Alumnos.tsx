@@ -50,8 +50,10 @@ export const AmbAlumnos = () => {
   //  Lógica específica del componente (Manipulación del input 'dni')
   // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
   const inputsModificar = inputsFormulario.map((input) => {
-    if (tipoFormulario === "modificar" && input.name === "dni") {
-      return { ...input, readonly: true };
+    if (tipoFormulario === "modificar") {
+      if (input.name === "dni" || input.name === "email") {
+        return { ...input, readonly: true };
+      }
     }
     return input;
   });

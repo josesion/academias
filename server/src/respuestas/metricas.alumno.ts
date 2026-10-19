@@ -40,7 +40,7 @@ export const MAPA_INFO_ESCUELA : Record<string , { status : CodigoEstadoHTTP, ms
 export const MAPA_HORARIO_ESCUELA : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     ERROR_SERVIDOR,
- 
+
 
     "HORARIO_ESCUELA_OK" : {
             status: CodigoEstadoHTTP.OK,
@@ -48,3 +48,19 @@ export const MAPA_HORARIO_ESCUELA : Record<string , { status : CodigoEstadoHTTP,
         },
 
 }; 
+
+export const MAPA_ASISTENCIAS_INSCRIPCION : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+
+    ERROR_SERVIDOR,
+
+    "SIN_ASISTENCIAS_INSCRIPCION" : {
+            status: CodigoEstadoHTTP.NO_ENCONTRADO,
+            msg: "La inscripción no tiene asistencias registradas."
+        },
+
+    "ASISTENCIAS_INSCRIPCION_OK" : {
+            status: CodigoEstadoHTTP.OK,
+            msg: "Asistencias de la inscripción ok."
+        },
+
+};

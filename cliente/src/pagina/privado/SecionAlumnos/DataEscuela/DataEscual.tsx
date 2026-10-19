@@ -12,6 +12,7 @@ import { EstadoPlanActual } from "../../../../componentes/SeccionAlumnos/EstadoA
 import { PlanesEscuelaList } from "../../../../componentes/SeccionAlumnos/TarjetasPlanes/TarjetasPlanes";
 
 import { GrillaHorarios } from "../../../../componentes/SeccionAlumnos/Horarios/Horarios";
+import { ListadoClasesAsistidas } from "../../../../componentes/SeccionAlumnos/ListadoClasesAsistidas/ListadoClasesAsistidas";
 
 import { ArrowLeft, Calendar } from "lucide-react";
 import "./dataescuela.css";
@@ -19,7 +20,7 @@ import "./dataescuela.css";
 import { configInfoEscuelas } from "../../../../hookNegocios/infoEscuela";
 
 export const DataEscuela = () => {
-  const { state, dispatch, cerrarMensajeError } = configInfoEscuelas();
+  const { state, dispatch, cerrarMensajeError, abrirModalClases, cerrarModalClases, reintentarClases } = configInfoEscuelas();
   const { data } = state;
 
   const navigate = useNavigate();
@@ -109,6 +110,7 @@ export const DataEscuela = () => {
             <EstadoPlanActual
               inscripcion={data.inscripcion}
               carga={state.carga.infoEscuela}
+              onVerClases={abrirModalClases}
             />
           ) : (
             <EstadoVacio variante="inscripcion" />
@@ -154,6 +156,18 @@ export const DataEscuela = () => {
             abierto
           />
         ))}
+
+      {/* --- MODAL DE CLASES ASISTIDAS --- */}
+      {state.modal.clasesAsistidas && (
+        <ListadoClasesAsistidas
+          abierto={state.modal.clasesAsistidas}
+          clases={state.clasesAsistidas}
+          carga={state.carga.clasesAsistidas}
+          error={state.errorClasesAsistidas}
+          onCerrar={cerrarModalClases}
+          onReintentar={reintentarClases}
+        />
+      )}
 
       {/* --- AVISO DE ERROR FLOTANTE (robot roto) --- */}
       {state.error && (

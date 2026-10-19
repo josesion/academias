@@ -22,6 +22,14 @@ export const IdEscuelaSchema = z.object({
 });
 
 
+export const AsistenciasInscripcionSchema = z.object({
+    // --- Inscripción cuyo historial de asistencias se consulta ---
+    id_inscripcion: z.number({ message: "id Inscripción debe ser numérico" })
+        .min(1, { message: "El id debe ser mayor o igual a 1" }),
+});
+
+
 export type MetricasAlumnosInputs = z.infer<typeof MetricasAlumnoSchema>;
 export type DataEscuelaInputs = z.infer<typeof DataEscuelaSchema>;
 export type IdEscuelaInputs = z.infer<typeof IdEscuelaSchema>;
+export type AsistenciasInscripcionInputs = z.infer<typeof AsistenciasInscripcionSchema>;

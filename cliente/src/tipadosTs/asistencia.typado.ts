@@ -107,3 +107,13 @@ export interface DataAsistencia{
      dni_alumno : string,
      estado : "activos" | "inactivos",
 };
+
+export interface AsistenciaInscripcionRow {
+  fecha: string;
+  id_horario_clase: number;
+  dia_semana: string;
+  hora: string;
+  tipo_clase: string;
+  nivel: string;
+  profesor: string;
+};

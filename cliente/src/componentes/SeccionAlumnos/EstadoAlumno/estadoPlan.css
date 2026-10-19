@@ -184,3 +184,27 @@
 .barra-progreso-fill.fill-agotado {
   background-color: var(--color-error);
 }
+
+/* --- BOTÓN VER CLASES ASISTIDAS --- */
+.btn-ver-clases-asistidas {
+  background-color: var(--color-primario);
+  color: var(--fondo-secundario);
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radio-sm);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  cursor: pointer;
+  transition: var(--transicion);
+  align-self: flex-end;
+  margin-top: 4px;
+}
+
+.btn-ver-clases-asistidas:hover {
+  background-color: var(--color-secundario);
+}
+
+.btn-ver-clases-asistidas:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
