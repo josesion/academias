@@ -90,7 +90,7 @@ const dataEscuelaServicio = async ( data : DataEscuelaInputs )
     const validarData : DataEscuelaInputs = DataEscuelaSchema.parse( data);
    
     const validarCorreo = await dataMetricasAlumno.obtenerDniAlumno( validarData.correo);
-console.log(validarCorreo)
+
     if ( validarCorreo.code === "DNI_ALUMNO_NO_EXISTE"){
         return {
             error : true,

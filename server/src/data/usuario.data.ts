@@ -2,8 +2,9 @@ import bcrypt from 'bcryptjs';
 
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { ClientError } from "../utils/error";
-import { iud, select } from "../utils/baseDatos";
+import { select } from "../utils/baseDatos";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 import { TipadoData, DataIdUsuario, DataMiPerfil, ModMiPerfilInput } from "../tipados/tipado.data";
 
 
@@ -39,6 +40,196 @@ const buscarPorCorreo = async (
         valores: valores,
         entidad: "CORREO"
     });
+};
+
+/**
+ * Verifica si un correo ya está tomado para un usuario con ROL "usuario".
+ *
+ * Un usuario normal NO tiene fila en `alumnos`, así que solo se chequea la
+ * tabla `usuarios`: el correo no puede repetir ni el `correo` ni el `usuario`
+ * (login) de nadie. Delega al hook `buscarExistenteEntidad`.
+ *
+ * @param correo - Correo a validar.
+ * @param excluirId - id_usuario que queda fuera de la búsqueda (opcional, para
+ *                    que un usuario pueda conservar su propio correo al editar su perfil).
+ * @returns {Promise<TipadoData<{ id_usuario: number; correo: string; usuario: string }>>}
+ *   `CORREO_EXISTE` con la fila si ya está tomado / `CORREO_NO_EXISTE` si está libre.
+ */
+const buscarCorreoUsuario = async (
+    correo: string,
+    excluirId?: number
+): Promise<TipadoData<{ id_usuario: number; correo: string; usuario: string }>> => {
+
+    const sql = `SELECT id_usuario, correo, usuario
+                 FROM usuarios
+                 WHERE (correo = ? OR usuario = ?)
+                   AND (? IS NULL OR id_usuario != ?);`;
+
+    const idExcluir = excluirId ?? null;
+    const valores: unknown[] = [correo, correo, idExcluir, idExcluir];
+
+    return await buscarExistenteEntidad({
+        slqEntidad: sql,
+        valores: valores,
+        entidad: "CORREO"
+    });
+};
+
+/**
+ * Verifica si un correo ya está tomado para un usuario con ROL "alumno".
+ *
+ * Para un alumno el correo es el LOGIN y debe quedar UNIFICADO en tres
+ * columnas: `usuarios.correo`, `usuarios.usuario` y `alumnos.email` (así lo
+ * necesita el JOIN de `metricas.alumnos.data.obtenerDniAlumno`, que une
+ * `usuarios.correo = alumnos.email`). Por eso el chequeo cruza las dos tablas
+ * con UNION. Delega al hook `buscarExistenteEntidad`.
+ *
+ * @param correo - Correo a validar.
+ * @param excluirId - id_usuario que queda fuera de la búsqueda en `usuarios` (opcional).
+ * @param excluirDni - dni_alumno que queda fuera de la búsqueda en `alumnos` (opcional).
+ * @returns {Promise<TipadoData<{ origen: string; id: number; valor: string }>>}
+ *   `CORREO_EXISTE` con la fila del primer choque / `CORREO_NO_EXISTE` si está libre.
+ */
+const buscarCorreoAlumno = async (
+    correo: string,
+    excluirId?: number,
+    excluirDni?: number
+): Promise<TipadoData<{ origen: string; id: number; valor: string }>> => {
+
+    const sql = `SELECT 'usuarios' AS origen, id_usuario AS id, correo AS valor
+                 FROM usuarios
+                 WHERE (correo = ? OR usuario = ?)
+                   AND (? IS NULL OR id_usuario != ?)
+                 UNION ALL
+                 SELECT 'alumnos' AS origen, dni_alumno AS id, email AS valor
+                 FROM alumnos
+                 WHERE email = ?
+                   AND (? IS NULL OR dni_alumno != ?);`;
+
+    const idExcluir = excluirId ?? null;
+    const dniExcluir = excluirDni ?? null;
+    const valores: unknown[] = [
+        correo, correo, idExcluir, idExcluir,
+        correo, dniExcluir, dniExcluir
+    ];
+
+    return await buscarExistenteEntidad({
+        slqEntidad: sql,
+        valores: valores,
+        entidad: "CORREO"
+    });
+};
+
+/**
+ * Verifica que un nombre de usuario (`usuarios.usuario`) no esté repetido.
+ *
+ * Se usa al cambiar el login (`nuevo_usuario`) en el perfil: el usuario no
+ * puede ser igual al de otra cuenta. Delega al hook `buscarExistenteEntidad`.
+ *
+ * @param usuario - Nombre de usuario a validar.
+ * @param excluirId - id_usuario que queda fuera de la búsqueda (opcional, para
+ *                    que un usuario pueda conservar su propio nombre de usuario).
+ * @returns {Promise<TipadoData<{ id_usuario: number; usuario: string }>>}
+ *   `USUARIO_EXISTE` con la fila si ya está en uso / `USUARIO_NO_EXISTE` si está libre.
+ */
+const buscarUsuarioDisponible = async (
+    usuario: string,
+    excluirId?: number
+): Promise<TipadoData<{ id_usuario: number; usuario: string }>> => {
+
+    const sql = `SELECT id_usuario, usuario
+                 FROM usuarios
+                 WHERE usuario = ?
+                   AND (? IS NULL OR id_usuario != ?);`;
+
+    const idExcluir = excluirId ?? null;
+    const valores: unknown[] = [usuario, idExcluir, idExcluir];
+
+    return await buscarExistenteEntidad({
+        slqEntidad: sql,
+        valores: valores,
+        entidad: "USUARIO"
+    });
+};
+
+/**
+ * Obtiene el `dni_alumno` de la cuenta del usuario logueado con ROL "alumno".
+ *
+ * El token NO trae el `dni`, así que se resuelve aquí cruzando `usuarios` con
+ * `alumnos` por el correo (`usuarios.correo = alumnos.email`, el mismo vínculo
+ * que usa `metricas.alumnos.data.obtenerDniAlumno`). Sirve para excluir al
+ * propio alumno al validar que su nuevo correo no esté tomado.
+ *
+ * Si el correo y el email del alumno están desincronizados, no hay fila y la
+ * validación degrada a chequeo sin exclusión (no rompe el flujo).
+ *
+ * @param usuario_id - id_usuario del usuario logueado (viene del token).
+ * @returns {Promise<TipadoData<{ dni_alumno: number }>>}
+ *   `DNI_ALUMNO_EXISTE` con el dni / `DNI_ALUMNO_NO_EXISTE` si no se pudo resolver.
+ */
+const buscarDniAlumno = async (
+    usuario_id: number
+): Promise<TipadoData<{ dni_alumno: number }>> => {
+
+    const sql = `SELECT a.dni_alumno
+                 FROM alumnos a
+                 JOIN usuarios u ON u.correo = a.email
+                 WHERE u.id_usuario = ?;`;
+
+    return await buscarExistenteEntidad<{ dni_alumno: number }>({
+        slqEntidad: sql,
+        valores: [usuario_id],
+        entidad: "DNI_ALUMNO"
+    });
+};
+
+/**
+ * Verifica que la contraseña actual enviada por el usuario sea la correcta.
+ *
+ * Se usa en el perfil al cambiar la contraseña: antes de aceptar la nueva se
+ * compara la `contrasena_actual` con el hash guardado en `usuarios.contrasena`.
+ *
+ * @param usuario_id - id_usuario del usuario logueado (viene del token).
+ * @param contrasena - Contraseña actual en texto plano a verificar.
+ * @returns {Promise<TipadoData<null>>}
+ *   `CONTRASENA_VALIDA` si coincide /
+ *   `CONTRASENA_INVALIDA` si no coincide /
+ *   `USER_NOT_FOUND` si el usuario no existe.
+ */
+const verificarContrasenaActual = async (
+    usuario_id: number,
+    contrasena: string
+): Promise<TipadoData<null>> => {
+
+    const sql = `SELECT contrasena FROM usuarios WHERE id_usuario = ?;`;
+    const resultado = await select<{ contrasena: string }>(sql, [usuario_id]);
+
+    if (resultado.length <= 0) {
+        return {
+            error: true,
+            message: "Usuario no encontrado",
+            data: null,
+            code: "USER_NOT_FOUND"
+        };
+    }
+
+    const coincide = await bcrypt.compare(contrasena, resultado[0].contrasena);
+
+    if (!coincide) {
+        return {
+            error: true,
+            message: "La contraseña actual es incorrecta",
+            data: null,
+            code: "CONTRASENA_INVALIDA"
+        };
+    }
+
+    return {
+        error: false,
+        message: "Contraseña actual verificada correctamente",
+        data: null,
+        code: "CONTRASENA_VALIDA"
+    };
 };
 
 const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> => {
@@ -94,73 +285,108 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
 
 
 /**
- * Permite al usuario autenticado modificar su propio usuario, contraseña, correo y/o celular.
- * Requiere verificar la contraseña actual.
+ * Escribe los cambios de perfil del usuario autenticado (usuario, contraseña,
+ * correo y/o celular).
+ *
+ * Esta función SOLO ESCRIBE: las validaciones (contraseña actual correcta,
+ * unicidad de usuario y de correo, formato de email, unificación de los campos
+ * del alumno) las hace el Servicio ANTES de llamar acá. Por eso acá ya no se
+ * verifica la contraseña ni se chequea si un usuario está repetido.
+ *
+ * - Usa un único `UPDATE` con `SET` dinámico: solo se escriben los campos que
+ *   realmente cambiaron (si no cambió ninguno, no se ejecuta ninguna query).
+ * - Para ROL ALUMNO el login es el correo, así que deben quedar sincronizadas
+ *   3 columnas: `usuarios.usuario`, `usuarios.correo` y `alumnos.email`. Como
+ *   son 2 tablas, va dentro de una transacción (`iudEntidadTransaction`).
+ *   El `dni_alumno` lo resuelve el Servicio y llega por props.
+ *
+ * @param parametro - Datos a escribir + `usuario_id` (del token) y, para alumno,
+ *                    `dni_alumno` (resuelto por el Servicio).
+ * @returns {Promise<TipadoData<DataMiPerfil>>} `PROFILE_UPDATED` con el perfil final.
+ * @throws {ClientError} `USER_NOT_FOUND` (404) si el usuario ya no existe.
  */
 const modMiPerfil = async (parametro: ModMiPerfilInput): Promise<TipadoData<DataMiPerfil>> => {
-    const { usuario_id, nuevo_usuario, nueva_contrasena, correo, celular, contrasena_actual } = parametro;
+    // OJO: contrasena_actual NO se destructura — ya la validó el Servicio (noUnusedLocals)
+    const { usuario_id, nuevo_usuario, nueva_contrasena, correo, celular, dni_alumno } = parametro;
 
-    // 1. Obtener contraseña actual hasheada y datos del usuario
-    const sqlSelect = `SELECT contrasena, usuario, nombre, apellido, correo, celular, rol, id_escuela FROM usuarios WHERE id_usuario = ?;`;
-    const resultado = await select<{ contrasena: string; usuario: string; nombre: string; apellido: string; correo: string; celular: string; rol: string; id_escuela: number }>(sqlSelect, [usuario_id]);
-    
+    // 1. Leer estado actual (SIN la contraseña: ya no se verifica acá)
+    //    Nota: `celular` se tipea `string` para respetar el contrato DataMiPerfil
+    //    (la BD puede devolver null y el valor viaja tal cual, igual que antes).
+    const sqlSelect = `SELECT usuario, nombre, apellido, correo, celular, rol, id_escuela
+                       FROM usuarios WHERE id_usuario = ?;`;
+    const resultado = await select<{
+        usuario: string; nombre: string; apellido: string; correo: string;
+        celular: string; rol: string; id_escuela: number;
+    }>(sqlSelect, [usuario_id]);
+
     if (resultado.length <= 0) {
         throw new ClientError("Usuario no encontrado", 404, "USER_NOT_FOUND");
     }
+    const { usuario: usuarioBD, nombre, apellido, correo: correoBD,
+            celular: celularBD, rol, id_escuela } = resultado[0];
 
-    const { contrasena: hashActual, usuario: usuarioBD, nombre: nombreBD, apellido: apellidoBD, correo: correoBD, celular: celularBD, rol, id_escuela } = resultado[0];
+    // 2. Valores finales y SET dinámico: SOLO se escribe lo que cambió
+    const usuarioFinal = nuevo_usuario ?? usuarioBD;
+    const correoFinal  = correo ?? correoBD;
+    const celularFinal = celular ?? celularBD;
 
-    // 2. Verificar contraseña actual SOLO si se envía.
-    //    Es obligatoria únicamente al cambiar la contraseña (lo garantiza el refine
-    //    de modMiPerfilSchema); para modificar otros datos no se requiere.
-    if (contrasena_actual !== undefined) {
-        const passwordValida = await bcrypt.compare(contrasena_actual, hashActual);
-        if (!passwordValida) {
-            throw new ClientError("La contraseña actual es incorrecta.", 401, "INVALID_PASSWORD");
-        }
+    const campos: string[]   = [];
+    const valores: unknown[] = [];
+
+    if (nuevo_usuario !== undefined && nuevo_usuario !== usuarioBD) {
+        campos.push("usuario = ?"); valores.push(nuevo_usuario);
     }
-
-    let usuarioFinal = usuarioBD;
-    let nombreFinal = nombreBD;
-    let apellidoFinal = apellidoBD;
-    let correoFinal = correoBD;
-    let celularFinal = celularBD;
-
-    // 3. Si se quiere cambiar el usuario, verificar que no exista y actualizar
-    if (nuevo_usuario && nuevo_usuario !== usuarioBD) {
-        const existe = await select<{ usuario: string }>(`SELECT usuario FROM usuarios WHERE usuario = ?;`, [nuevo_usuario]);
-        if (existe.length > 0) {
-            throw new ClientError("El nombre de usuario ya está en uso.", 409, "USERNAME_TAKEN");
-        }
-        await iud(`UPDATE usuarios SET usuario = ? WHERE id_usuario = ?;`, [nuevo_usuario, usuario_id]);
-        usuarioFinal = nuevo_usuario;
-    }
-
-    // 4. Si se quiere cambiar el correo, actualizar (validacion ya hecha en Service)
     if (correo !== undefined && correo !== correoBD) {
-        await iud(`UPDATE usuarios SET correo = ? WHERE id_usuario = ?;`, [correo, usuario_id]);
-        correoFinal = correo;
+        campos.push("correo = ?"); valores.push(correo);
     }
-
-    // 5. Si se quiere cambiar el celular, actualizar (sin validación de unicidad)
     if (celular !== undefined && celular !== celularBD) {
-        await iud(`UPDATE usuarios SET celular = ? WHERE id_usuario = ?;`, [celular, usuario_id]);
-        celularFinal = celular;
+        campos.push("celular = ?"); valores.push(celular);
     }
 
-    // 6. Si se quiere cambiar la contraseña, hashear y actualizar
     if (nueva_contrasena) {
-        const nuevoHash = await bcrypt.hash(nueva_contrasena, 10);
-        await iud(`UPDATE usuarios SET contrasena = ? WHERE id_usuario = ?;`, [nuevoHash, usuario_id]);
+        campos.push("contrasena = ?");
+        valores.push(await bcrypt.hash(nueva_contrasena, 10));
     }
 
-    return {
-        error: false,
-        message: "Perfil actualizado correctamente",
-        data: { usuario: usuarioFinal, nombre: nombreFinal, apellido: apellidoFinal, correo: correoFinal, celular: celularFinal, rol, id_escuela },
-        code: "PROFILE_UPDATED",
-        errorsDetails: undefined
-    };
+    const datosFinales = { usuario: usuarioFinal, nombre, apellido,
+                           correo: correoFinal, celular: celularFinal, rol, id_escuela };
+
+    // Nada cambió → no se ejecuta ningún UPDATE
+    if (campos.length === 0) {
+        return { error: false, message: "Perfil actualizado correctamente",
+                 data: datosFinales, code: "PROFILE_UPDATED" };
+    }
+
+    // 3. Alumno: el login ES el correo → toca las 2 tablas, así que va en transacción.
+    //    El dni YA VIENE resuelto del Servicio (dni_alumno), no se consulta de nuevo.
+    const esAlumno    = rol === "alumno";
+    const cambioLogin = usuarioFinal !== usuarioBD || correoFinal !== correoBD;
+    const sincronizarAlumno = esAlumno && cambioLogin && dni_alumno !== undefined;
+
+    const transaccion = await iudEntidadTransaction<DataMiPerfil>(async (conn) => {
+        // Un solo UPDATE de usuarios con el SET armado dinámicamente
+        await conn.execute(
+            `UPDATE usuarios SET ${campos.join(", ")} WHERE id_usuario = ?;`,
+            [...valores, usuario_id]
+        );
+
+        // Alumno: sincronizar alumnos.email con el nuevo correo (usa el dni del Servicio)
+        if (sincronizarAlumno) {
+            await conn.execute(
+                `UPDATE alumnos SET email = ? WHERE dni_alumno = ?;`,
+                [correoFinal, dni_alumno]
+            );
+        }
+
+        return datosFinales;
+    });
+
+    if (transaccion.error) {
+        throw new ClientError("No se pudo actualizar el perfil", 500, "ERROR_SERVIDOR");
+    }
+
+    return { error: false, message: "Perfil actualizado correctamente",
+             data: transaccion.data, code: "PROFILE_UPDATED" };
 };
 
 /**
@@ -187,6 +413,11 @@ const obtenerMiPerfil = async (usuario_id: number): Promise<TipadoData<DataMiPer
 
 export const method = {
     buscarPorCorreo         : tryCatchDatos(buscarPorCorreo),
+    buscarCorreoUsuario     : tryCatchDatos(buscarCorreoUsuario),
+    buscarCorreoAlumno      : tryCatchDatos(buscarCorreoAlumno),
+    buscarUsuarioDisponible : tryCatchDatos(buscarUsuarioDisponible),
+    buscarDniAlumno         : tryCatchDatos(buscarDniAlumno),
+    verificarContrasenaActual: tryCatchDatos(verificarContrasenaActual),
     buscarIdUsuario         : tryCatchDatos(buscarIdUsuario),
     modMiPerfil             : tryCatchDatos(modMiPerfil),
     obtenerMiPerfil         : tryCatchDatos(obtenerMiPerfil)

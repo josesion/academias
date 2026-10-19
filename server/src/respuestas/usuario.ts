@@ -88,6 +88,10 @@ export const MAPA_MODIFICAR_PERFIL: Record<string, { status: CodigoEstadoHTTP, m
         status: CodigoEstadoHTTP.CONFLICTO,
         msg: "El correo ya está registrado para otro alumno"
     },
+    "ALUMNO_CAMPOS_DIFERENTES": {
+        status: CodigoEstadoHTTP.CONFLICTO,
+        msg: "Para un alumno, usuario y correo deben ser el mismo valor"
+    },
     "USERNAME_MUST_BE_EMAIL": {
         status: CodigoEstadoHTTP.CONFLICTO,
         msg: "Para rol alumno el usuario debe ser un email válido"

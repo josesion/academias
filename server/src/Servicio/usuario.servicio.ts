@@ -53,11 +53,21 @@ const obtenerMiPerfil = async (data: { usuario_id: number }): Promise<TipadoData
 
 /**
  * Modifica el perfil del usuario autenticado (usuario, contraseña, correo, celular).
- * Requiere contraseña actual para verificación.
- * Valida unicidad de usuario y correo.
- * Si el rol es "alumno", el username debe ser email válido.
- * Registra en historial.
- * 
+ *
+ * Valida TODO antes de tocar la BD, ramificando por rol (el rol sale del token):
+ *
+ * - Contraseñas: van juntas o ninguna (garantiza el refine del schema). Si vienen
+ *   ambas, se verifica que la actual sea correcta (`INVALID_PASSWORD`).
+ * - Rol "alumno": el correo ES el login y debe quedar unificado en 3 columnas
+ *   (`usuarios.correo`, `usuarios.usuario`, `alumnos.email`). El frontend fuerza
+ *   correo = usuario; si llegaran distintos se frena (`ALUMNO_CAMPOS_DIFERENTES`).
+ * - Rol NO alumno: correo y usuario se validan por separado.
+ *
+ * Registra el cambio en historial.
+ *
+ * La data SOLO escribe (SET dinámico + transacción de `alumnos.email` para
+ * alumno); ya no verifica contraseña ni unicidad.
+ *
  * @param data - Datos del body + usuario_id del token
  * @returns Perfil actualizado
  */
@@ -83,37 +93,115 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         };
     }
 
-    // 3. Validar formato email para alumno si se cambia el usuario
-    if (parametros.nuevo_usuario !== undefined && perfilActual.data.rol === "alumno") {
-        if (!esEmailValido(parametros.nuevo_usuario)) {
+    // 3. Normalización: string vacío en contraseñas = "sin cambio"
+    //    (el schema acepta '' para no frenar el PUT; acá se descarta).
+    const contrasenaActual = parametros.contrasena_actual || undefined;
+    const nuevaContrasena = parametros.nueva_contrasena || undefined;
+
+    // 4. Validación de contraseñas (regla "las dos o ninguna", garantizada
+    //    por el refine del schema). Si vienen ambas, se verifica que la
+    //    actual sea correcta ANTES de tocar la BD.
+    if (nuevaContrasena !== undefined && contrasenaActual !== undefined) {
+        const verificacion = await dataUsuario.verificarContrasenaActual(data.usuario_id, contrasenaActual);
+
+        if (verificacion.code === "CONTRASENA_INVALIDA") {
+            return {
+                error: true,
+                message: "La contraseña actual es incorrecta",
+                code: "INVALID_PASSWORD"
+            };
+        }
+
+        if (verificacion.code === "USER_NOT_FOUND") {
+            return {
+                error: true,
+                message: "Usuario no encontrado",
+                code: "USER_NOT_FOUND"
+            };
+        }
+    }
+
+    const esAlumno = perfilActual.data.rol === "alumno";
+    // Se resuelve una sola vez y se REUTILIZA: para excluir al alumno de su
+    // propio choque de correo (6a) y para que la data sincronice alumnos.email.
+    let dniAlumno: number | undefined;
+
+    // 5. Guardia de unificación para rol alumno: el frontend fuerza
+    //    correo = usuario en todo PUT (spec 036). Si llegaran distintos, se frena.
+    if (esAlumno
+        && parametros.correo !== undefined
+        && parametros.nuevo_usuario !== undefined
+        && parametros.correo !== parametros.nuevo_usuario) {
+        return {
+            error: true,
+            message: "Para un alumno, usuario y correo deben ser el mismo valor",
+            code: "ALUMNO_CAMPOS_DIFERENTES"
+        };
+    }
+
+    if (esAlumno) {
+        // 6a. Rama ALUMNO: el correo es el LOGIN y va unificado en 3 columnas
+        //     (usuarios.correo, usuarios.usuario y alumnos.email).
+        if (parametros.nuevo_usuario !== undefined && !esEmailValido(parametros.nuevo_usuario)) {
             return {
                 error: true,
                 message: "Para rol alumno el usuario debe ser un email válido",
                 code: "USERNAME_MUST_BE_EMAIL"
             };
         }
-    }
 
-    // 4. Validación de unicidad de correo EN SERVICE (antes de tocar BD)
-    if (parametros.correo !== undefined) {
-        const existeCorreo = await dataUsuario.buscarPorCorreo(parametros.correo, data.usuario_id);
-        if (existeCorreo.code === "CORREO_EXISTE") {
-            return {
-                error: true,
-                message: "El correo electrónico ya está en uso",
-                code: "EMAIL_TAKEN"
-            };
+        // El correo viaja SIEMPRE en todo PUT de alumno, pero por las dudas se
+        // usa el que venga (correo, o en su defecto nuevo_usuario).
+        const correoAlumno = parametros.correo ?? parametros.nuevo_usuario;
+
+        if (correoAlumno !== undefined) {
+            // Se resuelve el dni propio para excluir al alumno de su propio choque.
+            const dni = await dataUsuario.buscarDniAlumno(data.usuario_id);
+            dniAlumno = dni.code === "DNI_ALUMNO_EXISTE" ? dni.data?.dni_alumno : undefined;
+
+            const existeCorreo = await dataUsuario.buscarCorreoAlumno(correoAlumno, data.usuario_id, dniAlumno);
+            if (existeCorreo.code === "CORREO_EXISTE") {
+                return {
+                    error: true,
+                    message: "El correo electrónico ya está en uso",
+                    code: "EMAIL_TAKEN"
+                };
+            }
+        }
+    } else {
+        // 6b. Rama NO alumno: correo y usuario son campos independientes.
+        if (parametros.correo !== undefined) {
+            const existeCorreo = await dataUsuario.buscarCorreoUsuario(parametros.correo, data.usuario_id);
+            if (existeCorreo.code === "CORREO_EXISTE") {
+                return {
+                    error: true,
+                    message: "El correo electrónico ya está en uso",
+                    code: "EMAIL_TAKEN"
+                };
+            }
+        }
+
+        if (parametros.nuevo_usuario !== undefined) {
+            const existeUsuario = await dataUsuario.buscarUsuarioDisponible(parametros.nuevo_usuario, data.usuario_id);
+            if (existeUsuario.code === "USUARIO_EXISTE") {
+                return {
+                    error: true,
+                    message: "El nombre de usuario ya está en uso",
+                    code: "USERNAME_TAKEN"
+                };
+            }
         }
     }
 
-    // 5. Ejecutar modificación en data layer
+    // 7. Escritura en data layer. Ya NO se pasa contrasena_actual (la validó el
+    //    Servicio); se le pasa el dni para que sincronice alumnos.email.
     const resultado = await dataUsuario.modMiPerfil({
         usuario_id: data.usuario_id,
         nuevo_usuario: parametros.nuevo_usuario,
-        nueva_contrasena: parametros.nueva_contrasena,
+        nueva_contrasena: nuevaContrasena,
         correo: parametros.correo,
         celular: parametros.celular,
-        contrasena_actual: parametros.contrasena_actual,
+        dni_alumno: dniAlumno,
     });
 
     // 6. Traducir códigos de data a códigos de servicio
@@ -144,27 +232,12 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         };
     }
 
-    if (resultado.code === "USERNAME_TAKEN") {
+    // La transacción de 2 tablas (usuarios + alumnos) pudo fallar: FK, deadlock, etc.
+    if (resultado.code === "TRANSACCION_FALLIDA") {
         return {
             error: true,
-            message: "El nombre de usuario ya está en uso",
-            code: "USERNAME_TAKEN"
-        };
-    }
-
-    if (resultado.code === "EMAIL_TAKEN") {
-        return {
-            error: true,
-            message: "El correo electrónico ya está en uso",
-            code: "EMAIL_TAKEN"
-        };
-    }
-
-    if (resultado.code === "INVALID_PASSWORD") {
-        return {
-            error: true,
-            message: "La contraseña actual es incorrecta",
-            code: "INVALID_PASSWORD"
+            message: "No se pudo actualizar el perfil",
+            code: "ERROR_SERVIDOR"
         };
     }
 

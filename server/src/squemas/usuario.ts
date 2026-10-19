@@ -123,7 +123,8 @@ export const modMiPerfilSchema = z.object({
   nueva_contrasena: z.string()
     .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
     .max(50, { message: 'La contraseña no puede exceder los 50 caracteres.' })
-    .optional(),
+    .optional()
+    .or(z.literal('')),
   correo: z.string()
     .email({ message: 'El formato del correo electrónico no es válido.' })
     .max(255, { message: 'El correo electrónico no puede exceder los 255 caracteres.' })
@@ -132,18 +133,23 @@ export const modMiPerfilSchema = z.object({
     .max(20, { message: 'El celular no puede exceder los 20 caracteres.' })
     .optional()
     .or(z.literal('')),
-  contrasena_actual: z.string().min(8).optional(),
+  contrasena_actual: z.string().min(8).optional().or(z.literal('')),
 }).refine(data => data.nuevo_usuario || data.nueva_contrasena || data.correo !== undefined || data.celular !== undefined, {
   message: 'Debe proporcionar al menos un campo para modificar.',
   path: ['general']
 }).refine(data => {
-  // Si se envía nueva_contrasena, contrasena_actual es obligatoria
+  // Las contraseñas van juntas o ninguna: si se envía una, la otra es
+  // obligatoria. (La 3ª "confirmar_contrasena" no viaja al backend: la
+  // valida el frontend para comodidad del usuario.)
   if (data.nueva_contrasena && !data.contrasena_actual) {
+    return false;
+  }
+  if (data.contrasena_actual && !data.nueva_contrasena) {
     return false;
   }
   return true;
 }, {
-  message: 'La contraseña actual es requerida para cambiar la contraseña',
+  message: 'Para cambiar la contraseña se requieren la contraseña actual y la nueva',
   path: ['contrasena_actual']
 });
 
