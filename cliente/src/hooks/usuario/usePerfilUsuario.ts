@@ -8,6 +8,7 @@ import {
     initialPerfil,
     type PerfilAction,
     type CampoFormularioKey,
+    type FormularioPerfil,
     CAMPOS_OBLIGATORIOS,
 } from "../../reducers/perfil.reducer";
 import { useEffectServicio } from "../../utils/useEfectServicio";
@@ -15,7 +16,37 @@ import type { PerfilCompleto, MiPerfilResult, MiPerfilInputs } from "../../servi
 
 /** Tipos de los servicios inyectados (patrón del proyecto) */
 type ServicioGet = (signal?: AbortSignal) => Promise<{ error: boolean; data?: PerfilCompleto; message?: string; code?: string }>;
-type ServicioPut = (data: MiPerfilInputs, signal?: AbortSignal) => Promise<{ error: boolean; data?: MiPerfilResult; message?: string; code?: string }>;
+/**
+ * `errorsDetails` viaja como `unknown` porque el server lo devuelve como
+ * `object` sin forma garantizada → se normaliza con un type guard defensivo
+ * (`leerDetalles`) antes de usarlo (spec 036, decisión #10b).
+ */
+type ServicioPut = (data: MiPerfilInputs, signal?: AbortSignal) => Promise<{ error: boolean; data?: MiPerfilResult; message?: string; code?: string; errorsDetails?: unknown }>;
+
+/** Detalle de validación devuelto por el server en `errorsDetails`. */
+type DetalleValidacion = { campo: string; message: string };
+
+/**
+ * Lee `errorsDetails` como `unknown` y devuelve SOLO los detalles legibles.
+ * Si no es un array, o los elementos no tienen `campo`/`message` string,
+ * devuelve un array vacío (el llamador cae en el mensaje genérico).
+ */
+const leerDetalles = (valor: unknown): DetalleValidacion[] => {
+    if (!Array.isArray(valor)) return [];
+    return valor.filter(
+        (d): d is DetalleValidacion =>
+            !!d && typeof d === "object" &&
+            typeof (d as DetalleValidacion).campo === "string" &&
+            typeof (d as DetalleValidacion).message === "string"
+    );
+};
+
+/**
+ * Indica si el nombre de campo recibido por el server corresponde a una clave
+ * real del formulario (para poder pintarle un error de campo).
+ */
+const esCampoFormulario = (campo: string, formulario: FormularioPerfil): campo is CampoFormularioKey =>
+    Object.prototype.hasOwnProperty.call(formulario, campo);
 
 interface PropsPerfil {
     servicios: {
@@ -87,8 +118,21 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
      * Se llama desde el botón Guardar (onClick) — el componente pone e.preventDefault() en el form.
      *
      * Por rol (spec 036): para alumno `correo` no es obligatorio (se filtra aquí,
-     * sin tocar el reducer), no se valida su formato y el payload siempre lleva
-     * `correo` = valor del campo "usuario".
+     * sin tocar el reducer) y el payload siempre lleva `correo` = valor del
+     * campo "usuario".
+     *
+     * Decisión #10 (spec 036, Fase 7 — revierte la decisión #4): para alumno el
+     * campo "usuario" **sí** se valida con la regex de email **antes** de
+     * cualquier request (el payload de alumno siempre manda `correo` = usuario,
+     * así que el server rechazaría igual un usuario que no es email). Si no
+     * matchea, se corta con error en el campo "usuario" + alerta global, sin
+     * llamar al servicio.
+     *
+     * Además, el handler de errores contempla el código `VALIDATION_ERROR`
+     * leyendo `errorsDetails` (type guard defensivo): si el server manda
+     * detalles legibles, se muestra el mensaje real del primer detalle
+     * (mapeando "correo" → "usuario" para alumno); si no, se mantiene el
+     * mensaje genérico actual.
      */
     const guardarPerfil = async () => {
         const f = state.formulario;
@@ -104,6 +148,22 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
             dispatch({
                 type: "SET_ERROR_GUARDAR",
                 payload: `Completá ${faltantes.map((c) => c.etiqueta).join(", ")}.`,
+            });
+            return;
+        }
+
+        // Spec 036 (decisión #10, Fase 7): para alumno el campo "usuario" debe
+        // ser un correo electrónico válido. El payload de alumno SIEMPRE manda
+        // `correo` = usuario, así que si el usuario no es email el server
+        // respondería VALIDATION_ERROR: se corta acá, sin request.
+        if (esAlumno && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.usuario.value.trim())) {
+            dispatch({
+                type: "SET_ERROR_CAMPO",
+                payload: { campo: "usuario", valor: "El usuario debe ser un correo electrónico válido" },
+            });
+            dispatch({
+                type: "SET_ERROR_GUARDAR",
+                payload: "El usuario debe ser un correo electrónico válido",
             });
             return;
         }
@@ -285,6 +345,24 @@ export const useLogicaPerfil = (config: PropsPerfil) => {
                     // el campo "correo" está oculto → va al campo visible "usuario"
                     mensaje = resultado.message || "El usuario debe ser un correo válido";
                     campoError = "usuario";
+                } else if (code === "VALIDATION_ERROR") {
+                    // Spec 036 (decisión #10, Fase 7): el server manda
+                    // `errorsDetails` con el detalle real de la validación.
+                    // Se leen defensivamente; si no hay detalles legibles se
+                    // mantiene el mensaje genérico actual.
+                    const detalle = leerDetalles(resultado.errorsDetails)[0];
+                    if (detalle) {
+                        mensaje = detalle.message;
+                        // Alumno: el campo "correo" está oculto → el detalle se
+                        // muestra sobre el campo visible "usuario".
+                        const campoDetalle =
+                            esAlumno && detalle.campo === "correo" ? "usuario" : detalle.campo;
+                        // Solo se pinta error de campo si corresponde a una clave
+                        // real del formulario; si no, queda solo la alerta global.
+                        if (esCampoFormulario(campoDetalle, state.formulario)) {
+                            campoError = campoDetalle;
+                        }
+                    }
                 }
 
                 if (campoError) {

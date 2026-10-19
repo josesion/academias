@@ -123,8 +123,15 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
 
     const esAlumno = perfilActual.data.rol === "alumno";
     // Se resuelve una sola vez y se REUTILIZA: para excluir al alumno de su
-    // propio choque de correo (6a) y para que la data sincronice alumnos.email.
+    // propio choque de correo (6a) y para que la data sincronize alumnos.email.
     let dniAlumno: number | undefined;
+
+    // 4b. El dni se resuelve SIEMPRE para alumno (no solo si viene correo),
+    //     porque de él depende poder sincronizar alumnos.email al escribir.
+    if (esAlumno) {
+        const dni = await dataUsuario.buscarDniAlumno(data.usuario_id);
+        dniAlumno = dni.code === "DNI_ALUMNO_EXISTE" ? dni.data?.dni_alumno : undefined;
+    }
 
     // 5. Guardia de unificación para rol alumno: el frontend fuerza
     //    correo = usuario en todo PUT (spec 036). Si llegaran distintos, se frena.
@@ -155,10 +162,8 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         const correoAlumno = parametros.correo ?? parametros.nuevo_usuario;
 
         if (correoAlumno !== undefined) {
-            // Se resuelve el dni propio para excluir al alumno de su propio choque.
-            const dni = await dataUsuario.buscarDniAlumno(data.usuario_id);
-            dniAlumno = dni.code === "DNI_ALUMNO_EXISTE" ? dni.data?.dni_alumno : undefined;
-
+            // El dni ya se resolvió arriba (4b); acá solo se usa para excluir
+            // al alumno de su propio choque de correo.
             const existeCorreo = await dataUsuario.buscarCorreoAlumno(correoAlumno, data.usuario_id, dniAlumno);
             if (existeCorreo.code === "CORREO_EXISTE") {
                 return {
@@ -193,7 +198,19 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         }
     }
 
-    // 7. Escritura en data layer. Ya NO se pasa contrasena_actual (la validó el
+    // 7. Freno: sin dni no se puede garantizar que `alumnos.email` quede
+    //    sincronizado con `usuarios.correo`. No se escribe NADA (tampoco
+    //    celular o contraseña) para no dejar los datos a medias. El mensaje
+    //    NO revela el detalle del dni: se reporta como falla interna.
+    if (esAlumno && dniAlumno === undefined) {
+        return {
+            error: true,
+            message: "Error interno al procesar la solicitud. Intente nuevamente.",
+            code: "ALUMNO_SIN_DNI"
+        };
+    }
+
+    // 8. Escritura en data layer. Ya NO se pasa contrasena_actual (la validó el
     //    Servicio); se le pasa el dni para que sincronice alumnos.email.
     const resultado = await dataUsuario.modMiPerfil({
         usuario_id: data.usuario_id,
@@ -204,9 +221,9 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
         dni_alumno: dniAlumno,
     });
 
-    // 6. Traducir códigos de data a códigos de servicio
+    // 9. Traducir códigos de data a códigos de servicio
     if (resultado.code === "PROFILE_UPDATED" && resultado.data) {
-        // 7. Registrar historial (async, no bloqueante)
+        // 10. Registrar historial (async, no bloqueante)
         const dataHistorial: HistorialInputs = {
             id_escuela: resultado.data.id_escuela,
             id_usuario: data.usuario_id,

@@ -96,8 +96,6 @@ export interface ModMiPerfilInput {
     contrasena_actual?: string;
     /** Resuelto por el Servicio fuera de la transacción para rol alumno */
     dni_alumno?: number;
-    /** Email final sincronizado en usuarios.usuario, usuarios.correo y alumnos.email (solo rol alumno) */
-    emailFinal?: string;
 }
 
 // Sin `contrasena`: el hash NUNCA se selecciona ni sale por la API

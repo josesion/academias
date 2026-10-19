@@ -92,6 +92,13 @@ export const MAPA_MODIFICAR_PERFIL: Record<string, { status: CodigoEstadoHTTP, m
         status: CodigoEstadoHTTP.CONFLICTO,
         msg: "Para un alumno, usuario y correo deben ser el mismo valor"
     },
+    // Alumno sin fila en `alumnos` sincronizada (no se pudo resolver su dni):
+    // no se escribe nada para no dejar datos a medias. Se reporta como falla
+    // interna (500) SIN revelar el detalle del dni al usuario.
+    "ALUMNO_SIN_DNI": {
+        status: CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        msg: "Error interno al procesar la solicitud. Intente nuevamente."
+    },
     "USERNAME_MUST_BE_EMAIL": {
         status: CodigoEstadoHTTP.CONFLICTO,
         msg: "Para rol alumno el usuario debe ser un email válido"
