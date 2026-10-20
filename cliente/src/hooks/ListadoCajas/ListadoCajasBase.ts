@@ -146,6 +146,9 @@ useEffect(()=>{
           // 2. Activamos el estado de carga antes de iniciar la petición
           dispatchListadoCaja({type : "SET_CARGA_HISTORIAL", payload : true});
 
+          // 2.1. Limpiamos el error anterior al iniciar una nueva petición
+          dispatchListadoCaja({ type : "SET_ERROR_HISTORIAL_CAJA", payload : null });
+
           // 3. Unificamos los filtros de búsqueda y la paginación actuales del estado
           const data = {
               ...stateListadoCaja.filtrosBusqueda, ...stateListadoCaja.paginacion             
@@ -154,6 +157,18 @@ useEffect(()=>{
           // 4. Ejecución del servicio de historial de cajas pasando la señal de aborto
           const historialCajas = config.servicios.historialCajas;
           const resultHistorial = await historialCajas(data, signal);
+
+          // 4.1. apiFetch no lanza: los fallos vuelven como valor de retorno.
+          // Un abort manual no pisa ni datos ni error; un fallo real se muestra y corta el flujo.
+          if (resultHistorial.error) {
+              if (resultHistorial.code !== "REQUEST_ABORTED") {
+                  dispatchListadoCaja({
+                      type : "SET_ERROR_HISTORIAL_CAJA",
+                      payload : resultHistorial.message
+                  });
+              }
+              return;
+          }
  
           // 5. Verificamos que la respuesta del servidor sea exitosa
           if( resultHistorial.code === 'HISTORIAL_CAJA_OK') {
@@ -162,8 +177,8 @@ useEffect(()=>{
             const paginacion : Paginacion = resultHistorial.paginacion ? resultHistorial.paginacion : { pagina : 1, contadorPagina : 1}
             dispatchListadoCaja({ type : "SET_FILTRO_PAGINACION", payload : paginacion})
 
-            // Validamos y extraemos los métodos de pago
-            const metodoPago = resultHistorial.data.dataMetodo !== null ? resultHistorial.data.dataMetodo : null
+            // Validamos y extraemos los métodos de pago (un listado vacío trae dataMetodo: null)
+            const metodoPago = resultHistorial.data.dataMetodo ?? [];
 
             // 6. Asignamos de forma cíclica los colores sobrios que definimos previamente a cada método de pago
             const dataConColor = metodoPago.map((item : { id_cuenta : number, metodo : string, total : number, } , index : number) => ({

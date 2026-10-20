@@ -13,6 +13,7 @@ import { PlanesEscuelaList } from "../../../../componentes/SeccionAlumnos/Tarjet
 
 import { GrillaHorarios } from "../../../../componentes/SeccionAlumnos/Horarios/Horarios";
 import { ListadoClasesAsistidas } from "../../../../componentes/SeccionAlumnos/ListadoClasesAsistidas/ListadoClasesAsistidas";
+import { SpinnerTarjeta } from "../../../../componentes/Metricas/SipinnerMetricas/SpinnerTajetas";
 
 import { ArrowLeft, Calendar } from "lucide-react";
 import "./dataescuela.css";
@@ -20,7 +21,7 @@ import "./dataescuela.css";
 import { configInfoEscuelas } from "../../../../hookNegocios/infoEscuela";
 
 export const DataEscuela = () => {
-  const { state, dispatch, cerrarMensajeError, abrirModalClases, cerrarModalClases, reintentarClases } = configInfoEscuelas();
+  const { state, dispatch, cerrarMensajeError, abrirModalClases, cerrarModalClases, reintentarClases, reintentarHorario } = configInfoEscuelas();
   const { data } = state;
 
   const navigate = useNavigate();
@@ -61,7 +62,9 @@ export const DataEscuela = () => {
 
       {/* 2. Cabecera Institucional y Horarios Juntos Arriba (Grid Superior) */}
       <section className="top-dashboard-grid" aria-label="Informacion de la academia">
-        {data?.heroEscuela ? (
+        {state.carga.infoEscuela && !data?.heroEscuela ? (
+          <SpinnerTarjeta texto="Cargando academia…" />
+        ) : data?.heroEscuela ? (
           <HeroEscuela
             escuela={data.heroEscuela}
             carga={state.carga.infoEscuela}
@@ -90,7 +93,9 @@ export const DataEscuela = () => {
       {/* 3. Sección de Novedades / Flyers */}
       <section className="seccion-bloque" aria-labelledby={novedadesId}>
         <h2 id={novedadesId} className="seccion-titulo">Novedades y Anuncios</h2>
-        {data?.flayer ? (
+        {state.carga.infoEscuela && !data?.flayer ? (
+          <SpinnerTarjeta texto="Cargando novedades…" />
+        ) : data?.flayer ? (
           <CarruselFlayers
             flayers={data.flayer}
             tipo="carrusel"
@@ -106,7 +111,9 @@ export const DataEscuela = () => {
         <h2 id={planesId} className="visually-hidden">Planes de pago</h2>
 
         <div className="">
-          {data?.inscripcion ? (
+          {state.carga.infoEscuela && !data?.inscripcion ? (
+            <SpinnerTarjeta texto="Cargando plan…" />
+          ) : data?.inscripcion ? (
             <EstadoPlanActual
               inscripcion={data.inscripcion}
               carga={state.carga.infoEscuela}
@@ -119,7 +126,9 @@ export const DataEscuela = () => {
 
         <div className="grilla-planes" style={{ marginTop: "16px" }}></div>
 
-        {data?.planes ? (
+        {state.carga.infoEscuela && !data?.planes ? (
+          <SpinnerTarjeta texto="Cargando planes…" />
+        ) : data?.planes ? (
           <PlanesEscuelaList
             planes={data.planes}
             carga={state.carga.infoEscuela}
@@ -130,32 +139,16 @@ export const DataEscuela = () => {
       </section>
 
       {/* --- MODAL DE HORARIOS --- */}
-      {modalHorario &&
-        (state.carga.horario ? (
-          <GrillaHorarios
-            horarios={[]}
-            onCerrar={() => {
-              setModalHorario(false);
-            }}
-            abierto
-          />
-        ) : state.horario ? (
-          <GrillaHorarios
-            horarios={state.horario}
-            onCerrar={() => {
-              setModalHorario(false);
-            }}
-            abierto
-          />
-        ) : (
-          <GrillaHorarios
-            horarios={[]}
-            onCerrar={() => {
-              setModalHorario(false);
-            }}
-            abierto
-          />
-        ))}
+      {modalHorario && (
+        <GrillaHorarios
+          horarios={state.horario ?? []}
+          onCerrar={() => setModalHorario(false)}
+          abierto
+          carga={state.carga.horario}
+          error={state.errorHorario}
+          onReintentar={reintentarHorario}
+        />
+      )}
 
       {/* --- MODAL DE CLASES ASISTIDAS --- */}
       {state.modal.clasesAsistidas && (

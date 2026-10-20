@@ -113,7 +113,7 @@ export type ListadoCajaAction =
 // ──────────────────────────────────────────────────────────────     
 
    | { type : "SET_CARGA_HISTORIAL", payload : boolean }
-   | { type : "SET_ERROR_HISTORIAL_CAJA", payload : string}
+   | { type : "SET_ERROR_HISTORIAL_CAJA", payload : string | null }
    | { type : "SET_HISOTRIAL_CAJAS", payload : CajasServicioResponse }
 
 // ──────────────────────────────────────────────────────────────
@@ -211,25 +211,29 @@ export const listadoCajaReducer = ( state : ReturnType< typeof initialStateLista
      case "SET_FILTRO_BUSQUEDA_USUARIO" :
         return {
             ...state,
-            filtrosBusqueda :{ ...state.filtrosBusqueda, idUsuarioFiltro : action.payload}
+            filtrosBusqueda :{ ...state.filtrosBusqueda, idUsuarioFiltro : action.payload},
+            paginacion: { ...state.paginacion, pagina: 1 }
         }
 
     case "SET_FILTRO_BUSQUEDA_ESTADO" :
         return {
             ...state,
-            filtrosBusqueda : { ...state.filtrosBusqueda, estadoDiferencia : action.payload}
+            filtrosBusqueda : { ...state.filtrosBusqueda, estadoDiferencia : action.payload},
+            paginacion: { ...state.paginacion, pagina: 1 }
         }  
     
     case "SET_FILTRO_BUSQUEDA_FECHAD" : 
         return {
             ...state,
-            filtrosBusqueda : { ...state.filtrosBusqueda, fechaDesde : action.payload}
+            filtrosBusqueda : { ...state.filtrosBusqueda, fechaDesde : action.payload},
+            paginacion: { ...state.paginacion, pagina: 1 }
         }      
         
     case "SET_FILTRO_BUSQUEDA_FECHAH" : 
         return {
             ...state,
-            filtrosBusqueda : { ...state.filtrosBusqueda, fechaHasta : action.payload}
+            filtrosBusqueda : { ...state.filtrosBusqueda, fechaHasta : action.payload},
+            paginacion: { ...state.paginacion, pagina: 1 }
         }
         
     case "SET_FILTRO_PAGINACION" :

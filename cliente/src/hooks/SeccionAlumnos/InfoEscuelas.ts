@@ -44,7 +44,7 @@ export const infoEscuelas = ( config : InfoEscuelaProps) =>{
         accionCarga     : ( carga ) =>({ type : "SET_CARGA_HORARIO", payload : carga }),
         accionError     : ( mensaje )=> ({ type : "SET_HORARIO_ERROR", payload : mensaje }),
         useAbort : true ,
-        dependencias : [state.id_escuela],
+        dependencias : [state.id_escuela, state.refrescoHorario],
         enabled: Boolean(state.id_escuela)
     });
 
@@ -76,6 +76,17 @@ export const infoEscuelas = ( config : InfoEscuelaProps) =>{
         dispatch({ type: "SET_ERROR_CLASES_ASISTIDAS", payload: null });
     };
 
+    /**
+     * Vuelve a pedir el horario de la escuela (botón "Reintentar" del modal).
+     *
+     * El reducer limpia `errorHorario` e incrementa `refrescoHorario`; ese
+     * contador está en las dependencias del `useEffectServicio` del horario,
+     * así que el GET se dispara de nuevo.
+     */
+    const reintentarHorario = () => {
+        dispatch({ type: "REINTENTAR_HORARIO" });
+    };
+
     return{
         state,
         dispatch,
@@ -83,5 +94,6 @@ export const infoEscuelas = ( config : InfoEscuelaProps) =>{
         abrirModalClases,
         cerrarModalClases,
         reintentarClases,
+        reintentarHorario,
     };
 };  

@@ -12,6 +12,7 @@ import { BuscadorLateral } from "../../../componentes/BuscadorLateral/BuscadorLa
 import { Paginacion } from "../../../componentes/generales/Paginacion/Paginacion";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { SinDetallesCaja } from "../../../componentes/ListadoCajas/SinContenidos/SinDetalles/SinDetalles";
+import { CompoError } from "../../../componentes/generales/Error/Error";
 
 import "./listadocajas.css";
 
@@ -59,6 +60,7 @@ export const ListadoCajas = () => {
     estadoCaja,
     historialCajas,
     carga,
+    error,
     filtrosBusqueda,
     usuariosEscuela,
     detalleCaja,
@@ -159,6 +161,8 @@ export const ListadoCajas = () => {
       {/* 2. Sección Inferior: Detalle de Cajas al lado de los Gráficos */}
       <div className={`listado_cajas_grid_inferior ${vista === "graficos" ? "vista-graficos" : "vista-listado"}`}>
         <div className="listado_cajas_panel">
+          {error.historial && <CompoError mensaje={error.historial} />}
+
           {historialCajas ? (
             <DetalleCajas
               carga={carga.historial}

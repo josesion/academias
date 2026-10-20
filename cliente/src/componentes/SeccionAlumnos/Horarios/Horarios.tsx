@@ -1,6 +1,7 @@
 import React from "react";
 import { Clock, User, BookOpen, X } from "lucide-react";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
+import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import "./grillaHorarios.css";
 
 export interface HorarioClaseData {
@@ -25,6 +26,15 @@ interface GrillaHorariosProps {
   horarios: HorarioClaseData[];
   onCerrar: () => void;
   abierto: boolean;
+  /**
+   * Si es `true`, el cuerpo del modal muestra un spinner en vez de la grilla.
+   * Lo usa `DataEscuela` mientras el GET de horarios está en vuelo.
+   */
+  carga?: boolean;
+  /** Mensaje de error del GET de horarios. Si viene, reemplaza la grilla. */
+  error?: string | null;
+  /** Reintenta el GET de horarios (se muestra junto al error). */
+  onReintentar?: () => void;
 }
 
 const DIAS_ORDEN = [
@@ -59,6 +69,9 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
   horarios,
   onCerrar,
   abierto,
+  carga = false,
+  error = null,
+  onReintentar,
 }) => {
   const horariosPorDia = DIAS_ORDEN.reduce(
     (acc, dia) => {
@@ -104,7 +117,22 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
             </div>
 
             <div className="modal-grilla-body">
-              {horarios.length === 0 ? (
+              {carga ? (
+                <SpinnerTarjeta texto="Cargando horarios…" />
+              ) : error ? (
+                <div className="modal-grilla-error" role="alert">
+                  <p>{error}</p>
+                  {onReintentar && (
+                    <button
+                      type="button"
+                      className="btn-principal"
+                      onClick={onReintentar}
+                    >
+                      Reintentar
+                    </button>
+                  )}
+                </div>
+              ) : horarios.length === 0 ? (
                 <p className="sin-horarios" role="status" aria-live="polite">
                   No hay horarios cargados para esta escuela.
                 </p>

@@ -19,6 +19,13 @@ export interface InfoEscuelaTipado {
         clasesAsistidas: boolean;
     };
 
+    /**
+     * Contador que se incrementa al pedir "Reintentar" en el modal de horarios.
+     * Forma parte de las dependencias del `useEffectServicio` del horario para
+     * que vuelva a disparar el GET sin tocar `id_escuela`.
+     */
+    refrescoHorario: number;
+
     id_escuela: number | null;
     data: ResultInfoEscuela | null;
     horario: HorarioClaseData[] | null; // Tipado como array para la grilla
@@ -42,6 +49,8 @@ export const initialInfoEscuela = (): InfoEscuelaTipado => ({
         clasesAsistidas: false,
     },
 
+    refrescoHorario: 0,
+
     id_escuela: null,
     data: null,
     horario: null,
@@ -63,7 +72,8 @@ export type InfoEscuelaAction =
     | { type: "SET_CERRAR_MODAL_ERROR"}
     | { type: "SET_CERRAR_MODAL_CLASES"}
     | { type: "SET_HORARIO_ESCUELA"; payload: HorarioClaseData[] | null }
-    | { type: "SET_CLASES_ASISTIDAS"; payload: AsistenciaInscripcionRow[] | null };
+    | { type: "SET_CLASES_ASISTIDAS"; payload: AsistenciaInscripcionRow[] | null }
+    | { type: "REINTENTAR_HORARIO" };
 
 export const InfoEscuelaReducer = ( 
     state: ReturnType<typeof initialInfoEscuela>, 
@@ -137,6 +147,13 @@ export const InfoEscuelaReducer = (
             return {
                 ...state,
                 horario: action.payload
+            };
+
+        case "REINTENTAR_HORARIO":
+            return {
+                ...state,
+                errorHorario: null,
+                refrescoHorario: state.refrescoHorario + 1
             };
 
         case "SET_CLASES_ASISTIDAS":
