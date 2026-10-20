@@ -18,6 +18,26 @@ export interface EscuelaAlumnoRow {
   apellido_propietario: string;
   fecha_alta_escuela: string; 
   estado_en_escuela: string;
+  /** Logo de la escuela (R2). `null` si la escuela no lo tiene cargado. */
+  url_imagen: string | null;
+  /** Inscripción ACTIVA del alumno en esa escuela. `null` si no tiene ninguna. */
+  id_inscripcion: number | null;
+  /** Estado de la inscripción activa. `null` si el alumno no tiene inscripción activa. */
+  estado_inscripcion: "activos" | "suspendido" | "vencidos" | null;
+  /** Nombre del plan contratado (personalizado por la escuela o el maestro). */
+  descripcion_plan: string | null;
+  /** Inicio de la inscripción activa ("YYYY-MM-DD"). */
+  fecha_inicio_plan: string | null;
+  /** Vencimiento de la inscripción activa ("YYYY-MM-DD"). */
+  fecha_vencimiento_plan: string | null;
+  /** Días que faltan para el vencimiento. Negativo si ya venció. */
+  dias_restantes: number | null;
+  /** Total de clases del plan: `clases_asignadas_inscritas * meses_asignados_inscritos`. */
+  clases_plan: number | null;
+  /** Clases a las que asistió (asistencias con `estado = 'presente'`). */
+  clases_asistidas: number | null;
+  /** Porcentaje de clases del plan que ya consumió. */
+  porcentaje_clases_asistidas: number | null;
 };
 
 export interface ClaseHoyRow {

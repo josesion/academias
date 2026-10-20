@@ -12,18 +12,32 @@
 }
 
 .hero-avatar {
-  width: 64px;
-  height: 64px;
-  background-color: var(--fondo-superficie);
-  color: var(--color-secundario);
+  width: 80px;
+  height: 80px;
+  /* Mismo esquema de color que el avatar de la tarjeta "Mis Academias" */
+  background-color: var(--color-secundario);
+  color: var(--fondo-principal);
   font-family: var(--fuente-titulos);
   font-size: 1.5rem;
-  font-weight: var(--peso-negrita);
+  font-weight: var(--peso-semi-negrita);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radio-sm);
   flex-shrink: 0;
+}
+
+/* Logo real de la academia (mismo tamaño y forma que el avatar de respaldo) */
+.hero-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radio-sm);
+  object-fit: contain;
+  background-color: var(--fondo-superficie);
+  border: 1px solid var(--borde);
+  flex-shrink: 0;
+  /* Propiedad exacta: nunca `all` (--transicion de app.css es `all .3s`) */
+  transition: border-color 200ms var(--ease-ui);
 }
 
 .hero-info {
@@ -55,4 +69,18 @@
   font-weight: var(--peso-semi-negrita);
   align-self: flex-start;
   margin-top: 6px;
+}
+
+/* Hover gateado: solo en dispositivos con puntero fino real (mismo patrón
+   que `.tarjeta_escuela_logo` de la tarjeta "Mis Academias"). */
+@media (hover: hover) and (pointer: fine) {
+  .hero-logo:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo {
+    transition: none;
+  }
 }

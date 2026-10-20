@@ -15,6 +15,26 @@ export interface EscuelaAlumnoRow {
   apellido_propietario: string;
   fecha_alta_escuela: string; 
   estado_en_escuela: string;
+  /** Logo de la escuela (R2). `null` si la escuela nunca lo cargó o lo tiene vacío. */
+  url_imagen: string | null;
+  /** Inscripción ACTIVA del alumno en esa escuela. `null` si no tiene ninguna. */
+  id_inscripcion: number | null;
+  /** Estado de la inscripción activa. `null` si el alumno no tiene inscripción activa. */
+  estado_inscripcion: "activos" | "suspendido" | "vencidos" | null;
+  /** Nombre del plan contratado (personalizado por la escuela o el maestro). */
+  descripcion_plan: string | null;
+  /** Inicio de la inscripción activa ("YYYY-MM-DD"). */
+  fecha_inicio_plan: string | null;
+  /** Vencimiento de la inscripción activa ("YYYY-MM-DD"). */
+  fecha_vencimiento_plan: string | null;
+  /** Días que faltan para el vencimiento. Negativo si ya venció. */
+  dias_restantes: number | null;
+  /** Total de clases del plan: `clases_asignadas_inscritas * meses_asignados_inscritos`. */
+  clases_plan: number | null;
+  /** Clases a las que asistió (asistencias con `estado = 'presente'`). */
+  clases_asistidas: number | null;
+  /** Porcentaje de clases del plan que ya consumió. */
+  porcentaje_clases_asistidas: number | null;
 }
 
 
@@ -34,6 +54,27 @@ const obtenerDniAlumno = async ( correo : string)
     }); 
 };
 
+/**
+ * Devuelve las escuelas en las que el alumno está anotado, con los datos de
+ * su inscripción ACTIVA (`estado = 'activos'`): plan, vencimiento, días que
+ * faltan y porcentaje de clases consumidas, más el logo de la escuela.
+ *
+ * - La inscripción activa se resuelve con `ROW_NUMBER() OVER (PARTITION BY
+ *   id_escuela ORDER BY fecha_inicio DESC)`: si el alumno tuviera más de una
+ *   inscripción activa en la misma escuela, solo se trae la más reciente y la
+ *   fila NO se duplica.
+ * - El `LEFT JOIN` hace que las escuelas donde el alumno está anotado pero
+ *   **no tiene inscripción activa** SEGUIDAN apareciendo, con los datos del
+ *   plan en `null`.
+ * - Las clases se cuentan con `estado = 'presente'`, que es el único estado
+ *   que consume clase de la inscripción (ver `consultas.data/asistencias.sql`).
+ * - `NULLIF(e.urlImagen, '')` deja el logo en `null` cuando la escuela no lo
+ *   tiene cargado (columna vacía o `NULL`).
+ *
+ * @param {number} dni_alumno - DNI del alumno.
+ * @returns {Promise<TipadoData<EscuelaAlumnoRow[]>>} schools con los datos del
+ * plan de la inscripción activa.
+ */
 const obtenerEscuelasPorAlumno = async ( dni_alumno : number)
 :Promise<TipadoData<EscuelaAlumnoRow[]>> =>{
 
@@ -45,14 +86,60 @@ const obtenerEscuelasPorAlumno = async ( dni_alumno : number)
                                 e.dni_propietario,
                                 e.nombre_propietario,
                                 e.apellido_propietario,
+                                NULLIF(e.urlImagen, '') AS url_imagen,
                                 ae.fecha_alta_escuela,
-                                ae.estado AS estado_en_escuela
+                                ae.estado AS estado_en_escuela,
+                                i.id_inscripcion,
+                                i.estado AS estado_inscripcion,
+                                COALESCE(pe.nombre_personalizado, pp.descripcion_plan) AS descripcion_plan,
+                                DATE_FORMAT(i.fecha_inicio, '%Y-%m-%d') AS fecha_inicio_plan,
+                                DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS fecha_vencimiento_plan,
+                                DATEDIFF(i.fecha_fin, CURDATE()) AS dias_restantes,
+                                (i.clases_asignadas_inscritas * i.meses_asignados_inscritos) AS clases_plan,
+                                CASE 
+                                    WHEN i.id_inscripcion IS NULL THEN NULL
+                                    ELSE (
+                                        SELECT COUNT(*) 
+                                        FROM asistencias ast 
+                                        WHERE ast.id_inscripcion = i.id_inscripcion 
+                                        AND ast.estado = 'presente'
+                                    )
+                                END AS clases_asistidas,
+                                CASE 
+                                    WHEN (i.clases_asignadas_inscritas * i.meses_asignados_inscritos) > 0
+                                    THEN ROUND(
+                                            (
+                                                SELECT COUNT(*) 
+                                                FROM asistencias ast 
+                                                WHERE ast.id_inscripcion = i.id_inscripcion 
+                                                AND ast.estado = 'presente'
+                                            ) * 100.0 
+                                            / (i.clases_asignadas_inscritas * i.meses_asignados_inscritos)
+                                        , 2 ) + 0e0
+                                    ELSE NULL
+                                END AS porcentaje_clases_asistidas
                             FROM alumnos a
                             INNER JOIN alumnos_en_escuela ae ON a.dni_alumno = ae.dni_alumno
                             INNER JOIN escuelas e ON ae.id_escuela = e.id_escuela
+                            LEFT JOIN (
+                                SELECT ins.*, 
+                                        ROW_NUMBER() OVER (
+                                            PARTITION BY ins.id_escuela 
+                                            ORDER BY ins.fecha_inicio DESC, ins.id_inscripcion DESC
+                                        ) AS rn
+                                FROM inscripciones ins
+                                WHERE ins.dni_alumno = ? 
+                                AND ins.estado = 'activos'
+                            ) i ON i.id_escuela = e.id_escuela 
+                                AND i.rn = 1
+                            LEFT JOIN planes_en_escuela pe 
+                                ON pe.id_escuela = i.id_escuela 
+                                AND pe.id_plan = i.id_plan
+                            LEFT JOIN planes_pago pp 
+                                ON pp.id_plan = i.id_plan
                             WHERE a.dni_alumno = ?`;
 
-    const valor : unknown[] = [dni_alumno];
+    const valor : unknown[] = [ dni_alumno, dni_alumno ];
     
     return await listarEntidadSinPaginacion({
         slqListado : sql,
@@ -118,11 +205,25 @@ export interface EscuelaData {
   razon_social: string;
   direccion: string;
   celular: string;
+  /** Logo de la escuela (URL pública de R2). `null` si no tiene logo cargado. */
+  urlImagen: string | null;
 };
 
 
 
 
+/**
+ * Datos de la cabecera (hero) de una escuela: propietario, razón social,
+ * dirección, celular y el logo.
+ *
+ * El logo sale de `escuelas.urlImagen` con `NULLIF(..., '')`: si la escuela
+ * no lo tiene cargado, el frontend recibe `null` (tanto si la columna está
+ * vacía como si está en `NULL`).
+ *
+ * @param {number} id_escuela - Id de la escuela.
+ * @returns {Promise<TipadoData<EscuelaData>>} Datos de la escuela, o el
+ * código `DATA_ESCUELA_NO_EXISTE` si no hay escuela con ese id.
+ */
 export const dataEscuela = async ( id_escuela : number)
 :Promise<TipadoData<EscuelaData>> =>{
     const sql : string = `SELECT 
@@ -131,7 +232,8 @@ export const dataEscuela = async ( id_escuela : number)
                             apellido_propietario,
                             razon_social,
                             direccion,
-                            celular
+                            celular,
+                            NULLIF(urlImagen, '') AS urlImagen
                         FROM escuelas
                         WHERE id_escuela = ?;`;
 

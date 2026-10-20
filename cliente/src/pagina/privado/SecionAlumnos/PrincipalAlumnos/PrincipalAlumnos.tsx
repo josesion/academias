@@ -174,15 +174,9 @@ export const PrincipalAlumnos = () => {
               {hayEscuelas ? (
                 escuelas.map((escuela) => (
                   <TarjetaEscuela
-                    carga={state.carga.metricas}
-                    id_escuela={escuela.id_escuela}
                     key={escuela.id_escuela}
-                    dniPropietario={escuela.dni_propietario}
-                    nombrePropietario={escuela.nombre_propietario}
-                    apellidoPropietario={escuela.apellido_propietario}
-                    razonSocial={escuela.razon_social}
-                    direccion={escuela.direccion}
-                    celular={escuela.celular}
+                    carga={state.carga.metricas}
+                    escuela={escuela}
                   />
                 ))
               ) : (

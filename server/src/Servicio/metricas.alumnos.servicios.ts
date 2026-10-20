@@ -12,12 +12,21 @@ import { TipadoData } from "../tipados/tipado.data";
 import { FlayerDataResult  } from "../data/flayer.data";
 
 export interface  RespuestaMetricasAlumnos {
+     /** Escuelas del alumno con los datos de su inscripción activa (plan, vencimiento y % de clases) y el logo. */
      escuelas : EscuelaAlumnoRow[] | null | undefined ,
      clasesHoy : ClaseHoyRow[] |null | undefined ,
      flayers  : FlayerDataResult[] | null | undefined, // por el momento 
 };
 
 
+/**
+ * Métricas principales del alumno: sus escuelas (con los datos de la
+ * inscripción activa: plan, vencimiento, días restantes, % de clases y logo),
+ * las clases de hoy y los flayers.
+ *
+ * @param {MetricasAlumnosInputs} data - Correo del alumno.
+ * @returns {Promise<TipadoData<RespuestaMetricasAlumnos>>} Métricas del alumno.
+ */
 const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
 : Promise<TipadoData<RespuestaMetricasAlumnos>> => {
 
@@ -77,6 +86,7 @@ const metricasAlumnoPrincipal = async ( data : MetricasAlumnosInputs)
 
 export interface ResultInfoEscuela {
 
+    /** Datos de la cabecera de la escuela (propietario, razón social, logo, etc.). */
     heroEscuela : EscuelaData | null | undefined,
     flayer : FlayerDataResult[] | null | undefined,
     inscripcion :InscripcionActualData | null | undefined,
@@ -84,6 +94,13 @@ export interface ResultInfoEscuela {
 
 };
 
+/**
+ * Datos de la pantalla de una escuela: hero (datos de la escuela + logo),
+ * flayers, inscripción actual del alumno y planes activos.
+ *
+ * @param {DataEscuelaInputs} data - Correo del alumno e id de la escuela.
+ * @returns {Promise<TipadoData<ResultInfoEscuela>>} Datos de la escuela.
+ */
 const dataEscuelaServicio = async ( data : DataEscuelaInputs )
 :Promise<TipadoData<ResultInfoEscuela>> =>{
 
