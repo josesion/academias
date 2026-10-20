@@ -240,6 +240,29 @@
   color: var(--texto-secundario);
 }
 
+/* ============================================================================
+   CHIP DE CARGA DEL CALENDARIO (spec 038)
+   ---------------------------------------------------------------------------
+   Indicador local de recarga: vive en el encabezado del calendario para que la
+   grilla (112 celdas) nunca se tape. `margin-left: auto` lo empuja al borde
+   derecho del header (que es flex).
+   ============================================================================ */
+
+.calendario_cargando {
+    margin-left: auto;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    color: var(--texto-secundario);
+}
+
 /* visually-hidden: solo para lectores de pantalla */
 .visually-hidden {
   position: absolute;

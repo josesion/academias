@@ -8,6 +8,7 @@ import type * as TipadoHorario from "../../../tipadosTs/horario";
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../CeldaVacia/CeldaVacia";
 import { type ResultHoras } from "../../../hooks/setHora";
+import { type HorarioCarga } from "../../../reducers/horariosReducers";
 import {
   type Horas,
   type DiaSemana,
@@ -19,7 +20,13 @@ import "./formHorario.css";
 
 interface FormHorarioProps {
   metodo: metodo | null;
-  carga: boolean;
+
+  /**
+   * Estado de carga **por recurso** (spec 038): un flag por request, para que
+   * el eco de carga se pinte en el control que lo dispara y no en un overlay
+   * que tapa la pantalla.
+   */
+  carga: HorarioCarga;
 
   modalInterno?: boolean;
   mensajeEstado: string;
@@ -59,6 +66,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
     nilveles,
     tipo,
     metodo,
+    carga,
     horaInicioFin,
     diaHorario,
     listaProfe,
@@ -110,6 +118,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     tipo="text"
                     name="dni"
                     displayKey="persona"
+                    cargando={carga.profesores}
                   />
                 </div>
 
@@ -122,6 +131,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     valueKey="nivel"
                     tipo="text"
                     name="nivel"
+                    cargando={carga.niveles}
                   />
                 </div>
 
@@ -134,6 +144,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     valueKey="tipo"
                     tipo="text"
                     name="tipo"
+                    cargando={carga.tipos}
                   />
                 </div>
               </div>
@@ -155,7 +166,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
             <div className="formualrio_horario_botonera">
               <div className="formulario_horario_botonera1">
                 <Boton
-                  disable={props.carga}
+                  disable={carga.abm}
                   clase={metodo === "ALTA" ? "aceptar" : "agregar"}
                   logo={metodo === "ALTA" ? "Add" : "Edit"}
                   texto={
@@ -165,6 +176,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                 ></Boton>
                 {metodo === "MOD" ? (
                   <Boton
+                    disable={carga.abm}
                     clase="eliminar"
                     logo="Delete"
                     texto="Eliminar Horario"
@@ -188,6 +200,15 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
         <div className="calendario_header">
           <CalendarDays size={14} aria-hidden="true" />
           <h2 id="calendario_horario_titulo">Horario semanal</h2>
+
+          {/* Eco de carga local del calendario (spec 038): un chip en el
+              encabezado en vez de un overlay que tapa la grilla entera. */}
+          {carga.calendario && (
+            <span className="calendario_cargando" role="status">
+              <span className="spinner_mini" aria-hidden="true" />
+              Actualizando…
+            </span>
+          )}
         </div>
 
         <Calendario

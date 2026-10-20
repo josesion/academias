@@ -48,10 +48,6 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
 
     const setErrorGenericoAdapter = (error: string | null) => {
         dispatch({ type: 'SET_ERROR', payload: error });
-    };    
-
-    const setCargaAdapter = ( valor : boolean) => {
-        dispatch({ type: 'SET_CARGA', payload: valor });
     };
 
 // ──────────────────────────────────────────────────────────────
@@ -194,7 +190,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
    const handleAltaHorario = async() =>{
 
         try {
-            dispatch({ type : "SET_CARGA_ABM", payload : true });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : true } });
 
             if (!state.listoEnviar){
                 
@@ -223,14 +219,14 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         }catch ( error ){
             dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
         }finally{
-            dispatch({ type : "SET_CARGA_ABM", payload : false });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : false } });
         };
 
    };
 
    const handleModHorario =async( ) =>{
         try {
-            dispatch({ type : "SET_CARGA_ABM", payload : true });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : true } });
 
             if (!state.listoEnviar){
                 const mensajeBase = state.errorGenericoHorario as string;
@@ -254,7 +250,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         }catch ( error ){
             dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
         }finally{
-            dispatch({ type : "SET_CARGA_ABM", payload : false });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : false } });
         };    
     
    }; 
@@ -262,7 +258,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
 
    const handleEliminarHorario = async() =>{
         try {
-            dispatch({ type : "SET_CARGA_ABM", payload : true });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : true } });
 
             const servicioApiFetch = config.servicios.eliminarHorario;
             const resultadoEliminar = await servicioApiFetch(state.dataEliminarHorario);
@@ -279,7 +275,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         }catch ( error ){
             dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
         }finally{
-            dispatch({ type : "SET_CARGA_ABM", payload : false });
+            dispatch({ type: "SET_CARGA", payload : { campo: "abm", valor : false } });
         };   
    };
 
@@ -295,9 +291,10 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
       dispatch : dispatch,
       accionResultado : (data)=>({type : "SET_LISTADO_PROFESORES", payload : data || []}),
       accionError : ( mensaje ) =>({type : "SET_ERROR", payload : mensaje}),
-      accionCarga : ( estado ) =>({ type : "SET_CARGA", payload : estado}),
+      accionCarga : ( estado ) =>({ type : "SET_CARGA", payload : { campo : "profesores", valor : estado }}),
       useAbort : true,
-      dependencias : [state.filtroBusquedaProfesor]
+      ignorarCancelados : true,
+       dependencias : [state.filtroBusquedaProfesor]
    });
 
 // ──────────────────────────────────────────────────────────────
@@ -309,8 +306,9 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         dispatch : dispatch,
         accionResultado :( data ) => ({ type : "SET_LISTADO_NIVELES", payload : data || []}),
         accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
-        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : { campo : "niveles", valor : estado } }),
         useAbort : true, 
+        ignorarCancelados : true,
         dependencias : [state.filtroBusquedaNivel]
    });
 
@@ -323,8 +321,9 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         dispatch : dispatch,
         accionResultado :( data ) => ({ type : "SET_LISTADO_TIPO", payload : data || []}),
         accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
-        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : { campo : "tipos", valor : estado } }),
         useAbort : true, 
+        ignorarCancelados : true,
         dependencias : [state.filtroBusquedaTipo]
    });
 
@@ -337,8 +336,9 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         dispatch : dispatch,
         accionResultado :( data ) => ({ type : "SET_CALENDARIO" , payload : data || []}),
         accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
-        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : estado }),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : { campo : "calendario", valor : estado } }),
         useAbort : true, 
+        ignorarCancelados : true,
         dependencias : [state.actualizar, state.actualizarGenerico]
    });
 

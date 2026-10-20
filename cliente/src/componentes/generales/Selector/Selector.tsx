@@ -14,6 +14,15 @@ interface PropSelector<T> {
   value?: string | number;
   /** Texto de ayuda para accesibilidad (se usa en aria-describedby) */
   hint?: string;
+  /**
+   * Pinta un spinner en el borde derecho del campo mientras se cargan los
+   * datos (spec 038).
+   *
+   * Es **aditiva**: por defecto el campo se ve exactamente igual que antes.
+   * El spinner reemplaza al chevron (no conviven) para no sumar elementos ni
+   * hacer saltar el layout del input.
+   */
+  cargando?: boolean;
 }
 
 export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
@@ -44,11 +53,16 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
           value={parametros.value}
           className="selector_input_cyber"
           aria-describedby={hintId}
+          aria-busy={parametros.cargando || undefined}
           autoComplete="off"
         />
 
         <span className="selector_icono_der" aria-hidden="true">
-          <ChevronDown size={16} />
+          {parametros.cargando ? (
+            <span className="spinner_mini" />
+          ) : (
+            <ChevronDown size={16} />
+          )}
         </span>
       </div>
 

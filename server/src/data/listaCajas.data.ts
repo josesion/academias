@@ -349,7 +349,8 @@ const usuarioEscuela = async ( id : EstadoCajaInput)
                                 u.usuario
                             FROM usuarios u
                             INNER JOIN escuelas e ON u.id_escuela = e.id_escuela
-                            WHERE u.id_escuela = ?;`
+                            WHERE u.id_escuela = ?
+                                    AND LOWER(u.rol) = 'usuario';`
 
     const valor : unknown[] = [ id.id_escuela ];
     

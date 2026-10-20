@@ -14,37 +14,9 @@
   border: 0;
 }
 
-/* Carga global */
-.carga-global {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 3rem;
-  background: var(--fondo-secundario);
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-lg);
-  text-align: center;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: color-mix(in srgb, var(--fondo-principal) 85%, transparent);
-  backdrop-filter: blur(4px);
-}
-
-.carga-global .spinner {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 3px solid var(--fondo-superficie);
-  border-top-color: var(--color-secundario);
-  animation: spinner_girar 0.9s linear infinite;
-}
-
-@keyframes spinner_girar {
-  to { transform: rotate(360deg); }
-}
+/* Sin overlay global de carga (spec 038): la carga se marca en el control que
+   la dispara. Se eliminaron `.carga-global`, su `.spinner` y los keyframes
+   `spinner_girar` (que también viven en `cargando.css` para el resto). */
 
 .horarios_pagina {
   width: 100%;
@@ -71,9 +43,6 @@
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .carga-global .spinner {
-    animation: none !important;
-  }
   .formulario_overlay {
     animation: none !important;
   }
@@ -91,13 +60,6 @@
   .horarios_encabezado {
     border-bottom-width: 2px;
   }
-  .carga-global {
-    border-width: 2px;
-  }
-  .carga-global .spinner {
-    border-width: 4px;
-    border-top-color: var(--color-primario);
-  }
   .formulario_horario_filtro_primario,
   .formulario_horario_filtro_secundario,
   .TarjetaHorario,
@@ -111,9 +73,6 @@
 }
 
 @media print {
-  .carga-global {
-    display: none !important;
-  }
   .formulario_overlay {
     display: none !important;
   }

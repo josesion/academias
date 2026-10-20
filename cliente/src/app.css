@@ -608,6 +608,33 @@
 }
 
 /* ============================================================================
+   SPINNER MINI — carga local dentro de un control (spec 038)
+   ---------------------------------------------------------------------------
+   Spinner de 14px para marcar, en el control MISMO que dispara la petición,
+   que se está cargando (un input con datalist, un chip de estado…).
+
+   - Rotación continua → `linear` (no es entrada/salida, no lleva ease-out).
+   - Solo anima `transform` → no fuerza layout ni paint.
+   - Misma cadencia (0.8s) que el spinner del botón (`boton.css`).
+   ============================================================================ */
+
+.spinner_mini {
+    width: 14px;
+    height: 14px;
+    flex: none;                        /* no se encoge dentro de un flex padre */
+    border-radius: 50%;
+    border: 2px solid var(--fondo-superficie);
+    border-top-color: var(--color-secundario);
+    animation: spinner_mini_girar 0.8s linear infinite;
+}
+
+@keyframes spinner_mini_girar {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================================================
    REDUCED MOTION GLOBAL — Spec 026
    ============================================================================ */
 
@@ -622,6 +649,7 @@
     /* Spinner específico */
     .carga-global_spinner,
     .spinner,
+    .spinner_mini,
     .ComponenteCargando {
         animation: none !important;
         opacity: 0.6;

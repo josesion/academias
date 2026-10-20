@@ -11,8 +11,28 @@ export interface HorarioTipado{
     errorGenericoHorario: string | null;
     listoEnviar  : boolean;
     actualizar   : boolean;
-    cargaAbm     : boolean;
-    carga        : boolean;
+
+    /**
+     * Estado de carga **por recurso** (spec 038).
+     *
+     * Cada flag se prende SOLO mientras su propio request al backend está en
+     * vuelo, así que un filtro que se está consultando no enciende el flag de
+     * otro. Antes eran dos booleanos sueltos (`carga` y `cargaAbm`) que los
+     * 4 `useEffectServicio` de la página compartían: cualquiera en vuelo
+     * levantaba el overlay global `.carga-global` y tapaba toda la pantalla.
+     */
+    carga : {
+        /** GET del listado de profesores (lo dispara el onChange del filtro). */
+        profesores : boolean;
+        /** GET del listado de niveles. */
+        niveles    : boolean;
+        /** GET del listado de tipos. */
+        tipos      : boolean;
+        /** GET del calendario de la escuela. */
+        calendario : boolean;
+        /** POST / PUT / DELETE del alta, modificación o eliminación. */
+        abm        : boolean;
+    };
 
     modales :{
         modalInterno : boolean,
@@ -71,9 +91,14 @@ export const initialState = ( ) :HorarioTipado =>({
     errorActualizar : null, 
     errorGenericoHorario : "Completar los campos Profesor , Nivel y Tipo",       
     listoEnviar   : false,
-    actualizar    : false, 
-    carga         : false,  
-    cargaAbm      : false,
+    actualizar    : false,
+    carga         : {
+        profesores : false,
+        niveles    : false,
+        tipos      : false,
+        calendario : false,
+        abm        : false,
+    },
 
     modales : {
         modalHorario : false,
@@ -148,13 +173,22 @@ export const initialState = ( ) :HorarioTipado =>({
 // ==========================================
 // 3. ACCIONES (EVENTOS DEL SISTEMA)
 // ==========================================
-export type HorarioAction =  
+
+/**
+ * Campos del bloque `carga`: permiten que `SET_CARGA` traiga el nombre del
+ * recurso y el valor en un mismo objeto (mismo patrón que `suspcripciones.ts`).
+ */
+export type CampoCargaHorario = keyof HorarioTipado["carga"];
+
+/** Bloque `carga` completo (lo consumen el hook y el componente del formulario). */
+export type HorarioCarga = HorarioTipado["carga"];
+
+export type HorarioAction =
       | { type: 'SET_ERROR_ACTUALIZAR' ;  payload: string | null }
       | { type: 'SET_ERROR' ;  payload: string | null }
       | { type: "SET_ENVIAR" ; payload : boolean  }
       | { type: "SET_ACTUALIZAR" ; payload : boolean  }
-      | { type: "SET_CARGA" ; payload : boolean  }  
-      | { type: "SET_CARGA_ABM" ; payload : boolean  }    
+      | { type: "SET_CARGA" ; payload : { campo: CampoCargaHorario; valor: boolean } }
       | { type : "SET_MODAL_HORARIO"  ; payload : boolean }
       | { type : "SET_MODAL_INTERNO"  ; payload : boolean }    
       | { type : "SET_METODO"  ; payload :  TipadoHorario.metodo | null }  
@@ -219,9 +253,13 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
         case 'SET_ERROR':
              return { ...state, errorGenericoHorario: action.payload };
         case 'SET_CARGA':
-             return { ...state, carga : action.payload };     
-        case 'SET_CARGA_ABM':
-             return { ...state, cargaAbm : action.payload };                        
+             return {
+                ...state,
+                carga : {
+                    ...state.carga,
+                    [action.payload.campo] : action.payload.valor,
+                }
+             };
         case 'SET_ACTUALIZAR':
              return { ...state, actualizar: action.payload }; 
         case 'SET_ENVIAR':

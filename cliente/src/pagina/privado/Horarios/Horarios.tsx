@@ -24,20 +24,13 @@ export const HorarioPagina = () => {
   const formId = useId();
   const calendarioId = useId();
 
-  // Carga global inicial - usa solo propiedades que existen en el state
-  const cargandoGlobal = state.cargaAbm || state.carga;
-
   return (
     // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
     // `main` de la pagina. Un segundo `main` anidado es invalido.
     <div className="horarios_pagina">
-      {/* Carga global inicial */}
-      {cargandoGlobal && (
-        <div className="carga-global" aria-live="polite" aria-busy="true">
-          <div className="spinner" aria-hidden="true" />
-          <span className="visually-hidden">Cargando horarios...</span>
-        </div>
-      )}
+      {/* Sin overlay global de carga (spec 038): la carga se marca en el
+          control que la dispara (los selects y el encabezado del calendario),
+          así la UI nunca se tapa. */}
 
       <header className="horarios_encabezado">
         <h1 className="visually-hidden">Gestión de Horarios</h1>
@@ -46,7 +39,7 @@ export const HorarioPagina = () => {
       <section aria-labelledby={formId} className="horarios_form_section">
         <h2 id={formId} className="visually-hidden">Formulario de horario</h2>
         <FormHorario
-          carga={state.cargaAbm}
+          carga={state.carga}
           metodo={state.metodo}
           mensajeEstado={state.errorGenericoHorario as string}
           horaInicioFin={state.horaInicioFin}
