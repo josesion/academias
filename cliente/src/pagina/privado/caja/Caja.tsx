@@ -151,11 +151,13 @@ export const CajaArqueo = () => {
             name="id_categoria"
             onChangeSelector={handleMovimientoExtraordinarioChange}
             labelDefault="Seleccionar Categoría"
+            valueCategoria={state.movimientoExtraordinario.id_categoria}
             tipos_pago={state.listadoCuentasSesion ?? cuentasVacias}
             itemLabelTipo="nombre_cuenta"
             itemKeyTipo="id_cuenta"
             nameTipoPago="id_cuenta"
             onChanceSelectorTipo={handleTipoPagoChange}
+            valueTipoPago={state.movimientoExtraordinario.id_cuenta}
             onClickCancelar={handleCerrarModalEgrIng}
             onClickRegistrar={handRegistarMovimientoExtraordinario}
             montoValue={state.movimientoExtraordinario.monto.toString()}

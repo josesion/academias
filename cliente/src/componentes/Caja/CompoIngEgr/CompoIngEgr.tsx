@@ -24,6 +24,11 @@ interface ComporProps {
   labelDefault?: string;
   itemKey?: string; // lo q nesesita el selector para funcionar
   itemLabel?: string; // lo q nesesita el selector para funcionar
+  /**
+   * Id de la categoría elegida (spec 039).
+   * Sin este valor el `SelectorOpt` queda clavado en el placeholder.
+   */
+  valueCategoria?: number | null;
 
   // lo que nesesita  el selector tipo de pagos
   tipos_pago: ListadoTipoCuentas[];
@@ -31,6 +36,11 @@ interface ComporProps {
   nameTipoPago?: string;
   itemKeyTipo?: string;
   itemLabelTipo?: string;
+  /**
+   * Id de la cuenta (medio de pago) elegida (spec 039).
+   * Sin este valor el `SelectorOpt` queda clavado en el placeholder.
+   */
+  valueTipoPago?: number | null;
   // lo q nesesita el inputs
   montoValue: number | null | string;
   onChangeInput?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -60,6 +70,7 @@ export const CompoIngEgr = (props: ComporProps) => {
         name={props.name}
         onChangeSelector={props.onChangeSelector}
         labelDefault={props.labelDefault || "Seleccionar Categoría"}
+        value={props.valueCategoria ?? ""}
       />
 
       <SelectorOpt<ListadoTipoCuentas>
@@ -69,6 +80,7 @@ export const CompoIngEgr = (props: ComporProps) => {
         name={props.nameTipoPago}
         onChangeSelector={props.onChanceSelectorTipo}
         labelDefault="Seleccionar medio de pago"
+        value={props.valueTipoPago ?? ""}
       />
 
       <Inputs

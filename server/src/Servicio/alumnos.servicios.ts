@@ -76,8 +76,12 @@ const altaAlumno = async (data: AlumnosInputs)
             );
 
             // Modo prueba: mientras `RESEND_DESTINO` esté seteada, el correo va a esa
-            // casilla en vez de al alumno. Se vacía para enviar a los alumnos reales.
-            const destino = process.env.RESEND_DESTINO?.trim() || alumnoData.email;
+            // casilla en vez de al alumno. En producción se IGNORA aunque la variable
+            // siga definida, para no dejar a todos los alumnos sin su correo.
+            const destinoPrueba = process.env.NODE_ENV === 'production'
+                ? undefined
+                : process.env.RESEND_DESTINO?.trim();
+            const destino = destinoPrueba || alumnoData.email;
 
             // En segundo plano: el alta ya quedó hecha y no debe frenarse por el correo.
             // Un fallo queda en `logs/errores.log` y avisa a `CORREO_ADMIN`.

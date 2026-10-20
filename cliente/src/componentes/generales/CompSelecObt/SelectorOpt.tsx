@@ -8,6 +8,14 @@ interface CompoIEProps<T> {
   itemLabel: keyof T;
   onChangeSelector: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   name?: string;
+  /**
+   * Valor seleccionado (spec 039).
+   *
+   * **Es obligatoria en la práctica**: el select es controlado (`value={value ?? ""}`),
+   * así que si se omite, React restaura el placeholder después de cada `change` y la
+   * opción elegida NUNCA queda visible (aunque el `onChange` haya guardado el dato).
+   * Pasar siempre el valor real del estado (`null` → `""`).
+   */
   value?: string | number;
   labelDefault?: string;
   /** Solo lectura: pinta el select grisado y fuera de tab (spec 008) */

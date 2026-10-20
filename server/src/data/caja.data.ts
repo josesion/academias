@@ -512,27 +512,38 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
     const { id_caja , id_escuela} = data ; 
     const slq : string = `SELECT 
                             -- 1. El monto inicial (Saldo que ya existía)
-                            COALESCE(SUM(CASE WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS monto_inicial,
+                            COALESCE(SUM(CASE 
+                                WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto 
+                                ELSE 0 
+                            END), 0) AS monto_inicial,
                             
-                            -- 2. Total Ingresos (Excluyendo el inicial, solo lo que entró hoy)
-                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
+                            -- 2. Total Ingresos NETOS (Ingresos - Anulaciones/Devoluciones)
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
+                                WHEN cat.tipo_movimiento = 'egreso' AND (cat.nombre_categoria LIKE '%Anulacion%' OR cat.nombre_categoria LIKE '%Devolucion%') THEN -det.monto
+                                ELSE 0 
+                            END), 0) AS total_ingresos,
                             
-                            -- 3. Total Egresos
-                            COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+                            -- 3. Total Egresos REALES (Excluyendo anulaciones, solo gastos operativos)
+                            COALESCE(SUM(CASE 
+                                WHEN cat.tipo_movimiento = 'egreso' AND cat.nombre_categoria NOT LIKE '%Anulacion%' AND cat.nombre_categoria NOT LIKE '%Devolucion%' THEN det.monto 
+                                ELSE 0 
+                            END), 0) AS total_egresos,
 
-                            -- 4. FLUJO DEL DÍA (Solo movimientos de la sesión: Ingresos hoy - Egresos hoy)
-                            -- Si entró 10.000 y salió 5.000, acá te va a dar 5.000.
+                            -- 4. FLUJO DEL DÍA (Ingresos Netos - Egresos Reales)
+                            -- Da exactamente lo mismo porque matemáticamente restaba lo mismo, pero ahora la distribución es limpia
                             COALESCE(SUM(CASE 
                                 WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                ELSE 0 END), 0) AS flujo_dia,
+                                ELSE 0 
+                            END), 0) AS flujo_dia,
                             
-                            -- 5. BALANCE NETO FINAL (Monto Inicial + Ingresos Hoy - Egresos Hoy)
-                            -- Este es el total real de dinero que hay ahora mismo.
+                            -- 5. BALANCE NETO FINAL (Monto Inicial + Flujo Día)
                             COALESCE(SUM(CASE 
                                 WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
-                                ELSE 0 END), 0) AS balance_neto
+                                ELSE 0 
+                            END), 0) AS balance_neto
 
                         FROM cajas c
                         LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja

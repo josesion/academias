@@ -26,6 +26,11 @@ export interface DataDetalle {
   errorAnulacion: string | null;
   carga: boolean;
   listaMetodoPago: ListadoCuentas[];
+  /**
+   * Id del método de pago elegido (spec 039).
+   * Sin este valor el `SelectorOpt` queda clavado en el placeholder.
+   */
+  valueMetodoPago?: number | null;
   onChangeMetodo: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   anularInscripcion?: () => void;
   cancelarPanel?: () => void;
@@ -111,6 +116,7 @@ export const PanelDetalleInscrip = (props: DataDetalle) => {
             itemLabel="nombre_cuenta"
             onChangeSelector={props.onChangeMetodo}
             name="metodo_pago"
+            value={props.valueMetodoPago ?? ""}
           />
 
           <Boton

@@ -73,6 +73,7 @@ export const ListadoInscripcionPage = () => {
               cancelarPanel={handleCancelarAnulacion}
               anularInscripcion={handleAnularInscripcion}
               listaMetodoPago={listadoCuentas}
+              valueMetodoPago={dataAnularInscripcion.id_cuenta}
               onChangeMetodo={handleCachearMetodoPago}
               errorAnulacion={errorAnulacion ?? errorAnulacion}
               carga={dataAnularInscripcion.carga}

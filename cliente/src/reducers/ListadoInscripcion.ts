@@ -150,6 +150,9 @@ export const ListadoInscripcionReducer = ( state : ReturnType< typeof inicialSta
                 dataAnularInscripcion :{
                     ...state.dataAnularInscripcion,
                     idInscripcion : null,
+                    // El método de pago también se limpia: si no, al reabrir el
+                    // panel el select mostraría la selección anterior (spec 039).
+                    id_cuenta : null,
                     monto_pagado : "",
                     metodo_pago : "",
                     modalAnular : false , 

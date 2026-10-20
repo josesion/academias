@@ -89,7 +89,10 @@ export const loginLogica = () : LoginLogicaReturn =>{
             tipo : respuesta.data.tipo ,
             estado_suscripcion : respuesta.data.estado_suscripcion
           });
-    
+          setDataLogin({
+            usuario: "",
+            contrasena: "",        
+          });
           if (respuesta.data.rol === "administrador")
             return navegar("/assistant_manager_priv");
           if (respuesta.data.rol === "usuario")

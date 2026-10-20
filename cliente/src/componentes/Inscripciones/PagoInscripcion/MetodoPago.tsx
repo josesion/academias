@@ -10,6 +10,11 @@ interface MetodoPago {
 interface MetodoPagoProps {
   notas: string;
   listaMetodoPago: MetodoPago[];
+  /**
+   * Id del método de pago elegido (spec 039).
+   * Sin este valor el `SelectorOpt` queda clavado en el placeholder.
+   */
+  valueMetodoPago?: number | null;
   handleCachearMetodoPago: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleTextAreaNotas: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
 }
@@ -30,6 +35,7 @@ export const MetodoPagoInscripcion: React.FC<MetodoPagoProps> = (props) => {
             itemLabel="descripcion_cuenta"
             name="metodo_pago"
             onChangeSelector={handleCachearMetodoPago}
+            value={props.valueMetodoPago ?? ""}
           />
         </div>
 

@@ -133,7 +133,7 @@ export const modMiPerfilSchema = z.object({
     .max(20, { message: 'El celular no puede exceder los 20 caracteres.' })
     .optional()
     .or(z.literal('')),
-  contrasena_actual: z.string().min(8).optional().or(z.literal('')),
+  contrasena_actual: z.string().min(5,{message : "Minimo 5 caracteres"}).optional().or(z.literal('')),
 }).refine(data => data.nuevo_usuario || data.nueva_contrasena || data.correo !== undefined || data.celular !== undefined, {
   message: 'Debe proporcionar al menos un campo para modificar.',
   path: ['general']

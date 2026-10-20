@@ -6,7 +6,7 @@ import { iud } from './baseDatos';
  * Es una **lista blanca**: lo que no está acá no se persiste, así un `logger.error(msg, {…})`
  * con datos de más (body, headers, cookies) jamás llega a la tabla.
  */
-const CLAVES_DETALLE = ['stack', 'motivo', 'mensaje', 'destino', 'asunto', 'codigo'];
+const CLAVES_DETALLE = ['stack', 'motivo', 'mensaje', 'destino', 'asunto', 'codigo', 'id_mensaje'];
 
 /** Registros máximos de log esperando conexión en un momento dado. */
 const MAX_PENDIENTES = 50;

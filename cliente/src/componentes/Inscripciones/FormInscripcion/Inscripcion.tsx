@@ -30,6 +30,10 @@ interface InscripcionProps {
   listadoPlan: DataPlan[];
   listadoAlumno: DataAlumno[];
   listaMetodo: MetodoPago[];
+  /**
+   * Id del método de pago elegido (spec 039): lo que muestra el `SelectorOpt`.
+   */
+  metodoPagoSeleccionado: number | null;
 
   handleCachearPlan: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCachearAlumno: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -102,6 +106,7 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
         {rol?.tipo === "intermedio" && (
           <MetodoPagoInscripcion
             listaMetodoPago={props.listaMetodo}
+            valueMetodoPago={props.metodoPagoSeleccionado}
             handleCachearMetodoPago={handleCachearMetodoPago}
             handleTextAreaNotas={handleTextAreaNotas}
             notas={notas}

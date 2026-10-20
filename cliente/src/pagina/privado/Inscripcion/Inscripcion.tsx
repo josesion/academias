@@ -58,6 +58,7 @@ export const InscripcionPage = () => {
           notas={state.notas}
           enviando={state.enviando}
           listaMetodo={state.listadoMetodoPago}
+          metodoPagoSeleccionado={state.cuenta}
         />
       </section>
     </div>

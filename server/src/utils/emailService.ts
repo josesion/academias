@@ -313,7 +313,9 @@ const plantillaAvisoFallo = (contexto: string, destinatario: string, asunto: str
  * (por ejemplo el alta de un alumno).
  *
  * Si el envío falla, deja dos rastros: el detalle en `logs/errores.log` y un aviso
- * en la casilla definida en `CORREO_ADMIN`.
+ * en la casilla definida en `CORREO_ADMIN`. Si el envío sale bien, registra un
+ * evento `CORREO_ENVIADO` (nivel `info`, `origen: 'correo'`) con el id del mensaje
+ * de Resend, para poder cruzarlo con el panel del proveedor.
  *
  * @function enviarCorreoEnBackground
  * @param {EnviarCorreoParams} params - Mismos parámetros que `enviarCorreo`.
@@ -324,7 +326,21 @@ export const enviarCorreoEnBackground = (params: EnviarCorreoParams, contexto = 
     void (async () => {
         const resultado = await enviarCorreo(params);
 
-        if (resultado.success) return;
+        if (resultado.success) {
+            const idMensaje = (resultado.data as { id?: string } | undefined)?.id;
+
+            logger.info(
+                `CORREO ENVIADO${contexto ? ` (${contexto})` : ''} | para: ${params.to} | asunto: "${params.subject}"${idMensaje ? ` | id: ${idMensaje}` : ''}`,
+                {
+                    origen: 'correo',
+                    destino: params.to,
+                    asunto: params.subject,
+                    codigo: 'CORREO_ENVIADO',
+                    id_mensaje: idMensaje
+                }
+            );
+            return;
+        }
 
         const motivo = obtenerMotivo(resultado.error);
 
@@ -377,6 +393,13 @@ const avisarFalloCorreo = async (
  * Revisa la configuración de correo al arrancar el server y deja en el log
  * los errores que van a impedir que los correos salgan bien.
  *
+ * Controles:
+ * - `RESEND_API_KEY` ausente: no se puede enviar nada.
+ * - `RESEND_DESTINO` definida: modo prueba activo (los correos no llegan a los
+ *   alumnos) o variable ignorada si `NODE_ENV=production`.
+ * - `RESEND_FROM` en `resend.dev` sin `RESEND_DESTINO`: Resend rechazaría los
+ *   envíos a terceros.
+ *
  * @function verificarConfiguracionCorreo
  * @returns {void}
  */
@@ -387,6 +410,20 @@ export const verificarConfiguracionCorreo = (): void => {
     }
 
     const destinoPrueba = process.env.RESEND_DESTINO?.trim();
+
+    if (destinoPrueba) {
+        if (process.env.NODE_ENV === 'production') {
+            logger.error(
+                'RESEND_DESTINO está definida pero se IGNORA en producción: los correos van al alumno real.',
+                { origen: 'arranque', codigo: 'RESEND_DESTINO_IGNORADA' }
+            );
+        } else {
+            logger.error(
+                'RESEND_DESTINO está definida: MODO PRUEBA activo, los correos NO llegan a los alumnos.',
+                { origen: 'arranque', codigo: 'RESEND_MODO_PRUEBA_ACTIVO' }
+            );
+        }
+    }
 
     if (!destinoPrueba && remitentePorDefecto().includes('resend.dev')) {
         logger.error(

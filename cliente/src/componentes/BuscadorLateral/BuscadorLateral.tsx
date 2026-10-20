@@ -12,7 +12,7 @@ export interface UsuarioOption {
 }
 
 interface EstadoCajaOption {
-  idEstado: "exacta" | "con_diferencia" | null;
+  idEstado: "exacta" | "con_diferencia";
   descripcion: string;
 }
 
@@ -33,8 +33,10 @@ interface PropsBuscador {
   ariaControls?: string;
 }
 
+// Opciones del filtro de estado de caja. El caso "sin filtro" lo aporta el
+// `labelDefault` del `SelectorOpt` (value="") → así nunca se cachea el
+// string "null" en `estadoDiferencia` (spec 039).
 const listaEstadosCaja: EstadoCajaOption[] = [
-  { idEstado: null, descripcion: "Todas" },
   { idEstado: "exacta", descripcion: "Caja perfecta" },
   { idEstado: "con_diferencia", descripcion: "Con diferencia" },
 ];
@@ -81,6 +83,7 @@ export const BuscadorLateral = ({
               onChangeSelector={cachearUsuario}
               name="idUsuarioFiltro"
               labelDefault="Usuarios"
+              value={filtros.idUsuarioFiltro ?? ""}
             />
           </div>
 
@@ -91,7 +94,8 @@ export const BuscadorLateral = ({
               itemLabel="descripcion"
               onChangeSelector={cachearEstado}
               name="estadoFiltro"
-              labelDefault="Estados"
+              labelDefault="Todas"
+              value={filtros.estadoDiferencia ?? ""}
             />
           </div>
         </div>
