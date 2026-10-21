@@ -15,10 +15,12 @@ import {
          AsistenciaInputs, AsistenciaSchema, 
          ClasesActualInputs,ClaseActualSchema, 
          ClaseProximaSchema, ClasesProximaInputs,
+         InfoAlumnoSchema, InfoAlumnoInputs,
+         AsistenciaManualSchema, AsistenciaManualInputs,
        } from "../squemas/asistencias"; 
 
 import { DataAlumnoVigenteInputs, DataAlumnoVigenteSchema, } from "../squemas/horarios_clases";       
-import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia, ResultDataAsistencia} from "../tipados/asistencia.tipado";
+import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia, ResultDataAsistencia, InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
 
@@ -340,8 +342,133 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
 
 };
 
+/**
+ * Servicio de info de alumno.
+ */
+const infoAlumnoServicio = async ( data : InfoAlumnoInputs )
+: Promise<TipadoData<InfoAlumnoResult>> => {
+    const parsed : InfoAlumnoInputs = InfoAlumnoSchema.parse(data);
+    const result = await asistenciaData.infoAlumno(parsed);
+    if (result.code === "INSCRIPCION_EXISTE") {
+        return {
+            error : false,
+            message : "Info alumno obtenida",
+            data : result.data,
+            code : "INFO_ALUMNO_OK"
+        };
+    }
+    return {
+        error : true,
+        message : "El alumno no tiene plan activo",
+        code : "INFO_ALUMNO_NO_EXISTE"
+    };
+};
+
+/**
+ * Registra una asistencia **manual** (spec 043).
+ *
+ * Reglas distintas del kiosko (`/api/asistencia`):
+ * - **No** exige la ventana horaria (15 min antes / 30 min después del inicio).
+ * - Sólo admite registrar en **la clase que está en curso** o **la que sigue**.
+ * - Sí bloquea la **doble asistencia**: si el alumno ya marcó esta clase hoy,
+ *   no se vuelve a registrar.
+ *
+ * @param {VerificarInscripcionInput} verificacion - Datos para validar la
+ *   inscripción activa del alumno.
+ * @param {AsistenciaManualInputs} asistencia - Datos de la asistencia a
+ *   registrar (incluye el horario, el estado y el día).
+ *
+ * @returns {Promise<TipadoData<{ idAsistencia: number, clasesRestantes: number }>>}
+ *   Resultado tipado de la operación.
+ *
+ * @returns.code ASISTENCIA_OK - La asistencia quedó registrada.
+ * @returns.code INSCRIPCION_NO_EXISTE - El alumno no tiene plan activo.
+ * @returns.code CLASE_NO_PERMITIDA - La clase no es la de ahora ni la próxima.
+ * @returns.code ALUMNO_EN_CLASE - El alumno ya marcó esta clase hoy.
+ */
+const altaAsistenciaManual = async( verificacion : VerificarInscripcionInput , asistencia : AsistenciaManualInputs )
+: Promise<TipadoData<{idAsistencia : number, clasesRestantes : number}>> => {
+
+    const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse(verificacion);
+    const dataAsistencia : AsistenciaManualInputs = AsistenciaManualSchema.parse(asistencia);
+
+    const verificarInsc = await asistenciaData.verificarInscripcion( dataVerificacionInsc );
+
+    switch (verificarInsc.code){
+        case 'INSCRIPCION_NO_EXISTE' : {
+            return {
+                error: true,
+                message : `El alumno :${verificacion.dni_alumno} no tiene plan activo`,
+                code : "INSCRIPCION_NO_EXISTE"
+            };
+        };
+
+        case 'INSCRIPCION_EXISTE' : {
+            // La asistencia manual no usa la ventana horaria del kiosko:
+            // sólo se puede marcar la clase de ahora o la que sigue.
+            // El dia de la semana lo calcula el servidor (no viene del body).
+            const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+            const diaHoy = dias[new Date().getDay()];
+
+            const horarioValido = await asistenciaData.horarioEnCursoOProxima({
+                id_escuela : dataAsistencia.id_escuela,
+                estado : dataAsistencia.estado,
+                dia : diaHoy,
+                id_horario_clase : dataAsistencia.id_horario_clase,
+            });
+
+            if( horarioValido.code === 'HORARIO_NO_EXISTE' ){
+                return {
+                    error : true,
+                    message : "Sólo se puede registrar asistencia en la clase que está en curso o en la próxima",
+                    code : "CLASE_NO_PERMITIDA"
+                };
+            };
+
+            const verificarDobleAsistencia = await asistenciaData.dobleAsitencia( dataVerificacionInsc.id_inscripcion , dataAsistencia.id_horario_clase);
+
+            if( verificarDobleAsistencia.code === "ASISTENCIA_EXISTE" ){
+                return {
+                    error : true,
+                    message : `El alumno : ${ dataVerificacionInsc.dni_alumno } ya tiene asistencia en esta clase`,
+                    code : "ALUMNO_EN_CLASE"
+                };
+            };
+
+            const asistenciaResultado = await asistenciaData.asistencia( dataVerificacionInsc, { id_horario_clase : dataAsistencia.id_horario_clase });
+
+            if (asistenciaResultado.code === "TRANSACCION_FALLIDA"){
+                return {
+                    error : true,
+                    message : "Error, falla en la transaccion en consultas",
+                    code : "TRANSACCION_FALLIDA"
+                };
+            };
+
+            if (asistenciaResultado.code === "TRANSACCION_OK"){
+                return {
+                    error : false,
+                    message : `Asistencia correcta del alumno :${verificacion.dni_alumno} `,
+                    data : asistenciaResultado.data,
+                    code  : "ASISTENCIA_OK"
+                };
+            };
+        };
+
+        default:{
+            return {
+                error : true,
+                message : "No se Logro generar la asistencia",
+                code   :"ERROR_SERVIDOR"
+            };
+        };
+    };
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
+    asistenciaManual : tryCatchDatos( altaAsistenciaManual ),
     fechaAsistencia : tryCatchDatos( fechaAsistencia),
     dataAsistenciaServicio : tryCatchDatos( dataAsistenciaServicio ),
+    infoAlumno : tryCatchDatos( infoAlumnoServicio ),
 };

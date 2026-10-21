@@ -11,7 +11,7 @@ import { InputConvinados, SchemaFinal,
 import { DataEstadoResult, HistorialCaja, 
          DataResultMetodosPagos, CajasServicioResponse,
          ReturnUsuarioEscuelas,  MovimientoLibroDiario ,
-         CajasResumenResponse     
+         CajasResumenResponse, ArqueoCajaResumen, ArqueoDetalleItem      
 } from "../data/listaCajas.data";
 
 
@@ -166,9 +166,53 @@ const usuariosEscuela = async( id : EstadoCajaInput)
 
 
 /**
+ * Normaliza de forma defensiva el arqueo devuelto por la capa de datos.
+ *
+ * El JSON de `cajas.arqueo_detalle` puede venir `NULL` (caja abierta) o con
+ * un tipo inesperado, y sus números pueden venir como string. Acá se deja
+ * siempre un desglose válido (`[]` si no hay dato) y los montos como `number`.
+ *
+ * Los 2 usuarios (`usuario_apertura` / `usuario_cierre`) se **preservan** tal
+ * como los resuelve el server (nombre y apellido → correo → "Sin usuario");
+ * si vinieran vacíos, se les aplica el fallback `"Sin usuario"` (spec 042 ·
+ * Ampliación 2 · A3).
+ *
+ * @param {ArqueoCajaResumen | undefined} arqueo - Arqueo crudo devuelto por la capa de datos.
+ * @returns {ArqueoCajaResumen} El arqueo normalizado (con `detalle` siempre como array).
+ */
+const normalizarArqueoCaja = ( arqueo : ArqueoCajaResumen | undefined ) : ArqueoCajaResumen => {
+
+    const detalleCrudo : unknown = arqueo?.detalle;
+
+    const detalle : ArqueoDetalleItem[] = Array.isArray(detalleCrudo)
+        ? detalleCrudo.map( ( item : Partial<ArqueoDetalleItem> ) => ({
+                id_cuenta : Number(item?.id_cuenta) || 0,
+                nombre_cuenta : typeof item?.nombre_cuenta === "string" ? item.nombre_cuenta : "",
+                sistema : Number(item?.sistema) || 0,
+                real : Number(item?.real) || 0
+            }))
+        : [];
+
+    return {
+        detalle,
+        diferencia_total : Number(arqueo?.diferencia_total) || 0,
+        monto_sistema : Number(arqueo?.monto_sistema) || 0,
+        monto_final_real : Number(arqueo?.monto_final_real) || 0,
+        usuario_apertura : typeof arqueo?.usuario_apertura === "string" && arqueo.usuario_apertura.trim() !== ""
+            ? arqueo.usuario_apertura
+            : "Sin usuario",
+        usuario_cierre : typeof arqueo?.usuario_cierre === "string" && arqueo.usuario_cierre.trim() !== ""
+            ? arqueo.usuario_cierre
+            : "Sin usuario"
+    };
+
+};
+
+
+/**
  * Valida los datos de entrada para el libro diario mediante un esquema Zod,
- * consulta en paralelo o secuencia los detalles de movimientos y el resumen de métodos de pago por caja,
- * y consolida ambos resultados en una respuesta unificada para el cliente.
+ * consulta en paralelo o secuencia los detalles de movimientos, el resumen de métodos de pago y
+ * el arqueo por caja, y consolida los tres resultados en una respuesta unificada para el cliente.
  *
  * @async
  * @function libroDiario
@@ -176,7 +220,8 @@ const usuariosEscuela = async( id : EstadoCajaInput)
  * @throws {ZodError} Si la validación de los datos a través de `LibroDiarioSchema` falla.
  * @returns {Promise<TipadoData<CajasResumenResponse>>} Retorna una promesa con un objeto TipadoData:
  * - Si es exitoso o carece parcial/totalmente de registros (`error: false`): Devuelve un objeto consolidado 
- *   con `dataDetalle` y `dataMetodo` bajo el código `"LISTADO_DETALLE_CAJA_OK"`.
+ *   con `dataDetalle`, `dataMetodo` y `dataArqueo` bajo el código `"LISTADO_DETALLE_CAJA_OK"`.
+ *   `dataArqueo` es `null` si la caja no existe o si la consulta del arqueo no devolvió el código esperado.
  * - Si ocurre un error inesperado a nivel de servidor (`error: true`): Retorna el código `"ERROR_SERVIDOR"`.
  */
     const libroDiario = async ( data : LibroDiarioInput )
@@ -186,9 +231,18 @@ const usuariosEscuela = async( id : EstadoCajaInput)
 
         const resultLibroDiario = await listaCajaData.libroDiarioDetalle( dataValidada );
         const resultMetodosPago = await listaCajaData.graficosMetodosPagoCaja(dataValidada);
+        const resultArqueo = await listaCajaData.arqueoDetalleCaja(dataValidada);
 
         const sinDetalleCaja = resultLibroDiario.code === 'NO_ACTIVE_DETALLE_CAJA_RESUMEN';
         const sinMetodosPago = resultMetodosPago.code === "NO_ACTIVE_METODO_PAGOS_RESUMEN"
+
+        // El hook `buscarExistenteEntidad` invierte la semántica: el código
+        // "EXISTE" significa que la caja existe (y el dato viene en `data`).
+        // Cualquier otro código (caja inexistente o error) => `dataArqueo = null`
+        // sin cortar la respuesta del libro diario.
+        const dataArqueo : ArqueoCajaResumen | null = resultArqueo.code === 'ARQUEO_DETALLE_CAJA_EXISTE'
+            ? normalizarArqueoCaja( resultArqueo.data )
+            : null;
 
 
         if ( 
@@ -202,7 +256,7 @@ const usuariosEscuela = async( id : EstadoCajaInput)
             return {
                 error : false, 
                 message : "Libro diario listado correctamente.",
-                data :  { dataDetalle , dataMetodo },
+                data :  { dataDetalle , dataMetodo , dataArqueo },
                 code : "LISTADO_DETALLE_CAJA_OK"
             }
         };

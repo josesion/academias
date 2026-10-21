@@ -74,6 +74,15 @@
     --linea-titulo:1.2;
 
     /* =====================================
+        ALTURAS
+    ===================================== */
+
+    /* Altura del panel de detalle y de la columna de gráficos del Listado de Cajas
+       (spec 041 · O2). Fuente única de verdad; los breakpoints menores (600px/500px)
+       se mantienen como literales locales de cada media query. */
+    --altura-panel-cajas:750px;
+
+    /* =====================================
         RADIOS
     ===================================== */
 

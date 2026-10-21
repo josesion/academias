@@ -15,7 +15,7 @@
 
   box-sizing: border-box;
 
-  max-height: 750px;
+  max-height: var(--altura-panel-cajas);
 
   overflow-y: auto;
   overflow-x: hidden;
@@ -264,6 +264,51 @@
 }
 
 /* ============================================================
+   USUARIOS DE LA CAJA (quién abrió / quién cerró) — spec 042 · A3
+   ============================================================ */
+
+.detalle_caja_usuarios {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 6px 18px;
+}
+
+.detalle_caja_usuario {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    min-width: 0;
+}
+
+.detalle_caja_usuario svg {
+    flex-shrink: 0;
+
+    color: var(--texto-deshabilitado);
+}
+
+.detalle_caja_usuario_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-deshabilitado);
+}
+
+.detalle_caja_usuario_nombre {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+
+    /* Los nombres largos se envuelven: nunca rompen la grilla de la tarjeta */
+    overflow-wrap: anywhere;
+}
+
+/* ============================================================
    OBSERVACIONES
    ============================================================ */
 
@@ -297,6 +342,17 @@
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* La línea de usuarios se apila: los nombres largos no empujan el sello */
+    .detalle_caja_usuarios {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 6px;
+    }
+}
 
 @media (max-width: 600px) {
     .detalle_caja_card {

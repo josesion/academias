@@ -82,6 +82,10 @@ export interface HistorialCaja {
     monto_sistema: number;
     monto_real: number;
     monto_faltante: number;
+    /** Nombre y apellido del usuario que abrió la caja (fallback: correo o "Sin usuario"). */
+    usuario_apertura: string;
+    /** Nombre y apellido del usuario que cerró la caja (fallback: correo o "Sin usuario"). */
+    usuario_cierre: string;
 };
 
 interface ResultDataListadoCajas {
@@ -94,12 +98,19 @@ interface ResultDataListadoCajas {
     monto_final_real: number;
     diferencia_total: number;
     observaciones: string | null;  
+    usuario_apertura: string;
+    usuario_cierre: string;
 };
 
 
 /**
  * Obtiene el historial paginado de cajas cerradas de una escuela, permitiendo filtrar 
  * por rango de fechas, usuario responsable del cierre y estado de diferencia (exacta o con diferencia).
+ *
+ * Cada fila incluye **quién abrió y quién cerró** la caja (`usuario_apertura` y
+ * `usuario_cierre`), resueltos en SQL como `nombre + apellido`, con fallback al
+ * correo (`usuarios.usuario`) y, si no hay nada, a `"Sin usuario"` (spec 042 ·
+ * Ampliación 2 · A3).
  *
  * @async
  * @function detalleCajasCerradas
@@ -114,7 +125,8 @@ interface ResultDataListadoCajas {
  * @param {number} data.offset - Desplazamiento para la consulta SQL.
  * 
  * @returns {Promise<TipadoData<HistorialCaja[]>>} Promesa que resuelve con la estructura de datos 
- *          estándar conteniendo el listado del historial y la paginación.
+ *          estándar conteniendo el listado del historial (con `usuario_apertura` y `usuario_cierre`)
+ *          y la paginación.
  * 
  * @example
  * const historial = await detalleCajasCerradas({
@@ -143,6 +155,8 @@ const detalleCajasCerradas = async ( data : InputConvinados )
                                 c.monto_final_real,
                                 c.diferencia_total,
                                 c.observaciones_cierre,
+                                COALESCE(NULLIF(TRIM(CONCAT(IFNULL(ua.nombre,''), ' ', IFNULL(ua.apellido,''))), ''), ua.usuario, 'Sin usuario') AS usuario_apertura,
+                                COALESCE(NULLIF(TRIM(CONCAT(IFNULL(uc.nombre,''), ' ', IFNULL(uc.apellido,''))), ''), uc.usuario, 'Sin usuario') AS usuario_cierre,
                                 COUNT(*) OVER() AS total_registros
                             FROM cajas c
                             LEFT JOIN usuarios ua ON c.id_usuario_apertura = ua.id_usuario
@@ -206,7 +220,9 @@ const detalleCajasCerradas = async ( data : InputConvinados )
                     observaciones: items.observaciones ? items.observaciones : "",
                     monto_sistema: items.monto_sistema,
                     monto_real: items.monto_final_real,
-                    monto_faltante: items.diferencia_total 
+                    monto_faltante: items.diferencia_total,
+                    usuario_apertura: items.usuario_apertura,
+                    usuario_cierre: items.usuario_cierre
             };         
     });
 
@@ -237,26 +253,64 @@ return {
 export interface DataResultMetodosPagos {
     id_cuenta : number,
     metodo : string,
+    /**
+     * Saldo por cuenta (ingresos − egresos, **incluye** el "Saldo Inicial").
+     *
+     * En el endpoint del **listado** (`metricasMetodoPagoCajas`) es la Σ de los
+     * saldos finales de las cajas que pasan los filtros; en el del **libro
+     * diario** (`graficosMetodosPagoCaja`) es el saldo de esa caja (spec 042 ·
+     * Ampliación 3 · A4).
+     */
     total : number,
+    /**
+     * Dinero que **circuló** por la cuenta (ingresos − egresos, **excluye** el
+     * "Saldo Inicial"). Campo **nuevo** (spec 042 · Ampliación 3 · A4).
+     *
+     * Ojo: sólo lo devuelve el endpoint del **listado**
+     * (`metricasMetodoPagoCajas`); el del **libro diario** no lo manda.
+     */
+    flujo : number,
 }
 
 /**
- * Obtiene las métricas y el total acumulado por cada método de pago (cuenta) 
- * dentro de un rango de fechas, permitiendo filtrar opcionalmente por usuario 
- * y por el estado de diferencia de las cajas asociadas.
+ * Obtiene las métricas por cada método de pago (cuenta) de las **cajas
+ * cerradas** que entran en los filtros, aplicando los mismos criterios que el
+ * listado (rango de `fecha_cierre`, usuario que cerró la caja y estado de
+ * diferencia).
+ *
+ * El gráfico se deriva de las **mismas cajas que muestra el listado** (y no
+ * de los movimientos sueltos del rango), para que la lista y el gráfico nunca
+ * se contradigan: si una caja se abrió un día y se cerró otro, ambos aparecen
+ * o ninguno (spec 041).
+ *
+ * Devuelve **dos** métricas por cuenta (spec 042 · Ampliación 3 · A4), con el
+ * mismo patrón que `listaMetricasCaja` (`server/src/data/caja.data.ts`):
+ *
+ * - `total` = **saldo** por cuenta (ingresos − egresos, **incluye** el
+ *   "Saldo Inicial"). ⚠️ **Cambió de significado**: antes era el *flujo*.
+ *   Sus únicos consumidores son el gráfico del listado y los colores por
+ *   índice (`cliente/src/pagina/privado/ListadoCajas/ListadoCajas.tsx` y
+ *   `cliente/src/hooks/ListadoCajas/ListadoCajasBase.ts`).
+ * - `flujo` = **dinero que circuló** por la cuenta (ingresos − egresos,
+ *   **excluye** el "Saldo Inicial"). Campo **nuevo**.
+ *
+ * Como el filtro `cc.nombre_categoria != 'Saldo Inicial'` **ya no está** en el
+ * `WHERE`, los métodos que sólo tienen "Saldo Inicial" **también aparecen**,
+ * con `flujo = 0`.
  *
  * @async
  * @function metricasMetodoPagoCajas
  * @param {InputConvinados} data - Objeto que contiene los parámetros de filtrado.
  * @param {number} data.id_escuela - ID de la escuela a consultar.
- * @param {string} data.fechaDesde - Fecha inicial del rango de movimientos (YYYY-MM-DD).
- * @param {string} data.fechaHasta - Fecha final del rango de movimientos (YYYY-MM-DD).
- * @param {number|null} [data.idUsuarioFiltro] - ID del usuario responsable del movimiento, o null para incluir a todos.
+ * @param {string} data.fechaDesde - Fecha inicial del rango de cajas cerradas (YYYY-MM-DD).
+ * @param {string} data.fechaHasta - Fecha final del rango de cajas cerradas (YYYY-MM-DD).
+ * @param {number|null} [data.idUsuarioFiltro] - ID del usuario que cerró la caja, o null para incluir todas.
  * @param {string|null} [data.estadoDiferencia] - Filtro de diferencia de caja ('exacta', 'con_diferencia' o null).
- * 
- * @returns {Promise<TipadoData<DataResultMetodosPagos[]>>} Promesa que resuelve con la estructura de datos 
- *          estándar conteniendo el listado de métricas por método de pago sin paginación.
- * 
+ *
+ * @returns {Promise<TipadoData<DataResultMetodosPagos[]>>} Promesa que resuelve con la estructura de datos
+ *          estándar conteniendo el listado de métricas por método de pago sin paginación
+ *          (cada ítem con `total` = saldo y `flujo` = dinero que circuló).
+ *
  * @example
  * const metricas = await metricasMetodoPagoCajas({
  *     id_escuela: 1,
@@ -266,34 +320,45 @@ export interface DataResultMetodosPagos {
  *     estadoDiferencia: null
  * });
  */
-const metricasMetodoPagoCajas =async (  data :  InputConvinados) 
+const metricasMetodoPagoCajas =async (  data :  InputConvinados)
 :Promise<TipadoData<DataResultMetodosPagos[]>> => {
 
     const { id_escuela , fechaDesde, fechaHasta, idUsuarioFiltro, estadoDiferencia } = data;
 
-    const sql : string = `SELECT 
+    const sql : string = `SELECT
                                 ce.id_cuenta,
                                 ce.nombre_cuenta AS metodo,
+                                -- Saldo por cuenta (incluye el Saldo Inicial)
                                 COALESCE(
                                     SUM(
-                                        CASE 
+                                        CASE
                                             WHEN cc.tipo_movimiento = 'ingreso' THEN dc.monto
                                             WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
                                             ELSE 0
                                         END
                                     ), 0
-                                ) AS total
-                            FROM detalle_caja dc
-                            INNER JOIN cajas c ON dc.id_caja = c.id_caja
+                                ) AS total,
+                                -- Dinero que circuló por la cuenta (excluye el Saldo Inicial)
+                                COALESCE(
+                                    SUM(
+                                        CASE
+                                            WHEN cc.tipo_movimiento = 'ingreso' AND cc.nombre_categoria <> 'Saldo Inicial' THEN dc.monto
+                                            WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
+                                            ELSE 0
+                                        END
+                                    ), 0
+                                ) AS flujo
+                            FROM cajas c
+                            INNER JOIN detalle_caja dc ON dc.id_caja = c.id_caja
                             INNER JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
                             INNER JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
                             WHERE c.id_escuela = ?
-                                AND cc.nombre_categoria != 'Saldo Inicial' 
-                                AND DATE(dc.fecha_movimiento) BETWEEN ? AND ? 
-                                AND (dc.id_usuario = ? OR ? IS NULL)  -- Filtro de usuario opcional
+                                AND c.estado = 'cerrada'
+                                AND DATE(c.fecha_cierre) BETWEEN ? AND ?  -- Mismo rango que el listado
+                                AND (c.id_usuario_cierre = ? OR ? IS NULL)  -- Mismo criterio que el listado
                                 AND (
-                                    (? = 'exacta' AND c.diferencia_total = 0) OR 
-                                    (? = 'con_diferencia' AND c.diferencia_total != 0) OR 
+                                    (? = 'exacta' AND c.diferencia_total = 0) OR
+                                    (? = 'con_diferencia' AND c.diferencia_total != 0) OR
                                     (? IS NULL)
                                 )
                             GROUP BY ce.id_cuenta, ce.nombre_cuenta, ce.tipo_cuenta
@@ -421,15 +486,24 @@ const libroDiarioDetalle  = async ( data : LibroDiarioInput)
 
 
 /**
- * Consulta y obtiene el resumen agrupado de los montos por método de pago (cuenta) 
- * para una caja específica, excluyendo los saldos iniciales y calculando el balance 
- * de ingresos menos egresos.
+ * Consulta y obtiene el resumen de los montos por método de pago (cuenta)
+ * para una caja específica, calculando el **saldo por cuenta**: ingresos menos
+ * egresos **más** el saldo inicial de la cuenta.
+ *
+ * A diferencia de `metricasMetodoPagoCajas` (el gráfico **agregado** del
+ * listado, que además calcula el `flujo`), acá **no** se excluye el saldo
+ * inicial: así el gráfico del libro diario muestra exactamente el mismo
+ * valor que la columna **"Sistema"** del arqueo (`saldo_final_cuenta`) —
+ * spec 042 · Ampliación 2 · A1.
+ *
+ * ⚠️ Esta función **no** devuelve el campo `flujo` (sólo el `total` = saldo):
+ * el único que lo trae es `metricasMetodoPagoCajas` (spec 042 · Ampliación 3 · A4).
  *
  * @async
  * @function graficosMetodosPagoCaja
  * @param {LibroDiarioInput} id - Objeto de entrada que contiene el identificador de la caja (`id_caja`).
  * @returns {Promise<TipadoData<DataResultMetodosPagos[]>>} Retorna una promesa con un objeto TipadoData:
- * - Si es exitoso (`error: false`): Devuelve la lista con los totales por método de pago en la propiedad `data`.
+ * - Si es exitoso (`error: false`): Devuelve la lista con los saldos por método de pago en la propiedad `data`.
  * - Si ocurre algún error o no hay registros: Retorna el estado de error correspondiente con su mensaje y código.
  */
 const graficosMetodosPagoCaja =async ( id : LibroDiarioInput)
@@ -451,7 +525,6 @@ const graficosMetodosPagoCaja =async ( id : LibroDiarioInput)
                             INNER JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
                             INNER JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
                             WHERE dc.id_caja = ?
-                            AND cc.nombre_categoria != 'Saldo Inicial'
                             GROUP BY ce.id_cuenta, ce.nombre_cuenta, ce.tipo_cuenta
                             ORDER BY total DESC;`;
 
@@ -466,9 +539,166 @@ const graficosMetodosPagoCaja =async ( id : LibroDiarioInput)
 };
 
 
+/**
+ * Ítem del arqueo de una cuenta (método de pago) tal como se persistió en la
+ * columna JSON `cajas.arqueo_detalle` al cerrar la caja.
+ *
+ * - `sistema`: lo que el sistema decía que había en esa cuenta
+ *   (`saldo_final_cuenta`, incluye el saldo inicial de la cuenta).
+ * - `real`: el conteo real que escribió el cajero al cerrar la caja.
+ */
+export interface ArqueoDetalleItem {
+    id_cuenta : number;
+    nombre_cuenta : string;
+    sistema : number;
+    real : number;
+};
+
+/**
+ * Resumen del arqueo de una caja: el desglose por cuenta (`detalle`), los
+ * totales de la caja con los que se puede contrastar el desglose y
+ * **quién abrió y quién cerró** la caja (spec 042 · Ampliación 2 · A3).
+ */
+export interface ArqueoCajaResumen {
+    detalle : ArqueoDetalleItem[];
+    diferencia_total : number;
+    monto_sistema : number;
+    monto_final_real : number;
+    /** Nombre y apellido del usuario que abrió la caja (fallback: correo o "Sin usuario"). */
+    usuario_apertura : string;
+    /** Nombre y apellido del usuario que cerró la caja (fallback: correo o "Sin usuario"). */
+    usuario_cierre : string;
+};
+
+/**
+ * Fila cruda de la tabla `cajas` para el arqueo. La columna `arqueo_detalle`
+ * es `JSON NULL` y `mysql2` la parsea como array de objetos, pero se tipa como
+ * `unknown` para normalizarla de forma defensiva.
+ */
+interface FilaArqueoCaja {
+    arqueo_detalle : unknown;
+    diferencia_total : number | string | null;
+    monto_sistema : number | string | null;
+    monto_final_real : number | string | null;
+    usuario_apertura : string | null;
+    usuario_cierre : string | null;
+};
+
+/**
+ * Normaliza el contenido de la columna JSON `cajas.arqueo_detalle`.
+ *
+ * `mysql2` parsea las columnas JSON como array de objetos, pero la columna
+ * puede venir `NULL` (caja abierta o cerrada sin arqueo) o con un tipo
+ * inesperado (objeto, string). En cualquiera de esos casos se devuelve un
+ * array vacío para no romper el endpoint.
+ *
+ * @param {unknown} valorCrudo - Contenido crudo de `cajas.arqueo_detalle`.
+ * @returns {ArqueoDetalleItem[]} El desglose normalizado (array vacío si no hay dato válido).
+ */
+const normalizarDetalleArqueo = ( valorCrudo : unknown ) : ArqueoDetalleItem[] => {
+
+    if ( !Array.isArray(valorCrudo) ){
+        return [];
+    };
+
+    return valorCrudo.map( ( item : unknown ) => {
+
+        const registro = ( item ?? {} ) as Partial<ArqueoDetalleItem>;
+
+        return {
+            id_cuenta : Number(registro.id_cuenta) || 0,
+            nombre_cuenta : typeof registro.nombre_cuenta === "string" ? registro.nombre_cuenta : "",
+            sistema : Number(registro.sistema) || 0,
+            real : Number(registro.real) || 0
+        };
+    });
+
+};
+
+
+/**
+ * Obtiene el arqueo de una caja: el desglose por cuenta guardado en
+ * `cajas.arqueo_detalle` (el conteo real del cajero contra lo que decía el
+ * sistema) junto con los totales de la caja (`diferencia_total`,
+ * `monto_sistema` y `monto_final_real`).
+ *
+ * Además expone **quién abrió y quién cerró** la caja (`usuario_apertura` y
+ * `usuario_cierre`, spec 042 · Ampliación 2 · A3). Se resuelven en SQL como
+ * `nombre + apellido`, con fallback al correo (`usuarios.usuario`) y, si no
+ * hay nada, a `"Sin usuario"`. Están disponibles **siempre que la caja
+ * exista**, aunque `arqueo_detalle` sea `NULL` (caja abierta o cerrada sin
+ * arqueo): en ese caso `detalle` viene `[]` pero los usuarios siguen ahí.
+ *
+ * La búsqueda usa el hook `buscarExistenteEntidad`, que **invierte** la
+ * semántica: `error: true` con `code = "ARQUEO_DETALLE_CAJA_EXISTE"` significa
+ * que la caja **existe** (y el dato viene en `data`); el código
+ * `"ARQUEO_DETALLE_CAJA_NO_EXISTE"` significa que no hay caja con ese id.
+ *
+ * @async
+ * @function arqueoDetalleCaja
+ * @param {LibroDiarioInput} data - Objeto de entrada con el identificador de la caja (`id_caja`).
+ * @returns {Promise<TipadoData<ArqueoCajaResumen>>} Retorna una promesa con un objeto TipadoData:
+ * - Si la caja existe (`error: true`, `code: "ARQUEO_DETALLE_CAJA_EXISTE"`): Devuelve el arqueo normalizado en `data`.
+ * - Si la caja no existe (`code: "ARQUEO_DETALLE_CAJA_NO_EXISTE"`): No hay `data`.
+ *
+ * @example
+ * const arqueo = await arqueoDetalleCaja({ id_caja: 12 });
+ */
+const arqueoDetalleCaja = async ( data : LibroDiarioInput )
+:Promise<TipadoData<ArqueoCajaResumen>> =>{
+
+    const sql : string = `SELECT 
+                            c.arqueo_detalle,
+                            COALESCE(c.diferencia_total, 0) AS diferencia_total,
+                            COALESCE(c.monto_sistema, 0) AS monto_sistema,
+                            COALESCE(c.monto_final_real, 0) AS monto_final_real,
+                            COALESCE(NULLIF(TRIM(CONCAT(IFNULL(ua.nombre,''), ' ', IFNULL(ua.apellido,''))), ''), ua.usuario, 'Sin usuario') AS usuario_apertura,
+                            COALESCE(NULLIF(TRIM(CONCAT(IFNULL(uc.nombre,''), ' ', IFNULL(uc.apellido,''))), ''), uc.usuario, 'Sin usuario') AS usuario_cierre
+                        FROM cajas c
+                        LEFT JOIN usuarios ua ON c.id_usuario_apertura = ua.id_usuario
+                        LEFT JOIN usuarios uc ON c.id_usuario_cierre = uc.id_usuario
+                        WHERE c.id_caja = ?;`;
+
+    const valores : unknown[] = [ data.id_caja ];
+
+    const result = await buscarExistenteEntidad<FilaArqueoCaja>({
+        slqEntidad : sql,
+        valores : valores,
+        entidad : "ARQUEO_DETALLE_CAJA"
+    });
+
+    if ( result.code === 'ARQUEO_DETALLE_CAJA_EXISTE' && result.data ){
+
+        const fila : FilaArqueoCaja = result.data;
+
+        return {
+            error : result.error,
+            message : result.message,
+            data : {
+                detalle : normalizarDetalleArqueo(fila.arqueo_detalle),
+                diferencia_total : Number(fila.diferencia_total) || 0,
+                monto_sistema : Number(fila.monto_sistema) || 0,
+                monto_final_real : Number(fila.monto_final_real) || 0,
+                usuario_apertura : fila.usuario_apertura ?? "Sin usuario",
+                usuario_cierre : fila.usuario_cierre ?? "Sin usuario"
+            },
+            code : result.code
+        };
+    };
+
+    return {
+        error : result.error,
+        message : result.message,
+        code : result.code
+    };
+
+};
+
+
 export interface CajasResumenResponse {
     dataDetalle: MovimientoLibroDiario[] | null;
     dataMetodo: DataResultMetodosPagos[] | null;
+    dataArqueo: ArqueoCajaResumen | null;
 };
 
 export const method = {
@@ -478,6 +708,7 @@ export const method = {
     usuarioEscuela : tryCatchDatos( usuarioEscuela),
     libroDiarioDetalle : tryCatchDatos( libroDiarioDetalle ),
     graficosMetodosPagoCaja : tryCatchDatos( graficosMetodosPagoCaja ),
+    arqueoDetalleCaja : tryCatchDatos( arqueoDetalleCaja ),
 };
 
 

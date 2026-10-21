@@ -29,6 +29,7 @@ import cajasRutas from "./rutas/caja.rutas"
 import inscripciones from "./rutas/inscripciones";
 import horarios from "./rutas/horarios.ruta";
 import asistencias  from "./rutas/asistencias";
+import plantillas  from "./rutas/plantillas.ruta";
 import metricas  from "./rutas/metricas.ruta";
 import listaCajas from "./rutas/listaCaja.ruta";
 
@@ -129,6 +130,7 @@ app.use(planesUsuariosRuta);
 app.use(nivelRutas);
 app.use(tipoRutas);
 app.use(asistencias);
+app.use(plantillas);
 app.use(categoriasCajasRutas);
 app.use(cuentasCajaRutas);
 

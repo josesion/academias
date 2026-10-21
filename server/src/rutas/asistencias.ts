@@ -26,4 +26,18 @@ ruta.get(
     controladorAsistencias.dataAsistencia
 );
 
+ruta.post(
+    "/api/asistencia_manual",
+    permisos.validarPermiso,
+    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    controladorAsistencias.asistenciaManual
+);
+
+ruta.get(
+    "/api/info_alumno/:dni",
+    permisos.validarPermiso, 
+    permisoSaas.verificarPlan(['basico', 'intermedio']), 
+    controladorAsistencias.infoAlumno
+);
+
 export default ruta;

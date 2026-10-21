@@ -1064,6 +1064,267 @@
     }
 
 
+    /* ============================================================
+       IMPRESIÓN — SPEC 042: SECCIÓN "DIFERENCIA POR MÉTODO DE PAGO"
+       La sección nueva se imprime junto al libro diario (decisión del
+       usuario, clarificación #8). El panel del gráfico no se imprime.
+       ============================================================ */
+
+    /* Para que se impriman la tabla de movimientos y la sección nueva hay que
+       volver a mostrar la cadena del modal: `body > *` y `#root > *` ocultan
+       toda la app para la impresión. */
+    #root > *:has(.modal-overlay-finanzas),
+    #root .modal-overlay-finanzas,
+    #root .modal-contenido-finanzas,
+    #root .area-impresion-modal,
+    #root .modal_finanzas_contenido,
+    #root .modal_libro_panel {
+        display: block !important;
+    }
+
+
+    #root .modal-overlay-finanzas {
+        position: static !important;
+
+        width: 100% !important;
+
+        height: auto !important;
+
+        padding: 0 !important;
+
+        background: transparent !important;
+
+        backdrop-filter: none !important;
+
+        animation: none !important;
+    }
+
+
+    #root .modal-contenido-finanzas {
+        width: 100% !important;
+
+        max-width: none !important;
+
+        max-height: none !important;
+
+        overflow: visible !important;
+
+        padding: 0 !important;
+
+        gap: 16px !important;
+
+        border: none !important;
+
+        box-shadow: none !important;
+
+        background: var(--fondo-secundario) !important;
+
+        animation: none !important;
+    }
+
+
+    /* De la página se imprime sólo el modal abierto */
+    #root .listado_cajas_pagina > *:not(.modal-overlay-finanzas) {
+        display: none !important;
+    }
+
+
+    /* La barra de navegación no aporta nada en el PDF */
+    #root .menu_nav {
+        display: none !important;
+    }
+
+
+    /* El panel del gráfico no se imprime */
+    .ocultar-en-impresion {
+        display: none !important;
+    }
+
+
+    #root .arqueo_diferencia {
+        display: flex !important;
+
+        flex-direction: column !important;
+
+        width: 100% !important;
+
+        margin: 0 !important;
+
+        padding: 0 !important;
+
+        overflow: visible !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+
+        break-inside: avoid !important;
+
+        page-break-inside: avoid !important;
+    }
+
+
+    #root .arqueo_diferencia_titulo {
+        margin: 0 !important;
+
+        color: #000000 !important;
+
+        animation: none !important;
+    }
+
+
+    #root .arqueo_diferencia_tabla_wrapper {
+        display: block !important;
+
+        width: 100% !important;
+
+        max-height: none !important;
+
+        overflow: visible !important;
+
+        padding: 0 !important;
+
+        background: var(--fondo-secundario) !important;
+
+        border: none !important;
+
+        box-shadow: none !important;
+
+        animation: none !important;
+    }
+
+
+    #root .arqueo_diferencia_tabla {
+        display: table !important;
+
+        width: 100% !important;
+
+        border-collapse: collapse !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+    }
+
+
+    #root .arqueo_diferencia_tabla thead {
+        display: table-header-group !important;
+    }
+
+
+    #root .arqueo_diferencia_tabla thead th {
+        position: static !important;
+
+        padding: 8px 10px !important;
+
+        border-bottom: 1px solid #777777 !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+
+        font-size: 10px !important;
+    }
+
+
+    #root .arqueo_diferencia_tabla tbody {
+        display: table-row-group !important;
+    }
+
+
+    #root .arqueo_diferencia_fila {
+        display: table-row !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+
+        break-inside: avoid !important;
+
+        page-break-inside: avoid !important;
+    }
+
+
+    #root .arqueo_diferencia_fila td {
+        display: table-cell !important;
+
+        padding: 7px 10px !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+
+        border-bottom: 1px solid #dddddd !important;
+    }
+
+
+    /* El modo tarjeta (≤768px) también se aplica al ancho del papel: se
+       deshace para que la tabla salga como tabla en el PDF. */
+    #root .arqueo_diferencia_fila td::before {
+        content: none !important;
+    }
+
+
+    #root .arqueo_diferencia_num,
+    #root .arqueo_diferencia_cuenta {
+        color: #000000 !important;
+    }
+
+
+    #root .arqueo_diferencia .badge_diferencia {
+        background: transparent !important;
+
+        color: #000000 !important;
+
+        border: 1px solid #999999 !important;
+    }
+
+
+    #root .arqueo_diferencia_fila_totales,
+    #root .arqueo_diferencia_fila_total_caja {
+        display: table-row !important;
+    }
+
+
+    #root .arqueo_diferencia_fila_totales td {
+        display: table-cell !important;
+
+        padding: 9px 10px !important;
+
+        border-top: 1px solid #777777 !important;
+
+        background: var(--fondo-secundario) !important;
+
+        color: #000000 !important;
+    }
+
+
+    #root .arqueo_diferencia_fila_total_caja td {
+        display: table-cell !important;
+
+        padding: 9px 10px !important;
+
+        background: #f3f3f3 !important;
+
+        color: #000000 !important;
+    }
+
+
+    #root .arqueo_diferencia_nota {
+        margin: 0 !important;
+
+        padding: 6px 8px !important;
+
+        background: var(--fondo-secundario) !important;
+
+        border: 1px solid #999999 !important;
+
+        color: #000000 !important;
+
+        animation: none !important;
+    }
+
+
     .libro_diario_contenedor,
     .libro_diario_tabla_wrapper,
     .libro_diario_tabla_clasica {
@@ -1077,6 +1338,77 @@
         break-inside: avoid !important;
 
         page-break-inside: avoid !important;
+    }
+
+
+    /* El fondo animado y las esferas son decorativos: no aportan nada en el
+       PDF y ensucian la impresión (spec 042 · observación del Revisor). */
+    .fondo-animado,
+    .esfera,
+    .esfera-2,
+    .esfera-3,
+    .esfera-4,
+    .esfera-5,
+    .esfera-6 {
+        display: none !important;
+    }
+
+
+    /* El skip link ("Ir al contenido") es para teclado en pantalla: en papel
+       no tiene sentido y queda como un texto suelto arriba de todo. */
+    .salto_contenido {
+        display: none !important;
+    }
+
+
+    /* ============================================================
+       IMPRESIÓN — SPEC 042: FICHAS DE "ABRIÓ / CERRÓ"
+       La cabecera del modal también se imprime: las fichas de usuario
+       salen sin fondo (el papel es blanco) y con el texto en negro.
+       ============================================================ */
+
+    #root .modal_finanzas_usuarios {
+        display: grid !important;
+
+        grid-template-columns: repeat(2, 1fr) !important;
+
+        gap: 8px !important;
+
+        width: 100% !important;
+
+        margin-top: 8px !important;
+    }
+
+
+    #root .modal_finanzas_usuario {
+        display: flex !important;
+
+        align-items: center !important;
+
+        gap: 8px !important;
+
+        padding: 6px 8px !important;
+
+        background: transparent !important;
+
+        border: 1px solid #999999 !important;
+
+        color: #000000 !important;
+    }
+
+
+    #root .modal_finanzas_usuario svg {
+        color: #000000 !important;
+    }
+
+
+    #root .modal_finanzas_usuario_label {
+        color: #555555 !important;
+    }
+
+
+    #root .modal_finanzas_usuario_nombre {
+        color: #000000 !important;
     }
 
 

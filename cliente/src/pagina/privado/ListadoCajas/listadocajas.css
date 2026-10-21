@@ -11,7 +11,6 @@
   margin: 0 auto;
   padding: 24px;
   box-sizing: border-box;
-  margin-left: 20px;
 }
 
 
@@ -38,7 +37,7 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  min-height: 750px;
+  min-height: var(--altura-panel-cajas);
   height: 100%;
   box-sizing: border-box;
 }
@@ -64,7 +63,7 @@
   min-height: 0;
   height: 100%;
   box-sizing: border-box;
-  max-height: 750px;
+  max-height: var(--altura-panel-cajas);
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 6px;
@@ -193,6 +192,42 @@
     display: flex;
     align-items: center;
     gap: 12px;
+
+    /* `.libro_diario_titulo` trae `width: 100%` (está pensado para la
+       cabecera suelta del libro diario). Acá eso hacía que el título ocupara
+       toda la fila y el botón de cerrar cayera a una línea de abajo, abajo
+       a la izquierda. Con `flex: 1 1 auto` el título cede espacio y el botón
+       queda a la derecha, en la misma fila. */
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Botón de cierre del modal: acción secundaria, no un bloque verde de 182px.
+   Sólo afecta al header de este modal (el `Boton` es compartido). */
+.modal_finanzas_header .boton_personalizado.editar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    flex-shrink: 0;
+
+    padding: 8px 14px;
+
+    background: transparent;
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
+
+    font-size: var(--texto-sm);
+}
+
+.modal_finanzas_header .boton_personalizado.editar:hover:not(:disabled) {
+    background: var(--fondo-hover);
+    border-color: var(--borde-hover);
+    color: var(--texto-principal);
+
+    filter: none;
+    box-shadow: none;
 }
 
 .modal_finanzas_header .libro_diario_titulo > svg {
@@ -208,6 +243,97 @@
     background: color-mix(in srgb, var(--color-primario) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-primario) 22%, transparent);
     color: var(--color-primario);
+}
+
+/* ==========================================
+   USUARIOS DE LA CAJA (quién abrió / quién cerró) — spec 042 · A3
+   ========================================== */
+
+/* Los dos usuarios son "fichas": icono + (etiqueta arriba, nombre abajo).
+   Antes iban sueltos en una línea con "Abrió: Luis Gomez" y quedaban
+   desprolijos al lado del subtítulo. */
+.modal_finanzas_usuarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+
+    /* Ocupan su propia línea dentro del header (que es flex con wrap) */
+    flex-basis: 100%;
+    width: 100%;
+
+    margin-top: 4px;
+}
+
+
+.modal_finanzas_usuario {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+
+    padding: 9px 14px;
+
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    background: var(--fondo-secundario);
+}
+
+
+.modal_finanzas_usuario svg {
+    flex-shrink: 0;
+
+    color: var(--texto-deshabilitado);
+}
+
+
+.modal_finanzas_usuario_datos {
+    display: flex;
+    flex-direction: column;
+
+    gap: 1px;
+
+    min-width: 0;
+}
+
+
+/* La etiqueta va en la tipografía normal (antes iba en monoespaciada en
+   mayúsculas, que se leía como la salida de una consola) */
+.modal_finanzas_usuario_label {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+
+.modal_finanzas_usuario_nombre {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+
+    /* Los nombres largos se envuelven sin romper la cabecera */
+    overflow-wrap: anywhere;
+}
+
+/* En pantallas chicas el botón de cerrar baja a su propia línea: se lo
+   empuja a la derecha para que no quede pegado al borde izquierdo */
+@media (max-width: 560px) {
+    .modal_finanzas_header .boton_personalizado.editar {
+        margin-left: auto;
+    }
+}
+
+/* En el modal el ícono y el título se mantienen en la misma línea (el
+   `flex-wrap: wrap` de `.libro_diario_titulo` es para la cabecera suelta) */
+@media (max-width: 480px) {
+    .modal_finanzas_header .libro_diario_titulo {
+        flex-wrap: nowrap;
+    }
 }
 
 /* --- KEYFRAMES --- */
@@ -356,9 +482,9 @@
   width: 72px;
   height: 44px;
   flex-shrink: 0;
-  background-color: var(--fondo-terciario);
+  background-color: var(--fondo-terciario, var(--fondo-superficie));
   border: 2px solid var(--borde);
-  border-radius: var(--radio-full);
+  border-radius: var(--radio-full, 999px);
   cursor: pointer;
   transition:
     background-color var(--transicion),
@@ -396,7 +522,7 @@
   height: 36px;
   background-color: var(--fondo-principal);
   border: 1px solid var(--borde);
-  border-radius: var(--radio-full);
+  border-radius: var(--radio-full, 999px);
   box-shadow: var(--sombra-sm);
   transition:
     transform var(--transicion) var(--ease-ui),
@@ -444,6 +570,27 @@
 /* ==========================================
    PREFERENCIAS DE USUARIO
    ========================================== */
+
+/* Reduced Motion: el modal de Finanzas aparece y cierra sin animación */
+@media (prefers-reduced-motion: reduce) {
+  .modal-overlay-finanzas,
+  .modal-contenido-finanzas,
+  .modal-overlay-finanzas.saliendo,
+  .modal-overlay-finanzas.saliendo .modal-contenido-finanzas {
+    animation: none !important;
+  }
+}
+
+/* High Contrast: borde del modal más grueso y backdrop más opaco */
+@media (prefers-contrast: more) {
+  .modal-contenido-finanzas {
+    border-width: 2px;
+  }
+
+  .modal-overlay-finanzas {
+    background-color: color-mix(in srgb, var(--color-primario) 88%, transparent);
+  }
+}
 
 /* Reduced Motion: desactivar transiciones del switch */
 @media (prefers-reduced-motion: reduce) {
@@ -537,11 +684,6 @@
     height: auto;
     width: 100%;
   }
-
-  .listado_cajas_panel .detalle_caja_marco {
-    max-height: 750px;
-    overflow-y: auto;
-  }
 }
 
 @media (max-width: 700px) {
@@ -568,11 +710,6 @@
 
   .listado_cajas_panel {
     width: 100%;
-  }
-
-  .listado_cajas_panel .detalle_caja_marco {
-    max-height: 750px;
-    overflow-y: auto;
   }
 }
 

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
-import { BookOpen } from "lucide-react";
+import { coloresSobrios } from "../../../hooks/ListadoCajas/ListadoCajasBase";
+import { BookOpen, User, UserCheck } from "lucide-react";
 // Componentes
 import { EstadoCaja } from "../../../componentes/ListadoCajas/EstadoCaja/EstadoCaja";
 import { DetalleCajas } from "../../../componentes/ListadoCajas/Listado/DetalleCaja";
 import { LibroDiarioGeneral } from "../../../componentes/ListadoCajas/LibroDiario/LibroDiario";
+import { ArqueoDiferencia } from "../../../componentes/ListadoCajas/ArqueoDiferencia/ArqueoDiferencia";
 import { EstadoCajaCerrada } from "../../../componentes/ListadoCajas/EstadoCerrado/EstadoCerrado";
 import { GraficoMetodosPago } from "../../../componentes/ListadoCajas/Graficosmetodos/Graficos";
 import { BuscadorLateral } from "../../../componentes/BuscadorLateral/BuscadorLateral";
@@ -98,11 +100,36 @@ export const ListadoCajas = () => {
     onCerrar: manejarCierreConAnimacion,
   });
 
-  // Partimos los métodos de pago en bloques de 3
-  const bloquesMetodosPago = dividirEnBloques(
-    historialCajas?.dataMetodo || [],
-    3,
-  );
+  /* Spec 042 · A4: el listado muestra **dos** gráficos apilados, derivados del
+     **mismo** array de métodos (sin reordenar) para que un método conserve el
+     mismo color en los dos:
+       · "Saldo por método"                → `total` (saldo, incluye Saldo Inicial)
+       · "Dinero que circuló por método"   → `flujo` (ingresos − egresos, sin Saldo Inicial) */
+  const metodosDePago = historialCajas?.dataMetodo ?? [];
+
+  const metodosSaldo: MetodoPagoData[] = metodosDePago.map((item, index) => ({
+    metodo: item.metodo,
+    total: Number(item.total) || 0,
+    color: item.color ?? coloresSobrios[index % coloresSobrios.length],
+  }));
+
+  const metodosFlujo: MetodoPagoData[] = metodosDePago.map((item, index) => ({
+    metodo: item.metodo,
+    total: Number(item.flujo ?? 0) || 0,
+    color: item.color ?? coloresSobrios[index % coloresSobrios.length],
+  }));
+
+  // Partimos los métodos de pago en bloques de 3 (los dos gráficos usan el mismo corte)
+  const bloquesMetodosPago = dividirEnBloques(metodosSaldo, 3);
+  const bloquesMetodosFlujo = dividirEnBloques(metodosFlujo, 3);
+
+  /* Spec 042 · A2: el estado vacío del gráfico agregado del listado tiene dos
+     textos distintos según haya cajas en el período o no. */
+  const hayCajasEnElPeriodo = (historialCajas?.dataDetalle?.length ?? 0) > 0;
+
+  const textoSinMetodosPago = hayCajasEnElPeriodo
+    ? "Las cajas del período no tienen ingresos ni egresos registrados, por eso no hay métodos de pago para mostrar."
+    : "No hay cajas en el período seleccionado, por eso no hay métodos de pago para mostrar.";
 
   const handleCambiarVista = () => {
     setVista((v) => (v === "listado" ? "graficos" : "listado"));
@@ -179,26 +206,51 @@ export const ListadoCajas = () => {
         {/* Contenedor de los gráficos divididos */}
         <div className="listado_cajas_graficos_columna">
           {bloquesMetodosPago.length > 0 ? (
-            bloquesMetodosPago.map((bloqueDatos, index) => (
-              <div key={index} className="contenedor_grafico_bloque">
-                {bloquesMetodosPago.length > 1 && (
-                  <div className="grafico_subtitulo">
-                    <span>
-                      Métodos de Pago (Bloque {index + 1} de{" "}
-                      {bloquesMetodosPago.length})
-                    </span>
-                  </div>
-                )}
-                <GraficoMetodosPago
-                  props={bloqueDatos}
-                  carga={carga.historial}
-                />
-              </div>
-            ))
+            <>
+              {/* Gráfico 1: saldo por método (incluye el Saldo Inicial) */}
+              {bloquesMetodosPago.map((bloqueDatos, index) => (
+                <div key={`saldo-${index}`} className="contenedor_grafico_bloque">
+                  {bloquesMetodosPago.length > 1 && (
+                    <div className="grafico_subtitulo">
+                      <span>
+                        Métodos de Pago (Bloque {index + 1} de{" "}
+                        {bloquesMetodosPago.length})
+                      </span>
+                    </div>
+                  )}
+                  <GraficoMetodosPago
+                    props={bloqueDatos}
+                    carga={carga.historial}
+                    titulo="Saldo por método"
+                  />
+                </div>
+              ))}
+
+              {/* Gráfico 2: dinero que circuló por método (sin el Saldo Inicial) */}
+              {bloquesMetodosFlujo.map((bloqueDatos, index) => (
+                <div key={`flujo-${index}`} className="contenedor_grafico_bloque">
+                  {bloquesMetodosFlujo.length > 1 && (
+                    <div className="grafico_subtitulo">
+                      <span>
+                        Métodos de Pago (Bloque {index + 1} de{" "}
+                        {bloquesMetodosFlujo.length})
+                      </span>
+                    </div>
+                  )}
+                  <GraficoMetodosPago
+                    props={bloqueDatos}
+                    carga={carga.historial}
+                    titulo="Dinero que circuló por método"
+                  />
+                </div>
+              ))}
+            </>
           ) : (
+            /* Un único mensaje compartido por los dos gráficos: los dos se
+               alimentan del mismo array, así que si uno está vacío el otro también. */
             <div className="contenedor_grafico_bloque">
               <p className="text-slate-400 text-sm">
-                No hay métodos de pago registrados.
+                {textoSinMetodosPago}
               </p>
             </div>
           )}
@@ -210,6 +262,7 @@ export const ListadoCajas = () => {
           contadorPagina={stateListadoCaja.paginacion.contadorPagina}
           paginaActual={stateListadoCaja.paginacion.pagina}
           onPaginaCambiada={handlePaginaCambiada}
+          ariaLabel="Paginación del listado de cajas"
         />
       </div>
 
@@ -237,10 +290,43 @@ export const ListadoCajas = () => {
               <Boton
                 clase="editar"
                 logo="Cancel"
-                texto="Cerrar Libro Diario"
+                texto="Cerrar"
                 disable={false}
                 onClick={manejarCierreConAnimacion}
               />
+
+              {/* Spec 042 · A3: quién abrió y quién cerró la caja.
+                  Viene de `dataArqueo` y se muestra aunque la caja no
+                  tenga arqueo (en ese caso sólo falta la sección de arqueo). */}
+              {detalleCaja?.dataArqueo && (
+                <div className="modal_finanzas_usuarios">
+                  <div className="modal_finanzas_usuario">
+                    <User size={14} aria-hidden="true" />
+                    <div className="modal_finanzas_usuario_datos">
+                      <span className="modal_finanzas_usuario_label">
+                        Abrió
+                      </span>
+                      <span className="modal_finanzas_usuario_nombre">
+                        {detalleCaja.dataArqueo.usuario_apertura?.trim() ||
+                          "Sin usuario"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="modal_finanzas_usuario">
+                    <UserCheck size={14} aria-hidden="true" />
+                    <div className="modal_finanzas_usuario_datos">
+                      <span className="modal_finanzas_usuario_label">
+                        Cerró
+                      </span>
+                      <span className="modal_finanzas_usuario_nombre">
+                        {detalleCaja.dataArqueo.usuario_cierre?.trim() ||
+                          "Sin usuario"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </header>
 
             <div className="area-impresion-modal">
@@ -253,12 +339,20 @@ export const ListadoCajas = () => {
                   )}
                 </div>
 
+                {/* Spec 042: desglose de la diferencia por método de pago.
+                    Va entre la tabla de movimientos y el panel del gráfico.
+                    Si la caja no tiene arqueo, el componente no renderiza nada. */}
+                <ArqueoDiferencia data={detalleCaja?.dataArqueo ?? null} />
+
                 {detalleCaja?.dataMetodo && (
                   <aside className="modal_grafico_panel ocultar-en-impresion">
-                    <div className="modal_grafico_titulo">
-                      Distribución por método de pago
-                    </div>
-                    <GraficoMetodosPago props={detalleCaja.dataMetodo} />
+                    {/* Spec 042 · A4: el gráfico del libro diario ya muestra el
+                        saldo por cuenta (coherente con `total` del listado). */}
+                    <div className="modal_grafico_titulo">Saldo por método</div>
+                    <GraficoMetodosPago
+                      props={detalleCaja.dataMetodo}
+                      titulo="Saldo por método"
+                    />
                   </aside>
                 )}
               </div>

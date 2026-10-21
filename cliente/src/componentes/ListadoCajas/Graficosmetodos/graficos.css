@@ -116,7 +116,7 @@
 
 .grafico_metodos_pago .recharts-cartesian-grid-horizontal line {
 
-    stroke: rgba(255, 255, 255, .05);
+    stroke: var(--borde);
 
 }
 
@@ -165,7 +165,7 @@
 
 .grafico_metodos_pago .recharts-tooltip-item {
 
-    color: var(--texto-secundario) !important;
+    color: var(--texto-principal) !important;
 
     font-family: var(--fuente-codigo);
 
@@ -192,17 +192,6 @@
 
 .grafico_metodos_pago .recharts-tooltip-wrapper {
     outline: none;
-}
-
-.grafico_metodos_pago .recharts-default-tooltip {
-    background: var(--fondo-superficie) !important;
-    border: 1px solid var(--borde) !important;
-    border-radius: var(--radio-sm) !important;
-    box-shadow: var(--sombra-md) !important;
-}
-
-.grafico_metodos_pago .recharts-tooltip-item {
-    color: var(--texto-principal) !important;
 }
 
 /* ============================================================

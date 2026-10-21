@@ -8,6 +8,7 @@
     "tsc": "tsc",
     "build": "tsc",
     "test": "set NODE_ENV=test && jest --detectOpenHandles",
+    "migrar": "ts-node src/scripts/migrar.ts",
     "start": "node build/index.js"
   },
   "keywords": [],

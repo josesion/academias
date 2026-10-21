@@ -1,5 +1,5 @@
 import { Boton } from "../../generales/Boton/Boton";
-import { Calendar, Clock, Wallet, MessageSquare } from "lucide-react";
+import { Calendar, Clock, Wallet, MessageSquare, User, UserCheck } from "lucide-react";
 import { ComponenteCargando } from "../../generales/Cargando/Cargando";
 
 import "./detallecajas.css";
@@ -18,6 +18,10 @@ interface DetalleProps {
   monto_sistema: number;
   monto_real: number;
   monto_faltante: number;
+  /** Nombre y apellido del usuario que abrió la caja (fallback: correo o "Sin usuario"). */
+  usuario_apertura: string;
+  /** Nombre y apellido del usuario que cerró la caja (fallback: correo o "Sin usuario"). */
+  usuario_cierre: string;
 }
 
 interface DetalleCajasProps {
@@ -46,6 +50,20 @@ const TEXTO_LABEL_DIFERENCIA: Record<EstadoArqueo, string> = {
   faltante: "Faltante",
   sobrante: "Sobrante",
   exacta: "Diferencia",
+};
+
+/** Texto por defecto cuando el server no trae el usuario de la caja. */
+const USUARIO_POR_DEFECTO = "Sin usuario";
+
+/**
+ * Devuelve el nombre del usuario de la caja con un texto legible (nunca vacío).
+ *
+ * @param {string | null | undefined} usuario - Nombre que trae el server.
+ * @returns {string} El nombre del usuario o "Sin usuario" si no vino nada.
+ */
+const nombreUsuario = (usuario: string | null | undefined): string => {
+  const texto = (usuario ?? "").trim();
+  return texto !== "" ? texto : USUARIO_POR_DEFECTO;
 };
 
 export const DetalleCajas = ({
@@ -85,6 +103,8 @@ export const DetalleCajas = ({
             const idMontos = `montos-${detalle.id_caja}`;
             const sistema = detalle.monto_sistema.toLocaleString("es-AR");
             const real = detalle.monto_real.toLocaleString("es-AR");
+            const usuarioApertura = nombreUsuario(detalle.usuario_apertura);
+            const usuarioCierre = nombreUsuario(detalle.usuario_cierre);
             const diferencia =
               estado === "exacta"
                 ? "$0"
@@ -143,9 +163,29 @@ export const DetalleCajas = ({
                   </div>
                 </div>
 
+                {/* Quién abrió y quién cerró la caja (spec 042 · A3) */}
+                <div className="detalle_caja_usuarios">
+                  <span className="detalle_caja_usuario">
+                    <User size={13} aria-hidden="true" />
+                    <span className="detalle_caja_usuario_label">Abrió:</span>
+                    <span className="detalle_caja_usuario_nombre">
+                      {usuarioApertura}
+                    </span>
+                  </span>
+
+                  <span className="detalle_caja_usuario">
+                    <UserCheck size={13} aria-hidden="true" />
+                    <span className="detalle_caja_usuario_label">Cerró:</span>
+                    <span className="detalle_caja_usuario_nombre">
+                      {usuarioCierre}
+                    </span>
+                  </span>
+                </div>
+
                 {/* Resumen para lectores de pantalla en el botón */}
                 <div id={idMontos} className="visually-hidden">
-                  Sistema: ${sistema}, Real: ${real}, Diferencia: ${diferencia}
+                  Sistema: ${sistema}, Real: ${real}, Diferencia: ${diferencia}.
+                  Abrió: {usuarioApertura}. Cerró: {usuarioCierre}.
                 </div>
 
                 {detalle.observaciones && (

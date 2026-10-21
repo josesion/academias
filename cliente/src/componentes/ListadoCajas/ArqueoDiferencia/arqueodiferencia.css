@@ -1,0 +1,565 @@
+/* ============================================================
+   ARQUEO DIFERENCIA POR MÉTODO DE PAGO (spec 042)
+   Sección propia del modal "Libro diario" (spec 042).
+   Mismo lenguaje visual que `componentes/Caja/metodoPagoInputs/metodopagointputs.css`
+   (`.badge_diferencia` con variantes `ok` / `negativo` / `positivo`) y que
+   `componentes/ListadoCajas/LibroDiario/librodiario.css` (tabla clásica).
+   Sólo se usan tokens de `src/app.css`.
+   ============================================================ */
+
+.arqueo_diferencia {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* ============================================================
+   TÍTULO
+   ============================================================ */
+
+.arqueo_diferencia_titulo {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+
+    font-size: var(--texto-lg);
+
+    font-weight: var(--peso-semi-negrita);
+
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   TABLA — CONTENEDOR
+   ============================================================ */
+
+.arqueo_diferencia_tabla_wrapper {
+    width: 100%;
+
+    /* Con muchas cuentas la tabla scrollea sola, sin romper el modal */
+    max-height: 320px;
+
+    overflow: auto;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-lg);
+
+    padding: 3px;
+
+    box-shadow: var(--sombra-sm);
+}
+
+
+/* ============================================================
+   TABLA
+   ============================================================ */
+
+.arqueo_diferencia_tabla {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-family: var(--fuente-principal);
+}
+
+
+/* ============================================================
+   ENCABEZADO DE TABLA
+   ============================================================ */
+
+.arqueo_diferencia_tabla thead th {
+    position: sticky;
+    top: 0;
+
+    padding: 11px 16px;
+
+    border-bottom: 1px solid var(--borde);
+
+    background: var(--fondo-secundario);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-semi-negrita);
+
+    letter-spacing: 0.07em;
+
+    text-transform: uppercase;
+
+    color: var(--texto-deshabilitado);
+
+    text-align: left;
+}
+
+
+.arqueo_diferencia_col_der {
+    text-align: right;
+}
+
+
+/* ============================================================
+   FILAS
+   ============================================================ */
+
+.arqueo_diferencia_fila {
+    transition: background-color 0.25s var(--ease-ui);
+}
+
+
+.arqueo_diferencia_fila:nth-child(even) {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-primario) 3%,
+            transparent
+        );
+}
+
+
+.arqueo_diferencia_fila td {
+    padding: 10px 16px;
+
+    border-bottom:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-primario) 8%,
+            transparent
+        );
+
+    font-size: var(--texto-sm);
+
+    color: var(--texto-principal);
+
+    vertical-align: middle;
+}
+
+
+.arqueo_diferencia_cuenta {
+    overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   MONTOS
+   ============================================================ */
+
+.arqueo_diferencia_num {
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-medio);
+
+    font-variant-numeric: tabular-nums;
+
+    color: var(--texto-secundario);
+
+    text-align: right;
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   BADGE DE DIFERENCIA
+   Mismo lenguaje que `.badge_diferencia` de `metodopagointputs.css`.
+   Se re-declara acá (con el mismo selector visual) porque ese CSS pertenece
+   a la pantalla de caja y no se carga en el listado de cajas.
+   ============================================================ */
+
+.arqueo_diferencia .badge_diferencia {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    padding: 3px 8px;
+
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: 0.65rem;
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: 0.05em;
+
+    white-space: nowrap;
+}
+
+
+.arqueo_diferencia .badge_diferencia.ok {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-exito) 12%,
+            transparent
+        );
+
+    color: var(--color-exito);
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-exito) 30%,
+            transparent
+        );
+}
+
+
+.arqueo_diferencia .badge_diferencia.negativo {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-error) 12%,
+            transparent
+        );
+
+    color: var(--color-error);
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-error) 30%,
+            transparent
+        );
+}
+
+
+.arqueo_diferencia .badge_diferencia.positivo {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-advertencia) 12%,
+            transparent
+        );
+
+    color: var(--color-advertencia);
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-advertencia) 30%,
+            transparent
+        );
+}
+
+
+.arqueo_diferencia_badge_texto {
+    font-size: 0.58rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+
+    opacity: 0.85;
+}
+
+
+/* ============================================================
+   TOTALES DEL PIE
+   ============================================================ */
+
+.arqueo_diferencia_fila_totales td {
+    padding: 11px 16px;
+
+    border-top: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-semi-negrita);
+
+    font-variant-numeric: tabular-nums;
+
+    color: var(--texto-secundario);
+}
+
+
+.arqueo_diferencia_fila_totales td:first-child {
+    font-family: var(--fuente-principal);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-deshabilitado);
+}
+
+
+.arqueo_diferencia_fila_total_caja td {
+    padding: 11px 16px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--color-primario) 7%,
+            transparent
+        );
+
+    font-family: var(--fuente-codigo);
+
+    font-weight: var(--peso-semi-negrita);
+
+    font-size: var(--texto-sm);
+
+    font-variant-numeric: tabular-nums;
+
+    color: var(--texto-principal);
+}
+
+
+.arqueo_diferencia_fila_total_caja td:first-child {
+    font-family: var(--fuente-principal);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   NOTA INFORMATIVA (desajuste entre el desglose y el total)
+   ============================================================ */
+
+.arqueo_diferencia_nota {
+    margin: 0;
+
+    padding: 10px 14px;
+
+    border: 1px solid var(--borde);
+
+    border-left: 3px solid var(--color-advertencia);
+
+    border-radius: var(--radio-sm);
+
+    background:
+        color-mix(
+            in srgb,
+            var(--color-advertencia) 8%,
+            transparent
+        );
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-xs);
+
+    line-height: var(--linea-texto);
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   HOVER (sólo en punteros finos)
+   ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .arqueo_diferencia_fila:hover {
+        background:
+            color-mix(
+                in srgb,
+                var(--color-primario) 5%,
+                transparent
+            );
+    }
+}
+
+
+/* ============================================================
+   ENTRADA (escalonada de 30 ms)
+   ============================================================ */
+
+@keyframes arqueo_diferencia_entrada {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+
+.arqueo_diferencia_titulo {
+    animation: arqueo_diferencia_entrada 0.4s var(--ease-ui) both;
+}
+
+
+.arqueo_diferencia_tabla_wrapper {
+    animation: arqueo_diferencia_entrada 0.4s var(--ease-ui) both;
+    animation-delay: 30ms;
+}
+
+
+.arqueo_diferencia_nota {
+    animation: arqueo_diferencia_entrada 0.4s var(--ease-ui) both;
+    animation-delay: 60ms;
+}
+
+
+/* ============================================================
+   RESPONSIVE — MODO TARJETA (≤768px)
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    .arqueo_diferencia_tabla_wrapper {
+        max-height: 420px;
+
+        border-radius: var(--radio-md);
+    }
+
+
+    .arqueo_diferencia_tabla thead {
+        display: none;
+    }
+
+
+    .arqueo_diferencia_tabla,
+    .arqueo_diferencia_tabla tbody,
+    .arqueo_diferencia_tabla tfoot,
+    .arqueo_diferencia_fila,
+    .arqueo_diferencia_fila_totales,
+    .arqueo_diferencia_fila_total_caja {
+        display: block;
+
+        width: 100%;
+    }
+
+
+    .arqueo_diferencia_fila {
+        padding: 11px 14px;
+
+        border-bottom: 1px solid var(--borde);
+    }
+
+
+    .arqueo_diferencia_fila td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: flex-start;
+
+        gap: 12px;
+
+        padding: 4px 0;
+
+        border-bottom: none;
+    }
+
+
+    .arqueo_diferencia_fila td::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-family: var(--fuente-codigo);
+
+        font-size: 0.6rem;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.06em;
+
+        color: var(--texto-deshabilitado);
+    }
+
+
+    .arqueo_diferencia_num {
+        white-space: normal;
+
+        text-align: right;
+    }
+
+
+    .arqueo_diferencia .badge_diferencia {
+        flex-wrap: wrap;
+
+        justify-content: flex-end;
+    }
+
+
+    .arqueo_diferencia_fila_totales,
+    .arqueo_diferencia_fila_total_caja {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 12px 14px;
+    }
+
+
+    .arqueo_diferencia_fila_totales td,
+    .arqueo_diferencia_fila_total_caja td {
+        display: block;
+
+        padding: 0;
+
+        border-top: none;
+    }
+
+
+    .arqueo_diferencia_fila_totales td::before,
+    .arqueo_diferencia_fila_total_caja td::before {
+        content: none;
+    }
+}
+
+
+/* ============================================================
+   CELULAR PEQUEÑO
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    .arqueo_diferencia_titulo {
+        font-size: var(--texto-md);
+    }
+}
+
+
+/* ============================================================
+   MOVIMIENTO REDUCIDO
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .arqueo_diferencia_titulo,
+    .arqueo_diferencia_tabla_wrapper,
+    .arqueo_diferencia_nota {
+        animation: none;
+    }
+
+
+    .arqueo_diferencia_fila {
+        transition: none;
+    }
+}

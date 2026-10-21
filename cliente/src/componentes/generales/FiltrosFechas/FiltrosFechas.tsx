@@ -8,15 +8,67 @@ interface FiltroFechasProps {
   fechaHasta: string;
   onDesdeChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onHastaChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  /**
+   * Impide que el campo de fecha quede vacío.
+   *
+   * Con `true`, al borrar la fecha se **restaura el valor anterior** y no se
+   * avisa al padre (no hay cambio de estado ni petición). Con `false`
+   * (default) el vacío se propaga y sirve como "sin filtro" — así lo usa la
+   * pantalla de Anuncios, donde las fechas son opcionales.
+   */
+  impedirVacio?: boolean;
 }
 
+/**
+ * Filtro de rango de fechas (desde / hasta) con dos `input[type="date"]`.
+ *
+ * El componente **no guarda estado propio de las fechas**: es controlado por
+ * el padre, que le pasa `fechaDesde` / `fechaHasta` y recibe los cambios por
+ * `onDesdeChange` / `onHastaChange`. Lo único que state-local tiene es el
+ * desplegable en mobile (`.filtro_fechas_toggle`).
+ *
+ * @param props - Fechas controladas y callbacks de cambio.
+ * @returns El bloque del filtro de fechas.
+ */
 export const FiltroFechas: React.FC<FiltroFechasProps> = ({
   fechaDesde,
   fechaHasta,
   onDesdeChange,
   onHastaChange,
+  impedirVacio = false,
 }) => {
   const [abierto, setAbierto] = useState(false);
+
+  /**
+   * Intercepta el cambio del campo "Desde".
+   *
+   * Si el campo queda vacío y `impedirVacio` está activo, se restaura la
+   * fecha anterior **en el propio input** (el componente es controlado y sin
+   * un cambio de estado React no lo volvería a pintar) y no se llama al
+   * callback del padre, así que no se dispara ninguna petición.
+   *
+   * @param event - ChangeEvent del input de fecha "Desde".
+   */
+  const manejarDesde = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if ( impedirVacio && event.target.value === "" ){
+      event.target.value = fechaDesde;
+      return;
+    }
+    onDesdeChange?.(event);
+  };
+
+  /**
+   * Intercepta el cambio del campo "Hasta" (mismo criterio que "Desde").
+   *
+   * @param event - ChangeEvent del input de fecha "Hasta".
+   */
+  const manejarHasta = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if ( impedirVacio && event.target.value === "" ){
+      event.target.value = fechaHasta;
+      return;
+    }
+    onHastaChange?.(event);
+  };
 
   return (
     <div className={`filtro_fechas_wrapper ${abierto ? "abierto" : ""}`}>
@@ -54,7 +106,7 @@ export const FiltroFechas: React.FC<FiltroFechasProps> = ({
                 type="date"
                 aria-label="Filtrar desde la fecha"
                 value={fechaDesde}
-                onChange={onDesdeChange}
+                onChange={manejarDesde}
               />
             </div>
           </div>
@@ -70,7 +122,7 @@ export const FiltroFechas: React.FC<FiltroFechasProps> = ({
                 type="date"
                 aria-label="Filtrar hasta la fecha"
                 value={fechaHasta}
-                onChange={onHastaChange}
+                onChange={manejarHasta}
               />
             </div>
           </div>

@@ -39,6 +39,44 @@ export const ClaseProximaSchema = z.object({
 
 
 
+/**
+ * Alta de asistencia **manual** (spec 043).
+ *
+ * A diferencia del kiosko (`/api/asistencia`), la asistencia manual:
+ * - **no** exige estar dentro de la ventana horaria (15 min antes / 30 min
+ *   después del inicio de la clase), y
+ * - sólo admite la **clase que está en curso** o **la que sigue**.
+ */
+export const AsistenciaManualSchema = z.object({
+    id_escuela: z.coerce.number().int().positive(),
+    id_horario_clase: z.coerce.number().int().positive(),
+    id_inscripcion: z.coerce.number().int().positive(),
+    dni_alumno: z.coerce.number().int().positive(),
+    estado: EstadoEnum,
+});
+
+export type AsistenciaManualInputs = z.infer<typeof AsistenciaManualSchema>;
+
+/**
+ * Verificación del horario para la asistencia **manual** (spec 043).
+ * El horario tiene que ser la clase en curso o la próxima.
+ */
+export const HorarioManualSchema = z.object({
+    id_escuela: z.coerce.number().int().positive(),
+    id_horario_clase: z.coerce.number().int().positive(),
+    estado: EstadoEnum,
+    dia: DiaSemanaEnum,
+});
+
+export type HorarioManualInputs = z.infer<typeof HorarioManualSchema>;
+
 export type AsistenciaInputs = z.infer<typeof AsistenciaSchema>;
 export type ClasesActualInputs = z.infer<typeof ClaseActualSchema>;
 export type ClasesProximaInputs = z.infer<typeof ClaseProximaSchema>;
+
+export const InfoAlumnoSchema = z.object({
+    id_escuela: z.coerce.number().int().positive(),
+    dni_alumno: z.coerce.number().int().positive(),
+});
+
+export type InfoAlumnoInputs = z.infer<typeof InfoAlumnoSchema>;

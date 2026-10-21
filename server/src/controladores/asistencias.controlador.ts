@@ -11,7 +11,7 @@ import { method as asistenciaServicio } from "../Servicio/asistencia.servicio";
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
-         MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA
+         MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO
  } from "../respuestas/asistencia";
 
 
@@ -57,6 +57,64 @@ const altaAsistencia = async( req : Request , res: Response)=> {
             respuestaAsistencia.message || config.msg,
             respuestaAsistencia.code
 
+        );
+    };
+};
+
+/**
+ * Registra una asistencia **manual** (spec 043).
+ *
+ * A diferencia de `altaAsistencia` (kiosko), esta ruta:
+ * - no exige la ventana horaria de 15/30 minutos,
+ * - sólo admite la clase que está en curso o la próxima,
+ * - y bloquea la doble asistencia del mismo alumno en esa clase.
+ *
+ * @async
+ * @function altaAsistenciaManual
+ * @param {Request} req - Petición de Express con `req.usuario.id_escuela` y
+ *   `req.body` = { dni_alumno, id_inscripcion, estado, id_horario_clase }.
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Envía la respuesta estructurada.
+ */
+const altaAsistenciaManual = async( req : Request , res: Response)=> {
+
+    const data = {
+        id_escuela : Number( req.usuario?.id_escuela),
+        dni_alumno : Number( req.body.dni_alumno),
+        id_inscripcion : Number( req.body.id_inscripcion),
+        estado  : req.body.estado as string,
+    };
+
+    // El schema de la asistencia manual pide TODOS los campos (a diferencia
+    // del kiosko, que sólo necesita el id del horario). Si se manda un
+    // objeto incompleto, Zod responde "Error de validación de datos".
+    const dataAsistencia = {
+        id_escuela : data.id_escuela,
+        id_horario_clase : Number(req.body.id_horario_clase),
+        id_inscripcion : data.id_inscripcion,
+        dni_alumno : data.dni_alumno,
+        estado : data.estado,
+    };
+
+    const respuestaAsistencia = await asistenciaServicio.asistenciaManual(data, dataAsistencia);
+
+    const config = MAPA_ALTA_ASISTENCIA[ respuestaAsistencia.code]  || ERROR_INTERNO_SERVIDOR;
+
+    if (config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(
+            res,
+            config.status,
+            respuestaAsistencia.message || config.msg,
+            respuestaAsistencia.data,
+            undefined,
+            respuestaAsistencia.code
+        );
+    }else{
+        return enviarResponseError(
+            res,
+            config.status,
+            respuestaAsistencia.message || config.msg,
+            respuestaAsistencia.code
         );
     };
 };
@@ -148,8 +206,35 @@ const dataAsistencia = async( req : Request, res : Response) =>{
     };
 };
 
+/**
+ * Obtiene la informacion de un alumno (inscripcion vigente, clases restantes, vencimiento)
+ * a partir de su DNI y la escuela del token.
+ * @async
+ * @function infoAlumno
+ * @param {Request} req - Objeto de peticion de Express. Debe contener:
+ * - req.usuario.id_escuela: ID de la escuela extraido del token JWT.
+ * - req.params.dni: DNI del alumno a consultar.
+ * @param {Response} res - Objeto de respuesta de Express.
+ * @returns {Promise<void>} Envia la respuesta con la informacion del alumno o el error correspondiente.
+ */
+const infoAlumno = async( req : Request, res : Response) =>{
+    const data = {
+        id_escuela : Number(req.usuario?.id_escuela),
+        dni_alumno : Number(req.params.dni),
+    };
+    const result = await asistenciaServicio.infoAlumno(data);
+    const config = MAPA_INFO_ALUMNO[ result.code ] || ERROR_INTERNO_SERVIDOR;
+    if (config.status === CodigoEstadoHTTP.OK){
+        return enviarResponse(res, config.status, result.message || config.msg, result.data, undefined, result.code);
+    }else{
+        return enviarResponseError(res, config.status, result.message || config.msg, result.code);
+    }
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
+    asistenciaManual : tryCatch( altaAsistenciaManual ),
     fechasHorarios : tryCatch( fechasHorarios),
     dataAsistencia : tryCatch( dataAsistencia ),
+    infoAlumno : tryCatch( infoAlumno ),
 } 

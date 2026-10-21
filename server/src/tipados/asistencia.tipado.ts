@@ -49,3 +49,13 @@ export interface ResultDataAsistencia{
     dataHorario : DataHorarioAsistencia | DataResultErrrorAsistencia,
     dataInscripcion : DataInscripcionVigente | DataResultErrrorAsistencia
 }
+
+export interface InfoAlumnoResult {
+    nombre_completo : string,
+    dni_alumno : number,
+    id_inscripcion : number,
+    clases_restantes : number,
+    vencimiento : string,
+    estado : string,
+    plan : string
+}

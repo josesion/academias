@@ -140,6 +140,7 @@ export const ListadoInscripcionPage = () => {
           paginaActual={state.barraPaginacion.pagina as number}
           contadorPagina={state.barraPaginacion.contadorPagina as number}
           onPaginaCambiada={handlePaginaCambiada}
+          ariaLabel="Paginación del listado de inscripciones"
         />
       </nav>
     </div>

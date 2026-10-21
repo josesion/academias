@@ -106,6 +106,11 @@ export const BuscadorLateral = ({
             fechaHasta={filtros.fechaHasta}
             onDesdeChange={cachearFechaD}
             onHastaChange={cachearFechaH}
+            // El Listado de Cajas exige un rango completo: si el usuario borra
+            // una fecha, el backend la rechaza (Zod) y el filtro se rompe
+            // (spec 041). Las fechas no se pueden dejar invertidas tampoco:
+            // el reducer ajusta el otro extremo.
+            impedirVacio
           />
         </div>
       </div>

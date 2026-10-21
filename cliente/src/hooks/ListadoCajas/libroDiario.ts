@@ -19,6 +19,15 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
 
     const { dispatchLibroDiario } = config;
 
+    /**
+     * Pide el libro diario de la caja y guarda el resultado en el estado.
+     *
+     * Además de los movimientos (`dataDetalle`) y el gráfico por método de pago
+     * (`dataMetodo`), guarda el **arqueo** (`dataArqueo`): el desglose por cuenta
+     * con el conteo real del cajero contra lo que decía el sistema (spec 042).
+     * Si el server no lo manda (caja inexistente), queda en `null` y la sección
+     * no se muestra.
+     */
     const abrirLibroDiario =async (idCaja: number) =>{
   
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
@@ -39,7 +48,8 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
         const result = resultDetalle.code === 'LISTADO_DETALLE_CAJA_OK' 
                        ? { 
                             dataDetalle: resultDetalle.data.dataDetalle,
-                            dataMetodo : metodoPagoSet
+                            dataMetodo : metodoPagoSet,
+                            dataArqueo : resultDetalle.data.dataArqueo ?? null
                        } : null;
                        
         dispatchLibroDiario({ 

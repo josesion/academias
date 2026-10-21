@@ -13,7 +13,8 @@ import { TipadoData } from "../tipados/tipado.data";
 import { ResultadoClaseEnCruso, ResultadoClaseProxima, } from "../tipados/asistencia.tipado";
 
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
-import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, } from "../squemas/asistencias";
+import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, InfoAlumnoInputs, HorarioManualInputs } from "../squemas/asistencias";
+import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
 const vencerInscripciones = async () => {
@@ -464,10 +465,116 @@ const clase_proxima_clase = async( data : ClasesProximaInputs)
 
 
 
+/**
+ * Obtiene la información vigente de un alumno para una escuela.
+ */
+const infoAlumnoData = async ( data : InfoAlumnoInputs )
+: Promise<TipadoData<InfoAlumnoResult>> => {
+    const { id_escuela , dni_alumno } = data;
+    const sql : string = `SELECT
+                            i.id_inscripcion,
+                            CONCAT(a.nombre, ' ', a.apellido) AS nombre_completo,
+                            a.dni_alumno,
+                            DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
+                            i.estado,
+                            COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS plan,
+                            ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(asist.id_asistencia)) AS clases_restantes
+                        FROM inscripciones i
+                        JOIN alumnos a ON i.dni_alumno = a.dni_alumno
+                        JOIN planes_pago p ON i.id_plan = p.id_plan
+                        LEFT JOIN planes_en_escuela pe ON (i.id_plan = pe.id_plan AND i.id_escuela = pe.id_escuela)
+                        LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
+                        WHERE i.dni_alumno = ? AND i.id_escuela = ? AND i.estado = 'activos'
+                        GROUP BY i.id_inscripcion
+                        LIMIT 1;`;
+    const valores : unknown[] = [ dni_alumno , id_escuela ];
+    return await buscarExistenteEntidad<InfoAlumnoResult>({
+        slqEntidad : sql,
+        valores,
+        entidad : "inscripcion"
+    });
+};
+
+/**
+ * Verifica si un horario de clase es **la clase que está en curso** o
+ * **la que viene a continuación** (spec 043 · asistencia manual).
+ *
+ * A diferencia de `ventanaAsistencia` (que exige estar 15 min antes /
+ * 30 min después del inicio), esta regla es la del kiosko en cuanto a
+ * *qué clases* se pueden marcar: la de ahora o la próxima.
+ *
+ * @param data - Datos de la verificación.
+ * @param data.id_escuela - Escuela del horario.
+ * @param data.estado - Estado del horario ("activos").
+ * @param data.dia - Día de la semana en texto.
+ * @param data.id_horario_clase - Id del horario a validar.
+ *
+ * @returns {Promise<TipadoData<number>>} `HORARIO_EXISTE` si es una de las
+ *   dos clases permitidas; `HORARIO_NO_EXISTE` si no.
+ */
+const horarioEnCursoOProxima = async( data : HorarioManualInputs )
+: Promise<TipadoData<number>> =>{
+    const { id_escuela, estado, dia, id_horario_clase } = data;
+    const sql : string = `SELECT hc.id
+                            FROM horarios_clases hc
+                            WHERE hc.id = ?
+                            AND hc.id_escuela = ?
+                            AND hc.estado = ?
+                            AND hc.vigente = 1
+                            AND hc.dia_semana = ?
+                            AND (
+                                (
+                                    hc.hora_inicio < hc.hora_fin
+                                    AND CAST(NOW() AS TIME)
+                                        BETWEEN CAST(hc.hora_inicio AS TIME)
+                                        AND CAST(hc.hora_fin AS TIME)
+                                )
+                                OR
+                                (
+                                    hc.hora_inicio > hc.hora_fin
+                                    AND (
+                                        CAST(NOW() AS TIME) >= CAST(hc.hora_inicio AS TIME)
+                                        OR CAST(NOW() AS TIME) <= CAST(hc.hora_fin AS TIME)
+                                    )
+                                )
+                                OR
+                                (
+                                    CAST(hc.hora_inicio AS TIME) > CAST(NOW() AS TIME)
+                                    AND hc.id = (
+                                        SELECT h2.id
+                                        FROM horarios_clases h2
+                                        WHERE h2.id_escuela = ?
+                                        AND h2.estado = ?
+                                        AND h2.vigente = 1
+                                        AND h2.dia_semana = ?
+                                        AND CAST(h2.hora_inicio AS TIME) > CAST(NOW() AS TIME)
+                                        ORDER BY CAST(h2.hora_inicio AS TIME) ASC
+                                        LIMIT 1
+                                    )
+                                )
+                            )
+                            LIMIT 1;`;
+    const valores : unknown[] = [
+        id_horario_clase, id_escuela, estado, dia,
+        id_escuela, estado, dia
+    ];
+    return await buscarExistenteEntidad<number>({
+        slqEntidad : sql,
+        valores,
+        // La entidad define el código de respuesta: con "horario" el hook
+        // devuelve HORARIO_EXISTE / HORARIO_NO_EXISTE (igual que
+        // `ventanaAsistencia`). Con otro nombre el código no coincidiría y
+        // el filtro nunca bloquearía.
+        entidad : "horario"
+    });
+};
+
 export const method = {
+    infoAlumno : tryCatchDatos( infoAlumnoData ),
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
     dobleAsitencia  : tryCatchDatos( dobleAsitencia ),
     ventanaAsistencia : tryCatchDatos( ventanaAsistencia ),
+    horarioEnCursoOProxima : tryCatchDatos( horarioEnCursoOProxima ),
     asistencia : tryCatchDatos( asistenciaAlta ),
     vencerInscripciones : tryCatchDatos( vencerInscripciones),
     claseEnCurso : tryCatchDatos( clase_en_curso ),

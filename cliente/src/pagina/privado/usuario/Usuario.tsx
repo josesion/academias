@@ -5,6 +5,8 @@ import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/Tar
 import { AlertaVencimiento } from "../../../componentes/AlertaVencimiento/AlertaVencimiento";
 import { Asistencia } from "../../../componentes/Horarios/Asistencias/Asistencias";
 import { MetricasHistorial } from "../../../componentes/Historial/Historial.metricas";
+import { AsistenciaRapida } from "../../../componentes/AsistenciaRapida/AsistenciaRapida";
+import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 import { diasHastaVencimiento } from "../../../utils/fecha";
 
@@ -53,6 +55,9 @@ export const UsuarioPage = () => {
 
   // Carga global: se muestra mientras haya cualquier carga crítica inicial
   const cargandoGlobal = state.carga.tarjeta || state.carga.clases || state.carga.historial || state.carga.vencimiento;
+  const [modalAbierto, setModalAbierto] = useState(false);
+
+  const cerrarAsistenciaRapida = () => setModalAbierto(false);
 
   return (
     // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
@@ -76,7 +81,15 @@ export const UsuarioPage = () => {
 
           <p>Alumnos, asistencia y actividad reciente de tu escuela.</p>
         </div>
+        <Boton
+          clase="listar"
+          texto="Asistencia rápida"
+          logo="List"
+          onClick={() => setModalAbierto(true)}
+          aria-label="Abrir asistencia rápida manual"
+        />
       </header>
+      <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} />
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}

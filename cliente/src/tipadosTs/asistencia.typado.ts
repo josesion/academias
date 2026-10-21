@@ -117,3 +117,20 @@ export interface AsistenciaInscripcionRow {
   nivel: string;
   profesor: string;
 };
+
+export interface InfoAlumno {
+  nombre_completo: string;
+  dni_alumno: number;
+  id_inscripcion: number;
+  clases_restantes: number;
+  vencimiento: string;
+  estado: string;
+  plan: string;
+}
+
+export interface PlantillaAsistencia {
+  id_plantilla: number;
+  nombre: string;
+  fecha_creacion: string;
+  alumnos: number[];
+}

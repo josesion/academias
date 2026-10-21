@@ -139,6 +139,17 @@ const handleAbrirCaja = async () => {
 // ────────────────────────────────────────────────────────────── 
 
 
+/**
+ * Cierra la caja abierta: arma el payload de cierre (totales + `arqueo_detalle`)
+ * y lo manda al servicio `cerrarCaja`.
+ *
+ * El `arqueo_detalle` se arma desde `state.metricasCuentasCierre` (el conteo
+ * real del cajero) —ver el bloque de `dataDetalleCuentas`— para que
+ * `Σ(real − sistema)` coincida con `diferencia_total` (spec 042, **CA-13**).
+ *
+ * No modifica la UI del arqueo ni el cálculo de `monto_final_real` /
+ * `diferencia_total`.
+ */
 const handleCerrarCaja = async () => {
 
   if (!state.dataCaja?.id_caja) {
@@ -152,14 +163,31 @@ const handleCerrarCaja = async () => {
 
   let dataDetalleCuentas: JsonDataCierre[] = [];
 
-  if (state.metricasTipoCuentas && state.metricasTipoCuentas.length > 0) {
+  /**
+   * Arma el `arqueo_detalle` que se persiste al cerrar la caja.
+   *
+   * Se toma de `state.metricasCuentasCierre` (el `MetodosPago[]` que el
+   * reducer mantiene con `INICIALIZAR_METODO_PAGO` + `UPDATE_MONTO_REAL_CIERRE`),
+   * porque ese es el único lado donde vive **el conteo real que escribió el
+   * cajero** (`monto_real`).
+   *
+   * Antes se armaba desde `state.metricasTipoCuentas` con
+   * `real = movimiento_sesion` (el flujo de la sesión **sin** el saldo inicial)
+   * contra `sistema = saldo_final_cuenta` (el saldo final **con** el saldo
+   * inicial): por eso `Σ(real − sistema)` no coincidía con `diferencia_total`.
+   *
+   * Con este fix (spec 042): `sistema` sigue siendo `saldo_final_cuenta` (el
+   * mismo valor de antes) y `real` es el conteo del cajero ⇒
+   * `Σ(real − sistema) = diferencia_total` exactamente (**CA-13**).
+   */
+  if (state.metricasCuentasCierre && state.metricasCuentasCierre.length > 0) {
 
-    dataDetalleCuentas = state.metricasTipoCuentas.map((item) => {
+    dataDetalleCuentas = state.metricasCuentasCierre.map((item) => {
       return {
-        id_cuenta: Number(item.id_cuenta), // Aseguramos que sea number
+        id_cuenta: Number(item.id_cuenta),      // Aseguramos que sea number
         nombre_cuenta: item.nombre_cuenta,
-        sistema: item.saldo_final_cuenta,   // Lo que el sistema dice que hay
-        real: item.movimiento_sesion,      // Inicializamos 'real' con lo mismo (el usuario luego lo edita)
+        sistema: Number(item.monto_sistema),    // Lo que el sistema dice que hay (saldo final de la cuenta)
+        real: Number(item.monto_real) || 0,     // El conteo real que escribió el cajero
       };
     });
   };

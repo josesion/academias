@@ -222,19 +222,42 @@ export const listadoCajaReducer = ( state : ReturnType< typeof initialStateLista
             paginacion: { ...state.paginacion, pagina: 1 }
         }  
     
-    case "SET_FILTRO_BUSQUEDA_FECHAD" : 
+    // El rango de fechas nunca puede quedar invertido: si el "desde" pasa al
+    // "hasta" (o al revés) se arrastra el otro extremo para que ambos queden
+    // en la misma fecha. La comparación es de strings "YYYY-MM-DD" (en ese
+    // formato el orden lexicográfico coincide con el cronológico) para no
+    // arrastrar el parseo en UTC de `new Date("YYYY-MM-DD")`.
+    // El ajuste va en el MISMO return que el reset de página: una sola
+    // acción ⇒ una sola petición (spec 041).
+    case "SET_FILTRO_BUSQUEDA_FECHAD" : {
+        // Una fecha vacía se ignora: el backend la rechaza (Zod) y el filtro
+        // necesita siempre un rango completo.
+        if ( !action.payload ) return state;
+
+        const fechaHasta = ( !state.filtrosBusqueda.fechaHasta || action.payload > state.filtrosBusqueda.fechaHasta )
+            ? action.payload
+            : state.filtrosBusqueda.fechaHasta;
+
         return {
             ...state,
-            filtrosBusqueda : { ...state.filtrosBusqueda, fechaDesde : action.payload},
-            paginacion: { ...state.paginacion, pagina: 1 }
-        }      
-        
-    case "SET_FILTRO_BUSQUEDA_FECHAH" : 
-        return {
-            ...state,
-            filtrosBusqueda : { ...state.filtrosBusqueda, fechaHasta : action.payload},
+            filtrosBusqueda : { ...state.filtrosBusqueda, fechaDesde : action.payload, fechaHasta },
             paginacion: { ...state.paginacion, pagina: 1 }
         }
+    }
+        
+    case "SET_FILTRO_BUSQUEDA_FECHAH" : {
+        if ( !action.payload ) return state;
+
+        const fechaDesde = ( !state.filtrosBusqueda.fechaDesde || action.payload < state.filtrosBusqueda.fechaDesde )
+            ? action.payload
+            : state.filtrosBusqueda.fechaDesde;
+
+        return {
+            ...state,
+            filtrosBusqueda : { ...state.filtrosBusqueda, fechaHasta : action.payload, fechaDesde },
+            paginacion: { ...state.paginacion, pagina: 1 }
+        }
+    }
         
     case "SET_FILTRO_PAGINACION" :
         return {

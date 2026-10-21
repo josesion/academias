@@ -115,6 +115,8 @@
 
     color: var(--texto-deshabilitado);
 
+    /* Decoración pura (criterio "Fase C" de spec 033): el inset claro no aporta
+       información, sólo profundidad visual. Se conserva el literal a propósito. */
     box-shadow:
         inset 0 0 20px rgba(255, 255, 255, 0.015);
 

@@ -10,6 +10,12 @@ type PaginacionProps = {
   paginaActual: number;
   contadorPagina: number;
   onPaginaCambiada: (pagina: number) => void;
+  /**
+   * Etiqueta accesible del landmark <nav> que envuelve la paginación.
+   * Debe describir la pantalla donde se usa (ej. "Paginación del listado de cajas").
+   * Si no se pasa (o viene vacía) se usa el valor por defecto "Paginación".
+   */
+  ariaLabel?: string;
 };
 
 type PageItem = number | "...";
@@ -18,6 +24,7 @@ export const Paginacion = ({
   paginaActual,
   contadorPagina,
   onPaginaCambiada,
+  ariaLabel,
 }: PaginacionProps) => {
   // Función para manejar los clics. Simplemente llama a la función pasada por prop.
   const handleClick = (numeroPagina: number) => {
@@ -64,7 +71,7 @@ export const Paginacion = ({
     <nav
       className="paginacion_contenedor"
       role="navigation"
-      aria-label="Paginación del listado de inscripciones"
+      aria-label={ariaLabel?.trim() || "Paginación"}
     >
       <div className="paginacion_componente">
         <div className="paginacion_izquierda">

@@ -57,12 +57,37 @@ interface HistorialCaja {
     monto_sistema: number;
     monto_real: number;
     monto_faltante: number;
+    /** Nombre y apellido del usuario que abrió la caja (fallback: correo o "Sin usuario"). */
+    usuario_apertura: string;
+    /** Nombre y apellido del usuario que cerró la caja (fallback: correo o "Sin usuario"). */
+    usuario_cierre: string;
 };
 
 interface DataResultMetodosPagos {
     id_cuenta : number,
     metodo : string,
+    /**
+     * Saldo por cuenta (ingresos − egresos, **incluye** el "Saldo Inicial").
+     *
+     * En el listado (`GET /api/list_estado_caja`) es la Σ de los saldos
+     * finales de las cajas que pasan los filtros; en el libro diario
+     * (`GET /api/detalle_caja_resumen`) es el saldo de esa caja
+     * (spec 042 · Ampliación 3 · A4).
+     */
     total : number,
+    /**
+     * Dinero que **circuló** por la cuenta (ingresos − egresos, **excluye** el
+     * "Saldo Inicial"). Campo **nuevo** (spec 042 · Ampliación 3 · A4).
+     *
+     * Es **opcional** porque el endpoint del libro diario no lo manda y el
+     * mismo tipo se usa en los dos.
+     */
+    flujo? : number,
+    /**
+     * Color asignado por índice en `ListadoCajasBase.ts` (no lo manda la API):
+     * lo usa el gráfico para que un método conserve el mismo color.
+     */
+    color? : string,
 };
 
 export interface CajasServicioResponse {
@@ -165,9 +190,41 @@ interface MovimientoLibroDiario {
 };
 
 
+/**
+ * Ítem del arqueo de una cuenta (método de pago), tal como se persistió en
+ * `cajas.arqueo_detalle` al cerrar la caja.
+ *
+ * - `sistema`: lo que el sistema decía que había en esa cuenta.
+ * - `real`: el conteo real que escribió el cajero.
+ */
+export interface ArqueoDetalleItem {
+    id_cuenta : number;
+    nombre_cuenta : string;
+    sistema : number;
+    real : number;
+}
+
+/**
+ * Resumen del arqueo de una caja: el desglose por cuenta (`detalle`), los
+ * totales de la caja y **quién abrió y quién cerró** la caja (spec 042 ·
+ * Ampliación 2 · A3).
+ */
+export interface ArqueoCajaResumen {
+    detalle : ArqueoDetalleItem[];
+    diferencia_total : number;
+    monto_sistema : number;
+    monto_final_real : number;
+    /** Nombre y apellido del usuario que abrió la caja (fallback: correo o "Sin usuario"). */
+    usuario_apertura : string;
+    /** Nombre y apellido del usuario que cerró la caja (fallback: correo o "Sin usuario"). */
+    usuario_cierre : string;
+}
+
+
 export interface CajasResumenResponse {
     dataDetalle: MovimientoLibroDiario[] | null;
     dataMetodo: DataResultMetodosPagos[] | null;
+    dataArqueo: ArqueoCajaResumen | null;
 };
 
 
