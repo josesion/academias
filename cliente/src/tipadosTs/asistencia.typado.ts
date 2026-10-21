@@ -134,3 +134,34 @@ export interface PlantillaAsistencia {
   fecha_creacion: string;
   alumnos: number[];
 }
+
+/** Opción del selector de clases de la asistencia rápida (spec 043). */
+export interface ClaseOpcion {
+  id: number;
+  nombre: string;
+}
+
+/** Opción del selector de plantillas de la asistencia rápida (spec 043). */
+export interface PlantillaOpcion {
+  id: number;
+  nombre: string;
+  etiqueta: string;
+}
+
+/** Acción en curso en el modal de asistencia rápida (spec 043). */
+export type AccionAsistenciaRapida =
+  | "consulta"
+  | "registro"
+  | "plantilla"
+  | "agregarAlumno"
+  | "quitarAlumno"
+  | "registroGrupo"
+  | null;
+
+/** Situación de un alumno frente a su inscripción (spec 043). */
+export type SituacionAlumno =
+  | "vigente"
+  | "por_vencer"
+  | "vencido"
+  | "sin_clases"
+  | "inactivo";

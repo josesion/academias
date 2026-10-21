@@ -6,6 +6,7 @@ import { tryCatch } from "../utils/tryCatch";
 import { enviarResponseError } from "../utils/responseError";
 import { enviarResponse } from "../utils/response";
 import { method as asistenciaServicio } from "../Servicio/asistencia.servicio";
+import { handleControladores } from "../utils/handleControladores";
 // ──────────────────────────────────────────────────────────────
 // Sección de Typado
 // ──────────────────────────────────────────────────────────────
@@ -13,6 +14,8 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
          MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO
  } from "../respuestas/asistencia";
+import { AsistenciaManualInputs, InfoAlumnoInputs } from "../squemas/asistencias";
+import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
 /**
@@ -78,45 +81,20 @@ const altaAsistencia = async( req : Request , res: Response)=> {
  */
 const altaAsistenciaManual = async( req : Request , res: Response)=> {
 
-    const data = {
-        id_escuela : Number( req.usuario?.id_escuela),
-        dni_alumno : Number( req.body.dni_alumno),
-        id_inscripcion : Number( req.body.id_inscripcion),
-        estado  : req.body.estado as string,
-    };
-
     // El schema de la asistencia manual pide TODOS los campos (a diferencia
     // del kiosko, que sólo necesita el id del horario). Si se manda un
     // objeto incompleto, Zod responde "Error de validación de datos".
-    const dataAsistencia = {
-        id_escuela : data.id_escuela,
-        id_horario_clase : Number(req.body.id_horario_clase),
-        id_inscripcion : data.id_inscripcion,
-        dni_alumno : data.dni_alumno,
-        estado : data.estado,
+    const data : AsistenciaManualInputs = {
+        id_escuela : Number( req.usuario?.id_escuela),
+        id_horario_clase : Number( req.body.id_horario_clase),
+        id_inscripcion : Number( req.body.id_inscripcion),
+        dni_alumno : Number( req.body.dni_alumno),
+        estado : req.body.estado as "activos" | "inactivos" | "suspendido",
     };
 
-    const respuestaAsistencia = await asistenciaServicio.asistenciaManual(data, dataAsistencia);
-
-    const config = MAPA_ALTA_ASISTENCIA[ respuestaAsistencia.code]  || ERROR_INTERNO_SERVIDOR;
-
-    if (config.status === CodigoEstadoHTTP.OK){
-        return enviarResponse(
-            res,
-            config.status,
-            respuestaAsistencia.message || config.msg,
-            respuestaAsistencia.data,
-            undefined,
-            respuestaAsistencia.code
-        );
-    }else{
-        return enviarResponseError(
-            res,
-            config.status,
-            respuestaAsistencia.message || config.msg,
-            respuestaAsistencia.code
-        );
-    };
+    await handleControladores<AsistenciaManualInputs, { idAsistencia : number, clasesRestantes : number }>(
+        res, data, asistenciaServicio.asistenciaManual, MAPA_ALTA_ASISTENCIA
+    );
 };
 
 /**
@@ -218,17 +196,13 @@ const dataAsistencia = async( req : Request, res : Response) =>{
  * @returns {Promise<void>} Envia la respuesta con la informacion del alumno o el error correspondiente.
  */
 const infoAlumno = async( req : Request, res : Response) =>{
-    const data = {
+    const data : InfoAlumnoInputs = {
         id_escuela : Number(req.usuario?.id_escuela),
         dni_alumno : Number(req.params.dni),
     };
-    const result = await asistenciaServicio.infoAlumno(data);
-    const config = MAPA_INFO_ALUMNO[ result.code ] || ERROR_INTERNO_SERVIDOR;
-    if (config.status === CodigoEstadoHTTP.OK){
-        return enviarResponse(res, config.status, result.message || config.msg, result.data, undefined, result.code);
-    }else{
-        return enviarResponseError(res, config.status, result.message || config.msg, result.code);
-    }
+    await handleControladores<InfoAlumnoInputs, InfoAlumnoResult>(
+        res, data, asistenciaServicio.infoAlumno, MAPA_INFO_ALUMNO
+    );
 };
 
 export const method = {

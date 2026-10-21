@@ -373,10 +373,8 @@ const infoAlumnoServicio = async ( data : InfoAlumnoInputs )
  * - Sí bloquea la **doble asistencia**: si el alumno ya marcó esta clase hoy,
  *   no se vuelve a registrar.
  *
- * @param {VerificarInscripcionInput} verificacion - Datos para validar la
- *   inscripción activa del alumno.
  * @param {AsistenciaManualInputs} asistencia - Datos de la asistencia a
- *   registrar (incluye el horario, el estado y el día).
+ *   registrar (alumno, inscripción, escuela, estado y el horario de clase).
  *
  * @returns {Promise<TipadoData<{ idAsistencia: number, clasesRestantes: number }>>}
  *   Resultado tipado de la operación.
@@ -386,11 +384,19 @@ const infoAlumnoServicio = async ( data : InfoAlumnoInputs )
  * @returns.code CLASE_NO_PERMITIDA - La clase no es la de ahora ni la próxima.
  * @returns.code ALUMNO_EN_CLASE - El alumno ya marcó esta clase hoy.
  */
-const altaAsistenciaManual = async( verificacion : VerificarInscripcionInput , asistencia : AsistenciaManualInputs )
+const altaAsistenciaManual = async( asistencia : AsistenciaManualInputs )
 : Promise<TipadoData<{idAsistencia : number, clasesRestantes : number}>> => {
 
-    const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse(verificacion);
+    // Un solo objeto de entrada: es lo que espera `handleControladores`
+    // (el servicio se invoca con `servicio(parametros)`).
     const dataAsistencia : AsistenciaManualInputs = AsistenciaManualSchema.parse(asistencia);
+
+    const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse({
+        id_inscripcion : dataAsistencia.id_inscripcion,
+        dni_alumno : dataAsistencia.dni_alumno,
+        id_escuela : dataAsistencia.id_escuela,
+        estado : dataAsistencia.estado,
+    });
 
     const verificarInsc = await asistenciaData.verificarInscripcion( dataVerificacionInsc );
 
@@ -398,7 +404,7 @@ const altaAsistenciaManual = async( verificacion : VerificarInscripcionInput , a
         case 'INSCRIPCION_NO_EXISTE' : {
             return {
                 error: true,
-                message : `El alumno :${verificacion.dni_alumno} no tiene plan activo`,
+                message : `El alumno :${dataAsistencia.dni_alumno} no tiene plan activo`,
                 code : "INSCRIPCION_NO_EXISTE"
             };
         };
@@ -448,7 +454,7 @@ const altaAsistenciaManual = async( verificacion : VerificarInscripcionInput , a
             if (asistenciaResultado.code === "TRANSACCION_OK"){
                 return {
                     error : false,
-                    message : `Asistencia correcta del alumno :${verificacion.dni_alumno} `,
+                    message : `Asistencia correcta del alumno :${dataAsistencia.dni_alumno} `,
                     data : asistenciaResultado.data,
                     code  : "ASISTENCIA_OK"
                 };
