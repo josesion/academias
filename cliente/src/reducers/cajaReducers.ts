@@ -384,17 +384,44 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 }
             };
 
-        case 'INICIALIZAR_METODO_PAGO':
+        case 'INICIALIZAR_METODO_PAGO': {
+            /**
+             * Inicializa el arqueo por cuenta conservando el **conteo real** que
+             * ya escribió el cajero.
+             *
+             * Antes este caso **recreaba** `metricasCuentasCierre` con
+             * `monto_real: ""` en cada refresco de las métricas por cuenta, lo
+             * que **borraba** los montos tipeados. El refresco ocurre al
+             * registrar un movimiento (`DISPARAR_REFRESCO`) y al **recuperar el
+             * foco de la ventana** (`ACTUALIZAR_CAJA_GENERICO`), así que un
+             * simple *alt-tab* dejaba el arqueo sin conteo y la caja se cerraba
+             * con `real = 0` (un faltante falso por el saldo completo, que
+             * además **no** disparaba ningún aviso).
+             *
+             * Un conteo físico no cambia porque la página se refresque: aquí
+             * sólo se actualiza `monto_sistema` (el sistema puede haber
+             * cambiado). Las cuentas **nuevas** entran con `monto_real: ""`
+             * ("sin conteo") ⇒ hay que contarlas.
+             */
+            const previas = state.metricasCuentasCierre || [];
+
             return {
                 ...state,
-                metricasCuentasCierre: action.payload.map(cuenta => ({
-                    id_cuenta: cuenta.id_cuenta,
-                    nombre_cuenta: cuenta.nombre_cuenta,
-                    tipo_cuenta: cuenta.tipo_cuenta,
-                    monto_sistema: Number(cuenta.saldo_final_cuenta),
-                    monto_real: "", 
-                }))
+                metricasCuentasCierre: action.payload.map(cuenta => {
+                    const previa = previas.find(
+                        (p) => String(p.id_cuenta) === String(cuenta.id_cuenta)
+                    );
+
+                    return {
+                        id_cuenta: cuenta.id_cuenta,
+                        nombre_cuenta: cuenta.nombre_cuenta,
+                        tipo_cuenta: cuenta.tipo_cuenta,
+                        monto_sistema: Number(cuenta.saldo_final_cuenta),
+                        monto_real: previa ? previa.monto_real : "",
+                    };
+                })
             };
+        }
 
         case 'FORMATEAR_MOV_EXTRAORDINARIOS':
             return {
@@ -426,7 +453,12 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
                 ...state,
                 metricasCuentasCierre : (state.metricasCuentasCierre || []).map((det) =>({
                     ...det,
-                    monto_real : 0
+                    /**
+                     * Vacío = "sin conteo" (≠ "contó 0"). Con `0`, el valor
+                     * residual se arrastraría a la caja siguiente (el conteo se
+                     * conserva entre refrescos de métricas).
+                     */
+                    monto_real : ""
                 }))
             };  
             

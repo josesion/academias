@@ -147,8 +147,13 @@ const handleAbrirCaja = async () => {
  * real del cajero) —ver el bloque de `dataDetalleCuentas`— para que
  * `Σ(real − sistema)` coincida con `diferencia_total` (spec 042, **CA-13**).
  *
- * No modifica la UI del arqueo ni el cálculo de `monto_final_real` /
- * `diferencia_total`.
+ * Los tres totales (`monto_final_real`, `monto_sistema`, `diferencia_total`)
+ * se calculan **desde las mismas filas** que se persisten, para que la
+ * identidad `Σ(real − sistema) = diferencia_total` se cumpla **por
+ * construcción** y no dependa de que dos queries distintas hayan respondido en
+ * el mismo instante (spec 045, **CA-1**).
+ *
+ * No modifica la UI del arqueo.
  */
 const handleCerrarCaja = async () => {
 
@@ -199,14 +204,33 @@ const handleCerrarCaja = async () => {
     return;
   }
 
+  /**
+   * Totales del cierre calculados desde las **mismas filas** que se persisten.
+   *
+   * Antes `monto_sistema` y `diferencia_total` venían de
+   * `state.panelPrincipal[0].balance_neto`, que es **otra query** (`metricasPrincipal`)
+   * tomada en **otro momento** que las métricas por cuenta (`listaMetricasCaja`).
+   * Si esos dos snapshots no coincidían (p. ej. se registró un movimiento y se
+   * cerró la caja antes de que terminaran de volver los refetchs), entonces
+   * `Σ(real − sistema)` no era igual a `diferencia_total` y el modal del libro
+   * diario avisaba que "el desglose guardado no coincide con la diferencia
+   * total de la caja" en una caja recién cerrada.
+   *
+   * Calculando los tres totales desde `dataDetalleCuentas`, la identidad
+   * `Σ(real − sistema) = diferencia_total` se cumple **por construcción**
+   * (spec 045, **CA-1**).
+   */
+  const sumaReal = dataDetalleCuentas.reduce((acc, r) => acc + (Number(r.real) || 0), 0);
+  const sumaSistema = dataDetalleCuentas.reduce((acc, r) => acc + (Number(r.sistema) || 0), 0);
+
   if (state.panelPrincipal && state.dataCaja.id_caja) {
 
     dataCierreCaja = {
       id_caja: state.dataCaja.id_caja,
 
-      monto_final_real: Number(state.montoRealFinal),
-      monto_sistema: state.panelPrincipal[0].balance_neto ?? 0,
-      diferencia_total: Number(state.montoRealFinal) - state.panelPrincipal[0].balance_neto,
+      monto_final_real: sumaReal,
+      monto_sistema: sumaSistema,
+      diferencia_total: sumaReal - sumaSistema,
       arqueo_detalle: dataDetalleCuentas,
       observaciones_cierre: state.observaciones
     };
@@ -239,6 +263,15 @@ const handleCerrarCaja = async () => {
       dispatch({ type: "ABRIR_MODAL_ANIMACION" });
       dispatch({ type: "SET_CAJA_ACTIVA", payload: { id_caja: null, estado: "cerrada" } });
       dispatch({ type: "CERRAR_MODALES" });
+
+      /**
+       * El conteo del cajero se limpia **de inmediato** (no dentro del
+       * `setTimeout` de 2 s) para que nunca llegue a la caja siguiente: el
+       * `monto_real` se conserva entre refrescos de métricas, así que dejarlo
+       * puesto "arrastraba" el conteo de la caja recién cerrada (spec 045,
+       * **CA-6**).
+       */
+      dispatch({ type: "RESET_MONTO_CUENTAS_CIERRE", payload: state.metricasCuentasCierre });
 
       peticionComunicacion({
         nombreCanal: "canal_actualizar_metricas_cierre",
