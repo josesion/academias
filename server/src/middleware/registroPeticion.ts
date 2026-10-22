@@ -39,6 +39,13 @@ export const obtenerRuta = (req: Request): string => {
  */
 export const registroPeticion = (req: Request, res: Response, next: NextFunction): void => {
 
+    // Keep-Alive de Render (/api/health): no se registra en logs_eventos para no
+    // generar ruido (un ping cada 10 min) y mantener el endpoint ligero.
+    if (req.path === "/api/health") {
+        next();
+        return;
+    }
+
     const inicio = Date.now();
 
     res.on("finish", () => {

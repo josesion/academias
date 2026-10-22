@@ -115,6 +115,13 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Keep-Alive para Render (cron externo cron-job.org): público, sin auth, sin BD.
+// Se registra ANTES del middleware de logging para no generar fila en logs_eventos
+// en cada ping (cada 10 min) y mantener el endpoint realmente ligero.
+app.get("/api/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 // Registra TODA petición en `logs_eventos` (sale de acá solo el método, la ruta,
 // el estado y la duración; nunca headers, cookies ni body)
 app.use(registroPeticion);
