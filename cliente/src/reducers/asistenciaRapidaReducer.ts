@@ -24,6 +24,10 @@ export interface AsistenciaRapidaTipado {
   dni: string;
   /** Info del alumno consultado (null si no hay). */
   infoAlumno: TipadoAsistencia.InfoAlumno | null;
+  /** Resultados de la búsqueda de alumnos (spec 046). */
+  resultadosBusqueda: TipadoAsistencia.InfoAlumno[];
+  /** Flag de carga de la búsqueda (spec 046). */
+  buscando: boolean;
 
   // --- clases ---
   /** Clases disponibles (la que está en curso y la próxima). */
@@ -80,6 +84,8 @@ export const initialStateAsistenciaRapida = (): AsistenciaRapidaTipado => ({
 
   dni: "",
   infoAlumno: null,
+  resultadosBusqueda: [],
+  buscando: false,
 
   opcionesClase: [],
   idHorario: null,
@@ -115,6 +121,8 @@ export type AsistenciaRapidaAction =
   | { type: "SET_MODO"; payload: "alumno" | "plantilla" }
   | { type: "SET_DNI"; payload: string }
   | { type: "SET_INFO_ALUMNO"; payload: TipadoAsistencia.InfoAlumno | null }
+  | { type: "SET_RESULTADOS_BUSQUEDA"; payload: TipadoAsistencia.InfoAlumno[] }
+  | { type: "SET_BUSCANDO"; payload: boolean }
   | { type: "SET_CLASES"; payload: TipadoAsistencia.ClaseOpcion[] }
   | { type: "SET_ID_HORARIO"; payload: number | null }
   | { type: "SET_PLANTILLAS"; payload: TipadoAsistencia.PlantillaAsistencia[] }
@@ -146,16 +154,30 @@ export const asistenciaRapidaReducer = (
 ): AsistenciaRapidaTipado => {
   switch (action.type) {
     case "SET_TAB":
-      return { ...state, tab: action.payload, error: null, aviso: null };
+      return {
+        ...state, tab: action.payload, error: null, aviso: null,
+        dni: "", infoAlumno: null, resultadosBusqueda: [], buscando: false,
+        dniNuevo: "", dniAgregar: "",
+      };
 
     case "SET_MODO":
-      return { ...state, modo: action.payload, error: null, aviso: null };
+      return {
+        ...state, modo: action.payload, error: null, aviso: null,
+        dni: "", infoAlumno: null, resultadosBusqueda: [], buscando: false,
+        dniNuevo: "", dniAgregar: "",
+      };
 
     case "SET_DNI":
       return { ...state, dni: action.payload };
 
     case "SET_INFO_ALUMNO":
       return { ...state, infoAlumno: action.payload };
+
+    case "SET_RESULTADOS_BUSQUEDA":
+      return { ...state, resultadosBusqueda: action.payload };
+
+    case "SET_BUSCANDO":
+      return { ...state, buscando: action.payload };
 
     case "SET_CLASES":
       return { ...state, opcionesClase: action.payload };

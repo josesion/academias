@@ -14,7 +14,7 @@ import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
          MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO
  } from "../respuestas/asistencia";
-import { AsistenciaManualInputs, InfoAlumnoInputs } from "../squemas/asistencias";
+import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
@@ -205,10 +205,32 @@ const infoAlumno = async( req : Request, res : Response) =>{
     );
 };
 
+/**
+ * Busca alumnos por nombre, apellido o DNI para autocompletado
+ * (spec 046). Devuelve hasta 10 alumnos con inscripción activa
+ * de la escuela del token.
+ * @async
+ * @function buscarAlumno
+ * @param {Request} req - Debe contener req.usuario.id_escuela (token) y
+ *   req.query.termino (string 1-50).
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Envía la lista de alumnos encontrados o el error.
+ */
+const buscarAlumno = async( req : Request, res : Response) => {
+    const data : BuscarAlumnoInputs = {
+        id_escuela : Number(req.usuario?.id_escuela),
+        termino : String(req.query.termino ?? ""),
+    };
+    await handleControladores<BuscarAlumnoInputs, InfoAlumnoResult[]>(
+        res, data, asistenciaServicio.buscarAlumno, MAPA_INFO_ALUMNO
+    );
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
     asistenciaManual : tryCatch( altaAsistenciaManual ),
     fechasHorarios : tryCatch( fechasHorarios),
     dataAsistencia : tryCatch( dataAsistencia ),
     infoAlumno : tryCatch( infoAlumno ),
+    buscarAlumno : tryCatch( buscarAlumno ),
 } 

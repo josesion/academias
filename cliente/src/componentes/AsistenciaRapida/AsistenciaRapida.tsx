@@ -14,6 +14,7 @@ import "./AsistenciaRapida.css";
 interface Props {
   abierto: boolean;
   onCerrar: () => void;
+  onAsistenciaRegistrada?: () => void;
 }
 
 /**
@@ -23,14 +24,16 @@ interface Props {
  * `asistenciaRapidaReducer` y toda la lógica en `useAsistenciaRapidaLogica`
  * (hook `asistenciaRapida`).
  */
-export const AsistenciaRapida = ({ abierto, onCerrar }: Props) => {
+export const AsistenciaRapida = ({ abierto, onCerrar, onAsistenciaRegistrada }: Props) => {
   const { refDialog } = useModalAccesible({ abierto, onCerrar });
 
   const {
     state,
     dispatch,
     situacionDe,
-    handleDniChange,
+    handleBusquedaChange,
+    handleBusquedaNueva,
+    handleBusquedaAgregar,
     handleRegistrar,
     handleElegirPlantilla,
     handleToggleAlumno,
@@ -41,7 +44,7 @@ export const AsistenciaRapida = ({ abierto, onCerrar }: Props) => {
     handleAgregarAlumno,
     handleQuitarAlumno,
     handleBorrarPlantilla,
-  } = useAsistenciaRapidaSet(abierto);
+  } = useAsistenciaRapidaSet(abierto, onAsistenciaRegistrada);
 
   const dniRef = useRef<HTMLInputElement>(null);
 
@@ -165,15 +168,41 @@ export const AsistenciaRapida = ({ abierto, onCerrar }: Props) => {
                 <div className="asistencia-rapida-fila">
                   <div className="asistencia_rapida_campo_crece">
                     <Inputs
-                      label="DNI del alumno"
+                      label="Buscar alumno"
                       name="dni"
-                      type="number"
-                      placeholder="Ej: 30023547"
+                      type="text"
+                      placeholder="Nombre, apellido o DNI"
                       value={state.dni}
-                      onChange={(e) => handleDniChange(e.target.value)}
+                      onChange={(e) => handleBusquedaChange(e.target.value)}
                       ref={dniRef}
                       readonly={false}
                     />
+                    {state.buscando && (
+                      <p className="asistencia_rapida_buscando">Buscando...</p>
+                    )}
+                    {state.resultadosBusqueda.length > 0 && (
+                      <ul className="asistencia_rapida_resultados">
+                        {state.resultadosBusqueda.map((r) => (
+                          <li key={r.id_inscripcion}>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                dispatch({ type: "SET_INFO_ALUMNO", payload: r });
+                                dispatch({ type: "SET_DNI", payload: r.nombre_completo });
+                                dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+                              }}
+                            >
+                              {r.nombre_completo} · DNI {r.dni_alumno}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {state.dni.trim().length >= 2 &&
+                      !state.buscando &&
+                      state.resultadosBusqueda.length === 0 && (
+                        <p className="asistencia_rapida_sin_resultados">Sin resultados</p>
+                      )}
                   </div>
                 </div>
 
@@ -413,17 +442,46 @@ export const AsistenciaRapida = ({ abierto, onCerrar }: Props) => {
                   readonly={false}
                 />
                 <Inputs
-                  label="DNI del alumno"
+                  label="Buscar alumno"
                   name="dniNuevo"
-                  type="number"
-                  placeholder="Ej: 30023547"
+                  type="text"
+                  placeholder="Nombre, apellido o DNI"
                   value={state.dniNuevo}
-                  onChange={(e) =>
-                    dispatch({ type: "SET_DNI_NUEVO", payload: e.target.value })
-                  }
+                  onChange={(e) => handleBusquedaNueva(e.target.value)}
                   readonly={false}
                 />
               </div>
+              {state.buscando && (
+                <p className="asistencia_rapida_buscando">Buscando...</p>
+              )}
+              {state.resultadosBusqueda.length > 0 && (
+                <ul className="asistencia_rapida_resultados">
+                  {state.resultadosBusqueda.map((r) => (
+                    <li key={r.id_inscripcion}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!state.alumnosPendientes.includes(r.dni_alumno)) {
+                            dispatch({
+                              type: "SET_ALUMNOS_PENDIENTES",
+                              payload: [...state.alumnosPendientes, r.dni_alumno],
+                            });
+                          }
+                          dispatch({ type: "SET_DNI_NUEVO", payload: "" });
+                          dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+                        }}
+                      >
+                        {r.nombre_completo} · DNI {r.dni_alumno}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {state.dniNuevo.trim().length >= 2 &&
+                !state.buscando &&
+                state.resultadosBusqueda.length === 0 && (
+                  <p className="asistencia_rapida_sin_resultados">Sin resultados</p>
+                )}
 
               <div className="asistencia-rapida-acciones">
                 <Boton
@@ -571,37 +629,62 @@ export const AsistenciaRapida = ({ abierto, onCerrar }: Props) => {
                     {/* Agregar alumno a un grupo ya creado */}
                     {state.plantillaEditando === p.id_plantilla && (
                       <div className="asistencia_rapida_agregar_alumno">
-                        <Inputs
-                          label="DNI del alumno a agregar"
-                          name={`dniAgregar_${p.id_plantilla}`}
-                          type="number"
-                          placeholder="Ej: 30123456"
-                          value={state.dniAgregar}
-                          onChange={(e) =>
-                            dispatch({
-                              type: "SET_DNI_AGREGAR",
-                              payload: e.target.value,
-                            })
-                          }
-                          readonly={false}
-                        />
-                        <Boton
-                          clase="agregar"
-                          texto="Agregar al grupo"
-                          logo="Add"
-                          disable={state.accion === "agregarAlumno"}
-                          onClick={() => {
-                            const valor = Number(state.dniAgregar.trim());
-                            if (!Number.isFinite(valor) || valor <= 0) {
-                              dispatch({
-                                type: "SET_MENSAJE_PLANTILLAS",
-                                payload: "El DNI no es válido.",
-                              });
-                              return;
-                            }
-                            void handleAgregarAlumno(p.id_plantilla, valor);
-                          }}
-                        />
+                        <div className="asistencia-rapida-fila">
+                          <div className="asistencia_rapida_campo_crece">
+                            <Inputs
+                              label="Buscar alumno a agregar"
+                              name={`dniAgregar_${p.id_plantilla}`}
+                              type="text"
+                              placeholder="Nombre, apellido o DNI"
+                              value={state.dniAgregar}
+                              onChange={(e) => handleBusquedaAgregar(e.target.value)}
+                              readonly={false}
+                            />
+                          </div>
+                          <Boton
+                            clase="agregar"
+                            texto="Agregar al grupo"
+                            logo="Add"
+                            disable={state.accion === "agregarAlumno"}
+                            onClick={() => {
+                              const valor = Number(state.dniAgregar.trim());
+                              if (!Number.isFinite(valor) || valor <= 0) {
+                                dispatch({
+                                  type: "SET_MENSAJE_PLANTILLAS",
+                                  payload: "El DNI no es válido.",
+                                });
+                                return;
+                              }
+                              void handleAgregarAlumno(p.id_plantilla, valor);
+                            }}
+                          />
+                        </div>
+                        {state.buscando && (
+                          <p className="asistencia_rapida_buscando">Buscando...</p>
+                        )}
+                        {state.resultadosBusqueda.length > 0 && (
+                          <ul className="asistencia_rapida_resultados">
+                            {state.resultadosBusqueda.map((r) => (
+                              <li key={r.id_inscripcion}>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    void handleAgregarAlumno(p.id_plantilla, r.dni_alumno);
+                                    dispatch({ type: "SET_DNI_AGREGAR", payload: "" });
+                                    dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+                                  }}
+                                >
+                                  {r.nombre_completo} · DNI {r.dni_alumno}
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {state.dniAgregar.trim().length >= 2 &&
+                          !state.buscando &&
+                          state.resultadosBusqueda.length === 0 && (
+                            <p className="asistencia_rapida_sin_resultados">Sin resultados</p>
+                          )}
                       </div>
                     )}
                   </div>

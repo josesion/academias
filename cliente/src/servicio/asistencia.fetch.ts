@@ -254,3 +254,25 @@ export const quitarAlumnoPlantilla = async( id_plantilla : number, dni : number,
         signal
     });
 };
+
+/**
+ * Busca alumnos por nombre, apellido o DNI para autocompletado (spec 046).
+ */
+export const buscarAlumnoAsistencia = async( termino : string, signal?: AbortSignal )
+: Promise<ApiResponse<TipadoAsistencia.InfoAlumno[]>> => {
+    const verificarUser= await verificarAutenticacion();
+    if (verificarUser.autenticado === false) {
+        return {
+            error: true,
+            message: "Usuario no autenticado",
+            statusCode: 401,
+            code: "NOT_AUTHENTICATED",
+            errorsDetails: undefined
+        };
+    };
+    const ruta = `${PAGINA}api/buscar_alumno?termino=${encodeURIComponent(termino)}`;
+    return await apiFetch( ruta ,{
+        method: "GET",
+        signal
+    });
+};

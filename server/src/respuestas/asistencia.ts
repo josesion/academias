@@ -92,4 +92,8 @@ export const MAPA_INFO_ALUMNO : Record<string , { status : CodigoEstadoHTTP, msg
         status: CodigoEstadoHTTP.NO_ENCONTRADO,
         msg:  "El alumno no tiene plan activo."
     },
+    "BUSCAR_ALUMNO_OK": {
+        status: CodigoEstadoHTTP.OK,
+        msg:  "Búsqueda realizada."
+    },
 }; 

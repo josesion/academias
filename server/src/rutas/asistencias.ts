@@ -40,4 +40,11 @@ ruta.get(
     controladorAsistencias.infoAlumno
 );
 
+ruta.get(
+    "/api/buscar_alumno",
+    permisos.validarPermiso,
+    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    controladorAsistencias.buscarAlumno
+);
+
 export default ruta;

@@ -17,6 +17,7 @@ import {
          ClaseProximaSchema, ClasesProximaInputs,
          InfoAlumnoSchema, InfoAlumnoInputs,
          AsistenciaManualSchema, AsistenciaManualInputs,
+          BuscarAlumnoSchema, BuscarAlumnoInputs,
        } from "../squemas/asistencias"; 
 
 import { DataAlumnoVigenteInputs, DataAlumnoVigenteSchema, } from "../squemas/horarios_clases";       
@@ -471,10 +472,36 @@ const altaAsistenciaManual = async( asistencia : AsistenciaManualInputs )
     };
 };
 
+/**
+ * Servicio de búsqueda de alumnos por nombre, apellido o DNI.
+ */
+const buscarAlumnoServicio = async ( data : BuscarAlumnoInputs )
+: Promise<TipadoData<InfoAlumnoResult[]>> => {
+    const parsed : BuscarAlumnoInputs = BuscarAlumnoSchema.parse(data);
+    const result = await asistenciaData.buscarAlumno(parsed);
+    // El hook de listado devuelve INSCRIPCION_LISTED (con datos) o
+    // NO_ACTIVE_INSCRIPCION (sin datos). Ambos se consideran éxito para
+    // la búsqueda: un resultado vacío es válido (spec 046).
+    if ( result.code === "INSCRIPCION_LISTED" || result.code === "NO_ACTIVE_INSCRIPCION" ) {
+        return {
+            error: false,
+            message: "Búsqueda realizada",
+            data: result.data ?? [],
+            code: "BUSCAR_ALUMNO_OK",
+        };
+    }
+    return {
+        error: true,
+        message: result.message || "Error en la búsqueda",
+        code: result.code || "ERROR_SERVIDOR",
+    };
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
     asistenciaManual : tryCatchDatos( altaAsistenciaManual ),
     fechaAsistencia : tryCatchDatos( fechaAsistencia),
     dataAsistenciaServicio : tryCatchDatos( dataAsistenciaServicio ),
     infoAlumno : tryCatchDatos( infoAlumnoServicio ),
+    buscarAlumno : tryCatchDatos( buscarAlumnoServicio ),
 };

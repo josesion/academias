@@ -4,6 +4,7 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 //import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
 import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 import pool from "../bd";
 // ──────────────────────────────────────────────────────────────
@@ -569,6 +570,43 @@ const horarioEnCursoOProxima = async( data : HorarioManualInputs )
     });
 };
 
+/**
+ * Busca alumnos por nombre, apellido o DNI para autocompletado.
+ * Sólo inscripciones activas de la escuela del token. Máximo 10.
+ */
+const buscarAlumnoData = async ( data : { id_escuela : number, termino : string } )
+: Promise<TipadoData<InfoAlumnoResult[]>> => {
+    const { id_escuela, termino } = data;
+    const like = `%${termino}%`;
+    const sql : string = `SELECT
+                            i.id_inscripcion,
+                            CONCAT(a.nombre, ' ', a.apellido) AS nombre_completo,
+                            a.dni_alumno,
+                            DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
+                            i.estado,
+                            COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS plan,
+                            ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(asist.id_asistencia)) AS clases_restantes
+                        FROM inscripciones i
+                        JOIN alumnos a ON i.dni_alumno = a.dni_alumno
+                        JOIN planes_pago p ON i.id_plan = p.id_plan
+                        LEFT JOIN planes_en_escuela pe ON (i.id_plan = pe.id_plan AND i.id_escuela = pe.id_escuela)
+                        LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
+                        WHERE i.id_escuela = ? AND i.estado = 'activos'
+                        AND (
+                            a.nombre LIKE ? OR a.apellido LIKE ? OR CAST(a.dni_alumno AS CHAR) LIKE ? OR CONCAT(a.nombre, ' ', a.apellido) LIKE ?
+                        )
+                        GROUP BY i.id_inscripcion
+                        ORDER BY a.apellido ASC, a.nombre ASC
+                        LIMIT 10;`;
+    const valores : unknown[] = [ id_escuela, like, like, like, like ];
+    return await listarEntidadSinPaginacion<InfoAlumnoResult>({
+        slqListado: sql,
+        valores,
+        entidad: "inscripcion",
+        estado: "activos",
+    });
+};
+
 export const method = {
     infoAlumno : tryCatchDatos( infoAlumnoData ),
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
@@ -579,5 +617,6 @@ export const method = {
     vencerInscripciones : tryCatchDatos( vencerInscripciones),
     claseEnCurso : tryCatchDatos( clase_en_curso ),
     proximaClase : tryCatchDatos( clase_proxima_clase ),
+    buscarAlumno : tryCatchDatos( buscarAlumnoData ),
     
 };

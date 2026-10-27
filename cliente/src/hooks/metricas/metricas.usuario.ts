@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useContext } from "react";
+import { useEffect, useReducer, useContext, useCallback } from "react";
 
 import { initialStateMetricas, metricasReducer,type MetricaAction } from "../../reducers/metricasReducer";
 import { useEffectServicio } from "../../utils/useEfectServicio";
@@ -75,10 +75,10 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
             type: "SET_ERROR_CLASE",
             payload: mensaje,
         }),
-        useAbort : true
+        useAbort : true,
+        dependencias : [state.actualizar, state.actualizarGeneral]
         //YA SE VERAN LAS DEPENDECINAS
-    }); 
-
+    });
     // ---- listado de los alumnos q se encuentran tomando clases
     useEffectServicio<undefined, ResultAsistencia[], MetricaAction>({
         servicios : asistencia,
@@ -243,9 +243,14 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
     //Actualizacion por focus en la pantalla
     useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR_GENERICO"});
     
+    const refrescarAsistencia = useCallback(() => {
+        dispatch({ type: "SET_ACTUALIZAR_ASISTENCIA" });
+    }, [dispatch]);
+
     return{
         state,
-        rolTipo
+        rolTipo,
+        refrescarAsistencia
     };
 
 };

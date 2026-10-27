@@ -81,6 +81,7 @@
 .asistencia_rapida_campo_crece {
     flex: 1 1 220px;
     min-width: 0;
+    position: relative;
 }
 
 /* Campo con etiqueta visible (para los SelectorOpt) */
@@ -528,3 +529,8 @@
         text-align: center;
     }
 }
+
+.asistencia_rapida_resultados { list-style: none; margin: 4px 0 0 0; padding: 0; border: 1px solid var(--borde, #ccc); border-radius: 6px; max-height: 200px; overflow-y: auto; background: var(--fondo-superficie, #fff); width: 100%; }
+.asistencia_rapida_resultados li button { width: 100%; text-align: left; padding: 8px 10px; background: transparent; border: none; cursor: pointer; }
+.asistencia_rapida_resultados li button:hover { background: var(--fondo-hover, #f0f0f0); }
+.asistencia_rapida_buscando, .asistencia_rapida_sin_resultados { font-size: 0.85rem; color: var(--texto-secundario, #666); margin: 4px 0; }

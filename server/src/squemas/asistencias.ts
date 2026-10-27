@@ -80,3 +80,10 @@ export const InfoAlumnoSchema = z.object({
 });
 
 export type InfoAlumnoInputs = z.infer<typeof InfoAlumnoSchema>;
+
+export const BuscarAlumnoSchema = z.object({
+    id_escuela: z.coerce.number().int().positive(),
+    termino: z.string().trim().min(1).max(50),
+});
+
+export type BuscarAlumnoInputs = z.infer<typeof BuscarAlumnoSchema>;

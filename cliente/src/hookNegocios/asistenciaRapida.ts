@@ -4,6 +4,7 @@ import { useAsistenciaRapidaLogica } from "../hooks/asistenciaRapida";
 import {
   asistenciaHorarios,
   infoAlumno,
+  buscarAlumnoAsistencia,
   registroAsistenciaManual,
   listarPlantillas,
   crearPlantilla,
@@ -21,11 +22,15 @@ import {
  * @param {boolean} abierto - Si el modal está abierto.
  * @returns {object} Estado y handlers del modal.
  */
-export const useAsistenciaRapidaSet = (abierto: boolean) => {
+export const useAsistenciaRapidaSet = (
+  abierto: boolean,
+  onAsistenciaRegistrada?: () => void
+) => {
   const config = {
     servicios: {
       asistenciaHorarios,
       infoAlumno,
+      buscarAlumno: buscarAlumnoAsistencia,
       registroAsistenciaManual,
       listarPlantillas,
       crearPlantilla,
@@ -35,5 +40,5 @@ export const useAsistenciaRapidaSet = (abierto: boolean) => {
     },
   };
 
-  return useAsistenciaRapidaLogica(config, abierto);
+  return useAsistenciaRapidaLogica(config, abierto, onAsistenciaRegistrada);
 };

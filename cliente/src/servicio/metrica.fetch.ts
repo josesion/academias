@@ -65,7 +65,7 @@ export interface ResultAsistencia {
    nombre : string , apellido : string , estado :  "presente" | "Tardanza" | "Ausente";
 };
 
-export const metricasAsistencia = async ()
+export const metricasAsistencia = async (_data?: unknown, signal?: AbortSignal)
 :Promise<ApiResponse<ResultAsistencia>> =>{
 
     const verificarUser= await verificarAutenticacion();
@@ -80,8 +80,8 @@ export const metricasAsistencia = async ()
     };   
    
     const ruta  = `${PAGINA}api/metrica_asistencia`;  
-
-    return apiFetch( ruta , { method : "GET" } );
+    
+    return apiFetch( ruta , { method : "GET" , signal : signal } );
 };
 
 

@@ -6,6 +6,7 @@ import {
 } from "../reducers/asistenciaRapidaReducer";
 
 import type { ApiResponse } from "../utils/apiFetch";
+import { peticionComunicacion } from "../utils/canalComunicacion";
 import type * as TipadoAsistencia from "../tipadosTs/asistencia.typado";
 
 /**
@@ -23,6 +24,9 @@ export interface DataUseAsistenciaRapidaConfig {
     infoAlumno: (
       dni: number
     ) => Promise<ApiResponse<TipadoAsistencia.InfoAlumno>>;
+    buscarAlumno: (
+      termino: string
+    ) => Promise<ApiResponse<TipadoAsistencia.InfoAlumno[]>>;
     registroAsistenciaManual: (
       data: TipadoAsistencia.RegistroAsistencia
     ) => Promise<ApiResponse<TipadoAsistencia.ResultRegistroAsistencia>>;
@@ -103,7 +107,8 @@ export const aDni = (texto: string): number | null => {
  */
 export const useAsistenciaRapidaLogica = (
   config: DataUseAsistenciaRapidaConfig,
-  abierto: boolean
+  abierto: boolean,
+  onAsistenciaRegistrada?: () => void
 ) => {
   const [state, dispatch] = useReducer(
     asistenciaRapidaReducer,
@@ -112,7 +117,12 @@ export const useAsistenciaRapidaLogica = (
 
   /** Último DNI consultado: evita repetir la petición con el mismo valor. */
   const dniConsultadoRef = useRef<string>("");
-
+  /** Timer del debounce de la búsqueda (spec 046) — campo "alumno suelto". */
+  const busquedaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Timer del debounce — alta de plantilla. */
+  const busquedaNuevaTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Timer del debounce — agregar a plantilla existente. */
+  const busquedaAgregarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { servicios } = config;
 
   /* ------------------------------------------------------------------
@@ -246,6 +256,89 @@ export const useAsistenciaRapidaLogica = (
     [consultarAlumno]
   );
 
+  /**
+   * Busca alumnos por nombre, apellido o DNI (spec 046).
+   * @param {string} termino - Texto a buscar.
+   */
+  const buscarAlumnos = useCallback(
+    async (termino: string) => {
+      const limpio = termino.trim();
+      if (limpio.length < 2) {
+        dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+        return;
+      }
+      dispatch({ type: "SET_BUSCANDO", payload: true });
+      try {
+        const res = await servicios.buscarAlumno(limpio);
+        if (res.error || !res.data) {
+          dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+          return;
+        }
+        dispatch({
+          type: "SET_RESULTADOS_BUSQUEDA",
+          payload: res.data as TipadoAsistencia.InfoAlumno[],
+        });
+      } finally {
+        dispatch({ type: "SET_BUSCANDO", payload: false });
+      }
+    },
+    [servicios]
+  );
+
+  /**
+   * Cambia el texto de búsqueda con debounce de 300ms (spec 046).
+   * @param {string} valor - Nuevo valor del campo.
+   */
+  const handleBusquedaChange = useCallback(
+    (valor: string) => {
+      dispatch({ type: "SET_DNI", payload: valor });
+      dispatch({ type: "SET_INFO_ALUMNO", payload: null });
+      // Limpio el dropdown anterior para que no quede "pegado" al pasar
+      // de un buscador al otro (spec 046).
+      dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+      dispatch({ type: "SET_BUSCANDO", payload: false });
+      if (busquedaTimerRef.current) clearTimeout(busquedaTimerRef.current);
+      busquedaTimerRef.current = setTimeout(() => {
+        void buscarAlumnos(valor);
+      }, 300);
+    },
+    [buscarAlumnos]
+  );
+
+  /**
+   * Cambia el texto de búsqueda en el alta de plantilla (spec 046).
+   * @param {string} valor - Nuevo valor del campo.
+   */
+  const handleBusquedaNueva = useCallback(
+    (valor: string) => {
+      dispatch({ type: "SET_DNI_NUEVO", payload: valor });
+      dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+      dispatch({ type: "SET_BUSCANDO", payload: false });
+      if (busquedaNuevaTimerRef.current) clearTimeout(busquedaNuevaTimerRef.current);
+      busquedaNuevaTimerRef.current = setTimeout(() => {
+        void buscarAlumnos(valor);
+      }, 300);
+    },
+    [buscarAlumnos]
+  );
+
+  /**
+   * Cambia el texto de búsqueda al agregar a una plantilla existente (spec 046).
+   * @param {string} valor - Nuevo valor del campo.
+   */
+  const handleBusquedaAgregar = useCallback(
+    (valor: string) => {
+      dispatch({ type: "SET_DNI_AGREGAR", payload: valor });
+      dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
+      dispatch({ type: "SET_BUSCANDO", payload: false });
+      if (busquedaAgregarTimerRef.current) clearTimeout(busquedaAgregarTimerRef.current);
+      busquedaAgregarTimerRef.current = setTimeout(() => {
+        void buscarAlumnos(valor);
+      }, 300);
+    },
+    [buscarAlumnos]
+  );
+
   /** Registra la asistencia de un alumno suelto. */
   const handleRegistrar = useCallback(async () => {
     dispatch({ type: "SET_ERROR", payload: null });
@@ -303,10 +396,17 @@ export const useAsistenciaRapidaLogica = (
       dispatch({ type: "SET_DNI", payload: "" });
       dispatch({ type: "SET_INFO_ALUMNO", payload: null });
       dniConsultadoRef.current = "";
+      peticionComunicacion({
+        nombreCanal: "canal_actualizar_metricas_asistencia",
+        mensaje: "ACTUALIZAR",
+        dispatchError: dispatch,
+        error: "SET_ERROR",
+      });
+      onAsistenciaRegistrada?.();
     } finally {
       dispatch({ type: "SET_ACCION", payload: null });
     }
-  }, [servicios, state.infoAlumno, state.idHorario]);
+  }, [servicios, state.infoAlumno, state.idHorario, onAsistenciaRegistrada]);
 
   /* ------------------------------------------------------------------
      Plantillas
@@ -426,10 +526,19 @@ export const useAsistenciaRapidaLogica = (
           payload: { texto: `Asistencia registrada a ${ok} alumnos.`, tipo: "ok" },
         });
       }
+      peticionComunicacion({
+        nombreCanal: "canal_actualizar_metricas_asistencia",
+        mensaje: "ACTUALIZAR",
+        dispatchError: dispatch,
+        error: "SET_ERROR",
+      });
+      if (ok > 0) {
+        onAsistenciaRegistrada?.();
+      }
     } finally {
       dispatch({ type: "SET_ACCION", payload: null });
     }
-  }, [servicios, state.plantillas, state.plantillaSeleccionada, state.idHorario, state.seleccionados]);
+  }, [servicios, state.plantillas, state.plantillaSeleccionada, state.idHorario, state.seleccionados, onAsistenciaRegistrada]);
 
   /** Agrega un DNI a la lista de alumnos pendientes de la plantilla nueva. */
   const handleSumarPendiente = useCallback(() => {
@@ -587,6 +696,10 @@ export const useAsistenciaRapidaLogica = (
     dispatch,
     situacionDe,
     handleDniChange,
+    handleBusquedaChange,
+    handleBusquedaNueva,
+    handleBusquedaAgregar,
+    buscarAlumnos,
     handleRegistrar,
     handleElegirPlantilla,
     handleToggleAlumno,

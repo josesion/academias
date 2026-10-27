@@ -30,7 +30,7 @@ export const UsuarioPage = () => {
     return () => observer.disconnect();
   }, []);
 
-  const { state, rolTipo } = metricasUsuarioSeting();
+  const { state, rolTipo, refrescarAsistencia } = metricasUsuarioSeting();
 
   // La tarjeta de vencimiento solo se pinta con carga (skeleton), con error
   // o con 7 días o menos para el vencimiento. El padding de reserva del
@@ -89,7 +89,7 @@ export const UsuarioPage = () => {
           aria-label="Abrir asistencia rápida manual"
         />
       </header>
-      <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} />
+      <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} onAsistenciaRegistrada={refrescarAsistencia} />
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
