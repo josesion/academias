@@ -113,7 +113,7 @@ const altaEscuela =async (  datos : PostEscuelasInputs)
     const {
         dni_propietario, nombre_propietario, apellido_propietario, 
         razon_social, direccion, celular, urlImagen,
-        fecha_registro, baja, public_id
+        fecha_registro, baja, public_id, rubro
     } = datos;
 
     const sql : string = `INSERT INTO escuelas (
@@ -126,14 +126,15 @@ const altaEscuela =async (  datos : PostEscuelasInputs)
                     urlImagen, 
                     public_id, 
                     fecha_registro, 
-                    baja
+                    baja,
+                    rubro
                 ) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
 
     const valores : unknown[] = [
         dni_propietario, nombre_propietario, apellido_propietario, 
         razon_social, direccion, celular, urlImagen, public_id,
-        fecha_registro, baja
+        fecha_registro, baja, rubro
     ];
 
     const retorno = { razon_social, nombre_propietario, apellido_propietario  }
@@ -173,6 +174,7 @@ const modificarEscuela = async (
         baja,
         public_id,
         imagenMod,
+        rubro,
     } = datos;
 
       
@@ -191,7 +193,8 @@ const modificarEscuela = async (
                                 celular = ?,
                                 urlImagen = ?,
                                 public_id = ?,
-                                baja = ?
+                                baja = ?,
+                                rubro = ?
                             WHERE id_escuela = ?;`;
 
              valores = [
@@ -205,6 +208,7 @@ const modificarEscuela = async (
                     public_id,
     
                     baja,
+                    rubro,
                     id_escuela,
             ];
     }else {
@@ -216,7 +220,8 @@ const modificarEscuela = async (
                    razon_social = ?,
                    direccion = ?,
                    celular = ?,
-                   baja = ?
+                   baja = ?,
+                   rubro = ?
                WHERE id_escuela = ?;`;
 
         valores = [
@@ -227,6 +232,7 @@ const modificarEscuela = async (
             direccion,
             celular,
             baja,
+            rubro,
             id_escuela,
         ];
     }
@@ -285,6 +291,8 @@ export interface EscuelaListadoRow {
     public_id: string | null;
     fecha_registro: string | null; // o Date dependiendo de cómo te lo devuelva el driver de MySQL
     baja: string;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro: string;
     total_registros: number;
 }
 
@@ -310,6 +318,7 @@ const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string)
                             public_id,
                             fecha_registro,
                             baja,   
+                            rubro,
                             COUNT(*) OVER() AS total_registros
                         FROM escuelas
                         WHERE baja = ?

@@ -15,6 +15,8 @@ interface LoginDataResult {
     tokenCadena : string,
     rol : "usuario" | "administrador" | "alumno",
     razon_social : string ;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro : string;
     tipo : string;
     estado_suscripcion : string
 };
@@ -83,6 +85,7 @@ const loginUsuario =  async ( data : LoginInputs)
                     usuario    :  loginResult.data.usuario,
                     rol        : loginResult.data.rol, 
                     razon_social : loginResult.data.razon_social,
+                    rubro : loginResult.data.rubro,
                     tipo : "basico",
                     estado_suscripcion : "Sin fecha",
                     tokenCadena : token 
@@ -146,6 +149,7 @@ const loginUsuario =  async ( data : LoginInputs)
                                     usuario    :  loginResult.data.usuario,
                                     rol        : loginResult.data.rol, 
                                     razon_social : usuarioLogin.data.razon_social,
+                                    rubro : usuarioLogin.data.rubro,
                                     tipo : usuarioLogin.data.tipo,
                                     estado_suscripcion : usuarioLogin.data.estado_suscripcion || "Sin fecha", 
                                     tokenCadena : token 

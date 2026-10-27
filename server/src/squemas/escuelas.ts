@@ -11,6 +11,14 @@ const EscuelaBaseSchema = z.object({
     urlImagen: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
     fecha_registro: z.string().optional(),
     baja: z.string().default("activos"),
+    /**
+     * Rubro de la escuela (spec 047). Define el tema visual y la rama de
+     * `tipo_clase` que siembra el trigger `despues_de_crear_escuela`.
+     *
+     * El default `baile` mantiene el comportamiento anterior para cualquier
+     * alta que no mande el campo (formularios viejos, scripts, seeds).
+     */
+    rubro: z.enum(["baile", "gym"]).default("baile"),
     public_id: z
         .string({
             error: "El ID público de la imagen debe ser un texto",

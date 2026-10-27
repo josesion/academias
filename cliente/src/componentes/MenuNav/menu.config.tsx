@@ -123,6 +123,9 @@ export const SECCIONES_USUARIO: SeccionMenu[] = [
       },
       {
         etiqueta: "Géneros Musicales",
+        // En una escuela de gym este ABM administra entrenamientos, no géneros
+        // musicales. Misma ruta: sigue siendo el alta de `tipo_clase`.
+        etiquetaPorRubro: { gym: "Entrenamientos" },
         icono: MdOutlineMusicNote,
         ruta: "/user_tipo",
         color: AZUL_CLARO,

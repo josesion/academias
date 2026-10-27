@@ -4,11 +4,13 @@ import { MdOutlineDashboard } from "react-icons/md";
 
 import { SECCIONES_USUARIO } from "../menu.config";
 import { filtrarSecciones } from "../menu.permisos";
-import type { TipoPlan } from "../menu.types";
+import type { ItemMenu, TipoPlan } from "../menu.types";
 import { SeccionDesplegable } from "./SeccionDesplegable";
 
 interface Props {
   tipo?: TipoPlan | null;
+  /** Rubro de la escuela de la sesión (`baile` | `gym`). Spec 047. */
+  rubro?: string | null;
   seccionAbierta: string | null;
   alternarSeccion: (clave: string) => void;
   /** Cierra el submenú y el menú móvil: lo usan los ítems al navegar (spec 018). */
@@ -22,20 +24,32 @@ interface Props {
  * (spec 014). Con `NavLink` además marca la ruta activa (spec 018).
  *
  * @param tipo - Plan del usuario (filtra qué secciones ve).
+ * @param rubro - Rubro de la escuela (`baile` | `gym`), para la etiqueta del ítem.
  * @param seccionAbierta - Clave de la sección desplegada, o `null`.
  * @param alternarSeccion - Abre o cierra una sección del menú.
  * @param cerrarMenu - Cierra el submenú y el menú móvil al navegar.
  */
 export const VistaUsuario = ({
   tipo,
+  rubro,
   seccionAbierta,
   alternarSeccion,
   cerrarMenu,
 }: Props) => {
-  const secciones = useMemo(
-    () => filtrarSecciones(SECCIONES_USUARIO, tipo),
-    [tipo],
-  );
+  const secciones = useMemo(() => {
+    /** Reemplaza la etiqueta si el ítem define una para el rubro actual. */
+    const conEtiquetaDeRubro = (item: ItemMenu): ItemMenu => {
+      const alternativa =
+        rubro === "gym" ? item.etiquetaPorRubro?.gym : undefined;
+
+      return alternativa ? { ...item, etiqueta: alternativa } : item;
+    };
+
+    return filtrarSecciones(SECCIONES_USUARIO, tipo).map((seccion) => ({
+      ...seccion,
+      items: seccion.items.map(conEtiquetaDeRubro),
+    }));
+  }, [tipo, rubro]);
 
   return (
     <>

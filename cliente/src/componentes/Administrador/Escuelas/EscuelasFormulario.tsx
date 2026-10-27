@@ -3,6 +3,7 @@ import "./formularioescuela.css";
 import { Boton } from "../../generales/Boton/Boton";
 import { Inputs } from "../../generales/Inputs/Inputs";
 import { CompoError } from "../../generales/Error/Error";
+import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
 
 import { type CeldasInput } from "../../../reducers/escuelas.reducer";
 
@@ -14,7 +15,21 @@ export interface FormularioEscuelaTipado {
   razon_social: CeldasInput;
   direccion: CeldasInput;
   celular: CeldasInput;
+  /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+  rubro: CeldasInput;
 }
+
+/**
+ * Opciones del rubro (spec 047).
+ *
+ * El `valor` es lo que viaja al back (`escuelas.rubro`); la `etiqueta` es lo que
+ * ve el administrador. Se define acá afuera para no recrear el array en cada
+ * render (el select lo usa como `categorias`).
+ */
+const OPCIONES_RUBRO = [
+  { valor: "baile", etiqueta: "Academia de baile" },
+  { valor: "gym", etiqueta: "Gimnasio / Entrenamiento" },
+];
 
 interface ImagenFormularioTipado {
   imagen: File | null;
@@ -27,7 +42,9 @@ interface PropsFormEscuelas {
   putEscuelas: (event: React.MouseEvent<HTMLButtonElement>) => Promise<void>;
   cambioImagen: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCerrar: () => void;
-  cachearFormulario: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  cachearFormulario: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => void;
   metodo: "POST" | "PUT" | null;
   formulario: FormularioEscuelaTipado;
   imagen: ImagenFormularioTipado;
@@ -117,6 +134,28 @@ export const FormularioEscuelas = (data: PropsFormEscuelas) => {
           readonly={false}
           onChange={cachearFormulario}
         />
+
+        {/* ---------- Rubro (spec 047) ----------
+            Va último del grupo para no alterar las columnas que ya define
+            `formularioescuela.css` con `:nth-child(3)` y `:nth-child(4)`. */}
+        <div className="form-escuela__campo">
+          <label htmlFor={formulario.rubro.name}>Rubro de la escuela</label>
+
+          <SelectorOpt
+            categorias={OPCIONES_RUBRO}
+            itemKey="valor"
+            itemLabel="etiqueta"
+            name={formulario.rubro.name}
+            value={formulario.rubro.value}
+            labelDefault="Seleccione el rubro..."
+            onChangeSelector={cachearFormulario}
+          />
+
+          <p className="form-escuela__subtitulo">
+            Define el tema visual y los tipos de clase que se crean al dar de
+            alta la escuela.
+          </p>
+        </div>
       </div>
 
       <div className="form-escuela__grupo form-escuela__grupo--logo">

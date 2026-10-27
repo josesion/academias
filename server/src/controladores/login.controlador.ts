@@ -52,7 +52,10 @@ const login = async( req: Request, res: Response ) =>{
                   id_usuario : loginResult.data?.id_usuario,
                   rol        : loginResult.data?.rol ,
                   usuario    : loginResult.data?.usuario,
-                  razon_social : loginResult.data?.razon_social    
+                  razon_social : loginResult.data?.razon_social,
+                  // Rubro de la escuela (spec 047): lo consume el cliente para
+                  // aplicar el tema visual antes del primer /api/verificar.
+                  rubro      : loginResult.data?.rubro
                 },
                 undefined,
                 loginResult.code

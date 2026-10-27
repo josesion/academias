@@ -19,6 +19,14 @@ export interface ReglasPlan {
 
 export interface ItemMenu extends ReglasPlan {
   etiqueta: string;
+  /**
+   * Etiqueta alternativa según el rubro de la escuela (spec 047).
+   *
+   * Si el rubro de la sesión tiene una entrada acá, reemplaza a `etiqueta`.
+   * La ruta y el resto del ítem no cambian: solo el texto visible. Se usa para
+   * "Géneros Musicales" → "Entrenamientos" cuando la escuela es `gym`.
+   */
+  etiquetaPorRubro?: Partial<Record<"baile" | "gym", string>>;
   icono: IconType;
   ruta: string;
   color?: string;

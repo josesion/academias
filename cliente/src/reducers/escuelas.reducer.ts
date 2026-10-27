@@ -46,6 +46,8 @@ export interface EscuelasTipado {
         razon_social: CeldasInput;
         direccion: CeldasInput;
         celular: CeldasInput;
+        /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+        rubro: CeldasInput;
     };
 
     imagen: {
@@ -94,6 +96,7 @@ export const initialEscuelas = (): EscuelasTipado => ({
         razon_social: { name: "razon_social", value: "" },
         direccion: { name: "direccion", value: "" },
         celular: { name: "celular", value: "" },
+        rubro: { name: "rubro", value: "baile" },
     },
 
     imagen: {
@@ -207,6 +210,7 @@ export const EscuelasReducer = (
                     razon_social: { name: "razon_social", value: "" },
                     direccion: { name: "direccion", value: "" },
                     celular: { name: "celular", value: "" },
+                    rubro: { name: "rubro", value: "baile" },
                 },
                 imagen: {
                     imagen: null,
@@ -246,6 +250,8 @@ export const EscuelasReducer = (
                     razon_social: { name: "razon_social", value: action.payload.razon_social || "" },
                     direccion: { name: "direccion", value: action.payload.direccion || "" },
                     celular: { name: "celular", value: action.payload.celular || "" },
+                    // Una escuela gym editada sin rubro no debe volver a `baile`.
+                    rubro: { name: "rubro", value: action.payload.rubro === "gym" ? "gym" : "baile" },
                 },
                 imagen: {
                     imagen: null, // de entrada no hay un File nuevo cargado
@@ -280,6 +286,7 @@ export const EscuelasReducer = (
                     razon_social: { name: "razon_social", value: "" },
                     direccion: { name: "direccion", value: "" },
                     celular: { name: "celular", value: "" },
+                    rubro: { name: "rubro", value: "baile" },
                 },
                 imagen: {
                     imagen: null,

@@ -10,7 +10,11 @@ CREATE TABLE escuelas (
     urlImagen VARCHAR(255) DEFAULT NULL,
     public_id VARCHAR(255) DEFAULT NULL,
     fecha_registro DATE,
-    baja VARCHAR(20) DEFAULT 'activos'
+    baja VARCHAR(20) DEFAULT 'activos',
+    -- Rubro de la escuela (spec 047): 'baile' | 'gym'.
+    -- Define el tema visual y los tipos de clase que siembra el trigger
+    -- `despues_de_crear_escuela`. El default mantiene a todas en 'baile'.
+    rubro VARCHAR(20) NOT NULL DEFAULT 'baile'
 );
 
 INSERT INTO

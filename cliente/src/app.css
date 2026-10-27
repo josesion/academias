@@ -782,3 +782,179 @@
         overflow: visible !important;
     }
 }
+
+
+/* ============================================================================
+   TEMA GYM — spec 047 (§4 y §5)
+
+   Todo el tema cuelga de `html[data-rubro="gym"]`, que `protectRutas.tsx` pone
+   al iniciar sesión con una escuela de rubro `gym` y quita al cerrarla. Si el
+   atributo no está (baile, administrador, visita) NO se aplica nada de acá: la
+   estética de baile queda exactamente como estaba.
+
+   Se define al final del archivo para que no dependa del orden interno de
+   `app.css`; igual la especificidad (0,2,0) ya le gana a `:root` (0,1,0).
+   ============================================================================ */
+
+
+/* ----------------------------------------------------------------------------
+   BLOQUE A — Tokens
+   ---------------------------------------------------------------------------- */
+
+:root[data-rubro="gym"] {
+
+    /* Controles nativos (inputs, selects, scrollbars) en su variante oscura */
+    color-scheme: dark;
+
+    /* Fondos */
+    --fondo-principal:#0E1113;
+    --fondo-secundario:#161A1D;
+    --fondo-superficie:#1E2428;
+    --fondo-hover:rgba(255,255,255,.06);
+
+    /* Texto */
+    --texto-principal:#ECEEF0;
+    --texto-secundario:rgba(236,238,240,.66);
+    --texto-deshabilitado:rgba(236,238,240,.38);
+
+    /* Colores.
+       En `:root` el par de botón está cruzado (fondo = --color-primario,
+       texto = --fondo-secundario): al pasar el primario a lima, el texto de los
+       botones pasa a ser el fondo oscuro y el contraste sigue siendo válido. */
+    --color-primario:#C6F24E;
+    --color-secundario:#6FD3B0;
+
+    --color-exito:#4ADE80;
+    --color-advertencia:#F2C14E;
+    --color-error:#FF6B6B;
+
+    /* Bordes */
+    --borde:rgba(255,255,255,.10);
+    --borde-hover:rgba(255,255,255,.22);
+
+    /* Sombras: en oscuro las de `:root` (negras y muy suaves) desaparecen.
+       Se combinan con un brillo interno arriba, que es lo que da la lectura de
+       "vidrio" en las superficies opacas. */
+    --sombra-sm:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 8px rgba(0,0,0,.45);
+    --sombra-md:inset 0 1px 0 rgba(255,255,255,.07), 0 12px 32px rgba(0,0,0,.55);
+    --sombra-lg:inset 0 1px 0 rgba(255,255,255,.08), 0 20px 48px rgba(0,0,0,.65);
+
+    /* ⚠️ Override OBLIGATORIO (spec §4).
+       En `:root`, --fondo-error es --color-primario y --texto-error es
+       --fondo-secundario: sin esto, el toast de error quedaría lima. */
+    --fondo-error:#3A1114;
+    --texto-error:#FFB4B4;
+    --borde-error:rgba(255,107,107,.35);
+    --borde-error-fuerte:#FF6B6B;
+    --color-error-neon:#FF6B6B;
+    --sombra-error:rgba(255,107,107,.45);
+
+    /* `'EB Garamond'` no se carga como webfont: en gym se usa un stack del
+       sistema condensado, sin agregar dependencias. */
+    --fuente-titulos:"Arial Narrow", Arial, Helvetica, sans-serif;
+}
+
+/* `body` no tiene regla base en el proyecto (el fondo lo pone `.app`). En gym
+   se pinta igual para que no asome blanco en el overscroll ni en zonas sin
+   `.app`. El `!important` NO es necesario: no hay otra regla de `body`. */
+:root[data-rubro="gym"],
+html[data-rubro="gym"] body {
+    background-color:var(--fondo-principal);
+}
+
+
+/* ----------------------------------------------------------------------------
+   BLOQUE B — Vidrio (lista cerrada de la §6 de la spec)
+
+   V1 nav.menu_nav · V2 .menu_nav_lista · V3 overlays · V4 modal de finanzas.
+   El resto de las superficies queda opaco oscuro + brillo interno (--sombra-*).
+   ---------------------------------------------------------------------------- */
+
+/* --- V1 / V4: superficies de vidrio --- */
+
+html[data-rubro="gym"] nav.menu_nav,
+html[data-rubro="gym"] .modal-contenido-finanzas {
+
+    background:rgba(22,26,29,.62);
+
+    -webkit-backdrop-filter:blur(16px) saturate(140%);
+            backdrop-filter:blur(16px) saturate(140%);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 12px 32px rgba(0,0,0,.55);
+}
+
+/* --- V2: panel del menú.
+   SOLO en móvil: en escritorio `.menu_nav_lista` es una fila transparente
+   dentro del nav, y pintarle un panel translúcido ahí sería un cambio visual
+   que la spec no define (se anota como desviación en plan.md). --- */
+
+@media(max-width:900px){
+
+    html[data-rubro="gym"] .menu_nav_lista {
+
+        background:rgba(22,26,29,.72);
+
+        -webkit-backdrop-filter:blur(16px) saturate(140%);
+                backdrop-filter:blur(16px) saturate(140%);
+
+        border-bottom:1px solid rgba(255,255,255,.10);
+
+        box-shadow:
+            inset 0 1px 0 rgba(255,255,255,.08),
+            0 12px 32px rgba(0,0,0,.55);
+    }
+}
+
+/* --- V3: velo de los overlays --- */
+
+html[data-rubro="gym"] .modal-overlay,
+html[data-rubro="gym"] .modal-overlay-finanzas {
+
+    background:rgba(6,8,9,.55);
+
+    -webkit-backdrop-filter:blur(6px);
+            backdrop-filter:blur(6px);
+}
+
+/* --- Fallback sin `backdrop-filter`: superficie opaca (R3).
+   Si no hay blur, un fondo al 62% dejaría pasar el contenido y ensuciaría la
+   lectura; se vuelve al token de superficie. --- */
+
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+
+    html[data-rubro="gym"] nav.menu_nav,
+    html[data-rubro="gym"] .modal-contenido-finanzas {
+        background:var(--fondo-secundario);
+    }
+
+    @media(max-width:900px){
+        html[data-rubro="gym"] .menu_nav_lista {
+            background:var(--fondo-secundario);
+        }
+    }
+}
+
+
+/* ----------------------------------------------------------------------------
+   BLOQUE C — Ajustes propios del rubro
+
+   C1: la bailarina de `asistencia.css` es un `background-image` del contenedor:
+       se anula por especificidad (0,2,1 contra 0,1,0), sin tocar el TSX ni el
+       CSS del componente.
+   C2: títulos en mayúscula, coherente con la estética de entrenamiento.
+       Es lo primero que se revierte si rompe algún layout angosto.
+   ---------------------------------------------------------------------------- */
+
+html[data-rubro="gym"] .asistencia_contenedor {
+    background-image:none;
+}
+
+html[data-rubro="gym"] h1,
+html[data-rubro="gym"] h2 {
+    text-transform:uppercase;
+    letter-spacing:.03em;
+}

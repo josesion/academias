@@ -16,6 +16,8 @@ export interface PostEscuelasInputs{
     razon_social: string;
     direccion: string;
     celular: string;
+    /** Rubro de la escuela (spec 047). Si falta, el back asume `baile`. */
+    rubro?: "baile" | "gym";
     urlImagen?: string | "";
     fecha_registro?: string;
     baja?: string;
@@ -58,6 +60,7 @@ export const postEscuelas = async( parametro : PostEscuelasPayload )
     formData.append("razon_social", parametro.razon_social);
     formData.append("direccion", parametro.direccion);
     formData.append("celular", String(parametro.celular));
+    formData.append("rubro", parametro.rubro || "baile");
 
     // 2. Adjuntamos la imagen solo si existe físicamente
     if (parametro.imagen) {
@@ -96,6 +99,8 @@ export interface EscuelaListadoRow {
     public_id: string ;
     fecha_registro: string; // o Date dependiendo de cómo te lo devuelva el driver de MySQL
     baja:EstadoEscuela;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro: "baile" | "gym";
     total_registros?: number;
 }
 
@@ -177,6 +182,7 @@ export const putEscuelas = async (datos: PutEscuelasInputs)
     formData.append("razon_social", datos.razon_social);
     formData.append("direccion", datos.direccion);
     formData.append("celular", String(datos.celular));
+    formData.append("rubro", datos.rubro || "baile");
 
     if (datos.urlImagen) {
         formData.append("urlImagen", datos.urlImagen);

@@ -86,6 +86,7 @@ export const loginLogica = () : LoginLogicaReturn =>{
             rol: respuesta.data.rol,
             usuario : respuesta.data.usuario,
             razon_social : respuesta.data.razon_social,
+            rubro : respuesta.data.rubro,
             tipo : respuesta.data.tipo ,
             estado_suscripcion : respuesta.data.estado_suscripcion
           });

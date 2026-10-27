@@ -52,7 +52,7 @@ export const EscuelasLogica = (config: EscuelasProps) => {
     };
 
     // Guarda lo que se escribe en cada input del formulario
-    const cachearFormulario = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const cachearFormulario = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { value, name } = event.target;
 
         dispatch({
@@ -127,8 +127,7 @@ export const EscuelasLogica = (config: EscuelasProps) => {
 
         // En el alta la imagen es obligatoria
         if (!logo) {
-            dispatch({ type: "ERROR_GENERICO", payload: "Debes seleccionar una imagen o logo para la academia." });
-            return;
+            dispatch({ type: "ERROR_GENERICO", payload: "Debes seleccionar una imagen o logo para la academia." });            return;
         }
 
         // 3. Payload listo para enviar
@@ -139,6 +138,7 @@ export const EscuelasLogica = (config: EscuelasProps) => {
             razon_social: razonSocial,
             direccion: direccion,
             celular: celular,
+            rubro: state.formulario.rubro.value === "gym" ? "gym" : "baile",
             imagen: logo
         };
 
@@ -204,6 +204,7 @@ export const EscuelasLogica = (config: EscuelasProps) => {
             razon_social: razonSocial,
             direccion: direccion,
             celular: celular,
+            rubro: state.formulario.rubro.value === "gym" ? "gym" : "baile",
             imagen: logo,
             imagenMod: state.imagen.modificado ?? false
         };

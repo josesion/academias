@@ -38,6 +38,9 @@ const crearEscuela = async (req: Request, res: Response) =>{
         urlImagen: req.body.urlImagen || "", // O si la subes a un bucket/servidor antes, aquí iría la URL resultante
         fecha_registro: req.body.fecha_registro || new Date().toISOString().split('T')[0],
         baja: req.body.baja || "activos",
+        // Rubro de la escuela (spec 047). Llega por FormData como texto; el
+        // enum de Zod lo valida en el servicio.
+        rubro: req.body.rubro || "baile",
     };
 
     const data : EscuelaPost = {
@@ -73,6 +76,7 @@ const modEscuelas = async ( req: Request, res: Response ) => {
         celular: req.body.celular,
         urlImagen: req.body.urlImagen || "",
         baja: req.body.baja || "activos",
+        rubro: req.body.rubro || "baile",
         id_escuela: Number(req.body.id_escuela)
     };
 

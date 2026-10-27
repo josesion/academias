@@ -38,6 +38,8 @@ type UsuarioEscuelaInfo = {
   rol: string;
   usuario: string;
   razon_social: string;
+  /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+  rubro: string;
   tipo: string;
   /** `null` cuando la escuela todavía no tiene ninguna suscripción en la BD */
   estado_suscripcion: string | null;
@@ -51,6 +53,7 @@ const ROL_VISITA: UsuarioEscuelaInfo = {
   rol: "visita",
   usuario: "",
   razon_social: "",
+  rubro: "baile",
   tipo: "basico",
   estado_suscripcion: null,
 };
@@ -58,6 +61,33 @@ const ROL_VISITA: UsuarioEscuelaInfo = {
 export const RutasProtegidasContext = createContext<AuthContextType>(
   {} as AuthContextType,
 );
+
+/**
+ * Aplica o retira el tema de rubro en el elemento `<html>`.
+ *
+ * El atributo `data-rubro="gym"` activa el bloque de tokens de `app.css`
+ * (spec 047). **No** se aplica al rol `administrador`: ese usuario pertenece a
+ * la plataforma y no a un tenant, así que queda con la estética neutral.
+ *
+ * Se define acá (y no se exporta) para no romper la regla
+ * `react-refresh/only-export-components` de Vite.
+ *
+ * @param rubro - Rubro de la escuela de la sesión (`baile` | `gym`).
+ * @param rol - Rol del usuario autenticado.
+ */
+const aplicarRubroEnDocumento = (
+  rubro?: string | null,
+  rol?: string | null,
+): void => {
+  const raiz = document.documentElement;
+
+  if (rol !== "administrador" && rubro === "gym") {
+    raiz.setAttribute("data-rubro", "gym");
+    return;
+  }
+
+  raiz.removeAttribute("data-rubro");
+};
 
 export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
   const [autenticado, setAutenticado] = useState<boolean>(false);
@@ -70,6 +100,12 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
 
   const [usuarioEscuela, setUsuarioEscuela] =
     useState<UsuarioEscuelaInfo | null>(null);
+
+  // El tema de rubro sigue a la sesión (spec 047): se aplica al loguearse y se
+  // retira al cerrar sesión (el estado vuelve a ROL_VISITA, que es `baile`).
+  useEffect(() => {
+    aplicarRubroEnDocumento(rol?.rubro, rol?.rol);
+  }, [rol?.rubro, rol?.rol]);
 
   /**
    * Limpieza única del cierre de sesión: sirve tanto para el logout manual
@@ -86,6 +122,8 @@ export const ProtectRutasProv = ({ children }: ProtectRutasProvProps) => {
     setAutenticado(false);
     setUsuarioInfo(null);
     setRol(ROL_VISITA);
+    // El tema de rubro es parte de la sesión: se retira al cerrarla (spec 047).
+    aplicarRubroEnDocumento(null, null);
     // Basura de versiones anteriores: ya no se persiste el rol
     localStorage.removeItem("usuarioEscuela");
     // `Cookies.remove` NO puede borrar la cookie `token` real: es `httpOnly`

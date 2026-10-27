@@ -111,6 +111,7 @@ export const MenuNav = () => {
         {esUsuario && (
           <VistaUsuario
             tipo={(rol?.tipo as TipoPlan) || "basico"}
+            rubro={rol?.rubro}
             seccionAbierta={seccionAbierta}
             alternarSeccion={alternarSeccion}
             cerrarMenu={cerrarMenu}

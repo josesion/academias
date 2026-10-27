@@ -57,6 +57,8 @@ export interface DataIdUsuario{
     usuario: string;
     rol: string;
     razon_social: string;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro: string;
     tipo: string; 
     estado_suscripcion : string;
 }

@@ -239,6 +239,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
                     u.usuario,
                     u.rol,
                     e.razon_social,
+                    e.rubro,
                     p.tipo AS tipo,
                     s.estado AS estado_suscripcion
                 FROM usuarios u
@@ -275,6 +276,7 @@ const buscarIdUsuario = async (id: number): Promise<TipadoData<DataIdUsuario>> =
             usuario: resultado[0].usuario,
             rol : resultado[0].rol,
             razon_social : resultado[0].razon_social,
+            rubro : resultado[0].rubro,
             tipo : resultado[0].tipo,
             estado_suscripcion : resultado[0].estado_suscripcion
         }, 

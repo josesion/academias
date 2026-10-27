@@ -17,6 +17,8 @@ export interface UsuarioLogin {
   id_escuela: number;
   estado: string;
   razon_social : string;
+  /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+  rubro : string;
 }
 
 /**
@@ -40,7 +42,8 @@ const loginDataGenerico = async( data : LoginInputs)
                             u.rol, 
                             u.id_escuela,
                             u.estado,
-                            e.razon_social
+                            e.razon_social,
+                            e.rubro
                         FROM usuarios u
                         INNER JOIN escuelas e ON u.id_escuela = e.id_escuela
                         WHERE u.usuario = ?;`;
@@ -61,6 +64,8 @@ export interface UsuarioLoginData {
     contrasena: string;
     rol : RolUsuario;
     razon_social: string;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro: string;
     estado_suscripcion: string | null;
     fecha_vencimiento: string | null; 
     plan_tipo: string | null;
@@ -89,6 +94,7 @@ const loginDataUsuario = async( data : LoginInputs)
                                 u.contrasena,
                                 u.rol,
                                 e.razon_social,
+                                e.rubro,
                                 s.estado AS estado_suscripcion,
                                 s.fecha_vencimiento,
                                 p.tipo AS plan_tipo,
