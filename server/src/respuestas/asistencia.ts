@@ -97,3 +97,14 @@ export const MAPA_INFO_ALUMNO : Record<string , { status : CodigoEstadoHTTP, msg
         msg:  "Búsqueda realizada."
     },
 }; 
+
+/* Spec 048 · listado de asistencias. El caso "rango sin datos" NO es un 404:
+   la pantalla necesita 200 + `data: []` para mostrar su estado vacio. */
+export const MAPA_LISTADO_ASISTENCIAS
+: Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+    ERROR_SERVIDOR,
+    "ASISTENCIAS_LISTADAS": {
+        status: CodigoEstadoHTTP.OK,
+        msg:  "Asistencias listadas."
+    },
+};

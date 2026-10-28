@@ -18,7 +18,7 @@ import { calendarioEscuela, altaHorario , modHorario ,eliminarHorario} from "../
 
 import {type Horas , type DiaSemana } from "../tipadosTs/horario";
 
-const HORARIOS : Horas[] = [
+export const HORARIOS : Horas[] = [
   "08:00",
   "09:00",
   "10:00",

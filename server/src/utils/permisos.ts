@@ -126,9 +126,27 @@ const soloAlumno = async (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
+/**
+ * Restringe el acceso al rol "usuario" (dueño de la escuela).
+ * Cualquier otro rol (alumno, administrador) recibe 403 PROHIBIDO.
+ *
+ * Va DESPUES de `validarPermiso`, que es quien llena `req.usuario` con el
+ * payload del token. Deja la intencion escrita en la ruta aunque hoy
+ * `verificarPlan` ya bloquee a los otros roles por su `tipo` (spec 048).
+ */
+const soloUsuario = async (req: Request, res: Response, next: NextFunction) => {
+
+    if (req.usuario?.rol !== "usuario") {
+        return enviarResponseError(res, 403, "No autorizado : se requiere rol usuario.", "PROHIBIDO");
+    };
+
+    next();
+};
+
 
 export const method = {
     validarPermiso: tryCatch(validarPermiso),
     soloAdministrador: tryCatch(soloAdministrador),
-    soloAlumno: tryCatch(soloAlumno)
+    soloAlumno: tryCatch(soloAlumno),
+    soloUsuario: tryCatch(soloUsuario)
 }

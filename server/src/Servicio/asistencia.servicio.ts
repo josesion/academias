@@ -3,7 +3,7 @@
 // ──────────────────────────────────────────────────────────────
 import { tryCatchDatos } from "../utils/tryCatchBD";
 
-import { method as asistenciaData } from "../data/asistencia.data";
+import { method as asistenciaData, ListadoAsistenciaRow } from "../data/asistencia.data";
 import { method as inscripcionData } from "../data/inscripciones.data";
 import { method as horarioData  } from "../data/horarios.data"
 // ──────────────────────────────────────────────────────────────
@@ -18,6 +18,7 @@ import {
          InfoAlumnoSchema, InfoAlumnoInputs,
          AsistenciaManualSchema, AsistenciaManualInputs,
           BuscarAlumnoSchema, BuscarAlumnoInputs,
+          ListadoAsistenciasSchema, ListadoAsistenciasInputs,
        } from "../squemas/asistencias"; 
 
 import { DataAlumnoVigenteInputs, DataAlumnoVigenteSchema, } from "../squemas/horarios_clases";       
@@ -497,6 +498,66 @@ const buscarAlumnoServicio = async ( data : BuscarAlumnoInputs )
     };
 };
 
+/**
+ * Lista las asistencias de la escuela del token en un rango de fechas
+ * (spec 048).
+ *
+ * Flujo:
+ * 1. Valida y normaliza los filtros con Zod (unico punto del backend donde se
+ *    parsea el listado).
+ * 2. Calcula el `offset` a partir de `pagina` y `limit`: **nunca** viene por la
+ *    URL, asi no se puede desalinear con la pagina pedida.
+ * 3. Delega en la capa data, que lee la **foto** guardada en la asistencia.
+ * 4. Normaliza el caso vacio: `listarEntidad` devuelve `NO_ACTIVE_ASISTENCIAS`
+ *    sin `paginacion` cuando no hay filas; aca se transforma en un 200 con
+ *    `data: []` (la pantalla necesita listar un rango vacio, no un 404).
+ *
+ * @param {ListadoAsistenciasInputs} parametros - Filtros crudos del controlador
+ *   (`id_escuela` sale del token, nunca de la query).
+ * @returns {Promise<TipadoData<ListadoAsistenciaRow[]>>} Listado paginado.
+ * @returns.code ASISTENCIAS_LISTADAS - Hay filas o el rango no tiene ninguna.
+ * @returns.code ERROR_SERVIDOR - Falla inesperada de la base.
+ */
+const listadoAsistenciasServicio = async( parametros : ListadoAsistenciasInputs )
+: Promise<TipadoData<ListadoAsistenciaRow[]>> => {
+    const data : ListadoAsistenciasInputs = ListadoAsistenciasSchema.parse(parametros);
+    const offset : number = (data.pagina - 1) * data.limit;
+
+    const resultado = await asistenciaData.listadoAsistencias({ ...data, offset });
+
+    if ( resultado.code === "NO_ACTIVE_ASISTENCIAS" ) {
+        // Rango sin datos: es un exito para la pantalla (200 + lista vacia).
+        return {
+            error : false,
+            message : "No hay asistencias en el rango pedido.",
+            data : [],
+            paginacion : {
+                pagina : data.pagina,
+                limite : data.limit,
+                contadorPagina : 0,
+                totalRegistros : 0
+            },
+            code : "ASISTENCIAS_LISTADAS"
+        };
+    };
+
+    if ( resultado.code === "ASISTENCIAS_LISTED" ) {
+        return {
+            error : false,
+            message : "Asistencias listadas.",
+            data : resultado.data,
+            paginacion : resultado.paginacion,
+            code : "ASISTENCIAS_LISTADAS"
+        };
+    };
+
+    return {
+        error : true,
+        message : resultado.message || "Error al listar las asistencias",
+        code : "ERROR_SERVIDOR"
+    };
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
     asistenciaManual : tryCatchDatos( altaAsistenciaManual ),
@@ -504,4 +565,5 @@ export const method = {
     dataAsistenciaServicio : tryCatchDatos( dataAsistenciaServicio ),
     infoAlumno : tryCatchDatos( infoAlumnoServicio ),
     buscarAlumno : tryCatchDatos( buscarAlumnoServicio ),
+    listadoAsistencias : tryCatchDatos( listadoAsistenciasServicio ),
 };

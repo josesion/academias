@@ -19,6 +19,7 @@ import {
 import { BsCashStack } from "react-icons/bs";
 import {
   LuClipboardCheck,
+  LuClipboardList,
   LuUserPlus,
   LuLayers,
   LuCreditCard,
@@ -41,6 +42,13 @@ export const SECCIONES_USUARIO: SeccionMenu[] = [
         etiqueta: "Asistencia",
         icono: LuClipboardCheck,
         ruta: "/asistencia",
+        color: AZUL,
+        planes: ["intermedio", "basico"],
+      },
+      {
+        etiqueta: "Listado de Asistencias",
+        icono: LuClipboardList,
+        ruta: "/listado_asistencias",
         color: AZUL,
         planes: ["intermedio", "basico"],
       },

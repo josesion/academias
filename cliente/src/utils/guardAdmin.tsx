@@ -86,7 +86,8 @@ export const SoloAdministradorWrapper = ({
  * Guard de rol para las rutas de USUARIO (dueño de escuela).
  *
  * Protege: `/user_*`, `/caja_*`, `/inscrip_*`, `/horario_*`, `/flayers`,
- * `/list_inscrip`, `/asistencia`, `/user_categoria_caja`, `/user_tipo_cuenta`.
+ * `/list_inscrip`, `/asistencia`, `/listado_asistencias`,
+ * `/user_categoria_caja`, `/user_tipo_cuenta`.
  *
  * El bloqueo REAL sigue siendo del server (`validarPermiso` + `verificarPlan`);
  * este guard es solo de experiencia, para no mostrar una pantalla vacía.

@@ -5,6 +5,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 //import { iudEntidad } from "../hooks/iudEntidad";
 import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
 import { listarEntidadSinPaginacion } from "../hooks/funcionListarSinPag";
+import { listarEntidad } from "../hooks/funcionListar";
 import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
 import pool from "../bd";
 // ──────────────────────────────────────────────────────────────
@@ -14,7 +15,7 @@ import { TipadoData } from "../tipados/tipado.data";
 import { ResultadoClaseEnCruso, ResultadoClaseProxima, } from "../tipados/asistencia.tipado";
 
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
-import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, InfoAlumnoInputs, HorarioManualInputs } from "../squemas/asistencias";
+import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, InfoAlumnoInputs, HorarioManualInputs, ListadoAsistenciasInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
@@ -191,10 +192,28 @@ const ventanaAsistencia = async( id_horario_clase : number)
  * la integridad de los datos.
  *
  * Flujo interno:
- * 1. Inserta la asistencia del alumno para el día actual (CURDATE).
- * 2. Calcula la cantidad de clases restantes de la inscripción.
- * 3. Si las clases restantes llegan a 0 o menos, marca la inscripción como "vencidos".
- * 4. Confirma la transacción si todo sale bien, o hace rollback ante cualquier error.
+ * 1. Lee la **foto del horario** (spec 048): nivel, tipo, profesor, día y horas.
+ * 2. Inserta la asistencia del alumno para el día actual (CURDATE) junto con esa foto.
+ * 3. Calcula la cantidad de clases restantes de la inscripción.
+ * 4. Si las clases restantes llegan a 0 o menos, marca la inscripción como "vencidos".
+ * 5. Confirma la transacción si todo sale bien, o hace rollback ante cualquier error.
+ *
+ * Foto del horario (spec 048):
+ * - Se guarda en las 9 columnas de snapshot de `asistencias`: `id_nivel`,
+ *   `id_tipo_clase`, `dni_profesor`, `dia_semana`, `hora_inicio`, `hora_fin`,
+ *   `nombre_profesor`, `nivel` y `tipo_clase`.
+ * - Sale de `horarios_clases` (ids, dni del profesor, día y horas normalizadas con
+ *   `TIME()`) más los textos de `profesores` (`nombre` + `apellido`), `niveles`
+ *   (`nivel`) y `tipo_clase` (`tipo`).
+ * - Es **inmutable**: editar o renombrar el horario, el nivel, el tipo o el
+ *   profesor después del alta **no** cambia el histórico de la asistencia.
+ * - Se lee con la **misma conexión de la transacción** y filtrando por
+ *   `id_escuela` (aislamiento multi-tenant: un horario de otra escuela equivale
+ *   a inexistente).
+ *
+ * @throws Lanza si el horario no existe en esa escuela (o no tiene foto que
+ *   devolver): `iudEntidadTransaction` hace rollback y se responde
+ *   `TRANSACCION_FALLIDA` (los servicios ya manejan ese código).
  *
  * @param {VerificarInscripcionInput} verificacion
  * Datos necesarios para validar la inscripción activa del alumno.
@@ -228,6 +247,9 @@ const ventanaAsistencia = async( id_horario_clase : number)
  * - La lógica de vencimiento de inscripción depende exclusivamente
  *   del cálculo de clases restantes.
  * - El uso de transacciones evita estados inconsistentes ante errores intermedios.
+ * - Si el horario desapareciera entre las validaciones y el alta, la foto no se
+ *   puede armar: se corta con `TRANSACCION_FALLIDA` en vez de guardar una
+ *   asistencia sin foto.
  *
  * @example
  * // Resultado exitoso
@@ -247,16 +269,45 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
     const {id_escuela, dni_alumno, id_inscripcion} = verificacion;
     const { id_horario_clase} = asistencia;
 
+    // Foto del horario (spec 048): lo que el horario dice HOY, para congelarlo
+    // en la asistencia. Los textos quedan copiados, no referenciados.
+    const sqlFotoHorario : string = `SELECT
+                                        hc.id_nivel,
+                                        hc.id_tipo_clase,
+                                        hc.dni_profesor,
+                                        hc.dia_semana,
+                                        TIME(hc.hora_inicio) AS hora_inicio,
+                                        TIME(hc.hora_fin)    AS hora_fin,
+                                        NULLIF(TRIM(CONCAT(IFNULL(p.nombre, ''), ' ', IFNULL(p.apellido, ''))), '') AS nombre_profesor,
+                                        n.nivel,
+                                        tc.tipo              AS tipo_clase
+                                    FROM horarios_clases hc
+                                    LEFT JOIN profesores p   ON p.dni = hc.dni_profesor
+                                    LEFT JOIN niveles n      ON n.id = hc.id_nivel
+                                    LEFT JOIN tipo_clase tc  ON tc.id = hc.id_tipo_clase
+                                    WHERE hc.id = ?
+                                    AND hc.id_escuela = ?
+                                    LIMIT 1;`;
+
     const sqlInsertarAsistencia : string = `INSERT INTO asistencias (
                                                 id_escuela,
                                                 dni_alumno,
                                                 id_inscripcion,
                                                 id_horario_clase,
+                                                id_nivel,
+                                                id_tipo_clase,
+                                                dni_profesor,
+                                                dia_semana,
+                                                hora_inicio,
+                                                hora_fin,
+                                                nombre_profesor,
+                                                nivel,
+                                                tipo_clase,
                                                 fecha,
                                                 estado
                                             )
                                             VALUES (
-                                                ?, ?, ?, ?, CURDATE(), 'presente'
+                                                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), 'presente'
                                             );`;
 
     const sqlClasesRestantes : string = `SELECT
@@ -273,13 +324,35 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
     const sqlActualizarIncripcion : string = `UPDATE inscripciones 
                                                 SET estado = 'vencidos'
                                                 WHERE id_inscripcion = ?`;                                      
-                                            
-    const valoresInsertarAsistencia : unknown[] = [id_escuela , dni_alumno , id_inscripcion , id_horario_clase  ];
+
+    const valoresFotoHorario : unknown[] = [id_horario_clase, id_escuela];
     const valoresClasesRestantes : unknown[] = [id_inscripcion];
     const valoresActualizarInscripcion : unknown[] = [id_inscripcion];
 
     const resultado = await iudEntidadTransaction(async(conn)=>{
-        // se da la asistencia
+        // se arma la foto del horario con la misma conexion de la transaccion
+        const [resFoto] = await conn.execute(sqlFotoHorario, valoresFotoHorario);
+        const foto = (resFoto as any[])[0];
+        // sin horario en esta escuela no hay foto: rollback y TRANSACCION_FALLIDA
+        if(!foto){
+            throw new Error(`No se encontro el horario ${id_horario_clase} en la escuela ${id_escuela} para guardar la foto de la asistencia`);
+        };
+        // se da la asistencia con la foto incluida
+        const valoresInsertarAsistencia : unknown[] = [
+            id_escuela,
+            dni_alumno,
+            id_inscripcion,
+            id_horario_clase,
+            foto.id_nivel,
+            foto.id_tipo_clase,
+            foto.dni_profesor,
+            foto.dia_semana,
+            foto.hora_inicio,
+            foto.hora_fin,
+            foto.nombre_profesor,
+            foto.nivel,
+            foto.tipo_clase
+        ];
         const [resAsistencia] = await conn.execute(sqlInsertarAsistencia,valoresInsertarAsistencia);   
         // se calcula la clases q qeunda
         const [resClas] = await conn.execute(sqlClasesRestantes,valoresClasesRestantes);
@@ -607,6 +680,112 @@ const buscarAlumnoData = async ( data : { id_escuela : number, termino : string 
     });
 };
 
+/**
+ * Fila del listado de asistencias (spec 048).
+ *
+ * Todos los datos de la clase salen de la **foto** guardada en `asistencias`
+ * (no se une `horarios_clases`), salvo el nombre del alumno, que se toma del
+ * padrón actual a propósito.
+ *
+ * Los campos que pueden ser `null` son los de la foto: si una fila vieja no
+ * llegó a completarse, se muestra tal cual (`hora_inicio` / `dia_semana`
+ * `null`; los textos los resuelve el SQL con `COALESCE`).
+ */
+export interface ListadoAsistenciaRow {
+    id_asistencia: number;
+    fecha: string;
+    hora_inicio: string | null;
+    dia_semana: string | null;
+    id_horario_clase: number;
+    dni_alumno: number;
+    alumno: string;
+    dni_profesor: string | null;
+    profesor: string;
+    id_nivel: number | null;
+    nivel: string;
+    id_tipo_clase: number | null;
+    tipo_clase: string;
+    estado: string;
+    total_registros: number;
+}
+
+/**
+ * Lista las asistencias de una escuela en un rango de fechas (spec 048).
+ *
+ * - El rango `desde` / `hasta` es obligatorio y lo aplica siempre el `WHERE`.
+ * - Los filtros opcionales se agregan con **placeholders dinámicos**: el array
+ *   `valores` queda alineado 1:1 con `condiciones` y nunca se concatenan
+ *   valores en el SQL.
+ * - `limit` y `offset` son la única interpolación en el texto de la consulta:
+ *   llegan como número ya validado por Zod (`offset` lo calcula el servicio).
+ * - Lee la **foto** de la asistencia, así que no depende de `horarios_clases`:
+ *   editar o dar de baja un horario no cambia el histórico.
+ * - El nombre del alumno **no** es foto: se toma del padrón actual.
+ *
+ * @param data Filtros ya validados más el `offset` calculado por el servicio.
+ * @returns {Promise<TipadoData<ListadoAsistenciaRow[]>>} Listado paginado. Si
+ *   no hay filas, `listarEntidad` devuelve `NO_ACTIVE_ASISTENCIAS` sin
+ *   `paginacion` (el servicio lo normaliza).
+ */
+const listadoAsistencias = async( data : ListadoAsistenciasInputs & { offset : number } )
+: Promise<TipadoData<ListadoAsistenciaRow[]>> => {
+    const { offset } = data;
+    const limit = data.limit;
+
+    const condiciones : string[] = [
+        "a.id_escuela = ?",
+        "a.fecha BETWEEN ? AND ?",
+    ];
+    const valores : unknown[] = [ data.id_escuela, data.desde, data.hasta ];
+
+    if (data.dia_semana)    { condiciones.push("a.dia_semana = ?");                valores.push(data.dia_semana); }
+    // La columna ya es TIME: se castea el PARAMETRO, no la columna, para no
+    // esconderla de un indice presente o futuro y para normalizar '17:00'.
+    if (data.hora)          { condiciones.push("a.hora_inicio = CAST(? AS TIME)");  valores.push(data.hora); }
+    if (data.dni_profesor)  { condiciones.push("a.dni_profesor = ?");              valores.push(data.dni_profesor); }
+    if (data.id_nivel)      { condiciones.push("a.id_nivel = ?");                  valores.push(data.id_nivel); }
+    if (data.id_tipo_clase) { condiciones.push("a.id_tipo_clase = ?");             valores.push(data.id_tipo_clase); }
+
+    const where : string = `WHERE ${condiciones.join("\n  AND ")}`;
+
+    const slqListado : string = `SELECT
+                                    a.id_asistencia,
+                                    DATE_FORMAT(a.fecha, '%Y-%m-%d')            AS fecha,
+                                    TIME_FORMAT(a.hora_inicio, '%H:%i')         AS hora_inicio,
+                                    a.dia_semana,
+                                    a.id_horario_clase,
+                                    a.dni_alumno,
+                                    CONCAT(al.nombre, ' ', al.apellido)         AS alumno,
+                                    a.dni_profesor,
+                                    COALESCE(a.nombre_profesor, 'Sin profesor') AS profesor,
+                                    a.id_nivel,
+                                    COALESCE(a.nivel, 'Sin nivel')              AS nivel,
+                                    a.id_tipo_clase,
+                                    COALESCE(a.tipo_clase, 'Sin tipo')          AS tipo_clase,
+                                    a.estado,
+                                    COUNT(*) OVER()                             AS total_registros
+                                FROM asistencias a
+                                INNER JOIN alumnos al ON al.dni_alumno = a.dni_alumno
+                                ${where}
+                                ORDER BY a.fecha DESC,
+                                         a.hora_inicio DESC,
+                                         al.apellido ASC,
+                                         al.nombre ASC,
+                                         a.id_asistencia ASC
+                                LIMIT ${limit} OFFSET ${offset};`;
+
+    return await listarEntidad<ListadoAsistenciaRow>({
+        slqListado,
+        valores,
+        entidad : "asistencias",
+        estado  : "en el rango pedido",
+        limit,
+        // El hook recibe `pagina` como string (viene de la query en los otros
+        // listados); aca ya es un numero validado por Zod.
+        pagina  : String(data.pagina),
+    });
+};
+
 export const method = {
     infoAlumno : tryCatchDatos( infoAlumnoData ),
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
@@ -618,5 +797,6 @@ export const method = {
     claseEnCurso : tryCatchDatos( clase_en_curso ),
     proximaClase : tryCatchDatos( clase_proxima_clase ),
     buscarAlumno : tryCatchDatos( buscarAlumnoData ),
+    listadoAsistencias : tryCatchDatos( listadoAsistencias ),
     
 };

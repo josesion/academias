@@ -145,6 +145,63 @@ export const calcularSeisMesesAtras = (fechaBase: string): string => {
 };
 
 
+/**
+ * Calcula una fecha restando una cantidad de días a partir de una fecha base.
+ *
+ * Es el mismo criterio que `calcularSeisMesesAtras`: el string se parsea con
+ * `.replace(/-/g, "/")` para que `new Date()` lo interprete en **hora local** y
+ * no en UTC (con guiones, en Uruguay un `"2026-10-27"` retrocede un día). La
+ * resta se hace con `setDate`, así que los cambios de mes y de año salen solos.
+ *
+ * @param {string} fechaBase - Fecha de referencia en formato `YYYY-MM-DD`.
+ * @param {number} dias - Cantidad de días a restar (0 devuelve la misma fecha).
+ * @returns {string} La fecha resultante en formato `YYYY-MM-DD`.
+ *
+ * @example
+ * // Si la fecha base es 2026-10-27
+ * calcularDiasAtras("2026-10-27", 30);  // "2026-09-27"
+ * calcularDiasAtras("2026-03-01", 1);   // "2026-02-28"
+ */
+export const calcularDiasAtras = ( fechaBase : string, dias : number ) : string => {
+    // Mismo reemplazo que `calcularSeisMesesAtras`: evita el parseo en UTC.
+    const fecha = new Date( fechaBase.replace(/-/g, "/") );
+
+    fecha.setDate( fecha.getDate() - dias );
+
+    const year  = fecha.getFullYear();
+    const month = ( fecha.getMonth() + 1 ).toString().padStart( 2, "0" );
+    const day   = fecha.getDate().toString().padStart( 2, "0" );
+
+    return `${year}-${month}-${day}`;
+};
+
+/**
+ * Convierte una fecha `YYYY-MM-DD` al formato corto `DD/MM/AAAA` para mostrar
+ * en tablas y tarjetas.
+ *
+ * **No** usa `new Date()`: el ISO se interpreta como UTC y en Uruguay (UTC-3)
+ * la fecha se mostraría un día antes. Acá el string se parte por `-` y se da
+ * vuelta, así que el día que se ve es exactamente el que guardó el backend.
+ *
+ * @param {string} fecha - Fecha en formato `YYYY-MM-DD` (acepta ISO con `T`).
+ * @returns {string} `DD/MM/AAAA`, o el valor recibido si no tiene ese formato.
+ *
+ * @example
+ * formatearFechaCorta("2026-10-23");                  // "23/10/2026"
+ * formatearFechaCorta("2026-10-23T00:00:00.000Z");    // "23/10/2026"
+ */
+export const formatearFechaCorta = ( fecha : string ) : string => {
+    if ( !fecha ) return "";
+
+    // Si viene como ISO, la parte de la izquierda de la "T" es la fecha.
+    const [ anio, mes, dia ] = fecha.split("T")[0].split("-");
+
+    if ( !anio || !mes || !dia ) return fecha;
+
+    return `${dia}/${mes}/${anio}`;
+};
+
+
 export const obtenerEstadoVigencia =  (fechaVigencia: string, clasesUsadas: number, clasesTotales: number) => {
   const hoy = new Date();
   const vencimiento = new Date(fechaVigencia);

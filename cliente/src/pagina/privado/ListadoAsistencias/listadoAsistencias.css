@@ -1,0 +1,536 @@
+/* ============================================================
+   LISTADO DE ASISTENCIAS (spec 048)
+   Sólo se usan tokens de `src/app.css`. Mismo lenguaje visual que
+   `Listado_inscripcion/listadoInscrip.css` (contenedor centrado) y que
+   `ListadoCajas/ArqueoDiferencia/arqueodiferencia.css` (tabla + modo tarjeta).
+   ============================================================ */
+
+
+/* ============================================================
+   CONTENEDOR PRINCIPAL
+   ============================================================ */
+
+.listado_asistencias_pagina {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+
+    max-width: 1280px;
+
+    margin: 0 auto;
+
+    padding: 5px 5px 24px;
+
+    box-sizing: border-box;
+}
+
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.listado_asistencias_header {
+    padding-bottom: 12px;
+
+    border-bottom: 1px solid var(--borde);
+}
+
+
+.listado_asistencias_titulo {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: -0.02em;
+
+    color: var(--texto-principal);
+}
+
+
+.listado_asistencias_subtitulo {
+    margin: 6px 0 0;
+
+    font-family: var(--fuente-principal);
+
+    font-size: var(--texto-sm);
+
+    line-height: var(--linea-texto);
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   FILTROS
+   ============================================================ */
+
+.listado_asistencias_filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    padding: 16px;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-sm);
+}
+
+
+/* `FiltroFechas` trae su propia tarjeta con `max-width: 450px`; dentro de este
+   panel se aplana para que ocupe el ancho disponible y no duplique el marco. */
+.listado_asistencias_filtros .filtro_fechas_wrapper {
+    width: 100%;
+
+    max-width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 0;
+
+    background: transparent;
+}
+
+
+/* `FiltroFechas` centra sus campos; en este panel quedan alineados a la
+   izquierda, debajo de su propio título. */
+.listado_asistencias_filtros .filtro_fechas_contenedor {
+    justify-content: flex-start;
+}
+
+
+.listado_asistencias_filtros .filtro_fechas_colapsable {
+    margin-top: 10px;
+}
+
+
+.listado_asistencias_filtros_grid {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 14px;
+}
+
+
+.listado_asistencias_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-width: 0;
+}
+
+
+.listado_asistencias_label {
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-semi-negrita);
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    color: var(--texto-secundario);
+}
+
+
+.listado_asistencias_acciones {
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+
+/* ============================================================
+   TABLA — MARCO
+   ============================================================ */
+
+.listado_asistencias_tabla_wrapper {
+    width: 100%;
+
+    /* Con las 8 columnas la tabla puede no entrar: scrollea sola */
+    overflow-x: auto;
+
+    border-radius: var(--radio-lg);
+}
+
+
+.listado_asistencias_tabla {
+    width: 100%;
+
+    min-width: 860px;
+
+    /* `separate` para que el radio del marco se respete */
+    border-collapse: separate;
+
+    border-spacing: 0;
+
+    background: var(--fondo-secundario);
+
+    border: 1px solid var(--borde);
+
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-sm);
+
+    font-family: var(--fuente-principal);
+}
+
+
+.listado_asistencias_caption {
+    padding: 14px 16px;
+
+    background: var(--fondo-secundario);
+
+    border-bottom: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    letter-spacing: 0.06em;
+
+    text-transform: uppercase;
+
+    text-align: left;
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   ENCABEZADO DE LA TABLA
+   ============================================================ */
+
+.listado_asistencias_tabla thead th {
+    padding: 11px 16px;
+
+    background: var(--fondo-superficie);
+
+    border-bottom: 1px solid var(--borde);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-semi-negrita);
+
+    letter-spacing: 0.07em;
+
+    text-transform: uppercase;
+
+    text-align: left;
+
+    color: var(--texto-deshabilitado);
+
+    white-space: nowrap;
+}
+
+
+/* ============================================================
+   FILAS
+   ============================================================ */
+
+.listado_asistencias_fila {
+    transition: background-color 0.25s var(--ease-ui);
+}
+
+
+.listado_asistencias_fila:nth-child(even) {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-primario) 3%,
+            transparent
+        );
+}
+
+
+.listado_asistencias_fila td {
+    padding: 12px 16px;
+
+    border-bottom:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-primario) 8%,
+            transparent
+        );
+
+    font-size: var(--texto-sm);
+
+    color: var(--texto-principal);
+
+    vertical-align: middle;
+}
+
+
+.listado_asistencias_tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+
+/* ============================================================
+   CELDA ALUMNO
+   ============================================================ */
+
+.listado_asistencias_alumno_datos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.listado_asistencias_alumno_dni {
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   BADGE DE ESTADO (texto + color, D20)
+   ============================================================ */
+
+.listado_asistencias_estado {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 3px 9px;
+
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-codigo);
+
+    font-size: var(--texto-xs);
+
+    font-weight: var(--peso-negrita);
+
+    letter-spacing: 0.05em;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+.listado_asistencias_estado.presente {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-exito) 12%,
+            transparent
+        );
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-exito) 30%,
+            transparent
+        );
+
+    color: var(--color-exito);
+}
+
+
+.listado_asistencias_estado.ausente {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-error) 12%,
+            transparent
+        );
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-error) 30%,
+            transparent
+        );
+
+    color: var(--color-error);
+}
+
+
+.listado_asistencias_estado.justificado {
+    background:
+        color-mix(
+            in srgb,
+            var(--color-advertencia) 12%,
+            transparent
+        );
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--color-advertencia) 30%,
+            transparent
+        );
+
+    color: var(--color-advertencia);
+}
+
+
+/* ============================================================
+   HOVER (sólo en punteros finos)
+   ============================================================ */
+
+@media (hover: hover) and (pointer: fine) {
+
+    .listado_asistencias_fila:hover {
+        background: var(--fondo-hover);
+    }
+}
+
+
+/* ============================================================
+   RESPONSIVE — MODO TARJETA (≤900px)
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+    .listado_asistencias_tabla_wrapper {
+        overflow-x: visible;
+    }
+
+
+    .listado_asistencias_tabla {
+        display: block;
+
+        min-width: 0;
+
+        background: transparent;
+
+        border: 0;
+
+        border-radius: 0;
+
+        box-shadow: none;
+    }
+
+
+    .listado_asistencias_caption {
+        display: block;
+
+        padding: 0 0 10px;
+
+        background: transparent;
+
+        border-bottom: 0;
+    }
+
+
+    .listado_asistencias_tabla thead {
+        display: none;
+    }
+
+
+    .listado_asistencias_tabla tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+
+    .listado_asistencias_fila {
+        display: block;
+
+        padding: 12px 14px;
+
+        background: var(--fondo-secundario);
+
+        border: 1px solid var(--borde);
+
+        border-radius: var(--radio-md);
+
+        box-shadow: var(--sombra-sm);
+    }
+
+
+    .listado_asistencias_fila:nth-child(even) {
+        background: var(--fondo-secundario);
+    }
+
+
+    .listado_asistencias_fila td {
+        display: flex;
+
+        justify-content: space-between;
+
+        align-items: flex-start;
+
+        gap: 12px;
+
+        padding: 4px 0;
+
+        border-bottom: none;
+    }
+
+
+    .listado_asistencias_fila td::before {
+        content: attr(data-label);
+
+        flex-shrink: 0;
+
+        font-family: var(--fuente-codigo);
+
+        font-size: 0.6rem;
+
+        font-weight: var(--peso-semi-negrita);
+
+        letter-spacing: 0.06em;
+
+        text-transform: uppercase;
+
+        color: var(--texto-deshabilitado);
+    }
+
+
+    .listado_asistencias_alumno_datos {
+        align-items: flex-end;
+
+        text-align: right;
+    }
+}
+
+
+/* ============================================================
+   CELULAR PEQUEÑO
+   ============================================================ */
+
+@media (max-width: 480px) {
+
+    .listado_asistencias_pagina {
+        gap: 16px;
+
+        padding: 5px 14px 20px;
+    }
+
+
+    .listado_asistencias_filtros {
+        padding: 12px;
+    }
+}

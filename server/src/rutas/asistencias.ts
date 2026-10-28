@@ -42,9 +42,19 @@ ruta.get(
 
 ruta.get(
     "/api/buscar_alumno",
-    permisos.validarPermiso,
-    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    permisos.validarPermiso, 
+    permisoSaas.verificarPlan(['basico', 'intermedio']), 
     controladorAsistencias.buscarAlumno
+);
+
+// Spec 048: listado de asistencias. `soloUsuario` deja escrita la regla de
+// rol (un alumno o un administrador reciben 403 PROHIBIDO).
+ruta.get(
+    "/api/lista_asistencias",
+    permisos.validarPermiso,
+    permisos.soloUsuario,
+    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    controladorAsistencias.listadoAsistencias
 );
 
 export default ruta;

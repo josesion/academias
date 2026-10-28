@@ -21,6 +21,8 @@ import { HorarioPagina } from "./pagina/privado/Horarios/Horarios";
 import { InscripcionPage } from "./pagina/privado/Inscripcion/Inscripcion";
 // Formulario para asistencia
 import { FormularioAsistencia } from "./pagina/privado/FormularioAsistencia/FormularioAsistencia";
+// Listado de asistencias (spec 048)
+import { ListadoAsistenciasPage } from "./pagina/privado/ListadoAsistencias/ListadoAsistencias";
 // Formulario  Arqueo Caja
 import { CajaArqueo } from "./pagina/privado/caja/Caja";
 import { ListadoCajas } from "./pagina/privado/ListadoCajas/ListadoCajas";
@@ -114,6 +116,10 @@ function App() {
                     element={<AmbCategoriasCajaUsuarios />}
                   />
                   <Route path="/asistencia" element={<FormularioAsistencia />} />
+                  <Route
+                    path="/listado_asistencias"
+                    element={<ListadoAsistenciasPage />}
+                  />
                 </Route>
               </Route>
 

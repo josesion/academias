@@ -14,6 +14,39 @@ CREATE TABLE asistencias (
     -- Horario/clase específica
     id_horario_clase INT NOT NULL,
 
+    -- ----------------------------------------------------
+    -- FOTO DEL HORARIO AL MOMENTO DEL ALTA (spec 048)
+    -- Congela lo que decía el horario ese día. Sin FK a propósito:
+    -- borrar o renombrar un nivel/tipo no debe romper el histórico.
+    -- ----------------------------------------------------
+
+    -- Foto: horarios_clases.id_nivel al registrar
+    id_nivel INT NULL,
+
+    -- Foto: horarios_clases.id_tipo_clase al registrar
+    id_tipo_clase INT NULL,
+
+    -- Foto: horarios_clases.dni_profesor al registrar
+    dni_profesor VARCHAR(20) NULL,
+
+    -- Foto: día declarado por el horario (sin tildes)
+    dia_semana ENUM('lunes','martes','miercoles','jueves','viernes','sabado','domingo') NULL,
+
+    -- Foto: TIME(horarios_clases.hora_inicio), normalizada
+    hora_inicio TIME NULL,
+
+    -- Foto: TIME(horarios_clases.hora_fin), normalizada
+    hora_fin TIME NULL,
+
+    -- Foto: CONCAT(profesores.nombre, " ", profesores.apellido)
+    nombre_profesor VARCHAR(220) NULL,
+
+    -- Foto: niveles.nivel
+    nivel VARCHAR(100) NULL,
+
+    -- Foto: tipo_clase.tipo
+    tipo_clase VARCHAR(100) NULL,
+
     -- Fecha real en que se toma la clase
     fecha DATE NOT NULL,
 

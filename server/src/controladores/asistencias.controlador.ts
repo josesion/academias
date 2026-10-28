@@ -12,10 +12,58 @@ import { handleControladores } from "../utils/handleControladores";
 // ──────────────────────────────────────────────────────────────
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
-         MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO
+         MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO,
+         MAPA_LISTADO_ASISTENCIAS
  } from "../respuestas/asistencia";
 import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
+import { ListadoAsistenciaRow } from "../data/asistencia.data";
+
+/**
+ * Datos crudos del listado de asistencias tal como llegan por la query.
+ *
+ * `pagina` y `limit` son opcionales a proposito: si no vienen se mandan
+ * `undefined` para que Zod aplique sus `.default()` (1 y 15). `desde` y
+ * `hasta` no se sanean: si faltan, Zod responde 400.
+ */
+interface ListadoAsistenciasQuery {
+    id_escuela: number;
+    desde: string;
+    hasta: string;
+    dia_semana: string | null;
+    hora: string | null;
+    dni_profesor: string | null;
+    id_nivel: number | null;
+    id_tipo_clase: number | null;
+    pagina?: string;
+    limit?: string;
+}
+
+/**
+ * Devuelve el texto recortado de un valor de query, o `null` si no vino o
+ * vino vacio.
+ *
+ * Es clave para los filtros opcionales: el cliente manda `""` cuando el
+ * filtro esta vacio, y `z.string().min(1)` rechazaria ese `""` con un 400.
+ *
+ * @param {unknown} v - Valor de `req.query`.
+ * @returns {string | null} Texto utilizable o `null`.
+ */
+const textoONull = (v: unknown): string | null =>
+    typeof v === "string" && v.trim() !== "" ? v.trim() : null;
+
+/**
+ * Devuelve el numero de un valor de query, o `null` si no vino o vino vacio.
+ *
+ * **No** sanea el contenido: `"abc"` se convierte en `NaN` y Zod lo rechaza
+ * (400), igual que `"0"` en `limit` por su `.min(1)`. Sanear a mano
+ * escondería el error del cliente.
+ *
+ * @param {unknown} v - Valor de `req.query`.
+ * @returns {number | null} Numero a validar por Zod, o `null`.
+ */
+const numeroONull = (v: unknown): number | null =>
+    typeof v === "string" && v.trim() !== "" ? Number(v) : null;
 
 
 /**
@@ -226,6 +274,46 @@ const buscarAlumno = async( req : Request, res : Response) => {
     );
 };
 
+/**
+ * Lista las asistencias de la escuela del token en un rango de fechas
+ * (spec 048).
+ *
+ * `id_escuela` sale **siempre** de `req.usuario` (token): no hay parametro
+ * para pedir otra escuela. Los filtros opcionales vacios (`""`) se mandan
+ * como `null` para que no fallen contra el schema, y `pagina` / `limit` se
+ * dejan sin enviar cuando no vienen, para que apliquen sus defaults.
+ *
+ * @async
+ * @function listadoAsistencias
+ * @param {Request} req - Peticion de Express con `req.usuario.id_escuela` y
+ *   los filtros en `req.query` (desde, hasta, dia_semana, hora, dni_profesor,
+ *   id_nivel, id_tipo_clase, pagina, limit).
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Envia el listado paginado o el error correspondiente.
+ */
+const listadoAsistencias = async( req : Request, res : Response ) => {
+    const { desde, hasta, dia_semana, hora, dni_profesor, id_nivel, id_tipo_clase, pagina, limit } = req.query;
+
+    const datos : ListadoAsistenciasQuery = {
+        // Multi-tenant: la escuela del token, nunca de la query.
+        id_escuela : Number( req.usuario?.id_escuela ),
+        // Las fechas NO se sanean: si faltan, el Zod responde 400.
+        desde : desde as string,
+        hasta : hasta as string,
+        dia_semana : textoONull(dia_semana),
+        hora : textoONull(hora),
+        dni_profesor : textoONull(dni_profesor),
+        id_nivel : numeroONull(id_nivel),
+        id_tipo_clase : numeroONull(id_tipo_clase),
+        pagina : typeof pagina === "string" && pagina.trim() !== "" ? pagina : undefined,
+        limit : typeof limit === "string" && limit.trim() !== "" ? limit : undefined,
+    };
+
+    await handleControladores<ListadoAsistenciasQuery, ListadoAsistenciaRow[]>(
+        res, datos, asistenciaServicio.listadoAsistencias, MAPA_LISTADO_ASISTENCIAS
+    );
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
     asistenciaManual : tryCatch( altaAsistenciaManual ),
@@ -233,4 +321,5 @@ export const method = {
     dataAsistencia : tryCatch( dataAsistencia ),
     infoAlumno : tryCatch( infoAlumno ),
     buscarAlumno : tryCatch( buscarAlumno ),
+    listadoAsistencias : tryCatch( listadoAsistencias ),
 } 
