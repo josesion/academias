@@ -8,6 +8,7 @@ import { ClientError } from "./utils/error";
 import { enviarResponseError } from "./utils/responseError";
 import { registroPeticion, obtenerRuta } from "./middleware/registroPeticion";
 
+import { globalLimiter } from "./middleware/rateLimite";
 
 /**  RUTAS PARA EL ADMINISTRATIVO DE LA APP */
 
@@ -121,6 +122,10 @@ app.use(cookieParser());
 app.get("/api/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+
+app.use(globalLimiter);
+
 
 // Registra TODA petición en `logs_eventos` (sale de acá solo el método, la ruta,
 // el estado y la duración; nunca headers, cookies ni body)
