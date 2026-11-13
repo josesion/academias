@@ -10,6 +10,7 @@ import { AsistenciaRapida } from "../../../componentes/AsistenciaRapida/Asistenc
 import { InscripcionRapida } from "../../../componentes/Inscripciones/InscripcionRapida/InscripcionRapida";
 import { PanelClima } from "../../../componentes/PanelClima/PanelClima";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
+import { ListadoInscripcionesDashboard } from "../../../componentes/ListadoInscripcionesDashboard/ListadoInscripcionesDashboard";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 import { diasHastaVencimiento } from "../../../utils/fecha";
 
@@ -181,6 +182,9 @@ export const UsuarioPage = () => {
             />
           )}
         </div>
+        {/* Listado de inscripciones recientes para el dashboard */}
+        <ListadoInscripcionesDashboard />
+
         <div className="usuario_contenido_clases">
           <section aria-labelledby={clasesId} className="usuario_clases_section">
             <h2 id={clasesId} className="visually-hidden">Clases y asistencia</h2>

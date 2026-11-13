@@ -80,3 +80,28 @@ export interface AnulacionInscripcion {
     metodo_pago: 'efectivo' | 'transferencia' | 'debito' | 'credito' | string;
     descripcion: string;
 }
+
+/**
+ * Filtro para el listado de inscripciones del dashboard.
+ * "por_vencer" → ordenadas por vigencia ASC (las más cercanas arriba).
+ * "ultimas" → ordenadas por fecha_inicio DESC (las más nuevas arriba).
+ * "todos" → sin ordenamiento especial, las últimas 20 por defecto.
+ */
+export type FiltroInscripcionDashboard = "por_vencer" | "ultimas" | "todos";
+
+/**
+ * Inscripción tal como la devuelve el endpoint del dashboard
+ * (GET /api/inscripciones_dashboard). Extende el listado estándar
+ * con el campo calculado de días hasta vencimiento.
+ */
+export interface InscripcionDashboard {
+    id_inscripcion: number;
+    dni_alumno: number;
+    nombre_completo: string;
+    nombre_plan: string;
+    fecha_inicio: string;     // YYYY-MM-DD
+    vigencia: string;         // YYYY-MM-DD
+    monto_pagado: string;
+    estado: string;
+    dias_hasta_vencimiento: number;
+}

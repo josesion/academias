@@ -1,0 +1,328 @@
+/* =====================================
+   Listado de Inscripciones Dashboard
+   Métrica del panel principal del usuario
+===================================== */
+
+.inscripciones_dashboard {
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: var(--radio-md);
+    margin-top: var(--radio-md);
+}
+
+/* ---- Encabezado ---- */
+
+.inscripciones_dashboard_encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--radio-sm);
+    margin-bottom: var(--radio-sm);
+    flex-wrap: wrap;
+}
+
+.inscripciones_dashboard_titulo {
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+    margin: 0;
+}
+
+/* ---- Filtro tipo píldora ---- */
+
+.inscripciones_dashboard_filtro {
+    display: flex;
+    background: var(--fondo-superficie);
+    border-radius: var(--radio-sm);
+    padding: 3px;
+    gap: 2px;
+}
+
+.inscripcion_filtro_btn {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-medio);
+    color: var(--texto-secundario);
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: var(--transicion);
+    white-space: nowrap;
+}
+
+.inscripcion_filtro_btn:hover {
+    color: var(--texto-principal);
+    background: var(--fondo-secundario);
+}
+
+.inscripcion_filtro_btn.activo {
+    color: var(--texto-principal);
+    background: var(--fondo-secundario);
+    box-shadow: var(--sombra-sm);
+}
+
+.inscripcion_filtro_btn:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+/* ---- Cuerpo ---- */
+
+.inscripciones_dashboard_cuerpo {
+    max-height: 420px;
+    overflow-y: auto;
+}
+
+.inscripciones_dashboard_cuerpo.carga {
+    max-height: 200px;
+}
+
+/* ---- Skeleton de carga ---- */
+
+.inscripciones_dashboard_skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton_line {
+    height: 48px;
+    border-radius: var(--radio-sm);
+    background: linear-gradient(
+        90deg,
+        var(--fondo-superficie) 25%,
+        rgba(240, 239, 235, 0.6) 50%,
+        var(--fondo-superficie) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton_shimmer 1.5s infinite;
+}
+
+@keyframes skeleton_shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ---- Estado vacío ---- */
+
+.inscripciones_dashboard_vacio {
+    text-align: center;
+    padding: var(--radio-lg) var(--radio-md);
+    color: var(--texto-secundario);
+    font-size: var(--texto-sm);
+}
+
+/* ---- Estado error ---- */
+
+.inscripciones_dashboard_cuerpo.error {
+    text-align: center;
+    padding: var(--radio-lg) var(--radio-md);
+    color: var(--color-error);
+    font-size: var(--texto-sm);
+}
+
+/* ---- Lista ---- */
+
+.inscripciones_dashboard_lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+/* ---- Fila de inscripción ---- */
+
+.inscripcion_fila {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px var(--radio-sm);
+    border-radius: var(--radio-sm);
+    border-left: 3px solid transparent;
+    transition: background var(--transicion);
+}
+
+.inscripcion_fila:hover {
+    background: var(--fondo-hover);
+}
+
+/* Indicador de estado (borde izquierdo) */
+.inscripcion_fila.estado_critico {
+    border-left-color: var(--color-error);
+}
+
+.inscripcion_fila.estado_advertencia {
+    border-left-color: var(--color-advertencia);
+}
+
+.inscripcion_fila.estado_normal {
+    border-left-color: var(--color-exito);
+}
+
+/* ---- Parte principal (nombre + DNI) ---- */
+
+.inscripcion_fila_principal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.inscripcion_indicador {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.inscripcion_fila.estado_critico .inscripcion_indicador {
+    background: var(--color-error);
+}
+
+.inscripcion_fila.estado_advertencia .inscripcion_indicador {
+    background: var(--color-advertencia);
+}
+
+.inscripcion_fila.estado_normal .inscripcion_indicador {
+    background: var(--color-exito);
+}
+
+.inscripcion_nombre {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+}
+
+.inscripcion_dni {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+/* ---- Parte secundaria (plan, vigencia, badge) ---- */
+
+.inscripcion_fila_secundario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 16px;
+    flex-wrap: wrap;
+}
+
+.inscripcion_plan {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+.inscripcion_vigencia {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+/* ---- Badge de días ---- */
+
+.inscripcion_badge {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    padding: 2px 8px;
+    border-radius: 8px;
+    margin-left: auto;
+}
+
+.inscripcion_badge.estado_critico {
+    color: var(--color-error);
+    background: rgba(179, 71, 71, 0.1);
+}
+
+.inscripcion_badge.estado_advertencia {
+    color: var(--color-advertencia);
+    background: rgba(194, 155, 56, 0.1);
+}
+
+.inscripcion_badge.estado_normal {
+    color: var(--color-exito);
+    background: rgba(91, 123, 110, 0.1);
+}
+
+/* ---- Responsive: móvil ---- */
+
+@media (max-width: 600px) {
+    .inscripciones_dashboard_encabezado {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .inscripciones_dashboard_filtro {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .inscripcion_filtro_btn {
+        flex: 1;
+        text-align: center;
+        padding: 6px 8px;
+        font-size: 0.65rem;
+    }
+
+    .inscripcion_fila {
+        padding: 10px 8px;
+    }
+
+    .inscripcion_fila_secundario {
+        padding-left: 16px;
+        gap: 6px;
+    }
+}
+
+/* ---- Reduced motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton_line {
+        animation: none;
+        background: var(--fondo-superficie);
+    }
+
+    .inscripcion_fila {
+        transition: none;
+    }
+}
+
+/* ---- High contrast ---- */
+
+@media (prefers-contrast: more) {
+    .inscripcion_fila.estado_critico {
+        border-left-color: #d32f2f;
+    }
+
+    .inscripcion_fila.estado_advertencia {
+        border-left-color: #f57f17;
+    }
+
+    .inscripcion_fila.estado_normal {
+        border-left-color: #2e7d32;
+    }
+
+    .inscripcion_badge.estado_critico {
+        color: #d32f2f;
+        background: rgba(211, 47, 47, 0.15);
+    }
+
+    .inscripcion_badge.estado_advertencia {
+        color: #f57f17;
+        background: rgba(245, 127, 23, 0.15);
+    }
+
+    .inscripcion_badge.estado_normal {
+        color: #2e7d32;
+        background: rgba(46, 125, 50, 0.15);
+    }
+}

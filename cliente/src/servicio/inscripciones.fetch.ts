@@ -66,3 +66,20 @@ export const anularInscripcion  =async ( data : TipadoInscripcion.AnulacionInscr
         }
     });
 };
+
+/**
+ * Obtiene las últimas inscripciones para el dashboard del usuario.
+ *
+ * @param filtro - Tipo de ordenamiento: "por_vencer", "ultimas" o "todos".
+ * @param limit - Cantidad máxima de resultados (por defecto 20).
+ * @param signal - AbortSignal para cancelar la petición.
+ * @returns Lista de inscripciones con días hasta vencimiento calculados.
+ */
+export const inscripcionesDashboard = async(
+    filtro: TipadoInscripcion.FiltroInscripcionDashboard = "todos",
+    limit: number = 20,
+    signal?: AbortSignal
+): Promise<ApiResponse<TipadoInscripcion.InscripcionDashboard[]>> => {
+    const ruta = `${PAGINA}api/inscripciones_dashboard?filtro=${filtro}&limit=${limit}`;
+    return apiFetch(ruta, { method: "GET", signal });
+};
