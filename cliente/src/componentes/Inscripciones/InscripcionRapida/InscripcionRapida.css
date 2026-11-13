@@ -1,0 +1,64 @@
+/* ============================================================
+   INSCRIPCIÓN RÁPIDA (modal)
+   Modal de inscripción desde el panel principal (Usuario.tsx).
+
+   Solo tokens de app.css (:root): sin colores literales ni
+   fallbacks, así el tema claro y el tema gym
+   (html[data-rubro="gym"]) funcionan sin reglas extra.
+
+   El modal hereda de .modal-overlay-finanzas y .modal-contenido-finanzas
+   (definidos en listadocajas.css) para el overlay, animaciones y portal.
+   ============================================================ */
+
+/* Ancho del modal: más ancho que AsistenciaRapida (720px) porque el
+   formulario de inscripción tiene dos columnas (SelectorPlegable + tarjeta). */
+.inscripcion_rapida_modal {
+  width: 100%;
+  max-width: 960px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+/* El formulario interno ajusta su ancho dentro del modal.
+   .formulario_inscripcion_contenedor tiene width: 95% y max-width: 1200px
+   en su CSS propio; dentro del modal se overridea para que no desborde. */
+.inscripcion_rapida_modal .formulario_inscripcion_contenedor {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 20px;
+  max-height: none;
+  overflow-y: visible;
+  box-shadow: none;
+  border: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* En mobile el formulario se adapta al ancho del modal */
+@media (max-width: 640px) {
+  .inscripcion_rapida_modal {
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .inscripcion_rapida_modal .formulario_inscripcion_contenedor {
+    padding: 16px 12px;
+  }
+
+  .inscripcion_rapida_modal .formulario_inscripcion_filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .inscripcion_rapida_modal .formulario_inscripcion_info {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reduced motion: desactivar animaciones del formulario */
+@media (prefers-reduced-motion: reduce) {
+  .inscripcion_rapida_modal .formulario_inscripcion_contenedor {
+    animation: none !important;
+  }
+}

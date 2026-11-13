@@ -301,6 +301,13 @@
   margin-bottom: 16px;
 }
 
+/* Contenedor de botones rápidos en el encabezado (Asistencia + Inscribir) */
+.usuario_encabezado_botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .usuario_encabezado_titulos {
   display: flex;
   flex-direction: column;

@@ -7,6 +7,7 @@ import { AlertaVencimiento } from "../../../componentes/AlertaVencimiento/Alerta
 import { Asistencia } from "../../../componentes/Horarios/Asistencias/Asistencias";
 import { MetricasHistorial } from "../../../componentes/Historial/Historial.metricas";
 import { AsistenciaRapida } from "../../../componentes/AsistenciaRapida/AsistenciaRapida";
+import { InscripcionRapida } from "../../../componentes/Inscripciones/InscripcionRapida/InscripcionRapida";
 import { PanelClima } from "../../../componentes/PanelClima/PanelClima";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
@@ -76,8 +77,10 @@ export const UsuarioPage = () => {
   // Carga global: se muestra mientras haya cualquier carga crítica inicial
   const cargandoGlobal = state.carga.tarjeta || state.carga.clases || state.carga.historial || state.carga.vencimiento;
   const [modalAbierto, setModalAbierto] = useState(false);
+  const [modalInscripcionAbierto, setModalInscripcionAbierto] = useState(false);
 
   const cerrarAsistenciaRapida = () => setModalAbierto(false);
+  const cerrarInscripcionRapida = () => setModalInscripcionAbierto(false);
 
   return (
     // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
@@ -109,18 +112,28 @@ export const UsuarioPage = () => {
             <p>Alumnos, asistencia y actividad reciente de tu escuela.</p>
           </div>
 
-          <Boton
-            clase="listar"
-            texto="Asistencia rápida"
-            logo="List"
-            onClick={() => setModalAbierto(true)}
-            aria-label="Abrir asistencia rápida manual"
-          />
+          <div className="usuario_encabezado_botones">
+            <Boton
+              clase="listar"
+              texto="Asistencia rápida"
+              logo="List"
+              onClick={() => setModalAbierto(true)}
+              aria-label="Abrir asistencia rápida manual"
+            />
+            <Boton
+              clase="agregar"
+              texto="Inscribir"
+              logo="Add"
+              onClick={() => setModalInscripcionAbierto(true)}
+              aria-label="Abrir inscripción rápida de alumno"
+            />
+          </div>
         </div>
 
         <PanelClima alertaMontada={alertaMontada} onCerrar={enfocarTitulo} />
       </header>
       <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} onAsistenciaRegistrada={refrescarAsistencia} />
+      <InscripcionRapida abierto={modalInscripcionAbierto} onCerrar={cerrarInscripcionRapida} />
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
