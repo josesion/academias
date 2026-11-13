@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6d8ba3"/>
+      <stop offset="55%" stop-color="#9fb4c4"/>
+      <stop offset="100%" stop-color="#d8e2ea"/>
+    </linearGradient>
+    <filter id="suave" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="24"/>
+    </filter>
+    <filter id="suave2" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="11"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+
+  <g filter="url(#suave)" fill="#c3d0da" opacity="0.85">
+    <ellipse cx="300" cy="150" rx="260" ry="60"/>
+    <ellipse cx="760" cy="118" rx="300" ry="58"/>
+    <ellipse cx="1090" cy="180" rx="220" ry="52"/>
+  </g>
+  <g filter="url(#suave2)" fill="#eef3f7" opacity="0.85">
+    <ellipse cx="460" cy="250" rx="240" ry="44"/>
+    <ellipse cx="930" cy="270" rx="230" ry="42"/>
+    <ellipse cx="180" cy="300" rx="180" ry="36"/>
+  </g>
+  <g filter="url(#suave)" fill="#8fa2b1" opacity="0.6">
+    <ellipse cx="640" cy="360" rx="300" ry="46"/>
+  </g>
+
+  <path d="M0 618 L170 546 L318 590 L488 518 L632 582 L780 534 L938 594 L1074 542 L1200 606 L1200 750 L0 750 Z" fill="#8e9aa4" opacity="0.55"/>
+  <path d="M0 670 L192 610 L348 650 L536 594 L706 650 L858 610 L1028 660 L1200 618 L1200 750 L0 750 Z" fill="#78868f"/>
+</svg>

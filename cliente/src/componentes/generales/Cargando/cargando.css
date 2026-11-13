@@ -1,0 +1,121 @@
+.overlay_cargando {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--fondo-principal) 85%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+/* Variante local: relative al contenedor padre, sin tapar toda la pantalla */
+.overlay_cargando--local {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  width: 100%;
+}
+
+.cartel_cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 32px 40px;
+  border-radius: var(--radio-md);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  box-shadow: var(--sombra-lg);
+  font-family: var(--fuente-principal);
+}
+
+/* Spinner: anillo fino, arco en verde salvia rotando */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+.texto_cargando {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-style: italic;
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.texto_cargando::after {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: puntos_cargando 1.4s steps(4, end) infinite;
+}
+
+@keyframes spinner_girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes puntos_cargando {
+  0% {
+    content: "";
+  }
+  25% {
+    content: ".";
+  }
+  50% {
+    content: "..";
+  }
+  75% {
+    content: "...";
+  }
+  100% {
+    content: "";
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none !important;
+    border-top-color: var(--color-secundario); /* Visible estático */
+  }
+  .texto_cargando::after {
+    animation: none !important;
+    content: "..." !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .cartel_cargando {
+    border-width: 2px;
+  }
+  .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .overlay_cargando {
+    display: none;
+  }
+}

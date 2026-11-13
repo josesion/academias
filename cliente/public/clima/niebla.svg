@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b9c1b9"/>
+      <stop offset="55%" stop-color="#d5dbd3"/>
+      <stop offset="100%" stop-color="#eaeee8"/>
+    </linearGradient>
+    <filter id="niebla" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+    <filter id="niebla2" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+    <linearGradient id="cerro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8b968c"/>
+      <stop offset="100%" stop-color="#6d7a70"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+
+  <path d="M0 560 L150 470 L300 528 L470 452 L610 522 L760 470 L910 534 L1060 476 L1200 540 L1200 750 L0 750 Z" fill="url(#cerro)" opacity="0.5"/>
+  <path d="M0 640 L178 586 L340 624 L520 576 L692 630 L848 590 L1024 642 L1200 602 L1200 750 L0 750 Z" fill="url(#cerro)"/>
+
+  <g fill="#4c5c50" opacity="0.55">
+    <path d="M180 642 L208 520 L236 642 Z"/>
+    <path d="M236 646 L268 486 L300 646 Z"/>
+    <path d="M330 640 L356 546 L382 640 Z"/>
+    <path d="M880 646 L912 512 L944 646 Z"/>
+    <path d="M944 642 L972 556 L1000 642 Z"/>
+  </g>
+
+  <g filter="url(#niebla)" fill="#ffffff">
+    <ellipse cx="300" cy="560" rx="380" ry="64" opacity="0.85"/>
+    <ellipse cx="860" cy="598" rx="400" ry="70" opacity="0.8"/>
+    <ellipse cx="600" cy="452" rx="420" ry="54" opacity="0.6"/>
+  </g>
+  <g filter="url(#niebla2)" fill="#ffffff">
+    <ellipse cx="200" cy="480" rx="240" ry="34" opacity="0.5"/>
+    <ellipse cx="1010" cy="500" rx="220" ry="30" opacity="0.45"/>
+  </g>
+</svg>

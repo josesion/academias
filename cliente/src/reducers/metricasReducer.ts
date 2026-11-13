@@ -1,0 +1,256 @@
+import type{  ResultClase, ResultTarjeta, ResultAsistencia, VencimientoEscuela } from "../servicio/metrica.fetch";
+import { type ResultHistorial } from "../servicio/historial.fetch";
+// ==========================================
+// 1. DEFINICIÓN DEL ESTADO (MOLDE)
+// ==========================================
+
+export interface MetricaUsuario {
+    carga : {
+        tarjeta : boolean,
+        clases   : boolean,
+        asistencia:boolean,
+        historial : boolean,
+        vencimiento : boolean,
+    },
+    error  : {
+        tarjeta : string | null,
+        clases   : string | null,
+        asistencia: string | null,
+        historial : string | null,
+        actualizar : string | null,
+        metricasTarjetas : string | null,
+        cierreCaja : string | null,
+        vencimiento : string | null,
+    },
+
+    tarjetas : ResultTarjeta | null,
+    clases   : ResultClase   | null,
+    asistencias : ResultAsistencia[] | null,
+    historial   : ResultHistorial[] | null,
+    fechaVencimiento : VencimientoEscuela | null,
+
+    actualizar : number,
+    actualizarTajetas : number,
+    actualizarCierreCaja : number,
+    actualizarGeneral : number,
+    
+};
+
+// ==========================================
+// 2. VALORES INICIALES (ESTADO CERO)
+// ==========================================
+
+export const initialStateMetricas = ( ) :MetricaUsuario =>({
+
+    carga : {
+        tarjeta : false,
+        clases   : false,
+        asistencia : false,
+        historial : false, 
+        vencimiento : false,    
+    },
+
+    error : {
+        tarjeta : null,
+        clases   : null,
+        asistencia : null,
+        historial  : null,
+        actualizar : null,
+        metricasTarjetas : null,
+        cierreCaja : null,
+        vencimiento : null,
+    },
+
+    tarjetas : null,
+    clases   : null,
+    asistencias : null,
+    historial   : null,
+
+    actualizar : 0,
+    actualizarTajetas : 0,
+    actualizarCierreCaja : 0,
+    actualizarGeneral : 0,
+    fechaVencimiento : null,
+});
+
+// ==========================================
+// 3. ACCIONES (EVENTOS DEL SISTEMA)
+// ==========================================
+export type MetricaAction =  
+      | { type: 'SET_ERROR_TARJETA' , payload : string | null}
+      | { type: 'SET_CARGA_TARJETA', payload : boolean }
+      | { type: 'SET_TARJETAS',  payload : ResultTarjeta | null }     
+      | { type: 'SET_ERROR_CLASE' , payload : string | null}
+      | { type: 'SET_CARGA_CLASE', payload : boolean }
+      | { type: 'SET_CLASE',  payload : ResultClase | null } 
+      | { type: 'SET_ERROR_ASISTENCIA' , payload : string | null}
+      | { type: 'SET_CARGA_ASISNTECIA', payload : boolean }
+      | { type: 'SET_ASISTENCIA',  payload : ResultAsistencia[] | null }  
+
+      | { type: 'SET_ERROR_HISTORIAL' , payload : string | null}
+      | { type: 'SET_CARGA_HISTORIAL', payload : boolean }
+      | { type: 'SET_HISTORIAL',  payload : ResultHistorial[] | null } 
+      
+      | { type: 'SET_ACTUALIZAR_ASISTENCIA' } 
+      | { type: 'SET_ERROR_ACTUALIZAR' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_METRICAS_TARJETAS' } 
+      | { type: 'SET_ERROR_METRICAS_TARJETAS' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_CIERRE' } 
+      | { type: 'SET_ERROR_METRICAS_CIERRE' , payload : string | null}
+      
+      | { type: 'SET_ACTUALIZAR_GENERICO' } 
+
+      | { type : "SET_CARGA_VENCIMIENTO" , payload : boolean}
+      | { type : "SET_ERROR_VENCIMIENTO" , payload : string | null }
+      | { type : "SET_FECHA_VENCIMIENTO", payload : VencimientoEscuela | null}
+
+
+// ==========================================
+// 4. EL CEREBRO (REDUCER)
+// ==========================================
+export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, action: MetricaAction)
+: ReturnType<typeof initialStateMetricas> =>{
+      switch(action.type){
+//------------------------------------- PARA TARJETAS
+      case "SET_ERROR_TARJETA" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    tarjeta: action.payload 
+                }
+          };
+
+        case "SET_CARGA_TARJETA":
+            return { 
+                ...state,
+                carga: {
+                    ...state.carga, 
+                    tarjeta: action.payload 
+                }
+            };
+
+      case  "SET_TARJETAS" :
+        return {...state, tarjetas : action.payload };    
+//------------------------------------- PARA CLASES
+
+      case "SET_ERROR_CLASE" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    clases : action.payload 
+                }
+          };
+
+        case "SET_CARGA_CLASE":
+            return { 
+                ...state,
+                carga: {
+                    ...state.carga, 
+                    clases : action.payload 
+                }
+            };
+
+      case  "SET_CLASE" :
+        return {...state, clases : action.payload };
+//------------------------------------- PARA ASISTENCIA
+      case "SET_ERROR_ASISTENCIA" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    asistencia : action.payload 
+                }
+          };
+
+      case "SET_ERROR_METRICAS_TARJETAS" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    metricasTarjetas : action.payload 
+                }
+          };    
+          
+      case "SET_ERROR_METRICAS_CIERRE" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    cierreCaja : action.payload 
+                }
+          };            
+
+        case "SET_CARGA_ASISNTECIA":
+            return { 
+                ...state,
+                carga: {
+                    ...state.carga, 
+                    asistencia : action.payload 
+                }
+            };
+
+      case  "SET_ASISTENCIA" :
+        return {...state, asistencias : action.payload };
+
+//------------------------------------- PARA HISTORIAL
+      case "SET_ERROR_HISTORIAL" :
+          return{ ...state,
+                error: {
+                    ...state.error, 
+                    historial : action.payload 
+                }
+          };
+
+        case "SET_CARGA_HISTORIAL":
+            return { 
+                ...state,
+                carga: {
+                    ...state.carga, 
+                    historial : action.payload 
+                }
+            };
+
+      case  "SET_HISTORIAL" :
+        return {...state, historial : action.payload };
+
+
+    case "SET_ACTUALIZAR_ASISTENCIA":
+        return { ...state, actualizar: state.actualizar + 1 };
+
+    case "SET_ACTUALIZAR_METRICAS_TARJETAS" :
+        return { ...state, actualizarTajetas : state.actualizarTajetas +1 }    
+
+    case "SET_ACTUALIZAR_CIERRE" :
+        return { ...state, actualizarCierreCaja : state.actualizarCierreCaja +1 }   
+        
+    case "SET_ACTUALIZAR_GENERICO" :
+        return { ...state, actualizarGeneral : state.actualizarGeneral +1 }    
+
+
+    case "SET_CARGA_VENCIMIENTO" :
+        return {
+            ...state,
+            carga :{
+                ...state.carga,
+                vencimiento : action.payload
+            }
+        } 
+        
+    case "SET_ERROR_VENCIMIENTO" :
+        return {
+            ...state,
+            error :{
+                ...state.error,
+                vencimiento : action.payload
+            }
+        }    
+ 
+    case "SET_FECHA_VENCIMIENTO" :
+        return {
+            ...state,
+            fechaVencimiento : action.payload
+        }        
+            
+        default:
+                return state;       
+      };
+};

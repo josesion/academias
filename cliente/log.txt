@@ -1,0 +1,961 @@
+﻿powershell : -replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o 
+programa 
+En línea: 1 Carácter: 1
++ powershell -Command "(Get-Content 'C:\Users\pc\onedrive\escritorio\ac ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (-replace : El t...ipt o programa :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+-replace : El término '-replace' no se reconoce como nombre de un cmdlet, función, archivo de script o programa 
+ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que dicha ruta 
+es correcta e inténtelo de nuevo.
+En línea: 1 Carácter: 128
++ ... entes\inicio\planes\Planes.tsx') | ForEach-Object {  -replace 'import ...
++                                                          ~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (-replace:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 

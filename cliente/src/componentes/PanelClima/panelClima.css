@@ -1,0 +1,554 @@
+/* ==========================================================================
+   PANEL DE CLIMA — spec 053
+   Escritorio: tarjeta del encabezado con la imagen a sangre.
+   <= 1024px: cuadro flotante abajo a la izquierda con imagen miniatura.
+   ========================================================================== */
+
+.panel_clima {
+  /* Perilla documentada: cuánto sube el flotante cuando la alerta de
+     vencimiento está montada (se ajusta en validación). */
+  --clima-separacion-alerta: 300px;
+
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+
+  flex: 0 0 380px;
+  min-width: 320px;
+  max-width: 420px;
+  min-height: clamp(200px, 18vw, 260px);
+  padding: 18px 20px 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-md);
+  background: var(--fondo-superficie);
+  color: #ffffff;
+
+  animation: panel_clima_entrada 260ms var(--ease-ui) both;
+}
+
+@keyframes panel_clima_entrada {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel_clima_latido {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+/* ---------- Imagen a sangre (escritorio) ---------- */
+
+.panel_clima_media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.panel_clima_imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Excepción documentada de la spec: el velo sobre la foto usa neutros propios
+   porque los tokens no cubren "texto sobre imagen".
+
+   Va en dos capas porque las imágenes tienen luminancias muy distintas (de
+   `lluvia` oscura a `nieve` casi blanca): una horizontal que oscurece la
+   columna de texto (izquierda) y deja viva la imagen a la derecha, y otra
+   vertical solo abajo, para la fila del pronóstico que ocupa todo el ancho.
+   Verificado con el peor caso (`nieve.svg`): el texto queda ≥ 4.5:1. */
+.panel_clima_velo {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(8, 12, 16, 0.84) 0%,
+      rgba(8, 12, 16, 0.66) 40%,
+      rgba(8, 12, 16, 0.3) 72%,
+      rgba(8, 12, 16, 0.12) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(8, 12, 16, 0) 52%,
+      rgba(8, 12, 16, 0.55) 78%,
+      rgba(8, 12, 16, 0.88) 100%
+    );
+}
+
+/* ---------- Contenido sobre la imagen ---------- */
+
+.panel_clima_top {
+  display: block;
+}
+
+.panel_clima_actual {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.panel_clima .panel_clima_condicion {
+  margin: 0;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+}
+
+.panel_clima .panel_clima_temperatura {
+  margin: 0;
+
+  /* `inherit` para que tome el color del panel (#fff en escritorio). */
+  color: inherit;
+
+  font-family: var(--fuente-titulos);
+  font-size: clamp(2.4rem, 4vw, 3.1rem);
+  font-weight: var(--peso-medio);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+}
+
+.panel_clima_detalles {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: var(--texto-sm);
+}
+
+.panel_clima_dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.panel_clima_dato svg {
+  flex: 0 0 auto;
+  opacity: 0.9;
+}
+
+/* ---------- Pronóstico de 3 días ---------- */
+
+.panel_clima_pronostico {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+
+  margin: 0;
+  padding: 10px 0 0;
+  list-style: none;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.panel_clima_dia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+
+  font-size: var(--texto-xs);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.panel_clima_dia_nombre {
+  font-family: var(--fuente-codigo);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.panel_clima_dia_img {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.panel_clima_dia_temp {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.panel_clima_dia_min {
+  opacity: 0.75;
+}
+
+/* ---------- Carga ---------- */
+
+.panel_clima_esqueleto {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.panel_clima_hueso {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+  animation: panel_clima_latido 1.2s ease-in-out infinite;
+}
+
+.panel_clima_hueso_titulo {
+  width: 55%;
+}
+
+.panel_clima_hueso_valor {
+  width: 38%;
+  height: 26px;
+  border-radius: var(--radio-sm);
+}
+
+.panel_clima_hueso_linea {
+  width: 100%;
+}
+
+/* ---------- Error ---------- */
+
+.panel_clima_error {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.panel_clima .panel_clima_error_texto {
+  margin: 0;
+
+  color: inherit;
+  font-size: var(--texto-sm);
+  line-height: 1.35;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.panel_clima_reintentar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-primario, #1b1c1b);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  cursor: pointer;
+
+  transition:
+    background-color 160ms var(--ease-ui),
+    transform 120ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel_clima_reintentar:hover {
+    background: #ffffff;
+  }
+
+  .panel_clima_reintentar:active {
+    transform: scale(0.97);
+  }
+}
+
+.panel_clima_reintentar:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ---------- Cerrar (solo flotante) ---------- */
+
+.panel_clima_cerrar {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(10, 14, 16, 0.55);
+  color: #ffffff;
+  cursor: pointer;
+
+  transition:
+    background-color 160ms var(--ease-ui),
+    transform 120ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .panel_clima_cerrar:hover {
+    background: rgba(10, 14, 16, 0.78);
+  }
+
+  .panel_clima_cerrar:active {
+    transform: scale(0.94);
+  }
+}
+
+.panel_clima_cerrar:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* ==========================================================================
+   FLOTANTE — tablet y celular
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .panel_clima {
+    position: fixed;
+    left: 12px;
+    bottom: 12px;
+    z-index: 400;
+
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    width: min(240px, calc(100vw - 24px));
+    min-width: 0;
+    max-width: none;
+    min-height: 0;
+    padding: 12px;
+    gap: 8px;
+
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra-lg);
+    background: var(--fondo-secundario);
+    color: var(--texto-principal);
+  }
+
+  .panel_clima_top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-right: 30px;
+  }
+
+  .panel_clima_media {
+    position: relative;
+    inset: auto;
+    width: 56px;
+    height: 56px;
+    flex: 0 0 56px;
+    border-radius: var(--radio-sm);
+  }
+
+  .panel_clima_velo {
+    display: none;
+  }
+
+  .panel_clima_actual {
+    gap: 0;
+  }
+
+  .panel_clima .panel_clima_condicion {
+    color: var(--texto-secundario);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-shadow: none;
+  }
+
+  .panel_clima .panel_clima_temperatura {
+    font-size: 1.9rem;
+    text-shadow: none;
+  }
+
+  .panel_clima_detalles {
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--texto-xs);
+  }
+
+  .panel_clima_dato {
+    text-shadow: none;
+  }
+
+  .panel_clima_pronostico {
+    gap: 4px;
+    padding-top: 8px;
+    border-top-color: var(--borde);
+  }
+
+  .panel_clima_dia {
+    gap: 2px;
+    font-size: 0.62rem;
+    text-shadow: none;
+  }
+
+  .panel_clima_dia_nombre {
+    letter-spacing: 0.04em;
+  }
+
+  .panel_clima_dia_img {
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 0 0 1px var(--borde);
+  }
+
+  .panel_clima_esqueleto {
+    gap: 6px;
+  }
+
+  .panel_clima_hueso {
+    background: color-mix(in srgb, var(--texto-principal) 16%, transparent);
+  }
+
+  .panel_clima .panel_clima_error_texto {
+    color: var(--texto-secundario);
+    text-shadow: none;
+  }
+
+  .panel_clima_reintentar {
+    border-color: var(--borde);
+    background: var(--fondo-superficie);
+    color: var(--texto-principal);
+  }
+
+  .panel_clima_cerrar {
+    display: inline-flex;
+    top: 4px;
+    right: 4px;
+    width: 32px;
+    height: 32px;
+    border-color: var(--borde);
+    background: var(--fondo-superficie);
+    color: var(--texto-secundario);
+  }
+
+  /* Cierre de esta visita: solo dentro del modo flotante. */
+  .panel_clima_oculto {
+    display: none;
+  }
+}
+
+/* La alerta de vencimiento ocupa el ancho completo por debajo de ~480px:
+   el clima se corre hacia arriba en lugar de competir en apilado. */
+@media (max-width: 700px) {
+  .panel_clima.panel_clima_con_alerta {
+    bottom: calc(12px + var(--clima-separacion-alerta));
+  }
+}
+
+/* Móvil apaisado: sin pronóstico para no tapar contenido. */
+@media (max-width: 1024px) and (max-height: 500px) {
+  .panel_clima_pronostico {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD / IMPRESIÓN
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .panel_clima,
+  .panel_clima_hueso,
+  .panel_clima_cerrar,
+  .panel_clima_reintentar {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .panel_clima_cerrar:active,
+  .panel_clima_reintentar:active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .panel_clima {
+    border-width: 2px;
+    border-color: var(--texto-principal);
+  }
+
+  .panel_clima_velo {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0, 0, 0, 0.94) 0%,
+        rgba(0, 0, 0, 0.84) 40%,
+        rgba(0, 0, 0, 0.58) 72%,
+        rgba(0, 0, 0, 0.36) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.2) 52%,
+        rgba(0, 0, 0, 0.72) 78%,
+        rgba(0, 0, 0, 0.96) 100%
+      );
+  }
+
+  .panel_clima_pronostico {
+    border-top-width: 2px;
+  }
+
+  .panel_clima_cerrar {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .panel_clima {
+    display: none !important;
+  }
+}

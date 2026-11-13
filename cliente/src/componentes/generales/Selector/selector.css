@@ -1,0 +1,108 @@
+/* ==========================================================================
+   SELECTOR PLEGABLE — ESTETICA EDITORIAL / LUJO
+   ========================================================================== */
+
+.caja_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.selector_label {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--texto-secundario);
+    font-weight: var(--peso-negrita);
+}
+
+/* Contenedor del input con los iconos decorativos */
+.selector_input_wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.selector_input_cyber {
+    width: 100%;
+    height: 44px;
+    padding: 0 44px 0 44px; /* Espacio para los iconos de los costados */
+    
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    outline: none;
+    box-sizing: border-box;
+
+    transition: border-color 120ms var(--ease-ui), box-shadow 120ms var(--ease-ui), background 120ms var(--ease-ui);
+}
+
+.selector_input_cyber::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.selector_input_cyber:hover {
+    border-color: var(--borde-hover);
+}
+
+.selector_input_cyber:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+    background: var(--fondo-principal);
+}
+
+/* Iconos internos */
+.selector_icono_izq,
+.selector_icono_der {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--texto-deshabilitado);
+    pointer-events: none;
+}
+
+.selector_icono_izq {
+    left: 14px;
+}
+
+.selector_icono_der {
+    right: 14px;
+}
+
+/* Texto de ayuda (aria-describedby) */
+.selector_hint {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+}
+
+/* Ajustes opcionales para la lista nativa del datalist (limitado por navegadores pero estilizable en algunos contextos modernos) */
+.selector_contenedor {
+    background-color: var(--fondo-principal);
+    color: var(--texto-principal);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 640px) {
+    .selector_input_cyber {
+        height: 48px;
+        padding: 0 48px 0 48px;
+        font-size: var(--texto-md);
+    }
+    
+    .selector_icono_izq { left: 16px; }
+    .selector_icono_der { right: 16px; }
+}

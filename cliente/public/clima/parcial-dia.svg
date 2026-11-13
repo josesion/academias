@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4b93c9"/>
+      <stop offset="52%" stop-color="#93c4e6"/>
+      <stop offset="100%" stop-color="#f0e2c9"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8dd" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="#ffd98f" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#ffd98f" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="suave" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="suave2" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <linearGradient id="cerro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c39a6d"/>
+      <stop offset="100%" stop-color="#8d6541"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+  <circle cx="950" cy="190" r="250" fill="url(#halo)"/>
+  <circle cx="950" cy="190" r="58" fill="#fff6d8"/>
+
+  <g filter="url(#suave)" fill="#ffffff" opacity="0.92">
+    <ellipse cx="380" cy="250" rx="190" ry="52"/>
+    <ellipse cx="540" cy="286" rx="150" ry="42"/>
+    <ellipse cx="212" cy="286" rx="120" ry="34"/>
+    <ellipse cx="880" cy="180" rx="180" ry="46"/>
+    <ellipse cx="1040" cy="212" rx="130" ry="34"/>
+    <ellipse cx="700" cy="360" rx="150" ry="34" opacity="0.7"/>
+  </g>
+
+  <g filter="url(#suave2)" fill="#ffffff" opacity="0.55">
+    <ellipse cx="470" cy="196" rx="130" ry="30"/>
+    <ellipse cx="960" cy="120" rx="96" ry="24"/>
+  </g>
+
+  <path d="M0 606 L156 524 L286 570 L444 492 L580 560 L720 512 L880 578 L1016 526 L1200 594 L1200 750 L0 750 Z" fill="#b08355" opacity="0.55"/>
+  <path d="M0 656 L188 588 L338 630 L528 564 L698 624 L846 580 L1016 640 L1200 594 L1200 750 L0 750 Z" fill="url(#cerro)"/>
+</svg>

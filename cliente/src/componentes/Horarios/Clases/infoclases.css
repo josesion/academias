@@ -1,0 +1,128 @@
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL
+   ========================================================================== */
+
+.info_clases_contenedor {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 24px;
+    background: var(--fondo-secundario);
+   
+    border: none;
+    box-shadow: var(--sombra-md);
+    overflow: hidden;
+    gap: 20px;
+}
+
+/* ==========================================================================
+   DATOS Y ITEMS DE LA CLASE
+   ========================================================================== */
+
+.info_clases_datos {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex: 1;
+}
+
+.info_clases_item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.info_clases_label {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info_clases_item h2 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.info_clases_item p {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+}
+
+.info_clases_divisor {
+    width: 1px;
+    height: 32px;
+    background: var(--borde);
+}
+
+/* ==========================================================================
+   BADGE DE ESTADO (EN CURSO / SIN CURSO)
+   ========================================================================== */
+
+.info_clases_estado {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: var(--radio-full, 20px);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    white-space: nowrap;
+}
+
+.info_clases_estado.curso {
+    background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.1);
+    color: var(--color-exito);
+}
+
+.info_clases_estado.sin_curso {
+    background: rgba(var(--color-secundario-rgb, 108, 117, 125), 0.1);
+    color: var(--texto-secundario);
+}
+
+.estado_punto {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .info_clases_contenedor {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
+        gap: 16px;
+    }
+
+    .info_clases_datos {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .info_clases_divisor {
+        width: 100%;
+        height: 1px;
+    }
+
+    .info_clases_estado {
+        align-self: flex-start;
+    }
+}

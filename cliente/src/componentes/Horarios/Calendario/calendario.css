@@ -1,0 +1,201 @@
+/* ==========================================================================
+   CALENDARIO — ESTILO EDITORIAL / LUJO CON SCROLL HORIZONTAL Y STICKY
+   ========================================================================== */
+
+.contenedor_calendario_completo {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contenedor con scroll dual (vertical y horizontal automático) */
+.contenedor_calendario {
+    width: 100%;
+    max-height: 75dvh;
+    overflow: auto;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    position: relative;
+}
+
+/* Estilización de la barra de desplazamiento */
+.contenedor_calendario::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.contenedor_calendario::-webkit-scrollbar-track {
+    background: var(--fondo-hover);
+}
+
+.contenedor_calendario::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 4px;
+}
+
+/* Tabla general con ancho mínimo para forzar el scroll horizontal en pantallas chicas */
+.tabla_calendario {
+    width: 100%;
+    min-width: 950px; 
+    border-collapse: separate; 
+    border-spacing: 0;
+    table-layout: fixed;
+}
+
+/* ==========================================================================
+   ENCABEZADOS STICKY (Días arriba)
+   ========================================================================== */
+
+.cabecera_calendario th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--fondo-principal);
+    color: var(--texto-principal);
+    font-family: var(--fuente-titulos);
+    font-size: 0.85rem;
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 14px 10px;
+    text-align: center;
+    border-bottom: 2px solid var(--borde);
+    border-right: 1px solid var(--borde);
+    box-shadow: inset 0 -1px 0 var(--borde);
+}
+
+/* Celda de la esquina superior izquierda (cruza hora y días) */
+.th_hora_label.esquina_fija {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 4; /* Mayor que los días y las horas para quedar arriba de todo */
+    background: var(--fondo-principal);
+    width: 90px;
+    min-width: 90px;
+}
+
+/* ==========================================================================
+   COLUMNA LATERAL STICKY (Horas a la izquierda)
+   ========================================================================== */
+
+.celda_hora_lateral {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: var(--fondo-principal);
+    font-family: var(--fuente-codigo);
+    font-size: 0.75rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    text-align: center;
+    padding: 12px 8px;
+    border-right: 2px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    width: 90px;
+    min-width: 90px;
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   CELDAS DE LA GRILLA
+   ========================================================================== */
+
+.celda_interactiva {
+    padding: 6px;
+    border-right: 1px solid var(--borde);
+    border-bottom: 1px solid var(--borde);
+    background: var(--fondo-principal);
+    min-width: 150px;
+    height: 80px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    transition: background var(--transicion);
+}
+
+.celda_interactiva:hover {
+    background: color-mix(in srgb, var(--color-primario) 3%, var(--fondo-principal));
+}
+
+/* Wrappers internos para centrar o expandir */
+.wrapper_clase_postit,
+.wrapper_celda_vacia {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.seccion_footer_calendario {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 4px;
+}
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print (spec 024)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_calendario {
+    transition: none !important;
+  }
+  .celda_interactiva {
+    transition: none !important;
+  }
+  .celda_interactiva:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .contenedor_calendario {
+    border-width: 2px;
+  }
+  .th_hora_label,
+  .th_dia_sticky,
+  .celda_hora_lateral {
+    border-width: 2px !important;
+  }
+  .celda_interactiva {
+    border-width: 2px !important;
+  }
+  /* La celda con el foco rotativo (spec 014) necesita un contorno fuerte:
+     sin esto el usuario de teclado no sabe donde esta. */
+  .celda_interactiva:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: -3px;
+    box-shadow: none;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .seccion_footer_calendario {
+    display: none !important;
+  }
+  .contenedor_calendario {
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    border: 1px solid var(--borde);
+  }
+  .contenedor_calendario_completo {
+    break-inside: avoid;
+  }
+}

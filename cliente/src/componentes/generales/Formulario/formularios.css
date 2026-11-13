@@ -1,0 +1,388 @@
+/* ==========================================================================
+   FORMULARIO GENÉRICO — tokens de marca completos
+   ========================================================================== */
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+
+    width: 100%;
+    max-width: 520px;
+
+    padding: 2.5rem;
+
+    background: color-mix(in srgb, var(--fondo-secundario) 92%, transparent);
+    backdrop-filter: blur(18px);
+
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-lg);
+
+    max-height: calc(100dvh - 70px);
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    position: relative;
+
+    animation: fadeInForm 0.35s ease;
+}
+
+/* ==========================================================================
+   TITULO
+   ========================================================================== */
+
+.formulario_titulo_container {
+    position: relative;
+
+    width: 100%;
+
+    padding: 24px 0;
+    margin-bottom: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    border-bottom: 1px solid var(--borde);
+}
+
+.formulario_titulo {
+    position: relative;
+    z-index: 5;
+
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    line-height: var(--linea-titulo);
+
+    letter-spacing: 0.4px;
+
+    background: var(--texto-secundario);
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    margin: 0;
+}
+
+/* ==========================================================================
+   PARTÍCULAS — COLORES ARMONIZADOS
+   ========================================================================== */
+
+.particula_titulo {
+    position: absolute;
+    bottom: -10px;
+
+    border-radius: 50%;
+
+    z-index: 1;
+    pointer-events: none;
+
+    animation: fluirHaciaArriba 3s linear infinite;
+
+    opacity: 0;
+
+    filter: blur(3px);
+}
+
+.tp-1, .tp-3 {
+    background: var(--color-primario);
+    box-shadow: 
+        0 0 15px var(--color-primario),
+        0 0 30px color-mix(in srgb, var(--color-primario) 40%, transparent);
+}
+
+.tp-2, .tp-4 {
+    background: var(--texto-secundario);
+    box-shadow: 
+        0 0 15px var(--texto-secundario),
+        0 0 30px color-mix(in srgb, var(--texto-secundario) 40%, transparent);
+}
+
+.tp-1 {
+    left: 10%;
+    width: 12px;
+    height: 12px;
+    animation-delay: 0s;
+}
+
+.tp-2 {
+    left: 32%;
+    width: 10px;
+    height: 10px;
+    animation-delay: 0.8s;
+}
+
+.tp-3 {
+    left: 62%;
+    width: 14px;
+    height: 14px;
+    animation-delay: 1.5s;
+}
+
+.tp-4 {
+    left: 85%;
+    width: 9px;
+    height: 9px;
+    animation-delay: 0.4s;
+}
+
+@keyframes fluirHaciaArriba {
+    0% {
+        transform: translateY(20px) scale(0.4);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-110px) translateX(18px) scale(1.3);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .formulario,
+    .particula_titulo,
+    .buscador_estado {
+        animation: none !important;
+        transition: none !important;
+    }
+    .particula_titulo {
+        opacity: 0;
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — high-contrast / print
+   ========================================================================== */
+
+@media (prefers-contrast: more) {
+  .formulario {
+    border-width: 2px;
+  }
+  .buscador_estado {
+    border-width: 2px;
+  }
+  .buscador_estado:focus {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .inputs_contenedor:has(.mensaje_error) .inputs {
+    border-width: 2px;
+  }
+  .inputs_contenedor:has(.mensaje_error) .inputs:focus {
+    outline: 3px solid var(--color-error);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .particula_titulo {
+    display: none !important;
+  }
+  .formulario {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    background: var(--fondo-principal);
+    max-height: none;
+    overflow: visible;
+  }
+  .formulario_titulo_container {
+    border-bottom: 1px solid var(--borde);
+  }
+  .botonera_formulario {
+    display: none;
+  }
+  .errores_genericos {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   SELECT "TIPO" (bloque suelto sin componente propio)
+   ========================================================================== */
+
+.formulario > div p {
+    margin: 0 0 6px 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+/* Rótulo del <select> (spec 016): era un <p> y pasó a ser un <label> para que
+   el lector de voz anunciara el nombre del campo. Replica el estilo de arriba y
+   fuerza `display:block` porque <label> viene inline por defecto y, sin esto,
+   el rótulo se pegaría al select en la misma línea.
+   NO se extiende la regla anterior a `label` a propósito: los <label> de
+   `Inputs` también son hijos directos de un <div> del form y tienen su propio
+   estilo. */
+.formulario_label_select {
+    display: block;
+
+    margin: 0 0 6px 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+.buscador_estado {
+    width: 100%;
+    box-sizing: border-box;
+
+    height: 42px;
+    padding: 0 40px 0 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7AFBF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+
+    transition: var(--transicion);
+}
+
+.buscador_estado:hover {
+    border-color: var(--borde-hover);
+}
+
+.buscador_estado:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+.buscador_estado option {
+    background-color: var(--fondo-principal);
+    color: var(--texto-principal);
+    padding: 12px;
+}
+
+/* ==========================================================================
+   BOTONERA
+   ========================================================================== */
+
+.botonera_formulario {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 14px;
+
+    width: 100%;
+
+    margin-top: 22px;
+    padding-top: 16px;
+
+    border-top: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   ERRORES
+   ========================================================================== */
+
+.errores_genericos {
+    width: 100%;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--color-error);
+}
+
+/* ==========================================================================
+   SCROLLBAR
+   ========================================================================== */
+
+.formulario::-webkit-scrollbar {
+    width: 8px;
+}
+
+.formulario::-webkit-scrollbar-track {
+    background: var(--fondo-hover);
+    border-radius: var(--radio-sm);
+}
+
+.formulario::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-sm);
+}
+
+.formulario::-webkit-scrollbar-thumb:hover {
+    filter: brightness(1.15);
+}
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+
+@keyframes fadeInForm {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .formulario {
+        width: 92%;
+        padding: 1.5rem;
+        border-radius: var(--radio-md);
+    }
+
+    .formulario_titulo {
+        font-size: var(--titulo-sm);
+        text-align: center;
+    }
+
+    .botonera_formulario {
+        flex-direction: column;
+    }
+
+    .botonera_formulario > * {
+        width: 100%;
+    }
+}

@@ -1,0 +1,555 @@
+/* ==========================================================================
+   LAYOUT PANEL USUARIO — MÉTRICAS
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga global inicial */
+.carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-align: center;
+}
+
+.carga-global .spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+@keyframes spinner_girar {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carga-global .spinner {
+    animation: none;
+  }
+}
+
+.usuario_contenedor_metricas {
+  margin: 0 auto; /* Centrado horizontal automático */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* `flex-start` y NO `stretch`, y esto es importante: con `stretch` el
+     contenedor estiraba grupo1 al alto de grupo2, y el ResizeObserver de
+     Usuario.tsx copia el alto de grupo1 de vuelta a grupo2. Las dos columnas
+     quedaban clavadas en ~1382px con solo 641px de contenido real. Con
+     `stretch` es un bucle; con `flex-start` cada una mide lo que tiene. */
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  box-sizing: border-box;
+  /* Transición suave de layout al cambiar de viewport */
+  transition: margin 0.2s var(--ease-ui), padding 0.2s var(--ease-ui);
+}
+
+/* Reduce motion si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   GRUPO 1 (tarjetas + info de clases) — en columna
+   ========================================================================== */
+
+.usuario_contenedor_metricas .usuario_metricas_grupo1 {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1 1 auto; /* 1: crecer, 1: encoger, auto: tamaño natural */
+  min-width: 0; /* Esencial para que los items flexibles no se rompan */
+
+  /* Micro-interacciones con la skill emil-design-eng */
+  transition: transform 0.2s var(--ease-ui);
+}
+
+@media (hover:hover) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo1:hover {
+    transform: scale(0.98); /* Ligero "push" al hover en puntero preciso */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo1 {
+    transition: none;
+  }
+}
+
+/* Tarjetas: ancho mínimo más generoso para que no corten el texto */
+.usuario_contenedor_metricas .usuario_metricas_tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+  width: 100%; /* Asegura que las tarjetas ocupen todo el ancho disponible */
+
+  /* Las tarjetas tendrán :active scale en su propio regla */
+}
+
+/* Info de clases (InfoClases + Asistencia): en columna */
+.usuario_contenedor_metricas .usuario_contenido_clases {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%; /* Ocupa el ancho completo de su padre */
+
+  transition: margin 0.2s var(--ease-ui);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenido_clases {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   GRUPO 2 (historial) — debajo de grupo1 en mobile, al lado en desktop
+   ========================================================================== */
+
+.usuario_contenedor_metricas .usuario_metricas_grupo2 {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible; /* Quitado: hidden cortaba el contenido en mobile */
+
+  /* Micro-interacción suave */
+  transition: transform 0.2s var(--ease-ui);
+}
+
+@media (hover:hover) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo2:hover {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas .usuario_metricas_grupo2 {
+    transition: none;
+  }
+}
+
+/* Contenido del historial con scrolling solo cuando es necesario */
+.usuario_contenido_historial {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0; /* Permite contraerse en mobile */
+
+  /* Scrollbar aesthetic opcional */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-border, #ccc);
+    border-radius: 3px;
+  }
+}
+
+/* ==========================================================================
+   ESTADOS ACTIVOS Y HOVER (skill emil-design-eng)
+   ========================================================================== */
+
+/* Efecto :active scale(0.97) en elementos interactivos del panel */
+.usuario_contenedor_metricas [role="button"],
+.usuario_contenedor_metricas button,
+.usuario_contenedor_metricas [onclick] {
+  user-select: none;
+
+  /* Transición base */
+  transition: transform 0.1s var(--ease-ui), background-color 0.1s var(--ease-ui),
+    color 0.1s var(--ease-ui);
+
+  /* :active solo en dispositivos con puntero preciso */
+  @media (hover:hover) and (pointer: fine) {
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* Hover sutil solo en puntero preciso */
+  @media (hover:hover) and (pointer: fine) {
+    &:hover {
+      /* No se añade transform masivo aquí para evitar duplicados;
+         cada componente define su propio efecto sutil */
+    }
+  }
+
+  /* Reducir motion */
+  @media (prefers-reduced-motion: reduce) {
+    transition: background-color 0.1s ease-out, color 0.1s ease-out;
+    &:active {
+      transform: none;
+    }
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .usuario_contenedor_metricas {
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: stretch;
+    min-height: auto;
+    /* En mobile sacamos la máscara o la achicamos para que no oculte contenido útil */
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .usuario_contenedor_metricas .usuario_metricas_grupo1,
+  .usuario_contenedor_metricas .usuario_metricas_grupo2 {
+    flex: 1 1 auto;
+    width: 100%;
+    /* Quitado height explícito: cada uno toma el espacio que necesita */
+    /* :active y hover se aplican vía las reglas generales arriba */
+
+    @media (prefers-reduced-motion: reduce) {
+      transition: none;
+    }
+  }
+
+  .usuario_contenido_historial {
+    max-height: none; /* Sin tope artificial en mobile; scrolla solo si es necesario */
+  }
+
+  /* El bloque principal toma toda la fila: el clima pasa a flotante. */
+  .usuario_encabezado_principal {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .usuario_contenedor_metricas .usuario_metricas_tarjetas {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .usuario_saludo {
+    font-size: var(--texto-xs);
+  }
+}
+
+/* ==========================================================================
+   PANEL DE LA ACADEMIA — AJUSTES DE ESTA PAGINA (spec 018)
+
+   Todo lo de abajo va SCOPEADO bajo `.usuario_contenedor_metricas` a
+   proposito: `.tarjeta_metrica_contenedor` (y su CSS) lo usan TAMBIEN las
+   tarjetas del panel Admin, asi que tocar `tarjetametricas.css` aca
+   seria un efecto colateral en otra pantalla.
+
+   1. ENCABEZADO — la pagina no tenia titulo: arrancaba directo con las
+      tarjetas, sin jerarquia ni referencia de donde estas.
+   2. TARJETAS DE METRICA — la marca de agua era invisible (110px a
+      `opacity: .06`, mas grande que el propio dato) y el numero estaba en
+      19.2px serif, o sea mas chico que el icono.
+   3. CONTENEDOR — `width: 99%` descentraba la pagina.
+   ========================================================================== */
+
+/* ---------- 1. ENCABEZADO ---------- */
+/* `flex-basis: 100%` para que ocupe su propia linea: el contenedor es un
+   flex-wrap de dos columnas, asi que sin esto se pelearia con grupo1.
+   Desde la spec 053 el header es una fila: bloque principal a la izquierda y
+   panel de clima a la derecha (en `<= 1024px` el clima sale del flujo). */
+.usuario_encabezado {
+  flex: 0 0 100%;
+  width: 100%;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+
+  margin-bottom: 4px;
+}
+
+/* Bloque izquierdo: títulos + botón de asistencia rápida. Se deja en flujo
+   normal (no flex) para no cambiar el ancho ni el alto de lo que ya había. */
+.usuario_encabezado_principal {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.usuario_encabezado_principal .usuario_encabezado_titulos {
+  margin-bottom: 16px;
+}
+
+/* Atajos: botones de acceso rápido debajo de los títulos del encabezado */
+.usuario_atajos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.usuario_encabezado_titulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  min-width: 0;
+}
+
+.usuario_encabezado_etiqueta {
+  color: var(--color-secundario);
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.usuario_encabezado h1 {
+  margin: 0;
+
+  color: var(--texto-principal);
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+}
+
+.usuario_saludo {
+  margin: 0 0 4px 0;
+
+  color: var(--color-secundario);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-normal);
+  line-height: 1.4;
+}
+
+.usuario_encabezado p {
+  margin: 0;
+
+  color: var(--texto-secundario);
+
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+}
+
+/* ---------- 2. TARJETAS DE METRICA (scoped) ---------- */
+
+/* `transition` con PROPIEDADES EXACTAS. El original era
+   `transition: var(--transicion)` y ese token es `all .3s`: animaba tambien
+   padding/box-shadow por layout, que se percibe lento. */
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor {
+  padding: 20px 22px;
+
+  /* El borde base es `var(--borde)` sobre fondo `#f9f9f9`: las
+     tarjetas blancas casi no se separaban del fondo. */
+  border-color: rgba(116, 120, 120, 0.24);
+
+  transition:
+    transform 160ms var(--ease-ui),
+    border-color 200ms var(--ease-ui),
+    box-shadow 200ms var(--ease-ui);
+}
+
+/* La marca de agua pasa de 110px/.06 a 72px/.14: a 6% no se leia como
+   nada y ocupaba mas que el dato. */
+.usuario_contenedor_metricas .tarjeta_metrica_logo {
+  right: 6px;
+  bottom: 6px;
+
+  width: 72px;
+  height: 72px;
+
+  opacity: 0.14;
+
+  transition:
+    opacity 200ms var(--ease-ui),
+    transform 260ms var(--ease-ui);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_logo svg {
+  width: 56px;
+  height: 56px;
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+  opacity: 0.22;
+  /* Se saca el `rotate(-5deg)` del hover: en un numero de datos se lee como
+     un erro, no como un detalle. */
+  transform: scale(1.06);
+}
+
+/* Tinte por tipo: los dos estados de riesgo se distinguen de un vistazo sin
+   depender de leer el numero. */
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
+  color: var(--color-advertencia);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
+  color: var(--color-error);
+}
+
+.usuario_contenedor_metricas .tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
+  color: var(--color-exito);
+}
+
+/* El numero es EL dato de la tarjeta. En serif (`--fuente-titulos`) a tamano
+   de titular se ve editorial a proposito, en vez de accidental. */
+.usuario_contenedor_metricas .tarjeta_metrica_valor {
+  font-family: var(--fuente-titulos);
+  font-size: 2.375rem;
+  font-weight: var(--peso-semi-negrita);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Rotulo: mono en mayusculas (identidad de la casa) pero con mas aire y un
+   poco mas de contraste, que estaba en 60% de negro. */
+.usuario_contenedor_metricas .tarjeta_metrica_titulo {
+  margin-bottom: 2px;
+
+  color: var(--texto-secundario);
+  letter-spacing: 0.16em;
+}
+
+/* ---------- 3. CONTENEDOR ---------- */
+.usuario_contenedor_metricas {
+  /* Estaba en 99%: descentraba la pagina respecto del nav. */
+  width: 100%;
+  max-width: 1440px;
+  padding: 24px 32px 56px;
+}
+
+/* ---------- 4. RESPONSIVE DEL ENCABEZADO ---------- */
+@media (max-width: 650px) {
+  .usuario_contenedor_metricas {
+    padding: 20px 16px 40px;
+  }
+
+  .usuario_encabezado h1 {
+    font-size: 1.9rem;
+  }
+
+  /* En móvil los atajos ocupan ancho completo y los botones se apilan */
+  .usuario_atajos {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ==========================================================================
+   AVISO DE VENCIMIENTO — espacio reservado
+
+   La tarjeta es `position: fixed` abajo a la derecha (va en portal al body).
+   Como el panel de la academia entra en pantalla y el historial scrollea
+   adentro, sin esto la última entrada queda siempre tapada por la alerta.
+   ========================================================================== */
+
+.usuario_contenido_historial.con_alerta {
+  padding-bottom: 245px;
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .usuario_contenedor_metricas {
+    transition: none !important;
+  }
+  .usuario_metricas_grupo1,
+  .usuario_metricas_grupo2,
+  .usuario_contenido_clases {
+    transition: none !important;
+  }
+  .tarjeta_metrica_contenedor {
+    transition: none !important;
+  }
+  .tarjeta_metrica_logo {
+    transition: none !important;
+  }
+  .carga-global .spinner {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .usuario_contenedor_metricas {
+    border: 2px solid var(--borde);
+  }
+  .usuario_encabezado {
+    border-bottom: 2px solid var(--borde);
+  }
+  .tarjeta_metrica_contenedor {
+    border-width: 2px !important;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .usuario_contenido_historial {
+    border: 2px solid var(--borde);
+  }
+  .carga-global {
+    border-width: 2px;
+  }
+  .carga-global .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .carga-global {
+    display: none;
+  }
+  .usuario_encabezado {
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 1rem;
+  }
+  .usuario_metricas_tarjetas {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .usuario_contenido_clases {
+    display: none;
+  }
+  .AlertaVencimiento,
+  .alerta_vencimiento {
+    display: none;
+  }
+  .usuario_contenido_historial.con_alerta {
+    padding-bottom: 0;
+  }
+}
+
+.usuario_boton_asistencia_rapida { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--borde, #ccc); background: var(--color-primario, #2563eb); color: #fff; cursor: pointer; }

@@ -1,0 +1,234 @@
+/* ==========================================================================
+   APERTURA DE CAJA — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
+
+.coontenedor_apertura_caja {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    max-height: 90dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-right: 4px;
+}
+
+.coontenedor_apertura_caja::-webkit-scrollbar {
+    width: 8px;
+}
+
+.coontenedor_apertura_caja::-webkit-scrollbar-track {
+    background: var(--fondo-hover);
+    border-radius: var(--radio-sm);
+}
+
+.coontenedor_apertura_caja::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-sm);
+}
+
+/* ==========================================================================
+   TÍTULO
+   ========================================================================== */
+
+.apertura_titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 4px;
+}
+
+.apertura_titulo h2 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.apertura_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+    line-height: var(--linea-texto);
+}
+/* ==========================================================================
+   TARJETA CONTENEDORA
+   ========================================================================== */
+
+.card_cierre {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 22px;
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
+}
+
+.card_titulo {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--texto-secundario);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   GRILLA DE CUENTAS (Idéntica a métodos de pago)
+   ========================================================================== */
+
+.grid_apertura_cuentas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.tarjeta_metodo_pago {
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: var(--transicion);
+}
+
+.tarjeta_metodo_pago:hover {
+    border-color: var(--borde-hover);
+}
+
+.metodo_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--borde);
+}
+
+.metodo_info_principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.metodo_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    flex-shrink: 0;
+}
+
+.metodo_icono.fisico {
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
+}
+
+.metodo_icono.virtual {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+}
+
+.metodo_info_principal h4 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: 0.9rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metodo_info_principal span {
+    font-family: var(--fuente-principal);
+    font-size: 0.7rem;
+    color: var(--texto-deshabilitado);
+}
+
+/* Cuerpo de la tarjeta de apertura */
+.metodo_cuerpo_apertura {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.metodo_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.dato_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--texto-deshabilitado);
+    height: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.metodo_campo .inputs_contenedor, 
+.metodo_campo input {
+    height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+/* ==========================================================================
+   BOTONERA
+   ========================================================================== */
+
+.contenedor_botonera_apertura {
+    display: flex;
+    gap: 14px;
+    padding-top: 4px;
+}
+
+.contenedor_botonera_apertura > * {
+    flex: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    .coontenedor_apertura_caja {
+        max-width: 100%;
+    }
+
+    .card_cierre {
+        padding: 16px;
+        border-radius: var(--radio-md);
+    }
+
+    .apertura_titulo h2 {
+        font-size: var(--texto-lg);
+    }
+
+    .grid_apertura_cuentas {
+        grid-template-columns: 1fr;
+    }
+
+    .contenedor_botonera_apertura {
+        flex-direction: column-reverse;
+    }
+}

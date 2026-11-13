@@ -1,0 +1,225 @@
+.listado_usuarios {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  background: var(--fondo-principal);
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+}
+
+.listado_usuarios_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-titulo);
+}
+
+.listado_usuarios_lista {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.listado_usuarios_vacio {
+  margin: 0;
+  padding: 2rem;
+  text-align: center;
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  background: var(--fondo-secundario);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+}
+
+/* ---------- Fila ---------- */
+.usuario_row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) auto auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  transition: var(--transicion);
+}
+
+.usuario_row:hover {
+  background: var(--fondo-secundario);
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-2px);
+}
+
+.usuario_principal {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  min-width: 0;
+}
+
+.usuario_nombre {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.usuario_persona {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Datos ---------- */
+.usuario_dato {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  min-width: 0;
+}
+
+.usuario_label {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--texto-deshabilitado);
+}
+
+.usuario_valor {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Estado ---------- */
+.usuario_estado {
+  justify-self: end;
+  padding: .3rem .85rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.usuario_estado--activo {
+  color: var(--color-exito);
+  background: rgba(91, 123, 110, .12);
+  border-color: rgba(91, 123, 110, .3);
+}
+
+.usuario_estado--inactivo {
+  color: var(--color-error);
+  background: rgba(179, 71, 71, .1);
+  border-color: rgba(179, 71, 71, .3);
+}
+
+.usuario_estado--otro {
+  color: var(--color-advertencia);
+  background: rgba(194, 155, 56, .12);
+  border-color: rgba(194, 155, 56, .3);
+}
+
+/* ---------- Acción: botón "Modificar" (spec 008) ---------- */
+.usuario_accion {
+  justify-self: end;
+}
+
+/* Más compacto que el <Boton> genérico para que entre en la fila */
+.usuario_accion .boton_personalizado {
+  padding: .55rem 1rem;
+  font-size: var(--texto-xs);
+}
+
+/* ANIMACIÓN (skill emil-design-eng): propiedades exactas, nunca `all`.
+   La fila ya usa `--transicion` (all) de la maqueta: acá se controla el
+   botón, que es lo nuevo. */
+.usuario_accion .boton_personalizado {
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    filter 160ms var(--ease-ui);
+}
+
+/* Feedback de press: escala apenas y vuelve solo */
+.usuario_accion .boton_personalizado:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* ---------- Responsive: fila → TARJETA ---------- */
+@media (max-width: 860px) {
+  .listado_usuarios {
+    padding: 1.25rem;
+  }
+
+  .usuario_row {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: .85rem;
+    padding: 1.25rem;
+    border-radius: var(--radio-lg);
+  }
+
+  /* la tarjeta: principal arriba */
+  .usuario_principal {
+    grid-column: 1 / -1;
+  }
+
+  .usuario_persona {
+    white-space: normal;
+  }
+
+  /* los 3 datos en 2 columnas dentro de la tarjeta */
+  .usuario_valor {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* el chip de estado, abajo a la izquierda */
+  .usuario_estado {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  /* el botón de modificación, abajo de todo (full width en la tarjeta) */
+  .usuario_accion {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+  }
+
+  .usuario_accion .boton_personalizado {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   PREFERS-REDUCED-MOTION — sin movimiento en el botón de fila
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .usuario_accion .boton_personalizado {
+    transition-duration: 0ms;
+  }
+
+  .usuario_accion .boton_personalizado:active:not(:disabled) {
+    transform: none;
+  }
+}

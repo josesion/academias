@@ -1,0 +1,177 @@
+/* ============================================================
+   ITEM GENÉRICO — Estilo Editorial / Tarjeta Vertical
+   ============================================================ */
+
+.item_card_editorial {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    width: 100%;
+    max-width: 380px;
+    min-height: 240px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: 0; /* Bordes rectos puros */
+    padding: 24px;
+    box-sizing: border-box;
+
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.item_card_editorial:hover {
+    border-color: var(--texto-principal);
+}
+
+/* Indicador de estado cuadrado arriba a la derecha */
+.item_indicador_punto {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 6px;
+    height: 6px;
+    background: var(--texto-principal);
+}
+
+/* Cuerpo de la tarjeta */
+.item_card_body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Identificador superior (ej: #0842) */
+.item_id_editorial {
+    font-family: var(--fuente-titulos);
+    font-size: 1.1rem;
+    color: var(--texto-secundario);
+    font-weight: 300;
+    letter-spacing: -0.01em;
+}
+
+/* Contenedor de textos */
+.item_contenido_principal {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+/* Título principal (Primer campo destacado) */
+.item_bloque_principal {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.item_bloque_principal .item_valor_titulo {
+    font-family: var(--fuente-titulos);
+    font-size: 1.8rem;
+    font-weight: var(--peso-normal);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--texto-principal);
+    text-transform: capitalize;
+}
+
+/* Bloques de detalles (Mes, Clases, Monto, etc.) */
+.item_bloque_detalle {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-top: 6px;
+    border-top: 1px solid var(--borde);
+}
+
+.item_label_editorial {
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--texto-secundario);
+}
+
+.item_bloque_detalle .item_valor_sub {
+    font-family: var(--fuente-codigo);
+    font-size: 0.85rem;
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+    text-transform: uppercase;
+}
+
+/* Acciones inferiores con línea divisoria fina */
+.item_card_actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 12px;
+    border-top: 1px solid var(--borde);
+}
+
+.item_link_editar,
+.item_link_eliminar {
+    background: none;
+    border: none;
+    font-family: var(--fuente-codigo);
+    font-size: 0.7rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.2px;
+    color: var(--texto-principal);
+    cursor: pointer;
+    padding: 0;
+    transition: opacity 0.2s ease;
+}
+
+.item_link_editar:hover,
+.item_link_eliminar:hover {
+    opacity: 0.6;
+}
+
+.item_link_eliminar {
+    color: #c94a4a;
+}
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024) — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .item_card_editorial {
+    transition: none !important;
+    animation: none !important;
+  }
+  .item_link_editar,
+  .item_link_eliminar {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .item_card_editorial {
+    border-width: 2px !important;
+  }
+  .item_link_editar,
+  .item_link_eliminar {
+    border: 2px solid currentColor;
+    padding: 4px 8px;
+  }
+  .item_link_editar:focus-visible,
+  .item_link_eliminar:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .item_card_actions {
+    display: none !important;
+  }
+  .item_card_editorial {
+    box-shadow: none !important;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+}

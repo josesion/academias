@@ -1,0 +1,96 @@
+/* ============================================================
+   LISTADO MOLDE — rueda / selector físico 3D
+   ============================================================ */
+
+.rueda_contenedor {
+    --altura-rueda: 65vh;
+    --altura-item-aprox: 280px; /* Actualizado al alto real de la tarjeta editorial */
+    position: relative;
+
+    height: var(--altura-rueda);
+    max-height: 640px;
+
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scroll-snap-type: y mandatory;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+
+    perspective: 1200px;
+
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.rueda_contenedor::-webkit-scrollbar {
+    display: none;
+}
+
+.rueda_espaciador {
+    flex: 0 0 auto;
+    height: calc((var(--altura-rueda) - var(--altura-item-aprox)) / 2);
+    min-height: 0;
+}
+
+/* ============================================================
+   ÍTEM DE LA RUEDA
+   ============================================================ */
+
+.rueda_item {
+    flex: 0 0 auto;
+    width: 100%;
+    display: flex;             /* Centra horizontalmente el contenido */
+    justify-content: center;   /* Alinea al medio exacto */
+
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+
+    padding: 10px 0;
+
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+    transform-origin: center center;
+}
+
+/* Selector activo corregido para la tarjeta editorial */
+.rueda_item--activa .item_card_editorial {
+    border-color: var(--texto-principal);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+    transform: scale(1.02); /* Pequeño pop visual cuando queda en el centro */
+    transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s ease;
+}
+
+/* ============================================================
+   ACCESIBILIDAD
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    .rueda_contenedor {
+        perspective: none;
+    }
+
+    .rueda_item {
+        scroll-snap-align: start;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 600px) {
+    .rueda_contenedor {
+        --altura-rueda: 72vh;
+        --altura-item-aprox: 300px;
+    }
+}

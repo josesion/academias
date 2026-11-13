@@ -1,0 +1,601 @@
+/* ============================================================
+   ASISTENCIA RÁPIDA (spec 043)
+   Modal de asistencia manual + plantillas de alumnos.
+
+   Solo tokens de app.css (:root): sin colores literales ni
+   fallbacks, así el tema claro y el tema gym
+   (html[data-rubro="gym"]) funcionan sin reglas extra.
+
+   Convenciones
+   - Todo con prefijo .asistencia_rapida_ (underscore, como el resto
+     del proyecto). El modal en sí hereda de .modal-contenido-finanzas.
+   - Los estados salen de atributos, no de clases duplicadas:
+       aria-pressed  → sub-pestaña activa
+       data-situacion → píldora de situación
+       data-tipo      → aviso (ok / parcial)
+   - El foco visible lo da `:root :focus-visible` de app.css.
+   - Texto legible: --texto-secundario. --texto-deshabilitado queda
+     solo para filas/controles realmente deshabilitados.
+
+   Secciones
+   1. Modal y pestañas   2. Layout   3. Búsqueda
+   4. Ficha del alumno   5. Tabla    6. Píldoras y avisos
+   7. Plantillas         8. Responsive
+   ============================================================ */
+
+
+/* ============================================================
+   1. MODAL Y PESTAÑAS
+   ============================================================ */
+
+.asistencia_rapida_modal {
+    width: 100%;
+    max-width: 720px;
+}
+
+.asistencia_rapida_tabs {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* Control segmentado Alumno / Plantilla */
+.asistencia_rapida_subpestanas {
+    display: inline-flex;
+    align-self: flex-start;
+    gap: 4px;
+    padding: 4px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+}
+
+.asistencia_rapida_subpestana {
+    padding: 7px 18px;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-medio);
+    color: var(--texto-secundario);
+
+    background: transparent;
+    border: none;
+    border-radius: calc(var(--radio-sm) - 2px);
+    cursor: pointer;
+
+    transition: background-color 140ms var(--ease-ui),
+                color 140ms var(--ease-ui);
+}
+
+.asistencia_rapida_subpestana:hover {
+    color: var(--texto-principal);
+}
+
+.asistencia_rapida_subpestana[aria-pressed="true"] {
+    background: var(--color-primario);
+    color: var(--fondo-secundario);
+}
+
+
+/* ============================================================
+   2. LAYOUT
+   ============================================================ */
+
+.asistencia_rapida_seccion {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Campo que crece + botón que NO se estira */
+.asistencia_rapida_fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.asistencia_rapida_campo_crece {
+    position: relative;
+    flex: 1 1 220px;
+    min-width: 0;
+}
+
+/* Campo con etiqueta visible (para los SelectorOpt) */
+.asistencia_rapida_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.asistencia_rapida_label {
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: .05em;
+    color: var(--texto-secundario);
+}
+
+/* Nombre + búsqueda, plantilla + clase */
+.asistencia_rapida_dos_columnas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    align-items: end;
+    gap: 12px;
+}
+
+/* Botones con su ancho natural */
+.asistencia_rapida_acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.asistencia_rapida_contador {
+    margin-right: auto;
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+}
+
+.asistencia_rapida_meta {
+    margin-left: 8px;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+.asistencia_rapida_leyenda {
+    padding: 12px;
+
+    font-size: var(--texto-sm);
+    text-align: center;
+    color: var(--texto-secundario);
+
+    background: var(--fondo-superficie);
+    border: 1px dashed var(--borde-hover);
+    border-radius: var(--radio-sm);
+}
+
+
+/* ============================================================
+   3. BÚSQUEDA DE ALUMNOS
+   ============================================================ */
+
+.asistencia_rapida_resultados {
+    list-style: none;
+    width: 100%;
+    max-height: 200px;
+    margin-top: 6px;
+    overflow-y: auto;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra-sm);
+}
+
+.asistencia_rapida_resultados li + li {
+    border-top: 1px solid var(--borde);
+}
+
+.asistencia_rapida_resultados li button {
+    width: 100%;
+    padding: 9px 12px;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    text-align: left;
+    color: var(--texto-principal);
+
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    transition: background-color 120ms var(--ease-ui);
+}
+
+.asistencia_rapida_resultados li button:hover {
+    background: var(--fondo-hover);
+}
+
+.asistencia_rapida_estado_busqueda {
+    margin-top: 6px;
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+}
+
+
+/* ============================================================
+   4. FICHA DEL ALUMNO (modo individual)
+   ============================================================ */
+
+.asistencia_rapida_ficha {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 16px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+}
+
+.asistencia_rapida_ficha_cabecera {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.asistencia_rapida_ficha_datos {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.asistencia_rapida_ficha_nombre {
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-medio);
+    line-height: var(--linea-titulo);
+    color: var(--texto-principal);
+}
+
+.asistencia_rapida_ficha_plan {
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+.asistencia_rapida_ficha_items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+}
+
+.asistencia_rapida_ficha_items strong {
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+}
+
+
+/* ============================================================
+   5. TABLA DE ALUMNOS DE LA PLANTILLA
+   ============================================================ */
+
+.asistencia_rapida_tabla_wrapper {
+    width: 100%;
+    max-height: 320px;
+    overflow: auto;
+
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+}
+
+.asistencia_rapida_tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--texto-sm);
+}
+
+.asistencia_rapida_tabla thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    padding: 9px 14px;
+
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: .06em;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--texto-secundario);
+
+    background: var(--fondo-superficie);
+    border-bottom: 1px solid var(--borde);
+}
+
+.asistencia_rapida_tabla tbody td {
+    padding: 9px 14px;
+    vertical-align: middle;
+    color: var(--texto-principal);
+    border-bottom: 1px solid var(--borde);
+}
+
+.asistencia_rapida_tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.asistencia_rapida_tabla tbody tr:not(.fila_bloqueada):hover td {
+    background: var(--fondo-hover);
+}
+
+.asistencia_rapida_tabla .col_casilla {
+    width: 42px;
+    text-align: center;
+}
+
+.asistencia_rapida_tabla input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--color-primario);
+}
+
+.asistencia_rapida_tabla input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+.asistencia_rapida_tabla .fila_bloqueada td {
+    color: var(--texto-deshabilitado);
+}
+
+.asistencia_rapida_celda_nombre {
+    display: block;
+    font-weight: var(--peso-medio);
+}
+
+.asistencia_rapida_celda_dni {
+    display: block;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+}
+
+/* Texto solo para lector de pantalla (por si `.visually-hidden` no está
+   definida globalmente; limitado a esta tabla) */
+.asistencia_rapida_tabla .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* ============================================================
+   6. PÍLDORAS DE SITUACIÓN Y AVISOS
+   Un solo color base (--tono) por estado; fondo y borde se derivan.
+   ============================================================ */
+
+.asistencia_rapida_situacion {
+    --tono: var(--color-error);
+
+    display: inline-block;
+    padding: 3px 10px;
+
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    white-space: nowrap;
+    color: var(--tono);
+
+    background: color-mix(in srgb, var(--tono) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--tono) 30%, transparent);
+    border-radius: 999px;
+}
+
+/* vencido, sin_clases e inactivo usan el tono de error por defecto */
+.asistencia_rapida_situacion[data-situacion="vigente"]    { --tono: var(--color-exito); }
+.asistencia_rapida_situacion[data-situacion="por_vencer"] { --tono: var(--color-advertencia); }
+
+.asistencia_rapida_aviso {
+    --tono: var(--color-exito);
+
+    padding: 10px 14px;
+
+    font-size: var(--texto-sm);
+    line-height: 1.4;
+    color: var(--tono);
+
+    background: color-mix(in srgb, var(--tono) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--tono) 30%, transparent);
+    border-radius: var(--radio-sm);
+}
+
+.asistencia_rapida_aviso[data-tipo="parcial"] {
+    --tono: var(--color-advertencia);
+}
+
+
+/* ============================================================
+   7. PLANTILLAS (pestaña de gestión)
+   ============================================================ */
+
+.asistencia_rapida_bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    padding: 16px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+}
+
+.asistencia_rapida_bloque_titulo {
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-medio);
+    line-height: var(--linea-titulo);
+    color: var(--texto-principal);
+}
+
+/* Alumnos pendientes de agregar a la plantilla nueva */
+.asistencia_rapida_chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+}
+
+.asistencia_rapida_chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 6px 5px 12px;
+
+    font-size: var(--texto-sm);
+    color: var(--texto-principal);
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: 999px;
+}
+
+.asistencia_rapida_chip button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+
+    font-size: 15px;
+    line-height: 1;
+    color: var(--texto-secundario);
+
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+
+    transition: background-color 120ms var(--ease-ui),
+                color 120ms var(--ease-ui);
+}
+
+.asistencia_rapida_chip button:hover {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+}
+
+/* Listado */
+.asistencia_rapida_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 300px;
+    padding-right: 4px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde-hover) transparent;
+}
+
+.asistencia_rapida_plantilla {
+    padding: 12px 14px;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+}
+
+.asistencia_rapida_plantilla_header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.asistencia_rapida_plantilla_header strong {
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+}
+
+.asistencia_rapida_plantilla_alumnos {
+    list-style: none;
+}
+
+.asistencia_rapida_plantilla_alumnos li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+
+    font-size: var(--texto-sm);
+    color: var(--texto-principal);
+}
+
+.asistencia_rapida_plantilla_alumnos li + li {
+    border-top: 1px solid var(--borde);
+}
+
+.asistencia_rapida_quitar {
+    flex-shrink: 0;
+    padding: 3px 10px;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--color-error);
+
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+    border-radius: var(--radio-sm);
+    cursor: pointer;
+
+    transition: background-color 120ms var(--ease-ui);
+}
+
+.asistencia_rapida_quitar:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-error) 14%, transparent);
+}
+
+.asistencia_rapida_quitar:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* Agregar alumno a un grupo ya creado */
+.asistencia_rapida_agregar_alumno {
+    margin-top: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--borde);
+}
+
+
+/* ============================================================
+   8. RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 560px) {
+
+    .asistencia_rapida_fila,
+    .asistencia_rapida_acciones {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .asistencia_rapida_fila .boton_personalizado,
+    .asistencia_rapida_acciones .boton_personalizado {
+        width: 100%;
+    }
+
+    .asistencia_rapida_contador {
+        margin-right: 0;
+        text-align: center;
+    }
+
+    .asistencia_rapida_ficha_cabecera {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

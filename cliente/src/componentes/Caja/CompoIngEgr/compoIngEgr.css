@@ -1,0 +1,116 @@
+/* ============================================================
+   INGRESO / EGRESO — formulario de movimiento de caja
+   ============================================================ */
+
+.contenedor_compoIngEgr {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    width: 100%;
+    max-width: 420px;
+
+    padding: 26px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+}
+
+.contenedor_compoIngEgr > p {
+    margin: 0 0 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+
+    color: var(--texto-secundario);
+}
+
+/* ===== NOTAS ===== */
+
+.memo_compoIngEgr {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label_textarea {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+.textarea_chulo {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    line-height: var(--linea-texto);
+
+    resize: none;
+    outline: none;
+
+    transition: var(--transicion);
+}
+
+.textarea_chulo::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.textarea_chulo:hover {
+    border-color: var(--borde-hover);
+}
+
+.textarea_chulo:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+/* ===== BOTONERA ===== */
+
+.botonera_compoIngEgr {
+    display: flex;
+    gap: 12px;
+
+    margin-top: 6px;
+    padding-top: 16px;
+
+    border-top: 1px solid var(--borde);
+}
+
+.botonera_compoIngEgr > * {
+    flex: 1;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 480px) {
+    .contenedor_compoIngEgr {
+        max-width: 100%;
+        padding: 18px;
+    }
+
+    .botonera_compoIngEgr {
+        flex-direction: column;
+    }
+}

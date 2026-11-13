@@ -1,0 +1,763 @@
+/* ==========================================================================
+   Spec 054 - Tarjetero publico de escuelas y gimnasios (Login)
+   Solo tokens de `src/app.css`: no hay colores ni sombras fijas, asi que el
+   tema gym (`:root[data-rubro="gym"]`) repinta la seccion sin reglas extra.
+
+   Diseno editorial: logo compacto (64px) a la izquierda, rubro + nombre +
+   direccion a la derecha y acciones abajo.
+   ========================================================================== */
+
+.tarjetero {
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  padding-inline: 4px;
+}
+
+.tarjetero_encabezado {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--borde);
+}
+
+.tarjetero_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.tarjetero_subtitulo {
+  margin: 8px 0 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* --------------------------------------------------------------------------
+   Carrusel de tarjeta única.
+   - Una escuela a la vez, ocupando todo el ancho del panel.
+   - Auto-avance cada 6s con orden aleatorio (sin repetir hasta mostrar todas).
+   - Transiciones fade + slide horizontal entre tarjetas.
+   - Barra de progreso visual, dots indicadores, flechas de navegación.
+   - Pausa en hover/focus. Mismo comportamiento en mobile y desktop.
+   -------------------------------------------------------------------------- */
+
+.tarjetero_carrusel {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Pista donde se renderiza la tarjeta activa */
+.tarjetero_carrusel_pista {
+  display: flex;
+  width: 100%;
+}
+
+/* Escritorio: el tarjetero ocupa el panel derecho */
+@media (min-width: 900px) {
+  .tarjetero {
+    display: flex;
+    flex-direction: column;
+    max-width: 500px;
+    max-height: 78dvh;
+    margin-inline: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Tarjeta
+   -------------------------------------------------------------------------- */
+
+.tarjeta_publica {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: none;
+  padding: 20px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  transition: border-color 180ms var(--ease-ui), box-shadow 180ms var(--ease-ui),
+    transform 180ms var(--ease-ui);
+
+  /* Entrada fade + slide horizontal para el carrusel */
+  animation: tarjeta_carrusel_entrar 520ms var(--ease-ui) backwards;
+}
+
+@keyframes tarjeta_carrusel_entrar {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+/* Cabecera: logo + datos */
+.tarjeta_publica_cabecera {
+  display: flex;
+  flex: 1;
+  align-items: flex-start;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Logo compacto */
+.tarjeta_publica_media {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.tarjeta_publica_imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  object-fit: contain;
+}
+
+.tarjeta_publica_fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.06em;
+  color: var(--texto-secundario);
+  background: var(--fondo-superficie);
+}
+
+/* Datos */
+.tarjeta_publica_cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Rubro: etiqueta editorial en mayusculas, igual que `.section-title` */
+.tarjeta_publica_rubro {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 5px;
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 1.5px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+.tarjeta_publica_rubro--baile {
+  color: var(--color-secundario);
+}
+
+.tarjeta_publica_rubro--gym {
+  color: var(--color-advertencia);
+}
+
+.tarjeta_publica_rubro--desconocido {
+  color: var(--texto-secundario);
+}
+
+.tarjeta_publica_nombre {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.tarjeta_publica_direccion {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: 1.4;
+  color: var(--texto-secundario);
+}
+
+.tarjeta_publica_direccion svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+/* Acciones */
+.tarjeta_publica_acciones {
+  display: flex;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--borde);
+}
+
+.tarjeta_publica_accion {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: transparent;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  line-height: 1.2;
+  color: var(--texto-principal);
+  text-decoration: none;
+  transition: border-color 160ms var(--ease-ui), background-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+}
+
+/* Principal: relleno (mismo par cruzado que `.btn-principal`) */
+.tarjeta_publica_accion--whatsapp {
+  background: var(--color-exito);
+  border-color: var(--color-exito);
+  color: var(--fondo-secundario);
+}
+
+/* Secundario: contorno */
+.tarjeta_publica_accion--mapa {
+  background: var(--fondo-superficie);
+  color: var(--texto-principal);
+}
+
+.tarjeta_publica_accion:active {
+  transform: scale(0.97);
+}
+
+.tarjeta_publica_accion:focus-visible,
+.tarjetero_reintentar:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+/* --------------------------------------------------------------------------
+   Estados: carga, vacio y error (siempre dentro de la seccion)
+   -------------------------------------------------------------------------- */
+
+.tarjetero_estado {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  font-size: var(--texto-sm);
+  line-height: 1.5;
+  color: var(--texto-secundario);
+}
+
+.tarjetero_error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.tarjetero_error .tarjetero_estado {
+  padding-bottom: 0;
+}
+
+.tarjetero_reintentar {
+  padding: 8px 16px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: var(--fondo-superficie);
+  font-family: inherit;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  cursor: pointer;
+  transition: border-color 160ms var(--ease-ui), background-color 160ms var(--ease-ui);
+}
+
+/* Override: el spinner de carga dentro del tarjetero no necesita 200px de alto */
+.tarjetero .overlay_cargando--local {
+  min-height: 150px;
+}
+
+/* --------------------------------------------------------------------------
+   Estado vacío: card promocional "Tu academia puede estar aquí"
+
+   Animaciones (con `prefers-reduced-motion` se apagan por la regla global de
+   "Accesibilidad" al final del archivo; los adornos puramente decorativos se
+   ocultan en el bloque de abajo):
+   - Card: entra con fade + subida + desenfoque que se enfoca.
+   - Contenido escalonado: icono → título → subtítulo → botón.
+   - Icono: ondas tipo radar que se expanden + flotación suave.
+   - Orbe de luz que deriva lento detrás del contenido.
+   - Borde superior con gradiente que fluye.
+   - Botón: destello periódico y flecha que se desliza en hover.
+   -------------------------------------------------------------------------- */
+
+.tarjetero_vacio_card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 36px 24px 32px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-align: center;
+  max-width: 400px;
+  margin-inline: auto;
+  box-shadow: var(--sombra-md);
+  overflow: hidden;
+  animation: tarjetero_vacio_entrar 700ms var(--ease-ui) backwards;
+}
+
+/* El contenido va por encima del borde animado y del orbe de luz */
+.tarjetero_vacio_card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Borde superior con gradiente de acento */
+.tarjetero_vacio_card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-secundario), var(--color-primario), var(--color-secundario));
+  background-size: 200% 100%;
+  animation: tarjetero_vacio_borde_fluir 4s linear infinite;
+}
+
+/* Orbe de luz que deriva lentamente en la esquina superior derecha */
+.tarjetero_vacio_card::after {
+  content: "";
+  position: absolute;
+  top: -90px;
+  right: -90px;
+  z-index: 0;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-secundario) 24%, transparent) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: tarjetero_vacio_orbe 9s ease-in-out infinite alternate;
+}
+
+@keyframes tarjetero_vacio_entrar {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes tarjetero_vacio_borde_fluir {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes tarjetero_vacio_orbe {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(-60px, 70px) scale(1.25); }
+}
+
+/* Contenido escalonado */
+.tarjetero_vacio_icono_wrap,
+.tarjetero_vacio_titulo,
+.tarjetero_vacio_subtitulo,
+.tarjetero_vacio_boton {
+  animation: tarjetero_vacio_item 600ms var(--ease-ui) backwards;
+}
+
+.tarjetero_vacio_icono_wrap { animation-delay: 180ms; }
+.tarjetero_vacio_titulo { animation-delay: 300ms; }
+.tarjetero_vacio_subtitulo { animation-delay: 400ms; }
+.tarjetero_vacio_boton { animation-delay: 520ms; }
+
+@keyframes tarjetero_vacio_item {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+/* Icono con ondas */
+.tarjetero_vacio_icono_wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin-bottom: 4px;
+}
+
+.tarjetero_vacio_onda {
+  position: absolute;
+  inset: 16px;
+  border: 1.5px solid color-mix(in srgb, var(--color-secundario) 50%, transparent);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: tarjetero_vacio_onda 3s ease-out infinite;
+}
+
+.tarjetero_vacio_onda--2 { animation-delay: 1s; }
+.tarjetero_vacio_onda--3 { animation-delay: 2s; }
+
+@keyframes tarjetero_vacio_onda {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+.tarjetero_vacio_icono {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border: 1px solid color-mix(in srgb, var(--color-secundario) 28%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-secundario) 12%, var(--fondo-secundario));
+  color: var(--color-secundario);
+  animation: tarjetero_vacio_flotar 4s ease-in-out infinite;
+}
+
+@keyframes tarjetero_vacio_flotar {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.tarjetero_vacio_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+}
+
+.tarjetero_vacio_subtitulo {
+  margin: 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* Botón con destello periódico y flecha */
+.tarjetero_vacio_boton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  overflow: hidden;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--radio-md);
+  background: var(--color-secundario);
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--fondo-secundario);
+  cursor: pointer;
+  box-shadow: var(--sombra-sm);
+  transition: background-color 200ms var(--ease-ui), transform 160ms var(--ease-ui),
+    box-shadow 200ms var(--ease-ui);
+}
+
+.tarjetero_vacio_boton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    color-mix(in srgb, var(--fondo-secundario) 40%, transparent) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+  animation: tarjetero_vacio_destello 3.8s var(--ease-ui) 1.6s infinite;
+}
+
+@keyframes tarjetero_vacio_destello {
+  0% { transform: translateX(-120%); }
+  45%, 100% { transform: translateX(120%); }
+}
+
+.tarjetero_vacio_flecha {
+  flex: 0 0 auto;
+  transition: transform 200ms var(--ease-ui);
+}
+
+.tarjetero_vacio_boton:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.tarjetero_vacio_boton:active {
+  transform: scale(0.97);
+}
+
+/* Con movimiento reducido: sin adornos animados (orbe, ondas, destello) */
+@media (prefers-reduced-motion: reduce) {
+  .tarjetero_vacio_card::after,
+  .tarjetero_vacio_onda,
+  .tarjetero_vacio_boton::after {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Hover: solo en dispositivos con puntero fino (no se queda pegado en tactil)
+   -------------------------------------------------------------------------- */
+
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta_publica:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+    transform: translateY(-2px);
+  }
+
+  .tarjeta_publica_accion--whatsapp:hover {
+    background: var(--color-secundario);
+    border-color: var(--color-secundario);
+  }
+
+  .tarjeta_publica_accion--mapa:hover {
+    border-color: var(--borde-hover);
+    color: var(--color-secundario);
+  }
+
+  .tarjetero_reintentar:hover {
+    border-color: var(--borde-hover);
+    background: var(--fondo-secundario);
+  }
+
+  .tarjetero_vacio_boton:hover {
+    background: var(--color-primario);
+    box-shadow: var(--sombra-md);
+  }
+
+  .tarjetero_vacio_boton:hover .tarjetero_vacio_flecha {
+    transform: translateX(4px);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Carrusel: flechas de navegación
+   -------------------------------------------------------------------------- */
+
+.tarjetero_flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  background: var(--fondo-secundario);
+  color: var(--texto-principal);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-ui), background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+  pointer-events: none;
+}
+
+.tarjetero_flecha--izq {
+  left: 8px;
+}
+
+.tarjetero_flecha--der {
+  right: 8px;
+}
+
+/* Mostrar flechas al hacer hover en el carrusel (solo puntero fino) */
+@media (hover: hover) and (pointer: fine) {
+  .tarjetero_carrusel:hover .tarjetero_flecha {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .tarjetero_flecha:hover {
+    background: var(--fondo-secundario);
+    border-color: var(--borde-hover);
+  }
+}
+
+/* En pantallas táctiles, las flechas siempre visibles */
+@media (hover: none) or (pointer: coarse) {
+  .tarjetero_flecha {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.tarjetero_flecha:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.tarjetero_flecha:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+/* --------------------------------------------------------------------------
+   Carrusel: barra de progreso del auto-avance
+   -------------------------------------------------------------------------- */
+
+.tarjetero_progreso {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.tarjetero_progreso_barra {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-secundario);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: tarjetero_progreso_anim 6s linear forwards;
+}
+
+@keyframes tarjetero_progreso_anim {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Carrusel: dots indicadores
+   -------------------------------------------------------------------------- */
+
+.tarjetero_dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjetero_dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--borde-hover);
+  cursor: pointer;
+  transition: width 300ms var(--ease-ui), background-color 160ms var(--ease-ui),
+    transform 160ms var(--ease-ui);
+  pointer-events: auto;
+}
+
+.tarjetero_dot--activo {
+  width: 20px;
+  border-radius: 4px;
+  background: var(--color-secundario);
+}
+
+.tarjetero_dot:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+.tarjetero_dot:active {
+  transform: scale(0.9);
+}
+
+/* --------------------------------------------------------------------------
+   Accesibilidad
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjetero *,
+  .tarjetero *::before,
+  .tarjetero *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+
+  /* Ocultar la barra de progreso si el usuario prefiere movimiento reducido */
+  .tarjetero_progreso {
+    display: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .tarjeta_publica,
+  .tarjeta_publica_media,
+  .tarjeta_publica_accion,
+  .tarjetero_reintentar,
+  .tarjetero_flecha {
+    border-color: var(--texto-principal);
+  }
+
+  .tarjeta_publica_accion:focus-visible,
+  .tarjetero_reintentar:focus-visible,
+  .tarjetero_flecha:focus-visible {
+    outline: var(--focus-ring-high-contrast);
+    outline-offset: var(--focus-offset-high-contrast);
+  }
+}
+
+/* Igual que el resto del Login: la pantalla no se imprime. */
+@media print {
+  .tarjetero {
+    display: none !important;
+  }
+}

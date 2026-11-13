@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#080d18"/>
+      <stop offset="58%" stop-color="#1a2438"/>
+      <stop offset="100%" stop-color="#39465c"/>
+    </linearGradient>
+    <filter id="nube" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+    <filter id="rayo" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+
+  <g filter="url(#nube)" fill="#0c1320" opacity="0.95">
+    <ellipse cx="280" cy="110" rx="340" ry="86"/>
+    <ellipse cx="720" cy="84" rx="320" ry="76"/>
+    <ellipse cx="1080" cy="140" rx="260" ry="70"/>
+  </g>
+  <g filter="url(#nube)" fill="#27334a" opacity="0.6">
+    <ellipse cx="420" cy="210" rx="280" ry="46"/>
+    <ellipse cx="920" cy="230" rx="240" ry="42"/>
+  </g>
+
+  <g filter="url(#rayo)">
+    <polyline points="690,110 640,290 706,290 616,540" fill="none" stroke="#fff4b8" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="690,110 640,290 706,290 616,540" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g stroke="#cfdae6" stroke-width="2.2" stroke-linecap="round" opacity="0.35">
+    <line x1="150" y1="150" x2="120" y2="440"/>
+    <line x1="270" y1="180" x2="240" y2="470"/>
+    <line x1="390" y1="140" x2="360" y2="430"/>
+    <line x1="500" y1="200" x2="470" y2="490"/>
+    <line x1="840" y1="170" x2="810" y2="460"/>
+    <line x1="950" y1="210" x2="920" y2="500"/>
+    <line x1="1060" y1="160" x2="1030" y2="450"/>
+    <line x1="1130" y1="230" x2="1100" y2="510"/>
+  </g>
+
+  <path d="M0 630 L182 552 L338 602 L518 534 L688 606 L844 556 L1018 618 L1200 570 L1200 750 L0 750 Z" fill="#0a1018"/>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a9c1d4"/>
+      <stop offset="55%" stop-color="#cfdde8"/>
+      <stop offset="100%" stop-color="#eef4f8"/>
+    </linearGradient>
+    <linearGradient id="monte" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#dde9f2"/>
+    </linearGradient>
+    <filter id="suave" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+
+  <g filter="url(#suave)" fill="#9fb4c6" opacity="0.55">
+    <ellipse cx="280" cy="120" rx="280" ry="62"/>
+    <ellipse cx="760" cy="94" rx="300" ry="58"/>
+    <ellipse cx="1100" cy="160" rx="220" ry="52"/>
+  </g>
+
+  <path d="M0 560 L170 450 L320 522 L470 432 L620 520 L780 448 L930 528 L1080 456 L1200 526 L1200 750 L0 750 Z" fill="#b9cddc" opacity="0.8"/>
+  <path d="M0 634 L180 566 L340 612 L520 556 L690 618 L846 574 L1020 632 L1200 590 L1200 750 L0 750 Z" fill="url(#monte)"/>
+
+  <g fill="#3d5a68" opacity="0.6">
+    <path d="M210 640 L238 522 L266 640 Z"/>
+    <path d="M268 646 L300 488 L332 646 Z"/>
+    <path d="M900 646 L932 516 L964 646 Z"/>
+    <path d="M960 640 L988 552 L1016 640 Z"/>
+  </g>
+
+  <g fill="#ffffff">
+    <circle cx="110" cy="140" r="4" opacity="0.85"/>
+    <circle cx="240" cy="220" r="3" opacity="0.7"/>
+    <circle cx="370" cy="110" r="4.5" opacity="0.9"/>
+    <circle cx="500" cy="200" r="3.4" opacity="0.75"/>
+    <circle cx="630" cy="130" r="4" opacity="0.85"/>
+    <circle cx="760" cy="230" r="3.2" opacity="0.7"/>
+    <circle cx="890" cy="120" r="4.6" opacity="0.9"/>
+    <circle cx="1020" cy="210" r="3.6" opacity="0.75"/>
+    <circle cx="1140" cy="140" r="4" opacity="0.8"/>
+    <circle cx="180" cy="330" r="3" opacity="0.6"/>
+    <circle cx="460" cy="300" r="3.6" opacity="0.65"/>
+    <circle cx="720" cy="340" r="3" opacity="0.6"/>
+    <circle cx="980" cy="320" r="3.4" opacity="0.6"/>
+    <circle cx="320" cy="430" r="2.6" opacity="0.5"/>
+    <circle cx="850" cy="420" r="2.8" opacity="0.5"/>
+  </g>
+</svg>

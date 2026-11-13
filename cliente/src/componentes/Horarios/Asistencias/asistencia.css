@@ -1,0 +1,445 @@
+/* ==========================================================================
+   CONTENEDOR MAESTRO UNIFICADO CON IMAGEN DE FONDO
+   ========================================================================== */
+
+.asistencia_contenedor {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+    
+    /* Fondo base y la imagen centrada y responsiva */
+    background-color: var(--fondo-secundario);
+    background-image: url('../../../imagenes/bailarina.png'); /* Ajust
+    background-size: contain;
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+
+
+    border-radius: 0; /* Sin bordes redondeados */
+    border: none;
+    box-shadow: var(--sombra-md);
+    overflow: hidden;
+    gap: 16px;
+}
+
+/* Capa semitransparente para asegurar el contraste de los textos sobre la imagen */
+.asistencia_contenedor::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+
+    /* Queda por debajo del contenido (el contenido usa z-index 2) */
+    z-index: 1;
+    /* Degradado en vez de velo plano: arriba claro para que se vea la figura,
+       abajo fuerte para que el texto y el estado vacio se lean sin problema. */
+    background: linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--fondo-secundario) 52%, transparent) 0%,
+        color-mix(in srgb, var(--fondo-secundario) 88%, transparent) 58%,
+        var(--fondo-secundario) 100%
+    );
+    pointer-events: none;
+}
+
+/* Todo el contenido sube de nivel para ubicarse por encima de la capa translúcida */
+.asistencia_contenedor > * {
+    position: relative;
+    z-index: 2;
+}
+/* ==========================================================================
+   BLOQUE 1: INFORMACIÓN DE CLASE (SUPERIOR)
+   ========================================================================== */
+
+.asistencia_bloque_info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 16px;
+}
+
+.info_clases_datos {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+}
+
+.info_clases_item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.info_clases_label {
+    font-family: var(--fuente-principal);
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.info_clases_item h2 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.info_clases_item p {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: 0.85rem;
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+}
+
+.info_clases_divisor {
+    width: 1px;
+    height: 24px;
+    background: var(--borde);
+}
+
+.info_clases_estado {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: var(--radio-full, 20px);
+    font-family: var(--fuente-principal);
+    font-size: 0.75rem;
+    font-weight: var(--peso-semi-negrita);
+    white-space: nowrap;
+}
+
+.info_clases_estado.curso {
+    background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.1);
+    color: var(--color-exito);
+}
+
+.info_clases_estado.sin_curso {
+    background: rgba(var(--color-secundario-rgb, 108, 117, 125), 0.1);
+    color: var(--texto-secundario);
+}
+
+.estado_punto {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 4px currentColor;
+}
+
+/* ==========================================================================
+   LÍNEA DIVISORIA INTERNA
+   ========================================================================== */
+
+.asistencia_seccion_divisor {
+    width: 100%;
+    height: 1px;
+    background: var(--borde);
+    opacity: 0.7;
+}
+
+/* ==========================================================================
+   BLOQUE 2: CONTROL DE ASISTENCIA (INFERIOR)
+   ========================================================================== */
+
+.asistencia_bloque_principal {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+
+.asistencia_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.asistencia_header_info h3 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-negrita);
+}
+
+.asistencia_header_info p {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    color: var(--texto-secundario);
+    font-size: 0.75rem;
+}
+
+.asistencia_contador_badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-full, 20px);
+    font-family: var(--fuente-principal);
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+}
+
+.asistencia_contador_badge strong {
+    color: var(--texto-principal);
+    font-weight: var(--peso-negrita);
+}
+
+.punto_activo {
+    width: 6px;
+    height: 6px;
+    background-color: var(--color-exito);
+    border-radius: 50%;
+    box-shadow: 0 0 4px var(--color-exito);
+}
+
+/* Estado vacío */
+.asistencia_vacio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14px 16px 4px;
+    width: 100%;
+    background: transparent;
+    border: none;
+}
+
+.asistencia_vacio_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: var(--fondo-principal);
+    color: var(--texto-secundario);
+}
+
+.asistencia_vacio h3 {
+    margin: 0 0 4px 0;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    font-size: 0.95rem;
+}
+
+.asistencia_vacio p {
+    margin: 0;
+    max-width: 280px;
+    font-family: var(--fuente-principal);
+    color: var(--texto-secundario);
+    font-size: 0.8rem;
+}
+
+/* Lista de alumnos */
+.asistencia_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.asistencia_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--fondo-principal);
+    border-radius: var(--radio-md);
+    border: 1px solid var(--borde);
+    transition: var(--transicion);
+}
+
+.asistencia_item:hover {
+    border-color: var(--borde-hover);
+}
+
+.asistencia_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--color-primario);
+    color: #fff;
+    font-weight: var(--peso-negrita);
+    font-size: 0.75rem;
+}
+
+.asistencia_icono.variante_1 {
+    background: var(--color-secundario);
+}
+
+.asistencia_icono.variante_2 {
+    background: var(--color-advertencia);
+}
+
+.asistencia_nombre {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-left: 12px;
+}
+
+.asistencia_nombre p {
+    margin: 0;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    font-size: 0.85rem;
+}
+
+.asistencia_nombre span {
+    margin: 0;
+    color: var(--texto-secundario);
+    font-size: 0.7rem;
+}
+
+/* Badges de estado */
+.asistencia_estado {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: var(--peso-semi-negrita);
+    padding: 3px 8px;
+    border-radius: var(--radio-full, 20px);
+}
+
+.asistencia_estado.presente {
+    background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.1);
+    color: var(--color-exito);
+}
+
+.asistencia_estado.tardanza {
+    background: rgba(var(--color-advertencia-rgb, 255, 193, 7), 0.1);
+    color: var(--color-advertencia);
+}
+
+.asistencia_estado.ausente {
+    background: rgba(var(--color-error-rgb, 220, 53, 69), 0.1);
+    color: var(--color-error);
+}
+
+.asistencia_punto {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.asistencia_ecualizador {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 8px;
+}
+
+.asistencia_ecualizador span {
+    width: 2px;
+    background: currentColor;
+    animation: ecualizador 1.2s infinite ease-in-out;
+}
+
+.asistencia_ecualizador span:nth-child(1) { height: 5px; }
+.asistencia_ecualizador span:nth-child(2) { height: 8px; animation-delay: 0.2s; }
+.asistencia_ecualizador span:nth-child(3) { height: 3px; animation-delay: 0.4s; }
+
+@keyframes ecualizador {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(0.5); }
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .asistencia_bloque_info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .info_clases_datos {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .info_clases_divisor {
+        width: 100%;
+        height: 1px;
+    }
+
+    .info_clases_estado {
+        align-self: flex-start;
+    }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .asistencia_contenedor {
+    transition: none !important;
+  }
+  .asistencia_item {
+    transition: none !important;
+  }
+  .asistencia_ecualizador span {
+    animation: none !important;
+    transform: scaleY(1) !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .asistencia_contenedor {
+    border: 2px solid var(--borde);
+  }
+  .asistencia_item {
+    border-width: 2px;
+  }
+  .asistencia_item:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    border-color: var(--color-primario);
+  }
+  .asistencia_icono {
+    border: 2px solid var(--texto-principal);
+  }
+  .asistencia_vacio_icono {
+    border: 2px solid var(--borde);
+  }
+  .info_clases_estado {
+    border: 2px solid currentColor;
+  }
+  .asistencia_contador_badge {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .asistencia_contenedor {
+    background-image: none !important;
+  }
+  .asistencia_contenedor::before {
+    display: none;
+  }
+  .asistencia_vacio {
+    display: none;
+  }
+}

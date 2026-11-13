@@ -1,0 +1,22 @@
+.celda_vacia {
+  /* sin width/height: 100% */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+  /* estas dos líneas ahora SÍ funcionan, porque el padre (wrapper_celda_vacia)
+     tiene tamaño explícito por el inset, no por un % de una tabla */
+
+  border-radius: var(--radio-sm);
+  border: 1px dashed var(--borde);
+
+  color: var(--texto-deshabilitado);
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+
+  cursor: pointer;
+  transition: var(--transicion);
+}

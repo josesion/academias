@@ -1,0 +1,113 @@
+/* ==========================================================================
+   TARJETA HORARIO — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
+
+.tarjeta_resumen_horario {
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.card_titulo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--texto-secundario);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.badge_metodo {
+    padding: 2px 6px;
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
+    border-radius: var(--radio-sm);
+    font-size: 0.65rem;
+}
+
+/* Bloques de contenido interno */
+.info_horario_bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info_item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.info_label_con_icono {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-deshabilitado);
+}
+
+.info_valor {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    text-align: right;
+}
+
+.info_valor.codigo {
+    font-family: var(--fuente-codigo);
+    letter-spacing: -0.5px;
+}
+
+.info_valor.placeholder {
+    color: var(--texto-deshabilitado);
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* Divisor sutil */
+.info_divisor {
+    height: 1px;
+    background: var(--borde);
+    width: 100%;
+    margin: 2px 0;
+}
+
+/* Banner de estado final */
+.info_estado_banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radio-md);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.05em;
+    margin-top: 4px;
+}
+
+.info_estado_banner.listo {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.info_estado_banner.error {
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    color: var(--color-error);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}

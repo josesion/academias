@@ -1,0 +1,85 @@
+.cartel-exito-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-modal);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 9999;
+}
+
+.cartel-exito-tarjeta {
+  width: min(460px, 92vw);
+  background: var(--fondo-secundario);
+  border-radius: var(--radio-lg);
+  border: 1px solid var(--borde);
+  box-shadow: var(--sombra-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2.8rem 2.4rem;
+}
+
+.cartel-exito-icono {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--fondo-exito-suave);
+  color: var(--color-exito);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cartel-exito-icono svg {
+  width: 34px;
+  height: 34px;
+}
+
+.cartel-exito-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.8rem;
+  color: var(--texto-principal);
+}
+
+.cartel-exito-desc {
+  margin: 0;
+  color: var(--texto-secundario);
+  line-height: var(--linea-texto);
+}
+
+.cartel-exito-aviso {
+  margin: 0;
+  color: var(--color-advertencia);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-texto);
+}
+
+.cartel-exito-btn {
+  margin-top: 0.4rem;
+  border: 1px solid var(--color-primario);
+  background: var(--color-primario);
+  color: var(--fondo-secundario);
+  padding: 0.9rem 1.8rem;
+  border-radius: var(--radio-sm);
+  font-weight: var(--peso-semi-negrita);
+  font-family: var(--fuente-principal);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.cartel-exito-btn:hover {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+}
+
+.cartel-exito-btn:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}

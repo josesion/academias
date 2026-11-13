@@ -1,0 +1,619 @@
+
+// ──────────────────────────────────────────────────────────────
+// Sección de Hooks
+// ──────────────────────────────────────────────────────────────
+import { tryCatchDatos } from "../utils/tryCatchBD";
+import { iudEntidad } from "../hooks/iudEntidad";
+import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { iudEntidadTransaction } from "../hooks/iudEntidadTRansaccion";
+import { listarEntidad } from "../hooks/funcionListar";
+import pool from "../bd";  // pool de MySQL para validaciones previas directas
+// ──────────────────────────────────────────────────────────────
+// Sección de Tipados
+// ──────────────────────────────────────────────────────────────
+import { InscripcionInputs , VerificacionInputs , 
+         VerificarPlanAsistenciaUnputs, ResultInscripcionAsistencia,
+         FiltroHistorialInputs, AnularInscripcionInputs,
+
+ } from "../squemas/inscripciones";
+import { DetalleCajaInputs } from "../squemas/cajas";
+import { TipadoData } from "../tipados/tipado.data";
+import { InscripcionListado } from "../tipados/inscripciones";
+
+
+
+/**
+ * Verifica si un alumno ya posee una inscripción con un estado específico (ej. 'activos')
+ * en una escuela determinada.
+ * * Esta función se usa para aplicar una regla de negocio que previene la duplicación
+ * de inscripciones activas (evitando conflictos 409).
+ *
+ * @param {VerificacionInputs} data - Objeto con los datos clave para la verificación.
+ * @param {number} data.dni_alumno - El DNI del alumno a verificar.
+ * @param {number} data.id_escuela - El ID de la escuela donde se busca la inscripción.
+ * @param {string} data.estado - El estado de la inscripción a buscar (ej: 'activos').
+ * @returns {Promise<TipadoData<{id_inscripcion: number }>>} Una promesa que resuelve con
+ * un objeto que contiene el ID de la inscripción si existe, o null/undefined
+ * si no se encuentra (dependiendo de la implementación de buscarExistenteEntidad).
+ */
+
+const verificacion = async( data : VerificacionInputs ) 
+: Promise<TipadoData<{id_inscripcion: number }>> => {
+     const {dni_alumno , id_escuela , estado} = data;
+
+    const sql : string = `select id_inscripcion from inscripciones 
+                          where 
+                             dni_alumno = ? and estado = ? and id_escuela = ? ;`;
+    const valores : unknown[] = [dni_alumno , estado , id_escuela]; 
+
+    return await buscarExistenteEntidad<{id_inscripcion: number }>({
+        slqEntidad : sql,
+        valores ,
+        entidad : 'Inscripcion'
+    });
+};
+
+/**
+ * Registra una nueva inscripción en la base de datos con todos los detalles
+ * del plan (snapshot) y las fechas.
+ * * @param {InscripcionInputs} data - Objeto con todos los campos necesarios para la nueva inscripción.
+ * @param {number} data.id_plan - ID del plan asociado a la inscripción.
+ * @param {number} data.id_escuela - ID de la escuela donde se registra la inscripción.
+ * @param {number} data.dni_alumno - DNI del alumno inscrito.
+ * @param {string} data.fecha_inicio - Fecha de inicio de la inscripción (AAAA-MM-DD).
+ * @param {string | null | undefined} data.fecha_fin - Fecha de fin de la inscripción (AAAA-MM-DD), puede ser nulo.
+ * @param {number} data.monto - Monto pagado por el plan (snapshot del precio).
+ * @param {number} data.clases_asignadas_inscritas - Número de clases asignadas (snapshot).
+ * @param {number} data.meses_asignados_inscritos - Número de meses asignados (snapshot).
+ * @returns {Promise<TipadoData<{ id_plan: number, dni_alumno: number }>>} Una promesa que resuelve con
+ * el ID del plan y el DNI del alumno para confirmar la creación.
+ */
+
+const registroInscripcion = async( data : InscripcionInputs) 
+: Promise<TipadoData<{ id_plan : number , dni_alumno : number, id?: number }>> =>{
+
+    const { id_plan, id_escuela ,dni_alumno ,fecha_inicio ,fecha_fin ,
+            clases_asignadas_inscritas , meses_asignados_inscritos ,monto
+    } = data ;
+
+    const sql : string = `INSERT INTO inscripciones (
+                            id_plan, 
+                            id_escuela, 
+                            dni_alumno, 
+                            fecha_inicio, 
+                            fecha_fin, 
+                            monto, 
+                            clases_asignadas_inscritas, 
+                            meses_asignados_inscritos
+                        ) VALUES (
+                            ?, ?, ?, ?, ?, ?, ?, ?
+                        );`;
+    const valores : unknown[] = [id_plan,id_escuela, dni_alumno , fecha_inicio ,fecha_fin ,monto , clases_asignadas_inscritas , meses_asignados_inscritos];
+    const datosRetorno  = { id_plan , dni_alumno }
+
+    return await iudEntidad<{ id_plan : number , dni_alumno : number }>({
+        slqEntidad : sql,
+        valores ,
+        entidad : "Inscripciones",
+        metodo  : "CREAR",
+        datosRetorno : datosRetorno
+    });
+
+};
+
+
+
+
+/**
+ * Realiza el alta integral de una nueva inscripción junto con su primer pago.
+ * * Esta función es una operación transaccional que asegura la coherencia entre
+ * el registro académico y el financiero:
+ * 1. Inserta la nueva inscripción en la tabla `inscripciones`.
+ * 2. Recupera el `insertId` generado automáticamente por la base de datos.
+ * 3. Inserta el movimiento de ingreso en `detalle_caja`, usando el ID de la 
+ * inscripción como `referencia_id`.
+ * * @param {InscripcionInputs} dataInsc - Objeto con los datos académicos (plan, fechas, montos, clases).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataCaja - Datos financieros del pago (caja, categoría, método, descripción).
+ * * @returns {Promise<{
+ * error: boolean,
+ * message: string,
+ * data?: { id_inscripcion: number, dni_alumno: string },
+ * code: "TRANSACCION_OK" | "TRANSACCION_FALLIDA"
+ * }>} Respuesta estandarizada con los datos de la nueva inscripción o el error ocurrido.
+ * * @example
+ * const alta = await inscripcionConPagoAlta(nuevaInsc, datosPago);
+ * if (!alta.error) {
+ * console.log(`Alumno ${alta.data.dni_alumno} inscrito con ID: ${alta.data.id_inscripcion}`);
+ * }
+ */
+export const inscripcionConPagoAlta = async (
+    dataInsc: InscripcionInputs, 
+// 'Omit' crea un tipo nuevo basado en DetalleCajaInputs pero ELIMINA 'referencia_id'.
+// Hacemos esto porque el ID de la inscripción todavía no existe (se genera después del primer INSERT),
+// así evitamos que TypeScript nos tire error por "falta de campo obligatorio" al recibir los datos.
+    dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
+): Promise<TipadoData<{id_inscripcion : number, dni_alumno : number}>> => {
+    
+    // 1. Definimos las SQL (las mismas que ya tenés)
+    const sqlInsc = `INSERT INTO inscripciones 
+                        (
+                            id_plan, 
+                            id_escuela, 
+                            dni_alumno, 
+                            fecha_inicio, 
+                            fecha_fin, 
+                            clases_asignadas_inscritas, 
+                            meses_asignados_inscritos, 
+                            monto, 
+                            estado    
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+
+    const sqlCaja = `INSERT INTO detalle_caja (
+                                id_caja, 
+                                id_categoria, 
+                                id_cuenta, 
+                                id_usuario, 
+                                monto, 
+                                descripcion, 
+                                referencia_id
+                            ) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?);`;
+        
+        // 2 : Crear la inscripción
+        const valoresInsc = [
+            dataInsc.id_plan, 
+            dataInsc.id_escuela, 
+            dataInsc.dni_alumno, 
+            dataInsc.fecha_inicio, 
+            dataInsc.fecha_fin, 
+            dataInsc.clases_asignadas_inscritas, 
+            dataInsc.meses_asignados_inscritos,
+            dataInsc.monto,
+            dataInsc.estado
+        ];
+
+  
+            const resultado = await iudEntidadTransaction(async (conn) => {
+
+                const  [resInsc] =await conn.execute(sqlInsc, valoresInsc);
+              
+                const  idGenerado = (resInsc as any).insertId;   
+
+      // 3: Crear el detalle de caja usando el ID de la inscripción
+                const valoresCaja = [
+                    dataCaja.id_caja, 
+                    dataCaja.id_categoria, 
+                    dataCaja.id_cuenta,
+                    dataCaja.id_usuario, 
+                    dataCaja.monto, 
+                    dataCaja.descripcion, 
+                    idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+                ];
+
+              await  conn.execute( sqlCaja, valoresCaja);
+                
+                return { id_inscripcion : idGenerado , dni_alumno : dataInsc.dni_alumno}
+            });
+         
+
+            // 4. Manejo de respuesta final
+            if (resultado.code === "TRANSACCION_OK") {
+                return {
+                    error: false,
+                    message: "Inscripcion correcta",
+                    data: resultado.data,
+                    code: "TRANSACCION_OK"
+                };
+            }
+
+            return {
+                error: true,
+                message: resultado.message || "Error en la apertura de caja",
+                code: "TRANSACCION_FALLIDA"
+            };  
+
+};
+
+
+/**
+ * Realiza la anulación física de una inscripción mediante una transacción atómica.
+ * * Esta función ejecuta dos operaciones vinculadas:
+ * 1. Cambia el estado de la inscripción a 'suspendido'.
+ * 2. Registra el movimiento de egreso en el detalle de caja, vinculándolo al ID de la inscripción.
+ * * Si cualquiera de las dos operaciones falla, la transacción realiza un rollback 
+ * automático para mantener la integridad de los datos.
+ * * @param {AnularInscripcionInputs} dataInsc - Datos identificadores de la inscripción (id_escuela, id_inscripcion).
+ * @param {Omit<DetalleCajaInputs, 'referencia_id'>} dataCaja - Datos financieros del reembolso (monto, categoría, descripción).
+ * * @returns {Promise<{
+ * error: boolean,
+ * message: string,
+ * data?: { id_inscripcion: number },
+ * code: "TRANSACCION_OK" | "TRANSACCION_FALLIDA"
+ * }>} Objeto de respuesta que indica el éxito o fracaso de la operación doble.
+ * * @example
+ * const resultado = await anularInscripcion(datosInsc, datosDinero);
+ * if (!resultado.error) {
+ * console.log("Caja actualizada e inscripción suspendida.");
+ * }
+ */
+const anularInscripcion = async( 
+    dataInsc : AnularInscripcionInputs, 
+    dataCaja: Omit<DetalleCajaInputs, 'referencia_id'> 
+) =>{
+    // 1. Validaciones previas de FKs ANTES de entrar en transacción
+    // Esto evita entrar en transacción solo para fallar por FK y da error claro al servicio
+
+    // Verificar que la caja existe y está abierta
+    const sqlVerifCaja = `SELECT id_caja FROM cajas WHERE id_caja = ? AND estado = 'abierta' AND id_escuela = ? LIMIT 1`;
+    const [rowsCaja]: any = await pool.execute(sqlVerifCaja, [dataCaja.id_caja, dataInsc.id_escuela]);
+    if (rowsCaja.length === 0) {
+        return {
+            error: true,
+            message: "Caja no encontrada o no está abierta para esta escuela",
+            code: "CAJA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // Verificar que la categoría existe, es de egreso y pertenece a la escuela
+    const sqlVerifCat = `SELECT id_categoria FROM categorias_caja WHERE id_categoria = ? AND id_escuela = ? AND tipo_movimiento = 'egreso' LIMIT 1`;
+    const [rowsCat]: any = await pool.execute(sqlVerifCat, [dataCaja.id_categoria, dataInsc.id_escuela]);
+    if (rowsCat.length === 0) {
+        return {
+            error: true,
+            message: "Categoría de anulación inválida o no pertenece a esta escuela",
+            code: "CATEGORIA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // Verificar que la cuenta existe y pertenece a la escuela
+    const sqlVerifCuenta = `SELECT id_cuenta FROM cuentas_escuela WHERE id_cuenta = ? AND id_escuela = ? LIMIT 1`;
+    const [rowsCuenta]: any = await pool.execute(sqlVerifCuenta, [dataCaja.id_cuenta, dataInsc.id_escuela]);
+    if (rowsCuenta.length === 0) {
+        return {
+            error: true,
+            message: "Cuenta/método de pago inválido o no pertenece a esta escuela",
+            code: "CUENTA_NO_VALIDA_ANULAR"
+        };
+    }
+
+    // 2. Definimos las SQL
+    const sqlInsc = `update inscripciones 
+                        set inscripciones.estado = 'suspendido'
+                        where 
+                        inscripciones. id_escuela = ?
+                        and
+                        inscripciones.id_inscripcion = ?;`;
+
+    const sqlCaja = `INSERT INTO detalle_caja (
+                                id_caja, 
+                                id_categoria, 
+                                id_cuenta, 
+                                id_usuario, 
+                                monto, 
+                                descripcion, 
+                                referencia_id
+                            ) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?);`;
+    
+    const resultado = await iudEntidadTransaction(async (conn) => {
+            
+            // PASO A: Crear la inscripción la suspencion
+            const valoresInsc = [ dataInsc.id_escuela, dataInsc.id_inscripcion ];
+            
+            await conn.execute(sqlInsc, valoresInsc);
+
+            const idGenerado = dataInsc.id_inscripcion;
+           
+            // PASO B: Crear el detalle de caja usando el ID de la inscripción
+            const valoresCaja = [
+                dataCaja.id_caja, 
+                dataCaja.id_categoria,
+                dataCaja.id_cuenta,
+                dataCaja.id_usuario, 
+                dataCaja.monto,  
+                dataCaja.descripcion, 
+                idGenerado // <--- Aquí vinculamos el dinero con la inscripción
+            ];
+
+            await conn.execute(sqlCaja, valoresCaja);
+
+            return { id_inscripcion: idGenerado };
+        });  
+
+        if (resultado.code ===  "TRANSACCION_OK" ){
+            return {
+                error : false,
+                message : "Inscripcion anulada correctamente",
+                data : resultado.data,
+                code : "TRANSACCION_OK"
+            };
+        };
+
+        // Propagar detail del hook si existe (error MySQL real)
+        return {
+                error : true,
+                message : resultado.message || "Transaccion fallida",
+                code : "TRANSACCION_FALLIDA",
+                detail: resultado.detail
+        };              
+};
+
+
+/**
+ * Realiza la anulación (suspensión) lógica de una inscripción para usuarios del plan básico.
+ * 
+ * Ejecuta una consulta de actualización (`UPDATE`) en la base de datos cambiando el estado 
+ * de la inscripción a "suspendido" utilizando la escuela y el ID de la inscripción, sin afectar módulos de caja.
+ * 
+ * @async
+ * @function anularInscripcionBasico
+ * @param {AnularInscripcionInputs} dataInsc - Objeto con los datos de la inscripción, requiriendo al menos el ID de la escuela y el ID de la inscripción.
+ * @returns {Promise<TipadoData<{}>>} Retorna una estructura con el resultado de la operación, indicando si hubo error, mensaje descriptivo, datos vacíos y el código de estado correspondiente.
+ */
+const anularInscripcionBasico = async ( dataInsc : AnularInscripcionInputs )
+:Promise<TipadoData<{}>> =>{
+
+    const {id_escuela, id_inscripcion} = dataInsc;
+
+    const sql : string = `update inscripciones 
+                                set inscripciones.estado = 'suspendido'
+                                where 
+                                inscripciones. id_escuela = ?
+                                and
+                                inscripciones.id_inscripcion = ?;`;
+    
+    const valores : unknown[] = [ id_escuela, id_inscripcion ];
+
+    return await iudEntidad({
+        slqEntidad : sql,
+        valores : valores,
+        metodo : "MODIFICAR",
+        entidad : "ANULAR_INSCRIPCION",
+        datosRetorno : {}
+    });
+};
+
+/**
+ * Ejecuta una validación atómica de seguridad y recupera el monto histórico para anulación.
+ * * Esta función consulta en un solo viaje a la base de datos tres puntos críticos:
+ * 1. Si la inscripción sigue en estado 'activos' (evita doble anulación).
+ * 2. Si el alumno tiene asistencias 'presente' (regla de negocio de la academia).
+ * 3. El monto original abonado (para validar que no se devuelva más dinero del que entró).
+ * * @param {AnularInscripcionInputs} data - Objeto con los identificadores de la inscripción.
+ * @param {number} data.id_inscripcion - ID único de la inscripción a consultar.
+ * @param {number} data.id_escuela - ID de la escuela para validar el contexto.
+ * * @returns {Promise<TipadoData<{esta_activa: number, tiene_asistencias: number, monto_inscripcion: number}>>} 
+ * Promesa que resuelve a un objeto con:
+ * - `esta_activa`: 1 si el estado es 'activos', 0 si ya fue anulada o venció.
+ * - `monto_inscripcion`: El valor monetario original registrado en la inscripción.
+ * - `tiene_asistencias`: 1 si existe al menos una asistencia 'presente', 0 si está limpia.
+ * * @example
+ * const { data } = await reglaAnulacionInscripcion(inputs);
+ * // Usar data.monto_inscripcion para validar contra el monto solicitado por el usuario.
+ */
+const reglaAnulacionInscripcion = async ( data :  AnularInscripcionInputs)
+: Promise<TipadoData<{tiene_asistencias : number , esta_activa : number, monto_inscripcion : number}>> => {
+
+    const sql : string = `SELECT 
+                                -- 1 si está activa, 0 si ya está suspendida/vencida
+                                (i.estado = 'activos') AS esta_activa,
+                                i.monto AS monto_inscripcion,
+                                -- 1 si tiene asistencias, 0 si está limpia
+                                EXISTS (
+                                    SELECT 1 FROM asistencias 
+                                    WHERE id_inscripcion = i.id_inscripcion AND estado = 'presente'
+                                ) AS tiene_asistencias
+                            FROM inscripciones i
+                            WHERE i.id_inscripcion = ? AND i.id_escuela = ?;`;    
+    
+    const { id_escuela, id_inscripcion} = data;
+    const valores : unknown[] = [ id_inscripcion , id_escuela];
+    return buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores,
+        entidad : "Inscripcion"
+    });
+};
+
+
+/**
+ * Consulta la vigencia de la inscripción y calcula el saldo de clases disponibles.
+ * * Esta función realiza un cálculo dinámico cruzando la inscripción con el histórico 
+ * de asistencias para determinar cuántos créditos le quedan al alumno.
+ * * @param {VerificarPlanAsistenciaUnputs} data
+ * Objeto con los criterios de búsqueda:
+ * - dni_alumno: Documento del alumno a consultar.
+ * - estado: Estado de la inscripción (ej: 'activos').
+ * - id_escuela: Identificador de la institución.
+ * * @returns {Promise<TipadoData<ResultInscripcionAsistencia>>}
+ * Retorna una promesa con el resultado de `buscarExistenteEntidad`:
+ * - id_inscripcion: ID único del plan contratado.
+ * - vencimiento: Fecha de fin del plan formateada como 'YYYY-MM-DD'.
+ * - clases_restantes: Resultado de (clases totales - asistencias consumidas).
+ * * @remarks
+ * - Utiliza `DATE_FORMAT` para evitar problemas de conversión de zona horaria en el cliente.
+ * - Emplea un `LEFT JOIN` para asegurar que el cálculo funcione incluso si el alumno posee 0 asistencias.
+ * - Requiere `GROUP BY` debido a la función de agregación `COUNT`.
+ * * @sqlLogic
+ * El saldo de clases se calcula mediante la fórmula:
+ * `(clases_por_mes * meses_contratados) - asistencias_registradas`
+ */
+const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
+: Promise<TipadoData<ResultInscripcionAsistencia>> => {
+    const {dni_alumno ,estado ,id_escuela, } = data;
+    const sql : string = `SELECT 
+                                i.id_inscripcion,
+                                DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
+                                ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(a.id_asistencia)) AS clases_restantes
+                            FROM inscripciones i
+                            LEFT JOIN asistencias a 
+                                ON i.id_inscripcion = a.id_inscripcion
+                            WHERE 
+                                i.dni_alumno = ?
+                                AND i.estado = ? 
+                                AND i.id_escuela = ?
+                            GROUP BY i.id_inscripcion;`;
+    const valores : unknown[] = [ dni_alumno, estado , id_escuela];
+    return await buscarExistenteEntidad<ResultInscripcionAsistencia>({
+        slqEntidad : sql,
+        valores ,
+        entidad : "inscripcion"
+    });
+};
+
+/**
+ * Obtiene el listado de inscripciones de una escuela filtrado por fechas, estado, 
+ * nombre o DNI del alumno, incluyendo la paginación y el último método de pago utilizado.
+ *
+ * @async
+ * @function listadoInscripciones
+ * @param {FiltroHistorialInputs} data - Objeto con los filtros de búsqueda enviados desde el frontend.
+ * @param {number} data.id_escuela - Identificador único de la academia.
+ * @param {string} data.fecha_desde - Fecha límite inferior para el filtro (YYYY-MM-DD).
+ * @param {string} data.fecha_hasta - Fecha límite superior para el filtro (YYYY-MM-DD).
+ * @param {string} data.estado - Estado de la inscripción ('todos', 'activos', 'suspendido', 'vencidos').
+ * @param {number} data.limit - Cantidad máxima de registros a retornar por página.
+ * @param {number} data.offset - Cantidad de registros a saltar para la paginación.
+ * @param {string} data.nombre_alumno - Filtro por nombre o apellido del alumno (búsqueda parcial).
+ * @param {string} data.dni_alumno - Filtro por DNI del alumno (búsqueda parcial).
+ * @param {string} pagina - Número de página actual para la metadata del listado.
+ * * @returns {Promise<TipadoData<InscripcionListado[]>>} Promesa que resuelve con la estructura de paginación y el array de inscripciones.
+ */
+const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : string) 
+: Promise<TipadoData<InscripcionListado[]>> =>{
+  const { id_escuela, fecha_desde, fecha_hasta , estado, limit, offset , nombre_alumno, dni_alumno} = data ;   
+  const dniFiltro = `%${dni_alumno}%`;
+  const nombreFiltro = `%${nombre_alumno}%`;
+  let estadoFiltro : string;
+
+  if (estado === "todos" ) {
+     estadoFiltro = `%%`
+  }else{
+      estadoFiltro = `%${estado}%`;
+  }; 
+
+  const sql : string = `SELECT 
+                            i.estado ,
+                            i.id_inscripcion,
+                            a_alumno.dni_alumno,
+                            CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) AS nombre_completo,
+                            COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS nombre_plan,
+                            COUNT(asist.id_asistencia) AS clases_usadas,
+                            (i.clases_asignadas_inscritas * i.meses_asignados_inscritos) AS clases_totales,
+                            DATE_FORMAT(i.fecha_inicio, '%Y-%m-%d') AS fecha_inicio,
+                            DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vigencia,
+                            i.monto AS monto_pagado,
+                            
+                            (SELECT cu.nombre_cuenta 
+                            FROM detalle_caja dc 
+                            JOIN cuentas_escuela cu ON dc.id_cuenta = cu.id_cuenta
+                            WHERE dc.referencia_id = i.id_inscripcion 
+                            ORDER BY dc.id_movimiento DESC LIMIT 1) AS metodo_pago,
+                            
+                            COUNT(*) OVER() AS total_registros
+
+                        FROM inscripciones i
+                        JOIN alumnos a_alumno ON i.dni_alumno = a_alumno.dni_alumno
+                        JOIN planes_pago p ON i.id_plan = p.id_plan
+                        LEFT JOIN planes_en_escuela pe ON (i.id_plan = pe.id_plan AND i.id_escuela = pe.id_escuela)
+                        LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
+                        WHERE i.id_escuela = ?
+
+                        AND i.fecha_inicio BETWEEN ? AND ? 
+                        AND i.estado LIKE ?
+                        AND (
+                                CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ?
+                                AND a_alumno.dni_alumno LIKE ?
+                            )
+
+                        GROUP BY i.id_inscripcion
+                        ORDER BY i.fecha_inicio DESC
+                                    limit ${limit}
+                                    offset ${offset};`;
+
+                   
+  const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estadoFiltro, nombreFiltro, dniFiltro];// por defecto todos estado                     
+  return listarEntidad({
+        slqListado : sql,
+        valores,
+        limit, 
+        pagina,
+        entidad : "Inscripciones",
+        estado  : estado
+  });    
+};
+
+
+/**
+ * Busca y verifica la existencia del método de pago (cuenta) asociado a una inscripción.
+ * * @async
+ * @param {number} id_inscripcion - El ID de la inscripción (referencia_id) que originó el movimiento.
+ * @returns {Promise<TipadoData<{id_cuenta: number}>>} Objeto con el código de estado/existencia y el id_cuenta si corresponde.
+ * * @example
+ * const resultado = await buscarMetodoPago(45);
+ * if (resultado.error === true) {
+ * console.log("El método de pago existe.");
+ * }
+ */
+const buscarMetodoPago =async ( id_inscripcion : number)
+: Promise<TipadoData<{id_cuenta : number}>> => {
+    const slq : string = `SELECT id_cuenta 
+                          FROM detalle_caja 
+                          WHERE referencia_id = ?
+                          LIMIT 1;`;
+
+    const valores : unknown[] = [ id_inscripcion];
+    
+    return buscarExistenteEntidad({ 
+        slqEntidad : slq,
+        valores,
+        entidad : "id_metodo_pago"
+    });
+};
+
+
+/**
+ * Obtiene el saldo neto actual de un método de pago específico dentro de una caja abierta.
+ * Suma todos los movimientos (ingresos y egresos) filtrados por la caja y la cuenta seleccionada.
+ * * @param {number} id_caja - El ID de la caja activa que se está auditando.
+ * @param {number} id_cuenta - El ID del método de pago (cuenta_escuela) a consultar.
+ * @returns {Promise<TipadoData<{ saldo_actual: number }>>} Estructura estándar con el saldo neto calculado.
+ */
+const saldoMetodoPago =async ( id_caja : number , id_cuenta : number)
+: Promise<TipadoData<{saldo_actual : number}>> => {
+    const slq : string = `SELECT 
+                            CAST(COALESCE(
+                                SUM(
+                                    CASE 
+                                        WHEN cat.tipo_movimiento = 'egreso' THEN -dc.monto 
+                                        ELSE dc.monto 
+                                    END
+                                ), 0
+                            ) AS SIGNED) AS saldo_actual
+                        FROM detalle_caja dc
+                        INNER JOIN categorias_caja cat ON dc.id_categoria = cat.id_categoria
+                        WHERE dc.id_caja = ? AND dc.id_cuenta = ? ;`;
+
+    const valores : unknown[] = [ id_caja, id_cuenta];
+    
+    return buscarExistenteEntidad({ 
+        slqEntidad : slq,
+        valores,
+        entidad : "saldo"
+    });
+};
+
+
+export const method = {
+    inscripcionBasica  : tryCatchDatos( registroInscripcion ), 
+    verificacion : tryCatchDatos( verificacion ),
+    verificarPlanAsistencia : tryCatchDatos(  verificarPlanAsistencia ), 
+    inscripcionConPagoAlta : tryCatchDatos( inscripcionConPagoAlta ),
+    listadoInscripciones   : tryCatchDatos( listadoInscripciones ),
+    anularInscripcion  : tryCatchDatos( anularInscripcion ),
+    reglaAnulacionInscripcion : tryCatchDatos( reglaAnulacionInscripcion ),
+    idMetodoPago : tryCatchDatos( buscarMetodoPago ),
+    saldoMetodoPago : tryCatchDatos( saldoMetodoPago ),
+    anularInscripcionBasico : tryCatchDatos( anularInscripcionBasico ),
+};

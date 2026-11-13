@@ -1,0 +1,72 @@
+// utills
+//import { ClientError } from "../utils/error";
+// hook 
+import { select } from "../utils/baseDatos";
+// Typado
+//import { CodigoEstadoHTTP } from "../tipados/generico";
+import { TipadoData } from "../tipados/tipado.data";
+
+
+interface PaginacionBase {
+    limit   : number,
+    pagina  :string
+}
+
+interface PaginacionDBRow {
+    total_registros: number; // Usamos un nombre de columna estandarizado
+}
+
+interface ParametrosListaGenerica extends PaginacionBase {
+    slqListado  :   string,
+    valores     :   unknown[],// por q podria recibir cual tipo de dato
+    entidad     :   string,
+    estado      :   string
+}
+export const listarEntidad = async <TRespuesta>(
+    parametros: ParametrosListaGenerica 
+) : Promise<TipadoData<TRespuesta[]>>=> {
+
+    const { estado ,entidad, valores ,slqListado, limit, pagina } = parametros;
+    const entidadM = entidad.toUpperCase();
+    
+    type RowConTotal = TRespuesta & PaginacionDBRow;
+
+    const listado = await select<RowConTotal>(slqListado , valores);
+    
+    if ( listado.length <= 0) {
+        // Cuando no hay resultados devolvemos un TipadoData consistente
+        // en lugar de lanzar una excepción. Esto mantiene la misma
+        // forma de retorno que usan otros hooks (error:true + code)
+        return {
+            error: true,
+            message: `No hay ${entidadM} ${estado}`,
+            data: [],
+            paginacion: undefined,
+            code: `NO_ACTIVE_${entidadM}`,
+            errorsDetails: undefined
+        } as unknown as TipadoData<TRespuesta[]>;
+    }
+
+    const totalRegistro  =listado[0].total_registros;
+    const totalPagina = Math.ceil( totalRegistro / limit);
+    // extraigo el total de registros para la renderizacion 
+    const dataEntidad = listado.map( entidad => {
+        const { total_registros, ...alumnoData } = entidad as any; 
+        return alumnoData;
+    });
+    
+      return {
+        error: false,
+        message: ` ${entidadM} listados ${estado}`,
+        data: dataEntidad,
+        paginacion: {
+            pagina: Number(pagina),
+            limite: Number(limit),
+            contadorPagina: totalPagina,
+            totalRegistros: Number(totalRegistro)
+        },
+        code:  `${entidadM}_LISTED`,
+        errorsDetails: undefined
+    };
+
+}

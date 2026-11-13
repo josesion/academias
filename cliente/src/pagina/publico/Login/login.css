@@ -1,0 +1,75 @@
+.login_pagina_contenedor{
+    color: var(--color-primario);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* Con min-height el contenido se centra y la pagina crece cuando es necesario. */
+    min-height: 89.5dvh;
+    height: auto;
+    padding: 32px 16px 48px;
+    gap: 32px;
+}
+
+/* Formulario: ancho y centrado en mobile */
+.login_pagina_seccion{
+    width: 100%;
+    max-width: 520px;
+    margin-inline: auto;
+}
+
+/* ==========================================================================
+   ESCRITORIO: carrusel a la izquierda y formulario a la derecha.
+   Dos hijos directos en el contenedor: <TarjeteroEscuelas> y <section>.
+   ========================================================================== */
+
+@media (min-width: 900px) {
+  .login_pagina_contenedor {
+    display: grid;
+    grid-template-columns: minmax(0, 500px) minmax(340px, 440px);
+    justify-content: center;
+    align-items: center;
+    column-gap: 56px;
+    row-gap: 0;
+    padding-inline: 32px;
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+/* visually-hidden: solo para lectores de pantalla */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login_pagina_contenedor {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .login_pagina_contenedor {
+    /* El formulario ya se encarga de sus propios bordes (formularios.css).
+           Acá solo se fuerza un fondo sin transparencia para que el texto
+           no quede sobre la imagen de fondo. */
+    background: var(--fondo-principal);
+  }
+}
+
+@media print {
+  .login_pagina_contenedor {
+    display: none !important;
+  }
+}

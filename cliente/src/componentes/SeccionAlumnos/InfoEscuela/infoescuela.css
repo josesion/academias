@@ -1,0 +1,86 @@
+/* --- HERO ESCUELA --- */
+.hero-escuela {
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: var(--sombra-sm);
+  height: 100%;
+}
+
+.hero-avatar {
+  width: 80px;
+  height: 80px;
+  /* Mismo esquema de color que el avatar de la tarjeta "Mis Academias" */
+  background-color: var(--color-secundario);
+  color: var(--fondo-principal);
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: var(--peso-semi-negrita);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-sm);
+  flex-shrink: 0;
+}
+
+/* Logo real de la academia (mismo tamaño y forma que el avatar de respaldo) */
+.hero-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radio-sm);
+  object-fit: contain;
+  background-color: var(--fondo-superficie);
+  border: 1px solid var(--borde);
+  flex-shrink: 0;
+  /* Propiedad exacta: nunca `all` (--transicion de app.css es `all .3s`) */
+  transition: border-color 200ms var(--ease-ui);
+}
+
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.hero-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.hero-sub {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.badge-activo {
+  background-color: rgba(91, 123, 110, 0.1);
+  color: var(--color-secundario);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  align-self: flex-start;
+  margin-top: 6px;
+}
+
+/* Hover gateado: solo en dispositivos con puntero fino real (mismo patrón
+   que `.tarjeta_escuela_logo` de la tarjeta "Mis Academias"). */
+@media (hover: hover) and (pointer: fine) {
+  .hero-logo:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-logo {
+    transition: none;
+  }
+}

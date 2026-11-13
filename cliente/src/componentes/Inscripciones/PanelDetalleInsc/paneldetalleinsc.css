@@ -1,0 +1,296 @@
+/* ==========================================================================
+   PANEL DETALLE INSCRIPCIÓN (MODO ANULACIÓN / ACCIÓN CRÍTICA)
+   ========================================================================== */
+
+.recibo_ticket.ticket_inscripcion {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    max-height: 85dvh;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    /* Fondo especial con tinte de alerta/error para diferenciarlo */
+    background:  var(--fondo-secundario);
+    color: var(--texto-principal);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--borde));
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-lg);
+    animation: reciboAparece 0.22s ease;
+}
+
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar {
+    width: 6px;
+}
+
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.recibo_ticket.ticket_inscripcion::-webkit-scrollbar-thumb {
+    background: var(--borde-hover);
+    border-radius: 999px;
+}
+
+/* ==========================================================================
+   HEADER
+   ========================================================================== */
+
+.recibo_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 20px 24px 0;
+}
+
+.recibo_marca {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+
+    color: var(--texto-secundario);
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-sm);
+    font-weight: var(--peso-semi-negrita);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recibo_marca svg {
+    color: var(--color-error);
+    flex-shrink: 0;
+}
+
+.recibo_stamp {
+    flex-shrink: 0;
+    padding: 4px 10px;
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.stamp_neutro {
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    color: var(--texto-secundario);
+}
+
+/* ==========================================================================
+   TOTAL
+   ========================================================================== */
+
+.recibo_total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px 4px;
+    text-align: center;
+}
+
+.recibo_total_label {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--texto-secundario);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.recibo_monto {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+
+    margin-top: 6px;
+    max-width: 100%;
+
+    font-family: var(--fuente-titulos);
+    font-size: 2.4rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
+
+    word-break: break-word;
+}
+
+.monto_neutro {
+    color: var(--texto-principal);
+}
+
+/* ==========================================================================
+   PERFORADO (Efecto ticket térmico con muescos)
+   ========================================================================== */
+
+.recibo_perforado {
+    position: relative;
+    height: 0;
+    margin: 18px 0;
+    border-top: 2px dashed color-mix(in srgb, var(--color-error) 30%, var(--borde));
+}
+
+.recibo_perforado::before,
+.recibo_perforado::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--fondo-principal);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, var(--borde));
+}
+
+.recibo_perforado::before { left: -10px; }
+.recibo_perforado::after { right: -10px; }
+
+/* ==========================================================================
+   BODY
+   ========================================================================== */
+
+.recibo_body {
+    padding: 0 24px;
+}
+
+.recibo_fila {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: var(--texto-sm);
+}
+
+.recibo_fila_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    color: var(--texto-secundario);
+}
+
+.recibo_fila_label svg {
+    color: var(--color-error);
+}
+
+.recibo_fila_valor {
+    min-width: 0;
+    font-family: var(--fuente-codigo);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+    text-align: right;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recibo_linea_punteada {
+    margin: 14px 0;
+    border-top: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   BLOQUE ANULAR
+   ========================================================================== */
+
+.panel_anular_bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    margin-bottom: 8px;
+    padding: 14px;
+
+    border-left: 2px solid var(--color-error);
+    background: var(--fondo-superficie);
+    border-radius: 0 var(--radio-sm) var(--radio-sm) 0;
+}
+
+.panel_anular_label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--color-error);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.panel_anular_bloque .selector_contenedor {
+    width: 100%;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.recibo_footer {
+    display: flex;
+    justify-content: center;
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--borde);
+    margin-top: 12px;
+}
+
+.recibo_footer button {
+    width: 100%;
+}
+
+/* ==========================================================================
+   ANIMACIÓN
+   ========================================================================== */
+
+@keyframes reciboAparece {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .recibo_ticket.ticket_inscripcion {
+        animation: none;
+    }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 420px) {
+    .recibo_ticket.ticket_inscripcion {
+        max-width: 100%;
+        max-height: 90dvh;
+        border-radius: 0;
+    }
+
+    .recibo_header,
+    .recibo_body,
+    .recibo_footer {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .recibo_monto {
+        font-size: 2rem;
+    }
+}

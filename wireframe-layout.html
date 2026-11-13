@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELPHIS - Wireframe Layout PC</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; background: #1a1a2e; color: #e0e0e0; }
+
+  .section {
+    min-height: 100vh;
+    padding: 60px 7%;
+    border-bottom: 2px dashed #333;
+    position: relative;
+  }
+  .section-label {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #6c63ff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Wireframe boxes */
+  .box {
+    border: 2px dashed #555;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    background: rgba(255,255,255,0.03);
+  }
+  .box.highlight { border-color: #6c63ff; color: #6c63ff; }
+  .box img { max-width: 100%; }
+
+  /* Nav lateral */
+  .nav-lateral {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 10;
+  }
+  .nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #6c63ff;
+    background: transparent;
+  }
+  .nav-dot.active { background: #6c63ff; }
+
+  /* ===== HERO ===== */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    min-height: 100vh;
+  }
+  .hero-left { flex: 0.8; max-width: 550px; display: flex; flex-direction: column; gap: 16px; }
+  .hero-right { flex: 1.2; max-width: 550px; }
+
+  .badge { width: 80%; margin: 0 auto; padding: 8px; }
+  .contacto { display: flex; gap: 12px; justify-content: center; }
+  .contacto .box { flex: 1; padding: 8px; }
+  .titulo { padding: 24px; font-size: 28px; font-weight: bold; color: #ccc; }
+  .descripcion { width: 90%; margin: 0 auto; padding: 12px; }
+  .botones { display: flex; gap: 12px; justify-content: center; }
+  .botones .box { padding: 12px 24px; }
+  .estadisticas { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
+  .estadisticas .box { flex: 1; padding: 12px; }
+
+  .browser-frame {
+    border: 2px solid #444;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #16213e;
+  }
+  .browser-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #0f3460;
+    border-bottom: 1px solid #333;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.red { background: #e74c3c; }
+  .dot.yellow { background: #f1c40f; }
+  .dot.green { background: #2ecc71; }
+  .browser-content {
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .floating-card {
+    position: absolute;
+    padding: 8px 14px;
+    border-radius: 6px;
+    background: #1a1a2e;
+    border: 1px solid #6c63ff;
+    font-size: 12px;
+    color: #6c63ff;
+  }
+  .floating-card.left { bottom: 16px; left: 16px; }
+  .floating-card.right { top: 16px; right: 16px; }
+
+  /* ===== FUNCIONES ===== */
+  .funciones { display: flex; align-items: flex-start; gap: 36px; justify-content: center; padding-top: 100px; }
+  .funciones-lista { flex: 0.8; display: flex; flex-direction: column; gap: 8px; }
+  .funcion-item { display: flex; align-items: center; gap: 12px; padding: 12px; }
+  .funcion-item.active { border-color: #6c63ff; background: rgba(108,99,255,0.05); }
+  .funcion-icon { width: 40px; height: 40px; flex-shrink: 0; }
+  .funcion-text { flex: 1; text-align: left; }
+  .funcion-text .titulo-f { font-weight: bold; color: #ccc; margin-bottom: 4px; }
+  .funcion-text .desc-f { font-size: 12px; color: #777; }
+  .funciones-visor { flex: 1.2; }
+
+  /* ===== BENEFICIOS ===== */
+  .beneficios { display: flex; gap: 32px; justify-content: center; padding-top: 100px; background: rgba(15,52,96,0.3); }
+  .beneficios-video { flex: 1.1; }
+  .beneficios-lista { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .beneficio-item { padding: 14px; text-align: left; }
+
+  /* ===== PLANES ===== */
+  .planes { display: flex; flex-direction: column; align-items: center; padding-top: 100px; }
+  .planes-titulo { font-size: 24px; font-weight: bold; color: #ccc; margin-bottom: 32px; padding: 16px; }
+  .planes-grid { display: flex; gap: 18px; max-width: 900px; width: 100%; }
+  .plan-card { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 24px; min-height: 350px; }
+  .plan-card.destacado { border-color: #6c63ff; background: rgba(108,99,255,0.05); position: relative; }
+  .plan-card.destacado::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: #6c63ff;
+  }
+  .plan-precio { font-size: 32px; font-weight: bold; color: #ccc; padding: 12px; }
+  .plan-caracteristicas { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .plan-char { padding: 6px 10px; font-size: 13px; color: #999; text-align: left; }
+
+  /* ===== CTA + FOOTER ===== */
+  .cta-footer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding-top: 100px; }
+  .cta-titulo { font-size: 24px; font-weight: bold; color: #ccc; padding: 16px; max-width: 600px; }
+  .cta-contacto { display: flex; gap: 12px; }
+  .cta-boton { width: 250px; }
+  .footer { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .footer-logo { font-size: 20px; font-weight: bold; color: #6c63ff; letter-spacing: 2px; }
+  .footer-copy { font-size: 12px; color: #666; }
+
+</style>
+</head>
+<body>
+
+<!-- Navegación lateral -->
+<div class="nav-lateral">
+  <div class="nav-dot active" title="Hero"></div>
+  <div class="nav-dot" title="Funciones"></div>
+  <div class="nav-dot" title="Beneficios"></div>
+  <div class="nav-dot" title="Planes"></div>
+  <div class="nav-dot" title="CTA"></div>
+</div>
+
+<!-- ===== 1. HERO ===== -->
+<div class="section hero">
+  <div class="section-label">1. Hero</div>
+  <div class="hero-left">
+    <div class="box badge">🏷️ Para academias de baile, gym, profesores...</div>
+    <div class="contacto">
+      <div class="box">📷 Instagram</div>
+      <div class="box">💬 WhatsApp</div>
+    </div>
+    <div class="box titulo">Gestioná tu academia o gym<br>desde un solo lugar.</div>
+    <div class="box descripcion">Descripción corta del producto...</div>
+    <div class="botones">
+      <div class="box highlight">Iniciar Sesión</div>
+      <div class="box">Comenzar</div>
+    </div>
+    <div class="estadisticas">
+      <div class="box">100% Online</div>
+      <div class="box">24/7</div>
+      <div class="box">∞ Escalable</div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="browser-frame">
+      <div class="browser-bar">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+      <div class="browser-content">
+        <div class="box" style="width:90%;height:80%;">🖼️ hero.png<br>(Captura del dashboard)</div>
+        <div class="floating-card left">👤 Alumnos: 245</div>
+        <div class="floating-card right">💰 Ingresos: $248,500</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. FUNCIONES ===== -->
+<div class="section funciones">
+  <div class="section-label">2. Funciones</div>
+  <div class="funciones-lista">
+    <div class="box funcion-item active">
+      <div class="box funcion-icon">👤</div>
+      <div class="funcion-text">
+        <div class="titulo-f">Gestión de Alumnos</div>
+        <div class="desc-f">Descripción de la función...</div>
+      </div>
+    </div>
+    <div class="box funcion-item">
+      <div class="box funcion-icon">📅</div>
+      <div class="funcion-text"><div class="titulo-f">Horarios Inteligentes</div></div>
+    </div>
+    <div class="box funcion-item">
+      <div class="box funcion-icon">💵</div>
+      <div class="funcion-text"><div class="titulo-f">Caja Diaria</div></div>
+    </div>
+    <div class="box funcion-item">
+      <div class="box funcion-icon">✅</div>
+      <div class="funcion-text"><div class="titulo-f">Asistencias</div></div>
+    </div>
+    <div class="box funcion-item">
+      <div class="box funcion-icon">📊</div>
+      <div class="funcion-text"><div class="titulo-f">Reportes</div></div>
+    </div>
+    <div class="box funcion-item">
+      <div class="box funcion-icon">🔔</div>
+      <div class="funcion-text"><div class="titulo-f">Notificaciones</div></div>
+    </div>
+  </div>
+  <div class="funciones-visor">
+    <div class="browser-frame">
+      <div class="browser-bar">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+      <div class="browser-content">
+        <div class="box" style="width:90%;height:80%;">🖼️ Captura activa<br>(Cambia según función seleccionada)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. BENEFICIOS ===== -->
+<div class="section beneficios">
+  <div class="section-label">3. Beneficios</div>
+  <div class="beneficios-video">
+    <div class="browser-frame">
+      <div class="browser-bar">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+      <div class="browser-content">
+        <div class="box" style="width:90%;height:80%;">🎬 presentacion.mp4<br>(Video en loop)</div>
+      </div>
+    </div>
+  </div>
+  <div class="beneficios-lista">
+    <div class="box beneficio-item">✗ Eliminá planillas de Excel</div>
+    <div class="box beneficio-item">📱 Controlá desde cualquier dispositivo</div>
+    <div class="box beneficio-item">⏱️ Ahorrá tiempo administrativo</div>
+    <div class="box beneficio-item">🗂️ Información centralizada</div>
+    <div class="box beneficio-item">🔒 Plataforma moderna y segura</div>
+    <div class="box beneficio-item">🔄 Actualizaciones constantes</div>
+  </div>
+</div>
+
+<!-- ===== 4. PLANES ===== -->
+<div class="section planes">
+  <div class="section-label">4. Planes</div>
+  <div class="planes-titulo">Elegí tu plan</div>
+  <div class="planes-grid">
+    <div class="box plan-card">
+      <div class="box" style="padding:8px;">Tipo de plan</div>
+      <div class="plan-precio">$XXX</div>
+      <div class="box" style="padding:8px; font-size:13px;">Descripción del plan</div>
+      <div class="plan-caracteristicas">
+        <div class="box plan-char">✓ Característica 1</div>
+        <div class="box plan-char">✓ Característica 2</div>
+        <div class="box plan-char">✓ Característica 3</div>
+      </div>
+      <div class="box" style="padding:10px;">Comenzar</div>
+    </div>
+    <div class="box plan-card destacado">
+      <div style="position:absolute;top:8px;right:8px;background:#6c63ff;color:white;padding:2px 8px;border-radius:4px;font-size:10px;">Más completo</div>
+      <div class="box" style="padding:8px;">Tipo de plan</div>
+      <div class="plan-precio">$XXX</div>
+      <div class="box" style="padding:8px; font-size:13px;">Descripción del plan</div>
+      <div class="plan-caracteristicas">
+        <div class="box plan-char">✓ Característica 1</div>
+        <div class="box plan-char">✓ Característica 2</div>
+        <div class="box plan-char">✓ Característica 3</div>
+        <div class="box plan-char">✓ Característica 4</div>
+      </div>
+      <div class="box highlight" style="padding:10px;">Comenzar</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. CTA + FOOTER ===== -->
+<div class="section cta-footer">
+  <div class="section-label">5. CTA + Footer</div>
+  <div class="box cta-titulo">Comenzá a digitalizar tu academia o gym</div>
+  <div class="cta-contacto">
+    <div class="box" style="padding:8px 16px;">📷 Instagram</div>
+    <div class="box" style="padding:8px 16px;">💬 WhatsApp</div>
+  </div>
+  <div class="box" style="width:80%;padding:10px;">Descripción...</div>
+  <div class="box highlight cta-boton">Comenzar ahora</div>
+  <div class="footer">
+    <div class="footer-logo">ELPHIS</div>
+    <div class="box" style="padding:8px; font-size:13px;">Descripción corta</div>
+    <div class="cta-contacto">
+      <div class="box" style="padding:6px 12px; font-size:12px;">📷 Instagram</div>
+      <div class="box" style="padding:6px 12px; font-size:12px;">💬 WhatsApp</div>
+    </div>
+    <div class="footer-copy">© 2026 ELPHIS</div>
+  </div>
+</div>
+
+</body>
+</html>

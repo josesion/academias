@@ -1,0 +1,466 @@
+/* ==========================================================================
+   CAJA — ARQUEO (tokens de marca)
+   ========================================================================== */
+
+/* ⚠️ .formulario_overlay se repite en formHorario.css con otros valores.
+   Recomendado: moverlo a un archivo compartido y borrarlo de acá y de ahí.
+   Mientras tanto, unifico con la versión de formHorario para que no compitan. */
+.formulario_overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: color-mix(in srgb, var(--fondo-principal) 70%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  animation: overlayFade 0.2s ease;
+}
+
+@keyframes overlayFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Visually hidden utility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Carga global */
+.carga-global {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3rem;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  text-align: center;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: color-mix(in srgb, var(--fondo-principal) 85%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.carga-global .spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_girar 0.9s linear infinite;
+}
+
+@keyframes spinner_girar {
+  to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   CONTENEDOR GENERAL
+   ========================================================================== */
+
+.caja_arqueo_grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  padding: 24px;
+
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  box-sizing: border-box;
+
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   CABECERA
+   ========================================================================== */
+
+.caja_header {
+  width: 100%;
+
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.caja_header h1 {
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+}
+
+.caja_header h1 svg {
+  color: var(--color-primario);
+}
+
+.titulo_grupo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+.status_pill {
+  flex-shrink: 0;
+
+  padding: 6px 14px;
+  border-radius: 999px;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  transition: var(--transicion);
+}
+
+.status_pill.abierta {
+  background: color-mix(in srgb, var(--color-exito) 14%, transparent);
+  color: var(--color-exito);
+  border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.status_pill.cerrada {
+  background: color-mix(in srgb, var(--color-error) 14%, transparent);
+  color: var(--color-error);
+  border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.acciones_principales {
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   TARJETAS DE RESUMEN
+   ========================================================================== */
+
+.caja_resumen_cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+/* ==========================================================================
+   HISTORIAL + SIDEBAR — tu boceto: tarjetas arriba, detalle/métodos abajo
+   ========================================================================== */
+
+.caja_historial_wrapper {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  grid-template-areas:
+    "header  header"
+    "listado sidebar";
+  align-items: start;
+  gap: 18px 24px;
+
+  width: 100%;
+}
+
+.historial_header {
+  grid-area: header;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  width: 100%;
+}
+
+.historial_header h2 {
+  margin: 0;
+
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+}
+
+.btn_operativos {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.historial_contenido {
+  grid-area: listado;
+  min-width: 0;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 18px;
+
+  box-shadow: var(--sombra-sm);
+}
+
+.scroll_movimientos {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.scroll_movimientos::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll_movimientos::-webkit-scrollbar-track {
+  background: var(--fondo-hover);
+  border-radius: var(--radio-sm);
+}
+
+.scroll_movimientos::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+  border-radius: var(--radio-sm);
+}
+
+.scroll_movimientos::-webkit-scrollbar-thumb:hover {
+  filter: brightness(1.15);
+}
+
+.scroll_sensor {
+  padding: 14px;
+  text-align: center;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  color: var(--texto-deshabilitado);
+}
+
+.caja_sidebar_pagos {
+  grid-area: sidebar;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  position: sticky;
+  top: 20px;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 960px) {
+  .caja_historial_wrapper {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "listado"
+      "sidebar";
+  }
+
+  .caja_sidebar_pagos {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .caja_arqueo_grid {
+    padding: 14px;
+    gap: 18px;
+  }
+
+  .caja_header {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .caja_header h1 {
+    font-size: var(--texto-lg);
+  }
+
+  .titulo_grupo {
+    justify-content: center;
+  }
+
+  .acciones_principales,
+  .acciones_principales button {
+    width: 100%;
+  }
+
+  .historial_header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .historial_header h2 {
+    text-align: center;
+  }
+
+  .btn_operativos {
+    width: 100%;
+  }
+
+  .btn_operativos button {
+    flex: 1;
+  }
+
+  .historial_contenido {
+    padding: 14px;
+  }
+
+  .scroll_movimientos {
+    max-height: min(420px, 60vh);
+  }
+
+  .caja_sidebar_pagos {
+    text-align: center;
+  }
+
+  /* 2 columnas en móvil para que no quede en 1 */
+  .caja_resumen_cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .caja_arqueo_grid {
+    transition: none !important;
+  }
+  .caja_header {
+    transition: none !important;
+  }
+  .status_pill {
+    transition: none !important;
+  }
+  .formulario_overlay {
+    animation: none !important;
+  }
+  .carga-global .spinner {
+    animation: none !important;
+  }
+  .scroll_movimientos {
+    transition: none !important;
+  }
+  .caja_sidebar_pagos {
+    transition: none !important;
+  }
+  /* Animaciones de modales propios se manejan en sus CSS respectivos */
+}
+
+@media (prefers-contrast: more) {
+  .caja_arqueo_grid {
+    border: 2px solid var(--borde);
+  }
+  .caja_header {
+    border-bottom-width: 2px;
+  }
+  .status_pill {
+    border-width: 2px;
+  }
+  .caja_resumen_cards > div {
+    border-width: 2px !important;
+  }
+  .caja_resumen_cards > div:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .historial_contenido {
+    border-width: 2px;
+  }
+  .caja_sidebar_pagos > div {
+    border-width: 2px !important;
+  }
+  .btn_operativos button {
+    border-width: 2px !important;
+  }
+  .btn_operativos button:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .carga-global {
+    border-width: 2px;
+  }
+  .carga-global .spinner {
+    border-width: 4px;
+    border-top-color: var(--color-primario);
+  }
+}
+
+@media print {
+  .caja_arqueo_grid {
+    min-height: auto;
+    padding: 0;
+  }
+  .formulario_overlay {
+    display: none !important;
+  }
+  .carga-global {
+    display: none !important;
+  }
+  .caja_header {
+    border-bottom: 1px solid var(--borde);
+    margin-bottom: 1rem;
+  }
+  .acciones_principales {
+    display: none;
+  }
+  .btn_operativos {
+    display: none;
+  }
+  .historial_contenido {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+  }
+  .caja_historial_wrapper {
+    display: block;
+  }
+  .caja_sidebar_pagos {
+    break-inside: avoid;
+  }
+  .scroll_movimientos {
+    max-height: none;
+    overflow: visible;
+  }
+}

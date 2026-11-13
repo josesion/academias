@@ -1,0 +1,203 @@
+/* ============================================================
+   INPUTS — campo base reutilizable en toda la app
+   ============================================================ */
+
+.inputs_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
+}
+
+.inputs_contenedor label {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+/* label vacío (cuando no se pasa "label") no debe ocupar espacio */
+.inputs_contenedor label:empty {
+    display: none;
+}
+
+/* Asterisco de campo requerido */
+.inputs_requerido {
+    color: var(--color-error);
+    margin-left: 2px;
+    font-family: var(--fuente-principal);
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/* Asterisco dentro del formulario de perfil (sobrescribe color si hace falta) */
+.perfil_grupo .inputs_requerido {
+    color: var(--color-error);
+}
+
+.inputs {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    transition: var(--transicion);
+}
+
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .inputs,
+  .inputs[type="file"]::file-selector-button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .inputs {
+    border-width: 2px;
+  }
+  .inputs:focus:not(:read-only) {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .inputs_contenedor:has(.mensaje_error) .inputs:focus {
+    outline: 3px solid var(--color-error);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+@media print {
+  .inputs_contenedor label:empty {
+    display: none;
+  }
+  .mensaje_error {
+    display: none;
+  }
+  .inputs[type="file"]::file-selector-button {
+    display: none;
+  }
+}
+
+.inputs::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.inputs:hover:not(:read-only) {
+    border-color: var(--borde-hover);
+}
+
+.inputs:focus:not(:read-only) {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+/* ===== SOLO LECTURA ===== */
+
+.inputs:read-only {
+    background: color-mix(in srgb, var(--fondo-superficie) 88%, black);
+    color: var(--texto-secundario);
+    cursor: default;
+}
+
+/* ===== ESTADO DE ERROR ===== */
+
+.inputs_contenedor:has(.mensaje_error) .inputs {
+    border-color: var(--color-error);
+}
+
+.inputs_contenedor:has(.mensaje_error) .inputs:focus {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 18%, transparent);
+}
+
+.error_espacio {
+    min-height: 16px;
+}
+
+.mensaje_error {
+    margin: 0;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-medio);
+    color: var(--color-error);
+}
+
+/* ===== CHECKBOX / RADIO — no deben verse como el input de texto ===== */
+
+.inputs[type="checkbox"],
+.inputs[type="radio"] {
+    width: auto;
+    padding: 0;
+    accent-color: var(--color-primario);
+}
+
+/* ===== FILE ===== */
+
+.inputs[type="file"] {
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.inputs[type="file"]::file-selector-button {
+    margin-right: 10px;
+    padding: 6px 12px;
+
+    background: var(--color-primario);
+    color: var(--texto-principal);
+    border: none;
+    border-radius: var(--radio-sm);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.inputs[type="file"]::file-selector-button:hover {
+    filter: brightness(1.1);
+}
+
+/* ===== PASSWORD TOGGLE ===== */
+
+.inputs_toggle_password {
+  transition: color 120ms var(--ease-ui);
+}
+
+.inputs_toggle_password:hover {
+  color: var(--texto-principal);
+}
+
+.inputs_toggle_password:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inputs_toggle_password {
+    transition: none;
+  }
+}

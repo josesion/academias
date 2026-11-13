@@ -1,0 +1,362 @@
+// ──────────────────────────────────────────────────────────────
+// Sección de  hooks
+// ──────────────────────────────────────────────────────────────
+import { tryCatchDatos } from "../utils/tryCatchBD"; 
+import { iudEntidad } from "../hooks/iudEntidad";
+import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidad } from "../hooks/funcionListar";
+// ──────────────────────────────────────────────────────────────
+// Sección de Tipados
+// ──────────────────────────────────────────────────────────────
+import { TipadoData } from "../tipados/tipado.data";
+import { CategoriaCajaInpurts, ModCategoriaCajaInputs, BajaCategoriCajaInputs, ListadoCategoriaCajaInputs, CategoriaCajaInscripcionInputs }  from "../squemas/categoria.caja";
+import { DataCategoriaCajas, ResultListadoCategoriaCaja } from "../tipados/categoria.caja.tiapado";
+
+
+
+/**
+ * Verifica si una categoría de caja ya existe en la base de datos para una escuela y tipo de movimiento específicos.
+ * * @async
+ * @function verificarCategoriaExistente
+ * @param {CategoriaCajaInpurts} data - Objeto con los criterios de búsqueda.
+ * @param {string} data.nombre_categoria - El nombre de la categoría a validar.
+ * @param {number} data.id_escuela - ID de la escuela para limitar el scope de la búsqueda.
+ * @param {string} data.tipo_movimiento - El tipo (Ingreso/Egreso) para permitir nombres duplicados en diferentes tipos.
+ * * @returns {Promise<Object>} Promesa que resuelve al resultado de `buscarExistenteEntidad`.
+ * @property {boolean} existe - Indica si se encontró una coincidencia.
+ * @property {string} mensaje - Descripción del resultado para la UI.
+ * * @example
+ * const existe = await verificarCategoriaExistente({ 
+ * nombre_categoria: 'Cuotas', 
+ * id_escuela: 1, 
+ * tipo_movimiento: 'ingreso' 
+ * });
+ */
+const verificarCategoriaExistente = async(  data : CategoriaCajaInpurts ) 
+: Promise<TipadoData<any>> => {
+    const { nombre_categoria, id_escuela , tipo_movimiento} = data;
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
+                            from categorias_caja
+                            where nombre_categoria = ? 
+                                    and id_escuela = ?
+                                    and tipo_movimiento = ?;`;
+    const valor : unknown[] = [ nombre_categoria , id_escuela, tipo_movimiento];
+    return buscarExistenteEntidad({
+      slqEntidad : sql,
+      valores : valor,
+      entidad : "Categoria_Caja",
+    });
+};
+
+const buscadorIdCategoria = async(  data : ModCategoriaCajaInputs ) 
+: Promise<TipadoData<any>> => {
+    const { id_categoria, id_escuela } = data;
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
+                            from categorias_caja
+                            where    id_categoria = ?
+                                    and id_escuela = ?`;
+    const valor : unknown[] = [ id_categoria, id_escuela ];
+    return buscarExistenteEntidad({
+      slqEntidad : sql,
+      valores : valor,
+      entidad : "Categoria_Caja",
+    });
+};
+
+
+const verificarCategoriaExistente2 = async(  data : CategoriaCajaInpurts ) 
+: Promise<TipadoData<any>> => {
+    const { nombre_categoria, id_escuela } = data;
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
+                            from categorias_caja
+                            where nombre_categoria = ? 
+                                    and id_escuela = ?;`;
+    const valor : unknown[] = [ nombre_categoria , id_escuela];
+    return buscarExistenteEntidad({
+      slqEntidad : sql,
+      valores : valor,
+      entidad : "Categoria_Caja",
+    });
+};
+
+/**
+ * Realiza la consulta SQL para localizar el ID de la categoría 'Inscripcion' en la base de datos.
+ * * Esta es la capa final de acceso a datos. Utiliza una consulta preparada para buscar 
+ * la categoría específica por escuela, nombre y tipo de movimiento, garantizando 
+ * que se obtenga el registro correcto creado por el trigger de sistema.
+ *
+ * @param {CategoriaCajaInscripcionInputs} data - Objeto validado que contiene el id_escuela.
+ * @returns {Promise<TipadoData<{id_categoria : number}>>} Resultado de la búsqueda:
+ * - Si existe: Retorna el id_categoria mapeado por buscarExistenteEntidad.
+ * - Si no existe: Retorna el código de error de entidad no encontrada.
+ */
+const localizarIncripcionCategortia = async( data : CategoriaCajaInscripcionInputs)
+: Promise<TipadoData<{id_categoria : number}>> =>{
+    const sql : string = `SELECT id_categoria FROM categorias_caja
+                            WHERE id_escuela = ? 
+                            AND nombre_categoria = 'Inscripcion'
+                            AND tipo_movimiento = 'ingreso'; `;
+
+    const valor : unknown[]  = [ data.id_escuela ];
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad :"ID_INSCRIPCION_CATCAJA",
+    });                   
+};
+
+const localizarAnulacionCategortia = async( data : CategoriaCajaInscripcionInputs)
+: Promise<TipadoData<{id_categoria : number}>> =>{
+    const sql : string = `SELECT id_categoria FROM categorias_caja
+                            WHERE id_escuela = ? 
+                            AND nombre_categoria = 'Anulacion Inscripcion'
+                            AND tipo_movimiento = 'egreso';`;
+
+    const valor : unknown[]  = [ data.id_escuela ];
+    return await buscarExistenteEntidad({
+        slqEntidad : sql,
+        valores : valor,
+        entidad :"ID_ANULACION_CATCAJA",
+    });                   
+};
+
+
+const altaCategoriaCaja = async( data : CategoriaCajaInpurts )
+: Promise<TipadoData<DataCategoriaCajas>> => {
+    const  { tipo_movimiento, nombre_categoria , estado, id_escuela } = data;
+    const  sql : string = `INSERT INTO categorias_caja (id_escuela, nombre_categoria, tipo_movimiento) 
+                            VALUES ( ?, ?, ? );`;
+    const  valores : unknown[] = [ id_escuela , nombre_categoria, tipo_movimiento ];
+    const datosADevolver = { id_escuela, nombre_categoria, tipo_movimiento, estado};
+    return  iudEntidad({
+      slqEntidad : sql,
+      valores : valores,
+      entidad : "Categoria_Caja",
+      metodo : "CREAR",
+      datosRetorno : datosADevolver
+    });
+};
+
+
+
+
+/**
+ * Ejecuta la actualización de una categoría de caja existente en la base de datos.
+ * * @async
+ * @function modCategoriaCaja
+ * @param {ModCategoriaCajaInputs} data - Objeto con los datos necesarios para la actualización.
+ * @param {number} data.id_categoria - Identificador único de la categoría a modificar.
+ * @param {string} data.nombre_categoria - Nuevo nombre descriptivo de la categoría.
+ * @param {string} data.tipo_movimiento - Nuevo tipo de movimiento (Ingreso/Egreso).
+ * @param {number} data.id_escuela - ID de la escuela (utilizado como filtro de seguridad en el WHERE).
+ * * @returns {Promise<TipadoData<{id_categoria : number}>>} Promesa que resuelve al estándar de respuesta de la fábrica para operaciones IUD (Insert/Update/Delete).
+ * * @example
+ * const respuesta = await modCategoriaCaja({
+ * id_categoria: 10,
+ * nombre_categoria: "Ventas Varias",
+ * tipo_movimiento: "ingreso",
+ * id_escuela: 1
+ * });
+ */
+const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
+: Promise<TipadoData<{id_categoria : number}>> =>{
+  const {id_categoria , nombre_categoria , tipo_movimiento, id_escuela} = data;
+  const sql : string = `UPDATE categorias_caja 
+                        SET 
+                            nombre_categoria = ?, 
+                            tipo_movimiento  = ? 
+                        WHERE id_categoria =  ?
+                            and id_escuela = ? ;`;
+
+  const valores : unknown[] = [nombre_categoria, tipo_movimiento, id_categoria, id_escuela];
+  
+  return iudEntidad({
+      slqEntidad : sql,
+      valores,
+      entidad : "Categoria_Caja",
+      metodo : "MODIFICAR",
+      datosRetorno : { id_categoria } 
+  });
+
+};
+
+/**
+ * Realiza la baja lógica (cambio de estado) de una categoría de caja.
+ * * @async
+ * @function bajaCategoriaCaja
+ * @param {BajaCategoriCajaInputs} data - Objeto con las claves de identificación y el nuevo estado.
+ * @param {number} data.id_escuela - ID de la escuela para asegurar que la categoría pertenece a la institución.
+ * @param {number} data.id_categoria - Identificador único de la categoría a modificar.
+ * @param {string} data.estado - El nuevo estado (ej: 'inactivo') que se asignará al registro.
+ * * @returns {Promise<TipadoData<BajaCategoriCajaInputs>>} Promesa con el resultado de la operación IUD, retornando los datos actualizados.
+ * * @example
+ * const respuesta = await bajaCategoriaCaja({
+ * id_categoria: 5,
+ * id_escuela: 1,
+ * estado: 'inactivo'
+ * });
+ */
+const bajaCategoriaCaja = async( data : BajaCategoriCajaInputs) 
+: Promise<TipadoData<BajaCategoriCajaInputs>> => {
+    const {id_escuela, id_categoria , estado, nombre_categoria} = data ;
+    const sql : string = `UPDATE categorias_caja 
+                            SET 
+                                estado = ?
+                            WHERE id_categoria = ? and id_escuela =  ?;`;
+    const valores : unknown[] = [estado, id_categoria, id_escuela]; 
+
+    return iudEntidad({
+        slqEntidad: sql,
+        valores,
+        entidad : "Categoria_Caja",
+        metodo  : "ELIMINAR",
+        datosRetorno : { id_categoria , id_escuela, estado, nombre_categoria}
+    });
+};
+
+/**
+ * Obtiene un listado paginado y filtrado de las categorías de caja.
+ * * @async
+ * @function listadoCategoriaCaja
+ * @param {ListadoCategoriaCajaInputs} data - Parámetros de filtrado y paginación.
+ * @param {string} data.nombre_categoria - Término de búsqueda para filtrar por nombre (usando LIKE).
+ * @param {string} data.estado - Estado de los registros a recuperar (ej: 'activos').
+ * @param {number} data.id_escuela - Identificador de la escuela para segmentar los datos.
+ * @param {number} data.limit - Cantidad de registros por página.
+ * @param {number} data.offset - Desplazamiento calculado para la paginación.
+ * @param {string} data.tipo_movimiento - Filtro por tipo (ingreso/egreso) o comodín para todos.
+ * @param {number|string} data.pagina - Número de página actual para el retorno de metadatos.
+ * * @returns {Promise<TipadoData<ResultListadoCategoriaCaja[]>>} Promesa que resuelve al objeto estandarizado de listado, 
+ * incluyendo los datos de las categorías y la información de paginación extraída del Window Function.
+ * * @example
+ * const categorias = await listadoCategoriaCaja({
+ * nombre_categoria: 'cuota',
+ * estado: 'activos',
+ * id_escuela: 1,
+ * limit: 10,
+ * offset: 0,
+ * tipo_movimiento: 'ingreso',
+ * pagina: 1
+ * });
+ */
+const listadoCategoriaCaja = async( data  : ListadoCategoriaCajaInputs)
+: Promise<TipadoData<ResultListadoCategoriaCaja[]>> => {
+  const { nombre_categoria, estado, id_escuela, limit, offset, tipo_movimiento, pagina } = data ; 
+  const nombreCategoriaFiltro =`%${nombre_categoria}%`;
+  const sql : string = `select 
+                            id_categoria,
+                            nombre_categoria,
+                            tipo_movimiento,
+                            COUNT(*) OVER() AS total_registros
+                        from
+                            categorias_caja cc
+                        where
+                            cc.nombre_categoria like ?
+                            and cc.estado = ?
+                            and cc.id_escuela = ?
+                            and cc.tipo_movimiento like ?
+                        order by id_categoria
+                        limit ${limit}
+                        offset ${offset} `;
+  const valores : unknown[] = [ nombreCategoriaFiltro, estado, id_escuela, tipo_movimiento  ];    
+  
+  return await listarEntidad({
+    slqListado : sql,
+    limit : limit,
+    pagina : String(pagina),
+    valores,
+    entidad : "Categoria_Caja",
+    estado
+  });
+};
+
+/**
+ * @function verificarEgreso
+ * @description Consulta en la base de datos si una categoría específica está clasificada como 'egreso'.
+ * Utiliza una función auxiliar para validar la existencia de la entidad bajo condiciones específicas.
+ * * @param {number} id - El ID único de la categoría de caja a verificar.
+ * @returns {Promise<TipadoData<{id_categoria: number}>>} Retorna una promesa que resuelve en un objeto `TipadoData`:
+ * - `code: "CATEGORIA_EXISTE"` si la categoría existe y corresponde a un tipo 'egreso'.
+ * - `code: "CATEGORIA_NO_EXISTE"` (o similar según `buscarExistenteEntidad`) si no cumple la condición.
+ */
+const verificarEgreso = async ( id : number)
+: Promise<TipadoData<{id_categoria : number }>> => {
+
+    const sql : string = `select 
+                                id_categoria 
+                            from 
+                                categorias_caja 
+                                where id_categoria = ? and tipo_movimiento = "egreso";`;
+   const valor : unknown[] = [ id ];
+
+   return buscarExistenteEntidad({
+        entidad : "Categoria",
+        slqEntidad : sql,
+        valores    : valor
+   });
+
+};
+
+export interface ResultCategoria{
+    id_categoria : number, 
+    tipo_movimiento : "ingreso" | "egreso",
+    nombre_categoria : string
+};
+
+
+
+/**
+ * Servicio encargado de verificar la existencia de una categoría de caja en la base de datos 
+ * a partir de su identificador único, retornando los detalles de la categoría si es encontrada.
+ * 
+ * Este proceso realiza los siguientes pasos:
+ * 1. Define la consulta SQL para seleccionar los campos `id_categoria`, `tipo_movimiento` y `nombre_categoria` de la tabla `categorias_caja`.
+ * 2. Ejecuta la función genérica `buscarExistenteEntidad` pasando la consulta, los parámetros y el nombre de la entidad para estandarizar la respuesta.
+ *
+ * @async
+ * @function verificarCategoria
+ * @param {number} id - Identificador único de la categoría de caja que se desea verificar.
+ * 
+ * @returns {Promise<TipadoData<ResultCategoria>>} Promesa que resuelve con el resultado de la búsqueda,
+ * conteniendo los datos de la categoría si existe, o un indicador de error/código si no se encuentra.
+ * 
+ * @example
+ * const resultado = await verificarCategoria(5);
+ * if (!resultado.error) {
+ *    console.log(resultado.data?.nombre_categoria);
+ * }
+ */
+const verificarCategoria = async ( id : number)
+: Promise<TipadoData<ResultCategoria>> => {
+
+    const sql : string = `select 
+                                id_categoria, 
+                                tipo_movimiento,
+                                nombre_categoria
+                            from 
+                                categorias_caja 
+                            where id_categoria = ? ;`
+
+   const valor : unknown[] = [ id ];
+
+   return buscarExistenteEntidad({
+        entidad : "Categoria",
+        slqEntidad : sql,
+        valores    : valor
+   });
+
+};
+
+export const method = {
+    verificarCategoriaExistente : tryCatchDatos(verificarCategoriaExistente),
+    buscadorIdCategoria : tryCatchDatos(buscadorIdCategoria),
+    verificarCategoriaExistente2 : tryCatchDatos(verificarCategoriaExistente2),
+    altaCategoriaCaja : tryCatchDatos(altaCategoriaCaja),
+    modCategoriaCaja  : tryCatchDatos( modCategoriaCaja),
+    bajaCategoriaCaja : tryCatchDatos( bajaCategoriaCaja ),
+    listadoCategoriaCaja : tryCatchDatos( listadoCategoriaCaja ),
+    localizarIncripcionCategortia : tryCatchDatos( localizarIncripcionCategortia ),
+    localizarAnulacionCategortia : tryCatchDatos( localizarAnulacionCategortia ),
+    verificarEgreso : tryCatchDatos(verificarEgreso),
+    verificarCategoria : tryCatchDatos( verificarCategoria )
+};

@@ -1,0 +1,1285 @@
+/* ============================================================
+   ELPHIS — INICIO / LANDING PAGE
+   PARTE 1
+   ============================================================ */
+
+/* ============================================================
+   CONTENEDOR GENERAL
+   ============================================================ */
+
+.inicio{
+    width:100%;
+    min-height:100vh;
+    background:var(--fondo-principal);
+    color:var(--texto-principal);
+    font-family:var(--fuente-principal);
+    overflow:hidden;
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero{
+    position:relative;
+    min-height:720px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:100px 7% 80px;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 75% 35%,
+            color-mix(in srgb, var(--color-secundario) 16%, transparent),
+            transparent 35%
+        ),
+        var(--fondo-principal);
+}
+
+
+/* ============================================================
+   BRILLOS DEL HERO
+   ============================================================ */
+
+.hero_glow{
+    position:absolute;
+    border-radius:50%;
+    pointer-events:none;
+    filter:blur(80px);
+    opacity:.35;
+}
+
+.hero_glow_1{
+    width:280px;
+    height:280px;
+    top:80px;
+    left:-100px;
+    background:color-mix(in srgb, var(--color-secundario) 22%, transparent);
+}
+
+.hero_glow_2{
+    width:240px;
+    height:240px;
+    right:5%;
+    bottom:-100px;
+    background:color-mix(in srgb, var(--color-secundario) 16%, transparent);
+}
+
+
+/* ============================================================
+   CONTENIDO HERO
+   ============================================================ */
+
+.hero_contenido{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:620px;
+    margin-right:60px;
+}
+
+
+/* ============================================================
+   BADGE
+   ============================================================ */
+
+.hero_badge{
+    display:inline-flex;
+    align-items:center;
+    padding:7px 13px;
+    margin-bottom:22px;
+    border:1px solid var(--borde);
+    border-radius:999px;
+    background:var(--fondo-secundario);
+    color:var(--texto-secundario);
+    font-size:.72rem;
+    font-weight:var(--peso-medio);
+    letter-spacing:.04em;
+}
+
+
+/* ============================================================
+   TITULO HERO
+   ============================================================ */
+
+.hero_titulo{
+    margin:0;
+    font-family:var(--fuente-titulos);
+    font-size:clamp(2.5rem, 5vw, 4.5rem);
+    line-height:1.05;
+    font-weight:var(--peso-negrita);
+    letter-spacing:-.04em;
+    color:var(--texto-principal);
+}
+
+
+/* ============================================================
+   DESCRIPCIÓN HERO
+   ============================================================ */
+
+.hero_descripcion{
+    max-width:600px;
+    margin:25px 0 0;
+    color:var(--texto-secundario);
+    font-size:var(--texto-lg);
+    line-height:1.75;
+}
+
+
+/* ============================================================
+   BOTONES HERO
+   ============================================================ */
+
+.hero_botones{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:32px;
+}
+
+
+/* ============================================================
+   BOTÓN PRINCIPAL
+   ============================================================ */
+
+.boton_principal{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:0 20px;
+    border-radius:var(--radio-sm);
+    background:var(--color-primario);
+    border:1px solid transparent;
+    color:var(--fondo-secundario); /* antes #fff: en gym el primario es lima */
+    font-family:var(--fuente-principal);
+    font-size:var(--texto-sm);
+    font-weight:var(--peso-negrita);
+    text-decoration:none;
+    cursor:pointer;
+    transition:var(--transicion);
+}
+
+.boton_principal:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 25px color-mix(in srgb, var(--color-primario) 25%, transparent);
+}
+
+
+/* ============================================================
+   BOTÓN SECUNDARIO
+   ============================================================ */
+
+.boton_secundario{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:44px;
+    padding:0 20px;
+    border-radius:var(--radio-sm);
+    background:var(--fondo-superficie);
+    border:1px solid var(--borde);
+    color:var(--texto-principal);
+    font-size:var(--texto-sm);
+    font-weight:var(--peso-medio);
+    text-decoration:none;
+    cursor:pointer;
+    transition:var(--transicion);
+}
+
+.boton_secundario:hover{
+    background:var(--fondo-hover);
+    border-color:var(--borde-hover);
+}
+
+
+/* ============================================================
+   ESTADÍSTICAS
+   ============================================================ */
+
+.hero_estadisticas{
+    display:flex;
+    align-items:center;
+    gap:35px;
+    margin-top:45px;
+}
+
+.estadistica{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+}
+
+.estadistica strong{
+    font-family:var(--fuente-titulos);
+    font-size:1.25rem;
+    font-weight:var(--peso-negrita);
+    color:var(--texto-principal);
+}
+
+.estadistica span{
+    color:var(--texto-secundario);
+    font-size:var(--texto-xs);
+    white-space:nowrap;
+}
+
+
+/* ============================================================
+   MARCO DE APP (ventana de navegador)
+   Lo usan: captura del hero, visor de funciones y video.
+   Adentro va un <img> o <video> con la clase .marco_app_img
+   ============================================================ */
+
+.marco_app{
+    position:relative;
+    border:1px solid var(--borde);
+    border-radius:var(--radio-lg);
+    background:var(--fondo-secundario);
+    box-shadow:var(--sombra-lg);
+    overflow:hidden;
+}
+
+.marco_app_barra{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:12px 16px;
+    border-bottom:1px solid var(--borde);
+    background:var(--fondo-superficie);
+}
+
+.dashboard_dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+}
+
+.dashboard_dot.rojo{ background:#ef4444; }
+.dashboard_dot.amarillo{ background:#f59e0b; }
+.dashboard_dot.verde{ background:#22c55e; }
+
+/* El marco toma la altura de la imagen o el video: NO se recorta nada */
+.marco_app_pantalla{
+    position:relative;
+    min-height:120px;
+    background:var(--fondo-superficie);
+    line-height:0;
+}
+
+.marco_app_img{
+    display:block;
+    width:100%;
+    height:auto;
+}
+
+
+/* ============================================================
+   HERO · CAPTURA + TARJETAS FLOTANTES
+   ============================================================ */
+
+.hero_dashboard{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:540px;
+    flex-shrink:0;
+}
+
+.hero_flotante{
+    position:absolute;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    min-width:120px;
+    padding:12px 16px;
+    border:1px solid var(--borde);
+    border-radius:var(--radio-md);
+    background:var(--fondo-secundario);
+    box-shadow:var(--sombra-md);
+}
+
+.hero_flotante span{
+    color:var(--texto-secundario);
+    font-size:.68rem;
+}
+
+.hero_flotante strong{
+    color:var(--texto-principal);
+    font-family:var(--fuente-titulos);
+    font-size:1.35rem;
+    font-weight:var(--peso-negrita);
+    line-height:1.1;
+    font-variant-numeric:tabular-nums;
+}
+
+.hero_flotante_1{
+    left:-32px;
+    bottom:34px;
+}
+
+.hero_flotante_2{
+    right:-18px;
+    top:-20px;
+}
+
+
+/* ============================================================
+   SECCIONES GENERALES
+   ============================================================ */
+
+.funciones,
+.beneficios,
+.planes{
+    width:100%;
+    max-width:1200px;
+    margin:0 auto;
+    padding:100px 7%;
+}
+
+
+/* ============================================================
+   TITULO DE SECCIÓN
+   ============================================================ */
+
+.titulo_seccion{
+    max-width:700px;
+    margin:0 auto 55px;
+    text-align:center;
+}
+
+.titulo_seccion > span{
+    display:block;
+    margin-bottom:12px;
+    color:var(--color-primario);
+    font-size:var(--texto-xs);
+    font-weight:var(--peso-negrita);
+    letter-spacing:.12em;
+}
+
+.titulo_seccion h2{
+    margin:0;
+    font-family:var(--fuente-titulos);
+    font-size:clamp(1.8rem, 3vw, 2.7rem);
+    line-height:1.15;
+    font-weight:var(--peso-negrita);
+    letter-spacing:-.025em;
+}
+
+.titulo_seccion p{
+    margin:15px 0 0;
+    color:var(--texto-secundario);
+    font-size:.9rem;
+    line-height:1.6;
+}
+
+
+/* ============================================================
+   FUNCIONES · LISTA + VISOR
+   ============================================================ */
+
+.funciones{
+    border-top:1px solid var(--borde);
+}
+
+.funciones_visor{
+    display:grid;
+    grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+    gap:36px;
+    align-items:center;
+}
+
+.funciones_lista{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.funcion_item{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    width:100%;
+    padding:14px 16px;
+    text-align:left;
+    border:1px solid transparent;
+    border-radius:var(--radio-md);
+    background:transparent;
+    color:var(--texto-secundario);
+    font-family:var(--fuente-principal);
+    cursor:pointer;
+    transition:
+        background-color .25s var(--ease-ui),
+        border-color .25s var(--ease-ui),
+        box-shadow .25s var(--ease-ui),
+        color .25s var(--ease-ui);
+}
+
+.funcion_item:hover{
+    background:var(--fondo-hover);
+    color:var(--texto-principal);
+}
+
+.funcion_item.activa{
+    background:var(--fondo-secundario);
+    border-color:var(--borde-hover);
+    box-shadow:var(--sombra-sm);
+    color:var(--texto-principal);
+}
+
+.funcion_icono{
+    flex:none;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:var(--radio-sm);
+    background:color-mix(in srgb, var(--color-secundario) 10%, transparent);
+    border:1px solid color-mix(in srgb, var(--color-secundario) 22%, transparent);
+    color:var(--color-secundario);
+    font-size:1.05rem;
+}
+
+.funcion_item_texto{
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    padding-top:2px;
+}
+
+.funcion_item_texto > strong{
+    font-family:var(--fuente-titulos);
+    font-size:var(--texto-xl);
+    font-weight:var(--peso-negrita);
+    color:inherit;
+}
+
+/* La descripción solo se despliega en la función activa */
+.funcion_item_desc{
+    display:grid;
+    grid-template-rows:0fr;
+    transition:grid-template-rows .35s var(--ease-ui);
+}
+
+.funcion_item_desc > span{
+    min-height:0;
+    overflow:hidden;
+    color:var(--texto-secundario);
+    font-size:.8rem;
+    line-height:1.6;
+}
+
+.funcion_item.activa .funcion_item_desc{
+    grid-template-rows:1fr;
+}
+
+.funcion_item.activa .funcion_item_desc > span{
+    padding-top:6px;
+}
+
+/* Todas las capturas se apilan en la misma celda: el marco mide lo que la más
+   alta, así no salta de tamaño al cambiar de función. Las más bajas se
+   centran sin recortarse. */
+.funciones_visor_marco .marco_app_pantalla{
+    display:grid;
+}
+
+.visor_img{
+    grid-area:1 / 1;
+    height:100%;
+    object-fit:contain;
+    opacity:0;
+    transition:opacity .45s var(--ease-ui);
+}
+
+.visor_img.activa{
+    opacity:1;
+}
+
+
+/* ============================================================
+   PARTE 2
+   ============================================================ */
+
+
+/* ============================================================
+   BENEFICIOS (+ VIDEO)
+   ============================================================ */
+
+.beneficios{
+    border-top:1px solid var(--borde);
+    background:var(--fondo-secundario);
+}
+
+.beneficios_layout{
+    display:grid;
+    grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);
+    gap:32px;
+    align-items:center;
+    max-width:1050px;
+    margin:0 auto;
+}
+
+.beneficios_video{
+    min-width:0;
+}
+
+.beneficios_grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:10px;
+}
+
+.beneficio{
+    display:flex;
+    align-items:center;
+    min-height:54px;
+    padding:12px 18px;
+    border:1px solid var(--borde);
+    border-radius:var(--radio-sm);
+    background:var(--fondo-principal);
+    color:var(--texto-secundario);
+    font-size:.82rem;
+    line-height:var(--linea-texto);
+    transition:var(--transicion);
+}
+
+.beneficio:hover{
+    background:var(--fondo-superficie);
+    border-color:var(--borde-hover);
+    color:var(--texto-principal);
+    transform:translateX(3px);
+}
+
+
+/* ============================================================
+   PLANES
+   ============================================================ */
+
+.planes{
+    border-top:1px solid var(--borde);
+}
+
+.planes_grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:18px;
+    max-width:900px;
+    margin:0 auto;
+}
+
+
+/* ============================================================
+   GRID DE PLANES
+
+   Arriba de 600px son 2 columnas. Pueden llegar 1 a 4 planes,
+   así que los casos impares se corrigen acá con :has() (el
+   JSX no cambia, el grid se acomoda solo):
+     · 1 plan  → card centrada en vez de a media pantalla
+     · 2 planes → 1×2
+     · 3 planes → 2 + 1, el último centrado en su fila
+     · 4 planes → 2×2
+   ============================================================ */
+
+.planes_grid:has(> .plan_card:only-child){
+    grid-template-columns:minmax(0,420px);
+    justify-content:center;
+}
+
+.planes_grid:has(> .plan_card:nth-child(3):last-child) > .plan_card:last-child{
+    grid-column:1 / -1;
+    width:min(100%,420px);
+    justify-self:center;
+}
+
+
+/* ============================================================
+   MENSAJE DE ESTADO (cargando / error / sin planes)
+   ============================================================ */
+
+.planes_mensaje{
+    max-width:900px;
+    margin:0 auto;
+    padding:30px 0;
+    color:var(--texto-secundario);
+    font-size:.9rem;
+    line-height:1.6;
+    text-align:center;
+}
+
+
+/* ============================================================
+   PLAN CARD
+   ============================================================ */
+
+.plan_card{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    padding:32px 28px 28px;
+    border:1px solid var(--borde);
+    border-radius:var(--radio-md);
+    background:var(--fondo-secundario);
+    box-shadow:var(--sombra-sm);
+    overflow:hidden;
+    transition:
+        transform .3s var(--ease-ui),
+        border-color .3s var(--ease-ui),
+        box-shadow .3s var(--ease-ui);
+}
+
+.plan_card:hover{
+    transform:translateY(-4px);
+    border-color:var(--borde-hover);
+    box-shadow:var(--sombra-md);
+}
+
+
+/* ============================================================
+   PLAN DESTACADO
+   ============================================================ */
+
+.plan_card.destacado{
+    border-color:color-mix(in srgb, var(--color-primario) 35%, transparent);
+    background:
+        linear-gradient(
+            160deg,
+            color-mix(in srgb, var(--color-secundario) 9%, transparent),
+            transparent 55%
+        ),
+        var(--fondo-secundario);
+    box-shadow:var(--sombra-md);
+}
+
+.plan_card.destacado:hover{
+    border-color:var(--color-primario);
+    box-shadow:var(--sombra-lg);
+}
+
+.plan_card.destacado::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:2px;
+    background:var(--color-primario);
+}
+
+.plan_etiqueta{
+    position:absolute;
+    top:18px;
+    right:18px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:var(--color-primario);
+    color:var(--fondo-secundario);
+    font-size:.58rem;
+    font-weight:var(--peso-negrita);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+
+.plan_cabecera{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:12px;
+}
+
+.plan_tipo{
+    display:inline-flex;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--fondo-superficie);
+    border:1px solid var(--borde);
+    color:var(--texto-secundario);
+    font-size:.62rem;
+    font-weight:var(--peso-negrita);
+    letter-spacing:.08em;
+    text-transform:uppercase;
+}
+
+.plan_card h3{
+    margin:0;
+    font-family:var(--fuente-titulos);
+    font-size:1.45rem;
+    line-height:var(--linea-titulo);
+    font-weight:var(--peso-negrita);
+    color:var(--texto-principal);
+}
+
+
+/* ============================================================
+   PRECIO
+   ============================================================ */
+
+.plan_precio{
+    display:flex;
+    align-items:baseline;
+    gap:4px;
+    margin-top:18px;
+    padding-bottom:22px;
+    border-bottom:1px solid var(--borde);
+    color:var(--texto-principal);
+    font-family:var(--fuente-titulos);
+}
+
+.plan_precio_moneda{
+    font-size:1.1rem;
+    font-weight:var(--peso-medio);
+    color:var(--texto-secundario);
+}
+
+.plan_precio_monto{
+    font-size:2.4rem;
+    line-height:1;
+    font-weight:var(--peso-negrita);
+    letter-spacing:-.02em;
+    font-variant-numeric:tabular-nums;
+}
+
+
+/* ============================================================
+   CARACTERÍSTICAS
+   ============================================================ */
+
+.plan_lista{
+    display:flex;
+    flex-direction:column;
+    margin:6px 0 26px;
+    padding:0;
+    list-style:none;
+}
+
+.plan_caract{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    padding:11px 0;
+    border-bottom:1px dashed var(--borde);
+    font-size:.82rem;
+    line-height:var(--linea-texto);
+}
+
+.plan_caract:last-child{
+    border-bottom:none;
+}
+
+/* Tilde dibujado con máscara: toma el color del token, así sirve en ambos temas */
+.plan_caract::before{
+    content:"";
+    flex:none;
+    width:16px;
+    height:16px;
+    margin-top:2px;
+    background:var(--color-secundario);
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.plan_caract_clave{
+    flex:1;
+    color:var(--texto-secundario);
+}
+
+.plan_caract_valor{
+    color:var(--texto-principal);
+    font-weight:var(--peso-semi-negrita);
+    text-align:right;
+}
+
+
+/* ============================================================
+   BOTÓN PLAN
+   ============================================================ */
+
+.plan_boton{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-height:44px;
+    margin-top:auto;
+    border-radius:var(--radio-sm);
+    background:transparent;
+    border:1px solid var(--borde-hover);
+    color:var(--texto-principal);
+    font-family:var(--fuente-principal);
+    font-size:.82rem;
+    font-weight:var(--peso-negrita);
+    cursor:pointer;
+    transition:
+        background-color 140ms var(--ease-ui),
+        border-color 140ms var(--ease-ui),
+        color 140ms var(--ease-ui),
+        transform 140ms var(--ease-ui);
+}
+
+.plan_boton:hover{
+    background:var(--color-primario);
+    border-color:var(--color-primario);
+    color:var(--fondo-secundario);
+}
+
+.plan_boton:active{
+    transform:scale(.98);
+}
+
+.plan_boton_destacado{
+    background:var(--color-primario);
+    border-color:var(--color-primario);
+    color:var(--fondo-secundario);
+}
+
+.plan_boton_destacado:hover{
+    background:var(--color-secundario);
+    border-color:var(--color-secundario);
+}
+
+
+/* ============================================================
+   CTA
+   ============================================================ */
+
+.cta{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:100px 7%;
+    text-align:center;
+    border-top:1px solid var(--borde);
+    background:
+        radial-gradient(
+            circle at center,
+            color-mix(in srgb, var(--color-secundario) 12%, transparent),
+            transparent 55%
+        ),
+        var(--fondo-principal);
+    overflow:hidden;
+}
+
+.cta h2{
+    max-width:700px;
+    margin:0;
+    font-family:var(--fuente-titulos);
+    font-size:clamp(1.8rem, 3vw, 2.7rem);
+    line-height:1.15;
+    font-weight:var(--peso-negrita);
+    letter-spacing:-.025em;
+}
+
+.cta p{
+    max-width:600px;
+    margin:18px 0 28px;
+    color:var(--texto-secundario);
+    font-size:.9rem;
+    line-height:1.7;
+}
+
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:45px 7% 30px;
+    border-top:1px solid var(--borde);
+    background:var(--fondo-secundario);
+    text-align:center;
+}
+
+.footer h3{
+    margin:0 0 8px;
+    font-family:var(--fuente-titulos);
+    font-size:var(--titulo-sm);
+    font-weight:var(--peso-negrita);
+    letter-spacing:.08em;
+    color:var(--texto-principal);
+}
+
+.footer p{
+    margin:0 0 18px;
+    color:var(--texto-secundario);
+    font-size:.75rem;
+}
+
+.footer small{
+    color:var(--texto-deshabilitado);
+    font-size:.65rem;
+}
+
+
+/* ============================================================
+   CONTACTO (CTA Y FOOTER)
+   ============================================================ */
+
+.contacto_inicio,
+.footer_contacto{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+}
+
+.contacto_inicio{
+    margin:18px 0 0;
+}
+
+.hero_contacto{
+    justify-content:flex-start;
+    margin:14px 0 20px;
+}
+
+.footer_contacto{
+    margin:0 0 18px;
+}
+
+.contacto_item{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    color:var(--texto-secundario);
+    font-size:var(--texto-sm);
+    text-decoration:none;
+    transition:var(--transicion);
+}
+
+.contacto_item:hover{
+    color:var(--color-primario);
+}
+
+.contacto_item_instagram:hover,
+.contacto_item_whatsapp:hover{
+    color:var(--texto-principal);
+}
+
+.contacto_icono{
+    font-size:1.2rem;
+    flex-shrink:0;
+}
+
+.contacto_item_instagram .contacto_icono{
+    color:#E4405F;
+    fill:#E4405F;
+}
+
+.contacto_item_whatsapp .contacto_icono{
+    color:#25D366;
+    fill:#25D366;
+}
+
+.contacto_item_instagram:hover .contacto_icono,
+.contacto_item_whatsapp:hover .contacto_icono{
+    filter:brightness(1.1);
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET
+   ============================================================ */
+
+@media(max-width:1000px){
+
+    .hero{
+        padding:80px 5% 70px;
+    }
+
+    .hero_contenido{
+        margin-right:32px;
+    }
+
+    .hero_dashboard{
+        max-width:420px;
+    }
+
+    .hero_flotante_1{
+        left:-18px;
+    }
+
+    .hero_flotante_2{
+        right:-10px;
+    }
+
+    .funciones,
+    .beneficios,
+    .planes{
+        padding-left:5%;
+        padding-right:5%;
+    }
+
+    .funciones_visor{
+        gap:24px;
+    }
+
+    .beneficios_layout{
+        gap:22px;
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET PEQUEÑA
+   ============================================================ */
+
+@media(max-width:800px){
+
+    .hero{
+        min-height:auto;
+        flex-direction:column;
+        text-align:center;
+        gap:60px;
+        padding:80px 6%;
+    }
+
+    .hero_contenido{
+        max-width:700px;
+        margin:0;
+    }
+
+    .hero_contacto{
+        justify-content:center;
+    }
+
+    .hero_descripcion{
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    .hero_botones{
+        justify-content:center;
+    }
+
+    .hero_estadisticas{
+        justify-content:center;
+    }
+
+    .hero_dashboard{
+        max-width:560px;
+        width:100%;
+    }
+
+    .hero_flotante_1{
+        left:-8px;
+    }
+
+    .hero_flotante_2{
+        right:-8px;
+    }
+
+    /* Funciones: la captura va arriba y la lista abajo, en 2 columnas compactas */
+    .funciones_visor{
+        grid-template-columns:1fr;
+    }
+
+    .funciones_visor_marco{
+        order:-1;
+    }
+
+    .funciones_lista{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .funcion_item{
+        align-items:center;
+        padding:10px 12px;
+    }
+
+    .funcion_item_texto > strong{
+        font-size:var(--texto-md);
+    }
+
+    .funcion_item_desc{
+        display:none;
+    }
+
+    /* Beneficios: video arriba, lista abajo */
+    .beneficios_layout{
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — CELULAR
+   ============================================================ */
+
+@media(max-width:600px){
+
+    .hero{
+        padding:60px 18px;
+        gap:45px;
+    }
+
+    .hero_badge{
+        font-size:.60rem;
+        padding:6px 10px;
+    }
+
+    .hero_titulo{
+        font-size:clamp(2.1rem, 11vw, 3rem);
+    }
+
+    .hero_descripcion{
+        font-size:.85rem;
+        line-height:1.65;
+    }
+
+    .hero_botones{
+        flex-direction:column;
+        width:100%;
+    }
+
+    .boton_principal,
+    .boton_secundario{
+        width:100%;
+    }
+
+    .hero_estadisticas{
+        gap:20px;
+        justify-content:space-between;
+    }
+
+    .estadistica{
+        flex:1;
+    }
+
+    .estadistica strong{
+        font-size:var(--texto-lg);
+    }
+
+    .estadistica span{
+        font-size:.58rem;
+        white-space:normal;
+    }
+
+    .marco_app{
+        border-radius:var(--radio-md);
+    }
+
+    .marco_app_barra{
+        padding:9px 12px;
+    }
+
+    .hero_flotante{
+        min-width:96px;
+        padding:9px 12px;
+    }
+
+    .hero_flotante strong{
+        font-size:1.05rem;
+    }
+
+    .hero_flotante_1{
+        left:6px;
+        bottom:-16px;
+    }
+
+    .hero_flotante_2{
+        right:6px;
+        top:-16px;
+    }
+
+    .funciones,
+    .beneficios,
+    .planes{
+        padding:70px 18px;
+    }
+
+    .titulo_seccion{
+        margin-bottom:35px;
+    }
+
+    .titulo_seccion h2{
+        font-size:1.8rem;
+    }
+
+    .funciones_lista{
+        grid-template-columns:1fr;
+    }
+
+    /* A 1 columna los :has() de arriba estorban (dejan de 2 columnas y
+       centrean), así que se anulan. */
+    .planes_grid:has(> .plan_card:only-child){
+        grid-template-columns:1fr;
+        justify-content:stretch;
+    }
+
+    .planes_grid:has(> .plan_card:nth-child(3):last-child) > .plan_card:last-child{
+        grid-column:auto;
+        width:100%;
+        justify-self:stretch;
+    }
+
+    .plan_card{
+        padding:26px 22px 22px;
+    }
+
+    .plan_precio_monto{
+        font-size:2.1rem;
+    }
+
+    .cta{
+        padding:75px 20px;
+    }
+
+    .cta h2{
+        font-size:1.8rem;
+    }
+
+    .cta p{
+        font-size:.82rem;
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — CELULARES MUY PEQUEÑOS
+   ============================================================ */
+
+@media(max-width:380px){
+
+    .hero{
+        padding-left:14px;
+        padding-right:14px;
+    }
+
+    .hero_estadisticas{
+        gap:10px;
+    }
+
+    .estadistica span{
+        font-size:.53rem;
+    }
+
+    .hero_flotante_2{
+        display:none;
+    }
+
+    .funciones,
+    .beneficios,
+    .planes{
+        padding-left:14px;
+        padding-right:14px;
+    }
+
+}

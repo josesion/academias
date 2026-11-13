@@ -1,0 +1,162 @@
+/* ============================================================
+   TARJETA DE INSCRIPCIÓN — TOKENS DE MARCA
+   ============================================================ */
+
+.tarjeta_card {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===== CUERPO DE LA TARJETA ===== */
+.tarjeta_card_body {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    column-gap: 30px;
+    row-gap: 16px;
+
+    padding: 30px 30px 30px 42px;
+
+    background: var(--fondo-secundario);
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--borde);
+
+    box-shadow: var(--sombra-md);
+
+    height: 100%;
+    box-sizing: border-box;
+
+    transition: var(--transicion);
+    animation: fadeInTarjeta 0.25s ease;
+}
+
+.tarjeta_card_body:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-lg);
+}
+
+/* ===== LÍNEA LATERAL DE ACENTO ===== */
+.tarjeta_card_body::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 25px;
+    bottom: 25px;
+    width: 4px;
+
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: 6px;
+}
+
+/* ===== FILA DE DATOS ===== */
+.tarjeta_row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border-radius: var(--radio-sm);
+    background: var(--fondo-hover);
+    transition: var(--transicion);
+}
+
+.tarjeta_row:hover {
+    background: color-mix(in srgb, var(--texto-principal) 5%, var(--fondo-hover));
+}
+
+/* Focus visible para navegación por teclado entre filas */
+.tarjeta_row:focus-visible {
+    outline: 2px solid var(--color-secundario);
+    outline-offset: 2px;
+}
+
+.tarjeta_key {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+.tarjeta_value {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+}
+
+/* ===== ANIMACIÓN ===== */
+@keyframes fadeInTarjeta {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1024px) {
+    .tarjeta_card {
+        min-width: 100%;
+    }
+
+    .tarjeta_card_body {
+        grid-template-columns: 1fr;
+        row-gap: 12px;
+        padding: 20px 20px 20px 32px;
+        border-radius: var(--radio-md);
+    }
+
+    .tarjeta_card_body::before {
+        left: 10px;
+        top: 20px;
+        bottom: 20px;
+        width: 3px;
+    }
+
+    .tarjeta_row {
+        padding: 8px;
+    }
+
+    .tarjeta_value {
+        font-size: var(--texto-sm);
+    }
+}
+
+@media (max-width: 640px) {
+    .tarjeta_card_body {
+        padding: 16px 16px 16px 26px;
+    }
+
+    .tarjeta_card_body::before {
+        left: 8px;
+        width: 3px;
+    }
+
+    .tarjeta_row {
+        padding: 6px;
+    }
+
+    .tarjeta_key {
+        font-size: 0.62rem;
+    }
+
+    .tarjeta_value {
+        font-size: var(--texto-xs);
+    }
+}
+
+@media (max-width: 480px) {
+    .tarjeta_card_body {
+        padding: 14px 14px 14px 22px;
+    }
+
+    .tarjeta_card_body::before {
+        left: 6px;
+        width: 2px;
+    }
+}

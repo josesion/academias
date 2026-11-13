@@ -1,0 +1,155 @@
+/* ============================================================
+   PAGINACIÓN — Estilo Editorial Premium
+   ============================================================ */
+
+.paginacion_contenedor {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--borde);
+}
+
+.paginacion_componente {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--fondo-superficie);
+    padding: 4px;
+    border-radius: var(--radio-md);
+    border: 1px solid var(--borde);
+}
+
+.paginacion_centro {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* --- Botones comunes (Genericos y Seleccionado) --- */
+.btn_generico,
+.btn_seleccionado {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radio-sm);
+    border: none;
+    cursor: pointer;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-sm);
+    transition: var(--transicion);
+}
+
+/* Botón Normal */
+.btn_generico {
+    background: transparent;
+    color: var(--texto-principal);
+}
+
+.btn_generico:hover {
+    background: var(--fondo-principal);
+    color: var(--color-secundario);
+}
+
+/* Botón Seleccionado (Tu toque de lujo) */
+.btn_seleccionado {
+    background: var(--color-primario);
+    color: #fff;
+    font-weight: var(--peso-negrita);
+    box-shadow: var(--sombra-sm);
+}
+
+/* --- Botones de Navegación (Izquierda/Derecha) --- */
+.btn_nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radio-sm);
+    border: none;
+    background: transparent;
+    color: var(--texto-principal);
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.btn_nav:hover:not(:disabled) {
+    background: var(--fondo-principal);
+    color: var(--color-secundario);
+}
+
+.btn_nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* --- Puntos Suspensivos --- */
+.puntos_suspensivos {
+    padding: 0 8px;
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-codigo);
+}
+
+/* --- Active states (micro-interacciones) --- */
+@media (hover: hover) and (pointer: fine) {
+    .btn_generico:active,
+    .btn_seleccionado:active,
+    .btn_nav:active:not(:disabled) {
+        transform: scale(0.95);
+    }
+}
+
+/* ==========================================================================
+   PREFERS-REDUCED-MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    .btn_generico,
+    .btn_seleccionado,
+    .btn_nav {
+        transition: none;
+    }
+    @media (hover: hover) and (pointer: fine) {
+        .btn_generico:active,
+        .btn_seleccionado:active,
+        .btn_nav:active:not(:disabled) {
+            transform: none;
+        }
+    }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — high-contrast / print
+   ========================================================================== */
+
+@media (prefers-contrast: more) {
+  .paginacion_componente {
+    border-width: 2px;
+  }
+  .btn_generico,
+  .btn_seleccionado,
+  .btn_nav {
+    border: 2px solid var(--borde);
+  }
+  .btn_generico:focus-visible,
+  .btn_seleccionado:focus-visible,
+  .btn_nav:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .btn_seleccionado {
+    border-color: var(--color-primario);
+  }
+  .btn_nav:disabled {
+    border-color: var(--borde);
+  }
+}
+
+@media print {
+  .paginacion_contenedor {
+    display: none;
+  }
+}

@@ -1,0 +1,142 @@
+import { z } from "zod";
+
+
+export const GuardarFlayerSchema = z.object({
+    id_escuela: z
+        .number({
+            error: "El ID de la escuela debe ser un número",
+        })
+        .int({
+            error: "El ID de la escuela debe ser un número entero",
+        })
+        .positive({
+            error: "El ID de la escuela debe ser mayor a cero",
+        }),
+    id_usuario: z
+        .number({
+            error: "El ID de usuario debe ser un número",
+        })
+        .int({
+            error: "El ID de usuario debe ser un número entero",
+        })
+        .positive({
+            error: "El ID de usuario debe ser mayor a cero",
+        }),        
+    plan: z
+        .number({
+            error: "El ID de Plan debe ser un número",
+        })
+        .int({
+            error: "El ID de Plan debe ser un número entero",
+        })
+        .positive({
+            error: "El ID de Plan debe ser mayor a cero",
+        }),        
+
+    titulo: z
+        .string({
+            error: "El título debe ser un texto",
+        })
+        .min(5, {
+            error: "El título es obligatorio",
+        })
+        .max(150, {
+            error: "El título no puede superar los 150 caracteres",
+        }),
+
+    descripcion: z
+        .string({
+            error: "La descripción debe ser un texto",
+        })
+        .min(8, {
+            error: "La descripción es obligatorio",
+        })        
+        .max(500, {
+            error: "La descripción no puede superar los 500 caracteres",
+        }),
+
+    imagen_url: z
+        .string({
+            error: "La URL de la imagen debe ser un texto",
+        })
+
+        .max(500, {
+            error: "La URL de la imagen no puede superar los 500 caracteres",
+        }),
+
+    public_id: z
+        .string({
+            error: "El ID público de la imagen debe ser un texto",
+        })
+        .min(1, {
+            error: "El ID público de la imagen es obligatorio",
+        })
+        .max(255, {
+            error: "El ID público de la imagen no puede superar los 255 caracteres",
+        }),
+
+    fecha_actualizacion: z
+        .date({
+            error: "La fecha de actualización debe ser una fecha válida",
+        })
+        .nullable(),
+});
+
+
+export const GuardarImagenSchema = z.object({
+    buffer: z.instanceof(Buffer, {
+        message: "La imagen debe ser un buffer válido",
+    }),
+
+    tipo: z
+        .string({
+            message: "El tipo de imagen debe ser un texto",
+        })
+        .min(1, {
+            message: "El tipo de imagen es obligatorio",
+        }),
+
+    size: z
+        .number({
+            message: "El tamaño de la imagen debe ser un número",
+        })
+        .positive({
+            message: "El tamaño de la imagen debe ser mayor a cero",
+        }),
+
+    nombre: z
+        .string({
+            message: "El nombre de la imagen debe ser un texto",
+        })
+        .min(1, {
+            message: "El nombre de la imagen es obligatorio",
+        }),
+});
+
+
+export const IDEscuelaSchema = z.object({
+    id_escuela: z
+        .number({
+            error: "El ID de la escuela debe ser un número",
+        })
+
+});
+
+
+export const EliminarFlayerSchema = z.object({
+    id_flayer: z
+        .number({
+            error: "El ID flayer debe ser un número",
+        }),
+
+    id_usuario: z
+        .number({
+            error: "El ID flayer debe ser un número",
+    })    
+
+});
+
+export type GuardarFlayerInputs = z.infer<typeof GuardarFlayerSchema>;
+export type ImagenFlayerInputs = z.infer<typeof GuardarImagenSchema>;
+export type IDEscualInputs = z.infer<typeof IDEscuelaSchema>;
+export type EliminarFlayerInputs = z.infer<typeof EliminarFlayerSchema>;

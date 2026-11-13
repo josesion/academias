@@ -1,0 +1,374 @@
+/* ============================================================
+   DETALLE CAJAS — histórico de cajas cerradas
+   ============================================================ */
+
+.detalle_caja_marco {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+
+    
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+
+  box-sizing: border-box;
+
+  max-height: var(--altura-panel-cajas);
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding-right: 6px;
+}
+
+.detalle_caja_titulo {
+    /* NUEVO: Mantiene el título fijo arriba al hacer scroll */
+    position: sticky;
+    top: 0;
+    background-color: var(--fondo-principal); 
+    z-index: 10;
+    padding-top: 4px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+
+    color: var(--color-primario);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.detalle_caja_vacio {
+    padding: 40px 20px;
+    text-align: center;
+
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio-md);
+}
+
+/* ============================================================
+   ESTILIZAR LA BARRA DE SCROLL (NUEVO)
+   ============================================================ */
+.detalle_caja_marco::-webkit-scrollbar {
+    width: 6px;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-thumb {
+    background: var(--borde);
+    border-radius: 4px;
+}
+
+.detalle_caja_marco::-webkit-scrollbar-thumb:hover {
+    background: var(--texto-deshabilitado);
+}
+
+/* ============================================================
+   LISTA
+   ============================================================ */
+
+.detalle_caja_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ============================================================
+   TARJETA
+   ============================================================ */
+
+.detalle_caja_card {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 18px 20px 18px 24px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-left: 3px solid var(--texto-deshabilitado);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-sm);
+    transition: var(--transicion);
+
+    animation: cajaEntrada 0.3s ease backwards;
+}
+
+.detalle_caja_lista .detalle_caja_card:nth-child(1) { animation-delay: 0.02s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(2) { animation-delay: 0.06s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(3) { animation-delay: 0.10s; }
+.detalle_caja_lista .detalle_caja_card:nth-child(4) { animation-delay: 0.14s; }
+
+@keyframes cajaEntrada {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.detalle_caja_card:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+    transform: translateY(-2px);
+}
+
+.detalle_caja_card.exacta {
+    border-left-color: var(--color-exito);
+}
+
+.detalle_caja_card.faltante {
+    border-left-color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 5%, var(--fondo-secundario));
+}
+
+.detalle_caja_card.sobrante {
+    border-left-color: var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 5%, var(--fondo-secundario));
+}
+
+
+/* ============================================================
+   CABECERA
+   ============================================================ */
+
+.detalle_caja_cabecera {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.detalle_caja_fechas {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.detalle_caja_rango {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+}
+
+.detalle_caja_horas {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: var(--texto-deshabilitado);
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+}
+
+/* sello — mismo lenguaje que ElementoLista/recibo_stamp */
+.detalle_caja_sello {
+    flex-shrink: 0;
+
+    padding: 4px 10px;
+
+    border: 2px solid currentColor;
+    border-radius: 3px;
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    transform: rotate(-4deg);
+    opacity: 0.9;
+}
+
+.sello_exacta {
+    color: var(--color-exito);
+}
+
+.sello_faltante {
+    color: var(--color-error);
+}
+
+.sello_sobrante {
+    color: var(--color-advertencia);
+}
+/* ============================================================
+   MONTOS
+   ============================================================ */
+
+.detalle_caja_montos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    padding: 14px;
+
+    background: var(--fondo-hover);
+    border-radius: var(--radio-md);
+}
+
+.monto_item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.monto_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-deshabilitado);
+}
+
+.monto_valor {
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+
+    font-variant-numeric: tabular-nums;
+}
+
+.monto_exacta {
+    color: var(--texto-principal);
+}
+
+.monto_faltante {
+    color: var(--color-error);
+}
+
+.monto_sobrante {
+    color: var(--color-advertencia);
+}
+
+/* ============================================================
+   USUARIOS DE LA CAJA (quién abrió / quién cerró) — spec 042 · A3
+   ============================================================ */
+
+.detalle_caja_usuarios {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    gap: 6px 18px;
+}
+
+.detalle_caja_usuario {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 6px;
+
+    min-width: 0;
+}
+
+.detalle_caja_usuario svg {
+    flex-shrink: 0;
+
+    color: var(--texto-deshabilitado);
+}
+
+.detalle_caja_usuario_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--texto-deshabilitado);
+}
+
+.detalle_caja_usuario_nombre {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+
+    /* Los nombres largos se envuelven: nunca rompen la grilla de la tarjeta */
+    overflow-wrap: anywhere;
+}
+
+/* ============================================================
+   OBSERVACIONES
+   ============================================================ */
+
+.detalle_caja_obs {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    padding: 10px 12px;
+
+    border-left: 2px solid var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 6%, transparent);
+
+    color: var(--texto-secundario);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-style: italic;
+    line-height: var(--linea-texto);
+}
+
+.detalle_caja_obs svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--color-advertencia);
+}
+
+.detalle_caja_obs p {
+    margin: 0;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 768px) {
+
+    /* La línea de usuarios se apila: los nombres largos no empujan el sello */
+    .detalle_caja_usuarios {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 6px;
+    }
+}
+
+@media (max-width: 600px) {
+    .detalle_caja_card {
+        padding: 16px 16px 16px 20px;
+    }
+
+    .detalle_caja_montos {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .detalle_caja_cabecera {
+        flex-direction: column;
+    }
+
+    .detalle_caja_sello {
+        align-self: flex-start;
+    }
+}

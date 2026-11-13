@@ -1,0 +1,186 @@
+/* ==========================================================================
+   METODOS DE PAGO INPUTS — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
+
+.contenedor_metodo_pago_inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.metodo_pago_titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metodo_pago_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+}
+
+/* Grilla fluida que se acomoda sola (en fila si entra, baja a columna si falta espacio) */
+.grid_metodos_pago {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+/* Tarjeta individual por cada cuenta */
+.tarjeta_metodo_pago {
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: var(--transicion);
+}
+
+.tarjeta_metodo_pago:hover {
+    border-color: var(--borde-hover);
+}
+
+/* Cabecera de la tarjeta */
+.metodo_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed var(--borde);
+}
+
+.metodo_info_principal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.metodo_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radio-sm);
+    flex-shrink: 0;
+}
+
+.metodo_icono.fisico {
+    background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+    color: var(--color-primario);
+}
+
+.metodo_icono.virtual {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+}
+
+.metodo_info_principal h4 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    font-size: 0.9rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metodo_info_principal span {
+    font-family: var(--fuente-principal);
+    font-size: 0.7rem;
+    color: var(--texto-deshabilitado);
+}
+
+/* Badge de diferencia por cuenta */
+.badge_diferencia {
+    padding: 3px 8px;
+    border-radius: var(--radio-sm);
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+}
+
+.badge_diferencia.ok {
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.badge_diferencia.negativo {
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    color: var(--color-error);
+    border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.badge_diferencia.positivo {
+    background: color-mix(in srgb, var(--color-advertencia) 12%, transparent);
+    color: var(--color-advertencia);
+    border: 1px solid color-mix(in srgb, var(--color-advertencia) 30%, transparent);
+}
+
+/* Cuerpo de la tarjeta (Sistema vs Conteo real) — Perfectamente alineado */
+.metodo_cuerpo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    align-items: end;
+}
+
+.metodo_campo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.dato_label {
+    font-family: var(--fuente-codigo);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--texto-deshabilitado);
+    height: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.monto_sistema_display {
+    font-family: var(--fuente-codigo);
+    font-size: 0.85rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    padding: 0 12px;
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Forzamos uniformidad en los inputs reales */
+.metodo_campo .inputs_contenedor, 
+.metodo_campo input {
+    height: 40px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+/* Ajustes responsivos internos */
+@media (max-width: 480px) {
+    .grid_metodos_pago {
+        grid-template-columns: 1fr;
+    }
+}

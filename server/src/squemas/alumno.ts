@@ -1,0 +1,177 @@
+import { z } from "zod";
+
+export const CrearAlumnoSchema = z.object({
+dni :       z.string({message : "El dni es requerido"})
+                .nonempty({message : "Dni no debe estar vacio"})
+                .min(8,{message : "EL dni esta incompleto"}),
+
+nombre :    z.string({message: "EL nombre debe ser una cadena de texto"})
+                .nonempty({message : "Nombre no debe estar vacio"})
+                .min(4,{message: "El nombre debe tener min. 4 letras"})
+                .max(60 ,{message: "El nombre es muy largo"}) ,
+
+apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
+                .nonempty({message : "Apellido no debe estar vacio"})
+                .min(4,{message: "El Apellido debe tener min. 4 letras"})
+                .max(60 ,{message: "El Apellido es muy largo"}) ,
+
+email:     z.string({message: "El correo debe ser una cadena de texto"})
+                .nonempty({message: "El correo no debe estar vacio"})
+                .email({message: "El formato del correo no es válido"})
+                .max(255, {message: "El correo es muy largo"}),
+
+celular :   z.string()
+                .nonempty({message : "Celular no debe estar vacio"})
+                .min(10, { message: "El celular debe tener al menos 10 dígitos" })
+                .max(15, { message: "El celular no puede tener más de 15 dígitos" })
+                .regex(/^\d+$/, { message: "El celular debe contener solo números" }),
+
+id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }),
+                   
+id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                        
+                
+});
+
+export const CrearAlumnoEscuelaSchema = z.object({
+        dni :    z.string({message : "El dni es requerido"})
+                .nonempty({message : "Dni no debe estar vacio"})
+                .min(8,{message : "EL dni esta incompleto"}),
+
+        id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' }),
+
+});        
+
+export const EliminarAlumnoEscuelaSchema = z.object({
+        dni :    z.string({message : "El dni es requerido"})
+                .nonempty({message : "Dni no debe estar vacio"})
+                .min(8,{message : "EL dni esta incompleto"}),
+
+        id_escuela:  z.number({message:"id escuela debe ser de tipo numerico"})
+                .int({ message: 'El id escuela debe ser un número entero.' })
+                .min(0, { message: 'El id escuela debe ser un número  mayor a 0.' }),      
+                        
+        estado:z.enum([ "activos", "inactivos"]), 
+                
+                
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })                 
+
+});
+
+
+export const listaAlumnosSchema = z.object({
+dni :       z.string({message : "El dni es requerido"}),
+
+apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
+                .max(60 ,{message: "El Apellido es muy largo"}) ,
+
+escuela : z.number({message:"id escuela debe ser de tipo numerico"})
+                .int({ message: 'id escuela debe ser un número entero.' })
+                .min(0, { message: 'id escuela debe ser un número  mayor a 0.' }),                
+
+        estado: z.string()
+                .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
+                .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),
+
+        limit : z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El limite debe ser un número entero.' })
+                .positive({ message: 'El limite debe ser un número positivo.' }),
+
+        offset :z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El offset debe ser un número entero.' })
+                .min(0, { message: 'El offset debe ser un número  mayor a 0.' }),
+                
+        pagina : z.number({message:"Pagina debe ser de tipo numerico"})
+                .int({ message: 'La pagina debe ser un número entero.' })
+                .min(1, { message: 'La pagina debe ser un número  mayor a 0.' }),
+                
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })   
+
+});
+
+
+export const listaAlumnoSinPaginacionSchema = z.object({
+dni :       z.string({message : "El dni es requerido"}),
+
+
+escuela : z.number({message:"Limit debe ser de tipo numerico"})
+                .int({ message: 'El offset debe ser un número entero.' })
+                .min(0, { message: 'El offset debe ser un número  mayor a 0.' }),                
+
+estado: z.string()
+                .min(5, { message: 'El estado debe tener al menos 5 caracteres.' })
+                .max(20, { message: 'El estado no puede exceder los 20 caracteres.' }),
+
+       id_usuario :    z.number({message : "id Usuario debe ser numerico"}) 
+                        .min(0 , {message : "El id debe ser mayor de 0"})
+                        .positive({ message: 'El limite debe ser un número positivo.' })   
+
+});
+
+export const CrearAlumnoTreansaccionSchema = z.object({
+// --- Datos propios del Alumno ---
+    dni: z.string({ message: "El dni es requerido" })
+        .nonempty({ message: "Dni no debe estar vacio" })
+        .min(8, { message: "EL dni esta incompleto" }),
+
+    // --- Datos personales (compartidos) ---
+    nombre: z.string({ message: "EL nombre debe ser una cadena de texto" })
+        .nonempty({ message: "Nombre no debe estar vacio" })
+        .min(2, { message: "El nombre debe tener min. 2 letras" })
+        .max(100, { message: "El nombre es muy largo" }),
+
+    apellido: z.string({ message: "EL Apellido debe ser una cadena de texto" })
+        .nonempty({ message: "Apellido no debe estar vacio" })
+        .min(2, { message: "El Apellido debe tener min. 2 letras" })
+        .max(100, { message: "El Apellido es muy largo" }),
+
+    email : z.string({ message: "El correo debe ser una cadena de texto" })
+        .nonempty({ message: "El correo no debe estar vacio" })
+        .email({ message: "El formato del correo no es válido" })
+        .max(255, { message: "El correo es muy largo" }),
+
+    celular: z.string()
+        .nonempty({ message: "Celular no debe estar vacio" })
+        .min(10, { message: "El celular debe tener al menos 10 dígitos" })
+        .max(15, { message: "El celular no puede tener más de 15 dígitos" })
+        .regex(/^\d+$/, { message: "El celular debe contener solo números" }),
+
+    id_escuela: z.number({ message: "id Escuela debe ser numerico" })
+        .min(1, { message: "El id debe ser mayor o igual a 1" }),
+
+
+
+    usuario: z.string()
+        .min(4, { message: 'El nombre de usuario debe tener al menos 4 caracteres.' })
+        .max(50, { message: 'El nombre de usuario no puede exceder los 50 caracteres.' })
+        .optional(),
+
+
+
+    rol: z.string()
+        .default('alumno')
+        .optional(),
+
+    estado: z.string()
+        .default('activos')
+        .optional(),
+          
+});
+
+
+
+export type AlumnosInputs = z.infer<typeof CrearAlumnoSchema>;
+export type AlumnosTransaccionInputs = z.infer<typeof CrearAlumnoTreansaccionSchema>;
+export type AlumnoEscuelaInputs = z.infer<typeof CrearAlumnoEscuelaSchema>;
+export type EliminarAlumnoInputs = z.infer<typeof EliminarAlumnoEscuelaSchema>; 
+export type ListaAlumnoInputs = z.infer<typeof listaAlumnosSchema>; 
+export type ListaAlumnoSinPaginacionInputs = z.infer<typeof listaAlumnoSinPaginacionSchema>; 

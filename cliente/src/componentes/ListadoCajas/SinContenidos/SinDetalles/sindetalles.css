@@ -1,0 +1,67 @@
+/* ============================================================
+   SIN DETALLES — estado vacío genérico
+   ============================================================ */
+
+.sin_detalles_contenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 50px 24px;
+
+    text-align: center;
+
+    background: var(--fondo-secundario);
+    border: 1px dashed var(--borde);
+    border-radius: var(--radio-lg);
+}
+
+.sin_detalles_icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+    color: var(--texto-deshabilitado);
+}
+
+.sin_detalles_titulo {
+    margin: 0;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-secundario);
+}
+
+.sin_detalles_subtitulo {
+    max-width: 320px;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-deshabilitado);
+    line-height: var(--linea-texto);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 480px) {
+    .sin_detalles_contenedor {
+        padding: 36px 18px;
+    }
+
+    .sin_detalles_icono {
+        width: 44px;
+        height: 44px;
+    }
+}

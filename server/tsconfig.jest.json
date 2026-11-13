@@ -1,0 +1,19 @@
+// tsconfig.jest.json (Solo para pruebas)
+{
+  "extends": "./tsconfig.json", // Hereda la configuración base
+  "compilerOptions": {
+    "rootDir": "./", // 💡 SOLUCIÓN: Usamos la raíz del proyecto para incluir src y tests
+    
+    // 💡 SOLUCIÓN: Usamos tipos de Jest y no incluimos la compilación de salida
+    "types": ["node", "jest", "supertest"], 
+    "outDir": "./build/tests" // O puedes simplemente omitir outDir en la configuración de Jest/ts-jest
+  },
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts" // ✅ Aquí es donde incluimos los tests
+  ],
+  "exclude": [
+    "node_modules",
+    "build"
+  ]
+}

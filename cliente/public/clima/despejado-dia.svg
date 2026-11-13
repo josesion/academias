@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2e7fc4"/>
+      <stop offset="55%" stop-color="#7cb7e0"/>
+      <stop offset="100%" stop-color="#d3e8f5"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff9e0" stop-opacity="1"/>
+      <stop offset="45%" stop-color="#ffe08a" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffd166" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="suave" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <linearGradient id="cerro" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bb8d5f"/>
+      <stop offset="100%" stop-color="#875f3c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+  <circle cx="930" cy="150" r="230" fill="url(#halo)"/>
+  <circle cx="930" cy="150" r="62" fill="#fff7d6"/>
+
+  <g filter="url(#suave)" fill="#ffffff" opacity="0.78">
+    <ellipse cx="290" cy="168" rx="130" ry="34"/>
+    <ellipse cx="386" cy="186" rx="92" ry="25"/>
+    <ellipse cx="690" cy="112" rx="84" ry="22"/>
+    <ellipse cx="560" cy="300" rx="110" ry="24" opacity="0.6"/>
+  </g>
+
+  <path d="M0 604 L150 520 L270 566 L430 488 L566 556 L706 512 L866 574 L1006 520 L1200 592 L1200 750 L0 750 Z" fill="#a9764f" opacity="0.5"/>
+  <path d="M0 654 L182 586 L332 628 L522 562 L692 622 L842 578 L1012 638 L1200 592 L1200 750 L0 750 Z" fill="url(#cerro)"/>
+</svg>

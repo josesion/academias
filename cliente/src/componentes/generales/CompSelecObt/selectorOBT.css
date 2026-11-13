@@ -1,0 +1,110 @@
+/* ============================================================
+   SELECTOR OPT — select genérico con flecha propia
+   ============================================================ */
+
+.grupo_input_caja {
+    width: 100%;
+}
+
+.input_caja {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 12px 40px 12px 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    cursor: pointer;
+
+    transition: var(--transicion);
+
+    /* flecha propia — sin la del navegador */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23A7AFBF' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+}
+
+.input_caja:hover:not(:disabled) {
+    border-color: var(--borde-hover);
+}
+
+/* Solo lectura (spec 008): grisado y fuera de tab, sin cambiar la flecha */
+.input_caja:disabled {
+    background-color: var(--fondo-superficie);
+    color: var(--texto-deshabilitado);
+    cursor: not-allowed;
+}
+
+.input_caja:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+.input_caja option {
+    background-color: var(--fondo-principal);
+    color: var(--texto-principal);
+    padding: 12px;
+}
+
+.input_caja option:hover {
+    background-color: var(--color-primario);
+}
+
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .input_caja {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .input_caja {
+    border-width: 2px;
+  }
+  .input_caja:focus {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .input_caja:disabled {
+    border-width: 2px;
+    border-color: var(--borde);
+  }
+}
+
+@media print {
+  .mensaje_error {
+    display: none;
+  }
+  .input_caja {
+    appearance: auto;
+    -webkit-appearance: auto;
+    -moz-appearance: auto;
+    background-image: none;
+    padding-right: 14px;
+  }
+}
+
+.mensaje_error {
+  margin: 4px 0 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--color-error);
+}

@@ -1,0 +1,223 @@
+/* ==========================================================================
+   TARJETA MÉTRICA — TOKENS DE MARCA
+   ========================================================================== */
+
+.tarjeta_metrica_contenedor {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-height: 120px;
+
+    padding: 22px 24px;
+
+    overflow: hidden;
+
+    border-radius: var(--radio-lg);
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+}
+
+.tarjeta_metrica_contenedor:hover {
+    transform: translateY(-4px);
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-lg);
+}
+
+/* ==========================================================================
+   CONTENIDO
+   ========================================================================== */
+
+.tarjeta_metrica_contenido {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    width: 100%;
+    position: relative;
+    z-index: 2; /* Para que el texto quede siempre por encima de la marca de agua */
+}
+
+.tarjeta_metrica_contenido.centrado {
+    justify-content: flex-start; /* O center si preferís todo al medio */
+    text-align: left;
+}
+
+/* ==========================================================================
+   LOGO (ESTILO MARCA DE AGUA DE FONDO)
+   ========================================================================== */
+
+.tarjeta_metrica_logo {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 110px;
+    height: 110px;
+
+    pointer-events: none; /* Para que no interfiera con clics */
+    opacity: 0.06; /* Sutil marca de agua */
+
+    transition: var(--transicion);
+}
+
+.tarjeta_metrica_logo svg {
+    width: 90px;
+    height: 90px;
+    color: currentColor;
+}
+
+/* Efecto hover opcional: que la marca de agua resalte un poquito al pasar el mouse */
+.tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+    opacity: 0.12;
+    transform: scale(1.05) rotate(-5deg);
+}
+
+/* ==========================================================================
+   INFORMACIÓN
+   ========================================================================== */
+
+.tarjeta_metrica_info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.tarjeta_metrica_info.centrado {
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.tarjeta_metrica_titulo {
+    margin: 0;
+
+    font-family: var(--fuente-codigo);
+    color: var(--texto-secundario);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.tarjeta_metrica_valor {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.tarjeta_metrica_porcentaje,
+.tarjeta_metrica_leyenda {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    margin: 0;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+}
+
+.tarjeta_metrica_leyenda {
+    color: var(--texto-secundario);
+}
+
+.positivo {
+    color: var(--color-exito);
+}
+
+.negativo {
+    color: var(--color-error);
+}
+
+.neutro {
+    color: var(--texto-secundario);
+}
+
+/* ==========================================================================
+   COLORES POR TIPO (Afectan a la marca de agua o línea sutil)
+   ========================================================================== */
+
+.tarjeta_metrica_contenedor.activos .tarjeta_metrica_logo {
+    color: var(--color-exito);
+}
+
+.tarjeta_metrica_contenedor.nuevos .tarjeta_metrica_logo {
+    color: var(--color-secundario);
+}
+
+.tarjeta_metrica_contenedor.vencidos .tarjeta_metrica_logo {
+    color: var(--color-error);
+}
+
+.tarjeta_metrica_contenedor.por_vencer .tarjeta_metrica_logo {
+    color: var(--color-advertencia);
+}
+
+.tarjeta_metrica_contenedor.caja .tarjeta_metrica_logo {
+    color: var(--color-primario);
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta_metrica_contenedor,
+  .tarjeta_metrica_logo {
+    transition: none !important;
+    animation: none !important;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    transform: none !important;
+  }
+  .tarjeta_metrica_contenedor:hover .tarjeta_metrica_logo {
+    transform: none !important;
+    opacity: 0.06;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .tarjeta_metrica_contenedor {
+    border-width: 2px;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    border-width: 2px;
+    box-shadow: none;
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .tarjeta_metrica_contenedor {
+    box-shadow: none;
+    border: 1px solid var(--borde);
+    break-inside: avoid;
+  }
+  .tarjeta_metrica_logo {
+    display: none;
+  }
+  .tarjeta_metrica_contenedor:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}

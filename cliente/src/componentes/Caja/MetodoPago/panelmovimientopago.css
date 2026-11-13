@@ -1,0 +1,183 @@
+/* ==========================================================================
+   PANEL DE MOVIMIENTO DE PAGO — ESTILO EDITORIAL / LUJO
+   ========================================================================== */
+
+.panel_metodo_pago_contenedor {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 10px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-sm);
+    font-family: var(--fuente-principal);
+    box-sizing: border-box;
+    transition: var(--transicion);
+}
+
+.panel_metodo_pago_contenedor:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+}
+
+/* --- Header del Panel --- */
+.panel_header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--color-primario);
+}
+
+.panel_titulo {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+}
+
+/* --- Estado Vacío --- */
+.panel_vacio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+    color: var(--texto-deshabilitado);
+    font-size: var(--texto-sm);
+    text-align: center;
+}
+
+/* --- Lista de Métodos --- */
+.panel_lista {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* --- Item Individual --- */
+.metodo_item_completo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: color-mix(in srgb, var(--fondo-principal) 60%, transparent);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    transition: var(--transicion);
+}
+
+.metodo_item_completo:hover {
+    border-color: var(--borde-hover);
+    background: var(--fondo-principal);
+}
+
+/* --- Avatar / Siglas --- */
+.metodo_avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--color-primario), color-mix(in srgb, var(--color-primario) 70%, black));
+    color: #ffffff;
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-primario) 30%, transparent);
+}
+
+.metodo_avatar.variante_1 {
+    background: linear-gradient(135deg, var(--color-secundario), color-mix(in srgb, var(--color-secundario) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-secundario) 30%, transparent);
+}
+
+/* --- Contenido del Item --- */
+.metodo_contenido {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+}
+
+.metodo_fila_principal {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.metodo_nombre {
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+/* --- Monto Total con Decimales Estilizados --- */
+.metodo_monto_total {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    line-height: 1;
+}
+
+.metodo_monto_total .monto_simbolo {
+    font-size: 1.1rem;
+    font-weight: var(--peso-negrita);
+}
+
+.metodo_monto_total .monto_entero {
+    font-size: 1.4rem;
+    font-weight: var(--peso-negrita);
+    letter-spacing: -0.02em;
+}
+
+.metodo_monto_total .monto_decimal {
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-normal);
+    color: var(--texto-deshabilitado);
+    opacity: 0.65; /* Efecto desvanecido */
+}
+
+/* --- Desglose Secundario (Inicial y Sesión) --- */
+.metodo_desglose {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 4px;
+    border-top: 1px dashed var(--borde);
+}
+
+.desglose_dato {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--texto-xs);
+}
+
+.dato_label {
+    color: var(--texto-secundario);
+    font-family: var(--fuente-codigo);
+    text-transform: uppercase;
+    font-size: var(--texto-xs);
+}
+
+.dato_valor {
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.dato_valor.positivo {
+    color: #10b981; /* Verde éxito */
+}
+
+.dato_valor.negativo {
+    color: #ef4444; /* Rojo alerta */
+}

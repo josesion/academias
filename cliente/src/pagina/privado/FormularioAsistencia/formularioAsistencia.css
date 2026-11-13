@@ -1,0 +1,419 @@
+/* ==========================================================
+   KIOSCO DE ASISTENCIA — ELPHIS
+
+   Solo usa tokens de app.css (:root): no hay colores literales,
+   así que el tema editorial claro y el tema gym
+   (html[data-rubro="gym"]) funcionan sin reglas extra.
+
+   Reutiliza de app.css:
+   - .card-base (tarjetas de clase)  → se ajusta con variables
+     (--card-padding, --card-gap), NO redeclarando propiedades,
+     para no depender del orden de los CSS en el bundle.
+   - :root :focus-visible (anillo de foco)
+   - --overlay-modal, --fondo-exito-suave, --ease-ui
+   - reduced-motion global (no hace falta repetirlo acá)
+
+   Secciones:
+   1. Contenedor   2. Header   3. Panel
+   4. Tarjetas de clase   5. Formulario   6. Popup de éxito
+   7. Responsive
+   ========================================================== */
+
+
+/* ===========================
+   1. CONTENEDOR
+   =========================== */
+
+.asistencia_kiosco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 100dvh;
+    padding: 40px 20px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde-hover) transparent;
+
+    background: var(--fondo-principal);
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+}
+
+
+/* ===========================
+   2. HEADER
+   =========================== */
+
+.asistencia_header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.asistencia_header h1 {
+    font-family: var(--fuente-titulos);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    font-weight: var(--peso-medio);
+    line-height: var(--linea-titulo);
+    color: var(--texto-principal);
+}
+
+.asistencia_header p {
+    font-size: var(--texto-md);
+    color: var(--texto-secundario);
+}
+
+/* Filete de acento */
+.asistencia_header::after {
+    content: "";
+    width: 48px;
+    height: 2px;
+    margin-top: 10px;
+    border-radius: 999px;
+    background: var(--color-secundario);
+}
+
+
+/* ===========================
+   3. PANEL CENTRAL
+   =========================== */
+
+.asistencia_panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    width: 100%;
+    max-width: 720px;
+}
+
+.asistencia_clases {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+
+/* ===========================
+   4. TARJETAS DE CLASE
+   (base visual: .card-base de app.css)
+   =========================== */
+
+.clase_card {
+    --card-padding: 22px;
+    --card-gap: 16px;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Franja de acento a la izquierda: el color lo da --acento */
+.clase_card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--acento, var(--borde-hover));
+}
+
+.clase_card.actual  { --acento: var(--color-exito); }
+.clase_card.proxima { --acento: var(--borde-hover); }
+
+/* Sin clase: la tarjeta se apaga */
+.clase_card--vacia::before {
+    background: var(--borde);
+}
+
+.clase_card--vacia .clase_contenido h2 {
+    color: var(--texto-deshabilitado);
+}
+
+/* --- Badge --- */
+
+.badge {
+    align-self: flex-start;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 12px;
+    border-radius: 999px;
+
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.badge.actual {
+    color: var(--color-exito);
+    background: var(--fondo-exito-suave);
+    border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.badge.proxima {
+    color: var(--texto-secundario);
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+}
+
+/* --- Contenido --- */
+
+.clase_contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.clase_contenido h2 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.4rem;
+    font-weight: var(--peso-medio);
+    line-height: var(--linea-titulo);
+    color: var(--texto-principal);
+    overflow-wrap: anywhere;
+}
+
+.clase_contenido p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-md);
+    font-variant-numeric: tabular-nums;
+    color: var(--texto-secundario);
+}
+
+.clase_contenido p svg {
+    flex: none;
+    color: var(--color-secundario);
+}
+
+.separador_hora {
+    color: var(--color-secundario);
+}
+
+
+/* ===========================
+   5. FORMULARIO
+   =========================== */
+
+.asistencia_accion {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    padding: 28px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-md);
+}
+
+/* Mismo lenguaje que .section-title de app.css, con ícono */
+.titulo_accion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+
+    color: var(--color-secundario);
+}
+
+.titulo_accion span {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--texto-secundario);
+}
+
+/* --- Estado de la inscripción --- */
+
+.estado_inscripcion {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.estado_card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 88px;
+    padding: 16px;
+
+    text-align: center;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+}
+
+.estado_card dt {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--texto-secundario);
+}
+
+.estado_card dd {
+    font-size: 1.35rem;
+    font-weight: var(--peso-semi-negrita);
+    font-variant-numeric: tabular-nums lining-nums;
+    color: var(--texto-principal);
+}
+
+/* --- Botón a ancho completo --- */
+
+.asistencia_accion .boton_contenedor,
+.asistencia_accion button {
+    width: 100%;
+}
+
+
+/* ===========================
+   6. POPUP DE ÉXITO
+   (z-index 1200: por encima del nav y del skip-link)
+   =========================== */
+
+.overlay-exito {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--overlay-modal);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+
+    animation: asistencia_fade 220ms var(--ease-ui);
+}
+
+.card-exito {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+
+    min-width: 320px;
+    padding: 34px;
+
+    text-align: center;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    box-shadow: var(--sombra-lg);
+
+    animation: asistencia_pop 300ms var(--ease-ui);
+}
+
+.card-exito_logo {
+    width: 90px;
+    height: 90px;
+}
+
+.card-exito h2 {
+    font-family: var(--fuente-titulos);
+    font-size: 1.7rem;
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
+}
+
+.card-exito p {
+    font-size: var(--texto-md);
+    color: var(--texto-secundario);
+}
+
+@keyframes asistencia_fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+@keyframes asistencia_pop {
+    from { opacity: 0; transform: scale(.94); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+
+/* ===========================
+   7. RESPONSIVE
+   =========================== */
+
+@media (max-width: 640px) {
+
+    .asistencia_kiosco {
+        padding: 24px 14px;
+    }
+
+    .asistencia_header {
+        margin-bottom: 24px;
+    }
+
+    .asistencia_clases {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .clase_card {
+        --card-padding: 18px;
+        --card-gap: 14px;
+    }
+
+    .clase_contenido h2 {
+        font-size: 1.2rem;
+    }
+
+    .asistencia_accion {
+        padding: 20px;
+        gap: 18px;
+    }
+}
+
+@media (max-width: 380px) {
+
+    .estado_inscripcion {
+        grid-template-columns: 1fr;
+    }
+
+    .estado_card {
+        min-height: 76px;
+    }
+
+    .card-exito {
+        min-width: 0;
+        width: 92%;
+        padding: 26px;
+    }
+
+    .card-exito h2 {
+        font-size: 1.35rem;
+    }
+}

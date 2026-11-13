@@ -1,0 +1,89 @@
+//Seccion de tipado-----------------------------------------
+import type { InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador";
+import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
+
+//Seccion de servicios--------------------------------------
+import { registroTipo , modTipo , estadoTipo , listado } from "../servicio/tipo.fetch";
+
+import { useAbmGenerico } from "../hooks/useAbmGenerico";
+
+
+
+//  Datos para el filtro de busqueda
+const inputsFiltro : InputsPropsBuscador[] = [
+    {
+        name        : "tipo",
+        label       : "Tipo descripcion",
+        type        : "text",
+        placeholder : "Ingrese el Tipo",
+        value       : "",
+    }   
+];
+
+// Datos para el formulario de alta 
+const inputsTipo : InputsPropsFormulario[] =[
+    {
+        name        : "tipo",
+        label       : "Tipo descripcion",
+        type        : "text",
+        placeholder : "Ingrese el Tipo ",
+        value       : "",
+        readonly    : false,
+    },
+];
+
+const mapTipoForm = ( dataM : any) =>({
+    id : dataM.id,
+    tipo : dataM.tipo
+});
+
+const mapTipoEliminar = ( data : any) =>({
+    id: data.id,
+    tipo : data.tipo 
+}); 
+
+const mapTextoEliminar = (dataE: any) => ` El estado de Nivel : ${dataE.id} cambiara`;
+
+export const useAbmTipoUsuarios = () =>{
+
+
+
+     const config = {
+        recursoSingular : "Tipo",
+        tituloPagina: "Tipos de Clase",
+
+        
+        servicios : {
+                registro    : registroTipo,
+                modificar   : modTipo,
+                eliminar    : estadoTipo,
+                listado     : listado
+        },
+
+        inputsFormulario : inputsTipo,
+        inputsFiltro : inputsFiltro, 
+        
+        estados: ["activos", "inactivos"],  
+        
+        inicialFormData : {
+            tipo        : "",
+        }, 
+        
+        paginacion : { 
+            pagina : 1,
+            limite : 6,
+            contadorPagina : 0
+        },
+        
+        inicialFiltros : {
+            tipo      : ""
+        },  
+        
+        mapDeFormulario : mapTipoForm, 
+        mapDataEliminar : mapTipoEliminar, 
+        mapTextoEliminar: mapTextoEliminar,            
+
+     }
+
+     return useAbmGenerico<{tipo : string}>(config); 
+};

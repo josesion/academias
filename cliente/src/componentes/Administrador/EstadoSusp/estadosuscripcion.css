@@ -1,0 +1,129 @@
+/* =====================================
+   MODAL DE ANULACIÓN DE SUSCRIPCIÓN
+   Mismas medidas que formulariosuscripcion.css;
+   colores y tipografías con los tokens de src/app.css
+   ===================================== */
+
+/* =====================================
+   CONTENEDOR
+   El fondo/borde lo aporta .admin_modal; aquí va el aire interior
+   (mismas medidas que .form-susp, que es el que se ve bien)
+   ===================================== */
+.estado-susp {
+  width: 100%;
+  padding: 2.5rem;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENCABEZADO Y LEYENDA
+   ===================================== */
+.estado-susp__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.estado-susp__titulo {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.estado-susp__texto {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-lg);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* "Academia — Plan": la parte destacada de la leyenda */
+.estado-susp__destacado {
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+   ===================================== */
+.estado-susp__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.estado-susp__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.estado-susp__acciones button:active {
+  transform: scale(0.98);
+}
+
+/* Anular: peligro sólido */
+.estado-susp__acciones .eliminar {
+  color: var(--fondo-secundario);
+  background: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+.estado-susp__acciones .eliminar:hover {
+  filter: brightness(0.92);
+  box-shadow: var(--sombra-md);
+}
+
+/* Cerrar: secundario contorno (mismo que el del formulario) */
+.estado-susp__acciones .cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+.estado-susp__acciones .cancelar:hover {
+  color: var(--color-error);
+  background: var(--fondo-hover);
+  border-color: var(--color-error);
+}
+
+/* =====================================
+   RESPONSIVE
+   ===================================== */
+@media (max-width: 640px) {
+  .estado-susp {
+    padding: 1.5rem;
+  }
+
+  .estado-susp__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .estado-susp__acciones button {
+    width: 100%;
+  }
+}

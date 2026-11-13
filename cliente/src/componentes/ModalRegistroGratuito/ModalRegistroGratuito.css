@@ -1,0 +1,310 @@
+/* ==========================================================================
+   MODAL REGISTRO GRATUITO — estética editorial (solo tokens de :root)
+   Las clases llevan prefijo `modal-registro-` para no chocar con
+   `.campo`, `.nota` o `.mensaje-error`, que eran globales.
+   ========================================================================== */
+
+.modal-registro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--overlay-modal);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  overscroll-behavior: contain;
+}
+
+.modal-registro-tarjeta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: min(92dvh, 980px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-lg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .modal-registro-tarjeta {
+    animation: modal-registro-entrada 260ms var(--ease-ui);
+  }
+  @keyframes modal-registro-entrada {
+    from { opacity: 0; transform: translateY(12px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* ---------- Cerrar ---------- */
+
+.modal-registro-cerrar {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid transparent;
+  border-radius: var(--radio-sm);
+  background: transparent;
+  color: var(--texto-secundario);
+  cursor: pointer;
+  transition: background-color 140ms var(--ease-ui), color 140ms var(--ease-ui);
+}
+
+.modal-registro-cerrar:hover {
+  background: var(--fondo-hover);
+  color: var(--texto-principal);
+}
+
+.modal-registro-cerrar svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Encabezado ---------- */
+
+.modal-registro-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 2.6rem 3rem 1.4rem;
+}
+
+.modal-registro-eyebrow {
+  margin: 0;
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-secundario);
+}
+
+.modal-registro-header h2 {
+  margin: 0;
+  padding-right: 2.5rem; /* no pisar el botón cerrar */
+  font-family: var(--fuente-titulos);
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  color: var(--texto-principal);
+}
+
+.modal-registro-descripcion {
+  margin: 0;
+  font-size: var(--texto-lg);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* ---------- Formulario ---------- */
+
+.modal-registro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+  padding: 0 3rem;
+}
+
+.modal-registro-requeridos {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.modal-registro-grupo {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Misma lectura que .section-title, pero alineado a la izquierda */
+.modal-registro-grupo legend {
+  float: left;          /* truco para que el legend admita ancho y borde */
+  width: 100%;
+  margin-bottom: 1.1rem;
+  padding: 0 0 0.5rem;
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+  border-bottom: 1px solid var(--borde);
+}
+
+.modal-registro-grupo .modal-registro-grid {
+  clear: both;
+}
+
+.modal-registro-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem 1.4rem;
+}
+
+.modal-registro-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.modal-registro-campo--completo {
+  grid-column: 1 / -1;
+}
+
+.modal-registro-campo label {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+}
+
+.modal-registro-campo input,
+.modal-registro-campo select {
+  width: 100%;
+  padding: 0.8rem 0.95rem;
+  /* 16px mínimo: evita el zoom automático de iOS al enfocar */
+  font-size: max(16px, var(--texto-md));
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+}
+
+.modal-registro-campo input:hover,
+.modal-registro-campo select:hover {
+  border-color: var(--borde-hover);
+}
+
+/* El anillo de foco lo pone app.css; acá solo se suma un halo suave */
+.modal-registro-campo input:focus-visible,
+.modal-registro-campo select:focus-visible {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 12%, transparent);
+}
+
+.modal-registro-campo input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+/* Estado del usuario: color + texto (no depende solo del color) */
+.modal-registro-estado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 1.2em; /* reserva espacio: el layout no salta al aparecer */
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.modal-registro-estado[data-estado="disponible"]    { color: var(--color-exito); }
+.modal-registro-estado[data-estado="no_disponible"] { color: var(--color-error); }
+.modal-registro-estado[data-estado="verificando"]   { color: var(--color-secundario); }
+
+.modal-registro-error {
+  padding: 0.8rem 1rem;
+  font-size: var(--texto-md);
+  color: var(--color-error);
+  background: var(--fondo-error-suave);
+  border: 1px solid var(--borde-error);
+  border-radius: var(--radio-sm);
+}
+
+/* ---------- Acciones (siempre visibles al hacer scroll) ---------- */
+
+.modal-registro-acciones {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-top: auto;
+  padding: 1.1rem 0 1.6rem;
+  background: var(--fondo-secundario);
+  border-top: 1px solid var(--borde);
+}
+
+.modal-registro-enviar {
+  min-height: 44px;
+  padding: 0.8rem 1.8rem;
+  font-size: var(--texto-md);
+}
+
+.modal-registro-enviar:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.modal-registro-enviar .spinner_mini {
+  border-color: color-mix(in srgb, var(--fondo-secundario) 35%, transparent);
+  border-top-color: var(--fondo-secundario);
+}
+
+.modal-registro-nota {
+  flex: 1 1 220px;
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* ---------- Móvil: hoja que sube desde abajo ---------- */
+
+@media (max-width: 720px) {
+  .modal-registro-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-registro-tarjeta {
+    width: 100%;
+    max-height: 94dvh;
+    border-radius: var(--radio-lg) var(--radio-lg) 0 0;
+  }
+
+  .modal-registro-header {
+    padding: 2rem 1.4rem 1rem;
+  }
+
+  .modal-registro-form {
+    padding: 0 1.4rem;
+  }
+
+  .modal-registro-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-registro-acciones {
+    padding-bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .modal-registro-enviar {
+    width: 100%;
+  }
+}
+
+/* ---------- Alto contraste ---------- */
+
+@media (prefers-contrast: more) {
+  .modal-registro-tarjeta,
+  .modal-registro-campo input,
+  .modal-registro-campo select {
+    border-width: 2px;
+  }
+}

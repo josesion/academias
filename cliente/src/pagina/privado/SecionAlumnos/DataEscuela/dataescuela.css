@@ -1,0 +1,213 @@
+.data-escuela-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.nav-superior {
+  display: flex;
+  align-items: center;
+}
+
+.btn-volver {
+  background: none;
+  border: none;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transicion);
+}
+
+.btn-volver:hover {
+  color: var(--texto-principal);
+}
+
+/* --- GRILLA SUPERIOR (HERO + HORARIOS LATERAL) --- */
+.top-dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.1fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+@media (max-width: 768px) {
+  .top-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- TARJETA DE HORARIOS LATERAL --- */
+.card-horarios-lateral {
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: var(--sombra-sm);
+  height: 100%;
+}
+
+.horarios-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.seccion-titulo-inline {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.card-horarios-lateral p {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+/* --- SECCIONES Y BLOQUES --- */
+.seccion-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seccion-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.25rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+/* --- BOTONES GENERALES --- */
+.btn-principal {
+  background-color: var(--color-primario);
+  color: var(--fondo-secundario);
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radio-sm);
+  font-weight: var(--peso-medio);
+  font-size: var(--texto-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: var(--transicion);
+  width: 100%;
+}
+
+.btn-principal:hover {
+  background-color: var(--color-secundario);
+}
+
+
+/* ============================================================
+   AVISO FLOTANTE DE ERROR (RobotError) — abajo a la derecha
+   ============================================================ */
+
+.robot-error-flotante {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1200;
+  max-width: 320px;
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-lg);
+  animation: robotErrorEntrada 0.35s ease;
+}
+
+@keyframes robotErrorEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .robot-error-flotante {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}
+/* ==========================================================================
+   ACCESIBILIDAD (spec 024)
+   ========================================================================== */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .data-escuela-container * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .btn-volver,
+  .btn-principal {
+    transition: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .btn-volver,
+  .btn-principal {
+    border-width: 2px !important;
+  }
+  .btn-volver:focus-visible,
+  .btn-principal:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .card-horarios-lateral,
+  .modal-grilla-card {
+    border: 2px solid var(--borde);
+  }
+  .seccion-titulo,
+  .seccion-titulo-inline {
+    border-bottom: 2px solid var(--borde);
+  }
+}
+
+@media print {
+  .nav-superior,
+  .btn-principal {
+    display: none !important;
+  }
+  .data-escuela-container {
+    background: var(--fondo-principal);
+  }
+  .seccion-bloque {
+    break-inside: avoid;
+  }
+}

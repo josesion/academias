@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" role="img">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#070d24"/>
+      <stop offset="62%" stop-color="#132046"/>
+      <stop offset="100%" stop-color="#203052"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#eee9d3" stop-opacity="0.4"/>
+      <stop offset="65%" stop-color="#b9c6e8" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#b9c6e8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="luna" cx="38%" cy="34%" r="70%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="72%" stop-color="#ece7cb"/>
+      <stop offset="100%" stop-color="#d3cdb0"/>
+    </radialGradient>
+    <filter id="nube" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="750" fill="url(#cielo)"/>
+
+  <g fill="#ffffff">
+    <circle cx="140" cy="110" r="1.8" opacity="0.7"/>
+    <circle cx="300" cy="70" r="1.4" opacity="0.55"/>
+    <circle cx="452" cy="132" r="2.1" opacity="0.8"/>
+    <circle cx="612" cy="86" r="1.5" opacity="0.6"/>
+    <circle cx="760" cy="146" r="1.7" opacity="0.7"/>
+    <circle cx="1060" cy="96" r="2" opacity="0.75"/>
+    <circle cx="1148" cy="188" r="1.4" opacity="0.5"/>
+    <circle cx="208" cy="230" r="1.3" opacity="0.45"/>
+  </g>
+
+  <circle cx="820" cy="210" r="180" fill="url(#halo)"/>
+  <circle cx="820" cy="210" r="54" fill="url(#luna)"/>
+
+  <g filter="url(#nube)" fill="#0f1a35" opacity="0.95">
+    <ellipse cx="700" cy="290" rx="230" ry="58"/>
+    <ellipse cx="900" cy="270" rx="180" ry="48"/>
+    <ellipse cx="520" cy="268" rx="150" ry="40"/>
+  </g>
+  <g filter="url(#nube)" fill="#25355c" opacity="0.75">
+    <ellipse cx="760" cy="222" rx="200" ry="38"/>
+    <ellipse cx="560" cy="350" rx="170" ry="30"/>
+  </g>
+
+  <path d="M0 612 L176 520 L308 574 L472 490 L616 566 L762 514 L922 582 L1058 526 L1200 598 L1200 750 L0 750 Z" fill="#0b1430" opacity="0.88"/>
+  <path d="M0 666 L194 598 L350 642 L540 576 L710 638 L862 594 L1032 652 L1200 606 L1200 750 L0 750 Z" fill="#060c20"/>
+</svg>

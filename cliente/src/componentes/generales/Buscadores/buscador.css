@@ -1,0 +1,340 @@
+/* ============================================================
+   BUSCADOR — Toolbar de Filtros (Estética Editorial / Lujo)
+   ============================================================ */
+
+.buscador_contenedor_comp {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    width: 100%;
+    max-width: 960px;
+    margin: 20px auto;
+
+    padding: 22px 26px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+    animation: buscadorEntrada 0.3s ease;
+}
+
+.buscador_contenedor_comp:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-lg);
+}
+
+@keyframes buscadorEntrada {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   ENCABEZADO — Título + Botón Hamburguesa (Mobile)
+   ============================================================ */
+
+.buscador_encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--borde);
+}
+
+.buscador_titulo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0;
+
+    color: var(--texto-secundario);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.buscador_titulo svg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+    padding: 5px;
+    box-sizing: border-box;
+
+    border-radius: var(--radio-sm);
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    color: var(--color-secundario);
+}
+
+/* ============================================================
+   BOTÓN HAMBURGUESA (Por si se usa en responsive)
+   ============================================================ */
+
+.buscador_toggle {
+    position: relative;
+    display: none;
+    align-items: center;
+    gap: 8px;
+
+    padding: 8px 12px;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-secundario);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+
+    cursor: pointer;
+    transition: var(--transicion), transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.buscador_toggle:hover {
+    border-color: var(--borde-hover);
+    color: var(--texto-principal);
+}
+
+.buscador_contenedor_comp.abierto .buscador_toggle {
+    color: var(--color-primario);
+    border-color: var(--borde-hover);
+    background: var(--fondo-superficie);
+}
+
+.buscador_hamburguesa_icon {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 14px;
+    height: 10px;
+    position: relative;
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.buscador_hamburguesa_icon .linea {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    border-radius: 2px;
+    transition: transform 0.4s ease, opacity 0.25s ease;
+}
+
+/* ============================================================
+   CUERPO COLAPSABLE
+   ============================================================ */
+
+.buscador_cuerpo_colapsable {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    opacity: 1;
+}
+
+.buscador_cuerpo_colapsable > .buscador_cuerpo {
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ============================================================
+   CUERPO — Grid de filtros
+   ============================================================ */
+
+.buscador_cuerpo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    align-items: end;
+}
+
+.buscador_columna {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.buscador_columna .inputs_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ============================================================
+   LABELS
+   ============================================================ */
+
+.buscador_label_generico,
+.buscador_columna label,
+.buscador_columna .inputs_contenedor label {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-deshabilitado);
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+}
+
+.buscador_columna:last-child .buscador_label_generico {
+    color: transparent;
+    user-select: none;
+}
+
+/* ============================================================
+   CAMPOS & INPUTS
+   ============================================================ */
+
+.buscador_input_base,
+.buscador_columna input {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+
+    padding: 0 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+
+    outline: none;
+    transition: var(--transicion);
+}
+
+.buscador_input_base:hover,
+.buscador_columna input:hover {
+    border-color: var(--borde-hover);
+}
+
+.buscador_input_base:focus,
+.buscador_columna input:focus {
+    border-color: var(--color-secundario);
+    box-shadow: 0 0 0 3px rgba(91, 123, 110, 0.15);
+}
+
+/* ============================================================
+   BOTÓN INTERNO
+   ============================================================ */
+
+.buscador_columna .boton_personalizado {
+    width: 100%;
+    height: 40px;
+    margin: 0;
+    border-radius: var(--radio-sm);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buscador_columna .error_espacio,
+.buscador_columna .input_error_message,
+.buscador_columna .inputs_contenedor span {
+    display: none;
+}
+
+/* ============================================================
+   SELECTS CON FLECHA ADAPTADA A LA PALETA
+   ============================================================ */
+
+.buscador_input_base,
+.buscador_estado,
+.buscador_columna select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    /* Flecha SVG sutil tintada con el color del texto secundario de tu paleta */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%231B1C1B' opacity='0.5' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 12px;
+
+    padding-right: 36px;
+    cursor: pointer;
+}
+
+.buscador_input_base option,
+.buscador_estado option,
+.buscador_columna select option {
+    background-color: var(--fondo-secundario);
+    color: var(--texto-principal);
+    padding: 12px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 700px) {
+    .buscador_encabezado {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .buscador_titulo {
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--borde);
+        flex: 1;
+    }
+
+    .buscador_toggle {
+        display: flex;
+    }
+
+    .buscador_cuerpo_colapsable {
+        grid-template-rows: 0fr;
+        opacity: 0;
+    }
+
+    .buscador_contenedor_comp.abierto .buscador_cuerpo_colapsable {
+        grid-template-rows: 1fr;
+        opacity: 1;
+    }
+
+    .buscador_cuerpo_colapsable > .buscador_cuerpo {
+        padding-top: 16px;
+    }
+
+    .buscador_cuerpo {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .buscador_columna:nth-last-child(2),
+    .buscador_columna:last-child {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 480px) {
+    .buscador_contenedor_comp {
+        padding: 18px 16px;
+    }
+
+    .buscador_cuerpo {
+        grid-template-columns: 1fr;
+    }
+
+    .buscador_columna:nth-last-child(2),
+    .buscador_columna:last-child {
+        grid-column: auto;
+    }
+}

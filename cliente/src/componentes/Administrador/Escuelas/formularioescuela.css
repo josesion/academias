@@ -1,0 +1,359 @@
+/* =====================================
+   CONTENEDOR
+===================================== */
+.form-escuela {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+
+  transition: var(--transicion);
+}
+
+.form-escuela:hover {
+  border-color: var(--borde-hover);
+  box-shadow: var(--sombra-lg);
+}
+
+/* =====================================
+   ENCABEZADO
+===================================== */
+.form-escuela__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-escuela__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  color: var(--texto-principal);
+}
+
+.form-escuela__subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   GRUPO DE DATOS
+===================================== */
+.form-escuela__grupo--datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+/* Razón social y dirección ocupan todo el ancho */
+.form-escuela__grupo--datos > :nth-child(3),
+.form-escuela__grupo--datos > :nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+/* =====================================
+   GRUPO DEL LOGO (input + vista previa)
+===================================== */
+.form-escuela__grupo--logo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: var(--fondo-superficie);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+  transition: var(--transicion);
+}
+
+.form-escuela__grupo--logo:hover {
+  background: var(--fondo-hover);
+  border-color: var(--color-secundario);
+}
+
+.form-escuela__logo-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* =====================================
+   PANEL DE VISTA PREVIA
+===================================== */
+.form-escuela__logo-panel {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.form-escuela__logo-marco {
+  width: 112px;
+  height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  background: var(--fondo-secundario);
+  border: 1px dashed var(--borde-hover);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+
+  transition: var(--transicion);
+}
+
+.form-escuela__logo-panel:has(img) .form-escuela__logo-marco {
+  border-style: solid;
+  border-color: var(--color-secundario);
+  box-shadow: var(--sombra-md);
+}
+
+.form-escuela__logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  animation: form-escuela-aparecer 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.form-escuela__logo-vacio {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-style: italic;
+  color: var(--texto-deshabilitado);
+}
+
+.form-escuela__logo-leyenda {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+@keyframes form-escuela-aparecer {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* =====================================
+   ELEMENTOS DE LOS COMPONENTES <Inputs />
+   (estilos por etiqueta, sin tocar el componente)
+===================================== */
+.form-escuela label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-secundario);
+}
+
+.form-escuela input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  transition: var(--transicion);
+}
+
+.form-escuela input::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+.form-escuela input:hover {
+  border-color: var(--borde-hover);
+}
+
+.form-escuela input:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-escuela input:disabled,
+.form-escuela input[readonly] {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+.form-escuela input:invalid:not(:placeholder-shown) {
+  border-color: var(--color-error);
+}
+
+/* Ocultar flechitas de input number */
+.form-escuela input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.form-escuela input[type="number"]::-webkit-outer-spin-button,
+.form-escuela input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Input de archivo */
+.form-escuela input[type="file"] {
+  padding: 0.6rem;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  background: var(--fondo-secundario);
+  cursor: pointer;
+}
+
+.form-escuela input[type="file"]::file-selector-button {
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: none;
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.form-escuela input[type="file"]::file-selector-button:hover {
+  background: var(--color-secundario);
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+===================================== */
+.form-escuela__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-escuela__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.form-escuela__acciones button:active {
+  transform: scale(0.98);
+}
+
+/* Agregar: primario sólido */
+.form-escuela__acciones .agregar {
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+}
+
+.form-escuela__acciones .agregar:hover {
+  background: var(--color-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: var(--sombra-md);
+}
+
+/* Cancelar: secundario contorno */
+.form-escuela__acciones .cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+.form-escuela__acciones .cancelar:hover {
+  color: var(--color-error);
+  background: var(--fondo-hover);
+  border-color: var(--color-error);
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+@media (max-width: 640px) {
+  .form-escuela {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: var(--radio-md);
+  }
+
+  .form-escuela__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .form-escuela__grupo--datos {
+    grid-template-columns: 1fr;
+  }
+
+  .form-escuela__grupo--logo {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-escuela__logo-panel {
+    align-self: center;
+  }
+
+  .form-escuela__logo-marco {
+    width: 88px;
+    height: 88px;
+  }
+
+  .form-escuela__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .form-escuela__acciones button {
+    width: 100%;
+  }
+}

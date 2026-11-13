@@ -1,0 +1,522 @@
+/* ============================================================
+   MENÚ DE NAVEGACIÓN - ELPHIS DESIGN SYSTEM
+   ============================================================ */
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+
+.menu_nav{
+
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    width:100%;
+
+    padding:9px 28px;
+
+    background:var(--fondo-secundario);
+
+    border-bottom:1px solid var(--borde);
+
+    box-shadow:var(--sombra-sm);
+
+}
+
+.menu-item-cabecera{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}   
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+
+.app-name{
+
+    margin:0;
+
+    font-family:var(--fuente-titulos);
+
+    font-size:var(--titulo-sm);
+
+    font-weight:var(--peso-negrita);
+
+    color:var(--texto-principal);
+
+    letter-spacing:.03em;
+
+    user-select:none;
+
+}
+
+/* ============================================================
+   USUARIO EN NAVBAR
+   ============================================================ */
+
+.app-name-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-user-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.app-user-label {
+    font-family: var(--fuente-principal);
+    font-size: 9px;
+    font-weight: var(--peso-regular);
+    color: var(--texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    user-select: none;
+}
+
+.app-user-name {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    letter-spacing: .02em;
+    user-select: none;
+}
+
+/* ============================================================
+   LISTA
+   ============================================================ */
+
+.menu_nav_lista{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    margin:0;
+
+    padding:0;
+
+    list-style:none;
+
+}
+
+/* ============================================================
+   ITEMS
+   ============================================================ */
+
+.menu_nav_lista .alinear{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    gap:10px;
+
+    padding:14px 14px;
+
+    border-radius:var(--radio-sm);
+
+    cursor:pointer;
+
+    color:var(--texto-secundario);
+
+    font-family:var(--fuente-principal);
+
+    font-size:var(--texto-sm);
+
+    font-weight:var(--peso-medio);
+
+    transition:var(--transicion);
+
+    position:relative;
+
+}
+
+.menu_nav_lista .alinear:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+/* --- Ruta activa (spec 018) -----------------------------------------------
+   `NavLink` agrega `.activo` al item cuya ruta coincide con la actual y pone
+   `aria-current="page"`. Reusa `--fondo-hover` (el mismo del :hover): no se
+   suma ningun color nuevo. La cabecera de la seccion abierta lleva
+   `.menu_control--abierto`. */
+
+.menu_nav_lista .activo{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+.menu_nav_lista .menu_control--abierto{
+
+    background:var(--fondo-hover);
+
+}
+
+/* En el submenu el activo lleva ademas una barra a la izquierda, para que se
+   distinga del :hover cuando el puntero esta encima. */
+.submenu .activo{
+
+    box-shadow:inset 3px 0 0 var(--color-primario);
+
+}
+
+.menu-item{
+
+    min-width:170px;
+
+}
+
+/* ============================================================
+   CONTROL INTERNO DEL ITEM (spec 014)
+
+   Los items dejaron de ser `<li onClick>`: ahora el `<li>` es la
+   estructura (y aporta layout, padding y hover) y adentro hay un
+   `<Link>` o un `<button>` de verdad, para que se puedan usar con
+   teclado y los anuncie el lector de voz.
+
+   Estas reglas hacen que el control se vea EXACTAMENTE igual que el
+   `<li>`: sin fondo, sin borde, con la misma tipografía y ocupando
+   todo el ancho (así el hover del `<li>` sigue cubriéndolo entero).
+   ============================================================ */
+
+.menu_control{
+
+    display:flex;
+
+    align-items:center;
+
+    /* Ocupa todo el ancho para que el fondo del hover del <li> quede parejo */
+    flex:1;
+
+    min-width:0;
+
+    gap:8px;
+
+    padding:0;
+
+    background:none;
+
+    border:none;
+
+    color:inherit;
+
+    font:inherit;
+
+    text-align:left;
+
+    text-decoration:none;
+
+    cursor:pointer;
+
+}
+
+/* Cabecera de una sección: ícono a la izquierda y chevron a la derecha,
+   como antes (el reparto lo hace el botón y no el <li>) */
+.menu_control--cabecera{
+
+    justify-content:space-between;
+
+}
+
+/* ============================================================
+   ICONOS
+   ============================================================ */
+
+.menu_nav_lista svg{
+
+    flex-shrink:0;
+
+    transition:var(--transicion);
+
+}
+
+.menu_nav_lista .alinear:hover svg{
+
+    color:var(--color-primario);
+
+}
+
+/* ============================================================
+   SUBMENÚ
+   ============================================================ */
+
+.submenu{
+
+    position:absolute;
+
+    top:calc(100% + 8px);
+
+    left:0;
+
+    min-width:240px;
+
+    padding:8px;
+
+    margin:0;
+
+    list-style:none;
+
+    background:var(--fondo-secundario);
+
+    border:1px solid var(--borde);
+
+    border-radius:var(--radio-md);
+
+    box-shadow:var(--sombra-md);
+
+    animation:submenuEntrada .2s ease;
+
+}
+
+.submenu li{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px 12px;
+
+    border-radius:var(--radio-sm);
+
+    color:var(--texto-secundario);
+
+    font-size:var(--texto-sm);
+
+    transition:var(--transicion);
+
+}
+
+.submenu li:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+.submenu li:hover svg{
+
+    color:var(--color-primario) !important;
+
+}
+
+/* ============================================================
+   BOTÓN MENÚ
+   ============================================================ */
+
+.btn_menu{
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    width:40px;
+
+    height:40px;
+
+    cursor:pointer;
+
+    border:none;
+
+    background:transparent;
+
+    border-radius:var(--radio-sm);
+
+    color:var(--texto-secundario);
+
+    transition:var(--transicion);
+
+}
+
+.btn_menu:hover{
+
+    background:var(--fondo-hover);
+
+    color:var(--texto-principal);
+
+}
+
+/* ============================================================
+   PRINCIPAL
+   ============================================================ */
+
+.menu_principal{
+
+    color:var(--texto-principal);
+
+    font-weight:var(--peso-negrita);
+
+}
+
+.menu_principal_contenido{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+}
+
+.menu_principal svg{
+
+    color:var(--color-primario);
+
+    transition:var(--transicion);
+
+}
+
+.menu_principal:hover{
+
+    background:rgba(99,141,185,.10);
+
+}
+
+.menu_principal:hover svg{
+
+    transform:scale(1.08);
+
+}
+
+/* ============================================================
+   ANIMACIÓN
+   ============================================================ */
+
+@keyframes submenuEntrada{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(8px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media(max-width:900px){
+
+    .btn_menu{
+
+        display:flex;
+
+    }
+
+    .menu_nav{
+
+        padding:14px 18px;
+
+    }
+
+    .menu_nav_lista{
+
+        display:none;
+
+        flex-direction:column;
+
+        align-items:stretch;
+
+        position:absolute;
+
+        top:100%;
+
+        left:0;
+
+        width:100%;
+
+        padding:12px;
+
+        gap:6px;
+
+        background:var(--fondo-secundario);
+
+        border-bottom:1px solid var(--borde);
+
+        box-shadow:var(--sombra-md);
+
+    }
+
+    .menu_nav_lista.abierto{
+
+        display:flex;
+
+    }
+
+    .menu_nav_lista .alinear{
+
+        width:100%;
+
+        padding:16px 14px;
+
+    }
+
+    .menu-item{
+
+        min-width:100%;
+
+    }
+
+    .submenu{
+
+        position:static;
+
+        margin-top:8px;
+
+        width:100%;
+
+        min-width:100%;
+
+        box-shadow:none;
+
+        border:1px solid var(--borde);
+
+        background:var(--fondo-principal);
+
+        animation:none;
+
+    }
+
+    .submenu li{
+
+        padding:16px;
+
+    }
+
+}

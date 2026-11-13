@@ -1,0 +1,154 @@
+/* ==========================================================================
+   SIN RESULTADO — ESTILO EDITORIAL / LUJO (NUEVO DISEÑO)
+   ========================================================================== */
+
+.sin_resultado_contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.sin_resultado_card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+
+    /* Estilo limpio heredado de la nueva línea de diseño */
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+    padding: 3rem 2rem;
+    box-shadow: var(--sombra-sm);
+}
+
+/* --- ESCENA DE ANIMACIÓN (RADAR / LUPA) --- */
+.escena_busqueda {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.contenedor_icono_animado {
+    font-size: 38px;
+    color: var(--color-primario);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: flotarLupa 4s ease-in-out infinite;
+}
+
+/* Anillos de Radar adaptados a los tokens */
+.radar_anillo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--color-primario);
+    border-radius: 50%;
+    opacity: 0;
+    animation: pulsoRadar 3s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    z-index: 1;
+}
+
+.radar_anillo.lento {
+    animation-delay: 1.5s;
+}
+
+/* Halo ambiental más sutil y acorde a la marca */
+.halo_ambiental_busqueda {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: var(--color-primario);
+    filter: blur(20px);
+    opacity: 0.15;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* --- TEXTOS --- */
+.texto_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+}
+
+.sin_resultado_texto {
+    font-family: var(--fuente-principal);
+    font-size: 1.25rem;
+    font-weight: var(--peso-negrita);
+    margin: 0;
+    color: var(--texto-principal);
+    letter-spacing: -0.01em;
+}
+
+.sin_resultado_subtexto {
+    font-family: var(--fuente-codigo);
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    line-height: var(--linea-texto);
+    font-weight: var(--peso-medio);
+    letter-spacing: 0.02em;
+}
+
+/* --- KEYFRAMES --- */
+
+@keyframes flotarLupa {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg); 
+    }
+    50% { 
+        transform: translateY(-5px) rotate(2deg); 
+    }
+}
+
+@keyframes pulsoRadar {
+    0% {
+        transform: scale(0.6);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_icono_animado {
+    animation: none !important;
+  }
+  .radar_anillo {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+  .halo_ambiental_busqueda {
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .sin_resultado_card {
+    border-width: 2px;
+  }
+}
+
+@media print {
+  .sin_resultado_contenedor {
+    display: none;
+  }
+}

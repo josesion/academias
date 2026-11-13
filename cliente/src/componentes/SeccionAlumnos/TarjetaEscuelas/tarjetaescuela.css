@@ -1,0 +1,296 @@
+.tarjeta_escuela {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 320px;
+  padding: 20px;
+  border-radius: var(--radio-md);
+  border: 1px solid var(--borde);
+  background: var(--fondo-secundario);
+  box-shadow: var(--sombra-sm);
+  font-family: var(--fuente-principal);
+  /* Propiedades exactas: `--transicion` de app.css es `all .3s` */
+  transition: box-shadow 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
+}
+
+/* Anula el subrayado y el color de link en todos los estados */
+.tarjeta_escuela,
+.tarjeta_escuela:hover,
+.tarjeta_escuela:focus,
+.tarjeta_escuela:focus-visible,
+.tarjeta_escuela:active,
+.tarjeta_escuela:visited {
+  text-decoration: none;
+  color: inherit;
+}
+
+.tarjeta_escuela:hover {
+  box-shadow: var(--sombra-md);
+  border-color: var(--borde-hover);
+}
+
+.tarjeta_escuela:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+}
+
+.tarjeta_escuela_header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tarjeta_escuela_avatar {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  /* Misma forma que el `.hero-avatar` de la pantalla de detalle */
+  border-radius: var(--radio-sm);
+  background: var(--color-secundario);
+  color: var(--fondo-principal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fuente-titulos);
+  font-size: 1.5rem;
+  font-weight: var(--peso-semi-negrita);
+  text-transform: uppercase;
+}
+
+.tarjeta_escuela_header_texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tarjeta_escuela_razon {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  line-height: var(--linea-titulo);
+  /* Hasta 2 líneas con ellipsis (el texto completo sigue en el DOM) */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tarjeta_escuela_propietario {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.tarjeta_escuela_divisor {
+  height: 1px;
+  background: var(--borde);
+  /* El espaciado vertical lo aporta el `gap` de `.tarjeta_escuela_contenido` */
+  margin: 0;
+}
+
+.tarjeta_escuela_datos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tarjeta_escuela_datos li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.tarjeta_escuela_datos li svg {
+  flex-shrink: 0;
+  color: var(--color-secundario);
+}
+
+.tarjeta_escuela_datos li span {
+  color: var(--texto-principal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Spec 037 — logo, chip de estado y bloque de plan
+   ============================================================ */
+
+/* Wrapper interno: columna que ocupa el alto disponible del `<Link>`
+   para que el bloque de plan pueda anclarse al pie con `margin-top: auto`. */
+.tarjeta_escuela_contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+/* Logo de la academia (cuadrado redondeado, `object-fit: contain`). */
+.tarjeta_escuela_logo {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  /* Misma forma que el `.hero-avatar` de la pantalla de detalle */
+  border-radius: var(--radio-sm);
+  object-fit: contain;
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde);
+  transition: border-color 200ms var(--ease-ui);
+}
+
+/* Chip de estado: texto visible + icono decorativo (aria-hidden). */
+.tarjeta_escuela_estado {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  line-height: 1.2;
+}
+
+.tarjeta_escuela_estado svg {
+  flex-shrink: 0;
+}
+
+.tarjeta_escuela_estado--nuevo {
+  color: var(--color-primario);
+  background: color-mix(in srgb, var(--color-primario) 8%, transparent);
+  border-color: color-mix(in srgb, var(--color-primario) 25%, transparent);
+}
+
+.tarjeta_escuela_estado--suspendido {
+  color: var(--texto-secundario);
+  background: var(--fondo-superficie);
+  border-color: var(--borde);
+}
+
+.tarjeta_escuela_estado--vencido {
+  color: var(--color-error);
+  background: color-mix(in srgb, var(--color-error) 14%, transparent);
+  border-color: color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.tarjeta_escuela_estado--por_vencer {
+  color: var(--color-advertencia);
+  background: color-mix(in srgb, var(--color-advertencia) 14%, transparent);
+  border-color: color-mix(in srgb, var(--color-advertencia) 30%, transparent);
+}
+
+.tarjeta_escuela_estado--vigente {
+  color: var(--color-exito);
+  background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+  border-color: color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+/* Bloque de plan: se ancla al pie de la tarjeta (`margin-top: auto`). */
+.tarjeta_escuela_plan {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  padding: 12px;
+  background: var(--fondo-superficie);
+  border-radius: var(--radio-sm);
+}
+
+.tarjeta_escuela_plan_fecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+.tarjeta_escuela_plan_fecha svg {
+  flex-shrink: 0;
+}
+
+.tarjeta_escuela_plan_fecha strong {
+  color: var(--texto-principal);
+  font-weight: var(--peso-semi-negrita);
+}
+
+.tarjeta_escuela_plan_metas {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tarjeta_escuela_meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tarjeta_escuela_meta_label {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tarjeta_escuela_meta_valor {
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  font-weight: var(--peso-semi-negrita);
+}
+
+/* Barra de progreso: pista neutra + relleno con el verde de marca. */
+.tarjeta_escuela_barra {
+  width: 100%;
+  height: 6px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tarjeta_escuela_barra_fill {
+  height: 100%;
+  background: var(--color-secundario);
+  border-radius: 4px;
+  /* Propiedad exacta: nunca `all` (--transicion de app.css es `all .3s`) */
+  transition: width 400ms var(--ease-ui);
+}
+
+/* Hover gateado: solo en dispositivos con puntero fino real. */
+@media (hover: hover) and (pointer: fine) {
+  .tarjeta_escuela_logo:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta_escuela_barra_fill {
+    transition: none;
+  }
+
+  .tarjeta_escuela_logo {
+    transition: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .tarjeta_escuela_estado {
+    border-width: 2px;
+  }
+
+  .tarjeta_escuela_barra {
+    border-color: var(--texto-principal);
+  }
+}

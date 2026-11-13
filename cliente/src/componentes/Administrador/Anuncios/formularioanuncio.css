@@ -1,0 +1,405 @@
+/* ==========================================================================
+   FORMULARIO DE ANUNCIOS — ALTA (POST) y MODIFICACIÓN (PUT)
+   Espejo de formularioempresa.css con prefijo .form-anuncio, más el textarea
+   de la descripción (el `Inputs` compartido no tiene) y el bloque de media.
+
+   ANIMACIÓN (skill emil-design-eng): ease-out fuerte (--ease-ui), propiedades
+   exactas, entrada escalonada de 30ms, `scale(0.97)` al apretar,
+   `prefers-reduced-motion` respetado.
+   ========================================================================== */
+
+.form-anuncio {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+}
+
+/* =====================================
+   ENTRADA ESCALONADA
+   ===================================== */
+@keyframes form_anuncio_entra {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-anuncio__encabezado,
+.form-anuncio__grupo--datos > *,
+.form-anuncio__grupo--media,
+.form-anuncio__acciones {
+  animation: form_anuncio_entra 200ms var(--ease-ui) both;
+}
+
+.form-anuncio__encabezado {
+  animation-delay: 0ms;
+}
+
+.form-anuncio__grupo--datos > :nth-child(1) { animation-delay: 40ms; }
+.form-anuncio__grupo--datos > :nth-child(2) { animation-delay: 70ms; }
+.form-anuncio__grupo--datos > :nth-child(3) { animation-delay: 100ms; }
+.form-anuncio__grupo--datos > :nth-child(4) { animation-delay: 130ms; }
+
+.form-anuncio__grupo--media {
+  animation-delay: 160ms;
+}
+
+.form-anuncio__acciones {
+  animation-delay: 190ms;
+}
+
+/* =====================================
+   ENCABEZADO
+   ===================================== */
+.form-anuncio__encabezado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.form-anuncio__titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-medio);
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.01em;
+  color: var(--texto-principal);
+}
+
+.form-anuncio__subtitulo {
+  margin: 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+}
+
+/* =====================================
+   GRUPO DE DATOS (2 columnas → 1 en mobile)
+   ===================================== */
+.form-anuncio__grupo--datos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem 1.5rem;
+}
+
+/* Este wrapper envuelve al <SelectorOpt />. El `gap` tiene que ser el MISMO
+   que el de `.inputs_contenedor` (6px): si no, el select queda más pegado al
+   rótulo que el input y los dos controles de una fila no caen a la misma
+   altura. */
+.form-anuncio__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Título y descripción ocupan la fila entera: son los textos largos */
+.form-anuncio__campo--ancho {
+  grid-column: 1 / -1;
+}
+
+/* =====================================
+   ETIQUETAS
+
+   SIN `margin-bottom` a propósito: el espaciado entre el rótulo y el control
+   lo pone el `gap` del contenedor (`6px` en `.inputs_contenedor` de `Inputs`,
+   `6px` en `.form-anuncio__campo`). Con un margen además del gap el <input>
+   quedaba a ~12px del rótulo y el <select> a ~6px: en una misma fila los dos
+   controles no caían a la misma altura.
+
+   SIN `color` ni `font-family` a propósito: los <label> de `Inputs` los
+   maneja `inputs.css` (`.inputs_contenedor label`). Esta regla empata con esa
+   en especificidad (0,1,1), así que si los pisa acá gana el ORDEN DE CARGA
+   DEL CSS, que cambia según los imports de cada página — el mismo problema
+   ya anotado en MEMORY con `boton.css`.
+   ===================================== */
+.form-anuncio label,
+.form-anuncio__label {
+  display: block;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* El rótulo que se escribe a mano (el del <SelectorOpt> y el del <textarea>)
+   tiene que verse IGUAL al de `Inputs`: misma fuente y mismo color. Si el
+   texto se viera distinto, las cajas de los rótulos tendrían distinta altura y
+   los controles seguirían sin alinearse aunque el `gap` sea el mismo. */
+.form-anuncio__label {
+  font-family: var(--fuente-codigo);
+  color: var(--texto-deshabilitado);
+}
+
+/* =====================================
+   ELEMENTOS <Inputs />
+   ===================================== */
+.form-anuncio input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+.form-anuncio input::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-anuncio input:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-anuncio input:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-anuncio input:disabled,
+.form-anuncio input[readonly] {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+/* =====================================
+   SELECTORES (<SelectorOpt />)
+   ===================================== */
+.form-anuncio select.input_caja {
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  font-size: var(--texto-md);
+  background-color: var(--fondo-principal);
+
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-anuncio select.input_caja:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-anuncio select.input_caja:focus {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+/* =====================================
+   TEXTAREA de la descripción
+   Mismo tratamiento que los inputs para que el form se lea como uno solo.
+   ===================================== */
+.form-anuncio__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  /* Sin resize: el alto del modal ya está controlado por el scroll interno */
+  resize: vertical;
+  min-height: 96px;
+
+  transition:
+    border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui),
+    background-color 160ms var(--ease-ui);
+}
+
+.form-anuncio__textarea::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-anuncio__textarea:hover {
+    border-color: var(--borde-hover);
+  }
+}
+
+.form-anuncio__textarea:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+.form-anuncio__textarea:disabled {
+  color: var(--texto-deshabilitado);
+  background: var(--fondo-superficie);
+  cursor: not-allowed;
+}
+
+/* =====================================
+   MEDIA
+   ===================================== */
+.form-anuncio__grupo--media {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+/* =====================================
+   ACCIONES (<Boton />)
+   ===================================== */
+.form-anuncio__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--borde);
+}
+
+.form-anuncio__acciones button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.04em;
+
+  border-radius: var(--radio-sm);
+  cursor: pointer;
+
+  transition:
+    transform 140ms var(--ease-ui),
+    background-color 160ms var(--ease-ui),
+    border-color 160ms var(--ease-ui),
+    color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui);
+}
+
+.form-anuncio__acciones button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.form-anuncio__acciones button.agregar {
+  color: var(--fondo-secundario);
+  background: var(--color-primario);
+  border: 1px solid var(--color-primario);
+}
+
+.form-anuncio__acciones button.cancelar {
+  color: var(--texto-secundario);
+  background: transparent;
+  border: 1px solid var(--borde-hover);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .form-anuncio__acciones button.agregar:hover:not(:disabled) {
+    background: var(--color-secundario);
+    border-color: var(--color-secundario);
+    box-shadow: var(--sombra-md);
+  }
+
+  .form-anuncio__acciones button.cancelar:hover:not(:disabled) {
+    color: var(--color-error);
+    background: var(--fondo-hover);
+    border-color: var(--color-error);
+  }
+}
+
+/* =====================================
+   RESPONSIVE — 1 columna y aire (≤650px)
+   ===================================== */
+@media (max-width: 650px) {
+  .form-anuncio {
+    padding: 1.5rem;
+    gap: 1.5rem;
+    border-radius: var(--radio-md);
+  }
+
+  .form-anuncio__titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .form-anuncio__grupo--datos {
+    grid-template-columns: 1fr;
+  }
+
+  .form-anuncio__acciones {
+    flex-direction: column-reverse;
+  }
+
+  .form-anuncio__acciones button {
+    width: 100%;
+  }
+}
+
+/* =====================================
+   PREFERS-REDUCED-MOTION
+   ===================================== */
+@media (prefers-reduced-motion: reduce) {
+  .form-anuncio__encabezado,
+  .form-anuncio__grupo--datos > *,
+  .form-anuncio__grupo--media,
+  .form-anuncio__acciones {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .form-anuncio input,
+  .form-anuncio select.input_caja,
+  .form-anuncio__textarea,
+  .form-anuncio__acciones button {
+    transition-duration: 0ms;
+  }
+
+  .form-anuncio__acciones button:active:not(:disabled) {
+    transform: none;
+  }
+}

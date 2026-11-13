@@ -1,0 +1,304 @@
+/* ==========================================================================
+   CIERRE DE CAJA — TOKENS DE MARCA
+   ========================================================================== */
+
+.coontenedor_cierre_caja {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+
+    max-height: 90dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    padding-right: 4px;
+}
+
+.coontenedor_cierre_caja::-webkit-scrollbar {
+    width: 8px;
+}
+
+.coontenedor_cierre_caja::-webkit-scrollbar-track {
+    background: var(--fondo-hover);
+    border-radius: var(--radio-sm);
+}
+
+.coontenedor_cierre_caja::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    border-radius: var(--radio-sm);
+}
+
+/* ==========================================================================
+   TITULO
+   ========================================================================== */
+
+.cierre_titulo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding-bottom: 4px;
+}
+
+.cierre_titulo h2 {
+    margin: 0;
+
+    font-family: var(--fuente-titulos);
+    font-size: var(--titulo-md);
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.cierre_titulo span {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-secundario);
+    line-height: var(--linea-texto);
+}
+
+/* ==========================================================================
+   TARJETA DE SECCIÓN — reutilizada por resumen/métodos/resultado/justificación
+   ========================================================================== */
+
+.card_cierre {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    padding: 22px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-sm);
+
+    transition: var(--transicion);
+    animation: cierreEntrada 0.3s ease backwards;
+}
+
+.card_cierre:nth-of-type(1) { animation-delay: 0.02s; }
+.card_cierre:nth-of-type(2) { animation-delay: 0.06s; }
+.card_cierre:nth-of-type(3) { animation-delay: 0.10s; }
+.card_cierre:nth-of-type(4) { animation-delay: 0.14s; }
+
+.card_cierre:hover {
+    border-color: var(--borde-hover);
+}
+
+@keyframes cierreEntrada {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.card_titulo {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--texto-secundario);
+
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--borde);
+}
+
+/* ==========================================================================
+   RESUMEN GENERAL (¡Intacto!)
+   ========================================================================== */
+
+.contenedor_resumen_general {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+}
+
+/* ==========================================================================
+   METODOS DE PAGO — Grid responsivo (en fila si entra, columna si baja)
+   ========================================================================== */
+
+.contenedor_detalle_cierre_caja {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+/* ==========================================================================
+   BLOQUE DUAL: Resultado y Justificación unidos horizontalmente
+   ========================================================================== */
+
+.bloque_dual_resultado_justificacion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.bloque_dual_resultado_justificacion .card_cierre {
+    height: 100%;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+/* ==========================================================================
+   RESULTADO DEL ARQUEO
+   ========================================================================== */
+
+.contenedor_resultado_cierre_caja {
+    display: flex;
+}
+
+.badge_dif {
+    flex: 1;
+    margin: 0;
+
+    padding: 16px 20px;
+
+    border-radius: var(--radio-md);
+    border-left: 3px solid var(--texto-deshabilitado);
+    background: color-mix(in srgb, var(--texto-deshabilitado) 10%, transparent);
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 0.3px;
+
+    color: var(--texto-secundario);
+
+    transition: var(--transicion);
+}
+
+.badge_dif.pendiente {
+    border-left-color: var(--texto-deshabilitado);
+    background: color-mix(in srgb, var(--texto-deshabilitado) 10%, transparent);
+    color: var(--texto-secundario);
+}
+
+.badge_dif.ok {
+    border-left-color: var(--color-exito);
+    background: color-mix(in srgb, var(--color-exito) 12%, transparent);
+    color: var(--color-exito);
+}
+
+.badge_dif.negativo {
+    border-left-color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 12%, transparent);
+    color: var(--color-error);
+}
+
+.badge_dif.positivo {
+    border-left-color: var(--color-advertencia);
+    background: color-mix(in srgb, var(--color-advertencia) 12%, transparent);
+    color: var(--color-advertencia);
+}
+
+/* ==========================================================================
+   JUSTIFICACIÓN
+   ========================================================================== */
+
+.texto_ayuda {
+    margin: -6px 0 0;
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-deshabilitado);
+    line-height: var(--linea-texto);
+}
+
+.textarea_cyber {
+    width: 100%;
+    box-sizing: border-box;
+
+    min-height: 100px;
+    padding: 14px;
+
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    line-height: var(--linea-texto);
+
+    resize: none;
+    outline: none;
+
+    transition: var(--transicion);
+}
+
+.textarea_cyber::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.textarea_cyber:hover:not(:disabled) {
+    border-color: var(--borde-hover);
+}
+
+.textarea_cyber:focus:not(:disabled) {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+.textarea_cyber:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   BOTONERA
+   ========================================================================== */
+
+.contenedor_botonera_cierre_caja {
+    display: flex;
+    gap: 14px;
+
+    padding-top: 4px;
+}
+
+.contenedor_botonera_cierre_caja > * {
+    flex: 1;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .bloque_dual_resultado_justificacion {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .coontenedor_cierre_caja {
+        max-width: 100%;
+    }
+
+    .card_cierre {
+        padding: 16px;
+        border-radius: var(--radio-md);
+    }
+
+    .cierre_titulo h2 {
+        font-size: var(--texto-lg);
+    }
+
+    .contenedor_resumen_general {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .contenedor_botonera_cierre_caja {
+        flex-direction: column-reverse;
+    }
+}
+
+@media (max-width: 380px) {
+    .contenedor_resumen_general {
+        grid-template-columns: 1fr;
+    }
+}

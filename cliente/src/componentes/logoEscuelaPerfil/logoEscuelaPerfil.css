@@ -1,0 +1,307 @@
+/* ============================================================
+   LOGO DE MI ESCUELA — Sección del perfil (spec 051)
+
+   Clase propia (`logo_escuela_*`): NO reutiliza `.perfil_seccion` porque
+   esa clase pinta bordes con `:first-of-type` / `:last-of-type` (R20).
+
+   Solo tokens de app.css: --color-*, --fondo-*, --texto-*, --borde,
+   --radio-*, --sombra-*, --ease-ui, --focus-ring, --focus-offset.
+   Así `html[data-rubro="gym"]` repinta la sección sin reglas extra.
+   ============================================================ */
+
+.logo_escuela_seccion {
+  margin-top: 24px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  padding: 24px;
+  box-shadow: var(--sombra-sm);
+  transition: border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+}
+
+/* ============================================================
+   ENCABEZADO
+   ============================================================ */
+
+.logo_escuela_titulo {
+  margin-bottom: 6px;
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-secundario);
+}
+
+.logo_escuela_contexto {
+  margin-bottom: 20px;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  line-height: var(--linea-texto);
+}
+
+/* ============================================================
+   PANEL: vista previa | controles
+   ============================================================ */
+
+.logo_escuela_panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.logo_escuela_cargando {
+  grid-column: 1 / -1;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio-md);
+  background: var(--fondo-superficie);
+  color: var(--texto-secundario);
+  font-size: var(--texto-sm);
+  animation: logoEscuelaEntrada 220ms var(--ease-ui) both;
+}
+
+/* ---------- Vista previa ---------- */
+
+.logo_escuela_previa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  animation: logoEscuelaEntrada 220ms var(--ease-ui) both;
+}
+
+.logo_escuela_marco {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--fondo-superficie);
+  border: 1px dashed var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.logo_escuela_imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo_escuela_vacio {
+  padding: 0 12px;
+  font-size: var(--texto-sm);
+  color: var(--texto-deshabilitado);
+  text-align: center;
+}
+
+.logo_escuela_leyenda {
+  margin: 0;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Controles ---------- */
+
+.logo_escuela_controles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  animation: logoEscuelaEntrada 220ms var(--ease-ui) 30ms both;
+}
+
+.logo_escuela_ayuda {
+  display: block;
+  margin-top: -6px;
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  overflow-wrap: anywhere;
+}
+
+.logo_escuela_acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.logo_escuela_acciones .boton_personalizado {
+  min-width: 0;
+  transition:
+    transform 120ms var(--ease-ui),
+    box-shadow 120ms var(--ease-ui),
+    background 120ms var(--ease-ui),
+    border-color 120ms var(--ease-ui);
+}
+
+/* El wrapper solo existe para poder devolver el foco al botón "Quitar logo"
+   (`Boton` no reenvía refs): `display: contents` lo saca del layout. */
+.logo_escuela_quitar {
+  display: contents;
+}
+
+.logo_escuela_acciones .boton_personalizado:not(:disabled):active,
+.logo_escuela_confirmacion_acciones .boton_personalizado:not(:disabled):active {
+  transform: scale(0.97);
+}
+
+/* ---------- Confirmación en línea ---------- */
+
+.logo_escuela_confirmacion {
+  padding: 12px 14px;
+  background: var(--fondo-superficie);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-md);
+  animation: logoEscuelaEntrada 200ms var(--ease-ui);
+}
+
+.logo_escuela_confirmacion_texto {
+  margin: 0 0 10px;
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+  overflow-wrap: anywhere;
+}
+
+.logo_escuela_confirmacion_acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---------- Alertas y región de estado ---------- */
+
+.logo_escuela_alerta {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: var(--fondo-error-suave);
+  border: 1px solid var(--color-error);
+  border-radius: var(--radio-md);
+  color: var(--color-error);
+  font-size: var(--texto-sm);
+  overflow-wrap: anywhere;
+  animation: logoEscuelaEntrada 200ms var(--ease-ui);
+}
+
+.logo_escuela_estado {
+  min-height: 1.25rem;
+  margin: 12px 0 0;
+  font-size: var(--texto-sm);
+  color: var(--color-exito);
+  overflow-wrap: anywhere;
+}
+
+.logo_escuela_estado:focus {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radio-sm);
+}
+
+/* ============================================================
+   ANIMACIÓN
+   ============================================================ */
+
+@keyframes logoEscuelaEntrada {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================
+   HOVER (solo dispositivos con puntero)
+   ============================================================ */
+
+@media (hover: hover) {
+  .logo_escuela_seccion:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+  }
+}
+
+/* ============================================================
+   RESPONSIVE — ≥ 700 px: dos columnas
+   ============================================================ */
+
+@media (min-width: 700px) {
+  .logo_escuela_panel {
+    grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  }
+
+  .logo_escuela_previa {
+    align-items: flex-start;
+  }
+
+  .logo_escuela_leyenda {
+    text-align: left;
+  }
+}
+
+/* < 700 px: una columna, vista previa centrada y botones a ancho completo */
+@media (max-width: 699px) {
+  .logo_escuela_acciones .boton_personalizado,
+  .logo_escuela_confirmacion_acciones .boton_personalizado {
+    width: 100%;
+  }
+}
+
+/* 320 px: sin scroll horizontal; textos y controles se apilan */
+@media (max-width: 360px) {
+  .logo_escuela_seccion {
+    padding: 16px 12px;
+  }
+
+  .logo_escuela_marco {
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   ACCESIBILIDAD
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .logo_escuela_seccion,
+  .logo_escuela_acciones .boton_personalizado {
+    transition: none;
+  }
+
+  .logo_escuela_previa,
+  .logo_escuela_controles,
+  .logo_escuela_cargando,
+  .logo_escuela_alerta,
+  .logo_escuela_confirmacion {
+    animation: none;
+  }
+
+  .logo_escuela_acciones .boton_personalizado:not(:disabled):active,
+  .logo_escuela_confirmacion_acciones .boton_personalizado:not(:disabled):active {
+    transform: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .logo_escuela_seccion,
+  .logo_escuela_marco,
+  .logo_escuela_alerta,
+  .logo_escuela_confirmacion {
+    border-width: 2px;
+  }
+
+  .logo_escuela_estado:focus {
+    outline: var(--focus-ring-high-contrast);
+    outline-offset: var(--focus-offset-high-contrast);
+  }
+}

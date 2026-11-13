@@ -1,0 +1,68 @@
+import { PAGINA } from "./variables.globales";
+import { apiFetch ,type ApiResponse  } from "../utils/apiFetch";
+
+// Seccion de tipados Alumnos
+
+import  type * as TipadoInscripcion  from "../tipadosTs/inscripciones";
+import  type { DataDetalleCaja } from "../tipadosTs/caja.typado";
+
+
+type PayloadInscripcionCompleto = TipadoInscripcion.inscripcionData & Omit<DataDetalleCaja, 'referencia_id'>;
+
+export const incripcion =async ( datos : PayloadInscripcionCompleto )
+: Promise<ApiResponse<TipadoInscripcion.ResultInscripcion>> =>{
+    const ruta  = `${PAGINA}api/inscripcion`;  
+    return await apiFetch( ruta , {
+        method : "POST",
+        body   :{
+            id_plan                     : datos.id_plan ,
+            dni_alumno                  : datos.dni_alumno,
+            fecha_inicio                : datos.fecha_inicio,
+            fecha_fin                   : datos.fecha_fin,
+            clases_asignadas_inscritas  : datos.clases_asignadas_inscritas,
+            meses_asignados_inscritos   : datos.meses_asignados_inscritos,
+            estado : "activos",
+
+            monto   : datos.monto,
+            id_caja : datos.id_caja,
+            id_categoria : datos.id_categoria,
+            
+            id_cuenta   : datos.id_cuenta, 
+            descripcion : datos.descripcion,
+        }
+    });
+    
+}
+
+export const listadoInscripciones = async( data : TipadoInscripcion.FiltroBusqueda, signal? : AbortSignal  )
+: Promise<ApiResponse<TipadoInscripcion.InscripcionListadoResult[]>> =>{
+    const parametrosQuery = {
+        estado: data.estado || "activos",
+        nombre_alumno : data.nombre_alumno,
+        dni_alumno  : data.dni_alumno,
+        fecha_desde : data.fecha_desde,
+        fecha_hasta : data.fecha_hasta,
+        pagina : data.pagina.toString(),
+        limit : data.limit.toString()
+    }; 
+   const ruta  = `${PAGINA}api/list_inscrip?${new URLSearchParams(parametrosQuery as Record<string, string>).toString()}`;
+   return await apiFetch( ruta , {
+    method : "GET",
+    signal
+   });
+};
+
+
+export const anularInscripcion  =async ( data : TipadoInscripcion.AnulacionInscripcion ) 
+: Promise<ApiResponse<{id_inscripcion : number}>> => {
+    const ruta  = `${PAGINA}api/anular_inscrip`;  
+
+    return apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_inscripcion : data.id_inscripcion,
+            id_cuenta : data.id_cuenta
+            // aca va el id de metodo de pago para la devolucion
+        }
+    });
+};

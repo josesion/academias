@@ -1,0 +1,35 @@
+.spinner_tarjeta {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--fuente-principal);
+}
+
+.spinner_tarjeta_loader {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--fondo-superficie);
+  border-top-color: var(--color-secundario);
+  animation: spinner_tarjeta_girar 0.9s linear infinite;
+}
+
+.spinner_tarjeta_texto {
+  color: var(--texto-secundario);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  letter-spacing: 0.02em;
+}
+
+@keyframes spinner_tarjeta_girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,442 @@
+import { TipadoData } from "../tipados/tipado.data";
+import { PostEscuelasInputs, EstadoEscuelasInputs, ListadoEscuelasInputs } from "../squemas/escuelas";
+
+import { tryCatchDatos } from "../utils/tryCatchBD";
+import { iudEntidad } from "../hooks/iudEntidad";
+import { buscarExistenteEntidad } from "../hooks/buscarExistenteEntidad";
+import { listarEntidad } from "../hooks/funcionListar";
+
+export interface EscuelaResumen {
+    id?: number;
+    razon_social: string;
+    nombre_propietario: string ;
+    apellido_propietario: string ;
+}
+
+export interface ModificarEscuelaInputs extends Partial<PostEscuelasInputs> {
+    id_escuela: number;
+    imagenMod : boolean;
+}
+
+export interface EscuelaPublicId {
+    id_escuela: number;
+    public_id?: string;
+    urlImagen?: string;
+}
+
+/** Fila de `escuelas` con lo mínimo para pintar el logo en el perfil (spec 051). */
+export interface EscuelaLogoRow {
+    id_escuela: number;
+    razon_social: string | null;
+    urlImagen: string | null;
+    public_id: string | null;
+}
+
+/** Retorno del UPDATE de las 2 columnas del logo (spec 051). */
+export interface EscuelaLogoActualizado {
+    id_escuela: number;
+    urlImagen: string | null;
+    public_id: string | null;
+}
+
+/**
+ * Verifica si ya existe un registro de escuela para el DNI del propietario.
+ *
+ * @async
+ * @function verificarRazonSocialEscuela
+ * @param {Pick<PostEscuelasInputs, "dni_propietario">} datos - Datos del propietario para validar duplicados.
+ * @returns {Promise<TipadoData<EscuelaResumen>>} Resultado de la validación según `buscarExistenteEntidad`.
+ */
+const verificarRazonSocialEscuela = async (
+    datos: Pick<PostEscuelasInputs, "dni_propietario">
+): Promise<TipadoData<EscuelaResumen>> => {
+    const { dni_propietario } = datos;
+
+    const sql: string = `SELECT id_escuela, razon_social
+                            FROM escuelas
+                            WHERE razon_social = ?;`;
+
+    const valores: unknown[] = [ dni_propietario];
+
+    return await buscarExistenteEntidad<EscuelaResumen>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA"
+    });
+};
+
+/**
+ * Localiza la clave pública de la imagen asociada a una escuela.
+ *
+ * @async
+ * @function localizarPublicIdEscuela
+ * @param {number} id_escuela - ID de la escuela a consultar.
+ * @returns {Promise<TipadoData<EscuelaPublicId>>} Resultado con el `public_id` y la URL actual de la imagen.
+ */
+const localizarPublicIdEscuela = async (
+    id_escuela: number
+): Promise<TipadoData<EscuelaPublicId>> => {
+    const sql: string = `SELECT id_escuela, public_id, urlImagen
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [id_escuela];
+
+    return await buscarExistenteEntidad<EscuelaPublicId>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_PUBLIC_ID",
+    });
+};
+
+/**
+ * Localiza la razón social (nombre comercial) de una escuela a partir de su identificador.
+ * Se usa para personalizar los correos automáticos con el nombre de la academia.
+ *
+ * @async
+ * @function localizarNombreEscuela
+ * @param {number} id_escuela - ID de la escuela a consultar.
+ * @returns {Promise<TipadoData<{ razon_social: string }>>} El nombre de la escuela en `data` si existe.
+ */
+const localizarNombreEscuela = async (
+    id_escuela: number
+): Promise<TipadoData<{ razon_social: string }>> => {
+    const sql: string = `SELECT id_escuela, razon_social
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [id_escuela];
+
+    return await buscarExistenteEntidad<{ razon_social: string }>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_NOMBRE",
+    });
+};
+
+/**
+ * Obtiene la fila de la escuela con los datos que necesita la sección del logo
+ * del perfil (spec 051).
+ *
+ * El hook `buscarExistenteEntidad` tiene la semántica invertida: devuelve
+ * `error: true` y `code` `ESCUELA_PERFIL_EXISTE` cuando la fila **existe**
+ * (con la fila en `data`), y `ESCUELA_PERFIL_NO_EXISTE` cuando no hay fila.
+ * El Servicio debe comparar por `code`, no por `error`.
+ *
+ * @async
+ * @function obtenerLogoEscuela
+ * @param {number} id_escuela - ID de la escuela a consultar.
+ * @returns {Promise<TipadoData<EscuelaLogoRow>>} `ESCUELA_PERFIL_EXISTE` con
+ *   `id_escuela`, `razon_social`, `urlImagen` y `public_id`, o
+ *   `ESCUELA_PERFIL_NO_EXISTE` si no hay fila.
+ */
+const obtenerLogoEscuela = async (
+    id_escuela: number
+): Promise<TipadoData<EscuelaLogoRow>> => {
+    const sql: string = `SELECT id_escuela, razon_social, urlImagen, public_id
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [id_escuela];
+
+    return await buscarExistenteEntidad<EscuelaLogoRow>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_PERFIL",
+    });
+};
+
+/**
+ * Escribe el logo de una escuela: las 2 columnas `urlImagen` y `public_id`.
+ *
+ * Se usa tanto para subir/reemplazar (URL y key nuevas) como para quitar el
+ * logo (las dos en `null`). Solo toca esas 2 columnas: el resto de la fila
+ * queda intacto.
+ *
+ * `iudEntidad` lanza `MODIFICAR_NOT_FOUND` (404) si `affectedRows <= 0`; como
+ * el Servicio lee la fila antes de escribir, cualquier `code` distinto de
+ * `ESCUELA_LOGO_MODIFICAR` se trata como falla interna.
+ *
+ * @async
+ * @function actualizarLogoEscuela
+ * @param {{ id_escuela: number, urlImagen: string | null, public_id: string | null }} datos -
+ *   ID de la escuela y los valores nuevos de las 2 columnas del logo.
+ * @returns {Promise<TipadoData<EscuelaLogoActualizado>>} `ESCUELA_LOGO_MODIFICAR`
+ *   con `{ id_escuela, urlImagen, public_id }`.
+ */
+const actualizarLogoEscuela = async (
+    datos: { id_escuela: number; urlImagen: string | null; public_id: string | null }
+): Promise<TipadoData<EscuelaLogoActualizado>> => {
+    const { id_escuela, urlImagen, public_id } = datos;
+
+    const sql: string = `UPDATE escuelas
+                        SET urlImagen = ?, public_id = ?
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [urlImagen, public_id, id_escuela];
+
+    const retorno: EscuelaLogoActualizado = { id_escuela, urlImagen, public_id };
+
+    return await iudEntidad<EscuelaLogoActualizado>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_LOGO",
+        datosRetorno: retorno,
+        metodo: "MODIFICAR",
+    });
+};
+
+/**
+ * Inserta una nueva escuela en la base de datos.
+ *
+ * @async
+ * @function altaEscuela
+ * @param {PostEscuelasInputs} datos - Datos validados de la escuela a registrar.
+ * @returns {Promise<TipadoData<EscuelaResumen>>} Resultado de la operación de escritura.
+ */
+const altaEscuela =async (  datos : PostEscuelasInputs)
+:Promise<TipadoData<EscuelaResumen>> =>{
+
+    const {
+        dni_propietario, nombre_propietario, apellido_propietario, 
+        razon_social, direccion, celular, urlImagen,
+        fecha_registro, baja, public_id, rubro
+    } = datos;
+
+    const sql : string = `INSERT INTO escuelas (
+                    dni_propietario, 
+                    nombre_propietario, 
+                    apellido_propietario, 
+                    razon_social, 
+                    direccion, 
+                    celular, 
+                    urlImagen, 
+                    public_id, 
+                    fecha_registro, 
+                    baja,
+                    rubro
+                ) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+
+    const valores : unknown[] = [
+        dni_propietario, nombre_propietario, apellido_propietario, 
+        razon_social, direccion, celular, urlImagen, public_id,
+        fecha_registro, baja, rubro
+    ];
+
+    const retorno = { razon_social, nombre_propietario, apellido_propietario  }
+
+    return await iudEntidad<EscuelaResumen>({
+        slqEntidad : sql,
+        valores : valores,
+        entidad : "escuela",
+        datosRetorno : retorno,
+        metodo : "CREAR"
+    });
+
+};
+
+/**
+ * Modifica una escuela existente en la base de datos por su ID.
+ *
+ * @async
+ * @function modificarEscuela
+ * @param {ModificarEscuelaInputs} datos - Datos nuevos de la escuela y el `id_escuela` a actualizar.
+ * @returns {Promise<TipadoData<EscuelaResumen>>} Resultado de la actualización.
+ */
+const modificarEscuela = async (
+    datos: ModificarEscuelaInputs
+): Promise<TipadoData<EscuelaResumen>> => {
+
+
+    const {
+        id_escuela,
+        dni_propietario,
+        nombre_propietario,
+        apellido_propietario,
+        razon_social,
+        direccion,
+        celular,
+        urlImagen,
+        baja,
+        public_id,
+        imagenMod,
+        rubro,
+    } = datos;
+
+      
+
+    let sql: string;
+    let valores: unknown[];    
+
+    if ( imagenMod && urlImagen ){
+
+             sql = `UPDATE escuelas
+                            SET dni_propietario = ?,
+                                nombre_propietario = ?,
+                                apellido_propietario = ?,
+                                razon_social = ?,
+                                direccion = ?,
+                                celular = ?,
+                                urlImagen = ?,
+                                public_id = ?,
+                                baja = ?,
+                                rubro = ?
+                            WHERE id_escuela = ?;`;
+
+             valores = [
+                    dni_propietario,
+                    nombre_propietario,
+                    apellido_propietario,
+                    razon_social,
+                    direccion,
+                    celular,
+                    urlImagen,
+                    public_id,
+    
+                    baja,
+                    rubro,
+                    id_escuela,
+            ];
+    }else {
+        // Si NO se modificó la imagen, EXCLUIMOS urlImagen y public_id del UPDATE para que no se borren
+        sql = `UPDATE escuelas
+               SET dni_propietario = ?,
+                   nombre_propietario = ?,
+                   apellido_propietario = ?,
+                   razon_social = ?,
+                   direccion = ?,
+                   celular = ?,
+                   baja = ?,
+                   rubro = ?
+               WHERE id_escuela = ?;`;
+
+        valores = [
+            dni_propietario,
+            nombre_propietario,
+            apellido_propietario,
+            razon_social,
+            direccion,
+            celular,
+            baja,
+            rubro,
+            id_escuela,
+        ];
+    }
+
+    const retorno = {
+        razon_social: razon_social ?? "",
+        nombre_propietario: nombre_propietario ?? "",
+        apellido_propietario: apellido_propietario ?? "",
+    };
+
+    return await iudEntidad<EscuelaResumen>({
+        slqEntidad: sql,
+        valores,
+        entidad: "escuela",
+        datosRetorno: retorno,
+        metodo: "MODIFICAR",
+    });
+};
+
+export interface RetornoEstado {
+    estado : string,
+    id_escuela : number
+};
+
+const estadoEscuela = async ( estadoProps : EstadoEscuelasInputs )
+:Promise<TipadoData<RetornoEstado>> =>{
+        const { id_escuela, estado } = estadoProps;
+
+        const sql = `UPDATE escuelas
+                    SET baja = ?
+                    WHERE id_escuela = ?;`;
+
+        const valores = [ estado, id_escuela];
+
+        const retorno = { id_escuela, estado }
+
+        return await iudEntidad<RetornoEstado>({
+            slqEntidad: sql,
+            valores,
+            entidad: "escuela",
+            datosRetorno: retorno , // Ajustá según lo que devuelvas
+            metodo: "MODIFICAR",
+        });
+};
+
+
+export interface EscuelaListadoRow {
+    id_escuela: number;
+    dni_propietario: number | null;
+    nombre_propietario: string | null;
+    apellido_propietario: string | null;
+    razon_social: string | null;
+    direccion: string | null;
+    celular: string | null;
+    urlImagen: string | null;
+    public_id: string | null;
+    fecha_registro: string | null; // o Date dependiendo de cómo te lo devuelva el driver de MySQL
+    baja: string;
+    /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
+    rubro: string;
+    total_registros: number;
+}
+
+
+const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string)
+: Promise<TipadoData<EscuelaListadoRow[]>>=> {
+
+    const { limit, apellido, razon_social, estado, dni, offset} = data;
+
+    const apellidoLike = `%${apellido || ""}%`;
+    const dniLike = `%${dni || ""}%`;
+    const razonSocialLike = `%${razon_social || ""}%`;
+
+    const sql = `SELECT 
+                            id_escuela,
+                            dni_propietario,
+                            nombre_propietario,
+                            apellido_propietario,
+                            razon_social,
+                            direccion,
+                            celular,
+                            urlImagen,
+                            public_id,
+                            fecha_registro,
+                            baja,   
+                            rubro,
+                            COUNT(*) OVER() AS total_registros
+                        FROM escuelas
+                        WHERE baja = ?
+                        AND apellido_propietario LIKE ?
+                        AND CAST(dni_propietario AS CHAR) LIKE ?  
+                        AND razon_social LIKE ?
+                        ORDER BY id_escuela DESC
+                LIMIT ${limit} OFFSET ${offset};`;
+
+    // Pasamos el estado dos veces (para la condición 'todos') y luego los tres comodines
+    const valores = [ estado, apellidoLike, dniLike, razonSocialLike]; 
+    
+    return await listarEntidad<EscuelaListadoRow>({
+        slqListado: sql,
+        valores: valores,
+        entidad: "LISTADO_ESCUELA",
+        estado: estado,
+        limit: limit,
+        pagina: String(pagina)
+    });
+};
+
+export const method = {
+    altaEscuela : tryCatchDatos( altaEscuela),
+    verificarRazonSocialEscuela : tryCatchDatos( verificarRazonSocialEscuela),
+    localizarPublicIdEscuela : tryCatchDatos( localizarPublicIdEscuela),
+    localizarNombreEscuela : tryCatchDatos( localizarNombreEscuela),
+    obtenerLogoEscuela : tryCatchDatos( obtenerLogoEscuela),
+    actualizarLogoEscuela : tryCatchDatos( actualizarLogoEscuela),
+    modificarEscuela : tryCatchDatos( modificarEscuela),
+    estadoEscuela : tryCatchDatos( estadoEscuela ),
+    listadoEscuelas: tryCatchDatos( listadoEscuelas )
+};
+

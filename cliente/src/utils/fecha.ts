@@ -1,0 +1,263 @@
+/**
+ * @function fechaHoy
+ * @description Genera una cadena de texto representando la fecha en el q se usa la funcion.
+ * La fecha resultante siempre será en formato "YYYY-01-01".
+ *
+ * @returns {string} La fecha formateada como "YYYY-MM-DD" para el 1 de enero del año siguiente.
+ */
+export const fechaHoy = () :string   =>{
+        const today = new Date(); // Obtiene la fecha y hora actual del ordenador
+
+        // Formatea la fecha a YYYY-MM-DD
+        // Obtiene el año (ej. 2025)
+        const year = today.getFullYear();
+        // Obtiene el mes (0-11), así que sumamos 1 y le añadimos un '0' delante si es < 10
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        // Obtiene el día (1-31) y le añade un '0' delante si es < 10
+        const day = today.getDate().toString().padStart(2, '0');
+
+        // Combina las partes en el formato YYYY-MM-DD
+    return  `${year}-${month}-${day}`;
+
+        // Establece el estado con la fecha formateada
+}
+
+/**
+ * Convierte la fecha de un evento del sistema a texto legible.
+ *
+ * El DTO `FilaLogEventos.fecha` viene como `string | Date` (así la entrega
+ * mysql2) y puede llegar en tres formatos distintos según de dónde venga la
+ * fila, así que esta función normaliza los tres a `DD/MM/AAAA HH:mm`:
+ *
+ * - `Date` → se formatea local (es lo habitual).
+ * - `"2026-10-08 14:22:31"` → el formato crudo de MySQL. Se reemplaza el
+ *   primer guion por "/" **a propósito**: `new Date("2026-10-08")` se parsea
+ *   como UTC y en Uruguay (UTC-3) se mostraría el día anterior.
+ * - `"2026-10-08T14:22:31.000Z"` → ISO de `JSON.stringify`: acá el desfase
+ *   no se toca porque la fecha ya viene convertida a UTC.
+ *
+ * @param {string | Date} fecha - Fecha del evento.
+ * @returns {string} `DD/MM/AAAA HH:mm`, o `""` si no hay fecha.
+ *
+ * @example
+ * formatearFechaHora("2026-10-08 14:22:31");  // "08/10/2026 14:22"
+ * formatearFechaHora(new Date());            // "08/10/2026 14:22"
+ */
+export const formatearFechaHora = ( fecha : string | Date ) : string => {
+
+        if ( !fecha ) return "";
+
+        // La ISO ya viene en UTC: no hay que corregir nada
+        if ( typeof fecha === "string" && fecha.includes("T") ){
+                const fechaIso = new Date( fecha );
+                if ( Number.isNaN( fechaIso.getTime() ) ) return "";
+                return completarFechaHora( fechaIso );
+        };
+
+        // Fecha MySQL: el guion se cambia por barra para evitar el parseo en UTC
+        const fechaMySQL = typeof fecha === "string" ? fecha.replace(/-/g,"/") : fecha;
+        const fechaLocal = new Date( fechaMySQL );
+
+        return Number.isNaN( fechaLocal.getTime() ) ? "" : completarFechaHora( fechaLocal );
+};
+
+/**
+ * Extrae `DD/MM/AAAA HH:mm` de un `Date` ya parseado.
+ *
+ * @function completarFechaHora
+ * @param {Date} fecha - Fecha a formatear.
+ * @returns {string} El texto con día, mes, año, hora y minutos.
+ */
+const completarFechaHora = ( fecha : Date ) : string => {
+
+        const anio   = fecha.getFullYear();
+        const mes    = ( fecha.getMonth() + 1 ).toString().padStart( 2, "0" );
+        const dia    = fecha.getDate().toString().padStart( 2, "0" );
+        const hora   = fecha.getHours().toString().padStart( 2, "0" );
+        const minuto = fecha.getMinutes().toString().padStart( 2, "0" );
+
+        return `${dia}/${mes}/${anio} ${hora}:${minuto}`;
+};
+
+
+/**
+ * Calcula la fecha de vencimiento sumando una cantidad de meses
+ * a la fecha actual.  
+ * 
+ * Tiene en cuenta automáticamente el cambio de año y los desbordes
+ * de meses (por ejemplo, sumar meses pasando de diciembre a enero).
+ *
+ * @param {number} meses - Cantidad de meses a sumar a la fecha actual.
+ * @returns {string} Fecha resultante en formato `YYYY-MM-DD`.
+ *
+ * @example
+ * fechaVencimiento(1);  // "2025-02-03"
+ * fechaVencimiento(6);  // "2025-07-03"
+ * fechaVencimiento(14); // "2026-03-03"
+ */
+
+export const fechaVencimiento = ( meses : number) : string=>{
+        const today = new Date(); // Obtiene la fecha y hora actual del ordenador
+        // Formatea la fecha a YYYY-MM-DD
+        // Obtiene el año (ej. 2025)
+        today.setMonth(today.getMonth() + meses);
+
+        const year = today.getFullYear();
+        // Obtiene el mes (0-11), así que sumamos 1 y le añadimos un '0' delante si es < 10
+        const month = (today.getMonth() + 1).toString().padStart(2, '0');
+        // Obtiene el día (1-31) y le añade un '0' delante si es < 10
+        const day = today.getDate().toString().padStart(2, '0');
+
+
+
+        return  `${year}-${month}-${day}`;
+
+};
+
+
+/**
+ * Calcula una fecha restando 6 meses a partir de una fecha base dada.
+ * * @param {string} fechaBase - La fecha de referencia en formato 'YYYY-MM-DD'.
+ * @returns {string} La nueva fecha calculada (6 meses atrás) en formato 'YYYY-MM-DD'.
+ * * @example
+ * // Si hoy es 2026-03-12
+ * const resultado = calcularSeisMesesAtras("2026-03-12");
+ * console.log(resultado); // "2025-09-12"
+ * * @description
+ * La función utiliza .replace(/-/g, '\/') para instanciar el objeto Date, 
+ * evitando desfases de zona horaria (UTC vs Local) que ocurren habitualmente 
+ * al parsear strings con guiones en JavaScript.
+ */
+export const calcularSeisMesesAtras = (fechaBase: string): string => {
+    // 1. Creamos el objeto Date a partir del string recibido
+    // Usamos el reemplazo de '-' por '/' para evitar problemas de zona horaria en JS
+    const date = new Date(fechaBase.replace(/-/g, '/')); 
+
+    // 2. Restamos los 6 meses
+    date.setMonth(date.getMonth() - 6);
+
+    // 3. Extraemos las partes para el formato YYYY-MM-DD
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+};
+
+
+/**
+ * Calcula una fecha restando una cantidad de días a partir de una fecha base.
+ *
+ * Es el mismo criterio que `calcularSeisMesesAtras`: el string se parsea con
+ * `.replace(/-/g, "/")` para que `new Date()` lo interprete en **hora local** y
+ * no en UTC (con guiones, en Uruguay un `"2026-10-27"` retrocede un día). La
+ * resta se hace con `setDate`, así que los cambios de mes y de año salen solos.
+ *
+ * @param {string} fechaBase - Fecha de referencia en formato `YYYY-MM-DD`.
+ * @param {number} dias - Cantidad de días a restar (0 devuelve la misma fecha).
+ * @returns {string} La fecha resultante en formato `YYYY-MM-DD`.
+ *
+ * @example
+ * // Si la fecha base es 2026-10-27
+ * calcularDiasAtras("2026-10-27", 30);  // "2026-09-27"
+ * calcularDiasAtras("2026-03-01", 1);   // "2026-02-28"
+ */
+export const calcularDiasAtras = ( fechaBase : string, dias : number ) : string => {
+    // Mismo reemplazo que `calcularSeisMesesAtras`: evita el parseo en UTC.
+    const fecha = new Date( fechaBase.replace(/-/g, "/") );
+
+    fecha.setDate( fecha.getDate() - dias );
+
+    const year  = fecha.getFullYear();
+    const month = ( fecha.getMonth() + 1 ).toString().padStart( 2, "0" );
+    const day   = fecha.getDate().toString().padStart( 2, "0" );
+
+    return `${year}-${month}-${day}`;
+};
+
+/**
+ * Convierte una fecha `YYYY-MM-DD` al formato corto `DD/MM/AAAA` para mostrar
+ * en tablas y tarjetas.
+ *
+ * **No** usa `new Date()`: el ISO se interpreta como UTC y en Uruguay (UTC-3)
+ * la fecha se mostraría un día antes. Acá el string se parte por `-` y se da
+ * vuelta, así que el día que se ve es exactamente el que guardó el backend.
+ *
+ * @param {string} fecha - Fecha en formato `YYYY-MM-DD` (acepta ISO con `T`).
+ * @returns {string} `DD/MM/AAAA`, o el valor recibido si no tiene ese formato.
+ *
+ * @example
+ * formatearFechaCorta("2026-10-23");                  // "23/10/2026"
+ * formatearFechaCorta("2026-10-23T00:00:00.000Z");    // "23/10/2026"
+ */
+export const formatearFechaCorta = ( fecha : string ) : string => {
+    if ( !fecha ) return "";
+
+    // Si viene como ISO, la parte de la izquierda de la "T" es la fecha.
+    const [ anio, mes, dia ] = fecha.split("T")[0].split("-");
+
+    if ( !anio || !mes || !dia ) return fecha;
+
+    return `${dia}/${mes}/${anio}`;
+};
+
+
+export const obtenerEstadoVigencia =  (fechaVigencia: string, clasesUsadas: number, clasesTotales: number) => {
+  const hoy = new Date();
+  const vencimiento = new Date(fechaVigencia);
+  
+  // 1. Cálculo por Fecha
+  const diferenciaDias = Math.ceil((vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // 2. Cálculo por Clases (¿Cuántas le quedan?)
+  const clasesRestantes = clasesTotales - clasesUsadas;
+
+  // ORDEN DE PRIORIDAD:
+  
+  // A. Ya no tiene clases O la fecha ya pasó
+  if (clasesRestantes <= 0 || diferenciaDias < 0) return "vencida";
+  
+  // B. Le quedan pocas clases (ej. 2 o menos) O faltan menos de 7 días
+  if (clasesRestantes <= 3 || diferenciaDias <= 7) return "por_vencer";
+  
+  // C. Todo ok
+  return "activa";
+};
+
+/**
+ * Calcula los días que faltan para una fecha de vencimiento.
+ *
+ * Es la misma cuenta que usa `AlertaVencimiento` para decidir si se muestra:
+ * la fecha se parsea en hora local (el DTO llega como "YYYY-MM-DD" o como
+ * ISO con "T") y se redondea la diferencia en días contra hoy a medianoche.
+ *
+ * @param {string | Date | null | undefined} fecha - Fecha de vencimiento.
+ * @returns {number | null} Días restantes (negativo si ya venció) o `null`
+ * si no hay fecha o es inválida.
+ *
+ * @example
+ * diasHastaVencimiento("2026-10-09"); // 0
+ * diasHastaVencimiento("2026-10-16"); // 7
+ * diasHastaVencimiento(null);          // null
+ */
+export const diasHastaVencimiento = (
+  fecha: string | Date | null | undefined
+): number | null => {
+  if (!fecha) return null;
+
+  const [anio, mes, dia] =
+    typeof fecha === "string"
+      ? String(fecha).split("T")[0].split("-").map(Number)
+      : [fecha.getFullYear(), fecha.getMonth() + 1, fecha.getDate()];
+
+  if (!anio || !mes || !dia) return null;
+
+  const vencimiento = new Date(anio, mes - 1, dia);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  vencimiento.setHours(0, 0, 0, 0);
+
+  return Math.round(
+    (vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24)
+  );
+};
