@@ -301,15 +301,6 @@
   margin-bottom: 16px;
 }
 
-/* Atajos: botones de acceso rápido debajo de los títulos del encabezado */
-.usuario_atajos {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
 .usuario_encabezado_titulos {
   display: flex;
   flex-direction: column;
@@ -458,11 +449,6 @@
     font-size: 1.9rem;
   }
 
-  /* En móvil los atajos ocupan ancho completo y los botones se apilan */
-  .usuario_atajos {
-    flex-direction: column;
-    align-items: stretch;
-  }
 }
 
 /* ==========================================================================

@@ -9,18 +9,27 @@ import { useNotificaciones } from "../contexto/notificaciones.context";
 // typados
 import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
 import type { ErrorBackend } from "./erroresZod";
+import type { LoginInputs } from "../squemas/login";
 
 
 interface LoginLogicaReturn {
+    /** Error genérico del formulario (siempre null, se usa toasts). */
     errorGenerico: string | null;
+    /** Errores inline por campo (Zod). */
     errorsZod: Record<string, string | null>;
-    dataLogin: any; // O mejor aún, una interfaz de tus credenciales
+    /** Datos actuales del formulario. */
+    dataLogin: LoginInputs;
+    /** Handler de submit del formulario. */
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+    /** Handler de cancelar, redirige a /. */
     handleCancelar: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    /** Handler de cambio de campo. */
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    /** Definición de los campos del formulario. */
     inputsLogin: InputsPropsFormulario[];
 }
 
+/** Campos del formulario de login: usuario y contraseña. */
 const inputsLogin: InputsPropsFormulario[] = [
   {
     name: "usuario",
@@ -57,11 +66,12 @@ export const useLoginLogica = () : LoginLogicaReturn =>{
 
     const [errorsZod, setErrorsZod] = useState<Record<string, string | null>>({});
     const [errorGenerico] = useState<string | null>(null);
-    const [dataLogin, setDataLogin] = useState<any>({
+    const [dataLogin, setDataLogin] = useState<LoginInputs>({
         usuario: "",
         contrasena: "",
     });
 
+    /** Cancela el login y redirige a la página de inicio. */
     const handleCancelar = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         navegar("/");
@@ -126,11 +136,12 @@ export const useLoginLogica = () : LoginLogicaReturn =>{
         }
     };
 
+    /** Actualiza un campo del formulario. Solo aplica `.trim()` al usuario, no a la contraseña. */
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const usuario = e.target.value.trim();
+        const valor = e.target.name === "contrasena" ? e.target.value : e.target.value.trim();
         setDataLogin({
         ...dataLogin,
-        [e.target.name]: usuario,
+        [e.target.name]: valor,
         });
     };
 

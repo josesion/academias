@@ -1,6 +1,5 @@
 import "./usuario.css";
 import { useRef, useState, useEffect, useId, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 import { RutasProtegidasContext } from "../../../contexto/protectRutas";
 
 import { TarjetaMetrica } from "../../../componentes/Metricas/TajetaMetricas/TarjetaMetrica";
@@ -10,10 +9,8 @@ import { MetricasHistorial } from "../../../componentes/Historial/Historial.metr
 import { AsistenciaRapida } from "../../../componentes/AsistenciaRapida/AsistenciaRapida";
 import { PanelClima } from "../../../componentes/PanelClima/PanelClima";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
-import { AperturaCaja } from "../../../componentes/Caja/AperturaCaja/AperturaCaja";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 import { diasHastaVencimiento } from "../../../utils/fecha";
-import { useAbrirCajaDashboard } from "../../../hooks/caja/useAbrirCajaDashboard";
 
 export const UsuarioPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -82,35 +79,6 @@ export const UsuarioPage = () => {
 
   const cerrarAsistenciaRapida = () => setModalAbierto(false);
 
-  // Hook ligero para abrir caja desde el dashboard
-  const {
-    cuentasActivas,
-    aperturaDetalle,
-    cargando,
-    error,
-    cajaAbierta,
-    cargarCuentas,
-    onChangeMonto,
-    onAbrirCaja,
-    setError,
-  } = useAbrirCajaDashboard();
-
-  const [modalCajaAbierto, setModalCajaAbierto] = useState(false);
-
-  const navigate = useNavigate();
-
-  /** Abre el modal de apertura y carga las cuentas activas */
-  const abrirModalCaja = () => {
-    setModalCajaAbierto(true);
-    cargarCuentas();
-  };
-
-  /** Cierra el modal de apertura y limpia el error */
-  const cerrarModalCaja = () => {
-    setModalCajaAbierto(false);
-    setError(null);
-  };
-
   return (
     // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
     // el unico `<main id="contenido_principal">` de la pagina (y es el destino
@@ -141,57 +109,18 @@ export const UsuarioPage = () => {
             <p>Alumnos, asistencia y actividad reciente de tu escuela.</p>
           </div>
 
-          {/* 
-            Atajos a acciones frecuentes: botones grandes para las tareas 
-            que el usuario realiza todos los días desde el dashboard.
-          */}
-          <div className="usuario_atajos">
-            <Boton
-              clase="listar"
-              texto="Asistencia rápida"
-              logo="List"
-              onClick={() => setModalAbierto(true)}
-              aria-label="Abrir asistencia rápida manual"
-            />
-
-            <Boton
-              clase="listar"
-              texto="Inscribir alumno"
-              logo="UserPlus"
-              onClick={() => navigate("/list_inscrip")}
-            />
-
-            {rolTipo === "intermedio" && (
-              <Boton
-                clase={cajaAbierta ? "cancelar" : "agregar"}
-                texto={cajaAbierta ? "Cerrar caja" : "Abrir caja"}
-                logo={cajaAbierta ? "Edit" : "CashStack"}
-                onClick={cajaAbierta ? () => navigate("/caja_usuario") : abrirModalCaja}
-              />
-            )}
-          </div>
+          <Boton
+            clase="listar"
+            texto="Asistencia rápida"
+            logo="List"
+            onClick={() => setModalAbierto(true)}
+            aria-label="Abrir asistencia rápida manual"
+          />
         </div>
 
         <PanelClima alertaMontada={alertaMontada} onCerrar={enfocarTitulo} />
       </header>
       <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} onAsistenciaRegistrada={refrescarAsistencia} />
-
-      {/* Modal de apertura de caja desde el dashboard */}
-      {modalCajaAbierto && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Apertura de caja">
-          <AperturaCaja
-            listadoCuentasActivas={cuentasActivas}
-            aperturaDetalle={aperturaDetalle}
-            onChangeMontoDinamico={onChangeMonto}
-            onAbrirCaja={() => {
-              onAbrirCaja();
-            }}
-            onCancelar={cerrarModalCaja}
-            enviado={cargando}
-            errorGenerico={error}
-          />
-        </div>
-      )}
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
