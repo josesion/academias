@@ -53,3 +53,14 @@ export const ERROR_INTERNO_SERVIDOR = {
     status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
     msg : "Error en el servidor, por favor intente nuevamente"
 } as const;
+
+export const MAPA_DASHBOARD_INSCRIPCIONES : Record< string , { status : CodigoEstadoHTTP , msg : string} > = {
+
+    "DASHBOARD_INSCRIPCIONES_OK" : { status : CodigoEstadoHTTP.OK , msg : "Inscripciones del dashboard obtenidas correctamente" },
+
+    "DASHBOARD_INSCRIPCIONES_VACIO" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No se encontraron inscripciones" },
+
+    "ERROR_DASHBOARD_INSCRIPCIONES" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error al obtener las inscripciones del dashboard" },
+
+    ERROR_INTERNO_SERVIDOR
+};

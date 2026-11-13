@@ -152,3 +152,19 @@ export type VerificarInscripcionInput = z.infer<typeof VerificarInscripcionSchem
 export type VerificarPlanAsistenciaUnputs  = z.infer<typeof VerificlarPlanSchema >;
 export type FiltroHistorialInputs = z.infer<typeof FiltroHistorialSchema>;
 export type AnularInscripcionInputs = z.infer<typeof AnularInscripcionSchema>;
+
+
+export const DashboardInscripcionesSchema = z.object({
+  id_escuela: z.coerce.number()
+    .int("El ID de la escuela debe ser un número entero.")
+    .positive("El ID de la escuela debe ser positivo."),
+
+  filtro: z.enum(["por_vencer", "ultimas", "todos"]).default("todos"),
+
+  limit: z.coerce.number()
+    .int("El límite debe ser un número entero.")
+    .positive("El límite debe ser positivo.")
+    .max(100, "El límite no puede superar 100."),
+});
+
+export type DashboardInscripcionesInputs = z.infer<typeof DashboardInscripcionesSchema>;

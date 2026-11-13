@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { method as controladorInscripciones } from "../controladores/inscripciones.controlador"; 
+import { method as controladorInscripcionesDashboard } from "../controladores/inscripciones.dashboard.controlador";
 import { method as permisos} from "../utils/permisos";
 
 const rutas = Router();
@@ -7,5 +8,6 @@ const rutas = Router();
 rutas.post("/api/inscripcion", permisos.validarPermiso ,controladorInscripciones.inscripcion);
 rutas.get("/api/list_inscrip", permisos.validarPermiso ,controladorInscripciones.listadoInscripciones );
 rutas.post("/api/anular_inscrip", permisos.validarPermiso , controladorInscripciones.anularInscripcion);
+rutas.get("/api/inscripciones_dashboard", permisos.validarPermiso , controladorInscripcionesDashboard.inscripcionesDashboard);
 
 export default rutas;
