@@ -1,6 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataUsuario } from "../data/usuario.data";
-import { method as dataEscuela, type EscuelaLogoActualizado, type EscuelaDatosPerfilRow } from "../data/escuela.data";
+import { method as dataEscuela, type EscuelaLogoActualizado } from "../data/escuela.data";
 import { TipadoData, DataMiPerfil } from "../tipados/tipado.data";
 import { ModInputsMiPerfil, modMiPerfilSchema } from "../squemas/usuario";
 import { GuardarImagenSchema, ImagenFlayerInputs } from "../squemas/flayer";
@@ -28,6 +28,16 @@ export interface EscuelaPerfilRetorno {
     celular: string | null;
     rubro: string | null;
     descripcion: string | null;
+    urlImagen: string | null;
+}
+
+/**
+ * Lo que devuelven los endpoints del logo de la escuela (spec 051).
+ * Solo los campos que necesita la sección del logo.
+ */
+export interface EscuelaLogoRetorno {
+    id_escuela: number;
+    razon_social: string;
     urlImagen: string | null;
 }
 
@@ -328,8 +338,8 @@ const obtenerEscuelaPerfil = async (
         };
     }
 
-    const fila = await dataEscuela.obtenerDatosEscuelaPerfil(id_escuela);
-    if (fila.code !== "ESCUELA_DATOS_EXISTE" || !fila.data) {
+    const fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
+    if (fila.code !== "ESCUELA_PERFIL_EXISTE" || !fila.data) {
         return {
             error: true,
             message: "No se encontró la escuela del usuario",
@@ -381,7 +391,7 @@ const obtenerEscuelaPerfil = async (
  */
 const actualizarLogoEscuela = async (
     data: { id_escuela: number; usuario_id: number; archivo?: ImagenFlayerInputs }
-): Promise<TipadoData<EscuelaPerfilRetorno>> => {
+): Promise<TipadoData<EscuelaLogoRetorno>> => {
     const { id_escuela, usuario_id, archivo } = data;
 
     if (!archivo) {
@@ -525,7 +535,7 @@ const actualizarLogoEscuela = async (
  */
 const quitarLogoEscuela = async (
     data: { id_escuela: number; usuario_id: number }
-): Promise<TipadoData<EscuelaPerfilRetorno>> => {
+): Promise<TipadoData<EscuelaLogoRetorno>> => {
     const { id_escuela, usuario_id } = data;
 
     const fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
@@ -639,7 +649,7 @@ const modificarDatosEscuelaPerfil = async (
     }
 
     const resultado = await dataEscuela.modificarDatosEscuelaPerfil(datos);
-    if (resultado.code !== "ESCUELA_MODIFICADA") {
+    if (resultado.code !== "ESCUELA_MODIFICAR") {
         return {
             error: true,
             message: resultado.message || "Error al actualizar los datos de la escuela",

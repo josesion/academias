@@ -24,16 +24,8 @@ export interface EscuelaPublicId {
     urlImagen?: string;
 }
 
-/** Fila de `escuelas` con lo mínimo para pintar el logo en el perfil (spec 051). */
+/** Fila de `escuelas` con todos los campos del perfil (spec 051). */
 export interface EscuelaLogoRow {
-    id_escuela: number;
-    razon_social: string | null;
-    urlImagen: string | null;
-    public_id: string | null;
-}
-
-/** Fila completa de `escuelas` para el formulario de datos en el perfil (spec 051). */
-export interface EscuelaDatosPerfilRow {
     id_escuela: number;
     razon_social: string | null;
     direccion: string | null;
@@ -43,6 +35,7 @@ export interface EscuelaDatosPerfilRow {
     urlImagen: string | null;
     public_id: string | null;
 }
+
 
 /** Retorno del UPDATE de las 2 columnas del logo (spec 051). */
 export interface EscuelaLogoActualizado {
@@ -127,8 +120,9 @@ const localizarNombreEscuela = async (
 };
 
 /**
- * Obtiene la fila de la escuela con los datos que necesita la sección del logo
- * del perfil (spec 051).
+ * Obtiene la fila completa de la escuela para el perfil (spec 051).
+ * Devuelve todos los campos editables: razón social, dirección, celular,
+ * rubro, descripción y logo.
  *
  * El hook `buscarExistenteEntidad` tiene la semántica invertida: devuelve
  * `error: true` y `code` `ESCUELA_PERFIL_EXISTE` cuando la fila **existe**
@@ -139,13 +133,12 @@ const localizarNombreEscuela = async (
  * @function obtenerLogoEscuela
  * @param {number} id_escuela - ID de la escuela a consultar.
  * @returns {Promise<TipadoData<EscuelaLogoRow>>} `ESCUELA_PERFIL_EXISTE` con
- *   `id_escuela`, `razon_social`, `urlImagen` y `public_id`, o
- *   `ESCUELA_PERFIL_NO_EXISTE` si no hay fila.
+ *   todos los campos, o `ESCUELA_PERFIL_NO_EXISTE` si no hay fila.
  */
 const obtenerLogoEscuela = async (
     id_escuela: number
 ): Promise<TipadoData<EscuelaLogoRow>> => {
-    const sql: string = `SELECT id_escuela, razon_social, urlImagen, public_id
+    const sql: string = `SELECT id_escuela, razon_social, direccion, celular, rubro, descripcion, urlImagen, public_id
                         FROM escuelas
                         WHERE id_escuela = ?;`;
 
@@ -155,36 +148,6 @@ const obtenerLogoEscuela = async (
         slqEntidad: sql,
         valores,
         entidad: "ESCUELA_PERFIL",
-    });
-};
-
-/**
- * Obtiene todos los campos editables de la escuela para el formulario de datos
- * del perfil (spec 051).
- *
- * El hook `buscarExistenteEntidad` tiene la semántica invertida: devuelve
- * `error: true` y `code` `ESCUELA_DATOS_EXISTE` cuando la fila **existe**.
- * El Servicio debe comparar por `code`, no por `error`.
- *
- * @async
- * @function obtenerDatosEscuelaPerfil
- * @param {number} id_escuela - ID de la escuela a consultar.
- * @returns {Promise<TipadoData<EscuelaDatosPerfilRow>>} `ESCUELA_DATOS_EXISTE` con
- *   todos los campos editables, o `ESCUELA_DATOS_NO_EXISTE` si no hay fila.
- */
-const obtenerDatosEscuelaPerfil = async (
-    id_escuela: number
-): Promise<TipadoData<EscuelaDatosPerfilRow>> => {
-    const sql: string = `SELECT id_escuela, razon_social, direccion, celular, rubro, descripcion, urlImagen, public_id
-                        FROM escuelas
-                        WHERE id_escuela = ?;`;
-
-    const valores: unknown[] = [id_escuela];
-
-    return await buscarExistenteEntidad<EscuelaDatosPerfilRow>({
-        slqEntidad: sql,
-        valores,
-        entidad: "ESCUELA_DATOS",
     });
 };
 
@@ -524,7 +487,6 @@ export const method = {
     localizarPublicIdEscuela : tryCatchDatos( localizarPublicIdEscuela),
     localizarNombreEscuela : tryCatchDatos( localizarNombreEscuela),
     obtenerLogoEscuela : tryCatchDatos( obtenerLogoEscuela),
-    obtenerDatosEscuelaPerfil : tryCatchDatos( obtenerDatosEscuelaPerfil),
     actualizarLogoEscuela : tryCatchDatos( actualizarLogoEscuela),
     modificarEscuela : tryCatchDatos( modificarEscuela),
     estadoEscuela : tryCatchDatos( estadoEscuela ),
