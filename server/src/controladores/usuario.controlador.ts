@@ -7,7 +7,8 @@ import { method as servicioUsuario } from "../Servicio/usuario.servicio";
 
 
 import { MAPA_OBTENER_PERFIL, MAPA_MODIFICAR_PERFIL,
-         MAPA_ESCUELA_PERFIL, MAPA_ESCUELA_LOGO_ACTUALIZADO, MAPA_ESCUELA_LOGO_QUITADO
+         MAPA_ESCUELA_PERFIL, MAPA_ESCUELA_LOGO_ACTUALIZADO, MAPA_ESCUELA_LOGO_QUITADO,
+         MAPA_MODIFICAR_ESCUELA_PERFIL
 } from "../respuestas/usuario";
 
 
@@ -138,6 +139,30 @@ const quitarLogoEscuela = async (req: Request, res: Response) => {
     await handleControladores(res, data, servicioUsuario.quitarLogoEscuela, MAPA_ESCUELA_LOGO_QUITADO);
 };
 
+/**
+ * Controlador para actualizar los datos de la escuela del usuario
+ * (`PUT /api/usuario_perfil/escuela`, spec 051).
+ *
+ * Usa `req.usuario.id_escuela` del token para identificar la escuela.
+ * Solo actualiza los campos que llegan en el body.
+ *
+ * @param req - Objeto de solicitud HTTP: body con los campos a actualizar.
+ * @param res - Objeto de respuesta HTTP.
+ * @returns {Promise<void>} Resuelve tras enviar la respuesta HTTP.
+ */
+const modificarDatosEscuelaPerfil = async (req: Request, res: Response) => {
+    const data = {
+        id_escuela: req.usuario!.id_escuela,
+        razon_social: req.body.razon_social,
+        direccion: req.body.direccion,
+        celular: req.body.celular,
+        rubro: req.body.rubro,
+        descripcion: req.body.descripcion,
+    };
+
+    await handleControladores(res, data, servicioUsuario.modificarDatosEscuelaPerfil, MAPA_MODIFICAR_ESCUELA_PERFIL);
+};
+
 export const method = {
 
     modMiPerfil       : tryCatch( modMiPerfil ),
@@ -145,5 +170,6 @@ export const method = {
     obtenerEscuelaPerfil : tryCatch( obtenerEscuelaPerfil ),
     actualizarLogoEscuela : tryCatch( actualizarLogoEscuela ),
     quitarLogoEscuela : tryCatch( quitarLogoEscuela ),
+    modificarDatosEscuelaPerfil : tryCatch( modificarDatosEscuelaPerfil ),
 
 }

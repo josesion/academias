@@ -169,3 +169,19 @@ export const MAPA_ESCUELA_LOGO_QUITADO: Record<string, { status: CodigoEstadoHTT
     },
     ERROR_SERVIDOR
 };
+
+export const MAPA_MODIFICAR_ESCUELA_PERFIL: Record<string, { status: CodigoEstadoHTTP, msg: string }> = {
+    "ESCUELA_PERFIL_ACTUALIZADA": {
+        status: CodigoEstadoHTTP.OK,
+        msg: "Datos de la escuela actualizados correctamente"
+    },
+    "ESCUELA_NO_ENCONTRADA": {
+        status: CodigoEstadoHTTP.NO_ENCONTRADO,
+        msg: "No se encontró la escuela del usuario"
+    },
+    "SIN_CAMPOS": {
+        status: CodigoEstadoHTTP.SOLICITUD_INCORRECTA,
+        msg: "No se enviaron campos para actualizar"
+    },
+    ERROR_SERVIDOR
+};

@@ -1,6 +1,6 @@
 import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as dataUsuario } from "../data/usuario.data";
-import { method as dataEscuela, type EscuelaLogoRow, type EscuelaLogoActualizado } from "../data/escuela.data";
+import { method as dataEscuela, type EscuelaLogoActualizado, type EscuelaDatosPerfilRow } from "../data/escuela.data";
 import { TipadoData, DataMiPerfil } from "../tipados/tipado.data";
 import { ModInputsMiPerfil, modMiPerfilSchema } from "../squemas/usuario";
 import { GuardarImagenSchema, ImagenFlayerInputs } from "../squemas/flayer";
@@ -18,12 +18,16 @@ const TAMANO_MAX_IMAGEN = 2 * 1024 * 1024;
 const CARPETA_LOGO_ESCUELA = "logo_escuela/";
 
 /**
- * Lo que devuelven los 3 endpoints del logo de la escuela (spec 051).
- * `public_id` NUNCA se expone al cliente.
+ * Lo que devuelve `GET /api/usuario_perfil/escuela` para el formulario de datos
+ * del perfil (spec 051). Incluye todos los campos editables.
  */
 export interface EscuelaPerfilRetorno {
     id_escuela: number;
     razon_social: string;
+    direccion: string | null;
+    celular: string | null;
+    rubro: string | null;
+    descripcion: string | null;
     urlImagen: string | null;
 }
 
@@ -297,15 +301,13 @@ const modMiPerfil = async (data: ModInputsMiPerfil & { usuario_id: number }): Pr
 };
 
 /**
- * Obtiene los datos de la escuela del usuario autenticado para la sección del
- * logo del perfil (spec 051).
+ * Obtiene los datos completos de la escuela del usuario autenticado para el
+ * formulario de datos del perfil (spec 051).
  *
- * El `urlImagen` se calcula con un fallback en este orden:
- * 1. la columna `urlImagen` de la fila (si no es `NULL`);
- * 2. `${R2_PUBLIC_URL}/${public_id}` (fila editada por SQL con la URL vacía);
- * 3. `null` (escuela sin logo).
+ * Devuelve todos los campos editables: razón social, dirección, celular,
+ * rubro, descripción y urlImagen (con fallback desde public_id).
  *
- * `public_id` NO se expone: el cliente solo necesita una URL para la vista
+ * `public_id` NO se expone: el cliente solo necesita la URL para la vista
  * previa, nunca la key del bucket.
  *
  * @param data - `id_escuela` tomado SIEMPRE del token (nunca del cliente).
@@ -326,22 +328,8 @@ const obtenerEscuelaPerfil = async (
         };
     }
 
-    let fila: TipadoData<EscuelaLogoRow>;
-
-    try {
-        fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
-    } catch (err) {
-        console.error("Error consultando la escuela del usuario:", err);
-
-        return {
-            error: true,
-            message: "No se pudo consultar la escuela del usuario.",
-            code: "ERROR_SERVIDOR"
-        };
-    }
-
-    // OJO: `buscarExistenteEntidad` devuelve `error: true` cuando la fila EXISTE.
-    if (fila.code !== "ESCUELA_PERFIL_EXISTE" || !fila.data) {
+    const fila = await dataEscuela.obtenerDatosEscuelaPerfil(id_escuela);
+    if (fila.code !== "ESCUELA_DATOS_EXISTE" || !fila.data) {
         return {
             error: true,
             message: "No se encontró la escuela del usuario",
@@ -358,6 +346,10 @@ const obtenerEscuelaPerfil = async (
         data: {
             id_escuela: fila.data.id_escuela,
             razon_social: fila.data.razon_social ?? "Mi escuela",
+            direccion: fila.data.direccion,
+            celular: fila.data.celular,
+            rubro: fila.data.rubro,
+            descripcion: fila.data.descripcion,
             urlImagen,
         },
         code: "ESCUELA_PERFIL_FETCHED"
@@ -420,20 +412,7 @@ const actualizarLogoEscuela = async (
     }
 
     // La escuela se lee ANTES de subir: sin fila no se ensucia R2.
-    let fila: TipadoData<EscuelaLogoRow>;
-
-    try {
-        fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
-    } catch (err) {
-        console.error("Error consultando la escuela del usuario:", err);
-
-        return {
-            error: true,
-            message: "No se pudo consultar la escuela del usuario.",
-            code: "ERROR_SERVIDOR"
-        };
-    }
-
+    const fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
     if (fila.code !== "ESCUELA_PERFIL_EXISTE" || !fila.data) {
         return {
             error: true,
@@ -549,20 +528,7 @@ const quitarLogoEscuela = async (
 ): Promise<TipadoData<EscuelaPerfilRetorno>> => {
     const { id_escuela, usuario_id } = data;
 
-    let fila: TipadoData<EscuelaLogoRow>;
-
-    try {
-        fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
-    } catch (err) {
-        console.error("Error consultando la escuela del usuario:", err);
-
-        return {
-            error: true,
-            message: "No se pudo consultar la escuela del usuario.",
-            code: "ERROR_SERVIDOR"
-        };
-    }
-
+    const fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
     if (fila.code !== "ESCUELA_PERFIL_EXISTE" || !fila.data) {
         return {
             error: true,
@@ -647,10 +613,53 @@ const quitarLogoEscuela = async (
     };
 };
 
+/**
+ * Actualiza los datos de la escuela del usuario autenticado (spec 051).
+ *
+ * Usa `id_escuela` del token para identificar la escuela. Solo actualiza
+ * los campos que llegan definidos en el body (UPDATE parcial dinámico).
+ *
+ * @param datos - `id_escuela` del token y campos opcionales de la escuela.
+ * @returns {Promise<TipadoData<{ id_escuela }>>} `ESCUELA_PERFIL_ACTUALIZADA`
+ *   (200), `ESCUELA_NO_ENCONTRADA` (404) o `ERROR_SERVIDOR` (500).
+ */
+const modificarDatosEscuelaPerfil = async (
+    datos: { id_escuela: number; razon_social?: string; direccion?: string; celular?: string; rubro?: string; descripcion?: string }
+): Promise<TipadoData<{ id_escuela: number }>> => {
+    const { id_escuela } = datos;
+
+    // Verificar que la escuela existe antes de escribir.
+    const fila = await dataEscuela.obtenerLogoEscuela(id_escuela);
+    if (fila.code !== "ESCUELA_PERFIL_EXISTE" || !fila.data) {
+        return {
+            error: true,
+            message: "No se encontró la escuela del usuario",
+            code: "ESCUELA_NO_ENCONTRADA"
+        };
+    }
+
+    const resultado = await dataEscuela.modificarDatosEscuelaPerfil(datos);
+    if (resultado.code !== "ESCUELA_MODIFICADA") {
+        return {
+            error: true,
+            message: resultado.message || "Error al actualizar los datos de la escuela",
+            code: resultado.code || "ERROR_SERVIDOR"
+        };
+    }
+
+    return {
+        error: false,
+        message: "Datos de la escuela actualizados correctamente",
+        data: { id_escuela },
+        code: "ESCUELA_PERFIL_ACTUALIZADA"
+    };
+};
+
 export const method = {
     obtenerMiPerfil: tryCatchDatos(obtenerMiPerfil),
     modMiPerfil: tryCatchDatos(modMiPerfil),
     obtenerEscuelaPerfil: tryCatchDatos(obtenerEscuelaPerfil),
     actualizarLogoEscuela: tryCatchDatos(actualizarLogoEscuela),
-    quitarLogoEscuela: tryCatchDatos(quitarLogoEscuela)
+    quitarLogoEscuela: tryCatchDatos(quitarLogoEscuela),
+    modificarDatosEscuelaPerfil: tryCatchDatos(modificarDatosEscuelaPerfil)
 };

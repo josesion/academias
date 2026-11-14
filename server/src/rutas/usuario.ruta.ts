@@ -18,6 +18,14 @@ ruta.get(
     usuarioControlador.obtenerEscuelaPerfil
 );
 
+// Actualizar datos de la escuela del usuario (spec 051)
+ruta.put(
+    "/api/usuario_perfil/escuela",
+    permisos.validarPermiso,
+    permisos.soloUsuario,
+    usuarioControlador.modificarDatosEscuelaPerfil
+);
+
 ruta.put(
     "/api/usuario_perfil/escuela/logo",
     permisos.validarPermiso,

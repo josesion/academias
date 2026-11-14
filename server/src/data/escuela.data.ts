@@ -32,6 +32,18 @@ export interface EscuelaLogoRow {
     public_id: string | null;
 }
 
+/** Fila completa de `escuelas` para el formulario de datos en el perfil (spec 051). */
+export interface EscuelaDatosPerfilRow {
+    id_escuela: number;
+    razon_social: string | null;
+    direccion: string | null;
+    celular: string | null;
+    rubro: string | null;
+    descripcion: string | null;
+    urlImagen: string | null;
+    public_id: string | null;
+}
+
 /** Retorno del UPDATE de las 2 columnas del logo (spec 051). */
 export interface EscuelaLogoActualizado {
     id_escuela: number;
@@ -143,6 +155,36 @@ const obtenerLogoEscuela = async (
         slqEntidad: sql,
         valores,
         entidad: "ESCUELA_PERFIL",
+    });
+};
+
+/**
+ * Obtiene todos los campos editables de la escuela para el formulario de datos
+ * del perfil (spec 051).
+ *
+ * El hook `buscarExistenteEntidad` tiene la semántica invertida: devuelve
+ * `error: true` y `code` `ESCUELA_DATOS_EXISTE` cuando la fila **existe**.
+ * El Servicio debe comparar por `code`, no por `error`.
+ *
+ * @async
+ * @function obtenerDatosEscuelaPerfil
+ * @param {number} id_escuela - ID de la escuela a consultar.
+ * @returns {Promise<TipadoData<EscuelaDatosPerfilRow>>} `ESCUELA_DATOS_EXISTE` con
+ *   todos los campos editables, o `ESCUELA_DATOS_NO_EXISTE` si no hay fila.
+ */
+const obtenerDatosEscuelaPerfil = async (
+    id_escuela: number
+): Promise<TipadoData<EscuelaDatosPerfilRow>> => {
+    const sql: string = `SELECT id_escuela, razon_social, direccion, celular, rubro, descripcion, urlImagen, public_id
+                        FROM escuelas
+                        WHERE id_escuela = ?;`;
+
+    const valores: unknown[] = [id_escuela];
+
+    return await buscarExistenteEntidad<EscuelaDatosPerfilRow>({
+        slqEntidad: sql,
+        valores,
+        entidad: "ESCUELA_DATOS",
     });
 };
 
@@ -428,15 +470,65 @@ const listadoEscuelas = async (data: ListadoEscuelasInputs,  pagina : string)
     });
 };
 
+/**
+ * Actualiza parcialmente los datos de la escuela del usuario (spec 051).
+ * Solo modifica los campos que llegan definidos: razon_social, direccion,
+ * celular, rubro y descripcion. No toca los campos de propietario ni la imagen.
+ */
+const modificarDatosEscuelaPerfil = async (
+    datos: { id_escuela: number; razon_social?: string; direccion?: string; celular?: string; rubro?: string; descripcion?: string }
+): Promise<TipadoData<EscuelaResumen>> => {
+    const { id_escuela, razon_social, direccion, celular, rubro, descripcion } = datos;
+
+    // Construir dinámicamente los campos a actualizar
+    const campos: string[] = [];
+    const valores: unknown[] = [];
+
+    if (razon_social !== undefined) { campos.push("razon_social = ?"); valores.push(razon_social); }
+    if (direccion !== undefined) { campos.push("direccion = ?"); valores.push(direccion); }
+    if (celular !== undefined) { campos.push("celular = ?"); valores.push(celular); }
+    if (rubro !== undefined) { campos.push("rubro = ?"); valores.push(rubro); }
+    if (descripcion !== undefined) { campos.push("descripcion = ?"); valores.push(descripcion); }
+
+    if (campos.length === 0) {
+        return {
+            error: true,
+            message: "No se enviaron campos para actualizar",
+            data: { razon_social: "", nombre_propietario: "", apellido_propietario: "" },
+            code: "SIN_CAMPOS"
+        };
+    }
+
+    valores.push(id_escuela);
+
+    const sql = `UPDATE escuelas SET ${campos.join(", ")} WHERE id_escuela = ?;`;
+
+    const retorno = {
+        razon_social: razon_social ?? "",
+        nombre_propietario: "",
+        apellido_propietario: "",
+    };
+
+    return await iudEntidad<EscuelaResumen>({
+        slqEntidad: sql,
+        valores,
+        entidad: "escuela",
+        datosRetorno: retorno,
+        metodo: "MODIFICAR",
+    });
+};
+
 export const method = {
     altaEscuela : tryCatchDatos( altaEscuela),
     verificarRazonSocialEscuela : tryCatchDatos( verificarRazonSocialEscuela),
     localizarPublicIdEscuela : tryCatchDatos( localizarPublicIdEscuela),
     localizarNombreEscuela : tryCatchDatos( localizarNombreEscuela),
     obtenerLogoEscuela : tryCatchDatos( obtenerLogoEscuela),
+    obtenerDatosEscuelaPerfil : tryCatchDatos( obtenerDatosEscuelaPerfil),
     actualizarLogoEscuela : tryCatchDatos( actualizarLogoEscuela),
     modificarEscuela : tryCatchDatos( modificarEscuela),
     estadoEscuela : tryCatchDatos( estadoEscuela ),
-    listadoEscuelas: tryCatchDatos( listadoEscuelas )
+    listadoEscuelas: tryCatchDatos( listadoEscuelas ),
+    modificarDatosEscuelaPerfil: tryCatchDatos( modificarDatosEscuelaPerfil )
 };
 

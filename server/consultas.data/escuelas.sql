@@ -14,7 +14,8 @@ CREATE TABLE escuelas (
     -- Rubro de la escuela (spec 047): 'baile' | 'gym'.
     -- Define el tema visual y los tipos de clase que siembra el trigger
     -- `despues_de_crear_escuela`. El default mantiene a todas en 'baile'.
-    rubro VARCHAR(20) NOT NULL DEFAULT 'baile'
+    rubro VARCHAR(20) NOT NULL DEFAULT 'baile',
+    descripcion TEXT DEFAULT NULL
 );
 
 INSERT INTO
@@ -40,3 +41,7 @@ VALUES (
         '2026-09-25',
         'activos'
     );
+
+-- Migracion: agregar columna descripcion a escuelas
+ALTER TABLE escuelas
+    ADD COLUMN IF NOT EXISTS descripcion TEXT DEFAULT NULL;
