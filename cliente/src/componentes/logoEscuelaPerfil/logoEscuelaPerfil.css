@@ -177,7 +177,7 @@
   gap: 12px;
 }
 
-/* ---------- Alertas y región de estado ---------- */
+/* ---------- Alerta de carga inicial ---------- */
 
 .logo_escuela_alerta {
   margin: 12px 0 0;
@@ -189,20 +189,6 @@
   font-size: var(--texto-sm);
   overflow-wrap: anywhere;
   animation: logoEscuelaEntrada 200ms var(--ease-ui);
-}
-
-.logo_escuela_estado {
-  min-height: 1.25rem;
-  margin: 12px 0 0;
-  font-size: var(--texto-sm);
-  color: var(--color-exito);
-  overflow-wrap: anywhere;
-}
-
-.logo_escuela_estado:focus {
-  outline: var(--focus-ring);
-  outline-offset: var(--focus-offset);
-  border-radius: var(--radio-sm);
 }
 
 /* ============================================================
@@ -300,8 +286,4 @@
     border-width: 2px;
   }
 
-  .logo_escuela_estado:focus {
-    outline: var(--focus-ring-high-contrast);
-    outline-offset: var(--focus-offset-high-contrast);
-  }
 }

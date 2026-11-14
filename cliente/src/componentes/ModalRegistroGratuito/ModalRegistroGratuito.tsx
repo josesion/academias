@@ -10,6 +10,7 @@ import { useModalAccesible } from "../../hooks/useModalAccesible";
 import { useDisponibilidadUsuario } from "../../hooks/registro.gratuito/useDisponibilidadUsuario";
 import { useRegistroGratuito } from "../../hooks/registro.gratuito/useRegistroGratuito";
 import { CartelExitoRegistro } from "../CartelExitoRegistro/CartelExitoRegistro";
+import { PhoneInputField } from "../generales/PhoneInputField/PhoneInputField";
 import "./ModalRegistroGratuito.css";
 
 interface ModalRegistroGratuitoProps {
@@ -20,25 +21,27 @@ interface ModalRegistroGratuitoProps {
 interface FormularioRegistro {
   razon_social: string;
   direccion: string;
-  celular: string;
+  celular: string | undefined;
   correo: string;
   rubro: "" | "baile" | "gym";
   dni_propietario: string;
   nombre_propietario: string;
   apellido_propietario: string;
   usuario: string;
+  descripcion: string;
 }
 
 const estadoInicial: FormularioRegistro = {
   razon_social: "",
   direccion: "",
-  celular: "",
+  celular: undefined,
   correo: "",
   rubro: "",
   dni_propietario: "",
   nombre_propietario: "",
   apellido_propietario: "",
   usuario: "",
+  descripcion: "",
 };
 
 interface CampoProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -93,7 +96,7 @@ export const ModalRegistroGratuito = ({
     return (
       !!form.razon_social.trim() &&
       !!form.direccion.trim() &&
-      !!form.celular.trim() &&
+      !!form.celular &&
       !!form.correo.trim() &&
       !!form.rubro &&
       !!form.dni_propietario.trim() &&
@@ -105,7 +108,7 @@ export const ModalRegistroGratuito = ({
 
   const onChange =
     (campo: keyof FormularioRegistro) =>
-    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
       setForm((prev) => ({ ...prev, [campo]: e.target.value }));
       setErrorLocal("");
     };
@@ -125,13 +128,14 @@ export const ModalRegistroGratuito = ({
     const res = await registrar({
       razon_social: form.razon_social.trim(),
       direccion: form.direccion.trim(),
-      celular: form.celular.trim(),
+      celular: form.celular || "",
       correo: form.correo.trim(),
       rubro: form.rubro as "baile" | "gym",
       dni_propietario: Number(dniLimpio),
       nombre_propietario: form.nombre_propietario.trim(),
       apellido_propietario: form.apellido_propietario.trim(),
       usuario: form.usuario.trim(),
+      descripcion: form.descripcion.trim() || undefined,
     });
     if (res.ok) {
       setMostrarExito(true);
@@ -218,6 +222,17 @@ export const ModalRegistroGratuito = ({
                     onChange={onChange("direccion")}
                     autoComplete="street-address"
                   />
+                  <div className="modal-registro-campo modal-registro-campo--textarea">
+                    <label htmlFor={id("descripcion")}>Descripción de tu academia o gym</label>
+                    <textarea
+                      id={id("descripcion")}
+                      value={form.descripcion}
+                      onChange={onChange("descripcion")}
+                      rows={3}
+                      placeholder="Breve descripción de tu academia o gym"
+                      autoComplete="off"
+                    />
+                  </div>
                   <div className="modal-registro-campo">
                     <label htmlFor={id("rubro")}>Rubro</label>
                     <select
@@ -231,15 +246,20 @@ export const ModalRegistroGratuito = ({
                       <option value="gym">Gym</option>
                     </select>
                   </div>
-                  <Campo
-                    id={id("celular")}
-                    etiqueta="Celular"
-                    type="tel"
-                    inputMode="tel"
-                    value={form.celular}
-                    onChange={onChange("celular")}
-                    autoComplete="tel"
-                  />
+                  <div className="modal-registro-campo">
+                    <PhoneInputField
+                      label="Celular"
+                      value={form.celular}
+                      onChange={(val) => {
+                        setForm((prev) => ({ ...prev, celular: val }));
+                        setErrorLocal("");
+                      }}
+                      required
+                    />
+                    <small className="modal-registro-hint">
+                      Este celular será usado para promocionar tu academia.
+                    </small>
+                  </div>
                   <Campo
                     id={id("correo")}
                     etiqueta="Correo de la cuenta / propietario"

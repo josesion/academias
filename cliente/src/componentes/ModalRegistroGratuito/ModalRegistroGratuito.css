@@ -173,7 +173,8 @@
 }
 
 .modal-registro-campo input,
-.modal-registro-campo select {
+.modal-registro-campo select,
+.modal-registro-campo textarea {
   width: 100%;
   padding: 0.8rem 0.95rem;
   /* 16px mínimo: evita el zoom automático de iOS al enfocar */
@@ -184,22 +185,82 @@
   border: 1px solid var(--borde);
   border-radius: var(--radio-sm);
   transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+  resize: vertical;
 }
 
 .modal-registro-campo input:hover,
-.modal-registro-campo select:hover {
+.modal-registro-campo select:hover,
+.modal-registro-campo textarea:hover {
   border-color: var(--borde-hover);
 }
 
 /* El anillo de foco lo pone app.css; acá solo se suma un halo suave */
 .modal-registro-campo input:focus-visible,
-.modal-registro-campo select:focus-visible {
+.modal-registro-campo select:focus-visible,
+.modal-registro-campo textarea:focus-visible {
   border-color: var(--color-secundario);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 12%, transparent);
 }
 
 .modal-registro-campo input[aria-invalid="true"] {
   border-color: var(--color-error);
+}
+
+/* PhoneInputField dentro del modal: hereda estilos de los inputs normales */
+.modal-registro-campo .phone_input .PhoneInputInput {
+  width: 100%;
+  padding: 0.8rem 0.95rem;
+  font-size: max(16px, var(--texto-md));
+  font-family: var(--fuente-principal);
+  color: var(--texto-principal);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+}
+
+.modal-registro-campo .phone_input .PhoneInputInput::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+.modal-registro-campo .phone_input .PhoneInputInput:hover:not(:read-only):not(:disabled) {
+  border-color: var(--borde-hover);
+}
+
+.modal-registro-campo .phone_input .PhoneInputInput:focus:not(:read-only):not(:disabled) {
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-secundario) 12%, transparent);
+}
+
+.modal-registro-campo .phone_input .PhoneInputCountry {
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  padding: 4px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.modal-registro-campo .phone_input .PhoneInputCountry:hover {
+  border-color: var(--borde-hover);
+}
+
+.modal-registro-campo .phone_input .PhoneInputCountry:focus {
+  border-color: var(--color-secundario);
+}
+
+/* Hint text debajo de un campo */
+.modal-registro-hint {
+  margin: 0;
+  font-size: var(--texto-sm);
+  line-height: var(--linea-texto);
+  color: var(--texto-secundario);
+}
+
+/* Textarea de descripción: ocupa todo el ancho del grid */
+.modal-registro-campo--textarea {
+  grid-column: 1 / -1;
 }
 
 /* Estado del usuario: color + texto (no depende solo del color) */

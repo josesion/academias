@@ -1,0 +1,62 @@
+/* ============================================================
+   FORMULARIO DATOS ESCUELA — sección del perfil de usuario (spec 051)
+
+   Reutiliza las clases de `formularioInfoUsuario.css` (`perfil_seccion`,
+   `section-title`, `perfil_grupo`, `perfil_acciones`, `perfil_ayuda`) para
+   mantener un estilo unificado. Este archivo agrega solo lo que no cubre
+   el CSS compartido: labels de SelectorOpt, textarea y carga.
+   ============================================================ */
+
+/* ---------- Label unificado (mismo estilo que Inputs) ---------- */
+
+.datos-escuela__label {
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* ---------- Textarea (mismo estilo que .inputs) ---------- */
+
+.perfil_grupo textarea.inputs {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  color: var(--texto-principal);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  outline: none;
+  resize: vertical;
+  transition: border-color 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui);
+}
+
+.perfil_grupo textarea.inputs::placeholder {
+  color: var(--texto-deshabilitado);
+  opacity: 0.7;
+}
+
+.perfil_grupo textarea.inputs:hover {
+  border-color: var(--borde-hover);
+}
+
+.perfil_grupo textarea.inputs:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+  border-color: var(--color-secundario);
+  box-shadow: none;
+}
+
+/* ---------- Carga ---------- */
+
+.datos-escuela__carga {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}

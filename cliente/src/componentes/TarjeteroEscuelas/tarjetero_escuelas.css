@@ -194,66 +194,71 @@
   -webkit-box-orient: vertical;
 }
 
-.tarjeta_publica_direccion {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin: 0;
-  font-size: var(--texto-sm);
-  line-height: 1.4;
-  color: var(--texto-secundario);
-}
+/* --------------------------------------------------------------------------
+   Sección de bienvenida y descripción
+   -------------------------------------------------------------------------- */
 
-.tarjeta_publica_direccion svg {
-  flex: 0 0 auto;
-  margin-top: 2px;
-}
-
-/* Acciones */
-.tarjeta_publica_acciones {
+.tarjeta_publica_bienvenida {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  padding-top: 16px;
+  padding: 16px 0;
   border-top: 1px solid var(--borde);
+  border-bottom: 1px solid var(--borde);
 }
 
-.tarjeta_publica_accion {
+.tarjeta_publica_bienvenida_titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: var(--texto-base);
+  font-weight: var(--peso-semi-negrita);
+  line-height: var(--linea-texto);
+  color: var(--color-secundario);
+}
+
+.tarjeta_publica_descripcion {
+  margin: 0;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-base);
+  line-height: var(--linea-texto);
+  color: var(--texto-principal);
+}
+
+/* --------------------------------------------------------------------------
+   Enlaces simples de contacto
+   -------------------------------------------------------------------------- */
+
+.tarjeta_publica_enlaces {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tarjeta_publica_enlace {
   display: inline-flex;
-  flex: 1;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 12px;
-  border: 1px solid var(--borde);
-  border-radius: var(--radio-sm);
-  background: transparent;
+  gap: 8px;
+  font-family: var(--fuente-principal);
   font-size: var(--texto-sm);
-  font-weight: var(--peso-medio);
-  line-height: 1.2;
-  color: var(--texto-principal);
+  font-weight: var(--peso-normal);
+  line-height: 1.4;
+  color: var(--color-secundario);
   text-decoration: none;
-  transition: border-color 160ms var(--ease-ui), background-color 160ms var(--ease-ui),
-    color 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+  transition: color 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* Principal: relleno (mismo par cruzado que `.btn-principal`) */
-.tarjeta_publica_accion--whatsapp {
-  background: var(--color-exito);
-  border-color: var(--color-exito);
-  color: var(--fondo-secundario);
+.tarjeta_publica_enlace svg {
+  flex: 0 0 auto;
 }
 
-/* Secundario: contorno */
-.tarjeta_publica_accion--mapa {
-  background: var(--fondo-superficie);
-  color: var(--texto-principal);
+.tarjeta_publica_enlace:active {
+  transform: scale(0.98);
 }
 
-.tarjeta_publica_accion:active {
-  transform: scale(0.97);
-}
-
-.tarjeta_publica_accion:focus-visible,
+.tarjeta_publica_enlace:focus-visible,
 .tarjetero_reintentar:focus-visible {
   outline: var(--focus-ring);
   outline-offset: var(--focus-offset);
@@ -548,8 +553,8 @@
 }
 
 /* --------------------------------------------------------------------------
-   Hover: solo en dispositivos con puntero fino (no se queda pegado en tactil)
-   -------------------------------------------------------------------------- */
+  Hover: solo en dispositivos con puntero fino (no se queda pegado en tactil)
+  -------------------------------------------------------------------------- */
 
 @media (hover: hover) and (pointer: fine) {
   .tarjeta_publica:hover {
@@ -558,14 +563,8 @@
     transform: translateY(-2px);
   }
 
-  .tarjeta_publica_accion--whatsapp:hover {
-    background: var(--color-secundario);
-    border-color: var(--color-secundario);
-  }
-
-  .tarjeta_publica_accion--mapa:hover {
-    border-color: var(--borde-hover);
-    color: var(--color-secundario);
+  .tarjeta_publica_enlace:hover {
+    color: var(--color-primario);
   }
 
   .tarjetero_reintentar:hover {

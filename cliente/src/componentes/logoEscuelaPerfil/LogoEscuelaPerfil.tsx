@@ -51,6 +51,7 @@ export const LogoEscuelaPerfil = ({ rol }: PropsLogoEscuelaPerfil) => {
  * `administrador` no monte los hooks (ni la carga inicial) de la sección.
  *
  * @param props - `rol` del usuario logueado (`usuario` o `alumno`)
+ * @returns La sección de logo con controles de guardar y quitar
  */
 const SeccionLogoEscuela = ({ rol }: PropsLogoEscuelaPerfil) => {
   const {
@@ -65,7 +66,6 @@ const SeccionLogoEscuela = ({ rol }: PropsLogoEscuelaPerfil) => {
   /** URL que falló al cargar (cubre la `urlImagen` legacy rota de la escuela 4). */
   const [srcRota, setSrcRota] = useState<string | null>(null);
 
-  const refEstado = useRef<HTMLParagraphElement>(null);
   const refContenedorQuitar = useRef<HTMLDivElement>(null);
 
   const esAlumno = rol === "alumno";
@@ -74,12 +74,6 @@ const SeccionLogoEscuela = ({ rol }: PropsLogoEscuelaPerfil) => {
   const hayLogoGuardado = Boolean(state.datos?.urlImagen);
   const mostrarImagen = Boolean(urlPrevia) && srcRota !== urlPrevia;
   const ocupado = state.carga.inicial || state.carga.guardar || state.carga.quitar;
-
-  // Después de un guardado o quitado exitoso el foco va a la región de estado
-  // para que el lector de pantalla anuncie el cambio (CA-23/CA-24).
-  useEffect(() => {
-    if (state.exito) refEstado.current?.focus();
-  }, [state.exito]);
 
   // Escape cancela la confirmación en línea y devuelve el foco a "Quitar logo"
   // (CA-30). Se escucha en `document` porque el foco puede estar en cualquier
@@ -120,7 +114,7 @@ const SeccionLogoEscuela = ({ rol }: PropsLogoEscuelaPerfil) => {
 
       {state.error.inicial && (
         <p className="logo_escuela_alerta" role="alert" aria-live="assertive">
-          {state.error.inicial}
+          No se pudo cargar la información de tu escuela.
         </p>
       )}
 
@@ -237,28 +231,6 @@ const SeccionLogoEscuela = ({ rol }: PropsLogoEscuelaPerfil) => {
         )}
       </div>
 
-      {!esAlumno && state.error.guardar && (
-        <p className="logo_escuela_alerta" role="alert" aria-live="assertive">
-          {state.error.guardar}
-        </p>
-      )}
-
-      {!esAlumno && state.error.quitar && (
-        <p className="logo_escuela_alerta" role="alert" aria-live="assertive">
-          {state.error.quitar}
-        </p>
-      )}
-
-      {/* Región de estado SIEMPRE renderizada (aunque esté vacía) */}
-      <p
-        className="logo_escuela_estado"
-        ref={refEstado}
-        role="status"
-        aria-live="polite"
-        tabIndex={-1}
-      >
-        {state.exito ?? ""}
-      </p>
     </section>
   );
 };

@@ -6,6 +6,7 @@ import {
 } from "../../reducers/logoEscuela.reducer";
 import type { ApiResponse } from "../../utils/apiFetch";
 import type { EscuelaPerfil } from "../../servicio/escuela.perfil.fetch";
+import { useNotificaciones } from "../../contexto/notificaciones.context";
 
 /* ==========================================================================
    TIPOS DE LOS SERVICIOS INYECTADOS (patrón del proyecto)
@@ -55,7 +56,7 @@ const MENSAJE_ERROR_CONEXION =
  * @returns `state` del reducer + handlers de la sección
  */
 export const useLogoEscuela = (config: PropsLogoEscuela) => {
-
+  const { exito: notifExito, error: notifError, info: notifInfo } = useNotificaciones();
   const { getEscuelaPerfil, putLogoEscuela, deleteLogoEscuela } = config.servicios;
 
   const [state, dispatch] = useReducer(LogoEscuelaReducers, initialLogoEscuela());
@@ -197,15 +198,15 @@ export const useLogoEscuela = (config: PropsLogoEscuela) => {
       if (resultado.error === false && resultado.data) {
         revocarPreview();
         dispatch({ type: "GUARDAR_OK", payload: resultado.data });
+        notifExito("Logo de la escuela actualizado correctamente");
       } else {
-        dispatch({
-          type: "GUARDAR_ERROR",
-          payload: resultado.message || "No se pudo guardar el logo.",
-        });
+        dispatch({ type: "GUARDAR_ERROR", payload: resultado.message || "No se pudo guardar el logo." });
+        notifError(resultado.message || "No se pudo guardar el logo.");
       }
     } catch {
       // Red de seguridad: apiFetch nunca lanza
       dispatch({ type: "GUARDAR_ERROR", payload: MENSAJE_ERROR_CONEXION });
+      notifError(MENSAJE_ERROR_CONEXION);
     } finally {
       guardandoRef.current = false;
       // Idempotente con GUARDAR_OK / GUARDAR_ERROR: deja el botón habilitado
@@ -246,15 +247,18 @@ export const useLogoEscuela = (config: PropsLogoEscuela) => {
       if (resultado.error === false && resultado.data) {
         revocarPreview();
         dispatch({ type: "QUITAR_OK", payload: resultado.data });
+        notifExito("Logo de la escuela eliminado correctamente");
       } else {
         dispatch({
           type: "QUITAR_ERROR",
           payload: resultado.message || "No se pudo quitar el logo.",
         });
+        notifError(resultado.message || "No se pudo quitar el logo.");
       }
     } catch {
       // Red de seguridad: apiFetch nunca lanza
       dispatch({ type: "QUITAR_ERROR", payload: MENSAJE_ERROR_CONEXION });
+      notifError(MENSAJE_ERROR_CONEXION);
     } finally {
       quitandoRef.current = false;
       // Idempotente con QUITAR_OK / QUITAR_ERROR: deja el botón habilitado

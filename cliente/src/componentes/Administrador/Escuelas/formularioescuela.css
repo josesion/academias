@@ -221,6 +221,45 @@
   border-color: var(--color-error);
 }
 
+/* Textarea de descripción (spec 051) */
+.form-escuela textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-normal);
+  color: var(--texto-principal);
+
+  background: var(--fondo-principal);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  outline: none;
+
+  resize: vertical;
+  transition: var(--transicion);
+}
+
+.form-escuela textarea::placeholder {
+  color: var(--texto-deshabilitado);
+}
+
+.form-escuela textarea:hover {
+  border-color: var(--borde-hover);
+}
+
+.form-escuela textarea:focus {
+  background: var(--fondo-secundario);
+  border-color: var(--color-secundario);
+  box-shadow: 0 0 0 3px var(--fondo-hover), var(--sombra-sm);
+}
+
+/* El campo con --textarea ocupa todo el ancho del grid */
+.form-escuela__campo--textarea {
+  grid-column: 1 / -1;
+}
+
 /* Ocultar flechitas de input number */
 .form-escuela input[type="number"] {
   -moz-appearance: textfield;

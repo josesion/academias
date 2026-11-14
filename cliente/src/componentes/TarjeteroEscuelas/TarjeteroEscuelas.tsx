@@ -26,6 +26,22 @@ const RUBRO_BADGE: Record<RubroTarjeta, { emoji: string; texto: string }> = {
   desconocido: { emoji: "", texto: "Escuela" },
 };
 
+/** Extrae el número de teléfono de una URL de WhatsApp (wa.me/51XXXXXXXXX). */
+function extraerNumeroWhatsApp(urlWa: string): string {
+  const match = urlWa.match(/wa\.me\/(\d+)/);
+  if (match) return "+" + match[1];
+  const match2 = urlWa.match(/phone=(\d+)/);
+  if (match2) return "+" + match2[1];
+  return urlWa;
+}
+
+/** Texto de bienvenida según el rubro de la escuela. */
+const BIENVENIDA_POR_RUBRO: Record<RubroTarjeta, string> = {
+  baile: "Bienvenido a nuestra academia de baile",
+  gym: "Bienvenido a nuestro gimnasio",
+  desconocido: "Bienvenido a nuestra academia",
+};
+
 interface TarjetaEscuelaPublicaProps {
   /** Escuela ya normalizada por `useEscuelasPublicas`. */
   escuela: EscuelaPublica;
@@ -36,12 +52,12 @@ interface TarjetaEscuelaPublicaProps {
  *
  * Cabecera compacta: logo de 64 px (o las iniciales de la razón social cuando
  * no hay `urlImagen` o la imagen falla) a la izquierda, y a la derecha el
- * rubro, el nombre y la dirección. Debajo, cuando hay datos suficientes, los
- * dos enlaces externos: WhatsApp y "Cómo llegar" a Google Maps.
+ * rubro y el nombre. Debajo, un título de bienvenida según el rubro, la
+ * descripción de la escuela (si existe), y finalmente los enlaces simples
+ * de WhatsApp y dirección.
  *
- * Los dos botones son `<a href>` reales (nunca `<div onClick>`): se tabulan,
- * se activan con `Enter` y abren en pestaña nueva con
- * `rel="noopener noreferrer"`.
+ * Los enlaces son `<a href>` reales: se tabulan, se activan con `Enter`
+ * y abren en pestaña nueva con `rel="noopener noreferrer"`.
  *
  * @param escuela Escuela normalizada que se pinta en la tarjeta.
  */
@@ -49,6 +65,7 @@ const TarjetaEscuelaPublica = ({ escuela }: TarjetaEscuelaPublicaProps) => {
   const [errorImagen, setErrorImagen] = useState(false);
 
   const badge = RUBRO_BADGE[escuela.rubro];
+  const bienvenida = BIENVENIDA_POR_RUBRO[escuela.rubro];
   const mostrarImagen = Boolean(escuela.urlImagen) && !errorImagen;
 
   return (
@@ -85,41 +102,45 @@ const TarjetaEscuelaPublica = ({ escuela }: TarjetaEscuelaPublicaProps) => {
           <h3 className="tarjeta_publica_nombre" title={escuela.razon_social}>
             {escuela.razon_social}
           </h3>
-
-          {escuela.direccion && (
-            <p className="tarjeta_publica_direccion">
-              <LuMapPin size={16} aria-hidden="true" />
-              <span>{escuela.direccion}</span>
-            </p>
-          )}
         </div>
       </div>
 
-      {(escuela.whatsapp || escuela.maps) && (
-        <div className="tarjeta_publica_acciones">
+      {/* Sección de bienvenida y descripción */}
+      <div className="tarjeta_publica_bienvenida">
+        <p className="tarjeta_publica_bienvenida_titulo">{bienvenida}</p>
+        {escuela.descripcion && (
+          <p className="tarjeta_publica_descripcion">
+            {escuela.descripcion}
+          </p>
+        )}
+      </div>
+
+      {/* Enlaces simples de contacto */}
+      {(escuela.whatsapp || escuela.direccion) && (
+        <div className="tarjeta_publica_enlaces">
           {escuela.whatsapp && (
             <a
-              className="tarjeta_publica_accion tarjeta_publica_accion--whatsapp"
+              className="tarjeta_publica_enlace"
               href={escuela.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Escribir por WhatsApp a ${escuela.razon_social}`}
             >
-              <LuMessageCircle size={16} aria-hidden="true" />
-              WhatsApp
+              <LuMessageCircle size={18} aria-hidden="true" />
+              <span>WhatsApp: {extraerNumeroWhatsApp(escuela.whatsapp)}</span>
             </a>
           )}
 
-          {escuela.maps && (
+          {escuela.direccion && (
             <a
-              className="tarjeta_publica_accion tarjeta_publica_accion--mapa"
-              href={escuela.maps}
+              className="tarjeta_publica_enlace"
+              href={escuela.maps ?? `https://www.google.com/maps/search/${encodeURIComponent(escuela.direccion)}`}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={`Ver la ubicación de ${escuela.razon_social} en Google Maps`}
             >
-              <LuMapPin size={16} aria-hidden="true" />
-              Cómo llegar
+              <LuMapPin size={18} aria-hidden="true" />
+              <span>Dirección: {escuela.direccion}</span>
             </a>
           )}
         </div>

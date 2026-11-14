@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAmbPerfilUsuario } from "../../../hookNegocios/abmPerfilUsuario";
 import { FormularioInfoUsuario } from "../../../componentes/formularioInfoUsuario/FormularioInfoUsuario";
 import { LogoEscuelaPerfil } from "../../../componentes/logoEscuelaPerfil/LogoEscuelaPerfil";
+import { FormularioDatosEscuela } from "../../../componentes/generales/formularioDatosEscuela/FormularioDatosEscuela";
 import "./perfilusuario.css";
 
 export const PerfilUsuarioPage = () => {
@@ -67,6 +68,18 @@ export const PerfilUsuarioPage = () => {
         </div>
       </header>
 
+      {/* Datos de mi escuela: solo para rol `usuario` (spec 051).
+          Los alumnos y administradores no ven esta sección. */}
+      {datos?.rol === "usuario" && <FormularioDatosEscuela />}
+
+      {/* Sección propia del logo, solo para rol `usuario` (spec 051).
+          Los alumnos y administradores no ven esta sección. */}
+      {datos?.rol === "usuario" && (
+        <LogoEscuelaPerfil
+          rol={(datos?.rol as "usuario" | "administrador" | "alumno") ?? "usuario"}
+        />
+      )}
+
       {/* Formulario delegado a componente reutilizable */}
       <FormularioInfoUsuario
         rol={(datos?.rol as "usuario" | "administrador" | "alumno") ?? "usuario"}
@@ -80,12 +93,6 @@ export const PerfilUsuarioPage = () => {
         getValor={getValor}
         tieneError={tieneError}
         getError={getError}
-      />
-
-      {/* Sección propia del logo, FUERA del <form> del perfil (R16): sus
-          botones no disparan el PUT del perfil ni navegan. */}
-      <LogoEscuelaPerfil
-        rol={(datos?.rol as "usuario" | "administrador" | "alumno") ?? "usuario"}
       />
     </div>
   );

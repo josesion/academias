@@ -11,6 +11,7 @@ export interface RegistroGratuitoDatos {
   nombre_propietario: string;
   apellido_propietario: string;
   usuario: string;
+  descripcion?: string;
 }
 
 export interface RegistroGratuitoResultado {

@@ -86,6 +86,7 @@ const normalizarEscuela = (fila: EscuelaPublicaRow): EscuelaPublica | null => {
 
   const direccion = textoONull(fila.direccion);
   const celular = normalizarCelular(fila.celular);
+  const descripcion = textoONull(fila.descripcion);
 
   return {
     id_escuela: fila.id_escuela,
@@ -93,6 +94,7 @@ const normalizarEscuela = (fila: EscuelaPublicaRow): EscuelaPublica | null => {
     direccion,
     urlImagen: textoONull(fila.urlImagen),
     rubro: normalizarRubro(fila.rubro),
+    descripcion,
     celularDigitos: celular ?? "",
     whatsapp: celular ? `https://wa.me/${celular}` : null,
     maps: direccion

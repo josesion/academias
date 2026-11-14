@@ -4,6 +4,7 @@ import { Boton } from "../../generales/Boton/Boton";
 import { Inputs } from "../../generales/Inputs/Inputs";
 import { CompoError } from "../../generales/Error/Error";
 import { SelectorOpt } from "../../generales/CompSelecObt/SelectorOpt";
+import { PhoneInputField } from "../../generales/PhoneInputField/PhoneInputField";
 
 import { type CeldasInput } from "../../../reducers/escuelas.reducer";
 
@@ -17,6 +18,8 @@ export interface FormularioEscuelaTipado {
   celular: CeldasInput;
   /** Rubro de la escuela (`baile` | `gym`). Spec 047. */
   rubro: CeldasInput;
+  /** Descripción de la escuela (spec 051). Opcional. */
+  descripcion: CeldasInput;
 }
 
 /**
@@ -125,15 +128,29 @@ export const FormularioEscuelas = (data: PropsFormEscuelas) => {
           readonly={false}
           onChange={cachearFormulario}
         />
-        <Inputs
-          type="number"
-          placeholder="Numero Celular"
+        <PhoneInputField
           label="Celular"
-          name={formulario.celular.name}
-          value={formulario.celular.value}
-          readonly={false}
-          onChange={cachearFormulario}
+          value={formulario.celular.value || undefined}
+          onChange={(val) => {
+            cachearFormulario({
+              target: { name: "celular", value: val || "" },
+            } as React.ChangeEvent<HTMLInputElement | HTMLSelectElement>);
+          }}
+          required
         />
+        <div className="form-escuela__campo form-escuela__campo--textarea">
+          <label htmlFor={formulario.descripcion.name}>
+            Descripción de la academia
+          </label>
+          <textarea
+            id={formulario.descripcion.name}
+            name={formulario.descripcion.name}
+            value={formulario.descripcion.value}
+            onChange={cachearFormulario}
+            rows={3}
+            placeholder="Breve descripción de la academia o gym"
+          />
+        </div>
 
         {/* ---------- Rubro (spec 047) ----------
             Va último del grupo para no alterar las columnas que ya define

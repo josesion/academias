@@ -2,64 +2,121 @@ import { PAGINA } from "./variables.globales";
 import { apiFetch, type ApiResponse } from "../utils/apiFetch";
 
 /**
- * Datos de la escuela que se muestran en la sección "Logo de mi escuela".
- *
- * El servidor **nunca** expone `public_id`: solo la URL pública del logo
- * (o `null` cuando la escuela no tiene logo).
+ * Datos mínimos de la escuela para la sección del logo.
+ * Se usa en `useLogoEscuela` y `logoEscuela.reducer`.
  */
 export interface EscuelaPerfil {
-  /** Id de la escuela del token (el cliente no lo envía en ninguna request) */
   id_escuela: number;
-  /** Razón social; el servidor manda "Mi escuela" cuando la columna es `NULL` */
   razon_social: string;
-  /** URL pública del logo o `null` si la escuela no tiene logo */
+  urlImagen: string | null;
+  public_id: string | null;
+}
+
+/**
+ * Datos de la escuela del usuario logueado (spec 051).
+ * Se obtienen directamente de `GET /api/usuario_perfil/escuela` que ya
+ * existe en el backend y devuelve todos los campos de la escuela.
+ */
+export interface EscuelaPerfilDatos {
+  id_escuela: number;
+  razon_social: string;
+  direccion: string | null;
+  celular: string | null;
+  rubro: string | null;
+  descripcion: string | null;
   urlImagen: string | null;
 }
 
 /**
- * Obtiene la escuela del usuario autenticado. El `id_escuela` sale del token,
- * por eso la request no lleva body, query ni params.
- *
- * @returns Promesa con `data: { id_escuela, razon_social, urlImagen }`
+ * Campos editables del formulario de datos de escuela en el perfil.
  */
-export const getEscuelaPerfil = async (): Promise<ApiResponse<EscuelaPerfil>> => {
+export interface EscuelaPerfilInputs {
+  razon_social?: string;
+  direccion?: string;
+  celular?: string;
+  descripcion?: string;
+}
+
+/**
+ * Obtiene los datos completos de la escuela del usuario logueado.
+ * Usa `GET /api/usuario_perfil/escuela` que ya existe en el backend y devuelve
+ * todos los campos de la escuela asociada al usuario autenticado.
+ *
+ * @returns Promesa con los datos de la escuela
+ */
+export const getMiEscuela = async (): Promise<ApiResponse<EscuelaPerfilDatos>> => {
   const ruta = `${PAGINA}api/usuario_perfil/escuela`;
-  return await apiFetch<EscuelaPerfil>(ruta, {
+  return await apiFetch<EscuelaPerfilDatos>(ruta, {
     method: "GET",
     credentials: "include",
   });
 };
 
 /**
- * Sube o reemplaza el logo de la escuela.
+ * Actualiza los datos de la escuela del usuario logueado.
+ * Usa `PUT /api/usuario_perfil/escuela` que identifica la escuela por
+ * `req.usuario.id_escuela` del token (spec 051).
  *
- * Va como `multipart/form-data` con el campo único `imagen` y **sin**
- * `Content-Type` manual: `apiFetch` deja que el navegador agregue el boundary.
- *
- * @param file - Archivo elegido por el usuario (el servidor revalida formato y tamaño)
- * @returns Promesa con la escuela ya actualizada (`urlImagen` con la URL nueva)
+ * @param datos - Campos a actualizar (todos opcionales)
+ * @returns Promesa con el resultado de la actualización
  */
-export const putLogoEscuela = async (file: File): Promise<ApiResponse<EscuelaPerfil>> => {
-  const ruta = `${PAGINA}api/usuario_perfil/escuela/logo`;
-  const body = new FormData();
-  body.append("imagen", file);
-
-  return await apiFetch<EscuelaPerfil>(ruta, {
+export const putMiEscuela = async (
+  datos: EscuelaPerfilInputs
+): Promise<ApiResponse<{ id_escuela: number }>> => {
+  const ruta = `${PAGINA}api/usuario_perfil/escuela`;
+  return await apiFetch(ruta, {
     method: "PUT",
-    body,
+    body: datos,
+    credentials: "include",
+  });
+};
+
+/* ==========================================================================
+   FUNCIONES PARA EL LOGO DE LA ESCUELA
+   Se usan en `useLogoEscuela` y `abmLogoEscuela`.
+   ========================================================================== */
+
+/**
+ * Obtiene los datos mínimos de la escuela del usuario logueado para la sección
+ * del logo (solo id, urlImagen y public_id).
+ *
+ * @returns Promesa con los datos del logo de la escuela
+ */
+export const getEscuelaPerfil = async (): Promise<ApiResponse<EscuelaPerfil>> => {
+  const ruta = `${PAGINA}api/usuario_perfil/escuela`;
+  return await apiFetch(ruta, {
+    method: "GET",
     credentials: "include",
   });
 };
 
 /**
- * Quita el logo de la escuela (deja `urlImagen` y `public_id` en `NULL`).
- * El endpoint es idempotente y no lleva body.
+ * Sube el logo de la escuela del usuario logueado.
  *
- * @returns Promesa con la escuela sin logo (`urlImagen: null`)
+ * @param file - Archivo de imagen (JPG, PNG, WEBP, máx 2 MB)
+ * @returns Promesa con los datos actualizados de la escuela
+ */
+export const putLogoEscuela = async (
+  file: File
+): Promise<ApiResponse<EscuelaPerfil>> => {
+  const ruta = `${PAGINA}api/usuario_perfil/escuela/logo`;
+  const formData = new FormData();
+  formData.append("imagen", file);
+  return await apiFetch(ruta, {
+    method: "PUT",
+    body: formData,
+    credentials: "include",
+  });
+};
+
+/**
+ * Quita el logo de la escuela del usuario logueado.
+ *
+ * @returns Promesa con los datos actualizados de la escuela
  */
 export const deleteLogoEscuela = async (): Promise<ApiResponse<EscuelaPerfil>> => {
   const ruta = `${PAGINA}api/usuario_perfil/escuela/logo`;
-  return await apiFetch<EscuelaPerfil>(ruta, {
+  return await apiFetch(ruta, {
     method: "DELETE",
     credentials: "include",
   });

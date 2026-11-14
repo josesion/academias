@@ -14,7 +14,7 @@ export type RubroTarjeta = RubroEscuela | "desconocido";
 /**
  * Fila cruda de `GET /api/escuelas_publicas` (spec 054).
  *
- * Es la lista blanca de 6 columnas del endpoint: nunca llegan `dni`,
+ * Es la lista blanca de 7 columnas del endpoint: nunca llegan `dni`,
  * `propietario`, `public_id`, `correo`, `baja` ni `fecha_registro`.
  */
 export interface EscuelaPublicaRow {
@@ -25,6 +25,7 @@ export interface EscuelaPublicaRow {
   /** Ya viene normalizada por la SQL: `""` se traduce a `null`. */
   urlImagen: string | null;
   rubro: string | null;
+  descripcion: string | null;
 }
 
 /**
@@ -32,6 +33,7 @@ export interface EscuelaPublicaRow {
  *
  * `whatsapp` y `maps` son las URLs finales o `null` cuando no hay dato
  * suficiente: la tarjeta no renderiza el botón correspondiente.
+ * `descripcion` se muestra cuando la escuela proporcionó un texto descriptivo.
  */
 export interface EscuelaPublica {
   id_escuela: number;
@@ -39,6 +41,8 @@ export interface EscuelaPublica {
   direccion: string | null;
   urlImagen: string | null;
   rubro: RubroTarjeta;
+  /** Descripción corta de la escuela para la tarjeta pública. */
+  descripcion: string | null;
   /** Dígitos listos para `wa.me` (con el prefijo `54`/`549` ya resuelto) o `""`. */
   celularDigitos: string;
   whatsapp: string | null;

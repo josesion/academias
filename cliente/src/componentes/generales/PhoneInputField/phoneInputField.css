@@ -1,0 +1,163 @@
+/* ============================================================
+   PHONE INPUT FIELD — input de teléfono con selector de país
+   Basado en el estilo de inputs.css para mantener consistencia
+   ============================================================ */
+
+.phone_input_contenedor {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.phone_input_contenedor label {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-semi-negrita);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--texto-deshabilitado);
+}
+
+/* label vacío no debe ocupar espacio */
+.phone_input_contenedor label:empty {
+    display: none;
+}
+
+/* Asterisco de campo requerido */
+.phone_input_requerido {
+    color: var(--color-error);
+    margin-left: 2px;
+    font-family: var(--fuente-principal);
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+/* ============================================================
+   Override del PhoneInput de la librería para que coincida
+   con el estilo de los inputs del proyecto
+   ============================================================ */
+
+.phone_input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* El input interno del PhoneInput */
+.phone_input .PhoneInputInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    color: var(--texto-principal);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    outline: none;
+    transition: var(--transicion);
+}
+
+.phone_input .PhoneInputInput::placeholder {
+    color: var(--texto-deshabilitado);
+}
+
+.phone_input .PhoneInputInput:hover:not(:read-only):not(:disabled) {
+    border-color: var(--borde-hover);
+}
+
+.phone_input .PhoneInputInput:focus:not(:read-only):not(:disabled) {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Estado de error */
+.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input .PhoneInputInput {
+    border-color: var(--color-error);
+}
+
+.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input .PhoneInputInput:focus {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Selector de país (dropdown) */
+.phone_input .PhoneInputCountry {
+    background: var(--fondo-superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    padding: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.phone_input .PhoneInputCountry:hover {
+    border-color: var(--borde-hover);
+}
+
+.phone_input .PhoneInputCountry:focus {
+    border-color: var(--color-primario);
+}
+
+/* Deshabilitado */
+.phone_input:disabled,
+.phone_input .PhoneInputInput:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   Mensaje de error
+   ============================================================ */
+
+.phone_input_error_espacio {
+    min-height: 20px;
+}
+
+.phone_input_mensaje_error {
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    color: var(--color-error);
+    margin: 0;
+    padding: 0;
+}
+
+/* ============================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .phone_input .PhoneInputInput,
+  .phone_input .PhoneInputCountry {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .phone_input .PhoneInputInput {
+    border-width: 2px;
+  }
+  .phone_input .PhoneInputInput:focus:not(:read-only):not(:disabled) {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+  .phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input .PhoneInputInput:focus {
+    outline: 3px solid var(--color-error);
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+}
+
+@media print {
+  .phone_input_contenedor label:empty {
+    display: none;
+  }
+  .phone_input_mensaje_error {
+    display: none;
+  }
+}

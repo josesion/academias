@@ -15,6 +15,5 @@ interface ValidarToken {
 
 export const VerificarPermisos = async() : Promise<ApiResponse<ValidarToken>> =>{
     const ruta = `${PAGINA}api/verificar`;
-    console.log("ruta verificar permisos", ruta);
     return apiFetch<ValidarToken>(ruta, { method: "GET" })
 }
