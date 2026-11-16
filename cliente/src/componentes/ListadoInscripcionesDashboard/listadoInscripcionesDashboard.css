@@ -6,9 +6,10 @@
 .inscripciones_dashboard {
     background: var(--fondo-secundario);
     border: 1px solid var(--borde);
-    border-radius: var(--radio-md);
+    border-radius: var(--radio-lg);
     padding: var(--radio-md);
     margin-top: var(--radio-md);
+    box-shadow: var(--sombra-sm);
 }
 
 /* ---- Encabezado ---- */
@@ -18,16 +19,19 @@
     align-items: center;
     justify-content: space-between;
     gap: var(--radio-sm);
-    margin-bottom: var(--radio-sm);
+    margin-bottom: var(--radio-md);
     flex-wrap: wrap;
+    padding-bottom: var(--radio-sm);
+    border-bottom: 1px solid var(--borde);
 }
 
 .inscripciones_dashboard_titulo {
     font-family: var(--fuente-titulos);
     font-size: var(--titulo-md);
-    font-weight: var(--peso-semi-negrita);
+    font-weight: var(--peso-negrita);
     color: var(--texto-principal);
     margin: 0;
+    letter-spacing: -0.01em;
 }
 
 /* ---- Filtro tipo píldora ---- */
@@ -38,6 +42,7 @@
     border-radius: var(--radio-sm);
     padding: 3px;
     gap: 2px;
+    border: 1px solid var(--borde);
 }
 
 .inscripcion_filtro_btn {
@@ -47,10 +52,10 @@
     color: var(--texto-secundario);
     background: transparent;
     border: none;
-    border-radius: 8px;
-    padding: 6px 14px;
+    border-radius: 6px;
+    padding: 6px 12px;
     cursor: pointer;
-    transition: var(--transicion);
+    transition: background 0.2s var(--ease-ui), color 0.2s var(--ease-ui);
     white-space: nowrap;
 }
 
@@ -60,8 +65,9 @@
 }
 
 .inscripcion_filtro_btn.activo {
-    color: var(--texto-principal);
+    color: var(--color-primario);
     background: var(--fondo-secundario);
+    font-weight: var(--peso-semi-negrita);
     box-shadow: var(--sombra-sm);
 }
 
@@ -70,15 +76,37 @@
     outline-offset: 2px;
 }
 
-/* ---- Cuerpo ---- */
+/* ---- Cuerpo con scroll fijo ---- */
 
 .inscripciones_dashboard_cuerpo {
-    max-height: 420px;
+    height: 300px;
     overflow-y: auto;
+    overflow-x: hidden;
+    
+    /* Scrollbar personalizado */
+    scrollbar-width: thin;
+    scrollbar-color: var(--borde) transparent;
+}
+
+.inscripciones_dashboard_cuerpo::-webkit-scrollbar {
+    width: 6px;
+}
+
+.inscripciones_dashboard_cuerpo::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.inscripciones_dashboard_cuerpo::-webkit-scrollbar-thumb {
+    background-color: var(--borde);
+    border-radius: 3px;
+}
+
+.inscripciones_dashboard_cuerpo::-webkit-scrollbar-thumb:hover {
+    background-color: var(--texto-secundario);
 }
 
 .inscripciones_dashboard_cuerpo.carga {
-    max-height: 200px;
+    height: 200px;
 }
 
 /* ---- Skeleton de carga ---- */
@@ -133,7 +161,7 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 6px;
 }
 
 /* ---- Fila de inscripción ---- */
@@ -141,15 +169,20 @@
 .inscripcion_fila {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 12px var(--radio-sm);
-    border-radius: var(--radio-sm);
+    gap: 6px;
+    padding: 14px var(--radio-sm);
+    border-radius: var(--radio-md);
     border-left: 3px solid transparent;
-    transition: background var(--transicion);
+    background: var(--fondo-superficie);
+    transition: background 0.2s var(--ease-ui), border-left-color 0.2s var(--ease-ui), box-shadow 0.2s var(--ease-ui), transform 0.15s var(--ease-ui);
 }
 
-.inscripcion_fila:hover {
-    background: var(--fondo-hover);
+@media (hover: hover) and (pointer: fine) {
+    .inscripcion_fila:hover {
+        background: var(--fondo-hover);
+        box-shadow: var(--sombra-sm);
+        transform: translateY(-1px);
+    }
 }
 
 /* Indicador de estado (borde izquierdo) */
@@ -170,39 +203,48 @@
 .inscripcion_fila_principal {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .inscripcion_indicador {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
+    box-shadow: 0 0 0 2px var(--fondo-secundario), 0 0 6px currentColor;
 }
 
 .inscripcion_fila.estado_critico .inscripcion_indicador {
     background: var(--color-error);
+    color: var(--color-error);
 }
 
 .inscripcion_fila.estado_advertencia .inscripcion_indicador {
     background: var(--color-advertencia);
+    color: var(--color-advertencia);
 }
 
 .inscripcion_fila.estado_normal .inscripcion_indicador {
     background: var(--color-exito);
+    color: var(--color-exito);
 }
 
 .inscripcion_nombre {
     font-family: var(--fuente-principal);
-    font-size: var(--texto-sm);
-    font-weight: var(--peso-medio);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-semi-negrita);
     color: var(--texto-principal);
+    line-height: 1.3;
 }
 
 .inscripcion_dni {
-    font-family: var(--fuente-principal);
+    font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
     color: var(--texto-secundario);
+    background: var(--fondo-superficie);
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
 }
 
 /* ---- Parte secundaria (plan, vigencia, badge) ---- */
@@ -210,7 +252,7 @@
 .inscripcion_fila_secundario {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     padding-left: 16px;
     flex-wrap: wrap;
 }
@@ -219,10 +261,11 @@
     font-family: var(--fuente-principal);
     font-size: var(--texto-xs);
     color: var(--texto-secundario);
+    font-weight: var(--peso-medio);
 }
 
 .inscripcion_vigencia {
-    font-family: var(--fuente-principal);
+    font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
     color: var(--texto-secundario);
 }
@@ -230,27 +273,32 @@
 /* ---- Badge de días ---- */
 
 .inscripcion_badge {
-    font-family: var(--fuente-principal);
+    font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
-    font-weight: var(--peso-semi-negrita);
-    padding: 2px 8px;
-    border-radius: 8px;
+    font-weight: var(--peso-negrita);
+    padding: 3px 10px;
+    border-radius: 6px;
     margin-left: auto;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
 }
 
 .inscripcion_badge.estado_critico {
     color: var(--color-error);
-    background: rgba(179, 71, 71, 0.1);
+    background: rgba(179, 71, 71, 0.12);
+    border-color: rgba(179, 71, 71, 0.25);
 }
 
 .inscripcion_badge.estado_advertencia {
     color: var(--color-advertencia);
-    background: rgba(194, 155, 56, 0.1);
+    background: rgba(194, 155, 56, 0.12);
+    border-color: rgba(194, 155, 56, 0.25);
 }
 
 .inscripcion_badge.estado_normal {
     color: var(--color-exito);
-    background: rgba(91, 123, 110, 0.1);
+    background: rgba(91, 123, 110, 0.12);
+    border-color: rgba(91, 123, 110, 0.25);
 }
 
 /* ---- Responsive: móvil ---- */
@@ -259,6 +307,7 @@
     .inscripciones_dashboard_encabezado {
         flex-direction: column;
         align-items: flex-start;
+        gap: var(--radio-sm);
     }
 
     .inscripciones_dashboard_filtro {
@@ -270,16 +319,20 @@
         flex: 1;
         text-align: center;
         padding: 6px 8px;
-        font-size: 0.65rem;
+        font-size: var(--texto-xs);
     }
 
     .inscripcion_fila {
-        padding: 10px 8px;
+        padding: 12px 10px;
     }
 
     .inscripcion_fila_secundario {
         padding-left: 16px;
-        gap: 6px;
+        gap: 8px;
+    }
+
+    .inscripciones_dashboard_cuerpo {
+        height: 250px;
     }
 }
 

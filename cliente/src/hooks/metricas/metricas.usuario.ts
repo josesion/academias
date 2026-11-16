@@ -146,6 +146,7 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
             payload: mensaje,
         }),
         useAbort: true,
+        ignorarCancelados: true,
         dependencias: [state.actualizar, state.actualizarGeneral]
     });
 
