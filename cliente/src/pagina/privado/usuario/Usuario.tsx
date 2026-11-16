@@ -13,6 +13,7 @@ import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { ListadoInscripcionesDashboard } from "../../../componentes/ListadoInscripcionesDashboard/ListadoInscripcionesDashboard";
 import { metricasUsuarioSeting } from "../../../hookNegocios/metricasUsuarios";
 import { diasHastaVencimiento } from "../../../utils/fecha";
+import { useEstadoCajaDashboard } from "../../../hooks/dashboard/useEstadoCajaDashboard";
 
 export const UsuarioPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -83,6 +84,8 @@ export const UsuarioPage = () => {
   const cerrarAsistenciaRapida = () => setModalAbierto(false);
   const cerrarInscripcionRapida = () => setModalInscripcionAbierto(false);
 
+  const { estadoCaja, carga } = useEstadoCajaDashboard();
+
   return (
     // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
     // el unico `<main id="contenido_principal">` de la pagina (y es el destino
@@ -121,13 +124,20 @@ export const UsuarioPage = () => {
               onClick={() => setModalAbierto(true)}
               aria-label="Abrir asistencia rápida manual"
             />
-            <Boton
-              clase="agregar"
-              texto="Inscribir"
-              logo="Add"
-              onClick={() => setModalInscripcionAbierto(true)}
-              aria-label="Abrir inscripción rápida de alumno"
-            />
+            <div className="usuario_inscribir_grupo">
+              <Boton
+                clase="agregar"
+                texto="Inscribir"
+                logo="Add"
+                onClick={() => setModalInscripcionAbierto(true)}
+                disable={rolTipo === "intermedio" && estadoCaja === "cerrada"}
+                cargando={false}
+                aria-label="Abrir inscripción rápida de alumno"
+              />
+              {rolTipo === "intermedio" && estadoCaja === "cerrada" && (
+                <p className="usuario_aviso_caja">Abrir caja para empezar</p>
+              )}
+            </div>
           </div>
         </div>
 
@@ -135,6 +145,7 @@ export const UsuarioPage = () => {
       </header>
       <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} onAsistenciaRegistrada={refrescarAsistencia} />
       <InscripcionRapida abierto={modalInscripcionAbierto} onCerrar={cerrarInscripcionRapida} />
+
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}

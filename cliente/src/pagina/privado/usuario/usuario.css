@@ -308,6 +308,24 @@
   gap: 10px;
 }
 
+/* Grupo que envuelve Inscribir y el aviso de caja cerrada */
+.usuario_inscribir_grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Aviso pequeño debajo de Inscribir cuando caja está cerrada */
+.usuario_aviso_caja {
+  margin: 0;
+
+  color: var(--color-advertencia);
+
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-normal);
+  line-height: 1.3;
+}
+
 .usuario_encabezado_titulos {
   display: flex;
   flex-direction: column;
