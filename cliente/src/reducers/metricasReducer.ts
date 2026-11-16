@@ -1,5 +1,6 @@
 import type{  ResultClase, ResultTarjeta, ResultAsistencia, VencimientoEscuela } from "../servicio/metrica.fetch";
 import { type ResultHistorial } from "../servicio/historial.fetch";
+import type { HorarioConAlumnos } from "../servicio/asistencia.fetch";
 // ==========================================
 // 1. DEFINICIÓN DEL ESTADO (MOLDE)
 // ==========================================
@@ -11,6 +12,7 @@ export interface MetricaUsuario {
         asistencia:boolean,
         historial : boolean,
         vencimiento : boolean,
+        horariosDelDia : boolean,
     },
     error  : {
         tarjeta : string | null,
@@ -21,6 +23,7 @@ export interface MetricaUsuario {
         metricasTarjetas : string | null,
         cierreCaja : string | null,
         vencimiento : string | null,
+        horariosDelDia : string | null,
     },
 
     tarjetas : ResultTarjeta | null,
@@ -28,6 +31,7 @@ export interface MetricaUsuario {
     asistencias : ResultAsistencia[] | null,
     historial   : ResultHistorial[] | null,
     fechaVencimiento : VencimientoEscuela | null,
+    horariosDelDia : HorarioConAlumnos[] | null,
 
     actualizar : number,
     actualizarTajetas : number,
@@ -47,7 +51,8 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
         clases   : false,
         asistencia : false,
         historial : false, 
-        vencimiento : false,    
+        vencimiento : false,
+        horariosDelDia : false,    
     },
 
     error : {
@@ -59,12 +64,14 @@ export const initialStateMetricas = ( ) :MetricaUsuario =>({
         metricasTarjetas : null,
         cierreCaja : null,
         vencimiento : null,
+        horariosDelDia : null,
     },
 
     tarjetas : null,
     clases   : null,
     asistencias : null,
     historial   : null,
+    horariosDelDia : null,
 
     actualizar : 0,
     actualizarTajetas : 0,
@@ -105,6 +112,10 @@ export type MetricaAction =
       | { type : "SET_CARGA_VENCIMIENTO" , payload : boolean}
       | { type : "SET_ERROR_VENCIMIENTO" , payload : string | null }
       | { type : "SET_FECHA_VENCIMIENTO", payload : VencimientoEscuela | null}
+
+      | { type: 'SET_CARGA_HORARIOS_DIA', payload : boolean }
+      | { type: 'SET_ERROR_HORARIOS_DIA', payload : string | null }
+      | { type: 'SET_HORARIOS_DIA', payload : HorarioConAlumnos[] | null }
 
 
 // ==========================================
@@ -248,8 +259,30 @@ export const metricasReducer = (state: ReturnType<typeof initialStateMetricas>, 
         return {
             ...state,
             fechaVencimiento : action.payload
-        }        
-            
+        }    
+
+//------------------------------------- PARA HORARIOS DEL DÍA
+    case "SET_CARGA_HORARIOS_DIA":
+        return {
+            ...state,
+            carga: {
+                ...state.carga,
+                horariosDelDia: action.payload
+            }
+        };
+
+    case "SET_ERROR_HORARIOS_DIA":
+        return {
+            ...state,
+            error: {
+                ...state.error,
+                horariosDelDia: action.payload
+            }
+        };
+
+    case "SET_HORARIOS_DIA":
+        return { ...state, horariosDelDia: action.payload };
+
         default:
                 return state;       
       };

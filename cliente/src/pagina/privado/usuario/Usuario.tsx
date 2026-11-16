@@ -40,11 +40,11 @@ export const UsuarioPage = () => {
   const { rol } = useContext(RutasProtegidasContext);
 
   // Saludo personalizado con nombre, escuela y fecha actual
-  const fechaActual = new Intl.DateTimeFormat('es-ES', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const fechaActual = new Intl.DateTimeFormat("es-ES", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
   }).format(new Date());
 
   // La tarjeta de vencimiento solo se pinta con carga (skeleton), con error
@@ -55,12 +55,14 @@ export const UsuarioPage = () => {
   const [alertaVisible, setAlertaVisible] = useState(false);
 
   useEffect(() => {
-    const dias = diasHastaVencimiento(state.fechaVencimiento?.fecha_vencimiento);
+    const dias = diasHastaVencimiento(
+      state.fechaVencimiento?.fecha_vencimiento,
+    );
 
     setAlertaVisible(
       Boolean(state.carga.vencimiento) ||
         Boolean(state.error.vencimiento) ||
-        (dias !== null && dias <= 7)
+        (dias !== null && dias <= 7),
     );
   }, [
     state.fechaVencimiento,
@@ -77,7 +79,11 @@ export const UsuarioPage = () => {
   const enfocarTitulo = () => refTitulo.current?.focus();
 
   // Carga global: se muestra mientras haya cualquier carga crítica inicial
-  const cargandoGlobal = state.carga.tarjeta || state.carga.clases || state.carga.historial || state.carga.vencimiento;
+  const cargandoGlobal =
+    state.carga.tarjeta ||
+    state.carga.clases ||
+    state.carga.historial ||
+    state.carga.vencimiento;
   const [modalAbierto, setModalAbierto] = useState(false);
   const [modalInscripcionAbierto, setModalInscripcionAbierto] = useState(false);
 
@@ -95,7 +101,9 @@ export const UsuarioPage = () => {
       {cargandoGlobal && (
         <div className="carga-global" aria-live="polite" aria-busy="true">
           <div className="spinner" aria-hidden="true" />
-          <span className="visually-hidden">Cargando panel de la academia...</span>
+          <span className="visually-hidden">
+            Cargando panel de la academia...
+          </span>
         </div>
       )}
 
@@ -107,11 +115,14 @@ export const UsuarioPage = () => {
 
             {rol?.usuario && rol?.razon_social && (
               <p className="usuario_saludo">
-                Hola, {rol.usuario} — Bienvenido a {rol.razon_social} • {fechaActual}
+                Hola, {rol.usuario} — Bienvenido a {rol.razon_social} •{" "}
+                {fechaActual}
               </p>
             )}
 
-            <h1 ref={refTitulo} tabIndex={-1}>Panel de la academia</h1>
+            <h1 ref={refTitulo} tabIndex={-1}>
+              Panel de la academia
+            </h1>
 
             <p>Alumnos, asistencia y actividad reciente de tu escuela.</p>
           </div>
@@ -143,15 +154,32 @@ export const UsuarioPage = () => {
 
         <PanelClima alertaMontada={alertaMontada} onCerrar={enfocarTitulo} />
       </header>
-      <AsistenciaRapida abierto={modalAbierto} onCerrar={cerrarAsistenciaRapida} onAsistenciaRegistrada={refrescarAsistencia} />
-      <InscripcionRapida abierto={modalInscripcionAbierto} onCerrar={cerrarInscripcionRapida} />
+      <AsistenciaRapida
+        abierto={modalAbierto}
+        onCerrar={cerrarAsistenciaRapida}
+        onAsistenciaRegistrada={refrescarAsistencia}
+      />
+      <InscripcionRapida
+        abierto={modalInscripcionAbierto}
+        onCerrar={cerrarInscripcionRapida}
+      />
 
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
-      <section aria-labelledby={metricasId} className="usuario_metricas_grupo1" ref={refGrupo1}>
-        <h2 id={metricasId} className="visually-hidden">Métricas principales</h2>
-        <div className="usuario_metricas_tarjetas" role="list" aria-label="Tarjetas de métricas de la academia">
+      <section
+        aria-labelledby={metricasId}
+        className="usuario_metricas_grupo1"
+        ref={refGrupo1}
+      >
+        <h2 id={metricasId} className="visually-hidden">
+          Métricas principales
+        </h2>
+        <div
+          className="usuario_metricas_tarjetas"
+          role="list"
+          aria-label="Tarjetas de métricas de la academia"
+        >
           <TarjetaMetrica
             carga={state.carga.tarjeta}
             tipo="activos"
@@ -197,13 +225,21 @@ export const UsuarioPage = () => {
         <ListadoInscripcionesDashboard />
 
         <div className="usuario_contenido_clases">
-          <section aria-labelledby={clasesId} className="usuario_clases_section">
-            <h2 id={clasesId} className="visually-hidden">Clases y asistencia</h2>
+          <section
+            aria-labelledby={clasesId}
+            className="usuario_clases_section"
+          >
+            <h2 id={clasesId} className="visually-hidden">
+              Clases y asistencia
+            </h2>
             <Asistencia
               asistencia={state.asistencias ?? []}
               clases={state.clases}
               estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
               cargaClases={state.carga.clases}
+              horariosDelDia={state.horariosDelDia ?? []}
+              cargaHorarios={state.carga.horariosDelDia}
+              errorHorarios={state.error.horariosDelDia}
             />
           </section>
         </div>
@@ -212,8 +248,14 @@ export const UsuarioPage = () => {
       {/* =======================
           CONTENIDO PRINCIPAL - HISTORIAL
       ======================== */}
-      <section aria-labelledby={historialId} className="usuario_metricas_grupo2" style={altoGrupo1 ? { height: altoGrupo1 } : undefined}>
-        <h2 id={historialId} className="visually-hidden">Historial de movimientos</h2>
+      <section
+        aria-labelledby={historialId}
+        className="usuario_metricas_grupo2"
+        style={altoGrupo1 ? { height: altoGrupo1 } : undefined}
+      >
+        <h2 id={historialId} className="visually-hidden">
+          Historial de movimientos
+        </h2>
         {/* `con_alerta` reserva ~245px al final del scroll para que la tarjeta
             flotante (en portal al body) no tape la última entrada del
             historial. Solo se aplica cuando la alerta se muestra de verdad

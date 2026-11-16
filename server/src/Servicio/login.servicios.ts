@@ -40,7 +40,6 @@ interface LoginDataResult {
 const loginUsuario =  async ( data : LoginInputs) 
 : Promise<TipadoData<LoginDataResult>>=> {
 
-    
     let token ;
     const loginData : LoginInputs = loginSchema.parse( data );
     const loginResult = await dataLogin.loginDataGenerico( loginData );
@@ -94,11 +93,11 @@ const loginUsuario =  async ( data : LoginInputs)
             };              
 
         };
-
+      
         if (loginResult.data.rol === "usuario"){
 
                 const usuarioLogin = await dataLogin.loginDataUsuario(loginData);
-        
+           
                 if ( usuarioLogin.code === "USUARIO_EXISTE" && usuarioLogin.data  ){
                   
                             const tokenData = {

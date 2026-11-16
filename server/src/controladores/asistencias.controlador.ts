@@ -13,11 +13,12 @@ import { handleControladores } from "../utils/handleControladores";
 import { CodigoEstadoHTTP } from "../tipados/generico";
 import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
          MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO,
-         MAPA_LISTADO_ASISTENCIAS
- } from "../respuestas/asistencia";
-import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs } from "../squemas/asistencias";
+         MAPA_LISTADO_ASISTENCIAS, MAPA_HORARIOS_ASISTENCIA
+} from "../respuestas/asistencia";
+import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs, HorariosAsistenciaInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 import { ListadoAsistenciaRow } from "../data/asistencia.data";
+import { HorarioConAlumnos } from "../Servicio/asistencia.servicio";
 
 /**
  * Datos crudos del listado de asistencias tal como llegan por la query.
@@ -314,6 +315,32 @@ const listadoAsistencias = async( req : Request, res : Response ) => {
     );
 };
 
+/**
+ * Horarios con asistencias de un día (acordeón de asistencias).
+ *
+ * Recibe la fecha en `req.params.fecha` y la escuela del token. Devuelve
+ * los horarios del día que tienen al menos un alumno presente, con la
+ * lista de alumnos que asistieron a cada uno.
+ *
+ * @async
+ * @function horariosAsistencia
+ * @param {Request} req - `req.params.fecha` (YYYY-MM-DD) y
+ *   `req.usuario.id_escuela` del token.
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Envía el array de horarios con alumnos o
+ *   array vacío si no hay asistencias.
+ */
+const horariosAsistencia = async( req : Request, res : Response ) => {
+    const data : HorariosAsistenciaInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        fecha : req.params.fecha as string,
+    };
+
+    await handleControladores<HorariosAsistenciaInputs, HorarioConAlumnos[]>(
+        res, data, asistenciaServicio.horariosAsistencia, MAPA_HORARIOS_ASISTENCIA
+    );
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
     asistenciaManual : tryCatch( altaAsistenciaManual ),
@@ -322,4 +349,5 @@ export const method = {
     infoAlumno : tryCatch( infoAlumno ),
     buscarAlumno : tryCatch( buscarAlumno ),
     listadoAsistencias : tryCatch( listadoAsistencias ),
+    horariosAsistencia : tryCatch( horariosAsistencia ),
 } 

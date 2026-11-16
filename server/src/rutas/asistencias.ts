@@ -57,4 +57,14 @@ ruta.get(
     controladorAsistencias.listadoAsistencias
 );
 
+// Horarios con asistencias de un día (acordeón de asistencias).
+// Solo horarios que tienen al menos un alumno presente en la fecha.
+ruta.get(
+    "/api/asistencia_horarios/:fecha",
+    permisos.validarPermiso,
+    permisos.soloUsuario,
+    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    controladorAsistencias.horariosAsistencia
+);
+
 export default ruta;

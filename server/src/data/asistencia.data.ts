@@ -15,7 +15,7 @@ import { TipadoData } from "../tipados/tipado.data";
 import { ResultadoClaseEnCruso, ResultadoClaseProxima, } from "../tipados/asistencia.tipado";
 
 import { VerificarInscripcionInput } from "../squemas/inscripciones";
-import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, InfoAlumnoInputs, HorarioManualInputs, ListadoAsistenciasInputs } from "../squemas/asistencias";
+import { AsistenciaInputs, ClasesActualInputs, ClasesProximaInputs, InfoAlumnoInputs, HorarioManualInputs, ListadoAsistenciasInputs, HorariosAsistenciaInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 
 
@@ -681,6 +681,25 @@ const buscarAlumnoData = async ( data : { id_escuela : number, termino : string 
 };
 
 /**
+ * Fila plana de horarios con asistencias de un día.
+ *
+ * Ahora sale de `horarios_clases` (tabla de programación) con LEFT JOIN
+ * a `asistencias` y `alumnos`. Los campos `dni_alumno` y `nombre_alumno`
+ * pueden ser `null` cuando un horario no tiene asistencias registradas.
+ */
+export interface HorarioAsistenciaRow {
+    id_horario_clase: number;
+    hora_inicio: string;
+    hora_fin: string;
+    dia_semana: string;
+    nivel: string;
+    tipo_clase: string;
+    profesor: string;
+    dni_alumno: number | null;
+    nombre_alumno: string | null;
+}
+
+/**
  * Fila del listado de asistencias (spec 048).
  *
  * Todos los datos de la clase salen de la **foto** guardada en `asistencias`
@@ -708,6 +727,71 @@ export interface ListadoAsistenciaRow {
     estado: string;
     total_registros: number;
 }
+
+/**
+ * Consulta todos los horarios programados para un día específico, con los alumnos
+ * que asistieron (si los hay).
+ *
+ * Lee los horarios de `horarios_clases` (tabla de programación) y hace LEFT JOIN
+ * con `asistencias` para obtener los alumnos presentes. Así se devuelven TODOS los
+ * horarios del día, incluso los que no tienen asistencias registradas.
+ *
+ * El día de la semana se calcula a partir de la fecha (DAYNAME) para filtrar
+ * correctamente los horarios programados.
+ *
+ * @param data Filtros: escuela y fecha.
+ * @returns {Promise<TipadoData<HorarioAsistenciaRow[]>>} Filas planas
+ *   (una por alumno presente; los horarios sin alumnos devuelven una fila
+ *   con dni_alumno NULL). Ordenadas por hora_inicio. El servicio las
+ *   agrupará por `id_horario_clase`.
+ */
+const horariosConAsistencias = async( data : HorariosAsistenciaInputs )
+: Promise<TipadoData<HorarioAsistenciaRow[]>> => {
+    const { id_escuela, fecha } = data;
+
+    const slqListado : string = `SELECT
+                                    hc.id AS id_horario_clase,
+                                    TIME_FORMAT(hc.hora_inicio, '%H:%i') AS hora_inicio,
+                                    TIME_FORMAT(hc.hora_fin, '%H:%i')   AS hora_fin,
+                                    hc.dia_semana,
+                                    COALESCE(n.nivel, 'Sin nivel')       AS nivel,
+                                    COALESCE(tc.tipo, 'Sin tipo')        AS tipo_clase,
+                                    COALESCE(CONCAT(p.nombre, ' ', p.apellido), 'Sin profesor') AS profesor,
+                                    asis.dni_alumno,
+                                    CONCAT(al.nombre, ' ', al.apellido) AS nombre_alumno
+                                FROM horarios_clases hc
+                                LEFT JOIN profesores p ON p.dni = hc.dni_profesor
+                                LEFT JOIN niveles n ON n.id = hc.id_nivel
+                                LEFT JOIN tipo_clase tc ON tc.id = hc.id_tipo_clase
+                                LEFT JOIN asistencias asis
+                                    ON asis.id_horario_clase = hc.id
+                                    AND asis.fecha = ?
+                                    AND asis.estado = 'presente'
+                                LEFT JOIN alumnos al ON al.dni_alumno = asis.dni_alumno
+                                WHERE hc.id_escuela = ?
+                                  AND hc.estado = 'activos'
+                                  AND LOWER(
+                                    CASE DAYOFWEEK(?)
+                                      WHEN 1 THEN 'domingo'
+                                      WHEN 2 THEN 'lunes'
+                                      WHEN 3 THEN 'martes'
+                                      WHEN 4 THEN 'miercoles'
+                                      WHEN 5 THEN 'jueves'
+                                      WHEN 6 THEN 'viernes'
+                                      WHEN 7 THEN 'sabado'
+                                    END
+                                  ) = LOWER(hc.dia_semana)
+                                ORDER BY hc.hora_inicio ASC,
+                                         al.apellido ASC,
+                                         al.nombre ASC;`;
+
+    return await listarEntidadSinPaginacion<HorarioAsistenciaRow>({
+        slqListado,
+        valores: [fecha, id_escuela, fecha],
+        entidad: "horarios_asistencia",
+        estado: "en la fecha pedida",
+    });
+};
 
 /**
  * Lista las asistencias de una escuela en un rango de fechas (spec 048).
@@ -798,5 +882,5 @@ export const method = {
     proximaClase : tryCatchDatos( clase_proxima_clase ),
     buscarAlumno : tryCatchDatos( buscarAlumnoData ),
     listadoAsistencias : tryCatchDatos( listadoAsistencias ),
-    
+    horariosConAsistencias : tryCatchDatos( horariosConAsistencias ),
 };

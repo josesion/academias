@@ -121,3 +121,16 @@ export const ListadoAsistenciasSchema = z.object({
 });
 
 export type ListadoAsistenciasInputs = z.infer<typeof ListadoAsistenciasSchema>;
+
+/**
+ * Horarios con asistencias de un día (acordeón de asistencias).
+ *
+ * Recibe `id_escuela` (del token) y `fecha` (YYYY-MM-DD) para devolver
+ * los horarios del día que tienen al menos un alumno presente.
+ */
+export const HorariosAsistenciaSchema = z.object({
+    id_escuela: z.coerce.number().int().positive(),
+    fecha: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Formato YYYY-MM-DD requerido"),
+});
+
+export type HorariosAsistenciaInputs = z.infer<typeof HorariosAsistenciaSchema>;

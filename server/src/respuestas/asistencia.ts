@@ -108,3 +108,19 @@ export const MAPA_LISTADO_ASISTENCIAS
         msg:  "Asistencias listadas."
     },
 };
+
+/**
+ * Horarios con asistencias de un día (acordeón de asistencias).
+ * El caso "sin asistencias" NO es un 404: el frontend necesita 200 + data: [].
+ */
+export const MAPA_HORARIOS_ASISTENCIA : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
+    ERROR_SERVIDOR,
+    "HORARIOS_ASISTENCIA_OK": {
+        status: CodigoEstadoHTTP.OK,
+        msg:  "Horarios con asistencias obtenidos."
+    },
+    "SIN_ASISTENCIAS_EN_FECHA": {
+        status: CodigoEstadoHTTP.OK,
+        msg:  "No hay asistencias en esa fecha."
+    },
+};

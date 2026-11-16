@@ -2,7 +2,7 @@
  * Fila de la tabla `escuelas` que expone el listado público
  * (`GET /api/escuelas_publicas`, spec 054).
  *
- * Es una lista blanca de 6 columnas: no incluye `dni_propietario`,
+ * Es una lista blanca de 7 columnas: no incluye `dni_propietario`,
  * `public_id`, `correo`, `fecha_registro` ni `baja`.
  *
  * `urlImagen` llega ya normalizada por la SQL (`NULLIF(urlImagen, '')`), así
@@ -16,4 +16,5 @@ export interface EscuelaPublicaRow {
     celular: string | null;
     urlImagen: string | null;
     rubro: string | null;
+    descripcion: string | null;
 }

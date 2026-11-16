@@ -1,5 +1,6 @@
 import { metricasTajertas, metricasClase, metricasAsistencia, fechaVencimientoPlan  } from "../servicio/metrica.fetch";
 import { getHistorialMetrica } from "../servicio/historial.fetch";
+import { asistenciaHorariosDelDia } from "../servicio/asistencia.fetch";
 
 import { metricasUsuarioLogica } from "../hooks/metricas/metricas.usuario";
 
@@ -12,6 +13,7 @@ export const  metricasUsuarioSeting = ( ) => {
             asistencia : metricasAsistencia,
             historial  : getHistorialMetrica,
             fechaVencimientoPlan : fechaVencimientoPlan,
+            horariosDelDia : asistenciaHorariosDelDia,
         },
 
 

@@ -8,7 +8,7 @@ import { EscuelaPublicaRow } from "../tipados/escuela.publica.tipado";
  * Lista las escuelas con suscripción activa para el tarjetero público del Login (spec 054).
  *
  * - Una sola consulta y columnas nombradas una por una: nunca `SELECT *`
- *   (el contrato son 6 columnas y ninguna sensible).
+ *   (el contrato son 7 columnas y ninguna sensible).
  * - `NULLIF(urlImagen, '')` replica el criterio de la spec 037 (Ampliación 4):
  *   un string vacío se devuelve como `null`.
  * - `INNER JOIN suscripciones_escuelas` filtra solo las escuelas con `estado = 'activo'`.
@@ -28,7 +28,8 @@ const listarEscuelasPublicas = async (): Promise<TipadoData<EscuelaPublicaRow[]>
                                 e.direccion,
                                 e.celular,
                                 NULLIF(e.urlImagen, '') AS urlImagen,
-                                e.rubro
+                                e.rubro,
+                                e.descripcion
                            FROM escuelas e
                            INNER JOIN suscripciones_escuelas se
                                ON e.id_escuela = se.id_escuela

@@ -153,3 +153,35 @@ export const buscarAlumnoAsistencia = async( termino : string, signal?: AbortSig
         signal
     });
 };
+
+/** Alumno dentro de un horario con asistencia */
+export interface HorarioAlumno {
+    dni_alumno: number;
+    nombre_completo: string;
+}
+
+/** Horario con lista de alumnos que asistieron (acordeón del día) */
+export interface HorarioConAlumnos {
+    id_horario_clase: number;
+    hora_inicio: string;
+    hora_fin: string;
+    dia_semana: string;
+    nivel: string;
+    tipo_clase: string;
+    profesor: string;
+    alumnos: HorarioAlumno[];
+}
+
+/**
+ * Obtiene los horarios de un día con los alumnos que asistieron.
+ * Se usa en el acordeón de horarios del día del panel principal.
+ * @param {string} fecha - Fecha en formato YYYY-MM-DD.
+ */
+export const asistenciaHorariosDelDia = async( fecha: string, signal?: AbortSignal )
+: Promise<ApiResponse<HorarioConAlumnos[]>> => {
+    const ruta = `${PAGINA}api/asistencia_horarios/${fecha}`;
+    return await apiFetch( ruta ,{
+        method: "GET",
+        signal
+    });
+};

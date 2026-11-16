@@ -362,6 +362,367 @@
 }
 
 /* ==========================================================================
+   LADO A LADO: Control de Asistencia + Horarios del día
+   ========================================================================== */
+
+.asistencia_lado_a_lado {
+   display: flex;
+   flex-direction: row;
+   gap: 16px;
+   width: 100%;
+}
+
+/* Columna izquierda: Control de Asistencia */
+.asistencia_lado_a_lado > .asistencia_bloque_principal {
+   flex: 1;
+   min-width: 0;
+   max-height: 320px;
+   overflow-y: auto;
+   padding-right: 4px;
+}
+
+/* Columna derecha: Horarios del día */
+.horarios_del_dia {
+   display: flex;
+   flex-direction: column;
+   gap: 10px;
+   flex: 1;
+   min-width: 0;
+}
+
+.horarios_header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+}
+
+.horarios_header h3 {
+   margin: 0;
+   font-family: var(--fuente-titulos);
+   color: var(--texto-principal);
+   font-size: var(--texto-lg);
+   font-weight: var(--peso-negrita);
+}
+
+.horarios_header p {
+   margin: 0;
+   font-family: var(--fuente-principal);
+   color: var(--texto-secundario);
+   font-size: 0.75rem;
+}
+
+/* Scrollbar para columna izquierda */
+.asistencia_bloque_principal::-webkit-scrollbar {
+   width: 6px;
+}
+
+.asistencia_bloque_principal::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+.asistencia_bloque_principal::-webkit-scrollbar-thumb {
+   background: color-mix(in srgb, var(--borde) 60%, transparent);
+   border-radius: 3px;
+}
+
+.asistencia_bloque_principal::-webkit-scrollbar-thumb:hover {
+   background: color-mix(in srgb, var(--borde) 80%, transparent);
+}
+
+.asistencia_bloque_principal {
+   scrollbar-width: thin;
+   scrollbar-color: color-mix(in srgb, var(--borde) 60%, transparent) transparent;
+}
+
+/* ==========================================================================
+   ACORDEÓN DE HORARIOS DEL DÍA
+   ========================================================================== */
+
+.horarios_acordeon {
+   display: flex;
+   flex-direction: column;
+   gap: 8px;
+   width: 100%;
+   max-height: 260px;
+   overflow-y: auto;
+   padding-right: 4px;
+}
+
+/* Item individual de horario */
+.horario_item {
+    background: var(--fondo-principal);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-md);
+    transition: var(--transicion);
+}
+
+.horario_item:hover {
+    border-color: var(--borde-hover);
+}
+
+/* Horario en curso — borde izquierdo verde */
+.horario_item.en_curso {
+    border-left: 3px solid var(--color-exito);
+    background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.04);
+}
+
+/* Horario expandido — fondo ligeramente diferente */
+.horario_item.expandido {
+    background: color-mix(in srgb, var(--fondo-principal) 92%, var(--texto-principal));
+    border-color: var(--borde-hover);
+}
+
+/* Encabezado clickeable del horario */
+.horario_encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: var(--fuente-principal);
+    text-align: left;
+    color: inherit;
+    transition: var(--transicion);
+}
+
+.horario_encabezado:hover {
+    background: color-mix(in srgb, var(--fondo-principal) 95%, var(--texto-principal));
+}
+
+.horario_encabezado:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: -2px;
+}
+
+/* Lado izquierdo: hora + badge en curso */
+.horario_encabezado_izq {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.horario_hora {
+    font-family: var(--fuente-titulos);
+    font-size: 0.85rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+    white-space: nowrap;
+}
+
+.horario_badge_en_curso {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: var(--radio-full, 20px);
+    font-size: 0.65rem;
+    font-weight: var(--peso-semi-negrita);
+    background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.12);
+    color: var(--color-exito);
+    white-space: nowrap;
+}
+
+.horario_badge_en_curso::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 3px currentColor;
+    animation: parpadeo 1.5s infinite ease-in-out;
+}
+
+@keyframes parpadeo {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+/* Lado derecho: tipo, nivel, profesor */
+.horario_encabezado_der {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.horario_tipo {
+    font-size: 0.8rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-principal);
+}
+
+.horario_nivel {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    padding: 1px 6px;
+    border-radius: var(--radio-full, 20px);
+    background: color-mix(in srgb, var(--fondo-principal) 85%, var(--texto-principal));
+    white-space: nowrap;
+}
+
+.horario_profesor {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Flecha del acordeón */
+.horario_flecha {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--texto-secundario);
+    transition: transform 0.2s ease;
+}
+
+/* Panel de alumnos dentro del acordeón */
+.horario_alumnos {
+    padding: 0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    animation: acordeonEntrada 0.2s ease-out;
+}
+
+@keyframes acordeonEntrada {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estado vacío dentro de un acordeón expandido */
+.horario_vacio {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    text-align: center;
+    background: color-mix(in srgb, var(--fondo-principal) 90%, transparent);
+    border-radius: var(--radio-sm, 4px);
+}
+
+.horario_vacio p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--texto-secundario);
+    font-style: italic;
+}
+
+/* Estado vacío: sin horarios para el día */
+.horarios_vacio_dia {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 16px;
+    gap: 4px;
+}
+
+.horarios_vacio_dia h3 {
+    margin: 0;
+    font-family: var(--fuente-titulos);
+    color: var(--texto-principal);
+    font-size: 0.95rem;
+}
+
+.horarios_vacio_dia p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--texto-secundario);
+}
+
+/* Estado de carga */
+.horarios_cargando {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px 16px;
+    gap: 8px;
+}
+
+.horarios_cargando_icono {
+    color: var(--color-primario);
+    animation: rotar 1s linear infinite;
+}
+
+@keyframes rotar {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.horarios_cargando p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--texto-secundario);
+}
+
+/* Estado de error */
+.horarios_error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    text-align: center;
+}
+
+.horarios_error p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--color-error);
+    font-style: italic;
+}
+
+/* Wrapper del badge de estado del alumno (ya existe, pero aseguramos) */
+.asistencia_estado_wrapper {
+   flex-shrink: 0;
+}
+
+/* ==========================================================================
+   BARRA DE SCROLL PERSONALIZADA PARA EL ACORDEÓN
+   ========================================================================== */
+
+/* Webkit (Chrome, Edge, Safari) */
+.horarios_acordeon::-webkit-scrollbar {
+   width: 6px;
+}
+
+.horarios_acordeon::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+.horarios_acordeon::-webkit-scrollbar-thumb {
+   background: color-mix(in srgb, var(--borde) 60%, transparent);
+   border-radius: 3px;
+}
+
+.horarios_acordeon::-webkit-scrollbar-thumb:hover {
+   background: color-mix(in srgb, var(--borde) 80%, transparent);
+}
+
+/* Firefox */
+.horarios_acordeon {
+   scrollbar-width: thin;
+   scrollbar-color: color-mix(in srgb, var(--borde) 60%, transparent) transparent;
+}
+
+/* ==========================================================================
    MEDIA QUERIES (RESPONSIVE)
    ========================================================================== */
 
@@ -387,6 +748,37 @@
     .info_clases_estado {
         align-self: flex-start;
     }
+
+    /* Acordeón responsive */
+    .horario_encabezado {
+        flex-wrap: wrap;
+        padding: 8px 10px;
+    }
+
+    .horario_encabezado_der {
+        width: 100%;
+        order: 3;
+        padding-top: 4px;
+    }
+
+    .horario_flecha {
+        margin-left: auto;
+    }
+
+    .horario_profesor {
+        display: none;
+    }
+
+    /* Lado a lado → columna en móviles */
+    .asistencia_lado_a_lado {
+        flex-direction: column;
+    }
+
+    .asistencia_lado_a_lado > .asistencia_bloque_principal {
+        max-height: none;
+        overflow-y: visible;
+        padding-right: 0;
+    }
 }
 
 /* ==========================================================================
@@ -403,6 +795,25 @@
   .asistencia_ecualizador span {
     animation: none !important;
     transform: scaleY(1) !important;
+  }
+  .horario_item {
+    transition: none !important;
+  }
+  .horario_encabezado {
+    transition: none !important;
+  }
+  .horario_flecha {
+    transition: none !important;
+  }
+  .horario_alumnos {
+    animation: none !important;
+  }
+  .horario_badge_en_curso::before {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .horarios_cargando_icono {
+    animation: none !important;
   }
 }
 
@@ -429,6 +840,19 @@
   }
   .asistencia_contador_badge {
     border-width: 2px;
+  }
+  .horario_item {
+    border-width: 2px;
+  }
+  .horario_item:hover {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+  .horario_encabezado:hover {
+    outline: 2px solid var(--color-primario);
+  }
+  .horario_item.en_curso {
+    border-left-width: 4px;
   }
 }
 

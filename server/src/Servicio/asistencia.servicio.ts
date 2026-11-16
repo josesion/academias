@@ -19,7 +19,8 @@ import {
          AsistenciaManualSchema, AsistenciaManualInputs,
           BuscarAlumnoSchema, BuscarAlumnoInputs,
           ListadoAsistenciasSchema, ListadoAsistenciasInputs,
-       } from "../squemas/asistencias"; 
+         HorariosAsistenciaSchema, HorariosAsistenciaInputs,
+       } from "../squemas/asistencias";
 
 import { DataAlumnoVigenteInputs, DataAlumnoVigenteSchema, } from "../squemas/horarios_clases";       
 import {  ResulClases_curso_proxima, ResultadoClaseEnCruso , ResultadoClaseProxima ,ResultErrorAsistencia, ResultDataAsistencia, InfoAlumnoResult } from "../tipados/asistencia.tipado";
@@ -558,6 +559,96 @@ const listadoAsistenciasServicio = async( parametros : ListadoAsistenciasInputs 
     };
 };
 
+/**
+ * Horario con lista de alumnos que asistieron (salida del acordeón).
+ */
+export interface HorarioConAlumnos {
+    id_horario_clase: number;
+    hora_inicio: string;
+    hora_fin: string;
+    dia_semana: string;
+    nivel: string;
+    tipo_clase: string;
+    profesor: string;
+    alumnos: Array<{ dni_alumno: number; nombre_completo: string }>;
+}
+
+/**
+ * Obtiene los horarios de un día con los alumnos que asistieron.
+ *
+ * Flujo:
+ * 1. Valida con Zod (`id_escuela` + `fecha`).
+ * 2. Llama a data para obtener filas planas (una por asistencia presente).
+ * 3. Agrupa las filas por `id_horario_clase` para formar la estructura
+ *    de horario + lista de alumnos.
+ * 4. Traduce los códigos de data al MAPA del endpoint.
+ *
+ * @param {HorariosAsistenciaInputs} parametros - Escuela (del token) y fecha.
+ * @returns {Promise<TipadoData<HorarioConAlumnos[]>>} Array de horarios
+ *   con sus alumnos, o array vacío si no hay asistencias.
+ * @returns.code HORARIOS_ASISTENCIA_OK - Hay horarios con asistentes.
+ * @returns.code SIN_ASISTENCIAS_EN_FECHA - No hay asistencias en esa fecha.
+ * @returns.code ERROR_SERVIDOR - Falla inesperada.
+ */
+const horariosAsistenciaServicio = async( parametros : HorariosAsistenciaInputs )
+: Promise<TipadoData<HorarioConAlumnos[]>> => {
+    const data : HorariosAsistenciaInputs = HorariosAsistenciaSchema.parse(parametros);
+
+    const resultado = await asistenciaData.horariosConAsistencias(data);
+
+    if (resultado.code === "NO_ACTIVE_HORARIOS_ASISTENCIA") {
+        return {
+            error: false,
+            message: "No hay asistencias en esa fecha.",
+            data: [],
+            code: "SIN_ASISTENCIAS_EN_FECHA",
+        };
+    }
+
+    if (resultado.code === "HORARIOS_ASISTENCIA_LISTED") {
+        // Agrupar filas planas por id_horario_clase
+        const grupos = new Map<number, HorarioConAlumnos>();
+        for (const fila of resultado.data!) {
+            let grupo = grupos.get(fila.id_horario_clase);
+            if (!grupo) {
+                grupo = {
+                    id_horario_clase: fila.id_horario_clase,
+                    hora_inicio: fila.hora_inicio,
+                    hora_fin: fila.hora_fin,
+                    dia_semana: fila.dia_semana,
+                    nivel: fila.nivel,
+                    tipo_clase: fila.tipo_clase,
+                    profesor: fila.profesor,
+                    alumnos: [],
+                };
+                grupos.set(fila.id_horario_clase, grupo);
+            }
+            // Si dni_alumno es null, significa que el horario no tiene
+            // asistencias (LEFT JOIN vacío). Se salta para no agregar
+            // un alumno nulo al array.
+            if (fila.dni_alumno != null && fila.nombre_alumno != null) {
+                grupo.alumnos.push({
+                    dni_alumno: fila.dni_alumno,
+                    nombre_completo: fila.nombre_alumno,
+                });
+            }
+        }
+
+        return {
+            error: false,
+            message: "Horarios con asistencias obtenidos.",
+            data: Array.from(grupos.values()),
+            code: "HORARIOS_ASISTENCIA_OK",
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "Error al obtener horarios con asistencias",
+        code: "ERROR_SERVIDOR",
+    };
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
     asistenciaManual : tryCatchDatos( altaAsistenciaManual ),
@@ -566,4 +657,5 @@ export const method = {
     infoAlumno : tryCatchDatos( infoAlumnoServicio ),
     buscarAlumno : tryCatchDatos( buscarAlumnoServicio ),
     listadoAsistencias : tryCatchDatos( listadoAsistenciasServicio ),
+    horariosAsistencia : tryCatchDatos( horariosAsistenciaServicio ),
 };

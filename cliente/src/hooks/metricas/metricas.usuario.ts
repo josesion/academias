@@ -7,6 +7,7 @@ import { recepcionComunicacion } from "../../utils/canalComunicacion";
 
 import { type ResultTarjeta, type ResultClase, type ResultAsistencia, type VencimientoEscuela, fechaVencimientoPlan } from "../../servicio/metrica.fetch";
 import { type ResultHistorial } from "../../servicio/historial.fetch";
+import { type HorarioConAlumnos } from "../../servicio/asistencia.fetch";
 
 import { RutasProtegidasContext } from "../../contexto/protectRutas";
 
@@ -18,7 +19,8 @@ interface MetricasConfig {
         clases   : ServicioCrud,
         asistencia : ServicioCrud,
         historial  : ServicioCrud,
-        fechaVencimientoPlan : ServicioCrud
+        fechaVencimientoPlan : ServicioCrud,
+        horariosDelDia : ServicioCrud
     },
 };
  
@@ -35,6 +37,7 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
     const clases   = config.servicios.clases;
     const asistencia = config.servicios.asistencia;
     const historial  = config.servicios.historial;
+    const horariosDelDiaServicio = config.servicios.horariosDelDia;
 
     //---- metricas de tarjeras 
     useEffectServicio<undefined,ResultTarjeta,MetricaAction >({
@@ -124,6 +127,27 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         useAbort : true,
         dependencias : [state.actualizarCierreCaja, state.actualizarGeneral]
     });     
+
+// ---- horarios del día con asistencias (acordeón del panel principal)
+    useEffectServicio<string, HorarioConAlumnos[], MetricaAction>({
+        servicios: horariosDelDiaServicio,
+        valores: new Date().toISOString().split("T")[0],
+        dispatch: dispatch,
+        accionResultado: (data) => ({
+            type: "SET_HORARIOS_DIA",
+            payload: data,
+        }),
+        accionCarga: (estado) => ({
+            type: "SET_CARGA_HORARIOS_DIA",
+            payload: estado,
+        }),
+        accionError: (mensaje) => ({
+            type: "SET_ERROR_HORARIOS_DIA",
+            payload: mensaje,
+        }),
+        useAbort: true,
+        dependencias: [state.actualizar, state.actualizarGeneral]
+    });
 
     
 
