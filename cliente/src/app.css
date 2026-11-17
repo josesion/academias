@@ -1,127 +1,120 @@
-:root{
+:root {
 
     /* =====================================
-        FONDOS (Actualizados a la paleta editorial/lujo)
+       FONDOS (Gris neutro oscuro — suave a la vista)
     ===================================== */
 
-    --fondo-principal:#f9f9f9;
-    --fondo-secundario:#FFFFFF;
-    --fondo-superficie:#F0EFEB;
-    --fondo-hover:rgba(27,28,27,.04);
+    --fondo-principal: #111827;
+    --fondo-secundario: #1F2937;
+    --fondo-superficie: #374151;
+    --fondo-hover: rgba(255, 255, 255, 0.06);
 
     /* =====================================
-        TEXTO
+       TEXTO (Blanco suave neutro)
     ===================================== */
 
-    --texto-principal:#1B1C1B;
-    --texto-secundario:rgba(27, 28, 27, 0.6);
-    --texto-deshabilitado:rgba(27, 28, 27, 0.4);
+    --texto-principal: #F3F4F6;
+    --texto-secundario: rgba(243, 244, 246, 0.6);
+    --texto-deshabilitado: rgba(243, 244, 246, 0.35);
 
     /* =====================================
-        COLORES
+       COLORES (Acentos sutiles sobre gris neutro)
     ===================================== */
 
-    --color-primario:#1B1C1B;
-    --color-secundario:#5B7B6E; /* Verde salvia sutil */
+    --color-primario: #6B7280;      /* Gris medio — acento neutro */
+    --color-secundario: #9CA3AF;    /* Gris claro — enlace, foco */
 
-    --color-exito:#5B7B6E;
-    --color-advertencia:#C29B38;
-    --color-error:#B34747;
+    --color-exito: #5A7A6A;         /* Verde grisáceo */
+    --color-advertencia: #A89460;   /* Mostaza apagado */
+    --color-error: #9A6060;         /* Rojo grisáceo */
 
     /* =====================================
-        BORDES
+       BORDES (Sutiles sobre gris neutro)
     ===================================== */
 
-    --borde:rgba(116,120,120,.15);
-    --borde-hover:rgba(116,120,120,.3);
+    --borde: rgba(255, 255, 255, 0.08);
+    --borde-hover: rgba(255, 255, 255, 0.18);
 
     /* =====================================
-        TIPOGRAFÍAS
+       TIPOGRAFÍAS
     ===================================== */
 
-    --fuente-principal:"Inter",sans-serif;
-    --fuente-titulos:'EB Garamond', Georgia, serif; /* Cambiado a Serif editorial */
-    --fuente-codigo:"JetBrains Mono",monospace;
+    --fuente-principal: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    --fuente-titulos: "Plus Jakarta Sans", "Inter", sans-serif;
+    --fuente-codigo: "JetBrains Mono", monospace;
 
     /* =====================================
-        TAMAÑOS
+       TAMAÑOS
     ===================================== */
 
-    --texto-xs:.68rem;
-    --texto-sm:.80rem;
-    --texto-md:.92rem;
-    --texto-lg:1rem;
-    --texto-xl:1.08rem;
+    --texto-xs: .70rem;
+    --texto-sm: .82rem;
+    --texto-md: .94rem;
+    --texto-lg: 1.02rem;
+    --texto-xl: 1.14rem;
 
-    --titulo-sm:1.15rem;
-    --titulo-md:1.2rem;
-    --titulo-lg:2.35rem;
+    --titulo-sm: 1.20rem;
+    --titulo-md: 1.38rem;
+    --titulo-lg: 2.45rem;
 
     /* =====================================
-        PESOS
+       PESOS
     ===================================== */
 
-    --peso-normal:400;
-    --peso-medio:500;
-    --peso-semi-negrita:600;
-    --peso-negrita:700;
+    --peso-normal: 400;
+    --peso-medio: 500;
+    --peso-semi-negrita: 600;
+    --peso-negrita: 700;
 
     /* =====================================
-        ALTURA DE LÍNEA
+       ALTURA DE LÍNEA
     ===================================== */
 
-    --linea-texto:1.5;
-    --linea-titulo:1.2;
+    --linea-texto: 1.55;
+    --linea-titulo: 1.18;
 
     /* =====================================
-        ALTURAS
+       ALTURAS
     ===================================== */
 
-    /* Altura del panel de detalle y de la columna de gráficos del Listado de Cajas
-       (spec 041 · O2). Fuente única de verdad; los breakpoints menores (600px/500px)
-       se mantienen como literales locales de cada media query. */
-    --altura-panel-cajas:750px;
+    --altura-panel-cajas: 750px;
 
     /* =====================================
-        RADIOS
+       RADIOS
     ===================================== */
 
-    --radio-sm:10px;
-    --radio-md:16px;
-    --radio-lg:22px;
+    --radio-sm: 10px;
+    --radio-md: 16px;
+    --radio-lg: 22px;
 
     /* =====================================
-        SOMBRAS
+       SOMBRAS (Profundas y neutras)
     ===================================== */
 
-    --sombra-sm:0 2px 8px rgba(27,27,27,.03);
-    --sombra-md:0 12px 32px rgba(27,27,27,.06);
-    --sombra-lg:0 20px 48px rgba(27,27,27,.09);
+    --sombra-sm: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 4px 12px rgba(0, 0, 0, 0.50);
+    --sombra-md: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 14px 32px -4px rgba(0, 0, 0, 0.60);
+    --sombra-lg: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 24px 48px -8px rgba(0, 0, 0, 0.70);
 
     /* =====================================
-        TRANSICIONES
+       TRANSICIONES
     ===================================== */
 
-    --transicion:all .3s cubic-bezier(0.16, 1, 0.3, 1);
-
-    /* Salida fuerte para interacciones de UI: arranca rápido y frena suave
-       (más punch que un ease-out genérico). Usar con propiedades exactas:
-       transition: transform 140ms var(--ease-ui) */
-    --ease-ui:cubic-bezier(0.23, 1, 0.32, 1);
+    --transicion: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-ui: cubic-bezier(0.23, 1, 0.32, 1);
 
     /* ============================================================
-       TOKENS ADICIONALES — Spec 031 (Unificar estilos hardcoded)
+       TOKENS ADICIONALES — Spec 031
        ============================================================ */
 
     /* ----- Error component ----- */
-    /* Fondo oscuro original era #1d1d2b; --color-primario (#1B1C1B) es el token oscuro más cercano */
-    --fondo-error: var(--color-primario);
-    --color-error-neon: #ff4d4d;
-    --borde-error: color-mix(in srgb, var(--color-error-neon) 20%, transparent);
-    --borde-error-fuerte: var(--color-error-neon);
-    --texto-error: var(--fondo-secundario);
-    --sombra-error: color-mix(in srgb, var(--color-error-neon) 70%, transparent);
+    --fondo-error: #2A1F1F;
+    --color-error-neon: #9A6060;
+    --borde-error: rgba(154, 96, 96, 0.25);
+    --borde-error-fuerte: #9A6060;
+    --texto-error: #C4A0A0;
+    --sombra-error: rgba(154, 96, 96, 0.20);
 
+    color-scheme: dark;
 }
 
 * {
@@ -133,31 +126,6 @@
 
 /* ==========================================================================
    FOCUS VISIBLE — WCAG 2.4.7 (spec 013)
-
-   16 CSS del proyecto tienen `outline: none` en la regla base de sus controles,
-   incluidos los dos componentes de los que está hecho casi todo:
-   `boton.css` (que NO tiene ninguna regla de foco en todo el archivo) y
-   `inputs.css`. `paginacion.css` tampoco: su foco solo existe dentro de dos
-   pantallas. Resultado: al tabular no se veía dónde estabas.
-
-   - El `:root` sube la regla a (0,2,0). Un `:focus-visible` pelado (0,1,0)
-     empataría con `.boton_personalizado { outline: none }` y ganaría el que
-     quedara último en el bundle: así no depende del orden de Vite.
-   - Sigue PERDIENDO contra los `:focus-visible` locales más específicos
-     ((0,2,1) en `admin.css`, `paginaescuelas.css` y `compo.verificacion.css`:
-     llevan un `button` de por medio), que mantienen su propio diseño.
-   - Los que empatan (0,2,0) quedan cubiertos por esta regla, y casi todos declaran lo
-     mismo: `carrucelsolo.css` usa estos mismos 2px de salvia (el `_dot` con
-     offset 3px) y `imagensector.css` ni siquiera define `outline`. Los dos que
-     sí cambian son `logout.css` (pasa de rojo a salvia) y `inicio.scroll.css`
-     (de 1px negro offset 4px a 2px salvia offset 2px).
-   - Token, grosor y offset idénticos a los de esas reglas locales, para que el
-     anillo se vea igual en toda la app.
-   - Los `outline: none` NO se borran: al sacarlos aparecería el anillo del
-     navegador en cada click de mouse, encima del `box-shadow` que cada input ya
-     dibuja (doble indicador). Acá la especificidad los neutraliza.
-   - No cambia nada para quien usa mouse: `:focus-visible` solo se activa con
-     teclado.
    ========================================================================== */
 
 :root :focus-visible {
@@ -168,82 +136,62 @@
 
 /* ==========================================================================
    ENLACE DE SALTO — WCAG 2.4.1 (spec 016)
-
-   Primer elemento enfocable de la página (va antes del <nav> en
-   `LayoutConMenu`). Está SIEMPRE en el DOM pero escondido muy arriba con
-   `translateY(-200%)`, así que solo aparece cuando recibe el foco — que es
-   justo cuando lo está buscando el usuario de teclado.
-
-   Se anima SOLO `transform` (no `top`/`height`): es lo único que no fuerza
-   recálculo de layout.
    ========================================================================== */
 
-.salto_contenido{
-    position:absolute;
+.salto_contenido {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 1100;
+    transform: translateY(-200%);
+    padding: 10px 16px;
 
-    top:8px;
-    left:8px;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-medio);
+    color: var(--texto-principal);
 
-    /* Por encima del nav (que va en 1000) y del overlay de los modales (1000) */
-    z-index:1100;
+    text-decoration: none;
+    white-space: nowrap;
 
-    /* Escondido hasta que recibe foco */
-    transform:translateY(-200%);
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra-md);
 
-    padding:10px 16px;
-
-    font-family:var(--fuente-principal);
-    font-size:var(--texto-sm);
-    font-weight:var(--peso-medio);
-
-    color:var(--texto-principal);
-
-    text-decoration:none;
-    white-space:nowrap;
-
-    background:var(--fondo-secundario);
-    border:1px solid var(--borde);
-    border-radius:var(--radio-sm);
-
-    box-shadow:var(--sombra-md);
-
-    transition:transform 180ms var(--ease-ui);
+    transition: transform 180ms var(--ease-ui);
 }
 
-.salto_contenido:focus-visible{
-    transform:translateY(0);
+.salto_contenido:focus-visible {
+    transform: translateY(0);
 }
 
-/* Con movimiento reducido el enlace aparece de golpe, sin deslizarse */
-@media (prefers-reduced-motion: reduce){
-    .salto_contenido{
-        transition:none;
+@media (prefers-reduced-motion: reduce) {
+    .salto_contenido {
+        transition: none;
     }
 }
 
 
 /* ==========================================================================
-   TÍTULOS DE SECCIÓN COMPARTIDOS — Estética Editorial
-   Usar en lugar de clases duplicadas (.tarjeta_titulo, .tarjeta_titulo_pago, ::before)
-========================================================================== */
+   TÍTULOS DE SECCIÓN COMPARTIDOS
+   ========================================================================== */
 
 .section-title {
     text-align: center;
-    margin: 0 0 20px 0; /* el margen de arriba lo pone el gap del contenedor */
+    margin: 0 0 20px 0;
     padding-bottom: 10px;
 
-    font-family: var(--fuente-codigo);
+    font-family: var(--fuente-titulos);
     font-size: var(--texto-xs);
     font-weight: var(--peso-negrita);
-    letter-spacing: 2px;
+    letter-spacing: 1.8px;
     text-transform: uppercase;
 
     color: var(--texto-secundario);
-
     border-bottom: 1px solid var(--borde);
 }
 
-/* Variante para títulos de sección dentro de tarjetas (mismo estilo, menos margen) */
 .section-title--card {
     margin-bottom: 16px;
     padding-bottom: 8px;
@@ -254,18 +202,14 @@
    APP
 ======================================================= */
 
-.app{
-
-    width:100%;
-    min-height:100vh;
-    min-height:100dvh;
-
-    position:relative;
-
-    overflow:hidden;
-
-    display:flex;
-    flex-direction:column;
+.app {
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     background: var(--fondo-principal);
 }
 
@@ -274,83 +218,54 @@
    LAYOUT
 ======================================================= */
 
-.layout_principal{
-
-    display:flex;
-    flex-direction:column;
-
-    height:100vh;
-    height:100dvh;
-
-    overflow:hidden;
-
+.layout_principal {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
-.contenido_derecha{
-
-    flex:1;
-
-    min-height:0;
-
-    overflow-y:auto;
-    overflow-x:hidden;
-
-    scrollbar-width:thin;
-    scrollbar-color:
-        rgba(116,120,120,.3)
-        transparent;
-
+.contenido_derecha {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
-
 
 /* Chrome */
-
-.contenido_derecha::-webkit-scrollbar{
-
-    width:5px;
-
+.contenido_derecha::-webkit-scrollbar {
+    width: 6px;
 }
 
-.contenido_derecha::-webkit-scrollbar-track{
-
-    background:transparent;
-
+.contenido_derecha::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-.contenido_derecha::-webkit-scrollbar-thumb{
-
-    border-radius:999px;
-
-    background:rgba(116,120,120,.2);
-
+.contenido_derecha::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
 }
 
-.contenido_derecha::-webkit-scrollbar-thumb:hover{
-
-    background:rgba(116,120,120,.4);
+.contenido_derecha::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
 }
 
 
 /* =======================================================
-   FONDO ANIMADO (Adaptado a tonos suaves y cálidos)
+   FONDO ANIMADO (Gris neutro oscuro — sin color)
 ======================================================= */
 
-.fondo-animado{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:0;
-
-    pointer-events:none;
-
-    overflow:hidden;
-
-    filter:blur(90px);
-
-    opacity:.35;
-
+.fondo-animado {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    filter: blur(110px);
+    opacity: .55;
 }
 
 
@@ -358,88 +273,56 @@
    ESFERAS
 ======================================================= */
 
-.esfera{
-
-    position:absolute;
-
-    border-radius:50%;
-
-    animation:moverLuces 24s ease-in-out infinite alternate;
-
-    will-change:transform;
-
+.esfera {
+    position: absolute;
+    border-radius: 50%;
+    animation: moverLuces 24s ease-in-out infinite alternate;
+    will-change: transform;
 }
 
-
-
-.esfera-2{
-
-    width:420px;
-    height:420px;
-
-    right:-8%;
-    bottom:5%;
-
-    background:rgba(91,123,110,.08);
-
-    animation-duration:18s;
-
+.esfera-2 {
+    width: 440px;
+    height: 440px;
+    right: -6%;
+    bottom: 4%;
+    background: rgba(255, 255, 255, 0.02);
+    animation-duration: 18s;
 }
 
-.esfera-3{
-
-    width:850px;
-    height:280px;
-
-    top:35%;
-    left:28%;
-
-    background:rgba(215,210,200,.15);
-
-    animation-duration:30s;
-
+.esfera-3 {
+    width: 820px;
+    height: 300px;
+    top: 32%;
+    left: 25%;
+    background: rgba(255, 255, 255, 0.03);
+    animation-duration: 30s;
 }
 
-.esfera-4{
-
-    width:260px;
-    height:260px;
-
-    top:55%;
-    left:12%;
-
-    background:rgba(91,123,110,.06);
-
-    animation-duration:26s;
-
+.esfera-4 {
+    width: 280px;
+    height: 280px;
+    top: 52%;
+    left: 10%;
+    background: rgba(255, 255, 255, 0.015);
+    animation-duration: 26s;
 }
 
-.esfera-5{
-
-    width:220px;
-    height:220px;
-
-    top:15%;
-    right:25%;
-
-    background:rgba(255,255,255,.6);
-
-    animation-duration:28s;
-
+.esfera-5 {
+    width: 240px;
+    height: 240px;
+    top: 12%;
+    right: 22%;
+    background: rgba(255, 255, 255, 0.025);
+    animation-duration: 28s;
 }
 
-.esfera-6{
-
-    width:500px;
-    height:260px;
-
-    bottom:-8%;
-    left:8%;
-
-    background:rgba(215,210,200,.12);
-
-    animation-duration:32s;
-
+.esfera-6 {
+    width: 520px;
+    height: 280px;
+    bottom: -6%;
+    left: 8%;
+    background: rgba(255, 255, 255, 0.02);
+    animation-duration: 32s;
 }
 
 
@@ -447,41 +330,21 @@
    ANIMACIÓN
 ======================================================= */
 
-@keyframes moverLuces{
-
-    0%{
-
-        transform:
-            translate(0,0)
-            scale(1);
-
+@keyframes moverLuces {
+    0% {
+        transform: translate(0, 0) scale(1);
     }
-
-    33%{
-
-        transform:
-            translate(80px,40px)
-            scale(1.08);
-
+    33% {
+        transform: translate(80px, 40px) scale(1.08);
     }
-
-    66%{
-
-        transform:
-            translate(-60px,90px)
-            scale(.92);
-
+    66% {
+        transform: translate(-60px, 90px) scale(.92);
     }
-
-    100%{
-
-        transform:
-            translate(0,0)
-            scale(1);
-
+    100% {
+        transform: translate(0, 0) scale(1);
     }
-
 }
+
 
 /* ============================================================
    TOKENS ADICIONALES — Spec 026 (Sección Alumnos)
@@ -489,11 +352,12 @@
 
 :root {
     /* Overlays modales */
-    --overlay-modal: rgba(8, 10, 16, 0.72);
-    --overlay-modal-light: rgba(15, 23, 42, 0.7);
+    --overlay-modal: rgba(2, 6, 23, 0.78);
+    --overlay-modal-light: rgba(11, 17, 32, 0.65);
+
     /* Fondos semitransparentes para estados */
-    --fondo-exito-suave: rgba(91, 123, 110, 0.12);
-    --fondo-error-suave: rgba(179, 71, 71, 0.12);
+    --fondo-exito-suave: rgba(90, 122, 106, 0.10);
+    --fondo-error-suave: rgba(154, 96, 96, 0.10);
 
     /* Focus ring unificado */
     --focus-ring: 2px solid var(--color-secundario);
@@ -506,11 +370,11 @@
     --btn-radius: var(--radio-sm);
     --btn-font: var(--fuente-principal);
     --btn-size: var(--texto-sm);
-    --btn-font-weight: var(--peso-medio);
+    --btn-font-weight: var(--peso-semi-negrita);
     --btn-gap: 8px;
 
     /* Card base */
-    --card-padding: 16px;
+    --card-padding: 18px;
     --card-gap: 12px;
     --card-border: 1px solid var(--borde);
     --card-radius: var(--radio-md);
@@ -519,7 +383,7 @@
     --card-hover-border: var(--borde-hover);
     --card-hover-shadow: var(--sombra-md);
 
-    /* Skip link (ya existe .salto_contenido, solo aseguramos variables) */
+    /* Skip link */
     --skip-link-z: 1100;
     --skip-link-bg: var(--fondo-secundario);
     --skip-link-border: var(--borde);
@@ -527,6 +391,7 @@
     --skip-link-padding: 10px 16px;
     --skip-link-shadow: var(--sombra-md);
 }
+
 
 /* ============================================================================
    BOTONES UNIFICADOS
@@ -548,6 +413,7 @@
     transition: background-color 140ms var(--ease-ui),
                 border-color 140ms var(--ease-ui),
                 color 140ms var(--ease-ui),
+                box-shadow 140ms var(--ease-ui),
                 transform 140ms var(--ease-ui);
     border: 1px solid transparent;
     text-decoration: none;
@@ -556,14 +422,17 @@
 
 .btn-principal {
     background-color: var(--color-primario);
-    color: var(--fondo-secundario);
+    color: #FFFFFF;
     border-color: var(--color-primario);
     padding: var(--btn-padding);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.30);
 }
 
 .btn-principal:hover {
-    background-color: var(--color-secundario);
-    border-color: var(--color-secundario);
+    background-color: #5B6270;
+    border-color: #5B6270;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.40);
+    transform: translateY(-1px);
 }
 
 .btn-secundario {
@@ -571,23 +440,25 @@
     color: var(--texto-principal);
     border-color: var(--borde);
     padding: var(--btn-padding);
+    box-shadow: var(--sombra-sm);
 }
 
 .btn-secundario:hover {
+    background-color: #4B5563;
     border-color: var(--borde-hover);
-    color: var(--color-secundario);
+    color: #FFFFFF;
 }
 
 .btn-ghost {
     background-color: transparent;
-    color: var(--texto-principal);
+    color: var(--texto-secundario);
     border-color: transparent;
     padding: calc(var(--btn-padding) - 2px) calc(var(--btn-padding) - 4px);
 }
 
 .btn-ghost:hover {
     background-color: var(--fondo-hover);
-    color: var(--color-secundario);
+    color: var(--texto-principal);
 }
 
 .btn-ghost-sm {
@@ -604,6 +475,7 @@
     outline-offset: var(--focus-offset);
 }
 
+
 /* ============================================================================
    CARD BASE
    ============================================================================ */
@@ -615,7 +487,9 @@
     border-radius: var(--card-radius);
     background: var(--card-bg);
     box-shadow: var(--card-shadow);
-    transition: border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+    transition: border-color 200ms var(--ease-ui),
+                box-shadow 200ms var(--ease-ui),
+                transform 200ms var(--ease-ui);
 }
 
 .card-base:hover {
@@ -623,21 +497,15 @@
     box-shadow: var(--card-hover-shadow);
 }
 
+
 /* ============================================================================
    SPINNER MINI — carga local dentro de un control (spec 038)
-   ---------------------------------------------------------------------------
-   Spinner de 14px para marcar, en el control MISMO que dispara la petición,
-   que se está cargando (un input con datalist, un chip de estado…).
-
-   - Rotación continua → `linear` (no es entrada/salida, no lleva ease-out).
-   - Solo anima `transform` → no fuerza layout ni paint.
-   - Misma cadencia (0.8s) que el spinner del botón (`boton.css`).
    ============================================================================ */
 
 .spinner_mini {
     width: 14px;
     height: 14px;
-    flex: none;                        /* no se encoge dentro de un flex padre */
+    flex: none;
     border-radius: 50%;
     border: 2px solid var(--fondo-superficie);
     border-top-color: var(--color-secundario);
@@ -649,6 +517,7 @@
         transform: rotate(360deg);
     }
 }
+
 
 /* ============================================================================
    REDUCED MOTION GLOBAL — Spec 026
@@ -662,7 +531,6 @@
         transition: none !important;
     }
 
-    /* Spinner específico */
     .carga-global_spinner,
     .spinner,
     .spinner_mini,
@@ -671,6 +539,7 @@
         opacity: 0.6;
     }
 }
+
 
 /* ============================================================================
    HIGH CONTRAST MODE
@@ -693,8 +562,6 @@
     .card-horarios-lateral,
     .modal-grilla-card,
     .robot-error-flotante,
-    .estado-plan-card,
-    .plan-card,
     .buscador_contenedor_comp {
         border-width: 2px !important;
         border-style: solid !important;
@@ -723,6 +590,7 @@
     }
 }
 
+
 /* ============================================================================
    PRINT STYLES
    ============================================================================ */
@@ -739,11 +607,8 @@
     .modal-overlay-finanzas,
     .robot-error-flotante,
     .aviso-clases,
-    .nav-superior,
     .buscador_contenedor_comp,
     .area_buscador_lateral,
-    .modal-overlay-finanzas,
-    .modal-overlay,
     .paginacion,
     .area_paginacion,
     .historico_paginacion,
@@ -779,189 +644,135 @@
     .amb_master_wrapper {
         background: var(--fondo-principal) !important;
     }
-
-    .visually-hidden {
-        position: static !important;
-        width: auto !important;
-        height: auto !important;
-        clip: auto !important;
-        margin: 0 !important;
-        overflow: visible !important;
-    }
 }
 
 
 /* ============================================================================
    TEMA GYM — spec 047 (§4 y §5)
-
-   Todo el tema cuelga de `html[data-rubro="gym"]`, que `protectRutas.tsx` pone
-   al iniciar sesión con una escuela de rubro `gym` y quita al cerrarla. Si el
-   atributo no está (baile, administrador, visita) NO se aplica nada de acá: la
-   estética de baile queda exactamente como estaba.
-
-   Se define al final del archivo para que no dependa del orden interno de
-   `app.css`; igual la especificidad (0,2,0) ya le gana a `:root` (0,1,0).
    ============================================================================ */
 
-
-/* ----------------------------------------------------------------------------
-   BLOQUE A — Tokens
-   ---------------------------------------------------------------------------- */
-
 :root[data-rubro="gym"] {
-
-    /* Controles nativos (inputs, selects, scrollbars) en su variante oscura */
     color-scheme: dark;
 
-    /* Fondos */
-    --fondo-principal:#0E1113;
-    --fondo-secundario:#161A1D;
-    --fondo-superficie:#1E2428;
-    --fondo-hover:rgba(255,255,255,.06);
+    --fondo-principal: #0E1113;
+    --fondo-secundario: #161A1D;
+    --fondo-superficie: #1E2428;
+    --fondo-hover: rgba(255, 255, 255, .06);
 
-    /* Texto */
-    --texto-principal:#ECEEF0;
-    --texto-secundario:rgba(236,238,240,.66);
-    --texto-deshabilitado:rgba(236,238,240,.38);
+    --texto-principal: #ECEEF0;
+    --texto-secundario: rgba(236, 238, 240, .66);
+    --texto-deshabilitado: rgba(236, 238, 240, .38);
 
-    /* Colores.
-       En `:root` el par de botón está cruzado (fondo = --color-primario,
-       texto = --fondo-secundario): al pasar el primario a lima, el texto de los
-       botones pasa a ser el fondo oscuro y el contraste sigue siendo válido. */
-    --color-primario:#C6F24E;
-    --color-secundario:#6FD3B0;
+    --color-primario: #C6F24E;
+    --color-secundario: #6FD3B0;
 
-    --color-exito:#4ADE80;
-    --color-advertencia:#F2C14E;
-    --color-error:#FF6B6B;
+    --color-exito: #3A9B62;         /* Verde desaturado */
+    --color-advertencia: #C4A040;   /* Dorado apagado */
+    --color-error: #C46A6A;         /* Rojo desaturado */
 
-    /* Bordes */
-    --borde:rgba(255,255,255,.10);
-    --borde-hover:rgba(255,255,255,.22);
+    --borde: rgba(255, 255, 255, .10);
+    --borde-hover: rgba(255, 255, 255, .22);
 
-    /* Sombras: en oscuro las de `:root` (negras y muy suaves) desaparecen.
-       Se combinan con un brillo interno arriba, que es lo que da la lectura de
-       "vidrio" en las superficies opacas. */
-    --sombra-sm:inset 0 1px 0 rgba(255,255,255,.06), 0 2px 8px rgba(0,0,0,.45);
-    --sombra-md:inset 0 1px 0 rgba(255,255,255,.07), 0 12px 32px rgba(0,0,0,.55);
-    --sombra-lg:inset 0 1px 0 rgba(255,255,255,.08), 0 20px 48px rgba(0,0,0,.65);
+    --sombra-sm: inset 0 1px 0 rgba(255, 255, 255, .06), 0 2px 8px rgba(0, 0, 0, .45);
+    --sombra-md: inset 0 1px 0 rgba(255, 255, 255, .07), 0 12px 32px rgba(0, 0, 0, .55);
+    --sombra-lg: inset 0 1px 0 rgba(255, 255, 255, .08), 0 20px 48px rgba(0, 0, 0, .65);
 
-    /* ⚠️ Override OBLIGATORIO (spec §4).
-       En `:root`, --fondo-error es --color-primario y --texto-error es
-       --fondo-secundario: sin esto, el toast de error quedaría lima. */
-    --fondo-error:#3A1114;
-    --texto-error:#FFB4B4;
-    --borde-error:rgba(255,107,107,.35);
-    --borde-error-fuerte:#FF6B6B;
-    --color-error-neon:#FF6B6B;
-    --sombra-error:rgba(255,107,107,.45);
+    --fondo-error: #3A1114;
+    --texto-error: #E8B4B4;
+    --borde-error: rgba(196, 106, 106, .30);
+    --borde-error-fuerte: #C46A6A;
+    --color-error-neon: #C46A6A;
+    --sombra-error: rgba(196, 106, 106, .35);
 
-    /* `'EB Garamond'` no se carga como webfont: en gym se usa un stack del
-       sistema condensado, sin agregar dependencias. */
-    --fuente-titulos:"Arial Narrow", Arial, Helvetica, sans-serif;
+    --fuente-titulos: "Arial Narrow", Arial, Helvetica, sans-serif;
 }
 
-/* `body` no tiene regla base en el proyecto (el fondo lo pone `.app`). En gym
-   se pinta igual para que no asome blanco en el overscroll ni en zonas sin
-   `.app`. El `!important` NO es necesario: no hay otra regla de `body`. */
 :root[data-rubro="gym"],
 html[data-rubro="gym"] body {
-    background-color:var(--fondo-principal);
+    background-color: var(--fondo-principal);
 }
-
-
-/* ----------------------------------------------------------------------------
-   BLOQUE B — Vidrio (lista cerrada de la §6 de la spec)
-
-   V1 nav.menu_nav · V2 .menu_nav_lista · V3 overlays · V4 modal de finanzas.
-   El resto de las superficies queda opaco oscuro + brillo interno (--sombra-*).
-   ---------------------------------------------------------------------------- */
-
-/* --- V1 / V4: superficies de vidrio --- */
 
 html[data-rubro="gym"] nav.menu_nav,
 html[data-rubro="gym"] .modal-contenido-finanzas {
-
-    background:rgba(22,26,29,.62);
-
-    -webkit-backdrop-filter:blur(16px) saturate(140%);
-            backdrop-filter:blur(16px) saturate(140%);
-
-    border:1px solid rgba(255,255,255,.10);
-
+    background: rgba(22, 26, 29, .62);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+            backdrop-filter: blur(16px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, .10);
     box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.08),
-        0 12px 32px rgba(0,0,0,.55);
+        inset 0 1px 0 rgba(255, 255, 255, .08),
+        0 12px 32px rgba(0, 0, 0, .55);
 }
 
-/* --- V2: panel del menú.
-   SOLO en móvil: en escritorio `.menu_nav_lista` es una fila transparente
-   dentro del nav, y pintarle un panel translúcido ahí sería un cambio visual
-   que la spec no define (se anota como desviación en plan.md). --- */
-
-@media(max-width:900px){
-
+@media(max-width:900px) {
     html[data-rubro="gym"] .menu_nav_lista {
-
-        background:rgba(22,26,29,.72);
-
-        -webkit-backdrop-filter:blur(16px) saturate(140%);
-                backdrop-filter:blur(16px) saturate(140%);
-
-        border-bottom:1px solid rgba(255,255,255,.10);
-
+        background: rgba(22, 26, 29, .72);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+                backdrop-filter: blur(16px) saturate(140%);
+        border-bottom: 1px solid rgba(255, 255, 255, .10);
         box-shadow:
-            inset 0 1px 0 rgba(255,255,255,.08),
-            0 12px 32px rgba(0,0,0,.55);
+            inset 0 1px 0 rgba(255, 255, 255, .08),
+            0 12px 32px rgba(0, 0, 0, .55);
     }
 }
-
-/* --- V3: velo de los overlays --- */
 
 html[data-rubro="gym"] .modal-overlay,
 html[data-rubro="gym"] .modal-overlay-finanzas {
-
-    background:rgba(6,8,9,.55);
-
-    -webkit-backdrop-filter:blur(6px);
-            backdrop-filter:blur(6px);
+    background: rgba(6, 8, 9, .55);
+    -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
 }
 
-/* --- Fallback sin `backdrop-filter`: superficie opaca (R3).
-   Si no hay blur, un fondo al 62% dejaría pasar el contenido y ensuciaría la
-   lectura; se vuelve al token de superficie. --- */
-
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
-
     html[data-rubro="gym"] nav.menu_nav,
     html[data-rubro="gym"] .modal-contenido-finanzas {
-        background:var(--fondo-secundario);
+        background: var(--fondo-secundario);
     }
 
-    @media(max-width:900px){
+    @media(max-width:900px) {
         html[data-rubro="gym"] .menu_nav_lista {
-            background:var(--fondo-secundario);
+            background: var(--fondo-secundario);
         }
     }
 }
 
-
-/* ----------------------------------------------------------------------------
-   BLOQUE C — Ajustes propios del rubro
-
-   C1: la bailarina de `asistencia.css` es un `background-image` del contenedor:
-       se anula por especificidad (0,2,1 contra 0,1,0), sin tocar el TSX ni el
-       CSS del componente.
-   C2: títulos en mayúscula, coherente con la estética de entrenamiento.
-       Es lo primero que se revierte si rompe algún layout angosto.
-   ---------------------------------------------------------------------------- */
-
 html[data-rubro="gym"] .asistencia_contenedor {
-    background-image:none;
+    background-image: none;
 }
 
 html[data-rubro="gym"] h1,
 html[data-rubro="gym"] h2 {
-    text-transform:uppercase;
-    letter-spacing:.03em;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+html[data-rubro="gym"] .esfera-2 {
+    background: rgba(255, 255, 255, .03);
+}
+
+html[data-rubro="gym"] .esfera-3 {
+    background: rgba(255, 255, 255, .04);
+}
+
+html[data-rubro="gym"] .esfera-4 {
+    background: rgba(255, 255, 255, .02);
+}
+
+html[data-rubro="gym"] .esfera-5 {
+    background: rgba(255, 255, 255, .08);
+}
+
+html[data-rubro="gym"] .esfera-6 {
+    background: rgba(255, 255, 255, .03);
+}
+
+html[data-rubro="gym"] .contenido_derecha {
+    scrollbar-color: rgba(255, 255, 255, .2) transparent;
+}
+
+html[data-rubro="gym"] .contenido_derecha::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .15);
+}
+
+html[data-rubro="gym"] .contenido_derecha::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .3);
 }

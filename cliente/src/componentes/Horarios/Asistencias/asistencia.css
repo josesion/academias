@@ -9,13 +9,8 @@
     width: 100%;
     padding: 20px;
     
-    /* Fondo base y la imagen centrada y responsiva */
+    /* Fondo base */
     background-color: var(--fondo-secundario);
-    background-image: url('../../../imagenes/bailarina.png');
-    background-size: contain;
-    background-position: center bottom;
-    background-repeat: no-repeat;
-    background-size: contain;
 
 
     border-radius: var(--radio-lg);
