@@ -56,7 +56,7 @@ const mapCategiriaEliminar = ( data : any) =>({
     nombre_categoria : data.nombre_categoria
 });
 
-const mapTextoEliminar = (dataE: any) => ` El estado Categoria : ${dataE.id_categoria} cambiara`
+const mapTextoEliminar = (dataE: any) => ` El estado de la Categoría "${dataE.nombre_categoria}" cambiará`
 
 export const setAbmCategoriaCaja = () => {
 

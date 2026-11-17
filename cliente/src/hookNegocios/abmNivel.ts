@@ -44,7 +44,7 @@ const mapNivelEliminar = ( data : any) =>({
     nivel : data.nivel 
 }); 
 
-const mapTextoEliminar = (dataE: any) => ` El estado de Nivel : ${dataE.id} cambiara`;
+const mapTextoEliminar = (dataE: any) => ` El estado del Nivel "${dataE.nivel}" cambiará`;
 
 export const useAbmNivelUsuarios = () =>{
 

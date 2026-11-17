@@ -84,7 +84,7 @@ const mapPlanesEliminar =( data : any) =>({
 
 
 
-const mapTextoEliminar = (dataE: any) => ` El estado del Plan : ${dataE.descripcion} cambiara`;
+const mapTextoEliminar = (dataE: any) => ` El estado del Plan "${dataE.descripcion}" cambiará`;
 
 export const useAbmPlanesUsuarios = () =>{
 

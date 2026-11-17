@@ -76,7 +76,7 @@ const mapProfesorEliminar = ( data : any) =>({
 });
 
 
-const mapTextoEliminar = (dataE: any) => ` El estado del Profesor : ${dataE.dni} cambiara`;
+const mapTextoEliminar = (dataE: any) => ` El estado del Profesor "${dataE.nombre} ${dataE.apellido}" (DNI: ${dataE.dni}) cambiará`;
 
 
 export const useAbmProfesoresUsuarios = () => {

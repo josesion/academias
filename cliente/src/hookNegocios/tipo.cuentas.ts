@@ -61,7 +61,7 @@ const mapEstadoTipoCuenta = ( dataE : any) => ({
     estado : dataE.estado 
 });
 
-const mapTextoEliminar = (dataE: any) => ` El estado Tipo Cuenta : ${dataE.id_cuenta} cambiara`;
+const mapTextoEliminar = (dataE: any) => ` El estado del Método de pago "${dataE.nombre_cuenta}" cambiará`;
 
 export const setAbmTipoCuentas = () => {
    

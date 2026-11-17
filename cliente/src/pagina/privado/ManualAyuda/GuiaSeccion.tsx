@@ -12,8 +12,8 @@ export interface PasoGuia {
   titulo: string;
   /** Descripción detallada de qué hacer en este paso. Puede ser texto plano o contenido React (listas, columnas, etc.). */
   descripcion: string | ReactNode;
-  /** Nombre del archivo de imagen (sin extensión) en la carpeta correspondiente. */
-  imagen: string;
+  /** Nombre del archivo de imagen (sin extensión) en la carpeta correspondiente. Opcional si el paso no tiene imagen. */
+  imagen?: string;
   /** Nota opcional que se muestra debajo de la imagen. */
   nota?: string;
 }
@@ -96,33 +96,37 @@ export const GuiaSeccion = ({
           <h2 className="guia-seccion-paso-titulo">{paso.titulo}</h2>
           <div className="guia-seccion-paso-descripcion">{paso.descripcion}</div>
 
-          <figure className="guia-seccion-paso-figura">
-            <div className="guia-seccion-paso-imagen-wrapper">
-              <img
-                src={`/imagenesayuda/${carpetaImagenes}/${paso.imagen}.png`}
-                alt={paso.titulo}
-                className="guia-seccion-paso-imagen"
-                loading="lazy"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  target.style.display = "none";
-                  const placeholder = target.nextElementSibling as HTMLElement;
-                  if (placeholder) placeholder.style.display = "flex";
-                }}
-              />
-              <div className="guia-seccion-placeholder" style={{ display: "none" }}>
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <circle cx="8.5" cy="8.5" r="1.5" />
-                  <path d="M21 15l-5-5L5 21" />
-                </svg>
-                <span>{paso.imagen}.png</span>
+          {paso.imagen ? (
+            <figure className="guia-seccion-paso-figura">
+              <div className="guia-seccion-paso-imagen-wrapper">
+                <img
+                  src={`/imagenesayuda/${carpetaImagenes}/${paso.imagen}.png`}
+                  alt={paso.titulo}
+                  className="guia-seccion-paso-imagen"
+                  loading="lazy"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    target.style.display = "none";
+                    const placeholder = target.nextElementSibling as HTMLElement;
+                    if (placeholder) placeholder.style.display = "flex";
+                  }}
+                />
+                <div className="guia-seccion-placeholder" style={{ display: "none" }}>
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <circle cx="8.5" cy="8.5" r="1.5" />
+                    <path d="M21 15l-5-5L5 21" />
+                  </svg>
+                  <span>{paso.imagen}.png</span>
+                </div>
               </div>
-            </div>
-            {paso.nota && (
-              <figcaption className="guia-seccion-paso-nota">{paso.nota}</figcaption>
-            )}
-          </figure>
+              {paso.nota && (
+                <figcaption className="guia-seccion-paso-nota">{paso.nota}</figcaption>
+              )}
+            </figure>
+          ) : paso.nota ? (
+            <p className="guia-seccion-paso-nota">{paso.nota}</p>
+          ) : null}
 
           {/* Navegación entre pasos */}
           <div className="guia-seccion-navegacion">

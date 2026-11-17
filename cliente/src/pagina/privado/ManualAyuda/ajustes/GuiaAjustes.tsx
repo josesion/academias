@@ -78,8 +78,8 @@ export const GuiaAjustesPage = () => {
           </p>
         </Fragment>
       ),
-      imagen: "ajustes-menu-seccion",
-      nota: "Captura: Sección 'Ajustes' del menú lateral desplegada mostrando las 4 opciones.",
+      imagen: "ajustes-click",
+      nota: "Captura: Ícono de engranaje en el menú lateral — hacer clic aquí para abrir Ajustes.",
     },
     {
       numero: 2,

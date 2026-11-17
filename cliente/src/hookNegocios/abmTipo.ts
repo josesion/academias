@@ -42,7 +42,7 @@ const mapTipoEliminar = ( data : any) =>({
     tipo : data.tipo 
 }); 
 
-const mapTextoEliminar = (dataE: any) => ` El estado de Nivel : ${dataE.id} cambiara`;
+const mapTextoEliminar = (dataE: any) => ` El estado del Tipo de clase "${dataE.tipo}" cambiará`;
 
 export const useAbmTipoUsuarios = () =>{
 

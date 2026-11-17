@@ -12,7 +12,7 @@ export const GuiaFlyersPage = () => {
       titulo: "Acceder a Flyers y Novedades",
       descripcion:
         'Desde el menú lateral, ve a "Mi Escuela" → "Flyers y Novedades". Verás la página "Mis Flyers" con una grilla de los flyers publicados. Si aún no hay flyers, aparecerá un mensaje indicando que no hay flyers publicados y un botón "Crear primer flyer".',
-      imagen: "flyers-vista-general",
+      imagen: "flyers-visita-general",
       nota: "💡 Consejo: Los flyers son una excelente forma de promocionar eventos, clases especiales o novedades de tu escuela. Tus alumnos pueden verlos desde la página de la escuela.",
     },
     {
@@ -20,7 +20,7 @@ export const GuiaFlyersPage = () => {
       titulo: "Crear un nuevo flyer",
       descripcion:
         'En el encabezado de la página, presiona el botón "Nuevo Flyer" para abrir el formulario modal. El formulario muestra los campos uno debajo del otro: título, descripción y el lienzo para subir la imagen.',
-      imagen: "flyers-formulario-crear",
+      imagen: "flyers-campos-texto",
       nota: "⚠️ Importante: Completá todos los campos antes de publicar. Un flyer sin título o sin imagen no se verá atractivo para los alumnos.",
     },
     {
@@ -28,7 +28,7 @@ export const GuiaFlyersPage = () => {
       titulo: "Completar título y descripción",
       descripcion:
         'Escribe el título del flyer en el campo "Título" y una descripción breve en el campo "Descripción Flayer". El título aparecerá como encabezado y la descripción debajo de la imagen.',
-      imagen: "flyers-campos-texto",
+      imagen: "flyers-campos-texto-titulo-decripcion",
       nota: "💡 Consejo: El título debe ser corto y llamativo (por ejemplo, '¡Clase abierta de Salsa!'). La descripción puede ser más larga y detallar fecha, hora y lugar del evento.",
     },
     {
@@ -68,7 +68,6 @@ export const GuiaFlyersPage = () => {
       titulo: "Límite de flyers según el plan",
       descripcion:
         "El número máximo de flyers que puedes publicar depende del plan contratado. Cuando alcanzas el límite, el botón de agregar flyer ya no aparece hasta que elimines alguno existente.",
-      imagen: "flyers-limite-plan",
       nota: "💡 Consejo: Si alcanzaste el límite de flyers y necesitás publicar uno nuevo, eliminá primero los flyers más antiguos o menos relevantes para liberar espacio.",
     },
   ];

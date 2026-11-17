@@ -88,7 +88,7 @@ const mapAlumnoEliminar =( data : any) =>({
 });
 
 const mapTextoEliminar = (dataE: any) => 
-    ` El estado Alumno : ${dataE.Dni} cambiara`;
+    ` El estado del Alumno "${dataE.Nombre} ${dataE.Apellido}" (DNI: ${dataE.Dni}) cambiará`;
 
 
 
