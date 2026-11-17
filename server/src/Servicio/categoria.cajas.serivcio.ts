@@ -185,7 +185,7 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
     const dataMod : ModCategoriaCajaInputs = ModCategoriaCajaSchema.parse(data);
 
     const verificarCategoriaExistente = await categoriaCajaData.buscadorIdCategoria( dataMod );
-   
+
     if( verificarCategoriaExistente.data?.categoria_sistema      
     ){
         return {
@@ -195,7 +195,9 @@ const modCategoriaCaja = async( data : ModCategoriaCajaInputs)
         };
     };
 
-    if ( verificarCategoriaExistente.code === "CATEGORIA_CAJA_EXISTE"){
+    const duplicadoExistente = await categoriaCajaData.verificarDuplicadoModCategoria( dataMod );
+
+    if ( duplicadoExistente.code === "CATEGORIA_CAJA_EXISTE"){
         return{
             error : true,
             message :  `La categoría: ${dataMod.nombre_categoria} ya existe`,

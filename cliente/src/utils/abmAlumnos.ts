@@ -31,7 +31,7 @@ const inputsFiltro  : InputsPropsBuscador[] =[
     }
     
 ]
-// Datos para el formulario de alta 
+// Datos para el formulario de alta
 const inputsAlumnos : InputsPropsFormulario[] = [
     {
         name: "dni",
@@ -39,7 +39,8 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "number",
         placeholder: "Ingrese Dni",
         value: "",
-        readonly : false 
+        readonly : false,
+        columnGroup: 1
     },
     {
         name: "apellido",
@@ -47,7 +48,8 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "text",
         placeholder: "Ingrese Apellido",
         value: "",
-        readonly : false 
+        readonly : false,
+        columnGroup: 2
     },
     {
         name: "nombre",
@@ -55,7 +57,18 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "text",
         placeholder: "Ingrese Nombres",
         value: "",
-        readonly : false 
+        readonly : false,
+        columnGroup: 1
+    },
+    {
+        name: "celular",
+        label: "Celular",
+        type: "phone",
+        placeholder: "+54 9 11 1234-5678",
+        value: "",
+        readonly : false,
+        columnGroup: 1,
+        contactPanel: true
     },
     {
         name: "email",
@@ -63,15 +76,9 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "email",
         placeholder: "ejemplo@correo.com",
         value: "",
-        readonly : false 
-    },
-    {
-        name: "celular",
-        label: "Celular",
-        type: "number",
-        placeholder: "Ej : 3875450376",
-        value: "",
-        readonly : false 
+        readonly : false,
+        columnGroup: 2,
+        contactPanel: true
     }
 ];
 

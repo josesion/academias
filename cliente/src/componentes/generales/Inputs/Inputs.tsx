@@ -33,6 +33,7 @@ interface InputsProps {
   disabled?: boolean;
   onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string | null;
+  hint?: string;
   autoComplete?: string;
   // Password toggle (opcional) - solo aplica si type="password"
   showPasswordToggle?: boolean;
@@ -164,6 +165,11 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
             </p>
           )}
         </div>
+
+        {/* Texto informativo opcional (hint) */}
+        {parametros.hint && (
+          <small className="inputs_hint">{parametros.hint}</small>
+        )}
       </div>
     );
   },

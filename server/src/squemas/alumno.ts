@@ -20,11 +20,28 @@ email:     z.string({message: "El correo debe ser una cadena de texto"})
                 .email({message: "El formato del correo no es válido"})
                 .max(255, {message: "El correo es muy largo"}),
 
-celular :   z.string()
-                .nonempty({message : "Celular no debe estar vacio"})
-                .min(10, { message: "El celular debe tener al menos 10 dígitos" })
-                .max(15, { message: "El celular no puede tener más de 15 dígitos" })
-                .regex(/^\d+$/, { message: "El celular debe contener solo números" }),
+celular :   z.union([
+                z.string(),
+                z.array(z.string())
+            ])
+            .transform((val) => {
+                // Si viene como array de strings, unir; si es string, usar directo
+                if (Array.isArray(val)) {
+                    return val.join('');
+                }
+                return val;
+            })
+            .transform((val) => {
+                // Eliminar caracteres no numéricos (+, espacios, guiones, paréntesis)
+                return val.replace(/[^0-9]/g, '');
+            })
+            .pipe(
+                z.string()
+                    .nonempty({message : "Celular no debe estar vacio"})
+                    .min(10, { message: "El celular debe tener al menos 10 dígitos" })
+                    .max(15, { message: "El celular no puede tener más de 15 dígitos" })
+                    .regex(/^\d+$/, { message: "El celular debe contener solo números" })
+            ),
 
 id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
                         .min(0 , {message : "El id debe ser mayor de 0"})
@@ -139,11 +156,28 @@ export const CrearAlumnoTreansaccionSchema = z.object({
         .email({ message: "El formato del correo no es válido" })
         .max(255, { message: "El correo es muy largo" }),
 
-    celular: z.string()
-        .nonempty({ message: "Celular no debe estar vacio" })
-        .min(10, { message: "El celular debe tener al menos 10 dígitos" })
-        .max(15, { message: "El celular no puede tener más de 15 dígitos" })
-        .regex(/^\d+$/, { message: "El celular debe contener solo números" }),
+    celular: z.union([
+        z.string(),
+        z.array(z.string())
+    ])
+    .transform((val) => {
+        // Si viene como array de strings, unir; si es string, usar directo
+        if (Array.isArray(val)) {
+            return val.join('');
+        }
+        return val;
+    })
+    .transform((val) => {
+        // Eliminar caracteres no numéricos (+, espacios, guiones, paréntesis)
+        return val.replace(/[^0-9]/g, '');
+    })
+    .pipe(
+        z.string()
+            .nonempty({ message: "Celular no debe estar vacio" })
+            .min(10, { message: "El celular debe tener al menos 10 dígitos" })
+            .max(15, { message: "El celular no puede tener más de 15 dígitos" })
+            .regex(/^\d+$/, { message: "El celular debe contener solo números" })
+    ),
 
     id_escuela: z.number({ message: "id Escuela debe ser numerico" })
         .min(1, { message: "El id debe ser mayor o igual a 1" }),

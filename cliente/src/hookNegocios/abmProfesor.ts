@@ -25,7 +25,7 @@ const inputsFiltro : InputsPropsBuscador[] = [
         value       : "",
     }
 ]; 
-// Datos para el formulario de alta 
+// Datos para el formulario de alta
 const inputsProfesor : InputsPropsFormulario[] = [
     {
         name        : "dni",
@@ -34,14 +34,7 @@ const inputsProfesor : InputsPropsFormulario[] = [
         placeholder : "Ingrese DNI",
         value       : "",
         readonly    : false,
-    },
-    {
-        name        : "nombre",
-        label       : "Nombre Profesor",
-        type        : "text",
-        placeholder : "Ingrese Nombre",
-        value       : "",
-        readonly    : false,
+        columnGroup : 1,
     },
     {
         name        : "apellido",
@@ -50,16 +43,27 @@ const inputsProfesor : InputsPropsFormulario[] = [
         placeholder : "Ingrese Apellido",
         value       : "",
         readonly    : false,
+        columnGroup : 2,
+    },
+    {
+        name        : "nombre",
+        label       : "Nombre Profesor",
+        type        : "text",
+        placeholder : "Ingrese Nombre",
+        value       : "",
+        readonly    : false,
+        columnGroup : 1,
     },
     {
         name        : "celular",
         label       : "Celular Profesor",
-        type        : "number",
-        placeholder : "Ingrese Celular",
+        type        : "phone",
+        placeholder : "+54 9 11 1234-5678",
         value       : "",
         readonly    : false,
+        columnGroup : 1,
+        contactPanel: true,
     }
-
 
 ];
 

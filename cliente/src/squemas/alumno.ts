@@ -14,8 +14,8 @@ apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
 
 celular :   z.string()
                 .min(10, { message: "El celular debe tener al menos 10 dígitos" })
-                .max(15, { message: "El celular no puede tener más de 15 dígitos" })
-                .regex(/^\d+$/, { message: "El celular debe contener solo números" })
+                .max(20, { message: "El celular es muy largo" })
+                .regex(/^\+\d{7,15}$/, { message: "Ingrese un número válido con código de país (ej: +5491112345678)" })
                 
 });
 

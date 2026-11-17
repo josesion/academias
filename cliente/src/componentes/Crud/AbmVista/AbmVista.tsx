@@ -121,6 +121,7 @@ export const AmbVistas: React.FC<AmbViewProps> = (props) => {
             onChange={onHandleChangeFormulario}
             onSubmit={onHandleSubmit}
             onItemsFormulario={onHandleItemsFormulario}
+            errorsZod={errorsZod}
             errorGenerico={errorGenerico}
           />
         </div>

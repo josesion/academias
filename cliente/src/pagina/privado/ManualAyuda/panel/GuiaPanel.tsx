@@ -18,7 +18,7 @@ export const GuiaPanelPage = () => {
       titulo: "Conocer el panel principal",
       descripcion:
         "Al ingresar al sistema, verás el panel principal con un saludo personalizado que incluye tu nombre, el nombre de tu escuela y la fecha actual. Este es tu centro de control.",
-      imagen: "panel-vista-general",
+      imagen: "1",
       nota: "Captura: Panel principal completo con todas las secciones visibles.",
     },
     {
@@ -26,7 +26,7 @@ export const GuiaPanelPage = () => {
       titulo: "Revisar las métricas superiores",
       descripcion:
         "En la parte superior verás tarjetas con métricas clave: Alumnos (con planes activos), Alumnos Nuevos (inscripciones del mes), Próximos vencimientos (que vencen en 7 días), Vencidos (este mes) y Total caja (si tienes plan Intermedio).",
-      imagen: "panel-metricas",
+      imagen: "2",
       nota: "Captura: Tarjetas de métricas superiores del dashboard.",
     },
     {
@@ -41,7 +41,7 @@ export const GuiaPanelPage = () => {
           <SubSeccionExpandible
             titulo="Registrar un alumno individual"
             icono="👤"
-            imagen="panel-asistencia-modo-alumno"
+            imagen="3.1"
             nota="Captura: Modal de asistencia rápida en modo alumno, buscando por nombre o DNI."
           >
             <p>
@@ -54,7 +54,7 @@ export const GuiaPanelPage = () => {
           <SubSeccionExpandible
             titulo="Registrar asistencia grupal con plantilla"
             icono="📋"
-            imagen="panel-asistencia-modo-plantilla"
+            imagen="3.2"
             nota="Captura: Modal de asistencia rápida en modo plantilla, con la lista de alumnos y checkboxes."
           >
             <p>
@@ -70,7 +70,7 @@ export const GuiaPanelPage = () => {
           <SubSeccionExpandible
             titulo="Crear una nueva plantilla"
             icono="➕"
-            imagen="panel-asistencia-crear-plantilla"
+            imagen="3.3"
             nota="Captura: Pestaña 'Plantillas' del modal, mostrando el formulario para crear una nueva plantilla con nombre y búsqueda de alumnos."
           >
             <p>
@@ -101,7 +101,7 @@ export const GuiaPanelPage = () => {
           )}
         </Fragment>
       ),
-      imagen: "panel-botones-accion",
+      imagen: "3",
       nota: esIntermedio
         ? "Captura: Botones 'Asistencia rápida' y 'Inscribir' en el encabezado del panel."
         : "Captura: Botón 'Asistencia rápida' en el encabezado del panel.",
@@ -111,7 +111,7 @@ export const GuiaPanelPage = () => {
       titulo: "Consultar inscripciones recientes",
       descripcion:
         "El listado de inscripciones muestra las más recientes con indicadores de color: 🔴 Rojo (7 días o menos para vencer), 🟡 Amarillo (14 días o menos), 🟢 Verde (más de 14 días). Puedes filtrar por 'Todas', 'Por vencer' o 'Últimas'.",
-      imagen: "panel-inscripciones",
+      imagen: "4",
       nota: "Captura: Listado de inscripciones con los filtros e indicadores de color.",
     },
     {
@@ -119,7 +119,7 @@ export const GuiaPanelPage = () => {
       titulo: "Ver clases y asistencia del día",
       descripcion:
         "La sección de clases muestra los horarios del día con el estado de cada clase (en curso / sin curso) y las asistencias registradas hasta el momento.",
-      imagen: "panel-clases-dia",
+      imagen: "5",
       nota: "Captura: Sección de clases del día con estados y asistencias.",
     },
     {
@@ -127,7 +127,7 @@ export const GuiaPanelPage = () => {
       titulo: "Revisar el historial de movimientos",
       descripcion:
         "En la parte inferior verás un carrusel horizontal con el historial reciente de movimientos financieros agrupados por día. Desliza horizontalmente para ver más días.",
-      imagen: "panel-historial",
+      imagen: "6",
       nota: "Captura: Carrusel horizontal del historial de movimientos.",
     },
     {

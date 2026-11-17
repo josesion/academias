@@ -80,6 +80,27 @@ const verificarCategoriaExistente2 = async(  data : CategoriaCajaInpurts )
 };
 
 /**
+ * Verifica si una categoría con el mismo nombre ya existe en otra fila (diferente ID).
+ * Se usa al modificar para detectar duplicados reales, excluyendo el registro actual.
+ */
+const verificarDuplicadoModCategoria = async( data : ModCategoriaCajaInputs ) 
+: Promise<TipadoData<any>> => {
+    const { nombre_categoria, id_escuela, tipo_movimiento, id_categoria } = data;
+    const sql : string =   `select categorias_caja.nombre_categoria , categoria_sistema
+                            from categorias_caja
+                            where nombre_categoria = ? 
+                                    and id_escuela = ?
+                                    and tipo_movimiento = ?
+                                    and id_categoria != ?;`;
+    const valor : unknown[] = [ nombre_categoria, id_escuela, tipo_movimiento, id_categoria ];
+    return buscarExistenteEntidad({
+      slqEntidad : sql,
+      valores : valor,
+      entidad : "Categoria_Caja",
+    });
+};
+
+/**
  * Realiza la consulta SQL para localizar el ID de la categoría 'Inscripcion' en la base de datos.
  * * Esta es la capa final de acceso a datos. Utiliza una consulta preparada para buscar 
  * la categoría específica por escuela, nombre y tipo de movimiento, garantizando 
@@ -351,6 +372,7 @@ export const method = {
     verificarCategoriaExistente : tryCatchDatos(verificarCategoriaExistente),
     buscadorIdCategoria : tryCatchDatos(buscadorIdCategoria),
     verificarCategoriaExistente2 : tryCatchDatos(verificarCategoriaExistente2),
+    verificarDuplicadoModCategoria : tryCatchDatos(verificarDuplicadoModCategoria),
     altaCategoriaCaja : tryCatchDatos(altaCategoriaCaja),
     modCategoriaCaja  : tryCatchDatos( modCategoriaCaja),
     bajaCategoriaCaja : tryCatchDatos( bajaCategoriaCaja ),

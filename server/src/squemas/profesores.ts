@@ -22,14 +22,34 @@ nombre: z
     .max(100, { message: "El apellido no puede superar los 100 caracteres" })
     .transform((val) => val.trim()),
 
-celular: z
-  .string()
-  .max(20, { message: "El celular no puede superar los 20 caracteres" })
-  .regex(/^[0-9]+$/, {
-    message: "El celular solo puede contener números",
-  })
-  .or(z.literal("").transform(() => null)) // ⬅️ transforma string vacío a null
-  .nullable(), // ⬅️ asegura que el tipo final sea string | null
+celular: z.union([
+  z.string(),
+  z.array(z.string())
+])
+.transform((val) => {
+  // Si viene como array de strings, unir; si es string, usar directo
+  if (Array.isArray(val)) {
+    return val.join('');
+  }
+  return val;
+})
+.transform((val) => {
+  // Eliminar caracteres no numéricos (+, espacios, guiones, paréntesis)
+  return val.replace(/[^0-9]/g, '');
+})
+.pipe(
+  z.string()
+    .max(20, { message: "El celular no puede superar los 20 caracteres" })
+    .regex(/^[0-9]+$/, {
+      message: "El celular solo puede contener números",
+    })
+    .or(z.literal(""))
+)
+.transform((val) => {
+  // Si es string vacío, transformar a null
+  return val === "" ? null : val;
+})
+.nullable(),
 
 
   estado: z
@@ -155,14 +175,34 @@ dni: z
     .max(100, { message: "El apellido no puede superar los 100 caracteres" })
     .transform((val) => val.trim()),
 
-celular: z
-  .string()
-  .max(20, { message: "El celular no puede superar los 20 caracteres" })
-  .regex(/^[0-9]+$/, {
-    message: "El celular solo puede contener números",
-  })
-  .or(z.literal("").transform(() => null)) // ⬅ transforma string vacío a null
-  .nullable(), // ⬅️ asegura que el tipo final sea string | null 
+celular: z.union([
+  z.string(),
+  z.array(z.string())
+])
+.transform((val) => {
+  // Si viene como array de strings, unir; si es string, usar directo
+  if (Array.isArray(val)) {
+    return val.join('');
+  }
+  return val;
+})
+.transform((val) => {
+  // Eliminar caracteres no numéricos (+, espacios, guiones, paréntesis)
+  return val.replace(/[^0-9]/g, '');
+})
+.pipe(
+  z.string()
+    .max(20, { message: "El celular no puede superar los 20 caracteres" })
+    .regex(/^[0-9]+$/, {
+      message: "El celular solo puede contener números",
+    })
+    .or(z.literal(""))
+)
+.transform((val) => {
+  // Si es string vacío, transformar a null
+  return val === "" ? null : val;
+})
+.nullable(),
 });
 
 export const EstadoProfesorSchema = z.object({

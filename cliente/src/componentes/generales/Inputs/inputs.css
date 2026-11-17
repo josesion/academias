@@ -201,3 +201,30 @@
     transition: none;
   }
 }
+
+/* ===== HINT — texto informativo opcional con ícono ===== */
+
+.inputs_hint {
+  margin: 0;
+  padding: 8px 10px;
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--texto-secundario);
+  background: color-mix(in srgb, var(--fondo-superficie) 60%, transparent);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.inputs_hint::before {
+  content: "ℹ";
+  flex-shrink: 0;
+  font-size: var(--texto-sm);
+  color: var(--color-secundario);
+  line-height: 1;
+  margin-top: 1px;
+}

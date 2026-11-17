@@ -40,73 +40,109 @@
    con el estilo de los inputs del proyecto
    ============================================================ */
 
+/* ============================================================
+   Estructura real de react-phone-number-input DOM:
+   .PhoneInput (div flex — este es el className que pasamos)
+     ├─ .PhoneInputCountry (div relative, contiene el select invisible)
+     │    ├─ .PhoneInputCountrySelect (select nativo, opacity:0, absolute)
+     │    ├─ .PhoneInputCountryIcon (bandera visible)
+     │    └─ .PhoneInputCountrySelectArrow (flecha dropdown)
+     └─ .PhoneInputInput (input real del número, flex:1)
+   ============================================================ */
+
+/* El contenedor .PhoneInput (className) es el que recibe el border, background, etc. */
 .phone_input {
-    width: 100%;
-    box-sizing: border-box;
+   width: 100%;
+   box-sizing: border-box;
+   display: flex !important;
+   align-items: center;
+   background: var(--fondo-superficie);
+   border: 1px solid var(--borde);
+   border-radius: var(--radio-sm);
+   overflow: hidden;
+   transition: var(--transicion);
 }
 
-/* El input interno del PhoneInput */
+/* .PhoneInputCountry: el div que contiene la bandera y el select invisible */
+.phone_input .PhoneInputCountry {
+   position: relative;
+   display: flex;
+   align-items: center;
+   flex-shrink: 0;
+   padding: 8px 4px 8px 8px;
+   margin: 0;
+   background: transparent;
+   border: none;
+   cursor: pointer;
+   transition: var(--transicion);
+   align-self: stretch;
+}
+
+/* .PhoneInputCountrySelect: el select nativo (invisible, absolute) */
+.phone_input .PhoneInputCountrySelect {
+   position: absolute;
+   top: 0;
+   left: 0;
+   height: 100%;
+   width: 100%;
+   z-index: 1;
+   border: 0;
+   opacity: 0;
+   cursor: pointer;
+}
+
+/* .PhoneInputInput: el input real del número */
 .phone_input .PhoneInputInput {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px 14px;
-    background: var(--fondo-superficie);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-sm);
-    color: var(--texto-principal);
-    font-family: var(--fuente-principal);
-    font-size: var(--texto-sm);
-    outline: none;
-    transition: var(--transicion);
+   width: 100%;
+   flex: 1;
+   min-width: 0;
+   box-sizing: border-box;
+   padding: 12px 14px;
+   background: transparent;
+   border: none;
+   border-radius: 0;
+   color: var(--texto-principal);
+   font-family: var(--fuente-principal);
+   font-size: var(--texto-sm);
+   outline: none;
+   transition: var(--transicion);
+   line-height: 1.5;
 }
 
 .phone_input .PhoneInputInput::placeholder {
-    color: var(--texto-deshabilitado);
+   color: var(--texto-deshabilitado);
 }
 
-.phone_input .PhoneInputInput:hover:not(:read-only):not(:disabled) {
-    border-color: var(--borde-hover);
+/* Hover en el contenedor completo */
+.phone_input:hover {
+   border-color: var(--borde-hover);
 }
 
-.phone_input .PhoneInputInput:focus:not(:read-only):not(:disabled) {
-    border-color: var(--color-primario);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+/* Focus: el contenedor completo toma el borde primario (igual que .inputs:focus) */
+.phone_input:has(.PhoneInputInput:focus) {
+   border-color: var(--color-primario);
+   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primario) 18%, transparent);
+}
+
+.phone_input .PhoneInputInput:focus {
+   outline: none;
 }
 
 /* Estado de error */
-.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input .PhoneInputInput {
-    border-color: var(--color-error);
+.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input {
+   border-color: var(--color-error);
 }
 
-.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input .PhoneInputInput:focus {
-    border-color: var(--color-error);
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-/* Selector de país (dropdown) */
-.phone_input .PhoneInputCountry {
-    background: var(--fondo-superficie);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-sm);
-    padding: 4px;
-    margin-right: 8px;
-    cursor: pointer;
-    transition: var(--transicion);
-}
-
-.phone_input .PhoneInputCountry:hover {
-    border-color: var(--borde-hover);
-}
-
-.phone_input .PhoneInputCountry:focus {
-    border-color: var(--color-primario);
+.phone_input_contenedor:has(.phone_input_mensaje_error) .phone_input:has(.PhoneInputInput:focus) {
+   border-color: var(--color-error);
+   box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-error) 18%, transparent);
 }
 
 /* Deshabilitado */
-.phone_input:disabled,
+.phone_input[disabled],
 .phone_input .PhoneInputInput:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+   opacity: 0.5;
+   cursor: not-allowed;
 }
 
 /* ============================================================

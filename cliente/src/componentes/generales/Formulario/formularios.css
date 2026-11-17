@@ -363,26 +363,146 @@
 }
 
 /* ==========================================================================
+   FILA — Layout de 2 columnas
+   ========================================================================== */
+
+.formulario_fila {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   gap: 1rem 1.2rem;
+   width: 100%;
+
+   opacity: 0;
+   animation: fadeInField 0.35s ease forwards;
+}
+
+/* ==========================================================================
+   SEPARADOR — Divisor visual entre secciones
+   ========================================================================== */
+
+.formulario_separador {
+   display: flex;
+   align-items: center;
+   gap: 12px;
+   width: 100%;
+   margin: 0.5rem 0;
+
+   opacity: 0;
+   animation: fadeInField 0.35s ease forwards;
+}
+
+.formulario_separador::before,
+.formulario_separador::after {
+   content: "";
+   flex: 1;
+   height: 1px;
+   background: var(--borde);
+}
+
+.formulario_separador_texto {
+   font-family: var(--fuente-codigo);
+   font-size: var(--texto-xs);
+   font-weight: var(--peso-semi-negrita);
+   text-transform: uppercase;
+   letter-spacing: 1.2px;
+   color: var(--texto-deshabilitado);
+   white-space: nowrap;
+}
+
+/* ==========================================================================
+   PANEL DE CONTACTO — Campos de celular/email agrupados visualmente
+   ========================================================================== */
+
+.formulario_panel_contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  padding: 1.2rem 1rem;
+  margin-top: 0.5rem;
+
+  background: color-mix(in srgb, var(--fondo-secundario) 60%, transparent);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+
+  opacity: 0;
+  animation: fadeInField 0.35s ease forwards;
+  animation-delay: 300ms;
+}
+
+/* Los inputs dentro del panel de contacto ocupan todo el ancho disponible */
+.formulario_panel_contacto > div,
+.formulario_panel_contacto > .formulario_fila {
+  width: 100%;
+}
+
+/* Dentro del panel de contacto, las filas usan 1 columna (ancho completo) */
+.formulario_panel_contacto > .formulario_fila {
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+
+.formulario_panel_contacto_titulo {
+   display: flex;
+   align-items: center;
+   gap: 10px;
+   width: 100%;
+   padding-bottom: 0.6rem;
+   margin-bottom: 0.2rem;
+
+   border-bottom: 1px solid var(--borde);
+}
+
+.formulario_panel_contacto_titulo::before,
+.formulario_panel_contacto_titulo::after {
+   content: "";
+   flex: 1;
+   height: 1px;
+   background: var(--borde);
+}
+
+/* ==========================================================================
+   ANIMACIÓN STAGGER — Campos aparecen con delay
+   ========================================================================== */
+
+@keyframes fadeInField {
+   from {
+       opacity: 0;
+       transform: translateY(8px);
+   }
+   to {
+       opacity: 1;
+       transform: translateY(0);
+   }
+}
+
+/* ==========================================================================
    RESPONSIVE
    ========================================================================== */
 
 @media (max-width: 768px) {
-    .formulario {
-        width: 92%;
-        padding: 1.5rem;
-        border-radius: var(--radio-md);
-    }
+   .formulario {
+       width: 92%;
+       padding: 1.5rem;
+       border-radius: var(--radio-md);
+   }
 
-    .formulario_titulo {
-        font-size: var(--titulo-sm);
-        text-align: center;
-    }
+   .formulario_titulo {
+       font-size: var(--titulo-sm);
+       text-align: center;
+   }
 
-    .botonera_formulario {
-        flex-direction: column;
-    }
+   /* En móvil, las filas de 2 columnas pasan a 1 columna */
+   .formulario_fila {
+       grid-template-columns: 1fr;
+       gap: 0;
+   }
 
-    .botonera_formulario > * {
-        width: 100%;
-    }
+   .botonera_formulario {
+       flex-direction: column;
+   }
+
+   .botonera_formulario > * {
+       width: 100%;
+   }
 }

@@ -97,7 +97,7 @@ const modAlumno = async( req : Request, res : Response) =>{
         dni : dni ,
         nombre : nombre ,
         apellido : apellido ,
-        celular  : String(celular),
+        celular  : Array.isArray(celular) ? celular.join('') : String(celular),
         email : req.body.email,
         id_escuela : Number(req.usuario?.id_escuela),
         id_usuario : Number(req.usuario?.id)

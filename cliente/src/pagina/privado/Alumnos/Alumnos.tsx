@@ -52,8 +52,15 @@ export const AmbAlumnos = () => {
   // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
   const inputsModificar = inputsFormulario.map((input) => {
     if (tipoFormulario === "modificar") {
-      if (input.name === "dni" || input.name === "email") {
+      if (input.name === "dni") {
         return { ...input, readonly: true };
+      }
+      if (input.name === "email") {
+        return {
+          ...input,
+          readonly: true,
+          hint: "Este correo es el usuario de acceso del alumno. Para cambiarlo, el alumno debe hacerlo desde su cuenta.",
+        };
       }
     }
     return input;
