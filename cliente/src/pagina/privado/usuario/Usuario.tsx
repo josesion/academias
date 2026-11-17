@@ -17,24 +17,11 @@ import { useEstadoCajaDashboard } from "../../../hooks/dashboard/useEstadoCajaDa
 
 export const UsuarioPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const refGrupo1 = useRef<HTMLElement>(null);
   const refTitulo = useRef<HTMLHeadingElement>(null);
-  const [altoGrupo1, setAltoGrupo1] = useState<number>();
 
   const metricasId = useId();
   const clasesId = useId();
   const historialId = useId();
-
-  useEffect(() => {
-    if (!refGrupo1.current) return;
-
-    const observer = new ResizeObserver((entries) => {
-      setAltoGrupo1(entries[0].contentRect.height);
-    });
-
-    observer.observe(refGrupo1.current);
-    return () => observer.disconnect();
-  }, []);
 
   const { state, rolTipo, refrescarAsistencia } = metricasUsuarioSeting();
   const { rol } = useContext(RutasProtegidasContext);
@@ -48,10 +35,8 @@ export const UsuarioPage = () => {
   }).format(new Date());
 
   // La tarjeta de vencimiento solo se pinta con carga (skeleton), con error
-  // o con 7 días o menos para el vencimiento. El padding de reserva del
-  // historial (`con_alerta`) se aplica solo en esos casos: con más días la
-  // alerta no se ve y el padding sería espacio vacío escrolleable al final
-  // del historial.
+  // o con 7 días o menos para el vencimiento. Se usa para controlar la
+  // visibilidad del PanelClima y del AlertaVencimiento.
   const [alertaVisible, setAlertaVisible] = useState(false);
 
   useEffect(() => {
@@ -170,7 +155,6 @@ export const UsuarioPage = () => {
       <section
         aria-labelledby={metricasId}
         className="usuario_metricas_grupo1"
-        ref={refGrupo1}
       >
         <h2 id={metricasId} className="visually-hidden">
           Métricas principales
@@ -221,62 +205,60 @@ export const UsuarioPage = () => {
             />
           )}
         </div>
-        {/* Listado de inscripciones recientes para el dashboard */}
-        <ListadoInscripcionesDashboard />
+        {/* Inscripciones y Asistencia lado a lado en desktop, columna en móvil */}
+        <div className="usuario_inscripciones_asistencia_row">
+          <div className="usuario_inscripciones_columna">
+            <ListadoInscripcionesDashboard />
+          </div>
 
-        <div className="usuario_contenido_clases">
-          <section
-            aria-labelledby={clasesId}
-            className="usuario_clases_section"
-          >
-            <h2 id={clasesId} className="visually-hidden">
-              Clases y asistencia
-            </h2>
-            <Asistencia
-              asistencia={state.asistencias ?? []}
-              clases={state.clases}
-              estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
-              cargaClases={state.carga.clases}
-              horariosDelDia={state.horariosDelDia ?? []}
-              cargaHorarios={state.carga.horariosDelDia}
-              errorHorarios={state.error.horariosDelDia}
-            />
-          </section>
+          <div className="usuario_asistencia_columna">
+            <section
+              aria-labelledby={clasesId}
+              className="usuario_clases_section"
+            >
+              <h2 id={clasesId} className="visually-hidden">
+                Clases y asistencia
+              </h2>
+              <Asistencia
+                asistencia={state.asistencias ?? []}
+                clases={state.clases}
+                estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
+                cargaClases={state.carga.clases}
+                horariosDelDia={state.horariosDelDia ?? []}
+                cargaHorarios={state.carga.horariosDelDia}
+                errorHorarios={state.error.horariosDelDia}
+              />
+            </section>
+          </div>
         </div>
       </section>
 
       {/* =======================
-          CONTENIDO PRINCIPAL - HISTORIAL
+          HISTORIAL — Carrusel horizontal al final
       ======================== */}
       <section
         aria-labelledby={historialId}
-        className="usuario_metricas_grupo2"
-        style={altoGrupo1 ? { height: altoGrupo1 } : undefined}
+        className="usuario_seccion_historial"
       >
         <h2 id={historialId} className="visually-hidden">
           Historial de movimientos
         </h2>
-        {/* `con_alerta` reserva ~245px al final del scroll para que la tarjeta
-            flotante (en portal al body) no tape la última entrada del
-            historial. Solo se aplica cuando la alerta se muestra de verdad
-            (carga, error o ≤ 7 días): con más días sería espacio vacío
-            escrolleable. */}
         <div
-          className={`usuario_contenido_historial ${alertaVisible ? "con_alerta" : ""}`}
           role="region"
           aria-label="Historial de movimientos"
         >
           <MetricasHistorial historial={state.historial ?? []} />
         </div>
-
-        {state.fechaVencimiento && (
-          <AlertaVencimiento
-            fechaVencimiento={state.fechaVencimiento?.fecha_vencimiento}
-            carga={state.carga.vencimiento}
-            mensajeError={state.error.vencimiento}
-          />
-        )}
       </section>
+
+      {/* Alerta de vencimiento — flotante, no en el flujo */}
+      {state.fechaVencimiento && (
+        <AlertaVencimiento
+          fechaVencimiento={state.fechaVencimiento?.fecha_vencimiento}
+          carga={state.carga.vencimiento}
+          mensajeError={state.error.vencimiento}
+        />
+      )}
     </div>
   );
 };

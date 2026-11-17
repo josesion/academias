@@ -1,0 +1,344 @@
+/* =====================================
+   Guía de Sección — Componente base
+   ===================================== */
+
+.guia-seccion-contenedor {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ---- Enlace volver ---- */
+
+.guia-seccion-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--color-secundario);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: color 140ms var(--ease-ui);
+}
+
+.guia-seccion-volver:hover {
+  color: var(--color-primario);
+}
+
+.guia-seccion-volver svg {
+  transition: transform 140ms var(--ease-ui);
+}
+
+.guia-seccion-volver:hover svg {
+  transform: translateX(-2px);
+}
+
+/* ---- Encabezado ---- */
+
+.guia-seccion-encabezado {
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.guia-seccion-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+  margin: 0 0 0.5rem 0;
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.02em;
+}
+
+.guia-seccion-subtitulo {
+  font-size: var(--texto-lg);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--linea-texto);
+  max-width: 560px;
+}
+
+/* ---- Layout de dos columnas ---- */
+
+.guia-seccion-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* ---- Índice lateral ---- */
+
+.guia-seccion-indice {
+  position: sticky;
+  top: 1.5rem;
+}
+
+.guia-seccion-indice-titulo {
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-deshabilitado);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.75rem 0;
+  padding-left: 0.75rem;
+}
+
+.guia-seccion-indice-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.guia-seccion-indice-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: var(--radio-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-normal);
+  color: var(--texto-secundario);
+  transition: background-color 140ms var(--ease-ui), color 140ms var(--ease-ui);
+  font-family: inherit;
+}
+
+.guia-seccion-indice-item:hover {
+  background-color: var(--fondo-hover);
+  color: var(--texto-principal);
+}
+
+.guia-seccion-indice-item.activo {
+  background-color: var(--fondo-superficie);
+  color: var(--texto-principal);
+  font-weight: var(--peso-semi-negrita);
+}
+
+.guia-seccion-indice-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  background-color: var(--fondo-superficie);
+  color: var(--texto-secundario);
+  transition: background-color 140ms var(--ease-ui), color 140ms var(--ease-ui);
+}
+
+.guia-seccion-indice-item.activo .guia-seccion-indice-num {
+  background-color: var(--color-primario);
+  color: var(--fondo-secundario);
+}
+
+.guia-seccion-indice-texto {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Contenido del paso ---- */
+
+.guia-seccion-contenido {
+  min-width: 0;
+}
+
+.guia-seccion-paso-indicador {
+  display: inline-block;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-deshabilitado);
+  margin-bottom: 0.5rem;
+}
+
+.guia-seccion-paso-titulo {
+  font-size: var(--titulo-md);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0 0 0.75rem 0;
+  line-height: var(--linea-titulo);
+}
+
+.guia-seccion-paso-descripcion {
+  font-size: var(--texto-md);
+  color: var(--texto-secundario);
+  margin: 0 0 1.5rem 0;
+  line-height: var(--linea-texto);
+  max-width: 640px;
+}
+
+/* ---- Imagen del paso ---- */
+
+.guia-seccion-paso-figura {
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+}
+
+.guia-seccion-paso-imagen-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  background-color: var(--fondo-superficie);
+}
+
+.guia-seccion-paso-imagen {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---- Placeholder cuando no hay imagen ---- */
+
+.guia-seccion-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 200px;
+  color: var(--texto-deshabilitado);
+}
+
+.guia-seccion-placeholder svg {
+  opacity: 0.4;
+}
+
+.guia-seccion-placeholder span {
+  font-size: var(--texto-sm);
+  font-family: var(--fuente-codigo);
+  color: var(--texto-deshabilitado);
+}
+
+.guia-seccion-paso-nota {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  font-style: italic;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* ---- Navegación entre pasos ---- */
+
+.guia-seccion-navegacion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--borde);
+}
+
+.guia-seccion-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background-color: var(--fondo-secundario);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  cursor: pointer;
+  transition: border-color 140ms var(--ease-ui), background-color 140ms var(--ease-ui);
+  font-family: inherit;
+}
+
+.guia-seccion-nav-btn:hover {
+  border-color: var(--borde-hover);
+  background-color: var(--fondo-hover);
+}
+
+.guia-seccion-nav-btn-siguiente {
+  margin-left: auto;
+}
+
+.guia-seccion-completado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--color-exito);
+  margin-left: auto;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 860px) {
+  .guia-seccion-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .guia-seccion-indice {
+    position: static;
+  }
+
+  .guia-seccion-indice-lista {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .guia-seccion-indice-item {
+    width: auto;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .guia-seccion-indice-texto {
+    display: none;
+  }
+
+  .guia-seccion-indice-titulo {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .guia-seccion-contenedor {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .guia-seccion-titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .guia-seccion-subtitulo {
+    font-size: var(--texto-md);
+  }
+
+  .guia-seccion-paso-titulo {
+    font-size: var(--titulo-sm);
+  }
+
+  .guia-seccion-indice-lista {
+    gap: 0.35rem;
+  }
+
+  .guia-seccion-indice-item {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .guia-seccion-indice-num {
+    width: 20px;
+    height: 20px;
+    font-size: 0.6rem;
+  }
+}

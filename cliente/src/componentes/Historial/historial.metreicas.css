@@ -1,12 +1,168 @@
 /* ==========================================================================
-   HISTORIAL — LINEA DE TIEMPO (tokens de marca)
+   HISTORIAL — LÍNEA DE TIEMPO HORIZONTAL (carrusel)
+
+   Cada movimiento es UNA tarjeta, y las tarjetas van en fila de izquierda a
+   derecha. Los movimientos se agrupan por día: arriba de cada grupo hay una
+   etiqueta con el día y una línea de tiempo horizontal que une los puntos.
+
+   Navegación: flechas, arrastre con mouse, scroll táctil / rueda y teclado
+   (el contenedor es enfocable). Barra de progreso debajo y desvanecido en los
+   bordes que tienen más contenido.
    ========================================================================== */
 
-.metrica_historial_contenedor {
+.historial_carrusel {
+  position: relative;
   width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-  padding-left: 5px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.metrica_historial_contenedor {
+  --fade-izq: 0px;
+  --fade-der: 0px;
+
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 4px 16px;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scroll-behavior: smooth;
+  overscroll-behavior-x: contain;
+
+  /* La navegación la dan las flechas y la barra de progreso */
+  scrollbar-width: none;
+
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-izq),
+    #000 calc(100% - var(--fade-der)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade-izq),
+    #000 calc(100% - var(--fade-der)),
+    transparent 100%
+  );
+}
+
+.metrica_historial_contenedor::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desvanecido solo del lado que tiene más contenido */
+.historial_carrusel[data-izq="true"] .metrica_historial_contenedor {
+  --fade-izq: 36px;
+}
+
+.historial_carrusel[data-der="true"] .metrica_historial_contenedor {
+  --fade-der: 36px;
+}
+
+/* Arrastre con mouse (solo puntero fino) */
+@media (hover: hover) and (pointer: fine) {
+  .metrica_historial_contenedor {
+    cursor: grab;
+  }
+}
+
+/* Mientras se arrastra: sin snap ni smooth para que siga al puntero */
+.metrica_historial_contenedor--arrastrando {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ==========================================================================
+   FLECHAS DEL CARRUSEL
+
+   Se usa `.historial_carrusel .historial_flecha` (0,2,0) para ganarle a la
+   regla `.usuario_contenedor_metricas button` de usuario.css (0,1,1), que
+   pisaba el `transition` de estos botones.
+   El centrado vertical es con `top` (sin `transform`) justamente porque esa
+   misma regla aplica `transform: scale()` en :active y movería la flecha.
+   ========================================================================== */
+
+.historial_carrusel .historial_flecha {
+  position: absolute;
+  top: calc(50% - 18px);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  background: var(--fondo-secundario);
+  color: var(--texto-principal);
+  box-shadow: var(--sombra-sm);
+  cursor: pointer;
+  transition: opacity 200ms var(--ease-ui), border-color 160ms var(--ease-ui),
+    box-shadow 160ms var(--ease-ui), transform 160ms var(--ease-ui);
+}
+
+.historial_flecha--izq {
+  left: 4px;
+}
+
+.historial_flecha--der {
+  right: 4px;
+}
+
+/* En el borde del recorrido la flecha desaparece */
+.historial_carrusel .historial_flecha:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.historial_carrusel .historial_flecha:active {
+  transform: scale(0.94);
+}
+
+.historial_carrusel .historial_flecha:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .historial_carrusel .historial_flecha:hover {
+    border-color: var(--borde-hover);
+    box-shadow: var(--sombra-md);
+  }
+}
+
+/* ==========================================================================
+   BARRA DE PROGRESO (posición dentro del recorrido)
+   ========================================================================== */
+
+.historial_progreso {
+  position: relative;
+  height: 3px;
+  margin: 0 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--borde);
+}
+
+.historial_progreso_barra {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--color-secundario);
 }
 
 /* ==========================================================================
@@ -43,35 +199,33 @@
 }
 
 /* ==========================================================================
-   SEPARADOR DE DIA
+   GRUPO DE UN DÍA
+   Ya no es una tarjeta: es una franja con la etiqueta del día arriba y los
+   movimientos de ese día en fila debajo.
    ========================================================================== */
 
 .historial_grupo_dia {
-  margin-bottom: 26px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.historial_grupo_dia:last-child {
-  margin-bottom: 0;
+/* Separación entre días: una línea fina vertical */
+.historial_grupo_dia + .historial_grupo_dia {
+  padding-left: 20px;
+  border-left: 1px solid var(--borde);
 }
+
+/* ==========================================================================
+   ETIQUETA DEL DÍA (arriba de cada grupo)
+   ========================================================================== */
 
 .historial_separador_dia {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 8px;
   position: relative;
-}
-
-.historial_separador_dia::before {
-  content: "";
-  flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--color-secundario);
-  border: 2px solid var(--fondo-principal);
-  box-shadow: 0 0 0 2px var(--color-secundario);
-  z-index: 1;
 }
 
 .historial_separador_dia span {
@@ -80,13 +234,11 @@
   font-weight: var(--peso-negrita);
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: var(--texto-deshabilitado);
+  color: var(--texto-secundario);
   white-space: nowrap;
-  background: var(--fondo-principal);
+  background: var(--fondo-superficie);
   padding: 3px 10px;
   border-radius: 999px;
-  position: relative;
-  z-index: 1;
 }
 
 .historial_separador_dia::after {
@@ -94,44 +246,45 @@
   flex: 1 1 0%;
   height: 1px;
   background: var(--borde);
-  margin-left: 10px;
 }
 
 /* ==========================================================================
-   LINEA DE TIEMPO
+   LÍNEA DE TIEMPO HORIZONTAL (movimientos de un día, en fila)
    ========================================================================== */
 
 .historial_linea_tiempo {
   position: relative;
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Línea que une los puntos (pasa por el centro de cada punto) */
 .historial_linea_tiempo::before {
   content: "";
   position: absolute;
-  top: -6px;
-  bottom: 4px;
-  left: 9px;
-  width: 2px;
+  top: 6px;
+  left: 0;
+  right: 0;
+  height: 2px;
   background: linear-gradient(
-    180deg,
+    90deg,
     var(--borde-hover),
-    transparent 70%
+    var(--borde) 90%,
+    transparent
   );
 }
 
 .historial_item {
   position: relative;
+  flex: 0 0 260px;
   display: flex;
-  gap: 12px;
-  padding-left: 26px;
-  padding-bottom: 9px;
-}
-
-.historial_item:last-child {
-  padding-bottom: 0px;
+  flex-direction: column;
+  padding-top: 22px; /* lugar para el punto */
+  scroll-snap-align: start;
 }
 
 /* ==========================================================================
@@ -140,8 +293,9 @@
 
 .historial_punto {
   position: absolute;
-  top: 2px;
-  left: 0px;
+  top: 0;
+  left: 14px;
+  z-index: 1;
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -190,24 +344,24 @@
 }
 
 /* ==========================================================================
-   TARJETA
+   TARJETA DE CADA MOVIMIENTO
    ========================================================================== */
 
 .historial_tarjeta {
   flex: 1;
-  padding: 10px 13px;
+  width: 100%;
+  padding: 12px 14px;
   border-radius: var(--radio-md);
   border: 1px solid var(--borde);
   background: var(--fondo-secundario);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--sombra-sm);
   transition: transform 160ms var(--ease-ui), border-color 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
 }
 
 .historial_item:hover .historial_tarjeta {
   border-color: var(--borde-hover);
-  transform: translateX(2px);
-  box-shadow: 0 4px 16px -4px rgba(0,0,0,0.12), 0 0 0 1px var(--borde-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-md);
 }
 
 .historial_tarjeta_encabezado {
@@ -215,7 +369,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .historial_pill {
@@ -276,7 +430,7 @@
 }
 
 .historial_descripcion {
-  margin: 0 0 6px 0;
+  margin: 0 0 8px 0;
   font-family: var(--fuente-principal);
   font-size: var(--texto-sm);
   line-height: var(--linea-texto);
@@ -294,106 +448,23 @@
   color: var(--texto-deshabilitado);
 }
 
-/* Centrar icono dentro del punto de la linea de tiempo */
-.historial_punto {
-  position: absolute;
-  top: 2px;
-  left: 0px;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid var(--fondo-principal);
-  box-shadow: 0 0 0 2px currentColor, 0 0 0 4px color-mix(in srgb, currentColor 15%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1px;
-  transition: transform 160ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
-}
-
-.historial_item:hover .historial_punto {
-  transform: scale(1.15);
-  box-shadow: 0 0 0 2px currentColor, 0 0 0 5px color-mix(in srgb, currentColor 25%, transparent);
-}
-
-.historial_punto_icono {
-  color: var(--fondo-principal);
-  filter: drop-shadow(0 0 1px currentColor);
-}
-
-.punto_verde {
-  background: var(--color-exito);
-  color: var(--color-exito);
-}
-
-.punto_rojo {
-  background: var(--color-error);
-  color: var(--color-error);
-}
-
-.punto_azul {
-  background: var(--color-secundario);
-  color: var(--color-secundario);
-}
-
-.punto_violeta {
-  background: var(--color-primario);
-  color: var(--color-primario);
-}
-
-.punto_gris {
-  background: var(--texto-deshabilitado);
-  color: var(--texto-deshabilitado);
-}
-
-/* Alinear icono dentro de la pill de la tarjeta */
-.historial_pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-family: var(--fuente-codigo);
-  font-size: var(--texto-xs);
-  font-weight: var(--peso-negrita);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
 /* ==========================================================================
-   ANIMACIONES DE ENTRADA
+   ANIMACIÓN DE ENTRADA
+   Cada movimiento llega desde la derecha, escalonado por su posición global
+   (`--i`). Tope: 8, el resto ya está fuera de pantalla. `backwards` (y no
+   `both`) para no pisar el transform del hover cuando termina.
    ========================================================================== */
 
-@keyframes historialItemEntrada {
+@keyframes historial_item_entrar {
   from {
     opacity: 0;
-    transform: translateX(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
+    transform: translateX(32px);
   }
 }
 
 .historial_item {
-  animation: historialItemEntrada 300ms var(--ease-ui) both;
-}
-
-.historial_item:nth-child(1) { animation-delay: 0ms; }
-.historial_item:nth-child(2) { animation-delay: 40ms; }
-.historial_item:nth-child(3) { animation-delay: 80ms; }
-.historial_item:nth-child(4) { animation-delay: 120ms; }
-.historial_item:nth-child(5) { animation-delay: 160ms; }
-.historial_item:nth-child(6) { animation-delay: 200ms; }
-.historial_item:nth-child(n+7) { animation-delay: 240ms; }
-
-/* Reducir motion: sin animacion de entrada */
-@media (prefers-reduced-motion: reduce) {
-  .historial_item {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
+  animation: historial_item_entrar 480ms var(--ease-ui) backwards;
+  animation-delay: calc(min(var(--i, 0), 8) * 70ms);
 }
 
 /* ==========================================================================
@@ -401,9 +472,8 @@
    ========================================================================== */
 
 @media (max-width: 480px) {
-  .historial_hora {
-    margin-left: 0;
-    width: 100%;
+  .historial_item {
+    flex-basis: 240px;
   }
 }
 
@@ -412,10 +482,14 @@
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
+  .metrica_historial_contenedor {
+    scroll-behavior: auto;
+  }
   .historial_item {
     animation: none !important;
-    opacity: 1;
-    transform: none;
+  }
+  .historial_carrusel .historial_flecha {
+    transition: none !important;
   }
   .historial_tarjeta {
     transition: none !important;
@@ -429,13 +503,21 @@
   }
   .historial_item:hover .historial_tarjeta {
     transform: none !important;
-    box-shadow: none !important;
+    box-shadow: var(--sombra-sm) !important;
   }
 }
 
 @media (prefers-contrast: more) {
   .metrica_historial_contenedor {
     border: 2px solid var(--borde);
+  }
+  .historial_carrusel .historial_flecha {
+    border-width: 2px;
+    border-color: var(--texto-principal);
+  }
+  .historial_carrusel .historial_flecha:focus-visible {
+    outline: var(--focus-ring-high-contrast);
+    outline-offset: var(--focus-offset-high-contrast);
   }
   .historial_tarjeta {
     border-width: 2px;
@@ -458,8 +540,30 @@
 }
 
 @media print {
+  .historial_carrusel .historial_flecha,
+  .historial_progreso {
+    display: none !important;
+  }
   .metrica_historial_contenedor {
-    max-width: none;
+    flex-direction: column;
+    align-items: stretch;
+    overflow-x: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .historial_grupo_dia + .historial_grupo_dia {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .historial_linea_tiempo {
+    flex-direction: column;
+  }
+  .historial_linea_tiempo::before {
+    display: none;
+  }
+  .historial_item {
+    flex-basis: auto;
+    animation: none;
   }
   .historial_tarjeta {
     box-shadow: none;
@@ -469,8 +573,5 @@
   .historial_item:hover .historial_tarjeta {
     transform: none;
     box-shadow: none;
-  }
-  .historial_linea_tiempo::before {
-    background: var(--borde);
   }
 }

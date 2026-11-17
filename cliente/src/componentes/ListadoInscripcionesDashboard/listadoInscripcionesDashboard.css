@@ -8,8 +8,10 @@
     border: 1px solid var(--borde);
     border-radius: var(--radio-lg);
     padding: var(--radio-md);
-    margin-top: var(--radio-md);
     box-shadow: var(--sombra-sm);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
 /* ---- Encabezado ---- */
@@ -76,10 +78,11 @@
     outline-offset: 2px;
 }
 
-/* ---- Cuerpo con scroll fijo ---- */
+/* ---- Cuerpo con scroll, crece para ocupar el espacio restante ---- */
 
 .inscripciones_dashboard_cuerpo {
-    height: 300px;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     
@@ -106,7 +109,7 @@
 }
 
 .inscripciones_dashboard_cuerpo.carga {
-    height: 200px;
+    min-height: 200px;
 }
 
 /* ---- Skeleton de carga ---- */

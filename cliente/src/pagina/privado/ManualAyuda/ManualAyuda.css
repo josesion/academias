@@ -1,0 +1,194 @@
+/* =====================================
+   Manual de Ayuda — Página principal
+   ===================================== */
+
+.manual-ayuda-contenedor {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+}
+
+/* ---- Encabezado ---- */
+
+.manual-ayuda-encabezado {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--borde);
+}
+
+.manual-ayuda-encabezado-interior {
+  max-width: 600px;
+}
+
+.manual-ayuda-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: var(--titulo-lg);
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+  margin: 0 0 0.75rem 0;
+  line-height: var(--linea-titulo);
+  letter-spacing: -0.02em;
+}
+
+.manual-ayuda-subtitulo {
+  font-size: var(--texto-lg);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--linea-texto);
+  max-width: 480px;
+}
+
+/* ---- Grid de categorías ---- */
+
+.manual-ayuda-categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ---- Tarjeta ---- */
+
+.manual-ayuda-tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background-color: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra-sm);
+  transition: transform 140ms var(--ease-ui), box-shadow 140ms var(--ease-ui), border-color 140ms var(--ease-ui);
+}
+
+.manual-ayuda-tarjeta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-md);
+  border-color: var(--borde-hover);
+}
+
+.manual-ayuda-tarjeta:active {
+  transform: scale(0.99);
+}
+
+.manual-ayuda-tarjeta-deshabilitada {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* ---- Link que envuelve toda la tarjeta ---- */
+
+.manual-ayuda-tarjeta-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ---- Ícono de la tarjeta ---- */
+
+.manual-ayuda-tarjeta-icono {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-sm);
+  background-color: var(--fondo-superficie);
+  color: var(--color-secundario);
+  flex-shrink: 0;
+}
+
+.manual-ayuda-tarjeta-icono svg {
+  width: 22px;
+  height: 22px;
+}
+
+.manual-ayuda-tarjeta-icono-deshabilitado {
+  background-color: var(--fondo-hover);
+  color: var(--texto-deshabilitado);
+}
+
+.manual-ayuda-tarjeta-titulo {
+  font-size: var(--titulo-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0;
+  line-height: var(--linea-titulo);
+}
+
+.manual-ayuda-tarjeta-descripcion {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin: 0;
+  line-height: var(--linea-texto);
+}
+
+/* ---- Acción "Ver guía" ---- */
+
+.manual-ayuda-tarjeta-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  color: var(--color-secundario);
+  transition: color 140ms var(--ease-ui);
+}
+
+.manual-ayuda-tarjeta-link:hover .manual-ayuda-tarjeta-accion {
+  color: var(--color-primario);
+}
+
+.manual-ayuda-tarjeta-accion svg {
+  transition: transform 140ms var(--ease-ui);
+}
+
+.manual-ayuda-tarjeta-link:hover .manual-ayuda-tarjeta-accion svg {
+  transform: translateX(3px);
+}
+
+/* ---- Badge "Próximamente" ---- */
+
+.manual-ayuda-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--texto-deshabilitado);
+  background-color: var(--fondo-superficie);
+  border-radius: 100px;
+  margin-top: auto;
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 600px) {
+  .manual-ayuda-contenedor {
+    padding: 2rem 1rem 3rem;
+  }
+
+  .manual-ayuda-encabezado {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .manual-ayuda-categorias {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .manual-ayuda-titulo {
+    font-size: var(--titulo-md);
+  }
+
+  .manual-ayuda-subtitulo {
+    font-size: var(--texto-md);
+  }
+
+  .manual-ayuda-tarjeta {
+    padding: 1.25rem;
+  }
+}

@@ -23,6 +23,7 @@ import {
   LuUserPlus,
   LuLayers,
   LuCreditCard,
+  LuBookOpen,
 } from "react-icons/lu";
 
 import type { SeccionMenu } from "./menu.types";
@@ -160,6 +161,13 @@ export const SECCIONES_USUARIO: SeccionMenu[] = [
         ruta: "/user_tipo_cuenta",
         color: AZUL_CLARO,
         planMinimo: "intermedio",
+      },
+      {
+        etiqueta: "Manual de Ayuda",
+        icono: LuBookOpen,
+        ruta: "/ayuda",
+        color: AZUL_CLARO,
+        planes: ["intermedio", "basico"],
       },
     ],
   },

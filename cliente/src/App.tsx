@@ -36,6 +36,18 @@ import { LayoutConMenu } from "./hooks/menuManager";
 // Flayers
 import { FlayersPag } from "./pagina/privado/Flayers/Flayers";
 
+// Manual de Ayuda
+import { ManualAyudaPage } from "./pagina/privado/ManualAyuda/ManualAyuda";
+import { GuiaLoginPage } from "./pagina/privado/ManualAyuda/login/GuiaLogin";
+import { GuiaPanelPage } from "./pagina/privado/ManualAyuda/panel/GuiaPanel";
+import { GuiaAsistenciaPage } from "./pagina/privado/ManualAyuda/asistencia/GuiaAsistencia";
+import { GuiaInscripcionesPage } from "./pagina/privado/ManualAyuda/inscripciones/GuiaInscripciones";
+import { GuiaAlumnosPage } from "./pagina/privado/ManualAyuda/alumnos/GuiaAlumnos";
+import { GuiaPlanesPage } from "./pagina/privado/ManualAyuda/planes/GuiaPlanes";
+import { GuiaHorariosPage } from "./pagina/privado/ManualAyuda/horarios/GuiaHorarios";
+import { GuiaFlyersPage } from "./pagina/privado/ManualAyuda/flyers/GuiaFlyers";
+import { GuiaAjustesPage } from "./pagina/privado/ManualAyuda/ajustes/GuiaAjustes";
+
 //Seccion conetxtos
 import { ProtectRutasProv } from "./contexto/protectRutas";
 import { NotificacionesProvider } from "./contexto/NotificacionesProvider";
@@ -129,6 +141,22 @@ function App() {
                 </Route>
               </Route>
 
+              {/* 🔒 MANUAL DE AYUDA — accesible para usuario y alumno */}
+              <Route element={<RutasPrivadas />}>
+                <Route element={<SoloUsuarioOAlumno />}>
+                  <Route path="/ayuda" element={<ManualAyudaPage />} />
+                  <Route path="/ayuda/login" element={<GuiaLoginPage />} />
+                  <Route path="/ayuda/panel" element={<GuiaPanelPage />} />
+                  <Route path="/ayuda/asistencia" element={<GuiaAsistenciaPage />} />
+                  <Route path="/ayuda/inscripciones" element={<GuiaInscripcionesPage />} />
+                  <Route path="/ayuda/alumnos" element={<GuiaAlumnosPage />} />
+                  <Route path="/ayuda/planes" element={<GuiaPlanesPage />} />
+                  <Route path="/ayuda/horarios" element={<GuiaHorariosPage />} />
+                  <Route path="/ayuda/flyers" element={<GuiaFlyersPage />} />
+                  <Route path="/ayuda/ajustes" element={<GuiaAjustesPage />} />
+                </Route>
+              </Route>
+
               {/* 🔒 BLOQUE ALUMNO (rol "alumno") */}
               <Route element={<RutasPrivadas />}>
                 <Route element={<SoloAlumno />}>
@@ -137,7 +165,7 @@ function App() {
                 </Route>
               </Route>
 
-              {/* 🔒 BLOQUE USUARIO + ALUMNO — rutas compartidas */}
+              {/* 🔒 BLOQUE USUARIO + ALUMNO — rutas compartidas (perfil) */}
               <Route element={<RutasPrivadas />}>
                 <Route element={<SoloUsuarioOAlumno />}>
                   <Route path="/user_perfil" element={<PerfilUsuarioPage />} />
