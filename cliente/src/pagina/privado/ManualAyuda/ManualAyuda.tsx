@@ -5,13 +5,6 @@ import "./ManualAyuda.css";
  * Ícono SVG inline para cada categoría del manual.
  */
 const iconos: Record<string, JSX.Element> = {
-  login: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 7v2M12 15v2M7 12h2M15 12h2" />
-    </svg>
-  ),
   panel: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="9" rx="1" />
@@ -82,13 +75,6 @@ const iconos: Record<string, JSX.Element> = {
  */
 export const ManualAyudaPage = () => {
   const categorias = [
-    {
-      id: "login",
-      titulo: "Inicio de Sesión",
-      descripcion: "Cómo acceder al sistema y configurar tu cuenta.",
-      ruta: "/ayuda/login",
-      disponible: true,
-    },
     {
       id: "panel",
       titulo: "Panel Principal",

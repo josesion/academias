@@ -13,7 +13,7 @@ export const GuiaAlumnosPage = () => {
       descripcion:
         'Desde el menú lateral, ve a "Mi Escuela" → "Alumnos Inscriptos". Verás el listado completo de todos los alumnos registrados con búsqueda y filtros por estado.',
       imagen: "alumnos-listado",
-      nota: "Captura: Listado de alumnos con barra de búsqueda y filtros.",
+      nota: "💡 Consejo: Usá la barra de búsqueda para encontrar alumnos por nombre, apellido o DNI. Los filtros de estado te permiten ver solo los alumnos activos o desactivados.",
     },
     {
       numero: 2,
@@ -21,7 +21,7 @@ export const GuiaAlumnosPage = () => {
       descripcion:
         'Presiona el botón "Agregar" o "+" para abrir el formulario modal. Completa los campos: DNI, nombre, apellido, teléfono, email, dirección, estado civil, etc. Luego confirma para guardar.',
       imagen: "alumnos-formulario-alta",
-      nota: "Captura: Modal de alta de alumno con todos los campos visibles.",
+      nota: "⚠️ Importante: El DNI y el email deben ser únicos — no podés registrar dos alumnos con el mismo DNI ni con el mismo email. Si el sistema te indica que ya existe, verificá los datos antes de continuar.",
     },
     {
       numero: 3,
@@ -29,7 +29,7 @@ export const GuiaAlumnosPage = () => {
       descripcion:
         "En el listado, haz clic en el botón de editar del alumno que deseas modificar. Se abrirá el formulario con los datos actuales. Nota: DNI y email son de solo lectura y no se pueden modificar.",
       imagen: "alumnos-formulario-modificar",
-      nota: "Captura: Modal de modificación con DNI y email deshabilitados.",
+      nota: "⚠️ Importante: El DNI y el email son de solo lectura y no se pueden modificar. Si necesitás cambiar estos datos, contactá al administrador del sistema.",
     },
     {
       numero: 4,
@@ -37,7 +37,7 @@ export const GuiaAlumnosPage = () => {
       descripcion:
         "En el listado, usa el botón de cambiar estado (activar/desactivar) para cambiar el estado del alumno sin eliminarlo. Un alumno desactivado no aparecerá en las búsquedas de inscripción.",
       imagen: "alumnos-cambiar-estado",
-      nota: "Captura: Botón de activar/desactivar en el listado.",
+      nota: "💡 Consejo: Desactivar un alumno no lo elimina del sistema — sus inscripciones y asistencias se mantienen registradas. Usá esta opción cuando un alumno deja la academia temporalmente y podés reactivarlo cuando regrese.",
     },
     {
       numero: 5,
@@ -45,7 +45,7 @@ export const GuiaAlumnosPage = () => {
       descripcion:
         'El proceso para profesores es idéntico al de alumnos. Ve a "Mi Escuela" → "Profesores" y repite los mismos pasos: alta, modificación, eliminación y cambio de estado.',
       imagen: "profesores-listado",
-      nota: "Captura: Listado de profesores con las mismas opciones que alumnos.",
+      nota: "💡 Consejo: Los profesores se gestionan igual que los alumnos, pero además se asignan a los horarios de clase. Asegurate de dar de alta a un profesor antes de crear un horario que lo requiera.",
     },
   ];
 

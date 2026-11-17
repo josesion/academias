@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import "./guia-seccion.css";
 
 /**
@@ -10,8 +10,8 @@ export interface PasoGuia {
   numero: number;
   /** Título corto del paso. */
   titulo: string;
-  /** Descripción detallada de qué hacer en este paso. */
-  descripcion: string;
+  /** Descripción detallada de qué hacer en este paso. Puede ser texto plano o contenido React (listas, columnas, etc.). */
+  descripcion: string | ReactNode;
   /** Nombre del archivo de imagen (sin extensión) en la carpeta correspondiente. */
   imagen: string;
   /** Nota opcional que se muestra debajo de la imagen. */
@@ -94,7 +94,7 @@ export const GuiaSeccion = ({
           </div>
 
           <h2 className="guia-seccion-paso-titulo">{paso.titulo}</h2>
-          <p className="guia-seccion-paso-descripcion">{paso.descripcion}</p>
+          <div className="guia-seccion-paso-descripcion">{paso.descripcion}</div>
 
           <figure className="guia-seccion-paso-figura">
             <div className="guia-seccion-paso-imagen-wrapper">

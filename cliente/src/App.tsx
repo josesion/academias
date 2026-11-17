@@ -38,7 +38,6 @@ import { FlayersPag } from "./pagina/privado/Flayers/Flayers";
 
 // Manual de Ayuda
 import { ManualAyudaPage } from "./pagina/privado/ManualAyuda/ManualAyuda";
-import { GuiaLoginPage } from "./pagina/privado/ManualAyuda/login/GuiaLogin";
 import { GuiaPanelPage } from "./pagina/privado/ManualAyuda/panel/GuiaPanel";
 import { GuiaAsistenciaPage } from "./pagina/privado/ManualAyuda/asistencia/GuiaAsistencia";
 import { GuiaInscripcionesPage } from "./pagina/privado/ManualAyuda/inscripciones/GuiaInscripciones";
@@ -145,7 +144,6 @@ function App() {
               <Route element={<RutasPrivadas />}>
                 <Route element={<SoloUsuarioOAlumno />}>
                   <Route path="/ayuda" element={<ManualAyudaPage />} />
-                  <Route path="/ayuda/login" element={<GuiaLoginPage />} />
                   <Route path="/ayuda/panel" element={<GuiaPanelPage />} />
                   <Route path="/ayuda/asistencia" element={<GuiaAsistenciaPage />} />
                   <Route path="/ayuda/inscripciones" element={<GuiaInscripcionesPage />} />

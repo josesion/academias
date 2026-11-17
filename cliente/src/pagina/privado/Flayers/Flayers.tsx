@@ -8,6 +8,7 @@ import { FormularioFlayer } from "../../../componentes/Flayers/FormularioFlayer/
 import { CompoError } from "../../../componentes/generales/Error/Error";
 import { ModalConfirmacion } from "../../../componentes/Flayers/Confirmacion/Confirmacion";
 import { CarruselFlayers } from "../../../componentes/Flayers/Carrucel/CarruselFlayers";
+import { Boton } from "../../../componentes/generales/Boton/Boton";
 
 import { LuX } from "react-icons/lu";
 
@@ -56,6 +57,13 @@ export const FlayersPag = () => {
             Administra tus publicaciones y carrusel
           </p>
         </div>
+        <Boton
+          texto="Nuevo Flyer"
+          logo="Add"
+          clase="agregar"
+          type="button"
+          onClick={abrirFormulario}
+        />
       </header>
 
       {/* CONTENIDO PRINCIPAL */}
@@ -90,15 +98,6 @@ export const FlayersPag = () => {
               </div>
 
               <div className="flayers_creacion_grid">
-                {/* LIENZO */}
-                <div className="flayers_pagina_lienzo">
-                  <LienzoImagen
-                    onChangeImagen={cachearImagen}
-                    imagen={state.imagen}
-                    quitarImagen={quitarImagen}
-                  />
-                </div>
-
                 {/* FORMULARIO */}
                 <div className="flayers_pagina_formulario">
                   <FormularioFlayer
@@ -107,6 +106,15 @@ export const FlayersPag = () => {
                     valores={state.valoresFormulario}
                     onSubmit={handleSubmit}
                     carga={state.carga.postImagen}
+                  />
+                </div>
+
+                {/* LIENZO */}
+                <div className="flayers_pagina_lienzo">
+                  <LienzoImagen
+                    onChangeImagen={cachearImagen}
+                    imagen={state.imagen}
+                    quitarImagen={quitarImagen}
                   />
                 </div>
               </div>

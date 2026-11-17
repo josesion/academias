@@ -143,39 +143,59 @@ export const GaleriaFlayers = ({
         </div>
       )}
 
-      <div className="galeria_grilla">
-        {flayers?.map((flayer) => (
-          <div
-            key={flayer.id_flayer}
-            className="galeria_tarjeta"
-            onClick={() => setFlayerDetalle(flayer)}
-          >
-            <div className="galeria_imagen_wrapper">
-              <img src={flayer.imagen_url} alt={flayer.titulo} />
+      {cantidadActual === 0 && !carga ? (
+        <div className="galeria_vacio">
+          <p className="galeria_vacio_texto">
+            Aún no hay flyers publicados
+          </p>
+          {puedeAgregar && onAgregar && (
+            <button
+              type="button"
+              className="galeria_tarjeta_agregar"
+              style={{ minWidth: "180px", padding: "12px 24px" }}
+              onClick={onAgregar}
+              aria-label="Crear primer flyer"
+            >
+              <LuPlus size={20} />
+              <span>Crear primer flyer</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="galeria_grilla">
+          {flayers?.map((flayer) => (
+            <div
+              key={flayer.id_flayer}
+              className="galeria_tarjeta"
+              onClick={() => setFlayerDetalle(flayer)}
+            >
+              <div className="galeria_imagen_wrapper">
+                <img src={flayer.imagen_url} alt={flayer.titulo} />
+              </div>
+              <div className="galeria_info">
+                <p className="galeria_titulo">{flayer.titulo}</p>
+                <p className="galeria_descripcion">{flayer.descripcion}</p>
+              </div>
             </div>
-            <div className="galeria_info">
-              <p className="galeria_titulo">{flayer.titulo}</p>
-              <p className="galeria_descripcion">{flayer.descripcion}</p>
-            </div>
-          </div>
-        ))}
+          ))}
 
-        {puedeAgregar && onAgregar && (
-          <button
-            type="button"
-            className="galeria_tarjeta_agregar"
-            onClick={(e) => {
-              e.stopPropagation();
-              onAgregar();
-            }}
-            aria-label="Agregar flyer"
-            title="Agregar flyer"
-          >
-            <LuPlus size={28} />
-            <span>Agregar flyer</span>
-          </button>
-        )}
-      </div>
+          {puedeAgregar && onAgregar && (
+            <button
+              type="button"
+              className="galeria_tarjeta_agregar"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAgregar();
+              }}
+              aria-label="Agregar flyer"
+              title="Agregar flyer"
+            >
+              <LuPlus size={28} />
+              <span>Agregar flyer</span>
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

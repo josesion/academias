@@ -23,7 +23,6 @@ export interface PropsFormularioFlayer {
 
 export const FormularioFlayer = (props: PropsFormularioFlayer) => {
   return (
-    // 1. Cambiamos el div contenedor por un <form> y agregamos el onSubmit
     <form onSubmit={props.onSubmit} className="formulario_flayer_contenedor">
       <div className="formulario_flayer_campo">
         <Inputs

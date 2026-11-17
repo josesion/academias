@@ -21,7 +21,7 @@ export const GuiaAsistenciaPage = () => {
       descripcion:
         "Escribe el número de DNI del alumno en el campo de identificación. El sistema buscará automáticamente al alumno en la base de datos.",
       imagen: "asistencia-campo-dni",
-      nota: "Captura: Campo de DNI con un número ingresado.",
+      nota: "💡 Consejo: Asegúrate de que el DNI esté correctamente registrado en el padrón de alumnos antes de intentar tomar asistencia. Si el sistema no encuentra al alumno, verificá que el DNI esté dado de alta en 'Mi Escuela' → 'Alumnos Inscriptos'.",
     },
     {
       numero: 3,
@@ -29,7 +29,7 @@ export const GuiaAsistenciaPage = () => {
       descripcion:
         "El sistema mostrará automáticamente la fecha de vencimiento de la inscripción y las clases restantes del alumno. Verifica que los datos sean correctos antes de registrar.",
       imagen: "asistencia-datos-alumno",
-      nota: "Captura: Datos del alumno mostrados (vencimiento y clases restantes).",
+      nota: "⚠️ Importante: Si el alumno aparece con la inscripción vencida o sin clases restantes, no podrás registrar su asistencia. En ese caso, debés inscribirlo nuevamente antes de continuar.",
     },
     {
       numero: 4,
@@ -37,13 +37,13 @@ export const GuiaAsistenciaPage = () => {
       descripcion:
         'Presiona el botón "Registrar asistencia" para confirmar la presencia del alumno. Verás una animación de éxito que confirma el registro.',
       imagen: "asistencia-boton-registrar",
-      nota: "Captura: Botón 'Registrar asistencia' y animación de éxito.",
+      nota: "✅ Una vez registrada, la asistencia se descuenta automáticamente de las clases restantes del alumno. Si registraste por error, podés revertirla desde el listado de asistencias.",
     },
     {
       numero: 5,
       titulo: "Consultar el historial de asistencias",
       descripcion:
-        'Para ver el historial completo, ve a "Diario" → "Listado de Asistencias". Allí podrás filtrar por fechas, día de la semana, hora, profesor, nivel y tipo de clase.',
+        'Para ver el historial completo, ve a "Diario" → "Listado de Asistencias". Allí podrás filtrar por fechas, día, hora, profesor, nivel y tipo de clase.',
       imagen: "asistencia-listado",
       nota: "Captura: Listado de asistencias con filtros laterales.",
     },
@@ -53,7 +53,7 @@ export const GuiaAsistenciaPage = () => {
       descripcion:
         "En el listado de asistencias, usa el panel lateral para filtrar por rango de fechas, día de la semana, hora, profesor, nivel y tipo de clase. La tabla agrupa las asistencias por fecha mostrando hora, alumno, profesor, nivel, tipo y estado.",
       imagen: "asistencia-filtros",
-      nota: "Captura: Panel de filtros lateral abierto con opciones seleccionadas.",
+      nota: "💡 Consejo: Combiná los filtros para encontrar información específica. Por ejemplo, filtrá por un día y un profesor en particular para ver todas las asistencias de ese profesor en ese día.",
     },
   ];
 

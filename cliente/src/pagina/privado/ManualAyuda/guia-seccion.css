@@ -180,6 +180,78 @@
   max-width: 640px;
 }
 
+/* ---- Contenido estructurado dentro de la descripción ---- */
+
+.guia-seccion-paso-descripcion .guia-desc-columnas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna {
+  padding: 0.75rem;
+  background-color: var(--fondo-superficie);
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--borde);
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna-titulo {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  margin: 0 0 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna-titulo .guia-desc-badge {
+  display: inline-block;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  color: var(--color-primario);
+  background-color: var(--fondo-hover);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radio-xs, 4px);
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna p {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin: 0 0 0.3rem 0;
+  line-height: var(--linea-texto);
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna ul {
+  margin: 0.3rem 0 0 0;
+  padding-left: 1.2rem;
+}
+
+.guia-seccion-paso-descripcion .guia-desc-columna li {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  line-height: var(--linea-texto);
+  margin-bottom: 0.15rem;
+}
+
+.guia-seccion-paso-descripcion .guia-desc-nota {
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--fondo-superficie);
+  border-left: 3px solid var(--color-primario);
+  border-radius: 0 var(--radio-sm) var(--radio-sm) 0;
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .guia-seccion-paso-descripcion .guia-desc-columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Imagen del paso ---- */
 
 .guia-seccion-paso-figura {
@@ -341,4 +413,113 @@
     height: 20px;
     font-size: 0.6rem;
   }
+}
+
+/* ---- Sub-secciones expandibles (paso 3 de Panel) ---- */
+
+.guia-subseccion {
+  margin-top: 0.75rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  overflow: hidden;
+}
+
+.guia-subseccion-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background-color: var(--fondo-superficie);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  color: var(--texto-principal);
+  transition: background-color 140ms var(--ease-ui);
+}
+
+.guia-subseccion-header:hover {
+  background-color: var(--fondo-hover);
+}
+
+.guia-subseccion-icono {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.guia-subseccion-titulo {
+  flex: 1;
+}
+
+.guia-subseccion-flecha {
+  font-size: 0.6rem;
+  color: var(--texto-deshabilitado);
+  transition: transform 140ms var(--ease-ui);
+  flex-shrink: 0;
+}
+
+.guia-subseccion-flecha.abierto {
+  transform: rotate(180deg);
+}
+
+.guia-subseccion-contenido {
+  padding: 0.75rem 1rem 1rem;
+  background-color: var(--fondo-secundario);
+  border-top: 1px solid var(--borde);
+}
+
+.guia-subseccion-contenido p {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin: 0 0 0.4rem 0;
+  line-height: var(--linea-texto);
+}
+
+.guia-subseccion-contenido p:last-child {
+  margin-bottom: 0;
+}
+
+.guia-subseccion-imagen-wrapper {
+  margin-top: 0.75rem;
+  position: relative;
+  width: 100%;
+  min-height: 150px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  overflow: hidden;
+  background-color: var(--fondo-superficie);
+}
+
+/* Placeholder dentro de sub-sección */
+
+.guia-seccion-paso-imagen-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 150px;
+  color: var(--texto-deshabilitado);
+}
+
+.guia-seccion-paso-imagen-placeholder-icono {
+  font-size: 1.5rem;
+  opacity: 0.4;
+}
+
+.guia-seccion-paso-imagen-placeholder-texto {
+  font-size: var(--texto-xs);
+  font-family: var(--fuente-codigo);
+  color: var(--texto-deshabilitado);
+}
+
+.guia-subseccion .guia-seccion-paso-nota {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  font-style: italic;
+  margin-top: 0.4rem;
+  text-align: center;
 }
