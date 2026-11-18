@@ -389,7 +389,8 @@
 }
 
 /* --- ENTRADA DE LA PÁGINA ---
-   Las 4 secciones suben escalonadas al montar la ruta.
+   Las secciones suben escalonadas al montar la ruta.
+   Orden actual: 1)Saludo 2)Resumen plan 3)Mis Academias 4)Clases hoy 5)Flayers 6)Anuncios
    Las keyframes solo declaran `from`, así que con `animation: none`
    (reduced-motion) el contenido queda visible. */
 
@@ -415,17 +416,25 @@
   animation-delay: 70ms;
 }
 
-/* La 4ª sección (Comunidad) contiene el widget flotante, que es
-   `position: fixed`. Un `transform` en el ancestro lo convierte en
-   absoluto de ese ancestro y saltaría de lugar al terminar la animación,
-   por eso esta entra solo con opacity (no crea containing block). */
-.principal-alumno-container > section:nth-of-type(4) {
-  animation-name: seccion_entra_opacity;
+.principal-alumno-container > section:nth-of-type(3) {
   animation-delay: 140ms;
 }
 
-.principal-alumno-container > section:nth-of-type(5) {
+.principal-alumno-container > section:nth-of-type(4) {
   animation-delay: 210ms;
+}
+
+.principal-alumno-container > section:nth-of-type(5) {
+  animation-delay: 280ms;
+}
+
+/* La 6ª sección (Anuncios/Comunidad) contiene el widget flotante, que es
+   `position: fixed`. Un `transform` en el ancestro lo convierte en
+   absoluto de ese ancestro y saltaría de lugar al terminar la animación,
+   por eso esta entra solo con opacity (no crea containing block). */
+.principal-alumno-container > section:nth-of-type(6) {
+  animation-name: seccion_entra_opacity;
+  animation-delay: 350ms;
 }
 
 /* Las tarjetas se montan recién cuando llega el fetch (después del
@@ -515,11 +524,11 @@
 }
 
 /* --- ACCESIBILIDAD: SIN MOVIMIENTO, PERO TODO VISIBLE ---
-   El selector de la 3ª sección va explícito: su regla de `animation-name`
+   El selector de la 6ª sección va explícito: su regla de `animation-name`
    tiene más especificidad que este bloque y si no, seguiría animando. */
 @media (prefers-reduced-motion: reduce) {
   .principal-alumno-container > *,
-  .principal-alumno-container > section:nth-of-type(3),
+  .principal-alumno-container > section:nth-of-type(6),
   .grilla-escuelas > .tarjeta_escuela,
   .grilla-clases > .tarjeta_clase,
   .carga-global_spinner,

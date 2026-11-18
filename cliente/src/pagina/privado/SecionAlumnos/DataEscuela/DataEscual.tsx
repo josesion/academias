@@ -1,4 +1,4 @@
-import { useState, useEffect, useId } from "react";
+import { useState, useEffect, useId, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { EstadoVacio } from "../../../../componentes/SeccionAlumnos/ComponteVacio/ComponteVacio";
 import { RobotError } from "../../../../componentes/SeccionAlumnos/RobotRoto/RobotError";
@@ -15,7 +15,7 @@ import { GrillaHorarios } from "../../../../componentes/SeccionAlumnos/Horarios/
 import { ListadoClasesAsistidas } from "../../../../componentes/SeccionAlumnos/ListadoClasesAsistidas/ListadoClasesAsistidas";
 import { SpinnerTarjeta } from "../../../../componentes/Metricas/SipinnerMetricas/SpinnerTajetas";
 
-import { ArrowLeft, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar, CheckCircle2, Clock } from "lucide-react";
 import "./dataescuela.css";
 
 import { configInfoEscuelas } from "../../../../hookNegocios/infoEscuela";
@@ -41,6 +41,69 @@ export const DataEscuela = () => {
   const novedadesId = useId();
   const planesId = useId();
   const grillaId = useId();
+  const historialId = useId();
+
+  /**
+   * Últimas 10 asistencias para mostrar directamente en la página.
+   */
+  const ultimasAsistencias = useMemo(() => {
+    const asistencias = state.clasesAsistidas ?? [];
+    return asistencias.slice(0, 10);
+  }, [state.clasesAsistidas]);
+
+  /**
+   * Formatea una fecha YYYY-MM-DD a DD/MM/YYYY.
+   */
+  const formatearFecha = (fechaStr: string): string => {
+    if (!fechaStr) return "—";
+    const [anio, mes, dia] = fechaStr.split("-");
+    return `${dia}/${mes}/${anio}`;
+  };
+
+  /**
+   * Capitaliza el primer carácter de un string.
+   */
+  const capitalizarDia = (dia: string): string => {
+    if (!dia) return "—";
+    return dia.charAt(0).toUpperCase() + dia.slice(1);
+  };
+
+  /**
+   * Próximas clases de esta academia para los días restantes de la semana.
+   * Se calcula a partir del horario semanal ya cargado.
+   */
+  const proximasClases = useMemo(() => {
+    const horarios = state.horario ?? [];
+    if (horarios.length === 0) return [];
+
+    // Día actual de la semana (0=domingo, 1=lunes, ..., 6=sábado)
+    const diaHoy = new Date().getDay();
+    const diasJS = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+    const diaActual = diasJS[diaHoy];
+
+    // Orden de días para filtrar desde hoy hasta domingo
+    const ordenDias = [
+      "lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo",
+    ];
+    const indiceHoy = ordenDias.indexOf(diaActual);
+    if (indiceHoy === -1) return [];
+
+    const diasRestantes = ordenDias.slice(indiceHoy);
+
+    // Filtrar y ordenar las clases de los días restantes
+    const proximas = horarios
+      .filter((h) => diasRestantes.includes(h.dia_semana))
+      .sort((a, b) => {
+        // Primero por día de la semana
+        const diaA = diasRestantes.indexOf(a.dia_semana);
+        const diaB = diasRestantes.indexOf(b.dia_semana);
+        if (diaA !== diaB) return diaA - diaB;
+        // Luego por hora
+        return a.hora_inicio.localeCompare(b.hora_inicio);
+      });
+
+    return proximas.slice(0, 7); // Máximo 7 próximas clases
+  }, [state.horario]);
 
   return (
     // NO va `<main>` ni `role="main"`: el layout ya aporta el unico landmark
@@ -132,10 +195,87 @@ export const DataEscuela = () => {
         ) : data?.planes ? (
           <PlanesEscuelaList
             planes={data.planes}
+            idPlanActual={data.inscripcion?.id_plan}
             carga={state.carga.infoEscuela}
           />
         ) : (
           <EstadoVacio variante="planes" />
+        )}
+      </section>
+
+      {/* 6. Próximas clases de esta academia */}
+      {proximasClases.length > 0 && (
+        <section className="seccion-bloque" aria-label="Próximas clases">
+          <h2 className="seccion-titulo">Próximas clases esta semana</h2>
+          <ul className="historial-asistencias-lista" role="list">
+            {proximasClases.map((clase, index) => (
+              <li
+                key={`${clase.id}-proxima-${index}`}
+                className="historial-asistencia-item"
+              >
+                <div className="historial-asistencia_icono" aria-hidden="true">
+                  {index === 0 ? (
+                    <Clock size={18} />
+                  ) : (
+                    <CheckCircle2 size={18} />
+                  )}
+                </div>
+                <div className="historial-asistencia_info">
+                  <span className="historial-asistencia_titulo">
+                    {clase.tipo_clase} — {clase.nivel}
+                  </span>
+                  <span className="historial-asistencia_detalle">
+                    {capitalizarDia(clase.dia_semana)} · {clase.hora_inicio}-{clase.hora_fin} · {clase.nombre_profesor}
+                  </span>
+                </div>
+                {index === 0 && (
+                  <span className="dias-restantes-badge" style={{ background: "rgba(34,197,94,0.12)", color: "#16a34a" }}>
+                    Próxima
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* 7. Historial de asistencias — visible en la página, no solo en modal */}
+      <section className="historial-asistencias-seccion" aria-labelledby={historialId}>
+        <h2 id={historialId} className="seccion-titulo">Historial de asistencias</h2>
+
+        {state.carga.clasesAsistidas ? (
+          <div className="historial-asistencias-carga" role="status" aria-live="polite">
+            <div className="spinner-clases" aria-hidden="true" />
+            <span>Cargando asistencias…</span>
+          </div>
+        ) : ultimasAsistencias.length > 0 ? (
+          <ul className="historial-asistencias-lista" role="list">
+            {ultimasAsistencias.map((asistencia, index) => (
+              <li
+                key={`${asistencia.id_horario_clase}-${asistencia.fecha}-${index}`}
+                className="historial-asistencia-item"
+              >
+                <div className="historial-asistencia_icono" aria-hidden="true">
+                  <CheckCircle2 size={18} />
+                </div>
+                <div className="historial-asistencia_info">
+                  <span className="historial-asistencia_titulo">
+                    {asistencia.tipo_clase} — {asistencia.nivel}
+                  </span>
+                  <span className="historial-asistencia_detalle">
+                    {capitalizarDia(asistencia.dia_semana)} · {asistencia.hora} · {asistencia.profesor}
+                  </span>
+                </div>
+                <span className="historial-asistencia_fecha">
+                  {formatearFecha(asistencia.fecha)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="historial-asistencias-vacio">
+            <p>Aún no tenés clases registradas en esta academia.</p>
+          </div>
         )}
       </section>
 

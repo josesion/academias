@@ -60,6 +60,30 @@
   gap: 4px;
 }
 
+/* Estados del badge según inscripción */
+.badge-vigente.badge-activo {
+  background-color: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.badge-vigente.badge-suspendido {
+  background-color: rgba(234, 179, 8, 0.12);
+  color: #ca8a04;
+}
+
+.badge-vigente.badge-vencido {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* Meta info: vencimiento + días restantes */
+.estado-plan-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .vencimiento-texto {
   font-size: var(--texto-sm);
   color: var(--texto-secundario);
@@ -70,6 +94,35 @@
 
 .vencimiento-texto strong {
   color: var(--texto-principal);
+}
+
+/* Badge de días restantes */
+.dias-restantes-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-medio);
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--color-primario);
+}
+
+.dias-restantes-badge.dias-por-vencer {
+  background-color: rgba(234, 179, 8, 0.12);
+  color: #ca8a04;
+}
+
+.dias-restantes-badge.dias-vencido {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+/* Monto pagado */
+.metrica-valor.monto-pagado {
+  color: var(--color-secundario);
+  font-size: var(--texto-lg);
 }
 
 /* --- MÉTRICAS DE CONSUMO --- */

@@ -1,6 +1,6 @@
 import React from "react";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
-import { CheckCircle2, Clock, AlertTriangle, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, XCircle, Wallet, CalendarDays } from "lucide-react";
 
 import "./estadoPlan.css";
 
@@ -41,10 +41,49 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
   const agotado = clasesRestantes <= 0;
   const porAgotarse = !agotado && clasesRestantes <= umbralAlerta;
 
+  /**
+   * Calcula los días restantes hasta el vencimiento del plan.
+   */
+  const diasRestantes = (() => {
+    if (!inscripcion.fecha_fin) return null;
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const fin = new Date(inscripcion.fecha_fin + "T00:00:00");
+    const diff = Math.ceil((fin.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+    return diff;
+  })();
+
   const formatearFecha = (fechaStr: string | null) => {
     if (!fechaStr) return "Sin vencimiento";
     const [anio, mes, dia] = fechaStr.split("-");
     return `${dia}/${mes}/${anio}`;
+  };
+
+  /**
+   * Formatea el monto como moneda argentina.
+   */
+  const formatearMonto = (monto: number) => {
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      minimumFractionDigits: 0,
+    }).format(monto);
+  };
+
+  /**
+   * Determina la clase CSS del badge según el estado de la inscripción.
+   */
+  const getEstadoBadgeClass = () => {
+    switch (inscripcion.estado) {
+      case "activos":
+        return "badge-activo";
+      case "suspendido":
+        return "badge-suspendido";
+      case "vencidos":
+        return "badge-vencido";
+      default:
+        return "";
+    }
   };
 
   return (
@@ -61,15 +100,27 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
             {/* Cabecera de la tarjeta */}
             <div className="estado-plan-header">
               <div className="estado-plan-titulo-box">
-                <span className="badge-vigente">
+                <span className={`badge-vigente ${getEstadoBadgeClass()}`}>
                   <CheckCircle2 size={14} aria-hidden="true" /> {inscripcion.estado.toUpperCase()}
                 </span>
                 <h3>{inscripcion.descripcion_plan}</h3>
               </div>
-              <span className="vencimiento-texto">
-                <Clock size={14} aria-hidden="true" /> Vence el:{" "}
-                <strong>{formatearFecha(inscripcion.fecha_fin)}</strong>
-              </span>
+              <div className="estado-plan-meta">
+                <span className="vencimiento-texto">
+                  <Clock size={14} aria-hidden="true" /> Vence el:{" "}
+                  <strong>{formatearFecha(inscripcion.fecha_fin)}</strong>
+                </span>
+                {diasRestantes !== null && (
+                  <span className={`dias-restantes-badge ${diasRestantes <= 0 ? "dias-vencido" : diasRestantes <= umbralAlerta ? "dias-por-vencer" : ""}`}>
+                    <CalendarDays size={14} aria-hidden="true" />
+                    {diasRestantes > 0
+                      ? `${diasRestantes} días restantes`
+                      : diasRestantes === 0
+                      ? "Vence hoy"
+                      : `${Math.abs(diasRestantes)} días vencido`}
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* Aviso de clases por agotarse / agotadas */}
@@ -104,6 +155,14 @@ export const EstadoPlanActual: React.FC<EstadoPlanActualProps> = ({
                   className={`metrica-valor destacar ${agotado ? "valor-agotado" : porAgotarse ? "valor-alerta" : ""}`}
                 >
                   {clasesRestantes > 0 ? `${clasesRestantes} clases restantes` : "Cupo agotado"}
+                </span>
+              </div>
+              <div className="info-metrica">
+                <span className="metrica-label">
+                  <Wallet size={14} aria-hidden="true" /> Monto pagado
+                </span>
+                <span className="metrica-valor monto-pagado">
+                  {formatearMonto(inscripcion.monto)}
                 </span>
               </div>
             </div>

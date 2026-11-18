@@ -1,11 +1,11 @@
 .data-escuela-container {
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 20px 0;
+  gap: 32px;
+  padding: 24px 16px;
 }
 
 .nav-superior {
@@ -169,12 +169,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .data-escuela-container * {
+  .data-escuela-container > header,
+  .data-escuela-container > nav,
+  .data-escuela-container > section {
     animation: none !important;
-    transition: none !important;
   }
-  .btn-volver,
-  .btn-principal {
+  .data-escuela-container * {
     transition: none !important;
   }
 }
@@ -199,6 +199,260 @@
   }
 }
 
+/* ==========================================================================
+   HISTORIAL DE ASISTENCIAS VISIBLE (no modal)
+   ========================================================================== */
+
+.historial-asistencias-seccion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.historial-asistencias-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.historial-asistencia-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  transition: var(--transicion);
+}
+
+.historial-asistencia-item:hover {
+  border-color: var(--color-secundario);
+  box-shadow: var(--sombra-sm);
+}
+
+.historial-asistencia_icono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+  color: var(--color-primario);
+  flex-shrink: 0;
+}
+
+.historial-asistencia_info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.historial-asistencia_titulo {
+  font-weight: var(--peso-semi-negrita);
+  font-size: var(--texto-sm);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.historial-asistencia_detalle {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+}
+
+.historial-asistencia_fecha {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.historial-asistencias-vacio {
+  padding: 24px;
+  text-align: center;
+  color: var(--texto-secundario);
+  font-size: var(--texto-sm);
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.historial-asistencias-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--texto-secundario);
+}
+
+.historial-asistencias-carga .spinner-clases {
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--borde);
+  border-top-color: var(--color-primario);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .historial-asistencia-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .historial-asistencia_fecha {
+    text-align: left;
+  }
+}
+
+/* ==========================================================================
+   ENTRADA DE LA PÁGINA — Animaciones escalonadas
+   ========================================================================== */
+
+@keyframes seccion_entra {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+.data-escuela-container > header,
+.data-escuela-container > nav,
+.data-escuela-container > section {
+  animation: seccion_entra 700ms var(--ease-ui) backwards;
+}
+
+.data-escuela-container > nav {
+  animation-delay: 70ms;
+}
+
+.data-escuela-container > section:nth-of-type(1) {
+  animation-delay: 140ms;
+}
+
+.data-escuela-container > section:nth-of-type(2) {
+  animation-delay: 210ms;
+}
+
+.data-escuela-container > section:nth-of-type(3) {
+  animation-delay: 280ms;
+}
+
+.data-escuela-container > section:nth-of-type(4) {
+  animation-delay: 350ms;
+}
+
+.data-escuela-container > section:nth-of-type(5) {
+  animation-delay: 420ms;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .data-escuela-container {
+    padding: 16px 12px;
+    gap: 24px;
+  }
+
+  .seccion-titulo {
+    font-size: 1.125rem;
+  }
+
+  .seccion-titulo-inline {
+    font-size: 1.125rem;
+  }
+
+  .top-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-horarios-lateral {
+    padding: 20px;
+  }
+
+  .btn-volver {
+    font-size: 0.85rem;
+  }
+
+  .historial-asistencia-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .historial-asistencia_fecha {
+    text-align: left;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .data-escuela-container {
+    padding: 20px 16px;
+  }
+
+  .top-dashboard-grid {
+    grid-template-columns: 1.5fr 1fr;
+    gap: 16px;
+  }
+}
+
+/* ==========================================================================
+   MEJORAS VISUALES ADICIONALES
+   ========================================================================== */
+
+/* Separador visual sutil entre secciones */
+.seccion-bloque + .seccion-bloque {
+  position: relative;
+}
+
+.seccion-bloque + .seccion-bloque::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--borde), transparent);
+  margin-bottom: 16px;
+  position: absolute;
+  top: -16px;
+  left: 0;
+  right: 0;
+}
+
+/* Mejora del contraste en hover para items */
+.historial-asistencia-item:focus-visible {
+  outline: 2px solid var(--color-secundario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+/* Badge de días restantes */
+.dias-restantes-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: var(--peso-medio, 500);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 @media print {
   .nav-superior,
   .btn-principal {
@@ -209,5 +463,8 @@
   }
   .seccion-bloque {
     break-inside: avoid;
+  }
+  .data-escuela-container > * {
+    animation: none !important;
   }
 }
