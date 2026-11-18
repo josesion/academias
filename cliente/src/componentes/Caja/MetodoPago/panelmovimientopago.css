@@ -175,9 +175,31 @@
 }
 
 .dato_valor.positivo {
-    color: #10b981; /* Verde éxito */
+    color: var(--color-exito);
 }
 
 .dato_valor.negativo {
-    color: #ef4444; /* Rojo alerta */
+    color: var(--color-error);
+}
+
+/* --- Colores por tipo de cuenta para los avatares --- */
+
+.metodo_avatar.tipo_efectivo {
+    background: linear-gradient(135deg, var(--color-exito), color-mix(in srgb, var(--color-exito) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.metodo_avatar.tipo_tarjeta {
+    background: linear-gradient(135deg, var(--color-secundario), color-mix(in srgb, var(--color-secundario) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-secundario) 30%, transparent);
+}
+
+.metodo_avatar.tipo_transferencia {
+    background: linear-gradient(135deg, var(--color-advertencia), color-mix(in srgb, var(--color-advertencia) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-advertencia) 30%, transparent);
+}
+
+.metodo_avatar.tipo_otro {
+    background: linear-gradient(135deg, var(--color-primario), color-mix(in srgb, var(--color-primario) 70%, black));
+    box-shadow: 0 4px 10px color-mix(in srgb, var(--color-primario) 30%, transparent);
 }

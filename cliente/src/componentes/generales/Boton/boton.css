@@ -92,6 +92,30 @@
     color: var(--texto-principal);
 }
 
+/* TRANSFERENCIA — Tono neutro con acento secundario */
+.boton_personalizado.transferencia {
+    background: color-mix(in srgb, var(--color-secundario) 10%, var(--fondo-secundario));
+    border-color: color-mix(in srgb, var(--color-secundario) 30%, transparent);
+    color: var(--color-secundario);
+}
+.boton_personalizado.transferencia:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-secundario) 20%, var(--fondo-secundario));
+    border-color: var(--color-secundario);
+    color: var(--texto-principal);
+}
+
+/* RETENCION — Tono advertencia sutil */
+.boton_personalizado.retencion {
+    background: color-mix(in srgb, var(--color-advertencia) 10%, var(--fondo-secundario));
+    border-color: color-mix(in srgb, var(--color-advertencia) 30%, transparent);
+    color: var(--color-advertencia);
+}
+.boton_personalizado.retencion:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-advertencia) 20%, var(--fondo-secundario));
+    border-color: var(--color-advertencia);
+    color: var(--texto-principal);
+}
+
 /* ============================================================
    ESTADO DESHABILITADO / CARGANDO
    ============================================================ */

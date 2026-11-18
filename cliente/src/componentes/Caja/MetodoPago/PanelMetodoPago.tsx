@@ -15,6 +15,15 @@ interface PanelMetodoPagoProps {
 }
 
 export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
+  // Determina la clase de color del avatar según el nombre de la cuenta
+  const getClaseAvatar = (nombre: string): string => {
+    const n = nombre.toLowerCase();
+    if (n.includes("efectivo") || n.includes("caja")) return "tipo_efectivo";
+    if (n.includes("tarjeta")) return "tipo_tarjeta";
+    if (n.includes("transferencia") || n.includes("transfer")) return "tipo_transferencia";
+    return "tipo_otro";
+  };
+
   return (
     <div className="panel_metodo_pago_contenedor">
       <div className="panel_header">
@@ -40,7 +49,7 @@ export const PanelMetodoPago = ({ cuentas }: PanelMetodoPagoProps) => {
             return (
               <div className="metodo_item_completo" key={cuenta.id_cuenta}>
                 <div
-                  className={`metodo_avatar ${index % 2 === 0 ? "" : "variante_1"}`}
+                  className={`metodo_avatar ${getClaseAvatar(cuenta.nombre_cuenta)}`}
                 >
                   {cuenta.nombre_cuenta.slice(0, 2).toUpperCase()}
                 </div>

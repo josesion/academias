@@ -18,8 +18,8 @@
   box-sizing: border-box;
 
   background: color-mix(in srgb, var(--fondo-principal) 70%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 
   animation: overlayFade 0.2s ease;
 }
@@ -27,6 +27,22 @@
 @keyframes overlayFade {
   from { opacity: 0; }
   to   { opacity: 1; }
+}
+
+/* Pop-in sutil para el contenido del modal */
+.formulario_overlay > :first-child {
+  animation: modalPopIn 0.25s ease;
+}
+
+@keyframes modalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Visually hidden utility */
@@ -81,7 +97,7 @@
 .caja_arqueo_grid {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 
   padding: 24px;
 
@@ -209,8 +225,8 @@
   grid-template-areas:
     "header  header"
     "listado sidebar";
-  align-items: start;
-  gap: 18px 24px;
+  align-items: stretch;
+  gap: 16px 24px;
 
   width: 100%;
 }
@@ -246,6 +262,10 @@
 .historial_contenido {
   grid-area: listado;
   min-width: 0;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
 
   background: var(--fondo-secundario);
   border: 1px solid var(--borde);
@@ -256,6 +276,7 @@
 }
 
 .scroll_movimientos {
+  flex: 1;
   max-height: 600px;
   overflow-y: auto;
   padding-right: 6px;
@@ -271,7 +292,7 @@
 }
 
 .scroll_movimientos::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+  background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radio-sm);
 }
 
@@ -290,13 +311,12 @@
 
 .caja_sidebar_pagos {
   grid-area: sidebar;
+  min-height: 0;
 
   display: flex;
   flex-direction: column;
   gap: 16px;
   min-width: 0;
-  position: sticky;
-  top: 20px;
 }
 
 /* ==========================================================================

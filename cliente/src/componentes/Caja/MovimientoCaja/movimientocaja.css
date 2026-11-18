@@ -69,7 +69,7 @@
 }
 
 .movimiento_lista::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+    background: rgba(255, 255, 255, 0.15);
     border-radius: var(--radio-sm);
 }
 
@@ -99,10 +99,12 @@
 
 .movimiento_fila.ingreso {
     border-left-color: var(--color-exito);
+    background: color-mix(in srgb, var(--color-exito) 4%, var(--fondo-secundario));
 }
 
 .movimiento_fila.egreso {
     border-left-color: var(--color-error);
+    background: color-mix(in srgb, var(--color-error) 4%, var(--fondo-secundario));
 }
 
 /* ============================================================

@@ -3,20 +3,39 @@
    ========================================================================== */
 
 .tarjeta_normal_contenedor {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-between;
 
-    width: 100%;
-    max-width: 320px;
-    padding: 24px;
+   width: 100%;
+   max-width: none;
+   padding: 24px;
 
-    background: var(--fondo-secundario);
-    border: 1px solid var(--borde);
-    border-radius: var(--radio-lg);
-    box-shadow: var(--sombra-sm);
-    font-family: var(--fuente-principal);
-    transition: var(--transicion);
+   background: var(--fondo-secundario);
+   border: 1px solid var(--borde);
+   border-top: 3px solid var(--borde);
+   border-radius: var(--radio-lg);
+   box-shadow: var(--sombra-sm);
+   font-family: var(--fuente-principal);
+   transition: var(--transicion);
+}
+
+/* --- Acento de color por variante --- */
+
+.tarjeta_normal_contenedor.azul {
+   border-top-color: var(--color-secundario);
+}
+
+.tarjeta_normal_contenedor.verde {
+   border-top-color: var(--color-exito);
+}
+
+.tarjeta_normal_contenedor.rojo {
+   border-top-color: var(--color-error);
+}
+
+.tarjeta_normal_contenedor.negro {
+   border-top-color: var(--color-primario);
 }
 
 .tarjeta_normal_contenedor:hover {

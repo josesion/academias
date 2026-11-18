@@ -5,6 +5,8 @@ import { AiFillCheckCircle } from "react-icons/ai";
 import { BiAddToQueue } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { SlActionRedo, SlActionUndo } from "react-icons/sl";
+import { FiShield } from "react-icons/fi";
+import { RxArrowSplit } from "react-icons/rx";
 //seccion stylos
 import "./boton.css";
 
@@ -30,6 +32,8 @@ interface BotonProps {
     | "Go"
     | "Back"
     | "Edit"
+    | "Swap"
+    | "Shield"
     | null;
   size?: number | 20;
   clase?:
@@ -39,7 +43,9 @@ interface BotonProps {
     | "eliminar"
     | "listar"
     | "flechas"
-    | "editar";
+    | "editar"
+    | "transferencia"
+    | "retencion";
   focus?: true | false;
   disable?: true | false;
   type?: "button" | "submit" | "reset";
@@ -66,6 +72,8 @@ const logoMap = {
   Go: SlActionRedo,
   Back: SlActionUndo,
   Edit: FaEdit,
+  Swap: RxArrowSplit,
+  Shield: FiShield,
 };
 
 /**

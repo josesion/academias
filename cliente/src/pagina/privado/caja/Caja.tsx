@@ -332,13 +332,13 @@ export const CajaArqueo = () => {
             {state.estadoCaja === "abierta" && (
               <>
                 <Boton
-                  clase="normal"
+                  clase="transferencia"
                   texto="Transferencia"
                   onClick={handleAbrirTransferencia}
                   logo={"Swap"}
                 />
                 <Boton
-                  clase="normal"
+                  clase="retencion"
                   texto="Retención"
                   onClick={handleAbrirRetencion}
                   logo={"Shield"}
