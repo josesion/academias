@@ -15,6 +15,7 @@ export interface ListadoCajas{
     modal :{
         libroDiario : boolean,
         modalGraficos : boolean,
+        idCajaActual : number | null,
     },
 
     carga : {
@@ -51,6 +52,7 @@ export const initialStateListadoCaja = () : ListadoCajas =>({
     modal : { 
         libroDiario : false,
         modalGraficos : false,
+        idCajaActual : null,
     },
 
     carga : {
@@ -99,6 +101,7 @@ export type ListadoCajaAction =
 
    | { type : "SET_MODAL_LIBRO_DIARIO" , payload : boolean}
    | { type : "SET_MODAL_GRFICOS_GLOBALES" , payload : boolean}
+   | { type : "SET_ID_CAJA_ACTUAL" , payload : number | null}
 // ──────────────────────────────────────────────────────────────
 // Encabezado del historial de caja 
 // ──────────────────────────────────────────────────────────────  
@@ -147,11 +150,21 @@ export const listadoCajaReducer = ( state : ReturnType< typeof initialStateLista
 
         case "SET_MODAL_LIBRO_DIARIO" :
             return {
-                ...state , 
-                modal : {
+                ...state, 
+                modal: {
                     ...state.modal,
-                    libroDiario : action.payload
-            }}
+                    libroDiario: action.payload
+                }
+            }
+
+        case "SET_ID_CAJA_ACTUAL":
+            return {
+                ...state,
+                modal: {
+                    ...state.modal,
+                    idCajaActual: action.payload
+                }
+            }
 
         case "SET_MODAL_GRFICOS_GLOBALES" :
             return {

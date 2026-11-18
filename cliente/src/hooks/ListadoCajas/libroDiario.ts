@@ -31,6 +31,7 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
     const abrirLibroDiario =async (idCaja: number) =>{
   
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : true });
+      dispatchLibroDiario({ type : "SET_ID_CAJA_ACTUAL" , payload : idCaja });
       dispatchLibroDiario({ type : "SET_CARGA_DETALLE", payload : true });
 
       const detalle = config.servicios.detalleCajaResumen;
@@ -68,6 +69,7 @@ export const libroDiario = ( config : LibroDiarioCongif) => {
       dispatchLibroDiario({ type : "SET_MODAL_LIBRO_DIARIO" , payload : false });
       // y aca lo borramos
       dispatchLibroDiario({ type : "SET_DETALLE_CAJA", payload : null });
+      dispatchLibroDiario({ type : "SET_ID_CAJA_ACTUAL" , payload : null });
       dispatchLibroDiario({ type : "SET_CARGA_DETALLE", payload : false });
     };
 

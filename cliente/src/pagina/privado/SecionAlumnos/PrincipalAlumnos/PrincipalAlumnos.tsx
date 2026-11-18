@@ -15,6 +15,7 @@ import type { FilaAnuncioPublico, TipoContacto } from "../../../../servicio/anun
 import "./principalalumno.css";
 
 import { configMetricasAlumnos } from "../../../../hookNegocios/metricas.alumnos";
+import { usePerfilRapido } from "../../../../hooks/SeccionAlumnos/usePerfilRapido";
 
 /**
  * Normaliza el valor crudo que viene de la BD (username, handle, número)
@@ -92,6 +93,7 @@ const aItemDeGaleria = (fila: FilaAnuncioPublico): EmprendedorItem => {
 export const PrincipalAlumnos = () => {
   const { state } = configMetricasAlumnos();
   const { data } = state;
+  const { perfil } = usePerfilRapido();
 
   // Estado de visibilidad del banner publicitario (solo sesión actual, sin localStorage)
   const [bannerVisible, setBannerVisible] = useState(true);
@@ -163,6 +165,22 @@ export const PrincipalAlumnos = () => {
 
       {!cargandoInicial && (
         <>
+          {/* Encabezado de bienvenida con datos del usuario */}
+          {perfil && (
+            <section className="saludo-seccion" aria-label="Bienvenida">
+              <div className="saludo-contenido">
+                <div className="saludo-texto">
+                  <h2 className="saludo-titulo">
+                    Bienvenido/a, {perfil.nombre} {perfil.apellido}
+                  </h2>
+                  <p className="saludo-sin-clase" style={{ margin: 0, opacity: 0.9 }}>
+                    {perfil.correo}
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* 1. Sección de Escuelas */}
           <section className="seccion-contenedor" aria-labelledby="escuelas-titulo">
             <h2 id="escuelas-titulo" className="seccion-titulo">Mis Academias</h2>

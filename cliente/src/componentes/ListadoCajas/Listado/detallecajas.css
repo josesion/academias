@@ -5,58 +5,123 @@
 .detalle_caja_marco {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-
-
-    
+    gap: 20px;
     width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
-
-  box-sizing: border-box;
-
-  max-height: var(--altura-panel-cajas);
-
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  padding-right: 6px;
+    box-sizing: border-box;
+    max-height: var(--altura-panel-cajas);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
 }
 
 .detalle_caja_titulo {
-    /* NUEVO: Mantiene el título fijo arriba al hacer scroll */
     position: sticky;
     top: 0;
-    background-color: var(--fondo-principal); 
+    background-color: var(--fondo-principal);
     z-index: 10;
     padding-top: 4px;
 
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: space-between;
+    gap: 10px;
 
-    padding-bottom: 12px;
+    padding-bottom: 14px;
     border-bottom: 1px solid var(--borde);
 
-    color: var(--color-primario);
+    color: var(--texto-secundario);
 
-    font-family: var(--fuente-codigo);
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+}
+
+.detalle_caja_titulo_izq {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ============================================================
+   BOTÓN EXPORTAR CSV
+   ============================================================ */
+
+.detalle_caja_btn_exportar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 6px 12px;
+
+    background: var(--fondo-hover);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-sm);
+
+    color: var(--texto-secundario);
+    font-family: var(--fuente-principal);
     font-size: var(--texto-xs);
-    font-weight: var(--peso-negrita);
-    letter-spacing: 1.4px;
-    text-transform: uppercase;
+    font-weight: var(--peso-semi-negrita);
+
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.detalle_caja_btn_exportar:hover {
+    background: var(--borde);
+    color: var(--texto-principal);
+    border-color: var(--borde-hover);
+}
+
+.detalle_caja_btn_exportar:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--fondo-principal),
+        0 0 0 4px var(--color-secundario);
+}
+
+.detalle_caja_btn_exportar:active {
+    transform: scale(0.97);
 }
 
 .detalle_caja_vacio {
-    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 60px 20px;
     text-align: center;
-
-    color: var(--texto-deshabilitado);
-    font-family: var(--fuente-principal);
-    font-size: var(--texto-sm);
 
     border: 1px dashed var(--borde);
     border-radius: var(--radio-md);
+}
+
+.detalle_caja_vacio_visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--fondo-hover);
+    color: var(--texto-deshabilitado);
+    margin-bottom: 4px;
+}
+
+.detalle_caja_vacio_titulo {
+    margin: 0;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-lg);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-secundario);
+}
+
+.detalle_caja_vacio_texto {
+    margin: 0;
+    max-width: 320px;
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-sm);
+    color: var(--texto-deshabilitado);
+    line-height: var(--linea-texto);
 }
 
 /* ============================================================
@@ -86,11 +151,11 @@
 .detalle_caja_lista {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 }
 
 /* ============================================================
-   TARJETA
+   TARJETA — ahora es un botón clickeable
    ============================================================ */
 
 .detalle_caja_card {
@@ -98,19 +163,49 @@
 
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 
-    padding: 18px 20px 18px 24px;
+    padding: 16px 20px;
 
     background: var(--fondo-secundario);
     border: 1px solid var(--borde);
     border-left: 3px solid var(--texto-deshabilitado);
-    border-radius: var(--radio-lg);
+    border-radius: var(--radio-md);
 
     box-shadow: var(--sombra-sm);
     transition: var(--transicion);
 
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    color: inherit;
+
     animation: cajaEntrada 0.3s ease backwards;
+}
+
+/* ============================================================
+   TOOLTIP CON ID DE CAJA
+   ============================================================ */
+
+.detalle_caja_id_tooltip {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+
+    font-family: var(--fuente-codigo);
+    font-size: 0.6rem;
+    font-weight: var(--peso-negrita);
+    color: var(--texto-deshabilitado);
+    opacity: 0;
+    transform: translateX(4px);
+    transition: opacity 0.2s var(--ease-ui), transform 0.2s var(--ease-ui);
+    pointer-events: none;
+    user-select: none;
+}
+
+.detalle_caja_card:hover .detalle_caja_id_tooltip {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 .detalle_caja_lista .detalle_caja_card:nth-child(1) { animation-delay: 0.02s; }
@@ -126,7 +221,19 @@
 .detalle_caja_card:hover {
     border-color: var(--borde-hover);
     box-shadow: var(--sombra-md);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+}
+
+.detalle_caja_card:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--fondo-principal),
+        0 0 0 4px var(--color-secundario);
+}
+
+.detalle_caja_card:active {
+    transform: translateY(0);
+    box-shadow: var(--sombra-sm);
 }
 
 .detalle_caja_card.exacta {
@@ -135,38 +242,34 @@
 
 .detalle_caja_card.faltante {
     border-left-color: var(--color-error);
-    background: color-mix(in srgb, var(--color-error) 5%, var(--fondo-secundario));
+    background: color-mix(in srgb, var(--color-error) 4%, var(--fondo-secundario));
 }
 
 .detalle_caja_card.sobrante {
     border-left-color: var(--color-advertencia);
-    background: color-mix(in srgb, var(--color-advertencia) 5%, var(--fondo-secundario));
+    background: color-mix(in srgb, var(--color-advertencia) 4%, var(--fondo-secundario));
 }
 
 
 /* ============================================================
-   CABECERA
+   CABECERA — fechas + sello en una línea
    ============================================================ */
 
 .detalle_caja_cabecera {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    gap: 14px;
-    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .detalle_caja_fechas {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    min-width: 0;
 }
 
 .detalle_caja_rango {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
     color: var(--texto-principal);
     font-family: var(--fuente-principal);
     font-size: var(--texto-sm);
@@ -174,10 +277,6 @@
 }
 
 .detalle_caja_horas {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
     color: var(--texto-deshabilitado);
     font-family: var(--fuente-codigo);
     font-size: var(--texto-xs);
@@ -213,42 +312,31 @@
 .sello_sobrante {
     color: var(--color-advertencia);
 }
+
 /* ============================================================
-   MONTOS
+   DIFERENCIA — dato hero de la tarjeta
    ============================================================ */
 
-.detalle_caja_montos {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-
-    padding: 14px;
-
-    background: var(--fondo-hover);
-    border-radius: var(--radio-md);
-}
-
-.monto_item {
+.detalle_caja_diferencia {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: baseline;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--fondo-hover);
+    border-radius: var(--radio-sm);
 }
 
-.monto_label {
-    font-family: var(--fuente-codigo);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--texto-deshabilitado);
-}
-
-.monto_valor {
+.detalle_caja_diferencia_valor {
     font-family: var(--fuente-titulos);
-    font-size: var(--texto-md);
-    font-weight: var(--peso-semi-negrita);
-    color: var(--texto-principal);
-
+    font-size: 1.15rem;
+    font-weight: var(--peso-negrita);
     font-variant-numeric: tabular-nums;
+}
+
+.detalle_caja_diferencia_label {
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
 }
 
 .monto_exacta {
@@ -264,48 +352,58 @@
 }
 
 /* ============================================================
-   USUARIOS DE LA CAJA (quién abrió / quién cerró) — spec 042 · A3
+   MONTOS — sistema y real en línea
+   ============================================================ */
+
+.detalle_caja_montos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.monto_item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    background: var(--fondo-hover);
+    border-radius: var(--radio-sm);
+}
+
+.monto_label {
+    font-family: var(--fuente-principal);
+    font-size: 0.65rem;
+    color: var(--texto-deshabilitado);
+}
+
+.monto_valor {
+    font-family: var(--fuente-titulos);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semi-negrita);
+    color: var(--texto-principal);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   USUARIOS — compactos en una línea
    ============================================================ */
 
 .detalle_caja_usuarios {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-
-    gap: 6px 18px;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
 .detalle_caja_usuario {
-    display: inline-flex;
-    align-items: center;
-
-    gap: 6px;
-
-    min-width: 0;
-}
-
-.detalle_caja_usuario svg {
-    flex-shrink: 0;
-
-    color: var(--texto-deshabilitado);
-}
-
-.detalle_caja_usuario_label {
-    font-family: var(--fuente-codigo);
-    font-size: 0.62rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--texto-deshabilitado);
-}
-
-.detalle_caja_usuario_nombre {
     font-family: var(--fuente-principal);
     font-size: var(--texto-xs);
-    font-weight: var(--peso-semi-negrita);
-    color: var(--texto-principal);
+    color: var(--texto-secundario);
+}
 
-    /* Los nombres largos se envuelven: nunca rompen la grilla de la tarjeta */
-    overflow-wrap: anywhere;
+.detalle_caja_usuario_sep {
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
 }
 
 /* ============================================================
@@ -313,62 +411,78 @@
    ============================================================ */
 
 .detalle_caja_obs {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-
-    padding: 10px 12px;
-
+    padding: 8px 12px;
     border-left: 2px solid var(--color-advertencia);
-    background: color-mix(in srgb, var(--color-advertencia) 6%, transparent);
+    background: color-mix(in srgb, var(--color-advertencia) 5%, transparent);
+    border-radius: 0 var(--radio-sm) var(--radio-sm) 0;
 
     color: var(--texto-secundario);
     font-family: var(--fuente-principal);
-    font-size: var(--texto-sm);
+    font-size: var(--texto-xs);
     font-style: italic;
     line-height: var(--linea-texto);
 }
 
-.detalle_caja_obs svg {
-    flex-shrink: 0;
+/* ============================================================
+   INDICADOR DE ACCIÓN — "Ver detalle" sutil
+   ============================================================ */
+
+.detalle_caja_accion {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin-top: 2px;
-    color: var(--color-advertencia);
+
+    font-family: var(--fuente-principal);
+    font-size: var(--texto-xs);
+    color: var(--texto-deshabilitado);
+    transition: var(--transicion);
 }
 
-.detalle_caja_obs p {
-    margin: 0;
+.detalle_caja_card:hover .detalle_caja_accion {
+    color: var(--texto-secundario);
+}
+
+.detalle_caja_accion svg {
+    transition: transform 0.2s var(--ease-ui);
+}
+
+.detalle_caja_card:hover .detalle_caja_accion svg {
+    transform: translateX(3px);
 }
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 768px) {
-
-    /* La línea de usuarios se apila: los nombres largos no empujan el sello */
-    .detalle_caja_usuarios {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 6px;
-    }
-}
-
 @media (max-width: 600px) {
     .detalle_caja_card {
-        padding: 16px 16px 16px 20px;
+        padding: 14px 16px;
     }
 
     .detalle_caja_montos {
         grid-template-columns: 1fr;
-        gap: 10px;
+        gap: 8px;
     }
 
     .detalle_caja_cabecera {
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .detalle_caja_sello {
         align-self: flex-start;
+    }
+
+    .detalle_caja_diferencia_valor {
+        font-size: 1rem;
+    }
+
+    .detalle_caja_btn_exportar span {
+        display: none;
+    }
+
+    .detalle_caja_btn_exportar {
+        padding: 6px 8px;
     }
 }

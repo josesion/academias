@@ -6,7 +6,7 @@ import { BiAddToQueue } from "react-icons/bi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { SlActionRedo, SlActionUndo } from "react-icons/sl";
 import { FiShield } from "react-icons/fi";
-import { RxArrowSplit } from "react-icons/rx";
+import { MdSwapHoriz } from "react-icons/md";
 //seccion stylos
 import "./boton.css";
 
@@ -72,7 +72,7 @@ const logoMap = {
   Go: SlActionRedo,
   Back: SlActionUndo,
   Edit: FaEdit,
-  Swap: RxArrowSplit,
+  Swap: MdSwapHoriz,
   Shield: FiShield,
 };
 

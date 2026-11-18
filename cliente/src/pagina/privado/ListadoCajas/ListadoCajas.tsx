@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
-import { coloresSobrios } from "../../../hooks/ListadoCajas/ListadoCajasBase";
-import { BookOpen, User, UserCheck } from "lucide-react";
+import { BookOpen, User, UserCheck, Download } from "lucide-react";
 // Componentes
 import { EstadoCaja } from "../../../componentes/ListadoCajas/EstadoCaja/EstadoCaja";
 import { DetalleCajas } from "../../../componentes/ListadoCajas/Listado/DetalleCaja";
@@ -31,20 +30,135 @@ export interface MovimientoLibroDiario {
   monto: number;
 }
 
-export interface MetodoPagoData {
-  metodo: string;
-  total: number;
-  color: string;
-}
+/**
+ * Genera y descarga un archivo CSV con el detalle completo del libro diario
+de una caja individual. Incluye dos secciones: movimientos cronológicos y
+arqueo por método de pago.
+ *
+ * @param detalleCaja - Los datos del resumen de la caja (movimientos, arqueo, métodos).
+ * @param idCaja - Identificador de la caja para el nombre del archivo.
+ */
+const exportarLibroDiarioCSV = (
+  detalleCaja: {
+    dataDetalle?: MovimientoLibroDiario[] | null;
+    dataArqueo?: {
+      detalle: Array<{ id_cuenta: number; nombre_cuenta: string; sistema: number; real: number }>;
+      diferencia_total: number;
+      monto_sistema: number;
+      monto_final_real: number;
+      usuario_apertura: string;
+      usuario_cierre: string;
+    } | null;
+    dataMetodo?: Array<{ id_cuenta: number; metodo: string; total: number }> | null;
+  },
+  idCaja: number
+) => {
+  const formatearMonto = (valor: number) =>
+    Number(valor || 0).toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
-// Función auxiliar correctamente tipada con genéricos
-const dividirEnBloques = <T,>(array: T[], tamanoBloque: number): T[][] => {
-  const bloques: T[][] = [];
-  for (let i = 0; i < array.length; i += tamanoBloque) {
-    bloques.push(array.slice(i, i + tamanoBloque));
+  const filas: string[] = [];
+
+  // Encabezado general
+  filas.push(`Libro Diario - Caja #${idCaja}`);
+  filas.push("");
+
+  // Seccion 1: Movimientos cronologicos
+  filas.push("MOVIMIENTOS CRONOLÓGICOS");
+  if (detalleCaja.dataDetalle && detalleCaja.dataDetalle.length > 0) {
+    const movimientos = detalleCaja.dataDetalle;
+    filas.push("Cód.,Fecha,Hora,Categoría,Descripción,Cuenta,Tipo,Monto");
+    movimientos.forEach((mov) => {
+      filas.push([
+        String(mov.id_movimiento).padStart(4, "0"),
+        mov.fecha,
+        mov.hora,
+        mov.categoria,
+        `"${(mov.descripcion ?? "").replace(/"/g, '""')}"`,
+        mov.cuenta,
+        mov.tipo,
+        formatearMonto(mov.monto),
+      ].join(","));
+    });
+
+    // Totales
+    const debe = movimientos
+      .filter((m) => m.tipo === "ingreso")
+      .reduce((acc, m) => acc + Number(m.monto), 0);
+    const haber = movimientos
+      .filter((m) => m.tipo === "egreso")
+      .reduce((acc, m) => acc + Number(m.monto), 0);
+    filas.push("");
+    filas.push(`Totales,Debe: $${formatearMonto(debe)},Haber: $${formatearMonto(haber)},Total: $${formatearMonto(debe - haber)}`);
+  } else {
+    filas.push("Sin movimientos cronológicos registrados");
   }
-  return bloques;
+
+  filas.push("");
+
+  // Seccion 2: Arqueo por método de pago
+  filas.push("ARQUEO POR MÉTODO DE PAGO");
+  if (detalleCaja.dataArqueo && detalleCaja.dataArqueo.detalle.length > 0) {
+    const arqueo = detalleCaja.dataArqueo;
+    filas.push("Método de pago,Sistema,Conteo real,Diferencia");
+    arqueo.detalle.forEach((item) => {
+      const sistema = Number(item.sistema) || 0;
+      const real = Number(item.real) || 0;
+      const diferencia = real - sistema;
+      const textoDif = diferencia > 0 ? "Sobrante" : diferencia < 0 ? "Faltante" : "Exacto";
+      filas.push([
+        item.nombre_cuenta,
+        `$${formatearMonto(sistema)}`,
+        `$${formatearMonto(real)}`,
+        `${diferencia > 0 ? "+" : ""}$${formatearMonto(Math.abs(diferencia))} (${textoDif})`,
+      ].join(","));
+    });
+
+    const sumaDesglose = arqueo.detalle.reduce(
+      (acc, item) => acc + (Number(item.real) - Number(item.sistema)),
+      0
+    );
+    filas.push("");
+    filas.push(`Total del desglose,${sumaDesglose > 0 ? "+" : ""}$${formatearMonto(Math.abs(sumaDesglose))}`);
+    filas.push(`Diferencia total de la caja,${formatearMonto(Number(arqueo.diferencia_total) || 0)}`);
+  } else {
+    filas.push("Sin arqueo registrado");
+  }
+
+  filas.push("");
+
+  // Seccion 3: Saldo por método
+  if (detalleCaja.dataMetodo && detalleCaja.dataMetodo.length > 0) {
+    filas.push("SALDO POR MÉTODO");
+    filas.push("Método,Saldo");
+    detalleCaja.dataMetodo.forEach((metodo) => {
+      filas.push([
+        metodo.metodo,
+        `$${formatearMonto(metodo.total)}`,
+      ].join(","));
+    });
+  }
+
+  // Usuarios
+  if (detalleCaja.dataArqueo) {
+    filas.push("");
+    filas.push("INFORMACIÓN DE CAJA");
+    filas.push(`Abrió,${detalleCaja.dataArqueo.usuario_apertura}`);
+    filas.push(`Cerró,${detalleCaja.dataArqueo.usuario_cierre}`);
+  }
+
+  const csvContent = filas.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `libro_diario_caja_${idCaja}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
 };
+
 
 export const ListadoCajas = () => {
   const {
@@ -66,24 +180,11 @@ export const ListadoCajas = () => {
     filtrosBusqueda,
     usuariosEscuela,
     detalleCaja,
+    modal,
   } = stateListadoCaja;
 
   // Estado local para manejar la animación fluida de salida del modal
   const [estaCerrando, setEstaCerrando] = useState(false);
-
-  // Estado para la vista: "listado" (grid 50/50) | "graficos" (solo gráficos ancho completo)
-  const [vista, setVista] = useState<"listado" | "graficos">(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("listadoCajasVista");
-      if (saved === "listado" || saved === "graficos") return saved;
-    }
-    return "listado";
-  });
-
-  // Persistir preferencia en localStorage
-  useEffect(() => {
-    localStorage.setItem("listadoCajasVista", vista);
-  }, [vista]);
 
   const manejarCierreConAnimacion = () => {
     setEstaCerrando(true);
@@ -100,40 +201,6 @@ export const ListadoCajas = () => {
     onCerrar: manejarCierreConAnimacion,
   });
 
-  /* Spec 042 · A4: el listado muestra **dos** gráficos apilados, derivados del
-     **mismo** array de métodos (sin reordenar) para que un método conserve el
-     mismo color en los dos:
-       · "Saldo por método"                → `total` (saldo, incluye Saldo Inicial)
-       · "Dinero que circuló por método"   → `flujo` (ingresos − egresos, sin Saldo Inicial) */
-  const metodosDePago = historialCajas?.dataMetodo ?? [];
-
-  const metodosSaldo: MetodoPagoData[] = metodosDePago.map((item, index) => ({
-    metodo: item.metodo,
-    total: Number(item.total) || 0,
-    color: item.color ?? coloresSobrios[index % coloresSobrios.length],
-  }));
-
-  const metodosFlujo: MetodoPagoData[] = metodosDePago.map((item, index) => ({
-    metodo: item.metodo,
-    total: Number(item.flujo ?? 0) || 0,
-    color: item.color ?? coloresSobrios[index % coloresSobrios.length],
-  }));
-
-  // Partimos los métodos de pago en bloques de 3 (los dos gráficos usan el mismo corte)
-  const bloquesMetodosPago = dividirEnBloques(metodosSaldo, 3);
-  const bloquesMetodosFlujo = dividirEnBloques(metodosFlujo, 3);
-
-  /* Spec 042 · A2: el estado vacío del gráfico agregado del listado tiene dos
-     textos distintos según haya cajas en el período o no. */
-  const hayCajasEnElPeriodo = (historialCajas?.dataDetalle?.length ?? 0) > 0;
-
-  const textoSinMetodosPago = hayCajasEnElPeriodo
-    ? "Las cajas del período no tienen ingresos ni egresos registrados, por eso no hay métodos de pago para mostrar."
-    : "No hay cajas en el período seleccionado, por eso no hay métodos de pago para mostrar.";
-
-  const handleCambiarVista = () => {
-    setVista((v) => (v === "listado" ? "graficos" : "listado"));
-  };
 
   return (
     <div className="listado_cajas_pagina">
@@ -169,93 +236,21 @@ export const ListadoCajas = () => {
         <EstadoCajaCerrada />
       )}
 
-      {/* Switch para alternar vista: Listado ↔ Gráficos */}
-      <div className="vista_switch_wrapper" role="group" aria-label="Alternar vista del listado de cajas">
-        <span className="vista_switch_label">Listado</span>
-        <label className="vista_switch">
-          <input
-            type="checkbox"
-            role="switch"
-            aria-checked={vista === "graficos"}
-            checked={vista === "graficos"}
-            onChange={handleCambiarVista}
-            aria-label="Alternar vista: listado de cajas o gráficos"
+      {/* 2. Sección Inferior: Detalle de Cajas (ancho completo) */}
+      <div className="listado_cajas_panel">
+        {error.historial && <CompoError mensaje={error.historial} />}
+
+        {historialCajas ? (
+          <DetalleCajas
+            carga={carga.historial}
+            props={
+              historialCajas.dataDetalle ? historialCajas.dataDetalle : []
+            }
+            onAbrirLibroDiario={abrirLibroDiario}
           />
-          <span className="vista_switch_thumb" aria-hidden="true" />
-        </label>
-        <span className="vista_switch_label">Gráficos</span>
-      </div>
-
-      {/* 2. Sección Inferior: Detalle de Cajas al lado de los Gráficos */}
-      <div className={`listado_cajas_grid_inferior ${vista === "graficos" ? "vista-graficos" : "vista-listado"}`}>
-        <div className="listado_cajas_panel">
-          {error.historial && <CompoError mensaje={error.historial} />}
-
-          {historialCajas ? (
-            <DetalleCajas
-              carga={carga.historial}
-              props={
-                historialCajas.dataDetalle ? historialCajas.dataDetalle : []
-              }
-              onAbrirLibroDiario={abrirLibroDiario}
-            />
-          ) : (
-            "Sin cajas"
-          )}
-        </div>
-
-        {/* Contenedor de los gráficos divididos */}
-        <div className="listado_cajas_graficos_columna">
-          {bloquesMetodosPago.length > 0 ? (
-            <>
-              {/* Gráfico 1: saldo por método (incluye el Saldo Inicial) */}
-              {bloquesMetodosPago.map((bloqueDatos, index) => (
-                <div key={`saldo-${index}`} className="contenedor_grafico_bloque">
-                  {bloquesMetodosPago.length > 1 && (
-                    <div className="grafico_subtitulo">
-                      <span>
-                        Métodos de Pago (Bloque {index + 1} de{" "}
-                        {bloquesMetodosPago.length})
-                      </span>
-                    </div>
-                  )}
-                  <GraficoMetodosPago
-                    props={bloqueDatos}
-                    carga={carga.historial}
-                    titulo="Saldo por método"
-                  />
-                </div>
-              ))}
-
-              {/* Gráfico 2: dinero que circuló por método (sin el Saldo Inicial) */}
-              {bloquesMetodosFlujo.map((bloqueDatos, index) => (
-                <div key={`flujo-${index}`} className="contenedor_grafico_bloque">
-                  {bloquesMetodosFlujo.length > 1 && (
-                    <div className="grafico_subtitulo">
-                      <span>
-                        Métodos de Pago (Bloque {index + 1} de{" "}
-                        {bloquesMetodosFlujo.length})
-                      </span>
-                    </div>
-                  )}
-                  <GraficoMetodosPago
-                    props={bloqueDatos}
-                    carga={carga.historial}
-                    titulo="Dinero que circuló por método"
-                  />
-                </div>
-              ))}
-            </>
-          ) : (
-            /* Un único mensaje compartido por los dos gráficos: los dos se
-               alimentan del mismo array, así que si uno está vacío el otro también. */
-            <div className="contenedor_grafico_bloque">
-              <p className="text-slate-400 text-sm">
-                {textoSinMetodosPago}
-              </p>
-            </div>
-          )}
-        </div>
+        ) : (
+          "Sin cajas"
+        )}
       </div>
 
       <div>
@@ -288,13 +283,26 @@ export const ListadoCajas = () => {
                 </div>
               </div>
 
-              <Boton
-                clase="editar"
-                logo="Cancel"
-                texto="Cerrar"
-                disable={false}
-                onClick={manejarCierreConAnimacion}
-              />
+              <div className="modal_finanzas_acciones">
+                {detalleCaja && modal.idCajaActual != null && (
+                  <button
+                    className="modal_finanzas_btn_exportar"
+                    onClick={() => exportarLibroDiarioCSV(detalleCaja, modal.idCajaActual)}
+                    title="Descargar libro diario como CSV"
+                    aria-label="Exportar libro diario a CSV"
+                  >
+                    <Download size={14} />
+                    <span>Exportar CSV</span>
+                  </button>
+                )}
+                <Boton
+                  clase="editar"
+                  logo="Cancel"
+                  texto="Cerrar"
+                  disable={false}
+                  onClick={manejarCierreConAnimacion}
+                />
+              </div>
 
               {/* Spec 042 · A3: quién abrió y quién cerró la caja.
                   Viene de `dataArqueo` y se muestra aunque la caja no

@@ -415,16 +415,16 @@
   animation-delay: 70ms;
 }
 
-/* La 3ª sección (Comunidad) contiene el widget flotante, que es
+/* La 4ª sección (Comunidad) contiene el widget flotante, que es
    `position: fixed`. Un `transform` en el ancestro lo convierte en
    absoluto de ese ancestro y saltaría de lugar al terminar la animación,
    por eso esta entra solo con opacity (no crea containing block). */
-.principal-alumno-container > section:nth-of-type(3) {
+.principal-alumno-container > section:nth-of-type(4) {
   animation-name: seccion_entra_opacity;
   animation-delay: 140ms;
 }
 
-.principal-alumno-container > section:nth-of-type(4) {
+.principal-alumno-container > section:nth-of-type(5) {
   animation-delay: 210ms;
 }
 
