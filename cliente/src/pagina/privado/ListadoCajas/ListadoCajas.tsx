@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { setHistorialCajas } from "../../../hookNegocios/historialCajas";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
-import { BookOpen, User, UserCheck, Download } from "lucide-react";
+import { BookOpen, User, UserCheck, Download, Printer } from "lucide-react";
 // Componentes
 import { EstadoCaja } from "../../../componentes/ListadoCajas/EstadoCaja/EstadoCaja";
 import { DetalleCajas } from "../../../componentes/ListadoCajas/Listado/DetalleCaja";
@@ -159,6 +159,285 @@ const exportarLibroDiarioCSV = (
   URL.revokeObjectURL(url);
 };
 
+/**
+ * Abre una ventana de impresión con el contenido formateado del libro diario
+de una caja individual. Incluye movimientos cronológicos, arqueo por método
+de pago y saldo por método.
+ *
+ * @param detalleCaja - Los datos del resumen de la caja (movimientos, arqueo, métodos).
+ * @param idCaja - Identificador de la caja para el título.
+ */
+const imprimirLibroDiario = (
+  detalleCaja: {
+    dataDetalle?: MovimientoLibroDiario[] | null;
+    dataArqueo?: {
+      detalle: Array<{ id_cuenta: number; nombre_cuenta: string; sistema: number; real: number }>;
+      diferencia_total: number;
+      monto_sistema: number;
+      monto_final_real: number;
+      usuario_apertura: string;
+      usuario_cierre: string;
+    } | null;
+    dataMetodo?: Array<{ id_cuenta: number; metodo: string; total: number }> | null;
+  },
+  idCaja: number
+) => {
+  const formatearMonto = (valor: number) =>
+    Number(valor || 0).toLocaleString("es-AR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
+  // Construir el HTML del contenido imprimible
+  let html = `
+    <html>
+      <head>
+        <title>Libro Diario - Caja #${idCaja}</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #1a1a1a;
+            padding: 20px;
+            line-height: 1.4;
+          }
+          h1 {
+            font-size: 18px;
+            margin-bottom: 4px;
+            color: #111;
+          }
+          h2 {
+            font-size: 14px;
+            margin-top: 20px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #ccc;
+            color: #333;
+          }
+          .subtitulo {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 16px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 11px;
+          }
+          th {
+            background: #f5f5f5;
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 2px solid #ccc;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+          }
+          td {
+            padding: 5px 8px;
+            border-bottom: 1px solid #eee;
+          }
+          tr:last-child td {
+            border-bottom: none;
+          }
+          .total-row {
+            font-weight: bold;
+            background: #f9f9f9;
+          }
+          .monto-positivo {
+            color: #2d6a4f;
+          }
+          .monto-negativo {
+            color: #b34747;
+          }
+          .info-caja {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid #ccc;
+            font-size: 11px;
+            color: #555;
+          }
+          .sin-detalles {
+            color: #888;
+            font-style: italic;
+            padding: 10px 0;
+          }
+          @media print {
+            body { padding: 0; }
+            h1 { font-size: 16px; }
+            h2 { font-size: 13px; }
+          }
+        </style>
+      </head>
+      <body>
+  `;
+
+  // Título
+  html += `<h1>Libro Diario - Caja #${idCaja}</h1>`;
+  html += `<p class="subtitulo">Registro cronológico de caja</p>`;
+
+  // Sección 1: Movimientos cronológicos
+  html += `<h2>MOVIMIENTOS CRONOLÓGICOS</h2>`;
+  if (detalleCaja.dataDetalle && detalleCaja.dataDetalle.length > 0) {
+    const movimientos = detalleCaja.dataDetalle;
+    html += `
+      <table>
+        <thead>
+          <tr>
+            <th>Cód.</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th>Cuenta</th>
+            <th>Tipo</th>
+            <th style="text-align:right">Monto</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    movimientos.forEach((mov) => {
+      html += `
+          <tr>
+            <td>${String(mov.id_movimiento).padStart(4, "0")}</td>
+            <td>${mov.fecha}</td>
+            <td>${mov.hora}</td>
+            <td>${mov.categoria}</td>
+            <td>${(mov.descripcion ?? "").replace(/"/g, '"')}</td>
+            <td>${mov.cuenta}</td>
+            <td>${mov.tipo}</td>
+            <td style="text-align:right">$${formatearMonto(mov.monto)}</td>
+          </tr>
+      `;
+    });
+
+    const debe = movimientos
+      .filter((m) => m.tipo === "ingreso")
+      .reduce((acc, m) => acc + Number(m.monto), 0);
+    const haber = movimientos
+      .filter((m) => m.tipo === "egreso")
+      .reduce((acc, m) => acc + Number(m.monto), 0);
+    const total = debe - haber;
+
+    html += `
+          <tr class="total-row">
+            <td colspan="7">Totales</td>
+            <td style="text-align:right">Debe: $${formatearMonto(debe)} | Haber: $${formatearMonto(haber)} | Total: $${formatearMonto(total)}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else {
+    html += `<p class="sin-detalles">Sin movimientos cronológicos registrados</p>`;
+  }
+
+  // Sección 2: Arqueo por método de pago
+  html += `<h2>ARQUEO POR MÉTODO DE PAGO</h2>`;
+  if (detalleCaja.dataArqueo && detalleCaja.dataArqueo.detalle.length > 0) {
+    const arqueo = detalleCaja.dataArqueo;
+    html += `
+      <table>
+        <thead>
+          <tr>
+            <th>Método de pago</th>
+            <th style="text-align:right">Sistema</th>
+            <th style="text-align:right">Conteo real</th>
+            <th style="text-align:right">Diferencia</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    arqueo.detalle.forEach((item) => {
+      const sistema = Number(item.sistema) || 0;
+      const real = Number(item.real) || 0;
+      const diferencia = real - sistema;
+      const claseMonto = diferencia > 0 ? "monto-positivo" : diferencia < 0 ? "monto-negativo" : "";
+      const signo = diferencia > 0 ? "+" : "";
+      html += `
+          <tr>
+            <td>${item.nombre_cuenta}</td>
+            <td style="text-align:right">$${formatearMonto(sistema)}</td>
+            <td style="text-align:right">$${formatearMonto(real)}</td>
+            <td style="text-align:right" class="${claseMonto}">${signo}$${formatearMonto(Math.abs(diferencia))}</td>
+          </tr>
+      `;
+    });
+
+    const sumaDesglose = arqueo.detalle.reduce(
+      (acc, item) => acc + (Number(item.real) - Number(item.sistema)),
+      0
+    );
+    const signoSuma = sumaDesglose > 0 ? "+" : "";
+
+    html += `
+          <tr class="total-row">
+            <td>Total del desglose</td>
+            <td colspan="2"></td>
+            <td style="text-align:right">${signoSuma}$${formatearMonto(Math.abs(sumaDesglose))}</td>
+          </tr>
+          <tr class="total-row">
+            <td>Diferencia total de la caja</td>
+            <td colspan="2"></td>
+            <td style="text-align:right">$${formatearMonto(Number(arqueo.diferencia_total) || 0)}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  } else {
+    html += `<p class="sin-detalles">Sin arqueo registrado</p>`;
+  }
+
+  // Sección 3: Saldo por método
+  if (detalleCaja.dataMetodo && detalleCaja.dataMetodo.length > 0) {
+    html += `<h2>SALDO POR MÉTODO</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Método</th>
+            <th style="text-align:right">Saldo</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    detalleCaja.dataMetodo.forEach((metodo) => {
+      html += `
+          <tr>
+            <td>${metodo.metodo}</td>
+            <td style="text-align:right">$${formatearMonto(metodo.total)}</td>
+          </tr>
+      `;
+    });
+    html += `</tbody></table>`;
+  }
+
+  // Información de caja
+  if (detalleCaja.dataArqueo) {
+    html += `
+      <div class="info-caja">
+        <span><strong>Abrió:</strong> ${detalleCaja.dataArqueo.usuario_apertura}</span>
+        <span><strong>Cerró:</strong> ${detalleCaja.dataArqueo.usuario_cierre}</span>
+      </div>
+    `;
+  }
+
+  html += `</body></html>`;
+
+  // Abrir ventana de impresión
+  const ventanaImpresion = window.open("", "_blank", "width=800,height=600");
+  if (ventanaImpresion) {
+    ventanaImpresion.document.write(html);
+    ventanaImpresion.document.close();
+    ventanaImpresion.focus();
+    setTimeout(() => {
+      ventanaImpresion.print();
+      ventanaImpresion.close();
+    }, 250);
+  }
+};
+
 
 export const ListadoCajas = () => {
   const {
@@ -285,15 +564,26 @@ export const ListadoCajas = () => {
 
               <div className="modal_finanzas_acciones">
                 {detalleCaja && modal.idCajaActual != null && (
-                  <button
-                    className="modal_finanzas_btn_exportar"
-                    onClick={() => exportarLibroDiarioCSV(detalleCaja, modal.idCajaActual)}
-                    title="Descargar libro diario como CSV"
-                    aria-label="Exportar libro diario a CSV"
-                  >
-                    <Download size={14} />
-                    <span>Exportar CSV</span>
-                  </button>
+                  <>
+                    <button
+                      className="modal_finanzas_btn_exportar"
+                      onClick={() => imprimirLibroDiario(detalleCaja, modal.idCajaActual)}
+                      title="Imprimir libro diario"
+                      aria-label="Imprimir libro diario"
+                    >
+                      <Printer size={14} />
+                      <span>Imprimir</span>
+                    </button>
+                    <button
+                      className="modal_finanzas_btn_exportar"
+                      onClick={() => exportarLibroDiarioCSV(detalleCaja, modal.idCajaActual)}
+                      title="Descargar libro diario como CSV"
+                      aria-label="Exportar libro diario a CSV"
+                    >
+                      <Download size={14} />
+                      <span>Exportar CSV</span>
+                    </button>
+                  </>
                 )}
                 <Boton
                   clase="editar"
