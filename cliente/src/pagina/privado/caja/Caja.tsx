@@ -337,12 +337,13 @@ export const CajaArqueo = () => {
                   onClick={handleAbrirTransferencia}
                   logo={"Swap"}
                 />
-                <Boton
+                {/* Botón de Retención oculto temporalmente hasta corregir la lógica de retenciones */}
+                {/* <Boton
                   clase="retencion"
                   texto="Retención"
                   onClick={handleAbrirRetencion}
                   logo={"Shield"}
-                />
+                /> */}
               </>
             )}
           </div>

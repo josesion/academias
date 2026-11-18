@@ -77,7 +77,16 @@ export const MovientoCaja: React.FC<MovimientoCajaProps> = ({
       ========================== */}
       <div className="movimiento_lista">
         {movimientos
-          .filter((mov) => mov.nombre_categoria !== "Saldo Inicial")
+          .filter((mov) => {
+            // Excluir "Saldo Inicial" del historial
+            if (mov.nombre_categoria === "Saldo Inicial") return false;
+            // Excluir retenciones activas: no aparecen en el detalle hasta que se resuelvan
+            if (mov.estado_retencion === "activa") return false;
+            // Excluir retenciones que fueron devueltas o justificadas completamente
+            // Solo la diferencia no devuelta (nueva fila con estado 'activa') aparece en el detalle
+            if (mov.estado_retencion === "devuelta" || mov.estado_retencion === "justificada") return false;
+            return true;
+          })
           .map((mov) => (
             <div
               key={mov.id_movimiento}
