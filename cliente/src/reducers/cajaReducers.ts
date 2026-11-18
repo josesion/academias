@@ -1,7 +1,8 @@
 import type { 
     MetricasCajaPanelPrincipal, DataCaja, DataAperturaCaja, 
     EstadoCaja, Categoria, ListadoTipoCuentas, metricasTipoCuentas, 
-    RegistroDetalleCaja, DetalleApertura , InformeDetalle
+    RegistroDetalleCaja, DetalleApertura , InformeDetalle,
+    RetencionActiva, DataTransferenciaCaja, DataRetencionCaja
 } from "../tipadosTs/caja.typado"; 
 import { type MetodosPago } from "../componentes/Caja/metodoPagoInputs/MetodoPagoInputs";
 
@@ -22,12 +23,20 @@ export interface CajaTipado {
         panelPrincipal : boolean,
         cuentasActivas : boolean,
         cuentasSesion : boolean,
+        // Spec 050
+        transferenciaCaja : boolean,
+        retencionCaja : boolean,
+        retencionesActivas : boolean,
+        resolverRetencion : boolean,
     };
     // UI y Control de Modales
     estadoCaja: EstadoCaja;
     modalesCaja: {
         apertura: boolean;
         cierre: boolean;
+        // Spec 050
+        transferencia: boolean;
+        retencion: boolean;
     };
     modalesEgresoIngreso: boolean;
     modalAnimaciones : boolean;
@@ -54,6 +63,16 @@ export interface CajaTipado {
     movimientoExtraordinario: RegistroDetalleCaja;
     aperturaDetalle: DetalleApertura[] | null;
     informeDetalle : InformeDetalle;
+
+    // Spec 050 — transferencias y retenciones
+    retencionesActivas: RetencionActiva[];
+    transferenciaCaja: DataTransferenciaCaja;
+    retencionCaja: DataRetencionCaja;
+    retencionSeleccionada: number | null;
+    devolucionRetencion: {
+        monto: string;
+        observacion: string;
+    };
 
     disparadorRefresco: number;
     montoRealFinal: number;
@@ -84,10 +103,14 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
         panelPrincipal : false,
         cuentasActivas : false,
         cuentasSesion : false,
+        transferenciaCaja : false,
+        retencionCaja : false,
+        retencionesActivas : false,
+        resolverRetencion : false,
     },
 
     estadoCaja: "cerrada",
-    modalesCaja: { apertura: false, cierre: false },
+    modalesCaja: { apertura: false, cierre: false, transferencia: false, retencion: false },
     modalesEgresoIngreso: false,
     modalAnimaciones : false,
     modalAnimacionesApertura : false,
@@ -125,6 +148,26 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
         metodo_pago: "",
         usuario : "",
         nombre_alumno_vinculado:null,
+        estado_retencion: null,
+    },
+    retencionesActivas: [],
+    transferenciaCaja: {
+        id_caja: null,
+        id_cuenta_origen: null,
+        id_cuenta_destino: null,
+        monto: "",
+        descripcion: "",
+    },
+    retencionCaja: {
+        id_caja: null,
+        id_cuenta: null,
+        monto: "",
+        descripcion: "",
+    },
+    retencionSeleccionada: null,
+    devolucionRetencion: {
+        monto: "",
+        observacion: "",
     },
     disparadorRefresco: 0,
     montoRealFinal: 0,
@@ -139,7 +182,7 @@ export const initialState = (config: { usuario : string}): CajaTipado => ({
 // ==========================================
 export type CajaAction =
     // --- Eventos de UI (Modales y Loading) ---
-    | { type: 'ABRIR_MODAL'; payload: 'apertura' | 'cierre' }
+    | { type: 'ABRIR_MODAL'; payload: 'apertura' | 'cierre' | 'transferencia' | 'retencion' }
     | { type: 'ABRIR_MODAL_IE' } 
     | { type: 'ABRIR_MODAL_ANIMACION' }  
     | { type: 'ABRIR_MODAL_INFORME' }  
@@ -183,6 +226,20 @@ export type CajaAction =
     | { type: 'SET_MONTO_FINAL'; payload: number } 
     | { type: 'SET_OBSERVACIONES'; payload: string } 
     | { type: 'SET_INFORME_DETALLE'; payload: InformeDetalle }               
+
+    // --- Spec 050: transferencias y retenciones ---
+    | { type: 'SET_RETENCIONES_ACTIVAS'; payload: RetencionActiva[] }
+    | { type: 'UPDATE_TRANSFERENCIA_CAJA'; payload: { campo: keyof DataTransferenciaCaja; valor: any } }
+    | { type: 'RESET_TRANSFERENCIA_CAJA' }
+    | { type: 'UPDATE_RETENCION_CAJA'; payload: { campo: keyof DataRetencionCaja; valor: any } }
+    | { type: 'RESET_RETENCION_CAJA' }
+    | { type: 'SET_RETENCION_SELECCIONADA'; payload: number | null }
+    | { type: 'UPDATE_DEVOLUCION_RETENCION'; payload: { campo: 'monto' | 'observacion'; valor: string } }
+    | { type: 'RESET_DEVOLUCION_RETENCION' }
+    | { type: 'SET_CARGA_TRANSFERENCIA'; payload: boolean }
+    | { type: 'SET_CARGA_RETENCION'; payload: boolean }
+    | { type: 'SET_CARGA_RETENCIONES_ACTIVAS'; payload: boolean }
+    | { type: 'SET_CARGA_RESOLVER_RETENCION'; payload: boolean }
     
     // --- Manejo de Formularios (Update & Reset) ---
     | { type: 'UPDATE_MONTO_REAL_CIERRE'; payload: { nombreCuenta: string; valorCuenta: number | string } }  
@@ -231,7 +288,7 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
         case 'CERRAR_MODALES':
             return {
                 ...state,
-                modalesCaja: { apertura: false, cierre: false },
+                modalesCaja: { apertura: false, cierre: false, transferencia: false, retencion: false },
                 enviando: false
             };
 
@@ -336,6 +393,89 @@ export const cajaReducer = (state: ReturnType<typeof initialState>, action: Caja
 
         case 'SET_INFORME_DETALLE':
             return { ...state, informeDetalle : action.payload };         
+
+        // --- SPEC 050: TRANSFERENCIAS Y RETENCIONES ---
+        case 'SET_RETENCIONES_ACTIVAS':
+            return { ...state, retencionesActivas: action.payload };
+
+        case 'UPDATE_TRANSFERENCIA_CAJA':
+            return {
+                ...state,
+                transferenciaCaja: {
+                    ...state.transferenciaCaja,
+                    [action.payload.campo]: action.payload.valor
+                }
+            };
+
+        case 'RESET_TRANSFERENCIA_CAJA':
+            return {
+                ...state,
+                transferenciaCaja: {
+                    id_caja: state.dataCaja.id_caja,
+                    id_cuenta_origen: null,
+                    id_cuenta_destino: null,
+                    monto: "",
+                    descripcion: "",
+                }
+            };
+
+        case 'UPDATE_RETENCION_CAJA':
+            return {
+                ...state,
+                retencionCaja: {
+                    ...state.retencionCaja,
+                    [action.payload.campo]: action.payload.valor
+                }
+            };
+
+        case 'RESET_RETENCION_CAJA':
+            return {
+                ...state,
+                retencionCaja: {
+                    id_caja: state.dataCaja.id_caja,
+                    id_cuenta: null,
+                    monto: "",
+                    descripcion: "",
+                }
+            };
+
+        case 'SET_RETENCION_SELECCIONADA':
+            return {
+                ...state,
+                retencionSeleccionada: action.payload,
+                devolucionRetencion: {
+                    monto: "",
+                    observacion: "",
+                }
+            };
+
+        case 'UPDATE_DEVOLUCION_RETENCION':
+            return {
+                ...state,
+                devolucionRetencion: {
+                    ...state.devolucionRetencion,
+                    [action.payload.campo]: action.payload.valor
+                }
+            };
+
+        case 'RESET_DEVOLUCION_RETENCION':
+            return {
+                ...state,
+                retencionSeleccionada: null,
+                devolucionRetencion: { monto: "", observacion: "" }
+            };
+
+        case 'SET_CARGA_TRANSFERENCIA':
+            return { ...state, carga: { ...state.carga, transferenciaCaja: action.payload } };
+
+        case 'SET_CARGA_RETENCION':
+            return { ...state, carga: { ...state.carga, retencionCaja: action.payload } };
+
+        case 'SET_CARGA_RETENCIONES_ACTIVAS':
+            return { ...state, carga: { ...state.carga, retencionesActivas: action.payload } };
+
+        case 'SET_CARGA_RESOLVER_RETENCION':
+            return { ...state, carga: { ...state.carga, resolverRetencion: action.payload } };
 
 
         // --- BLOQUE: ACTUALIZACIÓN DE FORMULARIOS ---

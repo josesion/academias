@@ -24,11 +24,18 @@ import {
          MetricasPrincipalInputs , MetricasPrincipalSchema,
          AperturaCajaInput, AperturaCajaSchema,
          CuentasSesionInputs, listaTipoCuentasSesionSchema,    
+         TransferenciaCajaInputs, TransferenciaCajaSchema,
+         RetencionCajaInputs, RetencionCajaSchema,
+         DevolverRetencionInputs, DevolverRetencionSchema,
+         JustificarRetencionInputs, JustificarRetencionSchema,
+         RetencionesActivasInputs, RetencionesActivasSchema,
 
 } from "../squemas/cajas"; 
 import { TipadoData } from "../tipados/tipado.data";
 import { 
-         ResultDetalleCaja,DetalleCajaMovimiento, CategoríaCaja
+         ResultDetalleCaja,DetalleCajaMovimiento, CategoríaCaja,
+         ResultTransferenciaCaja, ResultRetencionCaja,
+         ResultResolverRetencion, RetencionActiva
  } from "../tipados/caja.data.tipado"; 
 import { type HistorialInputs } from "../squemas/historial"; 
 
@@ -91,6 +98,18 @@ const detalleCaja = async ( data : DetalleCajaInputs)
     let saldoExiste : boolean = true;
     
     const verificacionCat = await verificarCategoria( verificarDetalle.id_categoria );
+
+    // Spec 050: el formulario genérico de ingreso/egreso no puede usar
+    // categorías internas del sistema (transferencias, retención, inscripción...).
+    const categoriaSistema = await dataCaja.categoriaSistemaCaja(verificarDetalle.id_categoria);
+    if ( categoriaSistema.error && categoriaSistema.data
+         && Number(categoriaSistema.data.categoria_sistema) === 1 ) {
+        return {
+            error : true,
+            message : "Las categorías del sistema no se pueden usar en este formulario",
+            code : "CATEGORIA_SISTEMA"
+        };
+    };
 
     // veifico si es de el tipo de categoria es de egreso 
     if ( verificacionCat.code === 'CATEGORIA_EXISTE' &&  verificacionCat.data?.tipo_movimiento === "egreso" ){
@@ -205,7 +224,20 @@ const cierreCajaServicio = async ( data : CierresCajaInputs )
     });
 
     if ( vericarCajaResult.code === "CAJA_ABIERTA_EXISTE" ){
-       
+
+        // Verificar que no haya retenciones activas antes de cerrar
+        const retencionesResult = await dataCaja.listaRetencionesActivas({
+            id_caja: cierreCajaData.id_caja
+        });
+
+        if (retencionesResult.data && retencionesResult.data.length > 0) {
+            return {
+                error: true,
+                message: "No se puede cerrar la caja con retenciones activas. Resuelve las retenciones pendientes primero.",
+                code: "RETENCIONES_ACTIVAS"
+            };
+        }
+
         const cierreCajaResult = await dataCaja.cierreCaja(cierreCajaData);
         
         const dataHistorial  : HistorialInputs = {
@@ -689,6 +721,418 @@ const aperturaCajaTransaccion = async ( parametros : AperturaCajaInput )
 };
 
 
+/**
+ * Traduce los mensajes "centinela" que devuelve la capa de datos de caja
+ * (spec 050) a códigos y mensajes de negocio para el cliente.
+ *
+ * @param {string} mensaje - Mensaje crudo devuelto por `dataCaja`.
+ * @param {string} porDefecto - Código a usar si el mensaje no está mapeado.
+ * @returns {{ code: string, message: string }} Código y mensaje legibles.
+ */
+const mapearErrorCaja = ( mensaje : string, porDefecto : string )
+: { code : string, message : string } => {
+
+    const errores : Record<string, { code : string, message : string }> = {
+        CAJA_NO_ABIERTA : {
+            code : "SIN_CAJA_ABIERTA",
+            message : "No hay una caja abierta para operar"
+        },
+        CUENTA_INVALIDA : {
+            code : "CUENTA_INVALIDA",
+            message : "La cuenta seleccionada no es válida"
+        },
+        SIN_SALDO : {
+            code : "SIN_SALDO",
+            message : "No cuentas con saldo suficiente en la cuenta"
+        },
+        CATEGORIAS_TRANSFERENCIA_FALTAN : {
+            code : "CATEGORIAS_TRANSFERENCIA_FALTAN",
+            message : "Faltan las categorías de sistema para transferencias"
+        },
+        CATEGORIA_RETENCION_FALTA : {
+            code : "CATEGORIA_RETENCION_FALTA",
+            message : "Falta la categoría de sistema para retenciones"
+        },
+        RETENCION_NO_EXISTE : {
+            code : "RETENCION_NO_EXISTE",
+            message : "La retención indicada no existe"
+        },
+        RETENCION_YA_RESUELTA : {
+            code : "RETENCION_YA_RESUELTA",
+            message : "La retención ya fue devuelta o justificada"
+        }
+    };
+
+    return errores[mensaje] ?? { code : porDefecto, message : mensaje };
+};
+
+/**
+ * Servicio encargado de registrar una transferencia interna entre dos cuentas
+ * de la misma escuela (spec 050).
+ *
+ * Valida el esquema con Zod, rechaza cuentas iguales, ejecuta la transacción de
+ * datos (que inserta la fila de vínculo y las dos patas del movimiento) y deja
+ * registro en el historial con la acción `TRANSFERENCIA`.
+ *
+ * @async
+ * @function transferenciaCajaServicio
+ * @param {TransferenciaCajaInputs} data - Caja, cuentas, monto y descripción.
+ * @returns {Promise<TipadoData<ResultTransferenciaCaja>>} IDs de la transferencia y de sus dos movimientos.
+ * @throws {Error} Si los datos no cumplen `TransferenciaCajaSchema`.
+ */
+const transferenciaCajaServicio = async ( data : TransferenciaCajaInputs )
+: Promise<TipadoData<ResultTransferenciaCaja>> => {
+
+    const transferencia : TransferenciaCajaInputs = TransferenciaCajaSchema.parse( data );
+
+    if ( transferencia.id_cuenta_origen === transferencia.id_cuenta_destino ) {
+        return {
+            error : true,
+            message : "La cuenta de origen y la de destino deben ser distintas",
+            code : "CUENTA_INVALIDA"
+        };
+    }
+
+    const resultado = await dataCaja.transferenciaEntreCuentasTransaccion( transferencia );
+
+    if ( resultado.code === "TRANSFERENCIA_OK" && resultado.data ) {
+
+        const dataHistorial : HistorialInputs = {
+            id_escuela : transferencia.id_escuela,
+            id_usuario : transferencia.id_usuario,
+            modulo : "CAJA",
+            accion : "TRANSFERENCIA",
+            id_registro : Number( resultado.data.id_transferencia ),
+            descripcion : `Transferencia interna de $${transferencia.monto}`,
+            datos : {
+                id_transferencia : resultado.data.id_transferencia,
+                id_cuenta_origen : transferencia.id_cuenta_origen,
+                id_cuenta_destino : transferencia.id_cuenta_destino,
+                monto : transferencia.monto,
+                id_movimiento_egreso : resultado.data.id_movimiento_egreso,
+                id_movimiento_ingreso : resultado.data.id_movimiento_ingreso
+            }
+        };
+
+        await registroHistorial( dataHistorial );
+
+        return {
+            error : false,
+            message : "Transferencia registrada correctamente",
+            data : resultado.data,
+            code : "TRANSFERENCIA_OK"
+        };
+    }
+
+    const errorMapeado = mapearErrorCaja( resultado.message, "TRANSFERENCIA_ERROR" );
+
+    return {
+        error : true,
+        message : errorMapeado.message,
+        code : errorMapeado.code
+    };
+};
+
+/**
+ * Servicio encargado de registrar una retención de efectivo (spec 050).
+ *
+ * La retención nace con `estado_retencion = 'activa'`: resta del saldo de la
+ * cuenta pero no cuenta como gasto hasta que se justifique.
+ *
+ * @async
+ * @function registrarRetencionServicio
+ * @param {RetencionCajaInputs} data - Caja, cuenta, monto y descripción.
+ * @returns {Promise<TipadoData<ResultRetencionCaja>>} ID del movimiento y estado inicial.
+ * @throws {Error} Si los datos no cumplen `RetencionCajaSchema`.
+ */
+const registrarRetencionServicio = async ( data : RetencionCajaInputs )
+: Promise<TipadoData<ResultRetencionCaja>> => {
+
+    const retencion : RetencionCajaInputs = RetencionCajaSchema.parse( data );
+
+    const resultado = await dataCaja.registrarRetencionTransaccion( retencion );
+
+    if ( resultado.code === "RETENCION_OK" && resultado.data ) {
+
+        const dataHistorial : HistorialInputs = {
+            id_escuela : retencion.id_escuela,
+            id_usuario : retencion.id_usuario,
+            modulo : "CAJA",
+            accion : "RETENCION",
+            id_registro : Number( resultado.data.id_movimiento ),
+            descripcion : `Retención de $${retencion.monto} en la cuenta ${retencion.id_cuenta}`,
+            datos : {
+                id_movimiento : resultado.data.id_movimiento,
+                id_cuenta : retencion.id_cuenta,
+                monto : retencion.monto,
+                estado_retencion : resultado.data.estado_retencion
+            }
+        };
+
+        await registroHistorial( dataHistorial );
+
+        return {
+            error : false,
+            message : "Retención registrada correctamente",
+            data : resultado.data,
+            code : "RETENCION_OK"
+        };
+    }
+
+    const errorMapeado = mapearErrorCaja( resultado.message, "RETENCION_ERROR" );
+
+    return {
+        error : true,
+        message : errorMapeado.message,
+        code : errorMapeado.code
+    };
+};
+
+/**
+ * Servicio encargado de listar las retenciones activas de una caja.
+ *
+ * Valida que la caja esté abierta y pertenezca a la escuela del token antes de
+ * consultar. Un listado vacío no se considera error: devuelve `data: []`.
+ *
+ * @async
+ * @function listaRetencionesActivasServicio
+ * @param {RetencionesActivasInputs} data - Escuela y caja a consultar.
+ * @returns {Promise<TipadoData<RetencionActiva[]>>} Retenciones activas de la caja.
+ * @throws {Error} Si los datos no cumplen `RetencionesActivasSchema`.
+ */
+const listaRetencionesActivasServicio = async ( data : RetencionesActivasInputs )
+: Promise<TipadoData<RetencionActiva[]>> => {
+
+    const filtro : RetencionesActivasInputs = RetencionesActivasSchema.parse( data );
+
+    // La caja tiene que estar abierta y ser de la escuela del token.
+    const cajaEscuela = await dataCaja.idCajaAbierta({ id_escuela : filtro.id_escuela, id_caja : filtro.id_caja });
+    if ( cajaEscuela.code === "ID_CAJA_NO_EXISTE" ) {
+        return {
+            error : true,
+            message : "La caja no pertenece a la escuela o no está abierta",
+            code : "SIN_CAJA_ABIERTA"
+        };
+    }
+
+    const resultado = await dataCaja.listaRetencionesActivas( filtro );
+
+    return {
+        error : false,
+        message : "Retenciones activas listadas correctamente",
+        data : resultado.data ?? [],
+        code : "RETENCIONES_ACTIVAS_OK"
+    };
+};
+
+/**
+ * Servicio encargado de devolver (total o parcialmente) una retención activa
+ * (spec 050).
+ *
+ * Reglas:
+ * - Devolución total: la retención queda `devuelta` y deja de restar del saldo.
+ * - Devolución parcial: la retención queda `devuelta` y la diferencia se
+ *   registra como egreso real `justificada`. La observación es obligatoria.
+ * - No se puede devolver más de lo retenido.
+ *
+ * @async
+ * @function devolverRetencionServicio
+ * @param {DevolverRetencionInputs} data - Movimiento, monto devuelto y observación.
+ * @returns {Promise<TipadoData<ResultResolverRetencion>>} Estado final y, si aplica, el egreso por diferencia.
+ * @throws {Error} Si los datos no cumplen `DevolverRetencionSchema`.
+ */
+const devolverRetencionServicio = async ( data : DevolverRetencionInputs )
+: Promise<TipadoData<ResultResolverRetencion>> => {
+
+    const devolucion : DevolverRetencionInputs = DevolverRetencionSchema.parse( data );
+
+    const retencion = await dataCaja.obtenerRetencion(
+        devolucion.id_movimiento,
+        devolucion.id_escuela
+    );
+
+    if ( retencion.code === "RETENCION_NO_EXISTE" || !retencion.data ) {
+        return {
+            error : true,
+            message : "La retención indicada no existe",
+            code : "RETENCION_NO_EXISTE"
+        };
+    }
+
+    if ( retencion.data.estado_retencion !== "activa" ) {
+        return {
+            error : true,
+            message : "La retención ya fue devuelta o justificada",
+            code : "RETENCION_YA_RESUELTA"
+        };
+    }
+
+    const montoOriginal = Number( retencion.data.monto );
+    const montoDevuelto = Number( devolucion.monto_devuelto );
+
+    if ( montoDevuelto > montoOriginal ) {
+        return {
+            error : true,
+            message : "No se puede devolver más de lo retenido",
+            code : "MONTO_DEVUELTO_INVALIDO"
+        };
+    }
+
+    const esParcial = montoDevuelto < montoOriginal;
+    const observacion = devolucion.observacion?.trim() || null;
+
+    // Decisión 050: si queda plata sin devolver, la observación es obligatoria.
+    if ( esParcial && !observacion ) {
+        return {
+            error : true,
+            message : "La observación es obligatoria cuando no se devuelve el total",
+            code : "OBSERVACION_REQUERIDA"
+        };
+    }
+
+    const resultado = await dataCaja.resolverRetencionTransaccion({
+        id_movimiento : devolucion.id_movimiento,
+        id_escuela : devolucion.id_escuela,
+        id_usuario : devolucion.id_usuario,
+        id_caja : Number( retencion.data.id_caja ),
+        id_cuenta : Number( retencion.data.id_cuenta ),
+        monto_original : montoOriginal,
+        monto_devuelto : montoDevuelto,
+        estado : "devuelta",
+        justificacion : observacion,
+        aplicar_diferencia : esParcial,
+        descripcion_original : retencion.data.descripcion
+    });
+
+    if ( resultado.code === "RETENCION_RESUELTA" && resultado.data ) {
+
+        const dataHistorial : HistorialInputs = {
+            id_escuela : devolucion.id_escuela,
+            id_usuario : devolucion.id_usuario,
+            modulo : "CAJA",
+            accion : "DEVOLUCION_RETENCION",
+            id_registro : devolucion.id_movimiento,
+            descripcion : esParcial
+                ? `Devolución parcial de retención: $${montoDevuelto} de $${montoOriginal}`
+                : `Devolución total de retención: $${montoDevuelto}`,
+            datos : {
+                id_movimiento : devolucion.id_movimiento,
+                monto_original : montoOriginal,
+                monto_devuelto : montoDevuelto,
+                id_movimiento_diferencia : resultado.data.id_movimiento_diferencia,
+                observacion
+            }
+        };
+
+        await registroHistorial( dataHistorial );
+
+        return {
+            error : false,
+            message : "Retención devuelta correctamente",
+            data : resultado.data,
+            code : "RETENCION_DEVUELTA"
+        };
+    }
+
+    const errorMapeado = mapearErrorCaja( resultado.message, "RETENCION_RESOLVER_ERROR" );
+
+    return {
+        error : true,
+        message : errorMapeado.message,
+        code : errorMapeado.code
+    };
+};
+
+/**
+ * Servicio encargado de justificar una retención que no se devuelve (spec 050).
+ *
+ * La retención pasa a `justificada` y desde ese momento cuenta como egreso real.
+ * La observación es obligatoria.
+ *
+ * @async
+ * @function justificarRetencionServicio
+ * @param {JustificarRetencionInputs} data - Movimiento y justificación.
+ * @returns {Promise<TipadoData<ResultResolverRetencion>>} Estado final de la retención.
+ * @throws {Error} Si los datos no cumplen `JustificarRetencionSchema`.
+ */
+const justificarRetencionServicio = async ( data : JustificarRetencionInputs )
+: Promise<TipadoData<ResultResolverRetencion>> => {
+
+    const justificacion : JustificarRetencionInputs = JustificarRetencionSchema.parse( data );
+
+    const retencion = await dataCaja.obtenerRetencion(
+        justificacion.id_movimiento,
+        justificacion.id_escuela
+    );
+
+    if ( retencion.code === "RETENCION_NO_EXISTE" || !retencion.data ) {
+        return {
+            error : true,
+            message : "La retención indicada no existe",
+            code : "RETENCION_NO_EXISTE"
+        };
+    }
+
+    if ( retencion.data.estado_retencion !== "activa" ) {
+        return {
+            error : true,
+            message : "La retención ya fue devuelta o justificada",
+            code : "RETENCION_YA_RESUELTA"
+        };
+    }
+
+    const montoOriginal = Number( retencion.data.monto );
+
+    const resultado = await dataCaja.resolverRetencionTransaccion({
+        id_movimiento : justificacion.id_movimiento,
+        id_escuela : justificacion.id_escuela,
+        id_usuario : justificacion.id_usuario,
+        id_caja : Number( retencion.data.id_caja ),
+        id_cuenta : Number( retencion.data.id_cuenta ),
+        monto_original : montoOriginal,
+        monto_devuelto : 0,
+        estado : "justificada",
+        justificacion : justificacion.justificacion.trim(),
+        aplicar_diferencia : false,
+        descripcion_original : retencion.data.descripcion
+    });
+
+    if ( resultado.code === "RETENCION_RESUELTA" && resultado.data ) {
+
+        const dataHistorial : HistorialInputs = {
+            id_escuela : justificacion.id_escuela,
+            id_usuario : justificacion.id_usuario,
+            modulo : "CAJA",
+            accion : "JUSTIFICACION_RETENCION",
+            id_registro : justificacion.id_movimiento,
+            descripcion : `Retención de $${montoOriginal} justificada`,
+            datos : {
+                id_movimiento : justificacion.id_movimiento,
+                monto : montoOriginal,
+                justificacion : justificacion.justificacion
+            }
+        };
+
+        await registroHistorial( dataHistorial );
+
+        return {
+            error : false,
+            message : "Retención justificada correctamente",
+            data : resultado.data,
+            code : "RETENCION_JUSTIFICADA"
+        };
+    }
+
+    const errorMapeado = mapearErrorCaja( resultado.message, "RETENCION_RESOLVER_ERROR" );
+
+    return {
+        error : true,
+        message : errorMapeado.message,
+        code : errorMapeado.code
+    };
+};
+
+
 export const method = {
     detalleCaja       : tryCatchDatos( detalleCaja),
     cierreCajaServicio: tryCatchDatos( cierreCajaServicio), 
@@ -700,5 +1144,11 @@ export const method = {
     metricasPrincipal : tryCatchDatos( metricasPrincipal ),
     aperturaCajaTransaccion : tryCatchDatos( aperturaCajaTransaccion ),
     serviciosCuentaSesion : tryCatchDatos( serviciosCuentaSesion ),
+    // Spec 050 — transferencias y retenciones
+    transferenciaCajaServicio : tryCatchDatos( transferenciaCajaServicio ),
+    registrarRetencionServicio : tryCatchDatos( registrarRetencionServicio ),
+    listaRetencionesActivasServicio : tryCatchDatos( listaRetencionesActivasServicio ),
+    devolverRetencionServicio : tryCatchDatos( devolverRetencionServicio ),
+    justificarRetencionServicio : tryCatchDatos( justificarRetencionServicio ),
 };
 

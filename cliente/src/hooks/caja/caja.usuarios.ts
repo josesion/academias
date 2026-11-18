@@ -7,6 +7,7 @@ import { useCajaMovimientos } from "./useCajaMovimientos";
 import { useCajaMetricas } from "./useCajaMetricas";
 import { useEntidadesExternasCaja } from "./useEntidadesExternasCaja";
 import { useIuCaja } from "./useIUCaja";
+import { useCajaTransferencias } from "./useCajaTransferencias";
 
 interface DataCajaUsuariosConfig {
 
@@ -23,6 +24,12 @@ interface DataCajaUsuariosConfig {
          listadoTipoCuentas : ServicioCrud,
          metricasPanelPrincipal :ServicioCrud,
          cuentasSesion : ServicioCrud,
+         // Spec 050 — transferencias y retenciones
+         transferenciaCaja : ServicioCrud,
+         registrarRetencion : ServicioCrud,
+         retencionesActivas : ServicioCrud,
+         devolverRetencion : ServicioCrud,
+         justificarRetencion : ServicioCrud,
     }
 };
 
@@ -91,6 +98,22 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
     });
 
     // ─────────────────────────────
+    // TRANSFERENCIAS Y RETENCIONES (spec 050)
+    // ─────────────────────────────
+    const transferenciasCaja = useCajaTransferencias({
+        servicios : {
+            transferenciaCaja : config.servicios.transferenciaCaja,
+            registrarRetencion : config.servicios.registrarRetencion,
+            retencionesActivas : config.servicios.retencionesActivas,
+            devolverRetencion : config.servicios.devolverRetencion,
+            justificarRetencion : config.servicios.justificarRetencion,
+        },
+        state : cajaBase.state,
+        dispatch : cajaBase.dispatch,
+        dispatchMetricas : cajaBase.dispatchMetricas,
+    });
+
+    // ─────────────────────────────
     // RETORNO FINAL
     // ─────────────────────────────
 
@@ -121,6 +144,22 @@ export const  useCajaUsuario = ( config : DataCajaUsuariosConfig ) =>{
         handleCierreMontos : moladesIU.handleCierreMontos,
         handleAbrirIngreso : moladesIU.handleAbrirIngreso,
         handleCachearDetalle : moladesIU.handleCachearDetalle,       
+
+        // Spec 050 — transferencias y retenciones
+        handleAbrirTransferencia : transferenciasCaja.handleAbrirTransferencia,
+        handleCerrarTransferencia : transferenciasCaja.handleCerrarTransferencia,
+        handleTransferenciaChange : transferenciasCaja.handleTransferenciaChange,
+        handleRegistrarTransferencia : transferenciasCaja.handleRegistrarTransferencia,
+
+        handleAbrirRetencion : transferenciasCaja.handleAbrirRetencion,
+        handleCerrarRetencion : transferenciasCaja.handleCerrarRetencion,
+        handleRetencionChange : transferenciasCaja.handleRetencionChange,
+        handleRegistrarRetencion : transferenciasCaja.handleRegistrarRetencion,
+
+        handleSeleccionarRetencion : transferenciasCaja.handleSeleccionarRetencion,
+        handleDevolucionRetencionChange : transferenciasCaja.handleDevolucionRetencionChange,
+        handleDevolverRetencion : transferenciasCaja.handleDevolverRetencion,
+        handleJustificarRetencion : transferenciasCaja.handleJustificarRetencion,
     };
 
 

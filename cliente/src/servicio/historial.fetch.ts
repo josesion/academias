@@ -21,12 +21,15 @@ type AccionHistorial =
     | "MODIFICAR"
     | "ELIMINAR"
     | "RESTAURAR"
-    | "ELIMINAR"
     | "ANULACION"
     | "ABRIR"
     | "CERRAR"
     | "INGRESO"
     | "EGRESO"
+    | "TRANSFERENCIA"
+    | "RETENCION"
+    | "DEVOLUCION_RETENCION"
+    | "JUSTIFICACION_RETENCION"
     | "LOGIN"
     | "LOGOUT";
 

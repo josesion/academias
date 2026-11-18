@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   LuMenu,
   LuX,
@@ -7,11 +8,15 @@ import {
   LuLogOut,
 } from "react-icons/lu";
 
+import { RutasProtegidasContext } from "../../../contexto/protectRutas";
+
 import "./menudesplegable.css";
 
 export const MenuDesplegableAlumno = () => {
   const [abierto, setAbierto] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const { cerrarSesion } = useContext(RutasProtegidasContext);
 
   const alternarMenu = () => setAbierto((prev) => !prev);
   const cerrarMenu = () => setAbierto(false);
@@ -68,7 +73,10 @@ export const MenuDesplegableAlumno = () => {
           <button
             className="menu_alumno_item"
             type="button"
-            onClick={cerrarMenu}
+            onClick={() => {
+              cerrarMenu();
+              navigate("/alumno_principal");
+            }}
           >
             <LuCalendarClock size={18} />
             <span>Horarios</span>
@@ -77,7 +85,10 @@ export const MenuDesplegableAlumno = () => {
           <button
             className="menu_alumno_item"
             type="button"
-            onClick={cerrarMenu}
+            onClick={() => {
+              cerrarMenu();
+              navigate("/alumno_principal");
+            }}
           >
             <LuCreditCard size={18} />
             <span>Planes</span>
@@ -85,7 +96,14 @@ export const MenuDesplegableAlumno = () => {
         </nav>
 
         <div className="menu_alumno_footer">
-          <button className="menu_alumno_item salir" type="button">
+          <button
+            className="menu_alumno_item salir"
+            type="button"
+            onClick={() => {
+              cerrarMenu();
+              cerrarSesion();
+            }}
+          >
             <LuLogOut size={18} />
             <span>Salir</span>
           </button>

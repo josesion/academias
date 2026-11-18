@@ -1,0 +1,48 @@
+/* ============================================================
+   TRANSFERENCIA ENTRE CUENTAS — spec 050
+   ============================================================ */
+
+.contenedor_transferencia_caja {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    width: 100%;
+    max-width: 420px;
+
+    padding: 26px;
+
+    background: var(--fondo-secundario);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio-lg);
+
+    box-shadow: var(--sombra-md);
+
+    transition: var(--transicion);
+}
+
+.contenedor_transferencia_caja > p {
+    margin: 0 0 4px;
+
+    font-family: var(--fuente-codigo);
+    font-size: var(--texto-xs);
+    font-weight: var(--peso-negrita);
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+
+    color: var(--texto-secundario);
+}
+
+.memo_transferencia_caja {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.botonera_transferencia_caja {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 6px;
+}

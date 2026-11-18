@@ -47,15 +47,39 @@ const listaEstadoCaja = async( id_escuela : EstadoCajaInput)
                             DATE_FORMAT(c.fecha_apertura, '%Y-%m-%d') AS fecha_apertura,
                             DATE_FORMAT(c.fecha_apertura, '%H:%i:%s') AS hora_apertura,
                             c.estado,
-                            COALESCE(SUM(dc.monto), 0.00) AS total,
+                            -- Total real por cuenta respetando el signo del movimiento.
+                            -- Las retenciones devueltas se neutralizan por estado (spec 050).
+                            COALESCE(SUM(
+                                CASE
+                                    WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
+                                    WHEN cc.tipo_movimiento = 'ingreso' THEN dc.monto
+                                    WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
+                                    ELSE 0
+                                END
+                            ), 0.00) AS total,
                             JSON_OBJECT(
-                                'efectivo', COALESCE(SUM(CASE WHEN ce.tipo_cuenta = 'fisico' THEN dc.monto ELSE 0 END), 0.00),
-                                'virtual', COALESCE(SUM(CASE WHEN ce.tipo_cuenta = 'virtual' THEN dc.monto ELSE 0 END), 0.00)
+                                'efectivo', COALESCE(SUM(
+                                    CASE
+                                        WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
+                                        WHEN ce.tipo_cuenta = 'fisico' AND cc.tipo_movimiento = 'ingreso' THEN dc.monto
+                                        WHEN ce.tipo_cuenta = 'fisico' AND cc.tipo_movimiento = 'egreso' THEN -dc.monto
+                                        ELSE 0
+                                    END
+                                ), 0.00),
+                                'virtual', COALESCE(SUM(
+                                    CASE
+                                        WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
+                                        WHEN ce.tipo_cuenta = 'virtual' AND cc.tipo_movimiento = 'ingreso' THEN dc.monto
+                                        WHEN ce.tipo_cuenta = 'virtual' AND cc.tipo_movimiento = 'egreso' THEN -dc.monto
+                                        ELSE 0
+                                    END
+                                ), 0.00)
                             ) AS totales
                         FROM cajas c
                         LEFT JOIN usuarios u ON c.id_usuario_apertura = u.id_usuario
                         LEFT JOIN detalle_caja dc ON c.id_caja = dc.id_caja
                         LEFT JOIN cuentas_escuela ce ON dc.id_cuenta = ce.id_cuenta
+                        LEFT JOIN categorias_caja cc ON dc.id_categoria = cc.id_categoria
                         WHERE c.id_escuela = ? AND c.estado = 'abierta'
                         GROUP BY c.id_caja, u.nombre, u.apellido, c.fecha_apertura, c.estado;`;
 
@@ -332,6 +356,7 @@ const metricasMetodoPagoCajas =async (  data :  InputConvinados)
                                 COALESCE(
                                     SUM(
                                         CASE
+                                            WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
                                             WHEN cc.tipo_movimiento = 'ingreso' THEN dc.monto
                                             WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
                                             ELSE 0
@@ -342,6 +367,7 @@ const metricasMetodoPagoCajas =async (  data :  InputConvinados)
                                 COALESCE(
                                     SUM(
                                         CASE
+                                            WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
                                             WHEN cc.tipo_movimiento = 'ingreso' AND cc.nombre_categoria <> 'Saldo Inicial' THEN dc.monto
                                             WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
                                             ELSE 0
@@ -515,6 +541,7 @@ const graficosMetodosPagoCaja =async ( id : LibroDiarioInput)
                                 COALESCE(
                                     SUM(
                                         CASE 
+                                            WHEN COALESCE(dc.estado_retencion, '') = 'devuelta' THEN 0
                                             WHEN cc.tipo_movimiento = 'ingreso' THEN dc.monto
                                             WHEN cc.tipo_movimiento = 'egreso' THEN -dc.monto
                                             ELSE 0

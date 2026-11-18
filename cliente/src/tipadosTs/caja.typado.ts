@@ -14,6 +14,8 @@ export interface InformeDetalle {
     metodo_pago: string,
     usuario : string
     nombre_alumno_vinculado: string | null,   
+    // Spec 050 — Estado de retención
+    estado_retencion: string | null,
 };
 
 
@@ -182,6 +184,9 @@ export interface DetalleCajaMovimientoResult {
     hora_formateada: string; // Formato 'HH:mm'
     observaciones : string ;
     nombre_alumno_vinculado: string | null,    
+    
+    // Spec 050 — Estado de retención
+    estado_retencion: string | null;
 };
 
 
@@ -241,5 +246,32 @@ type MetodoPagoTipo = "efectivo" | "transferencia" | "credito" | "debito";
   export interface Tipo_pago {
     id_tipo_pago: number;
     nombre_tipo_pago: MetodoPagoTipo;
+  }
+
+  export type EstadoRetencion = "activa" | "devuelta" | "justificada";
+
+  export interface RetencionActiva {
+    id_movimiento: number;
+    id_caja: number;
+    id_cuenta: number;
+    nombre_cuenta: string;
+    monto: number;
+    descripcion: string | null;
+    fecha_movimiento: string;
+    hora_formateada: string;
+    estado_retencion: EstadoRetencion;
+  }
+
+  export interface DataTransferenciaCaja {
+    id_cuenta_origen: number | string | null;
+    id_cuenta_destino: number | string | null;
+    monto: number | string;
+    descripcion: string;
+  }
+
+  export interface DataRetencionCaja {
+    id_cuenta: number | string | null;
+    monto: number | string;
+    descripcion: string;
   }
 

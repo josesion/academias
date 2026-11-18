@@ -111,16 +111,34 @@
   flex-direction: column;
 }
 
-/* El section wrapper de Asistencia debe estirar su hijo .asistencia_contenedor */
-.usuario_clases_section > .asistencia_contenedor {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
 /* En móvil se apilan en columna */
 @media (max-width: 1024px) {
   .usuario_inscripciones_asistencia_row {
     flex-direction: column;
+  }
+
+  /* Quitar el estiramiento forzado en mobile: cada bloque toma su altura natural */
+  .usuario_inscripciones_columna > *,
+  .usuario_asistencia_columna > * {
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* El section wrapper no debe forzar altura ni crear BFC */
+  .usuario_clases_section {
+    contain: none !important;
+  }
+
+  /* El contenedor de asistencia: sin estiramiento, sin clipping */
+  .usuario_clases_section > .asistencia_contenedor {
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
   }
 }
 

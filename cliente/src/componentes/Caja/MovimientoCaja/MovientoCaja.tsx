@@ -22,6 +22,7 @@ export interface Movimiento {
   hora_formateada: string;
   observaciones: string;
   nombre_alumno_vinculado: string | null;
+  estado_retencion: string | null;
 }
 
 interface MovimientoCajaProps {
@@ -37,6 +38,7 @@ interface MovimientoCajaProps {
     hora: string,
     metodo_pago: string,
     nombre_alumno_vinculado: string | null,
+    estado_retencion: string | null,
   ) => void;
 }
 
@@ -92,6 +94,7 @@ export const MovientoCaja: React.FC<MovimientoCajaProps> = ({
                   mov.hora_formateada,
                   mov.nombre_categoria,
                   mov.nombre_alumno_vinculado,
+                  mov.estado_retencion,
                 )
               }
             >

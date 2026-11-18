@@ -12,6 +12,7 @@ import {
   Info,
   Hash,
   UserRound,
+  Shield,
 } from "lucide-react";
 
 interface InformeDetalleCajaProps {
@@ -25,6 +26,7 @@ interface InformeDetalleCajaProps {
   observaciones?: string | null;
   metodo: "fisico" | "virtual" | string;
   nombre_alumno_vinculado?: string | null;
+  estado_retencion?: string | null;
   onCerrarModal: () => void;
 }
 
@@ -39,6 +41,7 @@ export const InformeDetalleCaja: React.FC<InformeDetalleCajaProps> = ({
   observaciones,
   metodo,
   nombre_alumno_vinculado,
+  estado_retencion,
   onCerrarModal,
 }) => {
   const esIngreso = tipo === "ingreso";
@@ -126,6 +129,19 @@ export const InformeDetalleCaja: React.FC<InformeDetalleCajaProps> = ({
               <Info size={12} /> Nota
             </span>
             <p>"{observaciones}"</p>
+          </div>
+        )}
+
+        {estado_retencion && (
+          <div className="recibo_obs">
+            <span className="recibo_obs_label">
+              <Shield size={12} /> Estado retención
+            </span>
+            <p className={`estado-retencion-badge ${estado_retencion}`}>
+              {estado_retencion === "activa" && "⏳ Activa"}
+              {estado_retencion === "devuelta" && "↩️ Devuelta"}
+              {estado_retencion === "justificada" && "✅ Justificada"}
+            </p>
           </div>
         )}
       </div>

@@ -65,6 +65,10 @@ const ESTILO_ACCION: Record<
   ANULACION: { color: "rojo", etiqueta: "Anulacion", icono: XCircle },
   LOGIN: { color: "azul", etiqueta: "Inició sesión", icono: LogIn },
   LOGOUT: { color: "gris", etiqueta: "Cerró sesión", icono: LogOut },
+  TRANSFERENCIA: { color: "azul", etiqueta: "Transferencia", icono: ArrowUpCircle },
+  RETENCION: { color: "violeta", etiqueta: "Retención", icono: Lock },
+  DEVOLUCION_RETENCION: { color: "verde", etiqueta: "Devolución", icono: Unlock },
+  JUSTIFICACION_RETENCION: { color: "gris", etiqueta: "Justificación", icono: Edit3 },
 };
 
 const formatearFechaRelativa = (fecha: Date): string => {

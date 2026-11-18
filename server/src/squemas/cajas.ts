@@ -70,18 +70,24 @@ export const CierreCajaSchema = z.object({
 export const IdCajaAbiertaSchema = z.object({
      id_escuela: z.coerce.number()
         .int("El ID de la escuela debe ser un número entero.")
-        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),    
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+     id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
+        .int("El ID de la caja debe ser un número entero.")
+        .positive("El ID de la caja debe ser positivo (mayor que 0).")
+        .optional()
 });
 
 export const PanelMetricasSchema = z.object({
      id_escuela: z.coerce.number()
         .int("El ID de la escuela debe ser un número entero.")
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
-     id_caja: z.number({ message: "ID de caja requerido" }).positive("ID de caja no válido"),      
+     id_caja: z.coerce.number()
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja debe ser positivo (mayor que 0)."),      
 });
 
 export const listaMovimientosCajaSchema = z.object({
-    id_caja: z.coerce.number()
+    id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
         .int("El ID de la caja debe ser un número entero.")
         .positive("El ID de la caja debe ser positivo (mayor que 0)."),
     limite: z.coerce.number()
@@ -118,7 +124,7 @@ export const MetricasPrincipalSchema = z.object({
     id_escuela: z.coerce.number()
         .int("El ID de la escuela debe ser un número entero.")
         .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
-        id_caja: z.coerce.number()
+        id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
         .int("El ID de la caja debe ser un número entero.")
         .positive("El ID de la caja debe ser positivo (mayor que 0)."),    
 });
@@ -199,12 +205,126 @@ export const listaTipoCuentasSesionSchema = z.object({
       id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
                  .min(0 , {message : "El id debe ser mayor de 0"})
                  .positive({ message: 'El limite debe ser un número positivo.' }) , 
-      id_caja: z.coerce.number()
+      id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
         .int("El ID de caja debe ser un número entero.")
         .positive("El ID de caja escuela debe ser positivo (mayor que 0).")
         .optional(),                 
 });
 
+
+// ============================================================
+// Spec 050 — Transferencias internas y Retenciones en caja
+// ============================================================
+
+/**
+ * Transferencia entre dos cuentas de la misma escuela.
+ *
+ * `id_escuela` y `id_usuario` los inyecta el controlador desde el token;
+ * el cliente sólo manda caja, cuentas, monto y descripción.
+ */
+export const TransferenciaCajaSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."),
+    id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja debe ser positivo (mayor que 0)."),
+    id_cuenta_origen: z.coerce.number()
+        .int("El ID de la cuenta de origen debe ser un número entero.")
+        .positive("El ID de la cuenta de origen debe ser positivo (mayor que 0)."),
+    id_cuenta_destino: z.coerce.number()
+        .int("El ID de la cuenta de destino debe ser un número entero.")
+        .positive("El ID de la cuenta de destino debe ser positivo (mayor que 0)."),
+    monto: z.coerce.number({ message: "El monto debe ser un número" })
+        .min(0.01, "El monto debe ser mayor a cero"),
+    descripcion: z.string()
+        .max(300, "La descripción no puede superar los 300 caracteres")
+        .optional()
+        .default("Transferencia entre cuentas"),
+});
+
+/**
+ * Retención de efectivo (egreso "neutro" mientras está activa).
+ */
+export const RetencionCajaSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."),
+    id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja debe ser positivo (mayor que 0)."),
+    id_cuenta: z.coerce.number()
+        .int("El ID de la cuenta debe ser un número entero.")
+        .positive("El ID de la cuenta debe ser positivo (mayor que 0)."),
+    monto: z.coerce.number({ message: "El monto debe ser un número" })
+        .min(0.01, "El monto debe ser mayor a cero"),
+    descripcion: z.string()
+        .max(300, "La descripción no puede superar los 300 caracteres")
+        .optional()
+        .default("Retención de efectivo"),
+});
+
+/**
+ * Devolución (total o parcial) de una retención.
+ *
+ * Si `monto_devuelto` es menor al monto original, la diferencia queda como
+ * egreso real y `observacion` pasa a ser obligatoria (se valida en el servicio).
+ */
+export const DevolverRetencionSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."),
+    id_movimiento: z.coerce.number()
+        .int("El ID del movimiento debe ser un número entero.")
+        .positive("El ID del movimiento debe ser positivo (mayor que 0)."),
+    monto_devuelto: z.coerce.number({ message: "El monto devuelto debe ser un número" })
+        .min(0, "El monto devuelto no puede ser negativo"),
+    observacion: z.string()
+        .max(500, "La observación no puede superar los 500 caracteres")
+        .optional()
+        .nullable(),
+});
+
+/**
+ * Justificación de una retención que no se devuelve.
+ * La observación es obligatoria.
+ */
+export const JustificarRetencionSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_usuario: z.coerce.number()
+        .int("El ID de usuario debe ser un número entero.")
+        .positive("El ID de usuario debe ser positivo (mayor que 0)."),
+    id_movimiento: z.coerce.number()
+        .int("El ID del movimiento debe ser un número entero.")
+        .positive("El ID del movimiento debe ser positivo (mayor que 0)."),
+    justificacion: z.string({ message: "La observación es obligatoria" })
+        .trim()
+        .min(1, "La observación es obligatoria")
+        .max(500, "La observación no puede superar los 500 caracteres"),
+});
+
+/**
+ * Consulta de retenciones activas de una caja.
+ */
+export const RetencionesActivasSchema = z.object({
+    id_escuela: z.coerce.number()
+        .int("El ID de la escuela debe ser un número entero.")
+        .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+    id_caja: z.coerce.number().refine(val => !isNaN(val), { message: "El ID de caja no puede ser NaN" })
+        .int("El ID de caja debe ser un número entero.")
+        .positive("El ID de caja debe ser positivo (mayor que 0)."),
+});
 
 export type AperturaCajaInput = z.infer<typeof AperturaCajaSchema>;
 export type CierresCajaInputs = z.infer<typeof CierresCajaSchema>;
@@ -219,3 +339,8 @@ export type ListaCategoriaCajaTipoInputs = z.infer<typeof ListaCategoriaCajaTipo
 export type ListaTipoCuentasInputs =z.infer<typeof listaTipoCuentasSchema>;
 export type MetricasPrincipalInputs =z.infer<typeof MetricasPrincipalSchema>;
 export type CuentasSesionInputs =z.infer<typeof listaTipoCuentasSesionSchema>;
+export type TransferenciaCajaInputs = z.infer<typeof TransferenciaCajaSchema>;
+export type RetencionCajaInputs = z.infer<typeof RetencionCajaSchema>;
+export type DevolverRetencionInputs = z.infer<typeof DevolverRetencionSchema>;
+export type JustificarRetencionInputs = z.infer<typeof JustificarRetencionSchema>;
+export type RetencionesActivasInputs = z.infer<typeof RetencionesActivasSchema>;

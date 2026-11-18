@@ -12,7 +12,9 @@ import { handleControladores } from "../utils/handleControladores";
 import { MAPA_METRICAS_PANEL, MAPA_CAJA_ABIERTA, 
         MAPA_LISTA_TIPO_CUENTAS, MAPA_ABRIR_CAJA, MAPA_LISTADO_CAJAS,
         MAPA_CERRAR_CAJA, MAPA_DETALLE_MOVIMIENTOS, MAPA_LISTADO_CATEGORIAS,
-        MAPA_METRICA_PRINCIPAL, MAPA_LISTADO_CATEGORIAS_SESION
+        MAPA_METRICA_PRINCIPAL, MAPA_LISTADO_CATEGORIAS_SESION,
+        MAPA_TRANSFERENCIA_CAJA, MAPA_RETENCION_CAJA,
+        MAPA_RETENCIONES_ACTIVAS, MAPA_RESOLVER_RETENCION
 
 } from "../respuestas/caja"; 
 
@@ -21,11 +23,16 @@ import type { ResultMetrica, ResultMetricasPrincipal, ResultListaCuentas} from "
 import { 
          DetalleCajaInputs, CierresCajaInputs, IdCajaAbiertaInputs, PanelMetricasInputs, 
          ListaMovimientosCajaInputs, ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs, 
-         MetricasPrincipalInputs, AperturaCajaInput, CuentasSesionInputs
+         MetricasPrincipalInputs, AperturaCajaInput, CuentasSesionInputs,
+         TransferenciaCajaInputs, RetencionCajaInputs,
+         DevolverRetencionInputs, JustificarRetencionInputs,
+         RetencionesActivasInputs
  } from "../squemas/cajas"; 
 
 import { 
-         ResultDetalleCaja,DetalleCajaMovimiento, CategoríaCaja
+         ResultDetalleCaja,DetalleCajaMovimiento, CategoríaCaja,
+         ResultTransferenciaCaja, ResultRetencionCaja,
+         ResultResolverRetencion, RetencionActiva
  } from "../tipados/caja.data.tipado"; 
 
 
@@ -44,7 +51,7 @@ import {
 const detalleCaja = async ( req : Request, res : Response ) => {
     
     const dataDetalle : DetalleCajaInputs= {
-        id_caja : Number(req.body.id_caja),
+        id_caja : req.usuario!.id_caja!,
         id_escuela : Number(req.usuario?.id_escuela),
         id_categoria : Number(req.body.id_categoria),
         id_cuenta : Number(req.body.id_cuenta),
@@ -74,8 +81,8 @@ const detalleCaja = async ( req : Request, res : Response ) => {
  */
 const cierreCaja = async( req : Request, res : Response) =>{
 
-    const data : CierresCajaInputs = { 
-        id_caja : req.body.id_caja,
+    const data : CierresCajaInputs = {
+        id_caja : req.usuario!.id_caja!,
         id_usuario_cierre : Number(req.usuario?.id),
         id_usuario  : Number(req.usuario?.id),
         id_escuela : Number(req.usuario?.id_escuela), 
@@ -130,8 +137,8 @@ const idCajaAbierta =async ( req : Request, res : Response) =>{
 const listaMetricasCaja = async ( req : Request, res : Response) => {
 
 
-    const data :  PanelMetricasInputs = { 
-        id_caja : Number(req.params.id_caja),
+    const data :  PanelMetricasInputs = {
+        id_caja : req.usuario!.id_caja!,
         id_escuela : Number(req.usuario?.id_escuela)
     };
 
@@ -153,7 +160,7 @@ const listaMetricasCaja = async ( req : Request, res : Response) => {
  */
 const movimientosCaja = async ( req : Request, res : Response) => {
     const data : ListaMovimientosCajaInputs = {
-        id_caja : Number(req.query.id_caja),
+        id_caja : req.usuario!.id_caja!,
         limite : Number(req.query.limite) || 10,
         offset : Number(req.query.offset) || 0
     };
@@ -167,19 +174,19 @@ const movimientosCaja = async ( req : Request, res : Response) => {
 
 /**
  * Controlador HTTP encargado de obtener las métricas principales de una caja específica,
- * extrayendo el identificador de la caja desde los parámetros de la ruta y el de la escuela
+ * extrayendo el identificador de la caja del middleware validarCajaAbierta y el de la escuela
  * desde los datos del usuario autenticado.
  * 
  * @async
  * @function metricasCajaPrincipal
- * @param {Request} req - Objeto de solicitud HTTP de Express, contiene el id de la caja en los parámetros y los datos del usuario.
+ * @param {Request} req - Objeto de solicitud HTTP de Express, contiene los datos del usuario con id_caja del middleware.
  * @param {Response} res - Objeto de respuesta HTTP de Express.
  * @returns {Promise<void>} No retorna un valor directo, sino que envía la respuesta HTTP al cliente mediante el manejador.
  */
 const metricasCajaPrincipal = async ( req : Request, res : Response ) => {
     
     const data : MetricasPrincipalInputs = {
-        id_caja : Number(req.params.id_caja),
+        id_caja : req.usuario!.id_caja!,
         id_escuela : Number(req.usuario?.id_escuela)
      };
 
@@ -288,6 +295,129 @@ const abrirCajaTransaccion =async (req : Request , res : Response) => {
 
 };
 
+/**
+ * Controlador HTTP encargado de registrar una transferencia interna entre dos
+ * cuentas de la escuela del usuario autenticado (spec 050).
+ *
+ * @async
+ * @function transferenciaCaja
+ * @param {Request} req - Body con `id_caja`, `id_cuenta_origen`, `id_cuenta_destino`, `monto` y `descripcion`.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante el manejador de controladores.
+ */
+const transferenciaCaja = async ( req : Request, res : Response ) => {
+
+    const data : TransferenciaCajaInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        id_usuario : Number( req.usuario?.id ),
+        id_caja : req.usuario!.id_caja!,
+        id_cuenta_origen : Number( req.body.id_cuenta_origen ),
+        id_cuenta_destino : Number( req.body.id_cuenta_destino ),
+        monto : Number( req.body.monto ),
+        descripcion : req.body.descripcion
+    };
+
+    await handleControladores< TransferenciaCajaInputs, ResultTransferenciaCaja >(
+        res, data, cajaServicio.transferenciaCajaServicio, MAPA_TRANSFERENCIA_CAJA
+    );
+};
+
+/**
+ * Controlador HTTP encargado de registrar una retención de efectivo (spec 050).
+ *
+ * @async
+ * @function registrarRetencion
+ * @param {Request} req - Body con `id_caja`, `id_cuenta`, `monto` y `descripcion`.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante el manejador de controladores.
+ */
+const registrarRetencion = async ( req : Request, res : Response ) => {
+
+    const data : RetencionCajaInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        id_usuario : Number( req.usuario?.id ),
+        id_caja : req.usuario!.id_caja!,
+        id_cuenta : Number( req.body.id_cuenta ),
+        monto : Number( req.body.monto ),
+        descripcion : req.body.descripcion
+    };
+
+    await handleControladores< RetencionCajaInputs, ResultRetencionCaja >(
+        res, data, cajaServicio.registrarRetencionServicio, MAPA_RETENCION_CAJA
+    );
+};
+
+/**
+ * Controlador HTTP encargado de listar las retenciones activas de una caja
+ * (spec 050).
+ *
+ * @async
+ * @function retencionesActivas
+ * @param {Request} req - Parámetro de ruta `id_caja` y usuario autenticado.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante el manejador de controladores.
+ */
+const retencionesActivas = async ( req : Request, res : Response ) => {
+
+    const data : RetencionesActivasInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        id_caja : req.usuario!.id_caja!
+    };
+
+    await handleControladores< RetencionesActivasInputs, RetencionActiva[] >(
+        res, data, cajaServicio.listaRetencionesActivasServicio, MAPA_RETENCIONES_ACTIVAS
+    );
+};
+
+/**
+ * Controlador HTTP encargado de devolver (total o parcialmente) una retención
+ * activa (spec 050).
+ *
+ * @async
+ * @function devolverRetencion
+ * @param {Request} req - Body con `id_movimiento`, `monto_devuelto` y `observacion`.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante el manejador de controladores.
+ */
+const devolverRetencion = async ( req : Request, res : Response ) => {
+
+    const data : DevolverRetencionInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        id_usuario : Number( req.usuario?.id ),
+        id_movimiento : Number( req.body.id_movimiento ),
+        monto_devuelto : Number( req.body.monto_devuelto ),
+        observacion : req.body.observacion
+    };
+
+    await handleControladores< DevolverRetencionInputs, ResultResolverRetencion >(
+        res, data, cajaServicio.devolverRetencionServicio, MAPA_RESOLVER_RETENCION
+    );
+};
+
+/**
+ * Controlador HTTP encargado de justificar una retención que no se devuelve
+ * (spec 050).
+ *
+ * @async
+ * @function justificarRetencion
+ * @param {Request} req - Body con `id_movimiento` y `justificacion`.
+ * @param {Response} res - Objeto de respuesta HTTP de Express.
+ * @returns {Promise<void>} Envía la respuesta mediante el manejador de controladores.
+ */
+const justificarRetencion = async ( req : Request, res : Response ) => {
+
+    const data : JustificarRetencionInputs = {
+        id_escuela : Number( req.usuario?.id_escuela ),
+        id_usuario : Number( req.usuario?.id ),
+        id_movimiento : Number( req.body.id_movimiento ),
+        justificacion : req.body.justificacion
+    };
+
+    await handleControladores< JustificarRetencionInputs, ResultResolverRetencion >(
+        res, data, cajaServicio.justificarRetencionServicio, MAPA_RESOLVER_RETENCION
+    );
+};
+
 export const method ={
     detalleCaja : tryCatch( detalleCaja),
     cierreCaja : tryCatch( cierreCaja),
@@ -298,5 +428,11 @@ export const method ={
     listaMetricasCaja : tryCatch( listaMetricasCaja),
     listaTipoCuentas : tryCatch( listaTipoCuentas),
     abrirCajaTransaccion : tryCatch( abrirCajaTransaccion ),
-    cuentasSesion : tryCatch( cuentasSesion )
+    cuentasSesion : tryCatch( cuentasSesion ),
+    // Spec 050 — transferencias y retenciones
+    transferenciaCaja : tryCatch( transferenciaCaja ),
+    registrarRetencion : tryCatch( registrarRetencion ),
+    retencionesActivas : tryCatch( retencionesActivas ),
+    devolverRetencion : tryCatch( devolverRetencion ),
+    justificarRetencion : tryCatch( justificarRetencion )
 };

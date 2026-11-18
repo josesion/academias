@@ -11,17 +11,7 @@
   font-family: var(--fuente-principal);
   /* Propiedades exactas: `--transicion` de app.css es `all .3s` */
   transition: box-shadow 300ms var(--ease-ui), border-color 300ms var(--ease-ui);
-}
-
-/* Anula el subrayado y el color de link en todos los estados */
-.tarjeta_escuela,
-.tarjeta_escuela:hover,
-.tarjeta_escuela:focus,
-.tarjeta_escuela:focus-visible,
-.tarjeta_escuela:active,
-.tarjeta_escuela:visited {
-  text-decoration: none;
-  color: inherit;
+  cursor: pointer;
 }
 
 .tarjeta_escuela:hover {
@@ -120,6 +110,34 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Botón de WhatsApp en la tarjeta de escuela */
+.tarjeta_escuela_whatsapp {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #25D366;
+  color: #fff;
+  border: none;
+  border-radius: var(--radio-sm);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-medio);
+  font-family: var(--fuente-principal);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 200ms var(--ease-ui), box-shadow 200ms var(--ease-ui);
+}
+
+.tarjeta_escuela_whatsapp:hover {
+  background: #1fb855;
+  box-shadow: var(--sombra-sm);
+}
+
+.tarjeta_escuela_whatsapp svg {
+  flex-shrink: 0;
 }
 
 /* ============================================================
@@ -293,4 +311,46 @@
   .tarjeta_escuela_barra {
     border-color: var(--texto-principal);
   }
+}
+
+/* ==========================================================================
+   FASE 3 — Botón de favorito
+   ========================================================================== */
+
+.tarjeta_escuela_fav {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-deshabilitado, #9ca3af);
+  cursor: pointer;
+  transition: all 150ms ease;
+  z-index: 2;
+}
+
+.tarjeta_escuela_fav:hover {
+  color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 12%, transparent);
+}
+
+.tarjeta_escuela_fav.activa {
+  color: #f59e0b;
+}
+
+/* Tarjeta favorita: borde dorado sutil */
+.tarjeta_escuela_favorita {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, #f59e0b 20%, transparent), var(--sombra-sm);
+}
+
+/* La tarjeta necesita position relative para el botón absoluto */
+.tarjeta_escuela {
+  position: relative;
 }

@@ -4,6 +4,7 @@ import { Response, Request, NextFunction } from 'express';
 import { enviarResponseError } from './responseError';
 import { tryCatch } from './tryCatch';
 import { method as validar } from '../data/usuario.data';
+import { method as dataCaja } from '../data/caja.data';
 
 dotenv.config(); 
 
@@ -23,6 +24,10 @@ declare global {
          *  guarda `usuario_nom` NULL y el listado lo resuelve con el
          *  `LEFT JOIN usuarios`. */
         usuario?: string;
+        /** ID de la caja abierta de la escuela. Lo pobla `validarCajaAbierta`
+         *  consultando la BD por `id_escuela`. Opcional a propósito: solo está
+         *  presente cuando la ruta usa ese middleware. */
+        id_caja?: number;
       };
     }
   }
@@ -143,10 +148,37 @@ const soloUsuario = async (req: Request, res: Response, next: NextFunction) => {
     next();
 };
 
+/**
+ * Middleware que verifica si la escuela del usuario tiene una caja abierta.
+ *
+ * Va DESPUÉS de `validarPermiso`, que ya pobla `req.usuario.id_escuela`.
+ * Consulta la BD directamente (sin pasar por servicio) para obtener el
+ * `id_caja` de la caja abierta. Si no hay caja, bloquea con 403.
+ *
+ * @returns {Promise<void>} Resuelve tras llamar a `next()` o tras enviar el 403.
+ */
+const validarCajaAbierta = async (req: Request, res: Response, next: NextFunction) => {
+    const id_escuela = req.usuario?.id_escuela;
+
+    if (!id_escuela) {
+        return enviarResponseError(res, 400, "ID de escuela no disponible", "ID_ESCUELA_FALTA");
+    }
+
+    const resultado = await dataCaja.idCajaAbierta({ id_escuela });
+   
+    if (resultado.code === "ID_CAJA_EXISTE" && resultado.data) {
+        req.usuario!.id_caja = resultado.data.id_caja;
+        return next();
+    }
+
+    return enviarResponseError(res, 403, "No hay caja abierta", "SIN_CAJA_ABIERTA");
+};
+
 
 export const method = {
     validarPermiso: tryCatch(validarPermiso),
     soloAdministrador: tryCatch(soloAdministrador),
     soloAlumno: tryCatch(soloAlumno),
-    soloUsuario: tryCatch(soloUsuario)
+    soloUsuario: tryCatch(soloUsuario),
+    validarCajaAbierta: tryCatch(validarCajaAbierta)
 }

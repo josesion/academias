@@ -138,3 +138,63 @@ export const cuentasSesion = async () => {
         method : "GET"
     });   
 };
+
+export const transferenciaCaja = async ( data : { id_cuenta_origen : number ; id_cuenta_destino : number ; monto : number ; descripcion : string })
+: Promise<ApiResponse<{ id_transferencia : number }>> => {
+    const ruta = `${PAGINA}api/transferencia_caja`;
+    return await apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_cuenta_origen : data.id_cuenta_origen,
+            id_cuenta_destino : data.id_cuenta_destino,
+            monto : data.monto,
+            descripcion : data.descripcion
+        }
+    });
+};
+
+export const registrarRetencion = async ( data : { id_cuenta : number ; monto : number ; descripcion : string })
+: Promise<ApiResponse<{ id_retencion : number }>> => {
+    const ruta = `${PAGINA}api/retencion_caja`;
+    return await apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_cuenta : data.id_cuenta,
+            monto : data.monto,
+            descripcion : data.descripcion
+        }
+    });
+};
+
+export const retencionesActivas = async ( data : { id_caja : number })
+: Promise<ApiResponse<TipadoCaja.RetencionActiva[]>> => {
+    const ruta = `${PAGINA}api/retenciones_activas/${data.id_caja}`;
+    return await apiFetch( ruta , {
+        method : "GET"
+    });
+};
+
+export const devolverRetencion = async ( data : { id_movimiento : number ; monto_devuelto : number ; observacion : string })
+: Promise<ApiResponse<{ id_movimiento : number }>> => {
+    const ruta = `${PAGINA}api/devolver_retencion`;
+    return await apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_movimiento : data.id_movimiento,
+            monto_devuelto : data.monto_devuelto,
+            observacion : data.observacion
+        }
+    });
+};
+
+export const justificarRetencion = async ( data : { id_movimiento : number ; justificacion : string })
+: Promise<ApiResponse<{ id_movimiento : number }>> => {
+    const ruta = `${PAGINA}api/justificar_retencion`;
+    return await apiFetch( ruta , {
+        method : "POST",
+        body : {
+            id_movimiento : data.id_movimiento,
+            justificacion : data.justificacion
+        }
+    });
+};

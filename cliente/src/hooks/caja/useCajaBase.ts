@@ -290,6 +290,9 @@ const handleCerrarCaja = async () => {
     if (cierreCajaResult.code === "NO_HAY_CAJA_ABIERTA") {
       return dispatch({ type: "SET_ERROR", payload: "No existe caja abierta" });
     }
+    if (cierreCajaResult.code === "RETENCIONES_ACTIVAS") {
+      return dispatch({ type: "SET_ERROR", payload: "No se puede cerrar con retenciones activas. Resuélvelas primero." });
+    }
 
   } catch (error) {
     dispatch({ type: "SET_ERROR", payload: "Error en el servidor" });

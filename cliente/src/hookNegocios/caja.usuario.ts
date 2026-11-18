@@ -9,6 +9,8 @@ import { metricasPanelCaja, obtenerIdCaja , abrirCaja ,
          cerrarCaja , movimientoCajaDetalle, listadoCategoriaCaja,
          registrarMovimientoCaja,  listadoTipoCuentas,
          metricasPanelPrincipal, cuentasSesion,
+         transferenciaCaja, registrarRetencion, retencionesActivas,
+         devolverRetencion, justificarRetencion,
         } from "../servicio/caja.fetch";
 
 export const  cajasCongif = () =>{
@@ -29,6 +31,11 @@ export const  cajasCongif = () =>{
             registrarMovimientoCaja : registrarMovimientoCaja,
             listadoTipoCuentas : listadoTipoCuentas,
             cuentasSesion : cuentasSesion,
+            transferenciaCaja : transferenciaCaja,
+            registrarRetencion : registrarRetencion,
+            retencionesActivas : retencionesActivas,
+            devolverRetencion : devolverRetencion,
+            justificarRetencion : justificarRetencion,
         }  
     };
     return useCajaUsuario(config)    

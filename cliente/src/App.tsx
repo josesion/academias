@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 // seccion de paginas
 import { Inicio } from "./pagina/publico/inicio/Inicios";
 //import { Admin } from "./pagina/privado/Admin/Admin";
@@ -71,6 +71,15 @@ import { SoloAdministrador, SoloUsuario, SoloAlumno, SoloUsuarioOAlumno } from "
 import { DashboardAdministrador } from "./pagina/privado/Admin/Admin";
 import { PaginaPlanes } from "./pagina/privado/Admin/PaginaPlanes/PaginaPlanes";
 import { PaginaEscuela } from "./pagina/privado/Admin/PaginaEscuelas/PaginaEscuela";
+
+// Wrapper que fuerza el remontaje de DataEscuela cuando cambia la ubicación.
+// React Router no remonta un componente al navegar a la misma ruta, por lo que
+// `location.state` no se actualiza. `location.key` cambia en cada navegación,
+// así que usarlo como `key` desmonta y remonta el hijo correctamente.
+const DataEscuelaWrapper = () => {
+  const location = useLocation();
+  return <DataEscuela key={location.key} />;
+};
 // Empresas y anuncios (spec 017): las empresas son las dueñas de los anuncios,
 // así que la de empresas va primero en el menú
 import { PaginaEmpresas } from "./pagina/privado/Admin/PaginaEmpresas/PaginaEmpresas";
@@ -159,7 +168,7 @@ function App() {
               <Route element={<RutasPrivadas />}>
                 <Route element={<SoloAlumno />}>
                   <Route path="/alumno_principal" element={<PrincipalAlumnos />} />
-                  <Route path="/data_escuela" element={<DataEscuela />} />
+                  <Route path="/data_escuela" element={<DataEscuelaWrapper />} />
                 </Route>
               </Route>
 

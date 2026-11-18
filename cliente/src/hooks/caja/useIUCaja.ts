@@ -92,7 +92,8 @@ const handleCachearDetalle = (
     dia: string,
     hora: string,
     metodo_pago: string,
-    nombre_alumno_vinculado: string | null
+    nombre_alumno_vinculado: string | null,
+    estado_retencion: string | null
 ) =>{
 
     const data = {
@@ -106,12 +107,13 @@ const handleCachearDetalle = (
         metodo_pago : metodo_pago,
         descripcion: descripcion,
         metodo : metodo,
-        nombre_alumno_vinculado : nombre_alumno_vinculado 
-    };    
-   
+        nombre_alumno_vinculado : nombre_alumno_vinculado,
+        estado_retencion,
+    };   
+    
     dispatch({ type : "SET_INFORME_DETALLE" , payload : data });
     dispatch({ type : "ABRIR_MODAL_INFORME"});
-};    
+};
 
    
 // ──────────────────────────────────────────────────────────────

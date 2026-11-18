@@ -32,6 +32,10 @@ export type AccionHistorial =
     | "CERRAR"
     | "INGRESO"
     | "EGRESO"
+    | "TRANSFERENCIA"
+    | "RETENCION"
+    | "DEVOLUCION_RETENCION"
+    | "JUSTIFICACION_RETENCION"
     | "LOGIN"
     | "LOGOUT";
 

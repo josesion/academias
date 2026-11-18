@@ -261,6 +261,7 @@ export const PrincipalAlumnos = () => {
               )}
             </div>
           </section>
+
         </>
       )}
     </div>

@@ -3,21 +3,21 @@
    ========================================================================== */
 
 .asistencia_contenedor {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    padding: 20px;
-    
-    /* Fondo base */
-    background-color: var(--fondo-secundario);
+   position: relative;
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+   padding: 20px;
+   
+   /* Fondo base */
+   background-color: var(--fondo-secundario);
 
 
-    border-radius: var(--radio-lg);
-    border: 1px solid var(--borde);
-    box-shadow: var(--sombra-md);
-    overflow: hidden;
-    gap: 16px;
+   border-radius: var(--radio-lg);
+   border: 1px solid var(--borde);
+   box-shadow: var(--sombra-md);
+   overflow: visible;
+   gap: 16px;
 }
 
 /* Capa semitransparente para asegurar el contraste de los textos sobre la imagen */
@@ -725,7 +725,48 @@
    MEDIA QUERIES (RESPONSIVE)
    ========================================================================== */
 
+/* ==========================================================================
+   TABLET: cuando el panel de asistencia ocupa todo el ancho (ya apilado con
+   inscripciones), las columnas internas también pasan a columna para evitar
+   que se superpongan. Se alinea con el breakpoint de usuario.css (1024px)
+   con un margen mayor para que el listado de clases baje antes y no tape
+   la leyenda "Sin alumnos registrados".
+   ========================================================================== */
+
+@media (max-width: 1250px) {
+    /* Lado a lado → columna en tablets */
+    .asistencia_lado_a_lado {
+        flex-direction: column;
+        flex: 0 0 auto !important;
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .asistencia_lado_a_lado > .asistencia_bloque_principal {
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding-right: 0;
+        flex: 0 0 auto !important;
+        min-height: auto !important;
+        height: auto !important;
+    }
+
+    .horarios_del_dia {
+        flex: 0 0 auto !important;
+        min-height: auto !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+}
+
 @media (max-width: 768px) {
+    .asistencia_contenedor {
+        gap: 12px;
+        padding: 16px;
+        overflow: visible !important;
+    }
+
     .asistencia_bloque_info {
         flex-direction: column;
         align-items: flex-start;
@@ -748,6 +789,14 @@
         align-self: flex-start;
     }
 
+    .asistencia_lado_a_lado {
+        gap: 12px;
+    }
+
+    .asistencia_bloque_principal {
+        gap: 10px;
+    }
+
     /* Acordeón responsive */
     .horario_encabezado {
         flex-wrap: wrap;
@@ -766,17 +815,6 @@
 
     .horario_profesor {
         display: none;
-    }
-
-    /* Lado a lado → columna en móviles */
-    .asistencia_lado_a_lado {
-        flex-direction: column;
-    }
-
-    .asistencia_lado_a_lado > .asistencia_bloque_principal {
-        max-height: none;
-        overflow-y: visible;
-        padding-right: 0;
     }
 }
 

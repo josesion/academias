@@ -14,9 +14,14 @@ import { VerificarCajaInputs, AbrirCajaInputs,
          DetalleCajaInputs, CierreCajaInputs,
          IdCajaAbiertaInputs,ListaMovimientosCajaInputs,
          ListaCategoriaCajaTipoInputs, ListaTipoCuentasInputs,
-         AperturaCajaInput, CierresCajaInputs
+         AperturaCajaInput, CierresCajaInputs,
+         TransferenciaCajaInputs, RetencionCajaInputs,
+         RetencionesActivasInputs
         } from "../squemas/cajas"; 
-import { ResultAqueoCaja, DetalleCajaMovimiento ,CategoríaCaja} from "../tipados/caja.data.tipado"; 
+import { ResultAqueoCaja, DetalleCajaMovimiento ,CategoríaCaja,
+         ResultTransferenciaCaja, ResultRetencionCaja,
+         ResultResolverRetencion, RetencionActiva
+       } from "../tipados/caja.data.tipado"; 
 import { TipadoData } from "../tipados/tipado.data";
 
 
@@ -159,13 +164,29 @@ const arqueoCaja = async ( data : CierreCajaInputs )
                                 c.id_caja,
                                 c.monto_inicial,
                                 -- Sumamos ingresos (si no hay, devuelve 0)
-                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE 0 END), 0) AS total_ingresos,
-                                -- Sumamos egresos (si no hay, devuelve 0)
-                                COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'egreso' THEN det.monto ELSE 0 END), 0) AS total_egresos,
+                                -- Las retenciones devueltas quedan neutralizadas por estado (spec 050).
+                                COALESCE(SUM(CASE 
+                                    WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                    WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                    ELSE 0 END), 0) AS total_ingresos,
+                                -- Sumamos egresos (si no hay, devuelve 0).
+                                -- Las retenciones activas NO cuentan como gasto; sólo al justificarse.
+                                COALESCE(SUM(CASE 
+                                    WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                    WHEN det.estado_retencion = 'activa' THEN 0
+                                    WHEN cat.tipo_movimiento = 'egreso' THEN det.monto 
+                                    ELSE 0 END), 0) AS total_egresos,
                                 -- BALANCE NETO: monto_inicial + (ingresos - egresos)
-                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS balance_neto,
+                                -- La retención devuelta no resta (se neutraliza por estado).
+                                (c.monto_inicial + COALESCE(SUM(CASE 
+                                    WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                    WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                    ELSE -det.monto END), 0)) AS balance_neto,
                                 -- Lo mismo para tu validación de sistema
-                                (c.monto_inicial + COALESCE(SUM(CASE WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto ELSE -det.monto END), 0)) AS monto_sistema_calculado
+                                (c.monto_inicial + COALESCE(SUM(CASE 
+                                    WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                    WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
+                                    ELSE -det.monto END), 0)) AS monto_sistema_calculado
                             FROM cajas c
                             -- El LEFT JOIN es clave: trae la caja aunque no tenga filas en detalle_caja
                             LEFT JOIN detalle_caja det ON c.id_caja = det.id_caja
@@ -256,9 +277,19 @@ Promise<TipadoData<{ id_caja: number, estado: string }>> => {
  */
 const idCajaAbierta = async ( data : IdCajaAbiertaInputs ) 
 : Promise<TipadoData<{id_caja : number }>>    =>{
-        const sql : string = `select id_caja from cajas c 
-                             where  c.estado = 'abierta' and c.id_escuela = ?;`;
-        const valores : unknown[] = [ data.id_escuela ];
+        let sql : string;
+        let valores : unknown[];
+
+        if (data.id_caja != null && data.id_caja > 0) {
+            sql = `select id_caja from cajas c 
+                     where c.estado = 'abierta' and c.id_escuela = ? and c.id_caja = ?;`;
+            valores = [ data.id_escuela, data.id_caja ];
+        } else {
+            sql = `select id_caja from cajas c 
+                     where c.estado = 'abierta' and c.id_escuela = ?;`;
+            valores = [ data.id_escuela ];
+        }
+
         return await buscarExistenteEntidad({
             slqEntidad : sql,
             valores,
@@ -290,6 +321,7 @@ const listaMovimientosCaja = async ( data : ListaMovimientosCajaInputs)
                             det.monto,
                             det.descripcion,
                             det.referencia_id,
+                            det.estado_retencion,
                             cat.nombre_categoria,
                             cat.tipo_movimiento, 
                             cue.nombre_cuenta,  
@@ -342,7 +374,8 @@ const listaCategiriaCajaTipos = async( data : ListaCategoriaCajaTipoInputs)
     const sql : string =`select * from categorias_caja 
                             where id_escuela =  ?
                             and estado = ?
-                            and tipo_movimiento = ?;`;
+                            and tipo_movimiento = ?
+                            and categoria_sistema = 0;`;
 
     const valores : unknown[]  = [ id_escuela, estado, tipo];
     return await listarEntidadSinPaginacion<CategoríaCaja>({
@@ -350,6 +383,31 @@ const listaCategiriaCajaTipos = async( data : ListaCategoriaCajaTipoInputs)
         valores,
         entidad : "LISTA_CATEGORIA_CAJA_TIPO",
         estado : estado
+    });
+};
+
+/**
+ * Consulta la marca `categoria_sistema` de una categoría de caja.
+ *
+ * Se usa para impedir que el formulario genérico de ingreso/egreso registre
+ * movimientos sobre categorías internas del sistema (spec 050). Igual que
+ * `buscarExistenteEntidad`, **invierte** la semántica:
+ * `error: true` + `code = "CATEGORIA_CAJA_EXISTE"` significa que la categoría existe.
+ *
+ * @param {number} id_categoria - Identificador de la categoría.
+ * @returns {Promise<TipadoData<{ categoria_sistema: number }>>} Marca 0 (usuario) o 1 (sistema).
+ */
+export const categoriaSistemaCaja = async (id_categoria: number)
+: Promise<TipadoData<{ categoria_sistema: number }>> => {
+
+    const sql: string = `SELECT categoria_sistema
+                         FROM categorias_caja
+                         WHERE id_categoria = ?`;
+
+    return await buscarExistenteEntidad<{ categoria_sistema: number }>({
+        slqEntidad: sql,
+        valores: [id_categoria],
+        entidad: "CATEGORIA_CAJA"
     });
 };
 
@@ -410,6 +468,7 @@ const listaTipoCuentasSesion =async ( id_caja : number)
                         INNER JOIN cuentas_escuela cu ON det.id_cuenta = cu.id_cuenta
                         INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
                         WHERE det.id_caja = ? 
+                          AND cu.estado = 'activos'
                         GROUP BY det.id_cuenta, cu.nombre_cuenta, cu.tipo_cuenta;`
     const parametros : unknown[ ] = [ id_caja ];
     return await listarEntidadSinPaginacion({
@@ -457,13 +516,16 @@ const listaMetricasCaja = async ( data : CierreCajaInputs)
                             COALESCE(SUM(CASE WHEN cat.nombre_categoria = 'Saldo Inicial' THEN det.monto ELSE 0 END), 0) AS inicial_cuenta,
                             
                             -- Movimientos puros de la sesión (Ingresos - Egresos)
+                            -- La retención devuelta se neutraliza por estado (spec 050).
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
                                 WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                 ELSE 0 END), 0) AS movimiento_sesion,
                             
                             -- El total real que hay en la cuenta (Monto Sistema)
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
                                 WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                 ELSE 0 END), 0) AS saldo_final_cuenta
@@ -518,21 +580,26 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
                             END), 0) AS monto_inicial,
                             
                             -- 2. Total Ingresos NETOS (Ingresos - Anulaciones/Devoluciones)
+                            -- Las dos patas de una transferencia se reflejan acá (spec 050).
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
                                 WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' AND (cat.nombre_categoria LIKE '%Anulacion%' OR cat.nombre_categoria LIKE '%Devolucion%') THEN -det.monto
                                 ELSE 0 
                             END), 0) AS total_ingresos,
                             
                             -- 3. Total Egresos REALES (Excluyendo anulaciones, solo gastos operativos)
+                            -- La retención sólo cuenta como egreso cuando está justificada (spec 050).
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                WHEN det.estado_retencion = 'activa' THEN 0
                                 WHEN cat.tipo_movimiento = 'egreso' AND cat.nombre_categoria NOT LIKE '%Anulacion%' AND cat.nombre_categoria NOT LIKE '%Devolucion%' THEN det.monto 
                                 ELSE 0 
                             END), 0) AS total_egresos,
 
                             -- 4. FLUJO DEL DÍA (Ingresos Netos - Egresos Reales)
-                            -- Da exactamente lo mismo porque matemáticamente restaba lo mismo, pero ahora la distribución es limpia
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
                                 WHEN cat.tipo_movimiento = 'ingreso' AND cat.nombre_categoria <> 'Saldo Inicial' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                 ELSE 0 
@@ -540,6 +607,7 @@ const metricasPrincipal = async (  data : CierreCajaInputs )
                             
                             -- 5. BALANCE NETO FINAL (Monto Inicial + Flujo Día)
                             COALESCE(SUM(CASE 
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
                                 WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto 
                                 WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto 
                                 ELSE 0 
@@ -669,6 +737,496 @@ const aperturaCajaTransaccion = async (datos: AperturaCajaInput)
 };
 
 
+// ============================================================
+// Spec 050 — Transferencias internas y Retenciones en caja
+// ============================================================
+
+/**
+ * Calcula el saldo real de una cuenta dentro de una caja.
+ *
+ * - Retención `devuelta` ⇒ **no resta** (se neutraliza por estado).
+ * - Retención `activa` o `justificada` ⇒ resta.
+ * - Transferencias: la salida resta y la entrada suma; neto 0 en la caja.
+ *
+ * @param conn - Conexión de la transacción en curso.
+ * @param id_caja - Caja a consultar.
+ * @param id_cuenta - Cuenta de la escuela.
+ * @returns {Promise<number>} Saldo actual de la cuenta en esa caja.
+ */
+const saldoCuentaTransaccion = async (
+    conn: any,
+    id_caja: number,
+    id_cuenta: number
+): Promise<number> => {
+    const sql: string = `SELECT COALESCE(SUM(CASE
+                                WHEN COALESCE(det.estado_retencion, '') = 'devuelta' THEN 0
+                                WHEN cat.tipo_movimiento = 'ingreso' THEN det.monto
+                                WHEN cat.tipo_movimiento = 'egreso' THEN -det.monto
+                                ELSE 0 END), 0) AS saldo
+                            FROM detalle_caja det
+                            INNER JOIN categorias_caja cat ON det.id_categoria = cat.id_categoria
+                            WHERE det.id_caja = ? AND det.id_cuenta = ?`;
+
+    const [rows]: any = await conn.execute(sql, [id_caja, id_cuenta]);
+    return Number(rows[0]?.saldo ?? 0);
+};
+
+/**
+ * Registra una transferencia interna entre dos cuentas de la misma escuela.
+ *
+ * Inserta una fila en `transferencias_caja` y **dos** movimientos vinculados:
+ * un egreso en la cuenta de origen (`Transferencia Salida`) y un ingreso en la
+ * cuenta de destino (`Transferencia Entrada`). Todo ocurre en una única
+ * transacción, así que el balance total de la caja se mantiene en cero.
+ *
+ * @param {TransferenciaCajaInputs} datos - Caja, cuentas, monto y descripción.
+ * @returns {Promise<TipadoData<ResultTransferenciaCaja>>} IDs de la transferencia y de sus dos patas.
+ * @throws {Error} Si la caja no está abierta, las cuentas no son válidas, el saldo no alcanza o faltan las categorías de sistema.
+ */
+export const transferenciaEntreCuentasTransaccion = async (datos: TransferenciaCajaInputs)
+: Promise<TipadoData<ResultTransferenciaCaja>> => {
+
+    const {
+        id_escuela, id_usuario, id_caja,
+        id_cuenta_origen, id_cuenta_destino, monto, descripcion
+    } = datos;
+
+    const resultado = await iudEntidadTransaction(async (conn) => {
+
+        // 1. Caja abierta y de la escuela.
+        const [rowsCaja]: any = await conn.execute(
+            `SELECT id_caja FROM cajas
+             WHERE id_caja = ? AND id_escuela = ? AND estado = 'abierta'
+             FOR UPDATE`,
+            [id_caja, id_escuela]
+        );
+        if (rowsCaja.length === 0) {
+            throw new Error("CAJA_NO_ABIERTA");
+        }
+
+        // 2. Cuentas activas de la escuela (bloquea las filas para serializar transferencias).
+        const [rowsCuentas]: any = await conn.execute(
+            `SELECT id_cuenta, nombre_cuenta FROM cuentas_escuela
+             WHERE id_escuela = ? AND estado = 'activos' AND id_cuenta IN (?, ?)
+             FOR UPDATE`,
+            [id_escuela, id_cuenta_origen, id_cuenta_destino]
+        );
+
+        const cuentas = rowsCuentas as { id_cuenta: number; nombre_cuenta: string }[];
+        const cuentaOrigen = cuentas.find((c) => Number(c.id_cuenta) === Number(id_cuenta_origen));
+        const cuentaDestino = cuentas.find((c) => Number(c.id_cuenta) === Number(id_cuenta_destino));
+
+        if (!cuentaOrigen || !cuentaDestino) {
+            throw new Error("CUENTA_INVALIDA");
+        }
+
+        // 3. Saldo suficiente en la cuenta de origen.
+        const saldoOrigen = await saldoCuentaTransaccion(conn, id_caja, id_cuenta_origen);
+        if (saldoOrigen < Number(monto)) {
+            throw new Error("SIN_SALDO");
+        }
+
+        // 4. Categorías de sistema de la transferencia.
+        const [rowsCat]: any = await conn.execute(
+            `SELECT id_categoria, nombre_categoria FROM categorias_caja
+             WHERE id_escuela = ?
+               AND nombre_categoria IN ('Transferencia Salida', 'Transferencia Entrada')`,
+            [id_escuela]
+        );
+
+        const categorias = rowsCat as { id_categoria: number; nombre_categoria: string }[];
+        const catSalida = categorias.find((c) => c.nombre_categoria === "Transferencia Salida");
+        const catEntrada = categorias.find((c) => c.nombre_categoria === "Transferencia Entrada");
+
+        if (!catSalida || !catEntrada) {
+            throw new Error("CATEGORIAS_TRANSFERENCIA_FALTAN");
+        }
+
+        const descripcionBase = descripcion?.trim() || "Transferencia entre cuentas";
+
+        // 5. Fila de vínculo.
+        const [resTransferencia]: any = await conn.execute(
+            `INSERT INTO transferencias_caja (
+                id_escuela, id_caja, id_cuenta_origen, id_cuenta_destino,
+                monto, id_usuario, descripcion
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [id_escuela, id_caja, id_cuenta_origen, id_cuenta_destino, monto, id_usuario, descripcionBase]
+        );
+        const idTransferencia = Number(resTransferencia.insertId);
+
+        const sqlDetalle: string = `INSERT INTO detalle_caja (
+                                        id_caja, id_categoria, id_cuenta, id_usuario,
+                                        monto, descripcion, referencia_id, id_transferencia
+                                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        // 6. Pata de egreso (origen).
+        const [resEgreso]: any = await conn.execute(sqlDetalle, [
+            id_caja,
+            catSalida.id_categoria,
+            id_cuenta_origen,
+            id_usuario,
+            monto,
+            `Transferencia a ${cuentaDestino.nombre_cuenta}: ${descripcionBase}`,
+            null,
+            idTransferencia
+        ]);
+        const idMovimientoEgreso = Number(resEgreso.insertId);
+
+        // 7. Pata de ingreso (destino).
+        const [resIngreso]: any = await conn.execute(sqlDetalle, [
+            id_caja,
+            catEntrada.id_categoria,
+            id_cuenta_destino,
+            id_usuario,
+            monto,
+            `Transferencia desde ${cuentaOrigen.nombre_cuenta}: ${descripcionBase}`,
+            null,
+            idTransferencia
+        ]);
+        const idMovimientoIngreso = Number(resIngreso.insertId);
+
+        return {
+            id_transferencia: idTransferencia,
+            id_movimiento_egreso: idMovimientoEgreso,
+            id_movimiento_ingreso: idMovimientoIngreso
+        };
+    });
+
+    if (resultado.code === "TRANSACCION_OK" && resultado.data) {
+        return {
+            error: false,
+            message: "Transferencia registrada correctamente",
+            data: resultado.data,
+            code: "TRANSFERENCIA_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "No se pudo registrar la transferencia",
+        code: "TRANSFERENCIA_ERROR"
+    };
+};
+
+/**
+ * Registra una retención de efectivo como egreso con `estado_retencion = 'activa'`.
+ *
+ * Mientras está activa resta del saldo de la cuenta pero no cuenta como gasto.
+ *
+ * @param {RetencionCajaInputs} datos - Caja, cuenta, monto y descripción.
+ * @returns {Promise<TipadoData<ResultRetencionCaja>>} ID del movimiento creado y estado inicial.
+ * @throws {Error} Si la caja no está abierta, la cuenta no es válida, el saldo no alcanza o falta la categoría `Retención`.
+ */
+export const registrarRetencionTransaccion = async (datos: RetencionCajaInputs)
+: Promise<TipadoData<ResultRetencionCaja>> => {
+
+    const { id_escuela, id_usuario, id_caja, id_cuenta, monto, descripcion } = datos;
+
+    const resultado = await iudEntidadTransaction(async (conn) => {
+
+        // 1. Caja abierta y de la escuela.
+        const [rowsCaja]: any = await conn.execute(
+            `SELECT id_caja FROM cajas
+             WHERE id_caja = ? AND id_escuela = ? AND estado = 'abierta'
+             FOR UPDATE`,
+            [id_caja, id_escuela]
+        );
+        if (rowsCaja.length === 0) {
+            throw new Error("CAJA_NO_ABIERTA");
+        }
+
+        // 2. Cuenta activa de la escuela.
+        const [rowsCuenta]: any = await conn.execute(
+            `SELECT id_cuenta FROM cuentas_escuela
+             WHERE id_escuela = ? AND estado = 'activos' AND id_cuenta = ?
+             FOR UPDATE`,
+            [id_escuela, id_cuenta]
+        );
+        if (rowsCuenta.length === 0) {
+            throw new Error("CUENTA_INVALIDA");
+        }
+
+        // 3. Saldo suficiente: la retención saca plata de la caja.
+        const saldo = await saldoCuentaTransaccion(conn, id_caja, id_cuenta);
+        if (saldo < Number(monto)) {
+            throw new Error("SIN_SALDO");
+        }
+
+        // 4. Categoría de sistema `Retención`.
+        const [rowsCat]: any = await conn.execute(
+            `SELECT id_categoria FROM categorias_caja
+             WHERE id_escuela = ? AND nombre_categoria = 'Retención'
+               AND tipo_movimiento = 'egreso'
+             LIMIT 1`,
+            [id_escuela]
+        );
+        if (rowsCat.length === 0) {
+            throw new Error("CATEGORIA_RETENCION_FALTA");
+        }
+        const idCategoria = Number((rowsCat as { id_categoria: number }[])[0].id_categoria);
+
+        // 5. Egreso "neutro" (activo hasta que se devuelva o justifique).
+        const [resDetalle]: any = await conn.execute(
+            `INSERT INTO detalle_caja (
+                id_caja, id_categoria, id_cuenta, id_usuario,
+                monto, descripcion, referencia_id, estado_retencion
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, 'activa')`,
+            [
+                id_caja,
+                idCategoria,
+                id_cuenta,
+                id_usuario,
+                monto,
+                descripcion?.trim() || "Retención de efectivo",
+                null
+            ]
+        );
+
+        return {
+            id_movimiento: Number(resDetalle.insertId),
+            monto: Number(monto),
+            estado_retencion: "activa" as const
+        };
+    });
+
+    if (resultado.code === "TRANSACCION_OK" && resultado.data) {
+        return {
+            error: false,
+            message: "Retención registrada correctamente",
+            data: resultado.data,
+            code: "RETENCION_OK"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "No se pudo registrar la retención",
+        code: "RETENCION_ERROR"
+    };
+};
+
+/**
+ * Lista las retenciones que siguen `activas` en una caja.
+ *
+ * @param {RetencionesActivasInputs} datos - Caja a consultar (la escuela se valida en el servicio).
+ * @returns {Promise<TipadoData<RetencionActiva[]>>} Retenciones activas con cuenta y fecha.
+ */
+export const listaRetencionesActivas = async (datos: RetencionesActivasInputs)
+: Promise<TipadoData<RetencionActiva[]>> => {
+
+    const sql: string = `SELECT
+                            det.id_movimiento,
+                            det.id_caja,
+                            det.id_cuenta,
+                            cue.nombre_cuenta,
+                            det.monto,
+                            det.descripcion,
+                            DATE_FORMAT(det.fecha_movimiento, '%Y-%m-%d') AS fecha_movimiento,
+                            TIME_FORMAT(det.fecha_movimiento, '%H:%i') AS hora_formateada,
+                            det.estado_retencion
+                         FROM detalle_caja det
+                         INNER JOIN cuentas_escuela cue ON det.id_cuenta = cue.id_cuenta
+                         WHERE det.id_caja = ?
+                           AND det.estado_retencion = 'activa'
+                         ORDER BY det.fecha_movimiento DESC, det.id_movimiento DESC`;
+
+    return await listarEntidadSinPaginacion<RetencionActiva>({
+        slqListado: sql,
+        valores: [datos.id_caja],
+        entidad: "RETENCIONES_ACTIVAS",
+        estado: "activas"
+    });
+};
+
+/** Fila cruda de una retención para resolverla. */
+export interface RetencionFila {
+    id_movimiento: number;
+    id_caja: number;
+    id_cuenta: number;
+    monto: number;
+    estado_retencion: "activa" | "devuelta" | "justificada" | null;
+    descripcion: string | null;
+};
+
+/**
+ * Busca una retención por `id_movimiento` validando que pertenezca a la escuela
+ * del token (a través de la caja).
+ *
+ * Usa `buscarExistenteEntidad`, que **invierte** la semántica:
+ * `error: true` + `code = "RETENCION_EXISTE"` significa que la retención existe.
+ *
+ * @param id_movimiento - Movimiento de detalle de caja.
+ * @param id_escuela - Escuela del token.
+ * @returns {Promise<TipadoData<RetencionFila>>} Fila si existe, o `RETENCION_NO_EXISTE`.
+ */
+export const obtenerRetencion = async (id_movimiento: number, id_escuela: number)
+: Promise<TipadoData<RetencionFila>> => {
+
+    const sql: string = `SELECT
+                            det.id_movimiento,
+                            det.id_caja,
+                            det.id_cuenta,
+                            det.monto,
+                            det.estado_retencion,
+                            det.descripcion
+                         FROM detalle_caja det
+                         INNER JOIN cajas c ON det.id_caja = c.id_caja
+                         WHERE det.id_movimiento = ? AND c.id_escuela = ?`;
+
+    return await buscarExistenteEntidad<RetencionFila>({
+        slqEntidad: sql,
+        valores: [id_movimiento, id_escuela],
+        entidad: "RETENCION"
+    });
+};
+
+/** Datos ya validados por el servicio para resolver una retención. */
+export interface ResolverRetencionData {
+    id_movimiento: number;
+    id_escuela: number;
+    id_usuario: number;
+    id_caja: number;
+    id_cuenta: number;
+    monto_original: number;
+    monto_devuelto: number;
+    estado: "devuelta" | "justificada";
+    justificacion: string | null;
+    aplicar_diferencia: boolean;
+    descripcion_original: string | null;
+};
+
+/**
+ * Resuelve una retención activa (devolución total, devolución parcial o
+ * justificación) dentro de una transacción.
+ *
+ * - **Devolución total** (`monto_devuelto >= monto`): marca `devuelta`. La retención
+ *   deja de restar del saldo y no aparece en el detalle de caja (se neutraliza por estado).
+ * - **Devolución parcial** (`0 < monto_devuelto < monto`): marca `devuelta` y
+ *   crea un egreso nuevo por la diferencia, `justificada`, con la observación
+ *   obligatoria y `referencia_id` apuntando a la retención original. Solo la
+ *   diferencia no devuelta aparece en el detalle.
+ * - **Justificación** (sin devolución): marca `justificada`, guarda la
+ *   observación y no crea movimientos.
+ *
+ * No se crea movimiento de ingreso al devolver porque el dinero ya estaba en la
+ * cuenta (solo estaba retenido). Al cambiar el estado a `devuelta`, la fila original
+ * se neutraliza en los cálculos de saldo y métricas.
+ *
+ * @param {ResolverRetencionData} datos - Datos validados por el servicio.
+ * @returns {Promise<TipadoData<ResultResolverRetencion>>} Estado final y, si aplica, el ID del egreso por diferencia.
+ * @throws {Error} Si la retención no existe, ya fue resuelta o falta la categoría `Retención`.
+ */
+export const resolverRetencionTransaccion = async (datos: ResolverRetencionData)
+: Promise<TipadoData<ResultResolverRetencion>> => {
+
+    const resultado = await iudEntidadTransaction(async (conn) => {
+
+        // 1. Bloquea la retención y verifica que siga activa.
+        const [rowsRet]: any = await conn.execute(
+            `SELECT id_movimiento, id_caja, id_cuenta, monto, estado_retencion, descripcion
+             FROM detalle_caja
+             WHERE id_movimiento = ?
+             FOR UPDATE`,
+            [datos.id_movimiento]
+        );
+
+        if (rowsRet.length === 0) {
+            throw new Error("RETENCION_NO_EXISTE");
+        }
+
+        const retencion = rowsRet[0] as RetencionFila;
+
+        if (retencion.estado_retencion !== "activa") {
+            throw new Error("RETENCION_YA_RESUELTA");
+        }
+
+        // 2. Actualiza la fila original (se neutraliza por estado si se devolvió).
+        // La justificación se guarda en `descripcion` (campo único de texto).
+        // Se guarda solo el texto que escribió el usuario, sin formato adicional.
+        const nuevaDescripcion = datos.justificacion
+            ? datos.justificacion
+            : retencion.descripcion ?? null;
+
+        await conn.execute(
+            `UPDATE detalle_caja
+                SET estado_retencion = ?, monto_devuelto = ?, descripcion = ?
+              WHERE id_movimiento = ?`,
+            [
+                datos.estado,
+                datos.monto_devuelto,
+                nuevaDescripcion,
+                datos.id_movimiento
+            ]
+        );
+
+        let idMovimientoDiferencia: number | null = null;
+
+        // 3. Devolución parcial: la diferencia queda como nueva retención activa.
+        if (datos.aplicar_diferencia) {
+
+            const diferencia = Number(datos.monto_original) - Number(datos.monto_devuelto);
+            if (diferencia > 0) {
+
+                const [rowsCat]: any = await conn.execute(
+                    `SELECT id_categoria FROM categorias_caja
+                     WHERE id_escuela = ? AND nombre_categoria = 'Retención'
+                       AND tipo_movimiento = 'egreso'
+                     LIMIT 1`,
+                    [datos.id_escuela]
+                );
+
+                if (rowsCat.length === 0) {
+                    throw new Error("CATEGORIA_RETENCION_FALTA");
+                }
+
+                const idCategoria = Number((rowsCat as { id_categoria: number }[])[0].id_categoria);
+
+                const [resDiferencia]: any = await conn.execute(
+                    `INSERT INTO detalle_caja (
+                        id_caja, id_categoria, id_cuenta, id_usuario,
+                        monto, descripcion, referencia_id,
+                        estado_retencion, monto_devuelto
+                     ) VALUES (?, ?, ?, ?, ?, ?, ?, 'activa', 0)`,
+                    [
+                        datos.id_caja,
+                        idCategoria,
+                        datos.id_cuenta,
+                        datos.id_usuario,
+                        diferencia,
+                        `Retención no devuelta: ${datos.justificacion ?? "sin observación"}`,
+                        datos.id_movimiento
+                    ]
+                );
+
+                idMovimientoDiferencia = Number(resDiferencia.insertId);
+            }
+        }
+
+        return {
+            id_movimiento: datos.id_movimiento,
+            estado_retencion: datos.estado,
+            monto_devuelto: datos.monto_devuelto,
+            id_movimiento_diferencia: idMovimientoDiferencia
+        };
+    });
+
+    if (resultado.code === "TRANSACCION_OK" && resultado.data) {
+        return {
+            error: false,
+            message: "Retención resuelta correctamente",
+            data: resultado.data,
+            code: "RETENCION_RESUELTA"
+        };
+    }
+
+    return {
+        error: true,
+        message: resultado.message || "No se pudo resolver la retención",
+        code: "RETENCION_RESOLVER_ERROR"
+    };
+};
+
+
 export const method = {
     verificarCajaAbierta : tryCatchDatos( verificarCajaAbierta ),
     abrirCaja  : tryCatchDatos( abrirCaja ),
@@ -683,4 +1241,11 @@ export const method = {
     metricasPrincipal : tryCatchDatos(metricasPrincipal),
     aperturaCajaTransaccion : tryCatchDatos( aperturaCajaTransaccion ),
     listaTipoCuentasSesion : tryCatchDatos( listaTipoCuentasSesion ),
+    // Spec 050 — transferencias y retenciones
+    transferenciaEntreCuentasTransaccion : tryCatchDatos( transferenciaEntreCuentasTransaccion ),
+    registrarRetencionTransaccion : tryCatchDatos( registrarRetencionTransaccion ),
+    listaRetencionesActivas : tryCatchDatos( listaRetencionesActivas ),
+    obtenerRetencion : tryCatchDatos( obtenerRetencion ),
+    resolverRetencionTransaccion : tryCatchDatos( resolverRetencionTransaccion ),
+    categoriaSistemaCaja : tryCatchDatos( categoriaSistemaCaja ),
 };

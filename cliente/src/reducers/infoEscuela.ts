@@ -73,7 +73,8 @@ export type InfoEscuelaAction =
     | { type: "SET_CERRAR_MODAL_CLASES"}
     | { type: "SET_HORARIO_ESCUELA"; payload: HorarioClaseData[] | null }
     | { type: "SET_CLASES_ASISTIDAS"; payload: AsistenciaInscripcionRow[] | null }
-    | { type: "REINTENTAR_HORARIO" };
+    | { type: "REINTENTAR_HORARIO" }
+    | { type: "RESET_INFO_ESCUELA" };
 
 export const InfoEscuelaReducer = ( 
     state: ReturnType<typeof initialInfoEscuela>, 
@@ -203,6 +204,9 @@ export const InfoEscuelaReducer = (
                     clasesAsistidas : false
                 }
             }    
+
+        case "RESET_INFO_ESCUELA":
+            return initialInfoEscuela();
 
         default:
             return state; 

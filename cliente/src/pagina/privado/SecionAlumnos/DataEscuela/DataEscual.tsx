@@ -26,13 +26,14 @@ export const DataEscuela = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { id_escuela } = location.state || {};
 
   useEffect(() => {
+    const { id_escuela } = location.state || {};
     if (id_escuela) {
+      dispatch({ type: "RESET_INFO_ESCUELA" });
       dispatch({ type: "SET_ID_ESCUELA", payload: id_escuela });
     }
-  }, [id_escuela]);
+  }, [location]);
 
   const [modalHorario, setModalHorario] = useState(false);
 
@@ -54,7 +55,7 @@ export const DataEscuela = () => {
 
       {/* 1. Navegación Superior */}
       <nav className="nav-superior" aria-label="Navegación de la academia">
-        <button className="btn-volver" onClick={() => navigate(-1)}>
+        <button className="btn-volver" onClick={() => navigate("/alumno_principal")}>
           <ArrowLeft size={18} aria-hidden="true" />
           <span>Volver al Panel Principal</span>
         </button>

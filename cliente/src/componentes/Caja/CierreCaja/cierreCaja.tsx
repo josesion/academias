@@ -13,6 +13,15 @@ interface PropsCierreCaja {
   metricasPanel?: MetricasCajaPanelPrincipal[] | null;
   montoRealFinal: number;
   carga: boolean;
+  /**
+   * Bloquea el cierre (spec 050): con retenciones activas no se puede
+   * confirmar la operación hasta resolverlas.
+   */
+  bloqueado?: boolean;
+  /** Motivo visible del bloqueo. */
+  bloqueoMensaje?: string | null;
+  /** Contenido extra dentro del modal (panel de retenciones activas). */
+  children?: React.ReactNode;
   onCambioObservaciones: (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => void;
@@ -131,11 +140,22 @@ export const CierreCaja = (data: PropsCierreCaja) => {
       </div>
 
       {/* =====================================================
+          RETENCIONES ACTIVAS (spec 050)
+      ===================================================== */}
+      {data.children}
+
+      {data.bloqueado && data.bloqueoMensaje && (
+        <p className="aviso_cierre_bloqueado" role="alert">
+          {data.bloqueoMensaje}
+        </p>
+      )}
+
+      {/* =====================================================
           BOTONERA
       ===================================================== */}
       <div className="contenedor_botonera_cierre_caja">
         <Boton
-          disable={data.carga}
+          disable={data.carga || Boolean(data.bloqueado)}
           clase="aceptar"
           logo="Add"
           texto="Cerrar Caja"

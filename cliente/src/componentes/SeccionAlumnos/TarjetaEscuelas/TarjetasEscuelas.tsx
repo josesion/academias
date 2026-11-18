@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   LuMapPin,
   LuPhone,
@@ -10,6 +10,7 @@ import {
   LuCircleHelp,
   LuCircleSlash,
   LuCircleX,
+  LuMessageCircle,
 } from "react-icons/lu";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import { obtenerIniciales } from "../InfoEscuela/InfoEscuela";
@@ -44,8 +45,10 @@ const estadoPlan = (escuela: EscuelaAlumnoRow): EstadoPlan => {
   if (escuela.id_inscripcion === null) return "nuevo";
   if (escuela.estado_inscripcion === "suspendido") return "suspendido";
   if (escuela.estado_inscripcion === "vencidos") return "vencido";
-  if (escuela.dias_restantes !== null && escuela.dias_restantes <= 0) return "vencido";
-  if (escuela.dias_restantes !== null && escuela.dias_restantes <= 5) return "por_vencer";
+  if (escuela.dias_restantes !== null && escuela.dias_restantes <= 0)
+    return "vencido";
+  if (escuela.dias_restantes !== null && escuela.dias_restantes <= 5)
+    return "por_vencer";
   return "vigente";
 };
 
@@ -79,7 +82,8 @@ const porcentajePlan = (escuela: EscuelaAlumnoRow): number | null => {
     porcentaje = (escuela.clases_asistidas / escuela.clases_plan) * 100;
   }
 
-  if (typeof porcentaje !== "number" || !Number.isFinite(porcentaje)) return null;
+  if (typeof porcentaje !== "number" || !Number.isFinite(porcentaje))
+    return null;
 
   return Math.min(100, Math.max(0, Math.round(porcentaje)));
 };
@@ -100,12 +104,30 @@ const formatearFecha = (fecha: string | null): string => {
 };
 
 /**
+ * Construye la URL de WhatsApp para contactar a la academia.
+ *
+ * Limpia el número de teléfono (quita espacios, guiones, paréntesis y +)
+ * y lo convierte a un enlace wa.me.
+ *
+ * @param celular - Número de teléfono crudo de la BD.
+ * @returns URL de WhatsApp lista para usar en `href`, o `undefined` si no hay número.
+ */
+const construirUrlWhatsApp = (celular: string | null): string | undefined => {
+  if (!celular || !celular.trim()) return undefined;
+  const num = celular
+    .trim()
+    .replace(/[\s\-()]/g, "")
+    .replace(/^\+/, "");
+  return `https://wa.me/${num}`;
+};
+
+/**
  * Tarjeta de una academia, en la pantalla "Mis Academias" del alumno.
  *
- * La tarjeta es un `<Link to="/data_escuela" state={{ id_escuela }}>` (spec
- * 014): antes era un `<div onClick>`, que no se podía tabular ni activar con
- * Enter. `DataEscuela` sigue leyendo el id de `location.state`, así que la
- * navegación es idéntica.
+ * La tarjeta usa `navigate()` con `onClick` (spec 014), el mismo patrón que
+ * el resto del proyecto. Pasa `id_escuela` en `state` para que `DataEscuela`
+ * lo lea de `location.state`. Los botones internos (favorito, WhatsApp) no
+ * disparan la navegación gracias a `stopPropagation()`.
  *
  * Además de los datos de siempre (razón social, propietario, DNI, dirección y
  * celular) muestra, según la inscripción activa del alumno (spec 037):
@@ -121,7 +143,11 @@ const formatearFecha = (fecha: string | null): string => {
  * @param escuela - Fila de la escuela (datos de la escuela y de su inscripción).
  * @param carga - Si está cargando.
  */
-export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
+export const TarjetaEscuela = ({
+  escuela,
+  carga,
+}: TarjetaEscuelaProps) => {
+  const navigate = useNavigate();
   const [errorImagen, setErrorImagen] = useState(false);
 
   // Si la academia cambia su logo, se limpia el error previo: si no, la
@@ -138,9 +164,12 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
   const fechaVencimiento = formatearFecha(escuela.fecha_vencimiento_plan);
 
   const clasesTexto =
-    typeof escuela.clases_asistidas === "number" && typeof escuela.clases_plan === "number"
+    typeof escuela.clases_asistidas === "number" &&
+    typeof escuela.clases_plan === "number"
       ? `${escuela.clases_asistidas} de ${escuela.clases_plan}`
       : "—";
+
+  const whatsappUrl = construirUrlWhatsApp(escuela.celular);
 
   const etiquetaEstado: Record<EstadoPlan, string> = {
     nuevo: "Nuevo",
@@ -158,11 +187,27 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
     vigente: <LuCircleCheck size={14} aria-hidden="true" />,
   }[estado];
 
+  const handleClickTarjeta = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("button") || target.closest("a")) return;
+    navigate("/data_escuela", { state: { id_escuela: escuela.id_escuela } });
+  };
+
   return (
-    <Link
+    <div
       className="tarjeta_escuela"
-      to="/data_escuela"
-      state={{ id_escuela: escuela.id_escuela }}
+      onClick={handleClickTarjeta}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          navigate("/data_escuela", {
+            state: { id_escuela: escuela.id_escuela },
+          });
+        }
+      }}
+      aria-label={`Ver detalle de ${escuela.razon_social}`}
     >
       {carga ? (
         <SpinnerTarjeta />
@@ -189,7 +234,9 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
             </div>
           </div>
 
-          <span className={`tarjeta_escuela_estado tarjeta_escuela_estado--${estado}`}>
+          <span
+            className={`tarjeta_escuela_estado tarjeta_escuela_estado--${estado}`}
+          >
             {iconoEstado}
             {etiquetaEstado[estado]}
           </span>
@@ -211,6 +258,20 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
             </li>
           </ul>
 
+          {whatsappUrl && (
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="tarjeta_escuela_whatsapp"
+              aria-label="Contactar academia por WhatsApp"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <LuMessageCircle size={18} aria-hidden="true" />
+              <span>Contactar por WhatsApp</span>
+            </a>
+          )}
+
           {hayInscripcion && (
             <div className="tarjeta_escuela_plan">
               <div className="tarjeta_escuela_plan_fecha">
@@ -230,7 +291,9 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
                 </span>
                 <span className="tarjeta_escuela_meta">
                   <span className="tarjeta_escuela_meta_label">Clases</span>
-                  <span className="tarjeta_escuela_meta_valor">{clasesTexto}</span>
+                  <span className="tarjeta_escuela_meta_valor">
+                    {clasesTexto}
+                  </span>
                 </span>
               </div>
 
@@ -251,6 +314,6 @@ export const TarjetaEscuela = ({ escuela, carga }: TarjetaEscuelaProps) => {
           )}
         </div>
       )}
-    </Link>
+    </div>
   );
 };

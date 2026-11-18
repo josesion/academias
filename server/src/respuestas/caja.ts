@@ -39,6 +39,8 @@ export const MAPA_CERRAR_CAJA : Record< string , { status : CodigoEstadoHTTP, ms
 
   "NO_HAY_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "No existe ninguna caja abierta"},
 
+  "RETENCIONES_ACTIVAS" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "No se puede cerrar la caja con retenciones activas. Resuelve las retenciones pendientes primero."},
+
   ERROR_SERVIDOR
 
 };
@@ -50,6 +52,8 @@ export const MAPA_DETALLE_MOVIMIENTOS : Record< string , { status : CodigoEstado
   "SIN_CAJA_ABIERTA" : { status :CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
 
   "SIN_SALDO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Sin saldo para realizar esta operacion"},
+
+  "CATEGORIA_SISTEMA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Las categorías del sistema no se pueden usar en este formulario"},
 
   "ERROR_ABRIR_CAJA_DETALLE" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "Error al crear el detalle, intente nuevamente"}
 
@@ -107,6 +111,74 @@ export const MAPA_LISTADO_CATEGORIAS_SESION : Record< string , { status : Codigo
   
 };
 
+
+export const MAPA_TRANSFERENCIA_CAJA : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
+
+  "TRANSFERENCIA_OK" : { status : CodigoEstadoHTTP.OK , msg : "Transferencia registrada correctamente"},
+
+  "SIN_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
+
+  "CUENTA_INVALIDA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Cuenta inválida"},
+
+  "SIN_SALDO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Sin saldo suficiente en la cuenta de origen"},
+
+  "CATEGORIAS_TRANSFERENCIA_FALTAN" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Faltan las categorías de sistema para transferencias"},
+
+  "TRANSFERENCIA_ERROR" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "No se pudo registrar la transferencia"},
+
+  ERROR_SERVIDOR
+
+};
+
+export const MAPA_RETENCION_CAJA : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
+
+  "RETENCION_OK" : { status : CodigoEstadoHTTP.OK , msg : "Retención registrada correctamente"},
+
+  "SIN_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
+
+  "CUENTA_INVALIDA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Cuenta inválida"},
+
+  "SIN_SALDO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Sin saldo suficiente en la cuenta"},
+
+  "CATEGORIA_RETENCION_FALTA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Falta la categoría de sistema para retenciones"},
+
+  "RETENCION_ERROR" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "No se pudo registrar la retención"},
+
+  ERROR_SERVIDOR
+
+};
+
+export const MAPA_RETENCIONES_ACTIVAS : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
+
+  "RETENCIONES_ACTIVAS_OK" : { status : CodigoEstadoHTTP.OK , msg : "Retenciones activas listadas correctamente"},
+
+  "SIN_CAJA_ABIERTA" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "No hay caja abierta"},
+
+  ERROR_SERVIDOR
+
+};
+
+export const MAPA_RESOLVER_RETENCION : Record< string , { status : CodigoEstadoHTTP, msg : string}> = {
+
+  "RETENCION_DEVUELTA" : { status : CodigoEstadoHTTP.OK , msg : "Retención devuelta correctamente"},
+
+  "RETENCION_JUSTIFICADA" : { status : CodigoEstadoHTTP.OK , msg : "Retención justificada correctamente"},
+
+  "RETENCION_NO_EXISTE" : { status : CodigoEstadoHTTP.NO_ENCONTRADO , msg : "La retención indicada no existe"},
+
+  "RETENCION_YA_RESUELTA" : { status : CodigoEstadoHTTP.CONFLICTO , msg : "La retención ya fue devuelta o justificada"},
+
+  "MONTO_DEVUELTO_INVALIDO" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "No se puede devolver más de lo retenido"},
+
+  "OBSERVACION_REQUERIDA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "La observación es obligatoria"},
+
+  "CATEGORIA_RETENCION_FALTA" : { status : CodigoEstadoHTTP.ENTIDAD_NO_PROCESABLE , msg : "Falta la categoría de sistema para retenciones"},
+
+  "RETENCION_RESOLVER_ERROR" : { status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR , msg : "No se pudo resolver la retención"},
+
+  ERROR_SERVIDOR
+
+};
 
 export const ERROR_INTERNO_SERVIDOR = {
     status : CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,

@@ -1,4 +1,4 @@
-import { useEffect, useId } from "react";
+import { useId } from "react";
 
 import { TarjetasNormales } from "../../../componentes/generales/TarjetasNormales/TarjetaNormali";
 import { MovientoCaja } from "../../../componentes/Caja/MovimientoCaja/MovientoCaja";
@@ -12,6 +12,9 @@ import { CierreCaja } from "../../../componentes/Caja/CierreCaja/cierreCaja";
 import { InformeDetalleCaja } from "../../../componentes/Informes/DetallesCaja";
 
 import { CompoIngEgr } from "../../../componentes/Caja/CompoIngEgr/CompoIngEgr";
+import { TransferenciaCaja } from "../../../componentes/Caja/TransferenciaCaja/TransferenciaCaja";
+import { RetencionCaja } from "../../../componentes/Caja/RetencionCaja/RetencionCaja";
+import { RetencionesPanel } from "../../../componentes/Caja/RetencionesPanel/RetencionesPanel";
 
 // logica -----
 import { cajasCongif } from "../../../hookNegocios/caja.usuario";
@@ -44,8 +47,21 @@ export const CajaArqueo = () => {
     handleCierreMontos,
     handleCachearDetalle,
     hanldeCerrarInforme,
-    sincronizarEstadoCaja,
     state,
+
+    // Spec 050 — transferencias y retenciones
+    handleAbrirTransferencia,
+    handleCerrarTransferencia,
+    handleTransferenciaChange,
+    handleRegistrarTransferencia,
+    handleAbrirRetencion,
+    handleCerrarRetencion,
+    handleRetencionChange,
+    handleRegistrarRetencion,
+    handleSeleccionarRetencion,
+    handleDevolucionRetencionChange,
+    handleDevolverRetencion,
+    handleJustificarRetencion,
   } = cajasCongif();
 
   interface Categoria {
@@ -63,10 +79,6 @@ export const CajaArqueo = () => {
   const cuentasVacias = [
     { id_cuenta: 0, nombre_cuenta: "Sin Cuentas", tipo_cuenta: "fisico" },
   ];
-  // para sincronizar la caja ya que al navegar por la barra este no renderizaba bien el estado de caja
-  useEffect(() => {
-    sincronizarEstadoCaja();
-  }, []);
 
   // IDs para ARIA
   const resumenId = useId();
@@ -132,7 +144,27 @@ export const CajaArqueo = () => {
             onCancelar={handleCerrarModalCerrar}
             onCerrar={handleCerrarCaja}
             onCambioObservaciones={hanldeObsevacionesCierre}
-          />
+            bloqueado={state.retencionesActivas.length > 0}
+            bloqueoMensaje={
+              state.retencionesActivas.length > 0
+                ? `Tienes ${state.retencionesActivas.length} retención${state.retencionesActivas.length > 1 ? 'es' : ''} activa${state.retencionesActivas.length > 1 ? 's' : ''}. Resolv${state.retencionesActivas.length > 1 ? 'elas' : 'ela'} antes de cerrar.`
+                : null
+            }
+          >
+            {state.retencionesActivas.length > 0 && (
+              <RetencionesPanel
+                retenciones={state.retencionesActivas}
+                retencionSeleccionada={state.retencionSeleccionada}
+                devolucion={state.devolucionRetencion}
+                carga={state.carga.resolverRetencion}
+                errorMensaje={state.errorGenerico}
+                onSeleccionar={handleSeleccionarRetencion}
+                onChange={handleDevolucionRetencionChange}
+                onDevolver={handleDevolverRetencion}
+                onJustificar={handleJustificarRetencion}
+              />
+            )}
+          </CierreCaja>
         </div>
       )}
 
@@ -184,7 +216,38 @@ export const CajaArqueo = () => {
             nombre_alumno_vinculado={
               state.informeDetalle.nombre_alumno_vinculado
             }
+            estado_retencion={state.informeDetalle.estado_retencion}
             onCerrarModal={hanldeCerrarInforme}
+          />
+        </div>
+      )}
+
+      {/* Spec 050 — Transferencia */}
+      {state.modalesCaja.transferencia && (
+        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Transferencia entre cuentas">
+          <TransferenciaCaja
+            cuentas={state.listadoCuentasActivas ?? cuentasVacias}
+            form={state.transferenciaCaja}
+            carga={state.carga.transferenciaCaja}
+            errorMensaje={state.errorGenerico}
+            onChange={handleTransferenciaChange}
+            onRegistrar={handleRegistrarTransferencia}
+            onCancelar={handleCerrarTransferencia}
+          />
+        </div>
+      )}
+
+      {/* Spec 050 — Retención */}
+      {state.modalesCaja.retencion && (
+        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Retención de efectivo">
+          <RetencionCaja
+            cuentas={state.listadoCuentasActivas ?? cuentasVacias}
+            form={state.retencionCaja}
+            carga={state.carga.retencionCaja}
+            errorMensaje={state.errorGenerico}
+            onChange={handleRetencionChange}
+            onRegistrar={handleRegistrarRetencion}
+            onCancelar={handleCerrarRetencion}
           />
         </div>
       )}
@@ -266,6 +329,22 @@ export const CajaArqueo = () => {
               onClick={handleAbrirEgreso}
               logo={"Delete"}
             />
+            {state.estadoCaja === "abierta" && (
+              <>
+                <Boton
+                  clase="normal"
+                  texto="Transferencia"
+                  onClick={handleAbrirTransferencia}
+                  logo={"Swap"}
+                />
+                <Boton
+                  clase="normal"
+                  texto="Retención"
+                  onClick={handleAbrirRetencion}
+                  logo={"Shield"}
+                />
+              </>
+            )}
           </div>
         </div>
 
@@ -290,6 +369,19 @@ export const CajaArqueo = () => {
         <aside className="caja_sidebar_pagos" aria-labelledby={metodosId}>
           <h3 id={metodosId} className="visually-hidden">Métodos de pago</h3>
           <PanelMetodoPago cuentas={state.metricasTipoCuentas ?? []} />
+          {state.estadoCaja === "abierta" && (
+            <RetencionesPanel
+              retenciones={state.retencionesActivas ?? []}
+              retencionSeleccionada={state.retencionSeleccionada}
+              devolucion={state.devolucionRetencion}
+              carga={state.carga.resolverRetencion}
+              errorMensaje={state.errorGenerico}
+              onSeleccionar={handleSeleccionarRetencion}
+              onChange={handleDevolucionRetencionChange}
+              onDevolver={handleDevolverRetencion}
+              onJustificar={handleJustificarRetencion}
+            />
+          )}
         </aside>
       </section>
     </div>

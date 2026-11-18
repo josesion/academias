@@ -528,12 +528,13 @@
 
 @media (hover: hover) and (pointer: fine) {
 
-    .listado_asistencias_fila:hover {
+    .listado_asistencias_fila:hover td {
         background: var(--fondo-hover);
     }
 
+    /* La caja de la hora debe adoptar el mismo fondo para no destacar como un recuadro */
     .listado_asistencias_fila:hover .listado_asistencias_hora {
-        border-color: var(--borde-hover);
+        background: var(--fondo-hover);
     }
 }
 
@@ -557,8 +558,26 @@
         min-width: 0;
     }
 
+    /* En mobile el grid de filtros pasa a 1 columna para no desbordar. */
+    .listado_asistencias_filtros_grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* En mobile el filtro de fechas debe mantenerse visible y no colapsar */
+    .listado_asistencias_filtros .filtro_fechas_colapsable {
+        grid-template-rows: 1fr !important;
+        visibility: visible !important;
+    }
+
+    .listado_asistencias_filtros .filtro_fechas_toggle {
+        display: none !important;
+    }
+
     /* En modo tarjeta el marco lo tiene cada tarjeta, no el wrapper */
     .listado_asistencias_tabla_wrapper {
+        position: relative;
+        z-index: 0;
+
         overflow-x: visible;
 
         background: transparent;
