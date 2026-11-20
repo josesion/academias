@@ -147,12 +147,14 @@ export const FormularioAsistencia = () => {
           </h2>
 
           <Inputs
-            label="Ingrese su DNI"
-            placeholder="Ej: 30023547"
-            name="dni_alumno"
-            type="number"
+            label="Ingrese su PIN de asistencia"
+            placeholder="Ej: 2372"
+            name="pin_asistencia"
+            type="text"
+            inputMode="numeric"
+            maxLength={4}
             ref={inputDniRef}
-            value={state.registroAsistencia.dni_alumno}
+            value={state.registroAsistencia.pin_asistencia}
             readonly={false}
             onChange={handleCachearAlumno}
           />

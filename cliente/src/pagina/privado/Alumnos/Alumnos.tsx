@@ -48,19 +48,25 @@ export const AmbAlumnos = () => {
     handleSubmitEliminar,
   } = useAbmAlumnos();
 
-  //  Lógica específica del componente (Manipulación del input 'dni')
-  // Se ejecuta para hacer el campo 'dni' de solo lectura si estamos modificando.
+  //  Lógica específica del componente (Manipulación de inputs en modificación)
+  // En modificación: el email es readonly (es el identificador único),
+  // el DNI es editable, y el PIN se muestra de solo lectura.
   const inputsModificar = inputsFormulario.map((input) => {
     if (tipoFormulario === "modificar") {
-      if (input.name === "dni") {
-        return { ...input, readonly: true };
-      }
       if (input.name === "email") {
         return {
           ...input,
           readonly: true,
           hint: "Este correo es el usuario de acceso del alumno. Para cambiarlo, el alumno debe hacerlo desde su cuenta.",
         };
+      }
+      if (input.name === "dni") {
+        // En modificación, el DNI es editable (puede agregarse o cambiarse)
+        return { ...input, readonly: false };
+      }
+      if (input.name === "pin_asistencia") {
+        // El PIN siempre es de solo lectura
+        return { ...input, readonly: true };
       }
     }
     return input;

@@ -17,7 +17,7 @@ interface DataUseAsistenciaConfig{
         obtenerDataAsistencia : ServicioCrud,
     },
 
-     inicalFiltroAlumno :{ dni_alumno  : string }
+     inicalFiltroAlumno :{ pin_asistencia  : string }
 };
 
 export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
@@ -38,11 +38,11 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
 
         dispatch({ type : "SET_REGISTRO_ASISTENCIA", payload : { ...state.registroAsistencia, [name] : value }})
 
-        if (name === "dni_alumno") {
-                // El "Peaje": Solo si tiene entre 8 y 9 caracteres buscamos en la DB
-            if (value.length >= 8 && value.length <= 9) {
+        if (name === "pin_asistencia") {
+                // El "Peaje": Solo si tiene 4 dígitos buscamos en la DB
+            if (value.length === 4) {
                    const dataAsistenciafetch = config.servicios.obtenerDataAsistencia;
-                   const resultado = await dataAsistenciafetch({  dni_alumno : value, estado : state.registroAsistencia.estado});
+                   const resultado = await dataAsistenciafetch({  pin_asistencia : value, estado : state.registroAsistencia.estado});
 
                    if (resultado.code === "ASISTENCIA_OK"){
             
@@ -62,7 +62,7 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
                         }}); 
                     };
             } else {
-                    // Si el DNI es muy corto (porque está borrando), limpiamos la info vieja
+                    // Si el PIN no tiene 4 dígitos, limpiamos la info vieja
 
                     dispatch({ type : "SET_PEAJE_RESET" });
             };
@@ -76,8 +76,9 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
 
             const registrarAsistenciaFetch = config.servicios.registroAsistencia;
             const dataAsistenciaData = {
-                dni_alumno : state.registroAsistencia.dni_alumno,
-                estado     : state.registroAsistencia.estado,
+                pin_asistencia : state.registroAsistencia.pin_asistencia,
+                dni_alumno     : state.dataAsistencia.dataInscripcion.dni_alumno,
+                estado         : state.registroAsistencia.estado,
                 id_horario_clase : state.dataAsistencia.dataHorario.id_horario_clase,
                 id_inscripcion   : state.dataAsistencia.dataInscripcion.id_inscripcion                
             };

@@ -101,7 +101,7 @@ const SelectorClase = ({
 type ResultadoMin = {
   id_inscripcion: number | string;
   nombre_completo: string;
-  dni_alumno: number | string;
+  email_alumno: string;
 };
 
 /** Estado de búsqueda + lista de resultados (se usaba 3 veces igual). */
@@ -128,7 +128,7 @@ const ResultadosBusqueda = <T extends ResultadoMin>({
         {resultados.map((r) => (
           <li key={r.id_inscripcion}>
             <button type="button" onClick={() => onElegir(r)}>
-              {r.nombre_completo} · DNI {r.dni_alumno}
+              {r.nombre_completo} · {r.email_alumno}
             </button>
           </li>
         ))}
@@ -354,7 +354,7 @@ export const AsistenciaRapida = ({
                     label="Buscar alumno"
                     name="dni"
                     type="text"
-                    placeholder="Nombre, apellido o DNI"
+                    placeholder="Nombre, apellido o correo"
                     value={state.dni}
                     onChange={(e) => handleBusquedaChange(e.target.value)}
                     ref={dniRef}
@@ -489,10 +489,10 @@ export const AsistenciaRapida = ({
                               <td>
                                 <span className="asistencia_rapida_celda_nombre">
                                   {fila.datos?.nombre_completo ??
-                                    `DNI ${fila.dni}`}
+                                    `Alumno ${fila.dni}`}
                                 </span>
                                 <span className="asistencia_rapida_celda_dni">
-                                  DNI {fila.dni}
+                                  {fila.datos?.email_alumno ?? ''}
                                 </span>
                               </td>
                               <td>
@@ -567,7 +567,7 @@ export const AsistenciaRapida = ({
                   label="Buscar alumno"
                   name="dniNuevo"
                   type="text"
-                  placeholder="Nombre, apellido o DNI"
+                  placeholder="Nombre, apellido o correo"
                   value={state.dniNuevo}
                   onChange={(e) => handleBusquedaNueva(e.target.value)}
                   readonly={false}
@@ -600,7 +600,7 @@ export const AsistenciaRapida = ({
                     <li key={dniAlumno} className="asistencia_rapida_chip">
                       <span>
                         {state.infoAlumnos[dniAlumno]?.nombre_completo ??
-                          `DNI ${dniAlumno}`}
+                          `Alumno ${dniAlumno}`}
                       </span>
                       <button
                         type="button"
@@ -686,7 +686,7 @@ export const AsistenciaRapida = ({
                           return (
                             <li key={dniAlumno}>
                               <span>
-                                {datos?.nombre_completo ?? `DNI ${dniAlumno}`}
+                                {datos?.nombre_completo ?? `Alumno ${dniAlumno}`}
                                 {datos && (
                                   <span className="asistencia_rapida_meta">
                                     {datos.clases_restantes} clases · vence{" "}
@@ -725,7 +725,7 @@ export const AsistenciaRapida = ({
                                 label="Buscar alumno a agregar"
                                 name={`dniAgregar_${p.id_plantilla}`}
                                 type="text"
-                                placeholder="Nombre, apellido o DNI"
+                                placeholder="Nombre, apellido o correo"
                                 value={state.dniAgregar}
                                 onChange={(e) =>
                                   handleBusquedaAgregar(e.target.value)

@@ -23,7 +23,7 @@ export interface InscripcionTipado {
 
         usuario    : string,
         filtrosIniciales : {  
-            inicialFiltroAlumno : { dni : string , apellido : string },
+            inicialFiltroAlumno : { email : string , apellido : string },
             inicialFiltroPlan   : { descripcion : string }
         },        
     },
@@ -79,7 +79,7 @@ export const inicialState = ( config: {
     usuario : string, 
     
     inicialFiltros : {
-        inicialFiltroAlumno : { dni : string , apellido : string },
+        inicialFiltroAlumno : { email : string , apellido : string },
         inicialFiltroPlan   : { descripcion : string }
     },
     

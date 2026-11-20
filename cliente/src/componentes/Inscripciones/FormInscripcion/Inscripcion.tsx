@@ -92,11 +92,11 @@ export const InscripcionForm: React.FC<InscripcionProps> = (props) => {
           objetoListado={listadoAlumno}
           onChange={handleCachearAlumno}
           input_list="list_alumnos"
-          valueKey="dni"
+          valueKey="email"
           displayKey="persona"
           tipo="text"
-          name="dni"
-          hint="Escribe nombre, apellido o DNI para filtrar..."
+          name="email"
+          hint="Escribe nombre, apellido o correo para filtrar..."
         />
       </div>
 

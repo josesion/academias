@@ -30,7 +30,7 @@ export const TarjetaInscripcion = ({ plan, alumno }: PropsTarjeta) => {
           <span className="tarjeta_key">Alumno</span>
           <span className="tarjeta_value">
             {alumno
-              ? `${alumno.Apellido} ${alumno.Nombre} (${alumno.Dni})`
+              ? `${alumno.Apellido} ${alumno.Nombre} (${alumno.email || alumno.Dni || "Sin identificador"})`
               : "No seleccionado"}
           </span>
         </div>

@@ -20,6 +20,13 @@ const inputsFiltro: InputsPropsBuscador[] = [
     value: "",
   },
   {
+    name: "email_alumno",
+    label: "Correo del alumno",
+    type: "text",
+    placeholder: "Ingrese correo",
+    value: "",
+  },
+  {
     name: "nombre_alumno",
     label: "Nombre o Apellido",
     type: "text",
@@ -48,6 +55,7 @@ export const setListadoInscripcion = () => {
 
     inicialFiltros : {
         dni_alumno: "",
+        email_alumno: "",
         nombre_alumno : "",
         fecha_desde : "",
         fecha_hasta : ""

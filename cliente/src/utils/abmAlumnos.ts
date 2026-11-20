@@ -1,8 +1,3 @@
-//import {  useContext} from "react";
-
-//Seccion de contexto---------------------------------------
-//import { RutasProtegidasContext } from "../contexto/protectRutas";
-
 //Seccion de tipado-----------------------------------------
 import type { InputsPropsBuscador } from "../componentes/generales/Buscadores/Buscador";
 import type { InputsPropsFormulario } from "../componentes/generales/Formulario/Formulario";
@@ -13,13 +8,13 @@ import { registroAlumno , listadoAlumnos, modAlumno , eliminarAlumno} from "../s
 
 import { useAbmGenerico } from "../hooks/useAbmGenerico";
 
-//  Datos para el filtro de buscaqueda
+//  Datos para el filtro de búsqueda — email como identificador principal
 const inputsFiltro  : InputsPropsBuscador[] =[
     {
-        name: "dni",
-        label: "Dni",
-        type: "number",
-        placeholder: "Ingrese Dni",
+        name: "email",
+        label: "Correo electrónico",
+        type: "email",
+        placeholder: "Ingrese correo electrónico",
         value: ""
     },
     {
@@ -31,16 +26,28 @@ const inputsFiltro  : InputsPropsBuscador[] =[
     }
     
 ]
-// Datos para el formulario de alta
+
+// Datos para el formulario de alta — email como primer campo obligatorio
 const inputsAlumnos : InputsPropsFormulario[] = [
+    {
+        name: "email",
+        label: "Correo Electrónico",
+        type: "email",
+        placeholder: "ejemplo@correo.com",
+        value: "",
+        readonly: false,
+        columnGroup: 1,
+        hint: "Este correo será el usuario de acceso del alumno."
+    },
     {
         name: "dni",
         label: "Dni Alumno",
-        type: "number",
-        placeholder: "Ingrese Dni",
+        type: "text",
+        placeholder: "Ingrese Dni (opcional)",
         value: "",
-        readonly : false,
-        columnGroup: 1
+        readonly: false,
+        columnGroup: 2,
+        hint: "Opcional — solo para seguro o certificados. Si no se ingresa, se generará un número aleatorio."
     },
     {
         name: "apellido",
@@ -48,7 +55,7 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "text",
         placeholder: "Ingrese Apellido",
         value: "",
-        readonly : false,
+        readonly: false,
         columnGroup: 2
     },
     {
@@ -57,53 +64,57 @@ const inputsAlumnos : InputsPropsFormulario[] = [
         type: "text",
         placeholder: "Ingrese Nombres",
         value: "",
-        readonly : false,
+        readonly: false,
         columnGroup: 1
     },
     {
         name: "celular",
         label: "Celular",
-        type: "phone",
+        type: "tel",
         placeholder: "+54 9 11 1234-5678",
         value: "",
-        readonly : false,
+        readonly: false,
         columnGroup: 1,
         contactPanel: true
     },
     {
-        name: "email",
-        label: "Correo Electrónico",
-        type: "email",
-        placeholder: "ejemplo@correo.com",
+        name: "pin_asistencia",
+        type: "text",
+        placeholder: "",
         value: "",
-        readonly : false,
+        readonly: true,
         columnGroup: 2,
-        contactPanel: true
+        contactPanel: true,
+        hint: "Se generará automáticamente un PIN de 4 dígitos y se enviará al correo del alumno."
     }
 ];
 
+/** Mapea los datos del listado al formato del formulario para modificar un alumno. */
 const mapAlumnoForm =( dataM : any) =>({
-    dni: dataM.Dni,
+    dni: dataM.Dni || "",
     apellido: dataM.Apellido,
     nombre: dataM.Nombre,
-    email : dataM.Email,
-    celular: dataM.Celular,
+    email: dataM.email || dataM.Email || "",
+    celular: dataM.Celular || "",
+    pin_asistencia: dataM.pin_asistencia || ""
 });
 
+/** Mapea los datos de un alumno para darlo de baja, usando el email como identificador. */
 const mapAlumnoEliminar =( data : any) =>({
-    dni: data.Dni
+    email: data.email || data.Email || "",
+    dni: data.Dni || ""
 });
 
 const mapTextoEliminar = (dataE: any) => 
-    ` El estado del Alumno "${dataE.Nombre} ${dataE.Apellido}" (DNI: ${dataE.Dni}) cambiará`;
+    ` El estado del Alumno "${dataE.Nombre} ${dataE.Apellido}" (Email: ${dataE.email || dataE.Email}) cambiará`;
 
 
 
 // Inicio del hook para logia abm alumnos
 export const useAbmAlumnos = () =>{ 
 // contexto
-//const { rol } = useContext( RutasProtegidasContext );
-  
+//const { rol } = useContext( RutasProtegidasContext );  
+
 
 const config = {
     recursoSingular : "Alumno",
@@ -123,7 +134,8 @@ const config = {
         apellido: '',
         nombre: '',
         email: '',
-        celular: ""
+        celular: "",
+        pin_asistencia: ""
     },
 
     estados: ["activos", "inactivos"],
@@ -135,7 +147,7 @@ const config = {
     },
 
     inicialFiltros : { 
-        dni : "", 
+        email : "", 
         apellido : "" 
     },
 

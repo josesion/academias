@@ -17,6 +17,7 @@ export const incripcion =async ( datos : PayloadInscripcionCompleto )
         body   :{
             id_plan                     : datos.id_plan ,
             dni_alumno                  : datos.dni_alumno,
+            email_alumno                : datos.email_alumno,
             fecha_inicio                : datos.fecha_inicio,
             fecha_fin                   : datos.fecha_fin,
             clases_asignadas_inscritas  : datos.clases_asignadas_inscritas,
@@ -40,6 +41,7 @@ export const listadoInscripciones = async( data : TipadoInscripcion.FiltroBusque
         estado: data.estado || "activos",
         nombre_alumno : data.nombre_alumno,
         dni_alumno  : data.dni_alumno,
+        email_alumno : data.email_alumno,
         fecha_desde : data.fecha_desde,
         fecha_hasta : data.fecha_hasta,
         pagina : data.pagina.toString(),

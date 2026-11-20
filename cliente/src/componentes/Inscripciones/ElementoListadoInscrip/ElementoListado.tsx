@@ -7,6 +7,7 @@ import "./elementolista.css";
 export interface InscripcionListado {
   id_inscripcion: number;
   dni_alumno: number;
+  email_alumno: string;
   nombre_completo: string;
   nombre_plan: string;
   clases_usadas: number;
@@ -117,7 +118,7 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
               </span>
 
               <span className="dni_tabla">
-                DNI: {inscripcion.dni_alumno.toLocaleString("es-AR")}
+                {inscripcion.email_alumno || `DNI: ${inscripcion.dni_alumno.toLocaleString("es-AR")}`}
               </span>
             </div>
           </td>
@@ -211,7 +212,7 @@ export const ElementoLista: React.FC<ElementoListaProps> = ({
               </span>
 
               <span className="alumno_dni">
-                DNI: {inscripcion.dni_alumno.toLocaleString("es-AR")}
+                {inscripcion.email_alumno || `DNI: ${inscripcion.dni_alumno.toLocaleString("es-AR")}`}
               </span>
             </div>
 

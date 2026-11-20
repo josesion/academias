@@ -43,7 +43,7 @@ export const useIncripcionesUsuarios = () =>{
 
 
         inicialFiltroAlumno : {
-            dni      : "",
+            email    : "",
             apellido : ""
         }, 
         

@@ -202,7 +202,9 @@ export const useAsistenciaRapidaLogica = (
      ------------------------------------------------------------------ */
 
   /**
-   * Consulta la info de un alumno por DNI.
+   * Consulta la info de un alumno por DNI (usado en plantillas donde se
+   * ingresa el DNI directamente). Ya no se usa en la búsqueda principal
+   * que es por nombre, apellido o correo.
    * @param {string} valor - DNI a consultar.
    */
   const consultarAlumno = useCallback(
@@ -257,7 +259,8 @@ export const useAsistenciaRapidaLogica = (
   );
 
   /**
-   * Busca alumnos por nombre, apellido o DNI (spec 046).
+   * Busca alumnos por nombre, apellido o correo (spec 046).
+   * El DNI ya no se usa como criterio de búsqueda.
    * @param {string} termino - Texto a buscar.
    */
   const buscarAlumnos = useCallback(

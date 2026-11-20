@@ -62,14 +62,24 @@ export interface ResulClases_curso_proxima{
     proximaClase : ResultadoClaseProxima | ResultErrorAsistencia 
 };
 
+/**
+ * Datos para registrar una asistencia en el kiosco.
+ * `pin_asistencia` identifica al alumno en la búsqueda.
+ * `dni_alumno` se obtiene al buscar por PIN y se envía al registrar
+ * para que la tabla `asistencias` pueda guardar el DNI correctamente.
+ */
 export interface RegistroAsistencia extends AsistenciaFechas{
-    dni_alumno : number ,
+    pin_asistencia : string ,
+    dni_alumno : number | null,
     id_inscripcion : number ,
     id_horario_clase : number,
 };
 
+/**
+ * Filtro de búsqueda de alumno en el kiosco por PIN.
+ */
 export interface BusquedaAlumno extends AsistenciaFechas{
-    dni_alumno : string ,
+    pin_asistencia : string ,
 };
 
 
@@ -82,7 +92,8 @@ export interface ResultRegistroAsistencia{
 export type DataInscripcionVigente ={
     id_inscripcion : number,
     vencimiento : string,
-    clases_restantes : number
+    clases_restantes : number,
+    dni_alumno : number | null
 };
 
 type DataHorarioAsistencia = {
@@ -103,8 +114,12 @@ export interface ResultDataAsistencia{
     dataInscripcion : DataInscripcionVigente | DataResultErrrorAsistencia
 }
 
+/**
+ * Datos para buscar un alumno en el kiosco de asistencia.
+ * Se usa el PIN de 4 dígitos en lugar del DNI.
+ */
 export interface DataAsistencia{
-     dni_alumno : string,
+     pin_asistencia : string,
      estado : "activos" | "inactivos",
 };
 
@@ -120,7 +135,8 @@ export interface AsistenciaInscripcionRow {
 
 export interface InfoAlumno {
   nombre_completo: string;
-  dni_alumno: number;
+  dni_alumno: number | null;
+  email_alumno: string;
   id_inscripcion: number;
   clases_restantes: number;
   vencimiento: string;

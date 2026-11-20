@@ -6,7 +6,8 @@ interface Paginacion {
 export interface inscripcionData{
     id_plan                     : number ,
     
-    dni_alumno                  : number,
+    dni_alumno?                 : number,
+    email_alumno?               : string,
     fecha_inicio                : string,
     fecha_fin                   : string,
     monto                       : number | null,
@@ -29,16 +30,22 @@ export  interface DataPlan {
 };
 
  export interface DataAlumno {
-    Dni : string ,
+    Dni : string | undefined,
     Nombre : string , 
-    Apellido : string
+    Apellido : string,
+    email : string
 };
 
+/**
+ * Filtro para buscar alumnos en el formulario de inscripción.
+ * Usa `email` como identificador principal; `dni` se mantiene como
+ * fallback para compatibilidad con el backend.
+ */
 export interface FiltroAlumno extends Paginacion {
-    dni: string;
+    dni?: string;
+    email?: string;
+    apellido: string;
     estado: string;
-
-
 };
 
 export interface FiltroPlan extends Paginacion {
@@ -48,6 +55,7 @@ export interface FiltroPlan extends Paginacion {
 
 export interface FiltroBusqueda {
     dni_alumno : string,
+    email_alumno : string,
     nombre_alumno : string,
     fecha_desde : string,
     fecha_hasta : string,
@@ -61,6 +69,7 @@ export interface InscripcionListadoResult {
   estado :string,  
   id_inscripcion: number;
   dni_alumno: number;
+  email_alumno: string;
   nombre_completo: string;
   nombre_plan: string;
   clases_usadas: number;

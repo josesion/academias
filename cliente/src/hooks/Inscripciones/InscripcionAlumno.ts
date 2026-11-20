@@ -22,8 +22,12 @@ export const InscripcionAlumno = ( config : AlumnoInscripciones ) => {
     const { state , dispatch} = config;
 
     // ──────────────────────────────────────────────────────────────
-    // Funcion para obtener los datos del alumno que se seleccione
-    // ──────────────────────────────────────────────────────────────
+    /**
+     * Busca al alumno en el listado por su correo electrónico.
+     * El DNI se captura del objeto encontrado para enviarlo al backend,
+     * pero la búsqueda se hace solo por email. Si el campo está vacío,
+     * se resetea el alumno seleccionado.
+     */
     const handleCachearAlumno = (e: React.ChangeEvent<HTMLInputElement>) =>{
 
         dispatch({type : "SET_FILTROS_ALUMNO", payload : {
@@ -32,9 +36,19 @@ export const InscripcionAlumno = ( config : AlumnoInscripciones ) => {
             [e.target.name] : e.target.value
         }})
 
-        const dniAlumno = e.target.value;
+        const emailBuscado = e.target.value.trim();
 
-        const alumnoSeleccionado = state.listadoAlumno.find( alumno => String(alumno.Dni) === dniAlumno );
+        // Si el campo está vacío, resetear el alumno seleccionado
+        if (emailBuscado === "") {
+            dispatch({ type : "SET_ALUMNO" , payload : null});
+            dispatch({ type : "SET_ERROR_GENERICO" , payload : null});
+            return;
+        }
+
+        // Buscar alumno por email: match parcial (mientras escribes) o exacto
+        const alumnoSeleccionado = state.listadoAlumno.find(
+            alumno => (alumno.email || "").toLowerCase().includes(emailBuscado.toLowerCase())
+        );
 
         if (alumnoSeleccionado){
    
@@ -63,17 +77,31 @@ export const InscripcionAlumno = ( config : AlumnoInscripciones ) => {
             const servicioApiFetchSinPag = config.servicios.listadoAlumnosBusqueda;
             
                 try{
-                    if (state.filtrosBusqueda.filtroBusquedaAlumno.dni === ""){    
+                    // Si hay filtro por email o apellido, usar búsqueda sin paginación
+                    const filtroEmail = (state.filtrosBusqueda.filtroBusquedaAlumno as any).email || "";
+                    const filtroApellido = (state.filtrosBusqueda.filtroBusquedaAlumno as any).apellido || "";
+
+                    // Normaliza los datos del backend (Email, Dni, Nombre...) al formato del frontend (email, Dni, Nombre...)
+                    const normalizarAlumno = (item: any) => ({
+                        Dni: item.Dni || item.dni || undefined,
+                        Nombre: item.Nombre || item.nombre || "",
+                        Apellido: item.Apellido || item.apellido || "",
+                        email: item.Email || item.email || ""
+                    });
+
+                    if (filtroEmail === "" && filtroApellido === ""){
+                        // Sin filtro: listado paginado
                         const listado = await servicioApiFetch(state.filtrosBusqueda.filtroBusquedaAlumno, signal);
-            
+
                         if( listado.error === false) {
-                            dispatch({ type : "SET_LISTADO_ALUMNO", payload : listado.data});
+                            dispatch({ type : "SET_LISTADO_ALUMNO", payload : listado.data.map(normalizarAlumno)});
                         };
-                    }else{
+                    } else {
+                        // Con filtro: búsqueda sin paginación
                         const listadoFiltro = await servicioApiFetchSinPag(state.filtrosBusqueda.filtroBusquedaAlumno, signal);
-                    
+
                         if (listadoFiltro.error === false){
-                            dispatch({type : "SET_LISTADO_ALUMNO" , payload : listadoFiltro.data});                    
+                            dispatch({type : "SET_LISTADO_ALUMNO" , payload : listadoFiltro.data.map(normalizarAlumno)});                    
                         };
                     };
 

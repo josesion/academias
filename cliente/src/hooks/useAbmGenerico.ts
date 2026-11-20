@@ -246,7 +246,13 @@ export const useAbmGenerico = <TData>( config : AbmConfig) =>{
         let mensajeFinal = resultado.message;
 
         if (tipoFormulario === "alta" && config.recursoSingular.toLowerCase() === "alumno") {
-            mensajeFinal = `¡Alumno registrado con éxito! Se le envió los datos de acceso a su correo : ${formData.email}.`;
+            // Si el backend devuelve el PIN de asistencia, incluirlo en el mensaje
+            const pin = (resultado as any).data?.pin_asistencia;
+            if (pin) {
+                mensajeFinal = `¡Alumno registrado con éxito! Se le envió los datos de acceso a su correo: ${formData.email}. PIN de asistencia: ${pin}`;
+            } else {
+                mensajeFinal = `¡Alumno registrado con éxito! Se le envió los datos de acceso a su correo: ${formData.email}.`;
+            }
         };
 
         exito(mensajeFinal);

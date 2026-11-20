@@ -16,7 +16,7 @@ export const useAsistenciaSet = () =>{
         },
 
         inicalFiltroAlumno :{
-            dni_alumno : ""
+            pin_asistencia : ""
         }
     };
 

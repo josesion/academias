@@ -49,7 +49,7 @@ interface InscripcionConfig {
     },
     paginacion : PaginacionProps,
 
-    inicialFiltroAlumno : { dni : string, apellido : string},
+    inicialFiltroAlumno : { email?: string, apellido : string},
     inicialFiltroPlan   : { descripcion : string }
 };
 
@@ -189,10 +189,17 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
                 // se carga el servicio de incripcion 
                 const servicioApiFetch = config.servicios.metodoInscripcion;
                 
+                // Usar DNI si existe, sino usar email como identificador del alumno
+                const dniAlumno = state.alumno.Dni 
+                    ? Number(state.alumno.Dni) 
+                    : undefined;
+                const emailAlumno = state.alumno.email || undefined;
+
                 const datosInscpDetalle = {
                     //id_escuela : state.inscripcionData.id_escuela,
                     id_plan    : state.plan.id,
-                    dni_alumno : Number(state.alumno.Dni),
+                    dni_alumno : dniAlumno,
+                    email_alumno: emailAlumno,
                     fecha_inicio :fechaHoy(),
                     fecha_fin    : fechaVencimiento(state.plan.meses),
                     monto  : Number(state.plan.monto),

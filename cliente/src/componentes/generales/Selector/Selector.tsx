@@ -82,7 +82,8 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
             (item as any).Nombre &&
             (item as any).Apellido
           ) {
-            valueToReturn = (item as any).Dni;
+            // Usar email como identificador principal, DNI como fallback
+            valueToReturn = (item as any).email || (item as any).Dni || "";
             displayLabel = `${(item as any).Nombre} ${(item as any).Apellido}`;
           }
 

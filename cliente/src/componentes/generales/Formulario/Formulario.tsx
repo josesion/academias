@@ -19,7 +19,7 @@ export type InputsPropsFormulario = {
     | "checkbox"
     | "radio"
     | "file"
-    | "phone";
+    | "tel";
   placeholder?: string;
   value?: string | number;
   name?: string;
@@ -174,8 +174,17 @@ export const Formulario = (props: FormularioProps) => {
   // Función para renderizar un solo campo
   const renderInput = (input: InputsPropsFormulario, globalIndex: number) => {
     const isSelect = input.options && input.options.length > 0;
-    const isPhone = input.type === "phone";
+    const isPhone = input.type === "tel";
     const inputKey = input.name ?? `input-${globalIndex}`;
+
+    // Si no tiene label y tiene hint, renderizar solo la hint sin input
+    if (!input.label && input.hint) {
+      return (
+        <div key={inputKey} className="inputs_contenedor">
+          <small className="inputs_hint">{input.hint}</small>
+        </div>
+      );
+    }
 
     if (isSelect) {
       return (

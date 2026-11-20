@@ -32,12 +32,12 @@ export const initialState = (): AsitenciaTipado =>({
     
     dataAsistencia :  { 
         dataHorario : { error : null , message: null , code : null},
-        dataInscripcion : { error : null , message: null , code : null}
+        dataInscripcion : { error : null , message: null , code : null, dni_alumno: null}
     },
     dataInscripcion : null,
 
     registroAsistencia : { 
-        dni_alumno : "", estado : "activos"
+        pin_asistencia : "", estado : "activos"
     },
 
 });
@@ -120,7 +120,7 @@ export const asistenciaReducer = (state: ReturnType<typeof initialState>, action
                     ...state,
                     dataAsistencia :{         
                         dataHorario : { error : null , message: null , code : null},
-                         dataInscripcion : { error : null , message: null , code : null}  },
+                         dataInscripcion : { error : null , message: null , code : null, dni_alumno: null}  },
                     errorGenerico  : action.payload.erroGenerico,
                     dataInscripcion: null
                 };
@@ -132,7 +132,7 @@ export const asistenciaReducer = (state: ReturnType<typeof initialState>, action
                     dataInscripcion : null ,
                     dataAsistencia : {
                         dataHorario : { error : null , message: null , code : null},
-                        dataInscripcion : { error : null , message: null , code : null}  
+                        dataInscripcion : { error : null , message: null , code : null, dni_alumno: null}  
                     } 
                 };
             }; 
@@ -143,10 +143,10 @@ export const asistenciaReducer = (state: ReturnType<typeof initialState>, action
             case "SET_REGISTRO_ASISTENCIA_OK":{
                 return{
                     ...state,
-                    registroAsistencia :  { dni_alumno : "", estado : "activos"},
+                    registroAsistencia :  { pin_asistencia : "", estado : "activos"},
                     dataAsistencia : {
                         dataHorario : { error : null , message: null , code : null},
-                       dataInscripcion : { error : null , message: null , code : null}                      
+                       dataInscripcion : { error : null , message: null , code : null, dni_alumno: null}                      
                     },
                     errorGenerico : null,
                     dataInscripcion : null,
