@@ -29,7 +29,8 @@ export interface ResulClases_curso_proxima{
  type DataInscripcionVigente ={
     id_inscripcion : number,
     vencimiento : string,
-    clases_restantes : number
+    clases_restantes : number,
+    dni_alumno : number | null
 };
 
 type DataHorarioAsistencia = {
@@ -52,7 +53,8 @@ export interface ResultDataAsistencia{
 
 export interface InfoAlumnoResult {
     nombre_completo : string,
-    dni_alumno : number,
+    dni_alumno : number | null,
+    email_alumno : string,
     id_inscripcion : number,
     clases_restantes : number,
     vencimiento : string,

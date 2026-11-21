@@ -36,7 +36,7 @@ const vencerInscripciones = async () => {
  *
  * Esta función consulta la tabla `inscripciones` para validar que:
  * - La inscripción exista
- * - Corresponda al alumno indicado
+ * - Corresponda al alumno indicado (por DNI o por PIN)
  * - Pertenezca a la escuela indicada
  * - Se encuentre en el estado esperado (ej: 'activos')
  *
@@ -46,7 +46,8 @@ const vencerInscripciones = async () => {
  * @param {VerificarInscripcionInput} data
  * Objeto con los datos necesarios para verificar la inscripción.
  * @param {number} data.id_inscripcion - ID de la inscripción.
- * @param {number} data.dni_alumno - DNI del alumno.
+ * @param {number} [data.dni_alumno] - DNI del alumno (opcional si se pasa PIN).
+ * @param {string} [data.pin_asistencia] - PIN de 4 dígitos del alumno (opcional si se pasa DNI).
  * @param {number} data.id_escuela - ID de la escuela.
  * @param {string} data.estado - Estado esperado de la inscripción (ej: 'activos').
  *
@@ -60,11 +61,37 @@ const vencerInscripciones = async () => {
  * - Internamente utiliza `buscarExistenteEntidad`.
  * - El `SELECT 1` se usa solo como verificación de existencia.
  * - No retorna datos de la inscripción, solo confirma su existencia.
+ * - Si se pasa `pin_asistencia`, se busca al alumno en la tabla `alumnos` para obtener el DNI.
  */
 
 const estadoInscripcion =async ( data : VerificarInscripcionInput) 
 : Promise<TipadoData<number>> =>{
-    const { id_inscripcion, dni_alumno, id_escuela, estado } = data;
+    const { id_inscripcion, dni_alumno, pin_asistencia, id_escuela, estado } = data;
+
+    // Si se pasa PIN, buscar el DNI del alumno primero
+    let dniResuelto = dni_alumno;
+    if (pin_asistencia && !dni_alumno) {
+        const [rows] = (await pool.execute(
+            "SELECT dni_alumno FROM alumnos WHERE pin_asistencia = ? LIMIT 1",
+            [pin_asistencia]
+        )) as [{ dni_alumno: number }[], unknown];
+        if (!rows.length) {
+            return {
+                error: true,
+                message: "No se encontró un alumno con ese PIN",
+                code: "INSCRIPCION_NO_EXISTE"
+            };
+        }
+        dniResuelto = rows[0].dni_alumno;
+    }
+
+    if (dniResuelto === undefined) {
+        return {
+            error: true,
+            message: "Se requiere dni_alumno o pin_asistencia",
+            code: "INSCRIPCION_NO_EXISTE"
+        };
+    }
 
     const sql : string = `SELECT 1
                             FROM inscripciones
@@ -74,8 +101,7 @@ const estadoInscripcion =async ( data : VerificarInscripcionInput)
                             AND estado = ?
                           LIMIT 1;`;
 
-                
-   const valores : unknown[] = [ id_inscripcion , dni_alumno, id_escuela, estado];                       
+   const valores : unknown[] = [ id_inscripcion , dniResuelto, id_escuela, estado];                       
    return await buscarExistenteEntidad<number>({
        slqEntidad : sql,
        valores, 
@@ -266,8 +292,28 @@ const ventanaAsistencia = async( id_horario_clase : number)
 const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistencia : AsistenciaInputs ) 
 : Promise<TipadoData<{idAsistencia : number, clasesRestantes : number}>>=>{
 
-    const {id_escuela, dni_alumno, id_inscripcion} = verificacion;
+    const {id_escuela, dni_alumno, pin_asistencia, id_inscripcion} = verificacion;
     const { id_horario_clase} = asistencia;
+
+    // Si no se envió dni_alumno pero sí pin_asistencia, resolver el DNI desde la BD
+    let dniParaGuardar = dni_alumno;
+    if (!dniParaGuardar && pin_asistencia) {
+        const [rows] = (await pool.execute(
+            "SELECT dni_alumno FROM alumnos WHERE pin_asistencia = ? LIMIT 1",
+            [pin_asistencia]
+        )) as [{ dni_alumno: number }[], unknown];
+        if (rows.length && rows[0].dni_alumno != null) {
+            dniParaGuardar = rows[0].dni_alumno;
+        }
+    }
+
+    if (dniParaGuardar === undefined || dniParaGuardar === null) {
+        return {
+            error: true,
+            message: "No se pudo determinar el DNI del alumno",
+            code: "TRANSACCION_FALLIDA"
+        };
+    }
 
     // Foto del horario (spec 048): lo que el horario dice HOY, para congelarlo
     // en la asistencia. Los textos quedan copiados, no referenciados.
@@ -340,7 +386,7 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
         // se da la asistencia con la foto incluida
         const valoresInsertarAsistencia : unknown[] = [
             id_escuela,
-            dni_alumno,
+            dniParaGuardar,
             id_inscripcion,
             id_horario_clase,
             foto.id_nivel,
@@ -549,6 +595,7 @@ const infoAlumnoData = async ( data : InfoAlumnoInputs )
                             i.id_inscripcion,
                             CONCAT(a.nombre, ' ', a.apellido) AS nombre_completo,
                             a.dni_alumno,
+                            a.email AS email_alumno,
                             DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
                             i.estado,
                             COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS plan,
@@ -644,8 +691,9 @@ const horarioEnCursoOProxima = async( data : HorarioManualInputs )
 };
 
 /**
- * Busca alumnos por nombre, apellido o DNI para autocompletado.
+ * Busca alumnos por nombre, apellido o email para autocompletado.
  * Sólo inscripciones activas de la escuela del token. Máximo 10.
+ * El DNI ya no se usa como criterio de búsqueda en la asistencia rápida.
  */
 const buscarAlumnoData = async ( data : { id_escuela : number, termino : string } )
 : Promise<TipadoData<InfoAlumnoResult[]>> => {
@@ -655,6 +703,7 @@ const buscarAlumnoData = async ( data : { id_escuela : number, termino : string 
                             i.id_inscripcion,
                             CONCAT(a.nombre, ' ', a.apellido) AS nombre_completo,
                             a.dni_alumno,
+                            a.email AS email_alumno,
                             DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
                             i.estado,
                             COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS plan,
@@ -666,7 +715,7 @@ const buscarAlumnoData = async ( data : { id_escuela : number, termino : string 
                         LEFT JOIN asistencias asist ON asist.id_inscripcion = i.id_inscripcion AND asist.estado = 'presente'
                         WHERE i.id_escuela = ? AND i.estado = 'activos'
                         AND (
-                            a.nombre LIKE ? OR a.apellido LIKE ? OR CAST(a.dni_alumno AS CHAR) LIKE ? OR CONCAT(a.nombre, ' ', a.apellido) LIKE ?
+                            a.nombre LIKE ? OR a.apellido LIKE ? OR a.email LIKE ? OR CONCAT(a.nombre, ' ', a.apellido) LIKE ?
                         )
                         GROUP BY i.id_inscripcion
                         ORDER BY a.apellido ASC, a.nombre ASC

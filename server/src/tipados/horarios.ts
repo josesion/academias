@@ -5,6 +5,7 @@ export interface ResultadoAltaHorario {
     dni_profesor: string;
     id_nivel: number;
     id_tipo_clase: number; 
+    id_sala?: number | null;
     id?: number 
 };
 
@@ -53,6 +54,10 @@ export interface ResultCalendarioHorario {
 
         /** Fecha de creación en formato ISO string */
         fecha_creacion: string | Date;
+
+        // Información de la Sala
+        id_sala?: number | null;
+        sala_nombre?: string;
 };
 
 

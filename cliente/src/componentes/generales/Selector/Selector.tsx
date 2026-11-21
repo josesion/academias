@@ -14,6 +14,8 @@ interface PropSelector<T> {
   value?: string | number;
   /** Texto de ayuda para accesibilidad (se usa en aria-describedby) */
   hint?: string;
+  /** Label expandido para lectores de pantalla (aria-label) */
+  ariaLabel?: string;
   /**
    * Pinta un spinner en el borde derecho del campo mientras se cargan los
    * datos (spec 038).
@@ -52,6 +54,7 @@ export const SelectorPlegable = <T,>(parametros: PropSelector<T>) => {
           type={parametros.tipo}
           value={parametros.value}
           className="selector_input_cyber"
+          aria-label={parametros.ariaLabel}
           aria-describedby={hintId}
           aria-busy={parametros.cargando || undefined}
           autoComplete="off"

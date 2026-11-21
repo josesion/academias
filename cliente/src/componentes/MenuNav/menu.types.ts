@@ -27,6 +27,12 @@ export interface ItemMenu extends ReglasPlan {
    * "Géneros Musicales" → "Entrenamientos" cuando la escuela es `gym`.
    */
   etiquetaPorRubro?: Partial<Record<"baile" | "gym", string>>;
+  /**
+   * Rubros para los que este ítem NO debe mostrarse (spec 047).
+   *
+   * Ejemplo: `ocultarEnRubro: ["gym"]` oculta "Niveles" en escuelas de gym.
+   */
+  ocultarEnRubro?: ("baile" | "gym")[];
   icono: IconType;
   ruta: string;
   color?: string;

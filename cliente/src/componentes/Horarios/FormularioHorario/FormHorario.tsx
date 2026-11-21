@@ -2,9 +2,10 @@ import { SelectorPlegable } from "../../generales/Selector/Selector";
 import { Calendario } from "../Calendario/Calendario";
 import { TarjetaHorario } from "../TarjetaHorario/TarjetaHorario";
 import { Boton } from "../../generales/Boton/Boton";
-import { SlidersHorizontal, CalendarDays } from "lucide-react";
+import { SlidersHorizontal, CalendarDays, Info } from "lucide-react";
 
 import type * as TipadoHorario from "../../../tipadosTs/horario";
+import type { DataSala } from "../../../tipadosTs/sala";
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../CeldaVacia/CeldaVacia";
 import { type ResultHoras } from "../../../hooks/setHora";
@@ -42,6 +43,9 @@ interface FormHorarioProps {
   tipo: TipadoHorario.DataTipo | null;
   listaTipo: TipadoHorario.DataTipo[];
 
+  sala: DataSala | null;
+  listaSalas: DataSala[];
+
   horarios: Horas[];
   diasSemana: DiaSemana[];
   calendario?: ClaseHorarioData[];
@@ -49,6 +53,8 @@ interface FormHorarioProps {
   handleCachearProfesores: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCachearNiveles: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCachearTipos: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCachearSalas: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  salaSeleccionada: DataSala | null;
   handleAlta: () => void;
   handleMoficar: () => void;
   handleCancelar: () => void;
@@ -72,10 +78,14 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
     listaProfe,
     listaNiveles,
     listaTipo,
+    sala,
+    listaSalas,
+    salaSeleccionada,
     calendario,
     handleCachearProfesores,
     handleCachearNiveles,
     handleCachearTipos,
+    handleCachearSalas,
     handleCancelar,
     handleAlta,
     handleModificarData,
@@ -86,6 +96,11 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
     diasSemana,
     horarios,
   } = props;
+
+  // Filtrar calendario por la sala seleccionada (contexto principal)
+  const calendarioFiltrado = salaSeleccionada
+    ? (calendario || []).filter((c) => c.sala_nombre === salaSeleccionada.nombre)
+    : (calendario || []);
 
   return (
     <div className="contenedor_formulario_horario">
@@ -104,13 +119,13 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
             <div className="formulario_horario_filtro_primario">
               <div className="filtro_primario_titulo">
                 <SlidersHorizontal size={13} aria-hidden="true" />
-                <span>Filtros</span>
+                <span>Filtros <span className="filtro_campos_obligatorio" title="Los campos marcados con * son obligatorios">* campos obligatorios</span></span>
               </div>
 
               <div className="filtro_primario_campos">
                 <div className="filtro_campo">
                   <SelectorPlegable<TipadoHorario.DataProfesor>
-                    titulo="Profesores"
+                    titulo="Profesores *"
                     objetoListado={listaProfe}
                     onChange={handleCachearProfesores}
                     input_list="list_profesores"
@@ -119,12 +134,13 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     name="dni"
                     displayKey="persona"
                     cargando={carga.profesores}
+                    ariaLabel="Seleccionar profesor, campo obligatorio"
                   />
                 </div>
 
                 <div className="filtro_campo">
                   <SelectorPlegable<TipadoHorario.DataNivel>
-                    titulo="Niveles"
+                    titulo="Niveles *"
                     objetoListado={listaNiveles}
                     onChange={handleCachearNiveles}
                     input_list="list_niveles"
@@ -132,12 +148,13 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     tipo="text"
                     name="nivel"
                     cargando={carga.niveles}
+                    ariaLabel="Seleccionar nivel, campo obligatorio"
                   />
                 </div>
 
                 <div className="filtro_campo">
                   <SelectorPlegable<TipadoHorario.DataTipo>
-                    titulo="Tipos"
+                    titulo="Tipos *"
                     objetoListado={listaTipo}
                     onChange={handleCachearTipos}
                     input_list="list_tipos"
@@ -145,8 +162,10 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
                     tipo="text"
                     name="tipo"
                     cargando={carga.tipos}
+                    ariaLabel="Seleccionar tipo de clase, campo obligatorio"
                   />
                 </div>
+
               </div>
             </div>
 
@@ -155,6 +174,7 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
               dataNivel={nilveles}
               dataProfe={profesores}
               dataTipo={tipo}
+              dataSala={sala}
               dia={diaHorario}
               hora_inicio={
                 horaInicioFin?.hora_inicio ? horaInicioFin.hora_inicio : null
@@ -211,14 +231,22 @@ export const FormHorario: React.FC<FormHorarioProps> = (props) => {
           )}
         </div>
 
-        <Calendario
-          diasSemana={diasSemana}
-          horarios={horarios}
-          calendario={calendario}
-          handleModData={handleModificarData}
-          handleAbrirModal={handleAbrirModal}
-          handleVolver={handleVolver}
-        />
+        {/* Instrucción de uso del calendario */}
+        <div className="calendario_instruccion" role="note">
+          <Info size={14} aria-hidden="true" />
+          <span>Hacé clic en una celda vacía para agregar clase, o en una ocupada para ver y modificar</span>
+        </div>
+
+        <div className="calendario_contenido" aria-live="polite">
+          <Calendario
+            diasSemana={diasSemana}
+            horarios={horarios}
+            calendario={calendarioFiltrado}
+            handleModData={handleModificarData}
+            handleAbrirModal={handleAbrirModal}
+            handleVolver={handleVolver}
+          />
+        </div>
       </div>
     </div>
   );

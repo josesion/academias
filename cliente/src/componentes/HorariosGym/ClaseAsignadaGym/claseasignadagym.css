@@ -1,0 +1,105 @@
+/* ==========================================================================
+   CLASE ASIGNADA GYM — MISMO ESTILO QUE BAILE, CON SALA EN VEZ DE NIVEL
+   ========================================================================== */
+
+.tarjeta_clase_asignada {
+   position: relative;
+   width: 100%;
+   height: 100%;
+   background: var(--fondo-principal);
+   border: 1px solid var(--borde);
+   border-radius: var(--radio-sm);
+   padding: 8px 10px;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   box-sizing: border-box;
+   cursor: pointer;
+   overflow: hidden;
+   transition: var(--transicion);
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.clase_indicador_lateral {
+   position: absolute;
+   left: 0;
+   top: 0;
+   bottom: 0;
+   width: 3px;
+   background: var(--color-primario);
+}
+
+.tarjeta_clase_asignada:hover {
+   border-color: var(--color-primario);
+   transform: translateY(-1px);
+   box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primario) 12%, transparent);
+}
+
+.clase_contenido_interno {
+   display: flex;
+   flex-direction: column;
+   gap: 6px;
+   padding-left: 6px;
+}
+
+/* Sala badge — siempre visible */
+.clase_sala_badge {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   font-family: var(--fuente-titulos);
+   font-size: 0.78rem;
+   font-weight: var(--peso-negrita);
+   color: var(--texto-principal);
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   line-height: var(--linea-titulo);
+}
+
+.clase_sala_texto {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* Profesor */
+.clase_detalle_profe {
+   display: flex;
+   align-items: center;
+   gap: 5px;
+   color: var(--texto-secundario);
+   font-family: var(--fuente-principal);
+   font-size: 0.7rem;
+   border-top: 1px dashed var(--borde);
+   padding-top: 4px;
+   margin-top: 2px;
+}
+
+.clase_profesor_texto {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* Tipo badge */
+.clase_tipo_badge {
+   font-family: var(--fuente-codigo);
+   font-size: 0.62rem;
+   color: var(--color-primario);
+   text-transform: uppercase;
+   letter-spacing: 0.03em;
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/* Estados */
+.tarjeta_clase_asignada.estado_inactivos {
+   opacity: 0.5;
+}
+
+.tarjeta_clase_asignada.estado_suspendido {
+   opacity: 0.6;
+   border-color: var(--color-advertencia);
+}

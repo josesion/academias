@@ -30,6 +30,7 @@ export const HorarioClaseSchema = z
 
     id_nivel: z.number().int().positive(),
     id_tipo_clase: z.number().int().positive(),
+    id_sala: z.number().int().positive().optional().nullable(),
 
     dia_semana: DiaSemanaEnum,
     hora_inicio: z
@@ -64,6 +65,7 @@ export const modHorariosSchema = z.object({
    dni_profesor: z.string().min(1),
    id_tipo_clase: z.number().int().positive(),
    id_nivel: z.number().int().positive(),
+   id_sala: z.number().int().positive().optional().nullable(),
    id : z.number().int().positive(),
    id_escuela: z.number().int().positive(),
       id_usuario :   z.number({message : "id Usuario debe ser numerico"}) 
@@ -88,13 +90,17 @@ export const DataHorarioAsistenciaSchema = z.object({
     dia : DiaSemanaEnum
 });
 
+/**
+ * Schema para validar la asistencia en el kiosco.
+ * El alumno se identifica por su PIN de 4 dígitos en lugar del DNI.
+ */
 export const DataAlumnoVigenteSchema = z.object({
     id_escuela: z.number().int().positive(),  
     estado : EstadoEnum,
     dia : DiaSemanaEnum,
-    dni_alumno: z.coerce.number()
-        .int("El DNI debe ser un número entero sin decimales.")
-        .positive("El DNI debe ser un número positivo."), 
+    pin_asistencia: z.string()
+        .length(4, "El PIN debe tener exactamente 4 dígitos.")
+        .regex(/^[0-9]{4}$/, "El PIN debe contener solo dígitos numéricos."), 
 });
 
 

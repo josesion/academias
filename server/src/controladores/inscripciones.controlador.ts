@@ -122,7 +122,8 @@ const listadoInscripciones = async ( req : Request, res : Response ) => {
         fecha_hasta : req.query.fecha_hasta as string,
         estado  : req.query.estado as string,
         nombre_alumno : req.query.nombre_alumno,
-        dni_alumno   : req.query.dni_alumno
+        dni_alumno   : req.query.dni_alumno,
+        email_alumno : req.query.email_alumno as string
     };
   
     await handleControladores(

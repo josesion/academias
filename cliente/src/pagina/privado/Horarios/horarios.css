@@ -27,6 +27,57 @@
 .horarios_encabezado {
   padding: 16px 24px;
   border-bottom: 1px solid var(--borde);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Badge de sala activa debajo del h1 */
+.horarios_sala_activa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: color-mix(in srgb, var(--color-primario) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-primario) 30%, transparent);
+  border-radius: var(--radio-sm);
+  font-size: 0.875rem;
+  color: var(--color-primario);
+  font-weight: var(--peso-negrita);
+  width: fit-content;
+}
+
+.horarios_sala_activa_dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primario);
+  flex-shrink: 0;
+}
+
+/* Mensaje de carga debajo del selector */
+.horarios_carga_sala {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: var(--texto-secundario);
+  font-style: italic;
+}
+
+/* Selector de sala como entrada principal */
+.horarios_sala_selector {
+  max-width: 400px;
+  margin: 16px auto 8px;
+  padding: 0 24px;
+}
+
+/* SelectorOpt renderiza .grupo_input_caja > .input_caja */
+.horarios_sala_selector .grupo_input_caja {
+  flex: unset;
+  max-width: 100%;
+  width: 100%;
+}
+.horarios_sala_selector .input_caja {
+  width: 100%;
 }
 
 .horarios_form_section,
@@ -34,8 +85,53 @@
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px 24px;
   box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Cartel de bienvenida (sin sala seleccionada)
+   ========================================================================== */
+
+.horarios_bienvenida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 500px;
+  margin: 48px auto 0;
+  padding: 40px 24px;
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-borde);
+  text-align: center;
+}
+
+.horarios_bienvenida_flecha {
+  color: var(--color-primario);
+  opacity: 0.8;
+  animation: bienvenida_flecha_bounce 2s ease-in-out infinite;
+}
+
+@keyframes bienvenida_flecha_bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.horarios_bienvenida svg {
+  color: var(--color-primario);
+  opacity: 0.6;
+}
+
+.horarios_bienvenida .horarios_bienvenida_flecha {
+  opacity: 0.8;
+}
+
+.horarios_bienvenida p {
+  margin: 0;
+  color: var(--texto-secundario);
+  font-size: 1.125rem;
+  line-height: 1.5;
 }
 
 /* ==========================================================================
@@ -53,6 +149,9 @@
   .formualrio_horario_botonera button,
   .formulario_horario_botonera1 button {
     transition: none !important;
+  }
+  .horarios_bienvenida_flecha {
+    animation: none !important;
   }
 }
 

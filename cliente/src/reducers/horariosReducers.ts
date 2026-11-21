@@ -1,4 +1,5 @@
 import * as TipadoHorario from "../tipadosTs/horario";
+import type { DataSala, FiltroSala } from "../tipadosTs/sala";
 import { type ResultHoras } from "../hooks/setHora"; 
 
 import { fechaHoy } from "../utils/fecha"; 
@@ -28,6 +29,8 @@ export interface HorarioTipado{
         niveles    : boolean;
         /** GET del listado de tipos. */
         tipos      : boolean;
+        /** GET del listado de salas. */
+        salas      : boolean;
         /** GET del calendario de la escuela. */
         calendario : boolean;
         /** POST / PUT / DELETE del alta, modificación o eliminación. */
@@ -51,6 +54,10 @@ export interface HorarioTipado{
 
     tipo : TipadoHorario.DataTipo | null,
     listaTipo : TipadoHorario.DataTipo[],
+
+    sala : DataSala | null,
+    listaSalas : DataSala[],
+    filtroBusquedaSala : FiltroSala,
 
 // ──────────────────────────────────────────────────────────────
 //  Estados q usa el  Calendario
@@ -78,6 +85,8 @@ export interface HorarioTipado{
    filtroBusquedaProfesor : TipadoHorario.FiltroProfesor,
    filtroBusquedaNivel : TipadoHorario.FiltroNivel,
    filtroBusquedaTipo  : TipadoHorario.FiltroTipo,   
+   /** Sala elegida como contexto principal. `null` = aún no seleccionada. */
+   salaSeleccionada : DataSala | null,
 
    actualizarGenerico :  number,
 
@@ -96,6 +105,7 @@ export const initialState = ( ) :HorarioTipado =>({
         profesores : false,
         niveles    : false,
         tipos      : false,
+        salas      : false,
         calendario : false,
         abm        : false,
     },
@@ -117,6 +127,11 @@ export const initialState = ( ) :HorarioTipado =>({
 
     tipo : null,
     listaTipo : [],
+
+    sala : null,
+    listaSalas : [],
+    filtroBusquedaSala : { nombre: "", estado: "activos" },
+
 // ──────────────────────────────────────────────────────────────
 //  Estados q usa el  Calendario
 // ──────────────────────────────────────────────────────────────
@@ -136,6 +151,7 @@ export const initialState = ( ) :HorarioTipado =>({
             dni_profesor : null,
             id_nivel :  null,
             id_tipo_clase  :  null,
+            id_sala : null,
             hora_inicio : null,
             hora_fin   : null,
             dia_semana : null,
@@ -146,6 +162,7 @@ export const initialState = ( ) :HorarioTipado =>({
         dni_profesor : null,
         id_nivel     : null,
         id_tipo_clase: null,
+        id_sala      : null,
         id           : null    
    },
    dataEliminarHorario : {
@@ -157,6 +174,7 @@ export const initialState = ( ) :HorarioTipado =>({
         dni_profe : null ,
         id_tipo_clase  : null,
         id_nivel  : null,
+        id_sala : null,
         id_horario : null     
    },
 // ──────────────────────────────────────────────────────────────
@@ -166,6 +184,7 @@ export const initialState = ( ) :HorarioTipado =>({
    filtroBusquedaNivel    : { nivel: "" , estado : "activos" },
    filtroBusquedaTipo     : { tipo : "" , estado : "activos" },
    filtroCalendario       : { estado : "activos"},
+   salaSeleccionada   : null,
 
    actualizarGenerico : 0,
 }); 
@@ -206,6 +225,10 @@ export type HorarioAction =
       | { type : "SET_TIPO"  ; payload :   TipadoHorario.DataTipo | null }      
       | { type : "SET_LISTADO_TIPO"  ; payload :  TipadoHorario.DataTipo[] }    
 
+      | { type : "SET_SALA"  ; payload :   DataSala | null }      
+      | { type : "SET_LISTADO_SALAS"  ; payload :  DataSala[] }    
+      | { type : "SET_FILTRO_BUSQUEDA_SALA"  ; payload :  FiltroSala }    
+
 // ──────────────────────────────────────────────────────────────
 //  Estados q usa el  Calendario
 // ──────────────────────────────────────────────────────────────      
@@ -231,7 +254,8 @@ export type HorarioAction =
      | { type : "SET_FILTRO_BUSQUEDA_PROFESOR"  ; payload :  TipadoHorario.FiltroProfesor } 
      | { type : "SET_FILTRO_BUSQUEDA_NIVEL"     ; payload :  TipadoHorario.FiltroNivel } 
      | { type : "SET_FILTRO_BUSQUEDA_TIPO"      ; payload :  TipadoHorario.FiltroTipo  } 
-     | { type : "SET_FILTRO_CALENDARIO"         ; payload :  TipadoHorario.Calendario } 
+     | { type : "SET_FILTRO_CALENDARIO"         ; payload :  TipadoHorario.Calendario }
+     | { type : "SET_SALA_SELECCIONADA"    ; payload :  DataSala | null }
 // ──────────────────────────────────────────────────────────────
 // Limpieza de los estados 
 // ────────────────────────────────────────────────────────────── 
@@ -287,7 +311,14 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
         case "SET_TIPO" :
              return { ...state, tipo : action.payload};    
         case "SET_LISTADO_TIPO" :
-             return { ...state, listaTipo : action.payload};              
+             return { ...state, listaTipo : action.payload};    
+
+        case "SET_SALA" :
+             return { ...state, sala : action.payload};    
+        case "SET_LISTADO_SALAS" :
+             return { ...state, listaSalas : action.payload};    
+        case "SET_FILTRO_BUSQUEDA_SALA" :
+             return { ...state, filtroBusquedaSala : action.payload};    
 // ──────────────────────────────────────────────────────────────
 //  Estados q usa el  Calendario
 // ──────────────────────────────────────────────────────────────
@@ -322,14 +353,17 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
              return { ...state,  filtroBusquedaTipo : action.payload}                   
         case "SET_FILTRO_CALENDARIO" :
              return { ...state,  filtroCalendario : action.payload}
+        case "SET_SALA_SELECCIONADA" :
+             return { ...state,  salaSeleccionada : action.payload}
 
-               case "RESET_FORMULARIO": 
+               case "RESET_FORMULARIO":
                          return { 
                               ...state, 
                               // 1. Reset de Selectores
                               profesores: null,
                               tipo: null,
                               niveles: null,
+                              sala: null,
 
                               // 2. Reset de Calendario / Tarjeta
                               horaInicioFin: null,
@@ -340,6 +374,7 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
                                    dni_profe: null,
                                    id_tipo_clase: null,
                                    id_nivel: null,
+                                   id_sala: null,
                                    id_horario: null
                               },
 
@@ -348,6 +383,7 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
                                    dni_profesor: null,
                                    id_nivel: null,
                                    id_tipo_clase: null,
+                                   id_sala: null,
                                    hora_inicio: null,
                                    hora_fin: null,
                                    dia_semana: null,
@@ -358,6 +394,7 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
                                    dni_profesor: null,
                                    id_nivel: null,
                                    id_tipo_clase: null,
+                                   id_sala: null,
                                    id: null
                               },
                               dataEliminarHorario: {
@@ -370,6 +407,7 @@ export const horarioReducer = (state: ReturnType<typeof initialState>, action: H
                               filtroBusquedaProfesor: { ...state.filtroBusquedaProfesor, dni: "" },
                               filtroBusquedaNivel: { ...state.filtroBusquedaNivel, nivel: "" },
                               filtroBusquedaTipo: { ...state.filtroBusquedaTipo, tipo: "" },
+                              // NO resetear salaSeleccionada: es el contexto principal de la página
 
                               // 6. Reset de estados de UI
                               errorGenericoHorario: "Completar los campos Profesor , Nivel y Tipo",

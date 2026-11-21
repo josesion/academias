@@ -12,7 +12,7 @@ describe("Creacion de ESCUELAS-PLANES-PLANES_EN_ESCUELAS" , ()=> {
 
         // --- 1. Preparación de Datos: ESCUELAS (Padre) ---
         const datosEscuela = {
-            id_escuela: 99, 
+            id_escuela: 998, 
             dni_propietario: 45678901,
             nombre_propietario: 'María',
             apellido_propietario: 'López',
@@ -42,7 +42,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
         // --- 2. Preparación de Datos: PLANES_PAGO (Maestro) ---
         const datosPlan = {
-            id_plan: 50, 
+            id_plan: 599, 
             descripcion_plan: 'Plan Mensual Básico',
             cantidad_clases: 4,
             cantidad_meses: 1,

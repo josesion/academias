@@ -129,6 +129,7 @@ const servicioAltaCalendario = async( data : TipadoHorario.HorarioClaseInput)
                     dni_profesor: dataClasesHorario.dni_profesor,
                     id_nivel: dataClasesHorario.id_nivel,
                     id_tipo_clase: dataClasesHorario.id_tipo_clase,
+                    id_sala: dataClasesHorario.id_sala,
                     hora_inicio: dataClasesHorario.hora_inicio,
                     hora_fin: dataClasesHorario.hora_fin,
                     dia_semana: dataClasesHorario.dia_semana,
@@ -186,6 +187,7 @@ const servcioModCalendario = async ( data : TipadoHorario.ModHorarioInput)
                     dni_profesor: dataModHorario.dni_profesor,
                     id_nivel: dataModHorario.id_nivel,
                     id_tipo_clase: dataModHorario.id_tipo_clase,
+                    id_sala: dataModHorario.id_sala,
                 }
             }; 
             

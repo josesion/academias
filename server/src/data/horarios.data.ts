@@ -56,19 +56,20 @@ import { TipadoData } from "../tipados/tipado.data";
 
 const verificarHorarioEscuela = async( data : HorarioClaseInput)
 : Promise<TipadoData<{ id : number}>> =>{
-    const {id_escuela, dia_semana, hora_inicio, hora_fin} = data;
+    const {id_escuela, id_sala, dia_semana, hora_inicio, hora_fin} = data;
 
     const sql : string =`SELECT id
                          FROM horarios_clases
                          WHERE
                             id_escuela = ?
+                            AND id_sala = ?
                             AND dia_semana = ?
                             AND estado = 'activos'
                             AND (
                                 (hora_inicio < ? AND hora_fin > ?)
                             )
                             AND vigente = true;`;
-    const valores : unknown[] = [ id_escuela, dia_semana, hora_fin, hora_inicio ];  
+    const valores : unknown[] = [ id_escuela, id_sala, dia_semana, hora_fin, hora_inicio ];  
     
     return await buscarExistenteEntidad<{ id : number}>({
         slqEntidad : sql,
@@ -195,22 +196,23 @@ const verificarProfesor = async( data : HorarioClaseInput)
 const altaHorario = async( datos : HorarioClaseInput ) 
 : Promise<TipadoData<ResultadoAltaHorario>> =>{
 
-    const {id_escuela,dni_profesor, id_nivel, id_tipo_clase,
+    const {id_escuela,dni_profesor, id_nivel, id_tipo_clase, id_sala,
         dia_semana, hora_inicio, hora_fin, fecha_creacion, estado
     } = datos;
 
     const sql : string =`INSERT INTO horarios_clases (
-                                id_escuela, dni_profesor, id_nivel, id_tipo_clase,
+                                id_escuela, dni_profesor, id_nivel, id_tipo_clase, id_sala,
                                 dia_semana, hora_inicio, hora_fin, fecha_creacion, estado)
                          VALUES
-                            ( ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    const valores : unknown[] = [id_escuela ,dni_profesor, id_nivel, id_tipo_clase,
+                            ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const valores : unknown[] = [id_escuela ,dni_profesor, id_nivel, id_tipo_clase, id_sala,
                                  dia_semana, hora_inicio, hora_fin, fecha_creacion, estado];
     const datosADevolver = {
         id_escuela,
         dni_profesor,   
         id_nivel,
-        id_tipo_clase
+        id_tipo_clase,
+        id_sala
     };
 
     return await iudEntidad<ResultadoAltaHorario>({
@@ -282,7 +284,11 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
                             n.id    as id_nivel,
                             
                             tc.tipo AS tipo_clase,
-							tc.id   as id_clase , 
+							tc.id   as id_clase ,
+                            
+                            hc.id_sala,
+                            s.nombre AS sala_nombre,
+                            
                             hc.dia_semana as dia,
                             hc.hora_inicio,
                             hc.hora_fin,
@@ -305,6 +311,9 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
 
                         JOIN escuelas e
                             ON e.id_escuela = hc.id_escuela
+
+                        LEFT JOIN salas s
+                            ON s.id = hc.id_sala
 
                         WHERE hc.id_escuela = ? 
                         AND hc.estado IN ('activos', 'suspendido')
@@ -359,19 +368,20 @@ const calendarioEscuela = async( datos : HorarioCalendarioInput)
 
 const modHorario = async ( datos : ModHorarioInput ) 
 : Promise<TipadoData<ResultModHorario>> => {
-    const {dni_profesor , id_tipo_clase , id_nivel, id_escuela , id } = datos ;
+    const {dni_profesor , id_tipo_clase , id_nivel, id_sala, id_escuela , id } = datos ;
 
     const sql : string = `UPDATE horarios_clases
                         SET
                             dni_profesor   =  ?,
                             id_tipo_clase  =  ?,
-                            id_nivel       =  ?
+                            id_nivel       =  ?,
+                            id_sala        =  ?
                         WHERE id = ?
                         AND id_escuela =  ?;`;
 
-    const valores : unknown[] = [ dni_profesor , id_tipo_clase , id_nivel, id, id_escuela  ];
+    const valores : unknown[] = [ dni_profesor , id_tipo_clase , id_nivel, id_sala, id, id_escuela  ];
 
-    const datosRetorno = { dni_profesor , id_nivel , id_tipo_clase , id, id_escuela };
+    const datosRetorno = { dni_profesor , id_nivel , id_tipo_clase, id_sala, id, id_escuela };
 
     return await iudEntidad<ResultModHorario>({
         slqEntidad : sql ,

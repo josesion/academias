@@ -1,9 +1,8 @@
 import { z } from "zod";
 
 export const CrearAlumnoSchema = z.object({
-dni :       z.string({message : "El dni es requerido"})
-                .nonempty({message : "Dni no debe estar vacio"})
-                .min(8,{message : "EL dni esta incompleto"}),
+dni :       z.string({message : "El dni debe ser una cadena de texto"})
+                .optional(),
 
 nombre :    z.string({message: "EL nombre debe ser una cadena de texto"})
                 .nonempty({message : "Nombre no debe estar vacio"})
@@ -54,9 +53,10 @@ id_usuario :    z.number({message : "id Usuario debe ser numerico"})
 });
 
 export const CrearAlumnoEscuelaSchema = z.object({
-        dni :    z.string({message : "El dni es requerido"})
-                .nonempty({message : "Dni no debe estar vacio"})
-                .min(8,{message : "EL dni esta incompleto"}),
+        dni :    z.string({message : "El dni debe ser una cadena de texto"})
+                .optional(),
+        email:   z.string({message: "El correo debe ser una cadena de texto"})
+                .optional(),
 
         id_escuela :    z.number({message : "id Escuela debe ser numerico"}) 
                         .min(0 , {message : "El id debe ser mayor de 0"})
@@ -65,9 +65,10 @@ export const CrearAlumnoEscuelaSchema = z.object({
 });        
 
 export const EliminarAlumnoEscuelaSchema = z.object({
-        dni :    z.string({message : "El dni es requerido"})
-                .nonempty({message : "Dni no debe estar vacio"})
-                .min(8,{message : "EL dni esta incompleto"}),
+        dni :    z.string({message : "El dni debe ser una cadena de texto"})
+                .optional(),
+        email:   z.string({message: "El correo debe ser una cadena de texto"})
+                .optional(),
 
         id_escuela:  z.number({message:"id escuela debe ser de tipo numerico"})
                 .int({ message: 'El id escuela debe ser un número entero.' })
@@ -84,7 +85,10 @@ export const EliminarAlumnoEscuelaSchema = z.object({
 
 
 export const listaAlumnosSchema = z.object({
-dni :       z.string({message : "El dni es requerido"}),
+dni :       z.string({message : "El dni debe ser una cadena de texto"})
+                .optional(),
+email:      z.string({message: "El correo debe ser una cadena de texto"})
+                .optional(),
 
 apellido :   z.string({message: "EL Apellido debe ser una cadena de texto"})
                 .max(60 ,{message: "El Apellido es muy largo"}) ,
@@ -117,8 +121,10 @@ escuela : z.number({message:"id escuela debe ser de tipo numerico"})
 
 
 export const listaAlumnoSinPaginacionSchema = z.object({
-dni :       z.string({message : "El dni es requerido"}),
-
+dni :       z.string({message : "El dni debe ser una cadena de texto"})
+                .optional(),
+email:      z.string({message: "El correo debe ser una cadena de texto"})
+                .optional(),
 
 escuela : z.number({message:"Limit debe ser de tipo numerico"})
                 .int({ message: 'El offset debe ser un número entero.' })
@@ -136,9 +142,8 @@ estado: z.string()
 
 export const CrearAlumnoTreansaccionSchema = z.object({
 // --- Datos propios del Alumno ---
-    dni: z.string({ message: "El dni es requerido" })
-        .nonempty({ message: "Dni no debe estar vacio" })
-        .min(8, { message: "EL dni esta incompleto" }),
+    dni: z.string({ message: "El dni debe ser una cadena de texto" })
+        .optional(),
 
     // --- Datos personales (compartidos) ---
     nombre: z.string({ message: "EL nombre debe ser una cadena de texto" })

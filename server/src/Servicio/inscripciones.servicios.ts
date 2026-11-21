@@ -183,7 +183,7 @@ const inscripcionServiciosCaja = async(
  */
 const listadoInscripciones = async ( data : FiltroHistorialInputs )
 : Promise<TipadoData<InscripcionListado[]>> =>{
-    const { limit , estado , id_escuela, fecha_desde , fecha_hasta, pagina, nombre_alumno, dni_alumno } = data ;
+    const { limit , estado , id_escuela, fecha_desde , fecha_hasta, pagina, nombre_alumno, dni_alumno, email_alumno } = data ;
 
     const offset = ( pagina -1 ) * Number(limit) ;
 
@@ -196,13 +196,14 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs )
         offset, 
         nombre_alumno,
         dni_alumno,
+        email_alumno,
         pagina
     };
-
+   
     const listadoData : FiltroHistorialInputs = FiltroHistorialSchema.parse( dataSet );
 
     const listaResultado = await inscripcionesData.listadoInscripciones( listadoData,  pagina);
-  
+   // console.log(listaResultado)    
   
     if ( listaResultado.code === "INSCRIPCIONES_LISTED" ){
        return{

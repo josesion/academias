@@ -1,0 +1,394 @@
+/* ==========================================================================
+   CALENDARIO GYM — ESTILO EDITORIAL / LUJO CON SCROLL HORIZONTAL Y STICKY
+   ========================================================================== */
+
+/* Wrapper del calendario */
+.calendario_gym {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+   width: 100%;
+   max-width: 100%;
+   box-sizing: border-box;
+}
+
+/* Contenedor con scroll */
+.calendario_gym .contenedor_calendario {
+   width: 100%;
+   max-height: 75dvh;
+   overflow: auto;
+   background: var(--fondo-secundario);
+   border: 1px solid var(--borde);
+   border-radius: var(--radio-lg);
+   box-shadow: var(--sombra-sm);
+   position: relative;
+}
+
+.calendario_gym .contenedor_calendario::-webkit-scrollbar {
+   width: 8px;
+   height: 8px;
+}
+
+.calendario_gym .contenedor_calendario::-webkit-scrollbar-track {
+   background: var(--fondo-hover);
+}
+
+.calendario_gym .contenedor_calendario::-webkit-scrollbar-thumb {
+   background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+   border-radius: 4px;
+}
+
+/* Tabla */
+.calendario_tabla {
+   width: 100%;
+   min-width: 950px;
+   border-collapse: separate;
+   border-spacing: 0;
+   table-layout: fixed;
+}
+
+/* Encabezados sticky (días arriba) */
+.calendario_tabla thead th {
+   position: sticky;
+   top: 0;
+   z-index: 3;
+   background: var(--fondo-principal);
+   color: var(--texto-principal);
+   font-family: var(--fuente-titulos);
+   font-size: 0.85rem;
+   font-weight: var(--peso-negrita);
+   text-transform: uppercase;
+   letter-spacing: 0.05em;
+   padding: 14px 10px;
+   text-align: center;
+   border-bottom: 2px solid var(--borde);
+   border-right: 1px solid var(--borde);
+}
+
+/* Celda de hora (columna izquierda sticky) */
+.calendario_hora_celda {
+   position: sticky;
+   left: 0;
+   z-index: 2;
+   background: var(--fondo-principal);
+   font-family: var(--fuente-codigo);
+   font-size: 0.75rem;
+   font-weight: var(--peso-negrita);
+   color: var(--texto-secundario);
+   text-align: center;
+   padding: 12px 8px;
+   border-right: 2px solid var(--borde);
+   border-bottom: 1px solid var(--borde);
+   width: 90px;
+   min-width: 90px;
+   box-sizing: border-box;
+}
+
+/* Esquina superior izquierda */
+.calendario_tabla thead .calendario_hora_celda {
+   position: sticky;
+   top: 0;
+   left: 0;
+   z-index: 4;
+   background: var(--fondo-principal);
+}
+
+/* Celdas de la grilla */
+.calendario_celda {
+   padding: 6px;
+   border-right: 1px solid var(--borde);
+   border-bottom: 1px solid var(--borde);
+   background: var(--fondo-principal);
+   min-width: 150px;
+   height: 80px;
+   vertical-align: middle;
+   box-sizing: border-box;
+   cursor: pointer;
+   transition: background var(--transicion);
+}
+
+.calendario_celda:hover {
+   background: color-mix(in srgb, var(--color-primario) 5%, var(--fondo-principal));
+}
+
+/* Celda ocupada */
+.calendario_celda.ocupada {
+   background: color-mix(in srgb, var(--color-primario) 8%, var(--fondo-principal));
+}
+
+/* Celda vacía con + */
+.calendario_celda.vacia {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+.agregar_icono {
+   font-size: 1.2rem;
+   font-weight: var(--peso-negrita);
+   color: var(--texto-deshabilitado);
+   transition: color var(--transicion);
+}
+
+.calendario_celda.vacia:hover .agregar_icono {
+   color: var(--color-primario);
+}
+
+/* Info dentro de celda ocupada */
+.clase_gym_info {
+   display: flex;
+   flex-direction: column;
+   gap: 2px;
+   font-size: 0.72rem;
+}
+
+.clase_gym_info strong {
+   font-weight: var(--peso-negrita);
+   color: var(--texto-principal);
+   font-size: 0.78rem;
+}
+
+.clase_gym_profesor {
+   color: var(--color-secundario);
+   font-size: 0.7rem;
+}
+
+.clase_gym_tipo {
+   color: var(--texto-secundario);
+   font-size: 0.68rem;
+   font-style: italic;
+}
+
+/* Badge de estado */
+.badge {
+   display: inline-block;
+   padding: 2px 6px;
+   border-radius: var(--radio-sm);
+   font-family: var(--fuente-codigo);
+   font-size: 0.6rem;
+   font-weight: var(--peso-negrita);
+   text-transform: uppercase;
+   letter-spacing: 0.05em;
+   margin-top: 4px;
+   width: fit-content;
+}
+
+.badge.estado_activos {
+   background: color-mix(in srgb, var(--color-exito) 15%, transparent);
+   color: var(--color-exito);
+   border: 1px solid color-mix(in srgb, var(--color-exito) 30%, transparent);
+}
+
+.badge.estado_inactivos {
+   background: color-mix(in srgb, var(--color-error) 15%, transparent);
+   color: var(--color-error);
+   border: 1px solid color-mix(in srgb, var(--color-error) 30%, transparent);
+}
+
+.badge.estado_suspendido {
+   background: color-mix(in srgb, var(--color-advertencia) 15%, transparent);
+   color: var(--color-advertencia);
+   border: 1px solid color-mix(in srgb, var(--color-advertencia) 30%, transparent);
+}
+
+/* Estado en celda */
+.calendario_celda.estado_inactivos {
+   opacity: 0.5;
+}
+
+.contenedor_calendario_completo {
+   display: flex;
+   flex-direction: column;
+   gap: 16px;
+   width: 100%;
+   max-width: 100%;
+   box-sizing: border-box;
+}
+
+/* Contenedor con scroll dual (vertical y horizontal automático) */
+.contenedor_calendario {
+   width: 100%;
+   max-height: 75dvh;
+   overflow: auto;
+   background: var(--fondo-secundario);
+   border: 1px solid var(--borde);
+   border-radius: var(--radio-lg);
+   box-shadow: var(--sombra-sm);
+   position: relative;
+}
+
+/* Estilización de la barra de desplazamiento */
+.contenedor_calendario::-webkit-scrollbar {
+   width: 8px;
+   height: 8px;
+}
+
+.contenedor_calendario::-webkit-scrollbar-track {
+   background: var(--fondo-hover);
+}
+
+.contenedor_calendario::-webkit-scrollbar-thumb {
+   background: linear-gradient(180deg, var(--color-primario), var(--color-secundario));
+   border-radius: 4px;
+}
+
+/* Tabla general con ancho mínimo para forzar el scroll horizontal en pantallas chicas */
+.tabla_calendario {
+   width: 100%;
+   min-width: 950px; 
+   border-collapse: separate; 
+   border-spacing: 0;
+   table-layout: fixed;
+}
+
+/* ==========================================================================
+   ENCABEZADOS STICKY (Días arriba)
+   ========================================================================== */
+
+.cabecera_calendario th {
+   position: sticky;
+   top: 0;
+   z-index: 3;
+   background: var(--fondo-principal);
+   color: var(--texto-principal);
+   font-family: var(--fuente-titulos);
+   font-size: 0.85rem;
+   font-weight: var(--peso-negrita);
+   text-transform: uppercase;
+   letter-spacing: 0.05em;
+   padding: 14px 10px;
+   text-align: center;
+   border-bottom: 2px solid var(--borde);
+   border-right: 1px solid var(--borde);
+   box-shadow: inset 0 -1px 0 var(--borde);
+}
+
+/* Celda de la esquina superior izquierda */
+.th_hora_label.esquina_fija {
+   position: sticky;
+   top: 0;
+   left: 0;
+   z-index: 4;
+   background: var(--fondo-principal);
+   width: 90px;
+   min-width: 90px;
+}
+
+/* ==========================================================================
+   COLUMNA LATERAL STICKY (Horas a la izquierda)
+   ========================================================================== */
+
+.celda_hora_lateral {
+   position: sticky;
+   left: 0;
+   z-index: 2;
+   background: var(--fondo-principal);
+   font-family: var(--fuente-codigo);
+   font-size: 0.75rem;
+   font-weight: var(--peso-negrita);
+   color: var(--texto-secundario);
+   text-align: center;
+   padding: 12px 8px;
+   border-right: 2px solid var(--borde);
+   border-bottom: 1px solid var(--borde);
+   width: 90px;
+   min-width: 90px;
+   box-sizing: border-box;
+}
+
+/* ==========================================================================
+   CELDAS DE LA GRILLA
+   ========================================================================== */
+
+.celda_interactiva {
+   padding: 6px;
+   border-right: 1px solid var(--borde);
+   border-bottom: 1px solid var(--borde);
+   background: var(--fondo-principal);
+   min-width: 150px;
+   height: 80px;
+   vertical-align: middle;
+   box-sizing: border-box;
+   transition: background var(--transicion);
+}
+
+.celda_interactiva:hover {
+   background: color-mix(in srgb, var(--color-primario) 3%, var(--fondo-principal));
+}
+
+/* Wrappers internos para centrar o expandir */
+.wrapper_clase_postit,
+.wrapper_celda_vacia {
+   width: 100%;
+   height: 100%;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+
+.seccion_footer_calendario {
+   display: flex;
+   justify-content: flex-start;
+   padding-top: 4px;
+}
+
+/* ==========================================================================
+   ACCESIBILIDAD — reduced-motion / high-contrast / print
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .contenedor_calendario {
+    transition: none !important;
+  }
+  .celda_interactiva {
+    transition: none !important;
+  }
+  .celda_interactiva:hover {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .contenedor_calendario {
+    border-width: 2px;
+  }
+  .th_hora_label,
+  .th_dia_sticky,
+  .celda_hora_lateral {
+    border-width: 2px !important;
+  }
+  .celda_interactiva {
+    border-width: 2px !important;
+  }
+  .celda_interactiva:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: -3px;
+    box-shadow: none;
+  }
+  .boton_personalizado {
+    border-width: 2px !important;
+  }
+  .boton_personalizado:focus-visible {
+    outline: 3px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+}
+
+@media print {
+  .seccion_footer_calendario {
+    display: none !important;
+  }
+  .contenedor_calendario {
+    max-height: none;
+    overflow: visible;
+    box-shadow: none;
+    border: 1px solid var(--borde);
+  }
+  .contenedor_calendario_completo {
+    break-inside: avoid;
+  }
+}

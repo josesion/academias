@@ -3,8 +3,6 @@
 // 1. IMPORTACIONES
 // ===================================================================
 export {};
-import { ClientError } from "../../src/utils/error";
-import { CodigoEstadoHTTP } from "../../src/tipados/generico";
 
 // ===================================================================
 // 2. DECLARACIÓN Y CONFIGURACIÓN DE MOCKS
@@ -101,7 +99,8 @@ const TOTAL_PAGINAS = Math.ceil(TOTAL_REGISTROS / LIMIT);
                     paginacion: {
                         pagina: Number(PAGINA),
                         limite: Number(LIMIT),
-                        contadorPagina: TOTAL_PAGINAS
+                        contadorPagina: TOTAL_PAGINAS,
+                        totalRegistros: TOTAL_REGISTROS
                     },
                     code: 'ALUMNO_LISTED',
                     errorsDetails: undefined
@@ -116,37 +115,28 @@ const TOTAL_PAGINAS = Math.ceil(TOTAL_REGISTROS / LIMIT);
         // ===================================================================
         //           CUANDO NO HAY DATOS EN EL LISTADO
         // ===================================================================
-        it('Debe lanzar error cuando no hay resultados', async () => {
+        it('Debe devolver error cuando no hay resultados', async () => {
             // Configurar el mock para devolver array vacío
             mockSelect.mockResolvedValue([]);
 
-            // Usar try-catch porque esperamos que lance un error
-            try {
-                await listarEntidad({
-                    slqListado: TEST_SQL,
-                    valores: TEST_VALORES,
-                    limit: LIMIT,
-                    pagina: PAGINA.toString(),
-                    entidad: 'Alumno',
-                    estado: ESTADO
-                });
-                
-                // Si llegamos aquí, el test debe fallar porque esperábamos un error
-                fail('Debería haber lanzado un error');
-            } catch (error: unknown) {
-                // Primero verificamos que sea una instancia de ClientError
-                expect(error).toBeInstanceOf(ClientError);
-                
-                // Una vez verificado que es ClientError, podemos hacer el type assertion
-                const clientError = error as ClientError;
-                
-                // Verificar el mensaje
-                expect(clientError.message).toBe('No hay ALUMNO activos');
-                // Verificar el código de estado
-                expect(clientError.statusCode).toBe(CodigoEstadoHTTP.SIN_CONTENIDO);
-                // Verificar el código de error
-                expect(clientError.code).toBe('NO_ACTIVE_ALUMNO');
-            }
+            // El hook devuelve un objeto con error: true en lugar de lanzar excepción
+            const resultado = await listarEntidad({
+                slqListado: TEST_SQL,
+                valores: TEST_VALORES,
+                limit: LIMIT,
+                pagina: PAGINA.toString(),
+                entidad: 'Alumno',
+                estado: ESTADO
+            });
+            
+            // Verificar que devuelve error: true
+            expect(resultado.error).toBe(true);
+            // Verificar el mensaje
+            expect(resultado.message).toBe('No hay ALUMNO activos');
+            // Verificar el código de error
+            expect(resultado.code).toBe('NO_ACTIVE_ALUMNO');
+            // Verificar que data es array vacío
+            expect(resultado.data).toEqual([]);
         });
 
     });

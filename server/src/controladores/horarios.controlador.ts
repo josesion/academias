@@ -34,6 +34,7 @@ const altaHorario = async( req : Request , res : Response) =>{
         dni_profesor:  req.body.dni_profesor,
         id_nivel: Number(req.body.id_nivel),
         id_tipo_clase: Number(req.body.id_tipo_clase),
+        id_sala: req.body.id_sala ? Number(req.body.id_sala) : null,
         hora_inicio: req.body.hora_inicio,
         hora_fin: req.body.hora_fin,
         dia_semana: req.body.dia_semana,
@@ -93,6 +94,7 @@ const modHorario = async( req : Request, res : Response) => {
         id_escuela: Number(req.usuario?.id_escuela),
         id_nivel : Number(req.body.id_nivel),
         id_tipo_clase :  Number(req.body.id_tipo_clase),
+        id_sala: req.body.id_sala ? Number(req.body.id_sala) : null,
         dni_profesor  : req.body.dni_profesor as string,
         id_usuario : Number(req.usuario?.id)
     };

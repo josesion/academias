@@ -47,7 +47,15 @@ export const VistaUsuario = ({
 
     return filtrarSecciones(SECCIONES_USUARIO, tipo).map((seccion) => ({
       ...seccion,
-      items: seccion.items.map(conEtiquetaDeRubro),
+      items: seccion.items
+        .map(conEtiquetaDeRubro)
+        .filter((item) => {
+          // Ocultar ítems que no aplican al rubro actual (spec 047)
+          if (rubro && item.ocultarEnRubro?.includes(rubro as "baile" | "gym")) {
+            return false;
+          }
+          return true;
+        }),
     }));
   }, [tipo, rubro]);
 

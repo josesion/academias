@@ -31,17 +31,43 @@ import { TipadoData } from "../tipados/tipado.data";
  * 
  * @throws {ZodError} Si los datos de entrada no pasan la validación del esquema `CrearAlumnoSchema`.
  */
+/**
+ * Genera un DNI interno a partir del email cuando no se proporciona DNI.
+ * Usa un hash simple del email para crear un número único de 9 dígitos.
+ */
+function generarDniInterno(email: string): string {
+    let hash = 0;
+    for (let i = 0; i < email.length; i++) {
+        const char = email.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash; // Convertir a 32 bits
+    }
+    // Asegurar que sea positivo y tenga 9 dígitos
+    const dniInterno = Math.abs(hash) % 900000000 + 100000000;
+    return dniInterno.toString();
+}
+
 const altaAlumno = async (data: AlumnosInputs)
     : Promise<TipadoData<RetornoRegistroAlumno>> => {
     
     const alumnoData: AlumnosInputs = CrearAlumnoSchema.parse(data);
     
-    // Verifico si el alumno ya existe en la bd de forma global
-    const existeAlumno = await dataAlumno.verAlumnoExistente(alumnoData.dni);
+    // Si no se proporciona DNI, generar uno interno a partir del email
+    const dniEfectivo = alumnoData.dni || generarDniInterno(alumnoData.email);
+    const alumnoDataConDni = { ...alumnoData, dni: dniEfectivo };
+    
+    // Verifico si el alumno ya existe en la bd de forma global (por DNI o por email)
+    let existeAlumno;
+    if (alumnoData.dni) {
+        existeAlumno = await dataAlumno.verAlumnoExistente(dniEfectivo);
+    } else {
+        // Sin DNI: verificar por email
+        existeAlumno = await dataAlumno.verAlumnoExistentePorEmail(alumnoData.email);
+    }
 
     if (existeAlumno.code === 'ALUMNO_NO_EXISTE') {
         // Si no existe, creamos por primera vez de forma global
-        const existeCorreo = await dataAlumno.verificarCorreoExistente(alumnoData.email);
+        const existeCorreo = await dataAlumno.verificarCorreoExistente(alumnoDataConDni.email);
 
         if (existeCorreo.code === "USUARIO_CORREO_EXISTE") {
             return {
@@ -51,7 +77,7 @@ const altaAlumno = async (data: AlumnosInputs)
             };
         };
         
-        const registrarAlumno = await dataAlumno.altaAlumnoTransaccion(alumnoData);
+        const registrarAlumno = await dataAlumno.altaAlumnoTransaccion(alumnoDataConDni);
 
 
         if (registrarAlumno.code === "TRANSACCION_FALLIDA") {
@@ -65,14 +91,15 @@ const altaAlumno = async (data: AlumnosInputs)
         if (registrarAlumno.code === "TRANSACCION_OK") {
 
             // Nombre de la academia para personalizar el correo (si no se encuentra, se omite)
-            const escuela = await dataEscuela.localizarNombreEscuela(alumnoData.id_escuela);
+            const escuela = await dataEscuela.localizarNombreEscuela(alumnoDataConDni.id_escuela);
             const nombreEscuela = escuela.data?.razon_social;
 
             const htmlContenido = generarPlantillaBienvenida(
-                alumnoData.nombre, 
-                alumnoData.email,
+                alumnoDataConDni.nombre, 
+                alumnoDataConDni.email,
                 registrarAlumno.data?.contrasenaTemporal,
-                nombreEscuela
+                nombreEscuela,
+                registrarAlumno.data?.pin_asistencia
             );
 
             // Modo prueba: mientras `RESEND_DESTINO` esté seteada, el correo va a esa
@@ -81,7 +108,7 @@ const altaAlumno = async (data: AlumnosInputs)
             const destinoPrueba = process.env.NODE_ENV === 'production'
                 ? undefined
                 : process.env.RESEND_DESTINO?.trim();
-            const destino = destinoPrueba || alumnoData.email;
+            const destino = destinoPrueba || alumnoDataConDni.email;
 
             // En segundo plano: el alta ya quedó hecha y no debe frenarse por el correo.
             // Un fallo queda en `logs/errores.log` y avisa a `CORREO_ADMIN`.
@@ -90,24 +117,35 @@ const altaAlumno = async (data: AlumnosInputs)
                 subject: "¡Tus credenciales de acceso a la Academia!",
                 html: htmlContenido,
                 text: generarTextoBienvenida(
-                    alumnoData.nombre,
-                    alumnoData.email,
+                    alumnoDataConDni.nombre,
+                    alumnoDataConDni.email,
                     registrarAlumno.data?.contrasenaTemporal,
-                    nombreEscuela
+                    nombreEscuela,
+                    registrarAlumno.data?.pin_asistencia
                 ),
                 replyTo: process.env.CORREO_ADMIN?.trim() || undefined
-            }, `Alta alumno ${alumnoData.dni}`);
+            }, `Alta alumno ${alumnoDataConDni.dni}`);
 
+            const retornoData = registrarAlumno.data as any || {};
             return {
                 error: false, // Corregido para que devuelva éxito correctamente
                 message: "Registro del alumno ok.",
-                code: "REGISTRO_ALUMNO_OK"
+                code: "REGISTRO_ALUMNO_OK",
+                data: {
+                    dni: retornoData.dni || alumnoDataConDni.dni || '',
+                    nombre: alumnoDataConDni.nombre,
+                    apellido: alumnoDataConDni.apellido,
+                    email: alumnoDataConDni.email,
+                    celular: alumnoDataConDni.celular || '',
+                    pin_asistencia: retornoData.pin_asistencia,
+                    contrasenaTemporal: retornoData.contrasenaTemporal
+                }
             };
         };
     };
         
     // Verifico si el alumno ya se encuentra en esta escuela
-    const existeAlumnoEscuela = await dataAlumno.verAlumnoEscuelaExistente(String(alumnoData.dni), Number(alumnoData.id_escuela)); 
+    const existeAlumnoEscuela = await dataAlumno.verAlumnoEscuelaExistente(String(alumnoDataConDni.dni), Number(alumnoDataConDni.id_escuela));
 
     if (existeAlumnoEscuela.code === "ALUMNOESCUELA_EXISTE") {
         return {
@@ -118,7 +156,7 @@ const altaAlumno = async (data: AlumnosInputs)
     };
 
     // Verifico que el correo no le pertenezca a otro alumno distinto (excluyendo al DNI actual)
-    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoData.email, alumnoData.dni);
+    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoDataConDni.email, alumnoDataConDni.dni);
 
     if (correoPropiedadAlumno.code === "USUARIO_CORREO_EXISTE") {
         return {
@@ -129,17 +167,17 @@ const altaAlumno = async (data: AlumnosInputs)
     };
 
     // Realiza la inscripción en la nueva escuela
-    const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(alumnoData.dni), id_escuela: Number(alumnoData.id_escuela) });
+    const inscripcionAlumno = await dataAlumno.registroAlumnoEscuela({ dni: String(alumnoDataConDni.dni), id_escuela: Number(alumnoDataConDni.id_escuela) });
     
     if (inscripcionAlumno.code === "ALUMNO_ALTA") {
         const dataHistorial: HistorialInputs = {
-            id_escuela: alumnoData.id_escuela,
-            id_usuario: alumnoData.id_usuario,
+            id_escuela: alumnoDataConDni.id_escuela,
+            id_usuario: alumnoDataConDni.id_usuario,
             modulo: "ALUMNOS",
             accion: "CREAR",
-            id_registro: Number(alumnoData.dni),
-            descripcion: `Registro Alumno ${alumnoData.apellido} ${alumnoData.nombre}`,
-            datos: alumnoData
+            id_registro: Number(alumnoDataConDni.dni),
+            descripcion: `Registro Alumno ${alumnoDataConDni.apellido} ${alumnoDataConDni.nombre}`,
+            datos: alumnoDataConDni
         }; 
         
         await registroHistorial(dataHistorial);   
@@ -178,9 +216,13 @@ const modAlumno = async (data: AlumnosInputs)
 : Promise<TipadoData<RetornoModAlumno>> => {
 
     const alumnoData: AlumnosInputs = CrearAlumnoSchema.parse(data);
+    
+    // Si no se proporciona DNI, usar email como identificador
+    const dniEfectivo = alumnoData.dni || generarDniInterno(alumnoData.email);
+    const alumnoDataConDni = { ...alumnoData, dni: dniEfectivo };
    
     // 1. Validación de correo por afuera (excluyendo el DNI propio)
-    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoData.email, alumnoData.dni);
+    const correoPropiedadAlumno = await dataAlumno.verificarCorreoExistente2(alumnoDataConDni.email, alumnoDataConDni.dni);
 
     if (correoPropiedadAlumno.code === "USUARIO_CORREO_EXISTE") {
         return {
@@ -191,7 +233,7 @@ const modAlumno = async (data: AlumnosInputs)
     };
 
     // 2. Ejecutar la transacción de actualización limpia en la BD
-    const resultadoModificacion = await dataAlumno.modAlumnoTransaccion(alumnoData); 
+    const resultadoModificacion = await dataAlumno.modAlumnoTransaccion(alumnoDataConDni); 
 
   
     if (resultadoModificacion.code === "TRANSACCION_FALLIDA") {
@@ -204,13 +246,13 @@ const modAlumno = async (data: AlumnosInputs)
 
     // 3. Si todo salió bien, guardamos historial y respondemos éxito
     const dataHistorial: HistorialInputs = {
-        id_escuela: alumnoData.id_escuela,
-        id_usuario: alumnoData.id_usuario,
+        id_escuela: alumnoDataConDni.id_escuela,
+        id_usuario: alumnoDataConDni.id_usuario,
         modulo: "ALUMNOS",
         accion: "MODIFICAR",
-        id_registro: Number(alumnoData.dni),
-        descripcion: `Modificacion de ${alumnoData.apellido} ${alumnoData.nombre}`,
-        datos: alumnoData
+        id_registro: Number(alumnoDataConDni.dni),
+        descripcion: `Modificacion de ${alumnoDataConDni.apellido} ${alumnoDataConDni.nombre}`,
+        datos: alumnoDataConDni
     }; 
         
     await registroHistorial(dataHistorial);         

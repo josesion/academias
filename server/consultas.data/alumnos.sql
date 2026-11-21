@@ -4,20 +4,23 @@ CREATE TABLE alumnos (
     -- DNI del alumno: numérico y será la clave primaria de la tabla
     dni_alumno BIGINT PRIMARY KEY,
 
--- Nombre del alumno
-nombre VARCHAR(255) NOT NULL,
+    -- Nombre del alumno
+    nombre VARCHAR(255) NOT NULL,
 
--- Apellido del alumno
-apellido VARCHAR(255) NOT NULL,
+    -- Apellido del alumno
+    apellido VARCHAR(255) NOT NULL,
 
--- Correo electrónico del alumno (nullable y SIN UNIQUE: así está en la BD real)
-email VARCHAR(255) DEFAULT NULL,
+    -- Correo electrónico del alumno (nullable y SIN UNIQUE: así está en la BD real)
+    email VARCHAR(255) DEFAULT NULL,
 
--- Número de celular
-numero_celular BIGINT,
+    -- Número de celular
+    numero_celular BIGINT,
 
--- Estado del alumno: por defecto es 'activos'
-estado VARCHAR(50) DEFAULT 'activos' );
+    -- Estado del alumno: por defecto es 'activos'
+    estado VARCHAR(50) DEFAULT 'activos',
+
+    -- PIN de asistencia para que el alumno fiche en el kiosco (4 dígitos)
+    pin_asistencia CHAR(4) DEFAULT NULL );
 
 -- Sentencia buscar alumno / para verificar si ya existe antes de agregarlo ---
 select alumnos.dni_alumno

@@ -7,15 +7,17 @@ CREATE TABLE escuelas (
     razon_social VARCHAR(100),
     direccion VARCHAR(100),
     celular VARCHAR(20),
-    urlImagen VARCHAR(255) DEFAULT NULL,
-    public_id VARCHAR(255) DEFAULT NULL,
+    -- Correo de contacto para registro gratuito desde landing (migración 049)
+    correo VARCHAR(255) DEFAULT NULL,
     fecha_registro DATE,
     baja VARCHAR(20) DEFAULT 'activos',
     -- Rubro de la escuela (spec 047): 'baile' | 'gym'.
     -- Define el tema visual y los tipos de clase que siembra el trigger
     -- `despues_de_crear_escuela`. El default mantiene a todas en 'baile'.
     rubro VARCHAR(20) NOT NULL DEFAULT 'baile',
-    descripcion TEXT DEFAULT NULL
+    urlImagen VARCHAR(255) DEFAULT NULL,
+    public_id VARCHAR(255) DEFAULT NULL,
+    descripcion TEXT
 );
 
 INSERT INTO
@@ -43,5 +45,4 @@ VALUES (
     );
 
 -- Migracion: agregar columna descripcion a escuelas
-ALTER TABLE escuelas
-    ADD COLUMN IF NOT EXISTS descripcion TEXT DEFAULT NULL;
+ALTER TABLE escuelas ADD COLUMN descripcion TEXT DEFAULT NULL;

@@ -19,8 +19,10 @@ import planesRutas from "./rutas/plan.ruta";
 import loginRutas from "./rutas/login.rutas";
 import authRutas from "./rutas/auth.ruta";
 import alumnoRutas from "./rutas/alumno.ruta";
+import tutorRutas from "./rutas/tutores.ruta";
 import profesorRutas from "./rutas/profesores.ruta";
 import nivelRutas from "./rutas/nivel.ruta";
+import salasRutas from "./rutas/salas.ruta";
 import tipoRutas from  "./rutas/tipo.ruta";
 import categoriasCajasRutas from "./rutas/categorias.cajas";
 import cuentasCajaRutas  from "./rutas/cuentas.escuelas";
@@ -29,6 +31,7 @@ import cajasRutas from "./rutas/caja.rutas"
 
 import inscripciones from "./rutas/inscripciones";
 import horarios from "./rutas/horarios.ruta";
+import horariosGym from "./rutas/horarios_gym.ruta";
 import asistencias  from "./rutas/asistencias";
 import plantillas  from "./rutas/plantillas.ruta";
 import metricas  from "./rutas/metricas.ruta";
@@ -134,6 +137,7 @@ app.use(globalLimiter);
 app.use(registroPeticion);
 
 app.use(alumnoRutas);
+app.use(tutorRutas);
 app.use(profesorRutas)
 app.use(adminRutas);
 app.use(planesRutas);
@@ -142,6 +146,8 @@ app.use(loginRutas);
 app.use(authRutas);
 app.use(planesUsuariosRuta);
 app.use(nivelRutas);
+app.use(salasRutas);
+app.use(horariosGym);
 app.use(tipoRutas);
 app.use(asistencias);
 app.use(plantillas);

@@ -8,6 +8,7 @@ import { recepcionComunicacion } from "../utils/canalComunicacion";
 import { useActualizarAlEnfocar } from "../utils/useActulizarFocus";
 
 import { mensajeErrorTemporal } from "./mensajeTemporales";
+import { useNotificaciones } from "../contexto/notificaciones.context";
 import { initialState, horarioReducer, type HorarioAction } from "../reducers/horariosReducers";
 
 /**
@@ -16,6 +17,7 @@ import { initialState, horarioReducer, type HorarioAction } from "../reducers/ho
  */
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 import type * as TipadoHorario from "../tipadosTs/horario";
+import type { DataSala } from "../tipadosTs/sala";
 import { type ClaseHorario } from "../componentes/Horarios/ClasesAsignadas/ClasesAsiganadas"; 
 import { type MensajeCelda } from "../componentes/Horarios/CeldaVacia/CeldaVacia";
 
@@ -26,6 +28,7 @@ interface HorarioConfig {
         listadoProfesores : ServicioCrud,
         listadoNivel : ServicioCrud,
         listadoTipo : ServicioCrud,
+        listadoSalas : ServicioCrud,
         horarioEscuela : ServicioCrud,
         altaHorario   : ServicioCrud,
         modHorario   : ServicioCrud,
@@ -37,6 +40,7 @@ interface HorarioConfig {
     inicialFiltroProfesor : { dni : string },
     inicialFiltroNivel : { nivel : string },
     inicialFiltroTipo : { tipo : string },
+    inicialFiltroSala?: { nombre?: string },
 
 };
 
@@ -44,6 +48,7 @@ interface HorarioConfig {
 export const useHorarioHook = ( config : HorarioConfig ) =>{
 
     const irA = useNavigate();
+    const api = useNotificaciones();
     const [ state , dispatch] = useReducer( horarioReducer, initialState());
 
     const setErrorGenericoAdapter = (error: string | null) => {
@@ -122,17 +127,36 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
          };      
    };
 
+   const handleCachearSalas = (e : React.ChangeEvent<HTMLInputElement>) =>{
+        dispatch({ type : "SET_FILTRO_BUSQUEDA_SALA", payload : { ...state.filtroBusquedaSala, [e.target.name] : e.target.value } });
+        const salaSeleccionada = state.listaSalas.find( sala => sala.nombre === e.target.value );
+        if( salaSeleccionada ){
+            dispatch({ type : "SET_SALA", payload : salaSeleccionada });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_sala : salaSeleccionada.id } });
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_sala : salaSeleccionada.id } });
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, id_sala : salaSeleccionada.id }});
+        } else {
+            dispatch({ type : "SET_SALA", payload : null });
+            dispatch({ type : "SET_CONJUNTO_ID_HORARIO" , payload : { ...state.conjuntoIDHorario, id_sala : null } });
+            dispatch({ type : "SET_DATA_FORM_HORARIO", payload : { ...state.dataFormHorario , id_sala : null } });
+            dispatch({ type : "SET_DATA_MOD_HORARIO", payload : { ...state.dataModHorario, id_sala : null }});
+        }
+   };
+
 // ──────────────────────────────────────────────────────────────
 // Handles para abrir formulario de horarios y cerrarlos
 // ────────────────────────────────────────────────────────────── 
 
    const handleAbrirModificarHorario = ( clase : ClaseHorario) =>{
-      
+     
         dispatch({ type : "SET_MODAL_INTERNO", payload : true });
         dispatch({ type : "SET_METODO", payload : "MOD" });
         dispatch({ type : "SET_TIPO", payload : {id: clase.id_clase ,tipo : clase.tipo_clase} });
         dispatch({ type : "SET_NIVELES", payload : {id : clase.id_nivel , nivel : clase.nivel} });
         dispatch({ type : "SET_PROFESORES", payload : {Dni : clase.dni_profe, Apellido : clase.profesor , Nombre : clase.nombre } });
+        if (clase.sala_nombre) {
+            dispatch({ type : "SET_SALA", payload : { id: clase.id_sala, nombre: clase.sala_nombre, capacidad: null } });
+        }
         dispatch({ type : "SET_HORARIOFIN" , payload :{ hora_inicio : clase.hora_inicio as TipadoHorario.Horas , 
                                                         hora_fin : clase.hora_fin as TipadoHorario.Horas } });                    
         dispatch({ type : "SET_DIA_HORARIO", payload : clase.dia });    
@@ -141,25 +165,30 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
                 id : clase.id_horario,
                 dni_profesor : clase.dni_profe,
                 id_nivel     : clase.id_nivel,
-                id_tipo_clase: clase.id_clase 
+                id_tipo_clase: clase.id_clase,
+                id_sala: clase.id_sala
          }});
          dispatch({ type : "SET_DATA_ELIMINAR_HORARIO" , payload : { ...state.dataEliminarHorario, id : clase.id_horario  } });
 
    };
 
    const handleAbirModalHoarios = ( mensaje : MensajeCelda) =>{
-        
+       
         if (mensaje.mensaje === "+"){
            const {hora_fin , hora_inicio} = generarRangoUnaHora(mensaje.hora);
            dispatch({ type : "SET_MODAL_INTERNO", payload : true });    
            dispatch({ type : "SET_HORARIOFIN", payload : generarRangoUnaHora(mensaje.hora) }); 
            dispatch({ type : "SET_DIA_HORARIO", payload : mensaje.dia });
            dispatch({ type : "SET_METODO", payload : "ALTA" }); 
+           // Setear id_sala automáticamente desde la sala seleccionada
+           const idSala = state.salaSeleccionada?.id ?? null;
            dispatch({ type    : "SET_DATA_FORM_HORARIO", 
                       payload : { ...state.dataFormHorario , 
                                  dia_semana : mensaje.dia,
                                  hora_inicio : hora_inicio,
-                                 hora_fin    : hora_fin    }});            
+                                 hora_fin    : hora_fin,
+                                 id_sala     : idSala    }});
+           dispatch({ type : "SET_CONJUNTO_ID_HORARIO", payload: { ...state.conjuntoIDHorario, id_sala: idSala } });
         };   
    };
    
@@ -173,6 +202,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
             dni_profe : null,
             id_tipo_clase  : null,
             id_nivel  : null,
+            id_sala : null,
             id_horario : null  
          } }); 
    };   
@@ -213,7 +243,8 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
             };
             dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });
             dispatch({ type : "RESET_FORMULARIO" });
-            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+            dispatch({ type : "SET_MODAL_INTERNO", payload : false });
+            api.exito("Horario creado exitosamente");
 
 
         }catch ( error ){
@@ -244,7 +275,8 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
             };  
             dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
             dispatch({ type : "RESET_FORMULARIO" });
-            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+            dispatch({ type : "SET_MODAL_INTERNO", payload : false });
+            api.exito("Horario modificado exitosamente");
 
 
         }catch ( error ){
@@ -254,7 +286,7 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
         };    
     
    }; 
-   
+  
 
    const handleEliminarHorario = async() =>{
         try {
@@ -268,9 +300,10 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
                 return;
             };
 
-            dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });        
+            dispatch({ type : "SET_ACTUALIZAR", payload : !state.actualizar });
             dispatch({ type : "RESET_FORMULARIO" });
-            dispatch({ type : "SET_MODAL_INTERNO" , payload : false });
+            dispatch({ type : "SET_MODAL_INTERNO", payload: false });
+            api.exito("Horario eliminado exitosamente");
 
         }catch ( error ){
             dispatch({ type : "SET_ERROR", payload : "Error en  carga de datos" });
@@ -328,6 +361,21 @@ export const useHorarioHook = ( config : HorarioConfig ) =>{
    });
 
 // ──────────────────────────────────────────────────────────────
+// Listado de Salas sin paginacion
+// ──────────────────────────────────────────────────────────────  
+   useEffectServicio<any,any[], HorarioAction>({
+        valores : state.filtroBusquedaSala,
+        servicios : config.servicios.listadoSalas,
+        dispatch : dispatch,
+        accionResultado :( data ) => ({ type : "SET_LISTADO_SALAS", payload : data || []}),
+        accionError : ( mensaje) =>({type : "SET_ERROR", payload : mensaje}),
+        accionCarga : ( estado ) => ({ type : "SET_CARGA", payload : { campo : "salas", valor : estado } }),
+        useAbort : true, 
+        ignorarCancelados : true,
+        dependencias : [state.filtroBusquedaSala.nombre]
+   });
+
+// ──────────────────────────────────────────────────────────────
 // Listado de Calendario sin paginacion
 // ──────────────────────────────────────────────────────────────  
    useEffectServicio<any,TipadoHorario.ClaseHorarioData[], HorarioAction>({
@@ -366,6 +414,7 @@ useEffect(() => {
     if (!state.conjuntoIDHorario.dni_profe) faltantes.push("Profesor");
     if (!state.conjuntoIDHorario.id_nivel) faltantes.push("Nivel");
     if (!state.conjuntoIDHorario.id_tipo_clase) faltantes.push("Tipo");
+    // Sala es implícita (seleccionada en la página), no se valida aquí
 
     dispatch({ type : "SET_ERROR", payload : `Falta seleccionar: ${faltantes.join(" , ")}` });  
     dispatch({ type : "SET_ENVIAR", payload : false });  
@@ -425,7 +474,22 @@ useEffect( ()=>{
 // ──────────────────────────────────────────────────────────────      
     useActualizarAlEnfocar({ dispatchActualizar : dispatch, accion : "ACTUALIZAR_GENERICO"});
 
-
+// ──────────────────────────────────────────────────────────────
+//  Seleccionar sala como contexto principal
+// ──────────────────────────────────────────────────────────────
+const handleSeleccionarSala = (sala: DataSala | null) => {
+    dispatch({ type: "SET_SALA_SELECCIONADA", payload: sala });
+    if (sala) {
+        // Setear id_sala en todos los formularios
+        dispatch({ type: "SET_CONJUNTO_ID_HORARIO", payload: { ...state.conjuntoIDHorario, id_sala: sala.id } });
+        dispatch({ type: "SET_DATA_FORM_HORARIO", payload: { ...state.dataFormHorario, id_sala: sala.id } });
+        dispatch({ type: "SET_DATA_MOD_HORARIO", payload: { ...state.dataModHorario, id_sala: sala.id } });
+    } else {
+        dispatch({ type: "SET_CONJUNTO_ID_HORARIO", payload: { ...state.conjuntoIDHorario, id_sala: null } });
+        dispatch({ type: "SET_DATA_FORM_HORARIO", payload: { ...state.dataFormHorario, id_sala: null } });
+        dispatch({ type: "SET_DATA_MOD_HORARIO", payload: { ...state.dataModHorario, id_sala: null } });
+    }
+};
 
 return {
     state,
@@ -435,6 +499,8 @@ return {
     handleCachearProfesores,
     handleCachearNiveles,
     handleCachearTipos,
+    handleCachearSalas,
+    handleSeleccionarSala,
     handleModHorario,
     handleAbirModalHoarios,
     handleAbrirModificarHorario,

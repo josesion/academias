@@ -7,9 +7,8 @@ describe( "Creacion ESCUELA-ALUMNOS-ALUMNOS_EN_ESCUELA" , ()=> {
   it('Debe insertar un alumno y vincularlo a una escuela (Flujo Completo)', async () => {
         // --- 1. Preparación de Datos Escuelas ---
     const datosEscuela = {
-        // Usamos '99' para el test porque es PRIMARY KEY, y aunque tiene AUTO_INCREMENT,
-        // es más fácil de referenciar y limpiar si le damos un valor fijo para las pruebas.
-        id_escuela: 99, 
+        // Usamos id_escuela fijo para el test, se limpia en afterEach
+        id_escuela: 999, 
     
         dni_propietario: 45678901,
         nombre_propietario: 'María',

@@ -32,9 +32,11 @@
 
   padding: 20px;
 
-  background: color-mix(in srgb, var(--fondo-principal) 70%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: color-mix(in srgb, var(--fondo-principal) 40%, transparent);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  pointer-events: none;
 
   animation: overlayFade 0.2s ease;
 }
@@ -55,6 +57,8 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+
+  pointer-events: auto;
 
   -webkit-overflow-scrolling: touch;
 }
@@ -127,6 +131,17 @@
   text-transform: uppercase;
 
   color: var(--texto-secundario);
+}
+
+/* Indicador de campos obligatorios en el título de filtros */
+.filtro_campos_obligatorio {
+  font-size: 0.75rem;
+  font-weight: var(--peso-normal);
+  letter-spacing: 0;
+  text-transform: none;
+
+  color: var(--color-advertencia, #e67e22);
+  opacity: 0.8;
 }
 
 /* Fila de selectores — layout profesional: en fila en desktop, sin
@@ -205,6 +220,13 @@
   box-shadow: var(--sombra-lg);
 }
 
+/* Selector de filtro por sala: fuera del modal, encima del calendario */
+.formulario_horario_filtro_secundario .filtro_campo {
+  flex: unset;
+  max-width: 300px;
+  width: 100%;
+}
+
 .calendario_header {
   display: flex;
   align-items: center;
@@ -241,12 +263,12 @@
 }
 
 /* ============================================================================
-   CHIP DE CARGA DEL CALENDARIO (spec 038)
-   ---------------------------------------------------------------------------
-   Indicador local de recarga: vive en el encabezado del calendario para que la
-   grilla (112 celdas) nunca se tape. `margin-left: auto` lo empuja al borde
-   derecho del header (que es flex).
-   ============================================================================ */
+  CHIP DE CARGA DEL CALENDARIO (spec 038)
+  ---------------------------------------------------------------------------
+  Indicador local de recarga: vive en el encabezado del calendario para que la
+  grilla (112 celdas) nunca se tape. `margin-left: auto` lo empuja al borde
+  derecho del header (que es flex).
+  ============================================================================ */
 
 .calendario_cargando {
     margin-left: auto;
@@ -261,6 +283,35 @@
     text-transform: uppercase;
 
     color: var(--texto-secundario);
+}
+
+/* ============================================================================
+  INSTRUCCIÓN DE USO DEL CALENDARIO
+  ---------------------------------------------------------------------------
+  Texto de ayuda debajo del encabezado para que el usuario sepa qué hacer.
+  ============================================================================ */
+
+.calendario_instruccion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+
+  font-family: var(--fuente-codigo);
+  font-size: 0.75rem;
+  color: var(--texto-secundario);
+  opacity: 0.7;
+}
+
+.calendario_instruccion svg {
+  flex-shrink: 0;
+  color: var(--color-primario);
+  opacity: 0.6;
+}
+
+/* Contenedor con aria-live para que los lectores de pantalla anuncien cambios */
+.calendario_contenido {
+  /* sin estilo propio, solo envoltura para aria-live */
 }
 
 /* visually-hidden: solo para lectores de pantalla */

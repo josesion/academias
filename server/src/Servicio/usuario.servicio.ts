@@ -548,13 +548,14 @@ const quitarLogoEscuela = async (
     }
 
     // Idempotente: ya está sin logo, no se escribe ni se audita.
-    if (fila.data.urlImagen === null && fila.data.public_id === null) {
+    const perfilEscuela = fila.data!;
+    if (perfilEscuela.urlImagen === null && perfilEscuela.public_id === null) {
         return {
             error: false,
             message: "Logo quitado correctamente",
             data: {
-                id_escuela: fila.data.id_escuela,
-                razon_social: fila.data.razon_social ?? "Mi escuela",
+                id_escuela: perfilEscuela.id_escuela,
+                razon_social: perfilEscuela.razon_social ?? "Mi escuela",
                 urlImagen: null,
             },
             code: "ESCUELA_LOGO_QUITADO"
@@ -589,7 +590,7 @@ const quitarLogoEscuela = async (
         };
     }
 
-    const publicIdAnterior = fila.data.public_id;
+    const publicIdAnterior = perfilEscuela.public_id;
 
     if (publicIdAnterior) {
         await eliminarImagenR2(`${process.env.R2_PUBLIC_URL}/${publicIdAnterior}`).catch((err: Error) =>
@@ -616,7 +617,7 @@ const quitarLogoEscuela = async (
         message: "Logo quitado correctamente",
         data: {
             id_escuela,
-            razon_social: fila.data.razon_social ?? "Mi escuela",
+            razon_social: perfilEscuela.razon_social ?? "Mi escuela",
             urlImagen: null,
         },
         code: "ESCUELA_LOGO_QUITADO"

@@ -8,36 +8,29 @@ let controladorAlumno: any;
 import { CodigoEstadoHTTP } from '../../src/tipados/generico'; 
 //import { AlumnoServioCode } from '../../src/tipados/alumno.data'
 // Evitar problemas de hoisting de jest.mock creando un objeto de mocks
-const mocksData = {
+const mocksServicio = {
     listaAlumnos          : jest.fn(),
-    eliminarAlumno        : jest.fn(),
+    estadoAlumno          : jest.fn(),
     modAlumno             : jest.fn(),
     altaAlumno            : jest.fn(),
-    verAlumnoExistente    : jest.fn(),
-    registarAlumno        : jest.fn(),
-    verAlumnoEscuelaExistente: jest.fn(),
+    listadoSinPaginacion  : jest.fn(),
 };
 
-// Mockeamos el módulo data/alumno.data delegando al mock dentro de 'mocksData'
-jest.mock('../../src/data/alumno.data', () => ({
+// Mockeamos el módulo Servicio/alumnos.servicios delegando al mock dentro de 'mocksServicio'
+jest.mock('../../src/Servicio/alumnos.servicios', () => ({
     method: {
-        listaAlumnos            : (...args: any[]) => mocksData.listaAlumnos(...args),
-        eliminarAlumno          : (...args: any[]) => mocksData.eliminarAlumno(...args),
-        modAlumno               : (...args: any[]) => mocksData.modAlumno(...args),
-        verAlumnoExistente      : (...args: any[]) => mocksData.verAlumnoExistente(...args),
-        registarAlumno          : (...args: any[]) => mocksData.registarAlumno(...args),
-        verAlumnoEscuelaExistente: (...args: any[]) => mocksData.verAlumnoEscuelaExistente(...args),
-        registroAlumnoEscuela   : (...args: any[]) => mocksData.altaAlumno(...args),
+        listaAlumnos            : (...args: any[]) => mocksServicio.listaAlumnos(...args),
+        estadoAlumno            : (...args: any[]) => mocksServicio.estadoAlumno(...args),
+        modAlumno               : (...args: any[]) => mocksServicio.modAlumno(...args),
+        altaAlumno              : (...args: any[]) => mocksServicio.altaAlumno(...args),
+        listadoSinPaginacion    : (...args: any[]) => mocksServicio.listadoSinPaginacion(...args),
     }
 }));
 
-const mockListaAlumnos      = mocksData.listaAlumnos;
-const mockEliminarAlumnos   = mocksData.eliminarAlumno;
-const mockModAlumnos        = mocksData.modAlumno;
-const mockAltaAlumnos       = mocksData.altaAlumno;
-const mockVerAlumnoExistente = mocksData.verAlumnoExistente;
-const mockRegistarAlumno     = mocksData.registarAlumno;
-const mockVerAlumnoEscuelaExistente = mocksData.verAlumnoEscuelaExistente;
+const mockListaAlumnos      = mocksServicio.listaAlumnos;
+const mockEliminarAlumnos   = mocksServicio.estadoAlumno;
+const mockModAlumnos        = mocksServicio.modAlumno;
+const mockAltaAlumnos       = mocksServicio.altaAlumno;
 
 const mockNext = jest.fn(); 
 
@@ -212,12 +205,12 @@ describe('AlumnoController - listaAlumnos , borrarAlumno , registarAlumno', () =
             );
         });
 
-        it ('Debe hacer el alta de un alumno y deolver un status 200', async()=> {
+        it ('Debe hacer el alta de un alumno y devolver un status 200', async()=> {
             const mockData = {
                 error: false,
                 message: 'ALUMNO creada exitosamente',
                 data: { dni: 123 , apellido : "lopez" , nombre : "jose manuel"},
-                code: 'ALUMNO_ALTA',
+                code: 'ALUMNO_ALTA_OK',
                 errorsDetails: undefined
             };
 
@@ -233,41 +226,18 @@ describe('AlumnoController - listaAlumnos , borrarAlumno , registarAlumno', () =
                 { }// params
             );
 
-            // Mock the data-layer flow the controller calls:
-            // 1) verAlumnoExistente -> not found (so controller will create)
-            mockVerAlumnoExistente.mockImplementation(async (...args: any[]) => {
-                console.log('MOCK CALL verAlumnoExistente', args);
-                return { error: false, message: 'no existe', data: [], code: 'ALUMNO_NO_EXISTE' };
-            });
-            // 2) registarAlumno -> created (returns dni)
-            // Nota: el controller compara el código con AlumnoServioCode.ALUMNO_CREATED cuyo valor es 'ALUMNO_CREAR'
-            mockRegistarAlumno.mockImplementation(async (...args: any[]) => {
-                console.log('MOCK CALL registarAlumno', args);
-                return { error: false, message: 'creado', data: { dni: '33762577' }, code: 'ALUMNO_CREAR' };
-            });
-            // 3) verAlumnoEscuelaExistente -> not found
-            mockVerAlumnoEscuelaExistente.mockImplementation(async (...args: any[]) => {
-                console.log('MOCK CALL verAlumnoEscuelaExistente', args);
-                return { error: false, message: 'no inscrito', data: [], code: 'ALUMNO_ESCHOOL_NO_EXISTE' };
-            });
-            // 4) registroAlumnoEscuela -> inscripción creada
-            mockAltaAlumnos.mockImplementation(async (...args: any[]) => {
-                console.log('MOCK CALL registroAlumnoEscuela', args);
-                return mockData;
-            });
+            // El controlador llama al servicio altaAlumno directamente
+            mockAltaAlumnos.mockResolvedValue(mockData);
 
             await controladorAlumno.altaAlumno( req , res , mockNext);
 
-            // Verificaciones intermedias para localizar en qué punto se detuvo el flujo
-            expect(mockVerAlumnoExistente).toHaveBeenCalledTimes(1);
-            expect(mockRegistarAlumno).toHaveBeenCalledTimes(1);
-            expect(mockVerAlumnoEscuelaExistente).toHaveBeenCalledTimes(1);
+            // El servicio fue llamado una vez
             expect(mockAltaAlumnos).toHaveBeenCalledTimes(1);
             // Aseguramos que no se haya llamado next(err)
             expect(mockNext).not.toHaveBeenCalled();
 
-            // El controlador devuelve CodigoEstadoHTTP.CREADO (201) cuando la inscripción fue creada
-            expect(res.status).toHaveBeenCalledWith(CodigoEstadoHTTP.CREADO);
+            // El controlador devuelve 200 cuando el servicio devuelve ALUMNO_ALTA_OK
+            expect(res.status).toHaveBeenCalledWith(CodigoEstadoHTTP.OK);
         });
 
 

@@ -29,16 +29,22 @@ describe('Pruebas de Conexión a la Base de Datos (MySQL)', () => {
 
     afterEach(async () => {
         // ESTO EVITA LA CONTAMINACIÓN DE DATOS ENTRE PRUEBAS
- // 1. Tablas de unión (Hijo)
-    await connection.query("DELETE FROM alumnos_en_escuela"); 
-    await connection.query("DELETE FROM planes_en_escuela");
-    await connection.query("DELETE FROM usuarios");
-    
-    // 2. Tablas Padre
-    await connection.query('DELETE FROM alumnos'); 
-    await connection.query('DELETE FROM escuelas');
-    await connection.query('DELETE FROM planes_pago');
-    await connection.query('DELETE FROM profesores');
+        // 1. Tablas hijas con FK RESTRICT (borrar primero)
+        await connection.query("DELETE FROM asistencias");
+        await connection.query("DELETE FROM inscripciones");
+        await connection.query("DELETE FROM historial");
+        await connection.query("DELETE FROM alumnos_en_escuela"); 
+        await connection.query("DELETE FROM planes_en_escuela");
+        await connection.query("DELETE FROM usuarios");
+        
+        // 2. Tablas Padre
+        await connection.query('DELETE FROM alumnos'); 
+        await connection.query('DELETE FROM escuelas');
+        await connection.query('DELETE FROM planes_pago');
+        await connection.query('DELETE FROM profesores');
+        // 3. Limpiar IDs fijos de tests para evitar duplicate key
+        await connection.query("DELETE FROM escuelas WHERE id_escuela IN (99, 998, 999)");
+        await connection.query("DELETE FROM planes_pago WHERE id_plan IN (50, 599)");
 
     });
 

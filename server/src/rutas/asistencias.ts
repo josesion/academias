@@ -20,7 +20,7 @@ ruta.get(
 );
 
 ruta.get(
-    "/api/data_asitencia/:dni/:estado", 
+    "/api/data_asistencia/:pin/:estado", 
     permisos.validarPermiso, 
     permisoSaas.verificarPlan(['basico', 'intermedio']), 
     controladorAsistencias.dataAsistencia

@@ -419,11 +419,11 @@ const reglaAnulacionInscripcion = async ( data :  AnularInscripcionInputs)
 
 /**
  * Consulta la vigencia de la inscripción y calcula el saldo de clases disponibles.
- * * Esta función realiza un cálculo dinámico cruzando la inscripción con el histórico 
+ * * Esta función realiza un cálculo dinámico cruzando la inscripción con el histórico
  * de asistencias para determinar cuántos créditos le quedan al alumno.
  * * @param {VerificarPlanAsistenciaUnputs} data
  * Objeto con los criterios de búsqueda:
- * - dni_alumno: Documento del alumno a consultar.
+ * - pin_asistencia: PIN de 4 dígitos del alumno a consultar.
  * - estado: Estado de la inscripción (ej: 'activos').
  * - id_escuela: Identificador de la institución.
  * * @returns {Promise<TipadoData<ResultInscripcionAsistencia>>}
@@ -435,26 +435,30 @@ const reglaAnulacionInscripcion = async ( data :  AnularInscripcionInputs)
  * - Utiliza `DATE_FORMAT` para evitar problemas de conversión de zona horaria en el cliente.
  * - Emplea un `LEFT JOIN` para asegurar que el cálculo funcione incluso si el alumno posee 0 asistencias.
  * - Requiere `GROUP BY` debido a la función de agregación `COUNT`.
+ * - Busca al alumno por `pin_asistencia` en la tabla `alumnos` y luego cruza con `inscripciones`.
  * * @sqlLogic
  * El saldo de clases se calcula mediante la fórmula:
  * `(clases_por_mes * meses_contratados) - asistencias_registradas`
  */
 const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
 : Promise<TipadoData<ResultInscripcionAsistencia>> => {
-    const {dni_alumno ,estado ,id_escuela, } = data;
+    const {pin_asistencia ,estado ,id_escuela, } = data;
     const sql : string = `SELECT 
                                 i.id_inscripcion,
                                 DATE_FORMAT(i.fecha_fin, '%Y-%m-%d') AS vencimiento,
-                                ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(a.id_asistencia)) AS clases_restantes
-                            FROM inscripciones i
+                                ((i.clases_asignadas_inscritas * i.meses_asignados_inscritos) - COUNT(a.id_asistencia)) AS clases_restantes,
+                                al.dni_alumno
+                            FROM alumnos al
+                            INNER JOIN inscripciones i
+                                ON i.dni_alumno = al.dni_alumno
                             LEFT JOIN asistencias a 
                                 ON i.id_inscripcion = a.id_inscripcion
                             WHERE 
-                                i.dni_alumno = ?
+                                al.pin_asistencia = ?
                                 AND i.estado = ? 
                                 AND i.id_escuela = ?
                             GROUP BY i.id_inscripcion;`;
-    const valores : unknown[] = [ dni_alumno, estado , id_escuela];
+    const valores : unknown[] = [ pin_asistencia, estado , id_escuela];
     return await buscarExistenteEntidad<ResultInscripcionAsistencia>({
         slqEntidad : sql,
         valores ,
@@ -482,21 +486,44 @@ const verificarPlanAsistencia = async( data : VerificarPlanAsistenciaUnputs)
  */
 const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : string) 
 : Promise<TipadoData<InscripcionListado[]>> =>{
-  const { id_escuela, fecha_desde, fecha_hasta , estado, limit, offset , nombre_alumno, dni_alumno} = data ;   
-  const dniFiltro = `%${dni_alumno}%`;
-  const nombreFiltro = `%${nombre_alumno}%`;
-  let estadoFiltro : string;
+ const { id_escuela, fecha_desde, fecha_hasta , estado, limit, offset , nombre_alumno, dni_alumno, email_alumno} = data ;   
+ let estadoFiltro : string;
 
-  if (estado === "todos" ) {
-     estadoFiltro = `%%`
-  }else{
-      estadoFiltro = `%${estado}%`;
-  }; 
+ if (estado === "todos" ) {
+    estadoFiltro = `%%`
+ }else{
+     estadoFiltro = `%${estado}%`;
+ }; 
 
-  const sql : string = `SELECT 
+ // Construir condiciones WHERE dinámicamente para evitar LIKE en BIGINT con string vacío
+ const condicionesFiltro: string[] = [];
+ const valoresFiltro: unknown[] = [];
+
+ if (nombre_alumno && nombre_alumno.trim() !== "") {
+     condicionesFiltro.push("CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ?");
+     valoresFiltro.push(`%${nombre_alumno}%`);
+ }
+
+ if (dni_alumno && dni_alumno.trim() !== "") {
+     condicionesFiltro.push("CAST(a_alumno.dni_alumno AS CHAR) LIKE ?");
+     valoresFiltro.push(`%${dni_alumno}%`);
+ }
+
+ if (email_alumno && email_alumno.trim() !== "") {
+     condicionesFiltro.push("a_alumno.email LIKE ?");
+     valoresFiltro.push(`%${email_alumno}%`);
+ }
+
+ // Si hay filtros de alumno, envolverlos en un grupo con paréntesis
+ const filtroAlumnoClause = condicionesFiltro.length > 0 
+     ? `AND (${condicionesFiltro.join("\n                                AND ")})`
+     : "";
+
+ const sql : string = `SELECT 
                             i.estado ,
                             i.id_inscripcion,
                             a_alumno.dni_alumno,
+                            a_alumno.email AS email_alumno,
                             CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) AS nombre_completo,
                             COALESCE(pe.nombre_personalizado, p.descripcion_plan) AS nombre_plan,
                             COUNT(asist.id_asistencia) AS clases_usadas,
@@ -522,10 +549,7 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
 
                         AND i.fecha_inicio BETWEEN ? AND ? 
                         AND i.estado LIKE ?
-                        AND (
-                                CONCAT(a_alumno.nombre, ' ', a_alumno.apellido) LIKE ?
-                                AND a_alumno.dni_alumno LIKE ?
-                            )
+                        ${filtroAlumnoClause}
 
                         GROUP BY i.id_inscripcion
                         ORDER BY i.fecha_inicio DESC
@@ -533,8 +557,8 @@ const listadoInscripciones = async ( data : FiltroHistorialInputs, pagina : stri
                                     offset ${offset};`;
 
                    
-  const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estadoFiltro, nombreFiltro, dniFiltro];// por defecto todos estado                     
-  return listarEntidad({
+ const valores : unknown []  = [id_escuela , fecha_desde, fecha_hasta, estadoFiltro, ...valoresFiltro];
+ return listarEntidad({
         slqListado : sql,
         valores,
         limit, 

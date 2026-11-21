@@ -136,6 +136,14 @@ export const SECCIONES_USUARIO: SeccionMenu[] = [
         ruta: "/user_nivel",
         color: AZUL_CLARO,
         planes: ["intermedio", "basico"],
+        ocultarEnRubro: ["gym"],
+      },
+      {
+        etiqueta: "Salas",
+        icono: MdOutlineCategory,
+        ruta: "/user_sala",
+        color: AZUL_CLARO,
+        planes: ["intermedio", "basico"],
       },
       {
         etiqueta: "Géneros Musicales",

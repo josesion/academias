@@ -53,6 +53,7 @@ export interface DataHorario {
     dni_profesor : string | null,
     id_nivel : number | null,
     id_tipo_clase  : number | null,
+    id_sala : number | null,
     hora_inicio : Horas | null ,
     hora_fin   : Horas | null ,
     dia_semana : DiaSemana | null,
@@ -74,7 +75,9 @@ export interface ClaseHorarioData {
   Dni: string;
   dni_profe: string;
   id_nivel: number;
-  id_horario: number
+  id_horario: number;
+  id_sala: number;
+  sala_nombre: string;
 }
 
  type estadoHorario = "activos" | "inactivos" | "suspendido";
@@ -83,6 +86,7 @@ export interface ModHorario{
     dni_profesor : string | null,
     id_nivel : number | null,
     id_tipo_clase : number | null,
+    id_sala : number | null,
     id : number | null
 };
 
@@ -138,5 +142,6 @@ export interface ConjuntoIDHorario {
     dni_profe : string  | null,
     id_tipo_clase  : number  | null,
     id_nivel  : number  | null,
+    id_sala : number | null,
     id_horario? : number| null
 };

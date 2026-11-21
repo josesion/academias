@@ -7,6 +7,7 @@ import {
   Tag,
   CheckCircle2,
   AlertCircle,
+  DoorOpen,
 } from "lucide-react";
 import {
   type DataProfesor,
@@ -15,6 +16,7 @@ import {
   type DiaSemana,
   type Horas,
 } from "../../../tipadosTs/horario";
+import type { DataSala } from "../../../tipadosTs/sala";
 
 import "./tarjetahorario.css";
 
@@ -22,6 +24,7 @@ export interface DataFormHorarios {
   dataProfe: DataProfesor | null;
   dataNivel: DataNivel | null;
   dataTipo: DataTipo | null;
+  dataSala: DataSala | null;
   dia: DiaSemana | null;
   hora_inicio: Horas | null;
   hora_fin: Horas | null;
@@ -92,6 +95,15 @@ export const TarjetaHorario: React.FC<DataFormHorarios> = (data) => {
           </span>
           <span className={`info_valor ${!data.dataTipo ? "placeholder" : ""}`}>
             {data.dataTipo ? data.dataTipo.tipo : "Elegir Tipo"}
+          </span>
+        </div>
+
+        <div className="info_item">
+          <span className="info_label_con_icono">
+            <DoorOpen size={14} /> Sala
+          </span>
+          <span className={`info_valor ${!data.dataSala ? "placeholder" : ""}`}>
+            {data.dataSala ? data.dataSala.nombre : "Elegir Sala"}
           </span>
         </div>
       </div>

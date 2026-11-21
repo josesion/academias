@@ -14,6 +14,7 @@ import { listadoTipoSinPaginacion } from "../servicio/tipo.fetch";
 import { listadoNivelSinPaginacion } from "../servicio/nivel.fetch";
 import { listadoProfesoresSinPag } from "../servicio/profesor.usuarios";
 import { calendarioEscuela, altaHorario , modHorario ,eliminarHorario} from "../servicio/horario.fetch";
+import { listarSalasSinPag } from "../servicio/salas.fetch";
 
 
 import {type Horas , type DiaSemana } from "../tipadosTs/horario";
@@ -58,6 +59,7 @@ export const useHorariosUsuarios = () => {
             listadoTipo : listadoTipoSinPaginacion,
             listadoNivel : listadoNivelSinPaginacion,
             listadoProfesores : listadoProfesoresSinPag,
+            listadoSalas : listarSalasSinPag,
             altaHorario    : altaHorario,
             modHorario     : modHorario,
             eliminarHorario : eliminarHorario,
@@ -76,6 +78,10 @@ export const useHorariosUsuarios = () => {
 
         inicialFiltroTipo : {
             tipo : ""
+        },
+
+        inicialFiltroSala : {
+            nombre : ""
         },
 
         dataAltaHorario : {

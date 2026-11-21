@@ -20,7 +20,7 @@ export const AlertaVencimiento: React.FC<AlertaVencimientoProps> = ({
   onAccionPrincipal,
 }) => {
   const [diasRestantes, setDiasRestantes] = useState<number | null>(null);
-  const [isVisible, setIsVisible] = useState<boolean>(true); // Por defecto visible si hay error o carga
+  const [isVisible, setIsVisible] = useState<boolean>(false); // Inicializar en false para evitar parpadeo al montar
 
   const tituloId = useId();
   const descId = useId();

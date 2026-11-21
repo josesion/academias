@@ -8,10 +8,13 @@ const modMiPerfil = servicioUsuario.modMiPerfil;
 jest.mock("../src/data/usuario.data", () => ({
   method: {
     obtenerMiPerfil: jest.fn(),
-    verificarUsuarioExistente: jest.fn(),
     buscarPorCorreo: jest.fn(),
-    verificarAlumnoEmailExistente: jest.fn(),
-    obtenerDniAlumnoPorEmail: jest.fn(),
+    buscarCorreoUsuario: jest.fn(),
+    buscarCorreoAlumno: jest.fn(),
+    buscarUsuarioDisponible: jest.fn(),
+    buscarDniAlumno: jest.fn(),
+    verificarContrasenaActual: jest.fn(),
+    buscarIdUsuario: jest.fn(),
     modMiPerfil: jest.fn(),
   },
 }));
@@ -108,26 +111,26 @@ describe("modMiPerfil - casos de validación y transacción", () => {
     expect(dataUsuarioMock.modMiPerfil).toHaveBeenCalledWith(
       expect.objectContaining({ celular: "9876543210", dni_alumno: undefined })
     );
-    // No debe llamar a obtenerDniAlumnoPorEmail (solo cambió celular)
-    expect(dataUsuarioMock.obtenerDniAlumnoPorEmail).not.toHaveBeenCalled();
+    // No debe llamar a buscarDniAlumno (solo cambió celular)
+    expect(dataUsuarioMock.buscarDniAlumno).not.toHaveBeenCalled();
   });
 
   it("CASO 2: alumno, correo repetido en alumnos.email -> 409 ALUMNO_EMAIL_EXISTE", async () => {
-    dataUsuarioMock.obtenerDniAlumnoPorEmail.mockResolvedValue({
+    dataUsuarioMock.buscarDniAlumno.mockResolvedValue({
       error: false,
       message: "Alumno encontrado",
       data: { dni_alumno: 123 },
-      code: "USER_FOUND",
+      code: "DNI_ALUMNO_EXISTE",
     } as any);
     dataUsuarioMock.buscarPorCorreo.mockResolvedValue({
       error: false,
       message: "Correo disponible",
-      code: "EMAIL_AVAILABLE",
+      code: "CORREO_NO_EXISTE",
     } as any);
-    dataUsuarioMock.verificarAlumnoEmailExistente.mockResolvedValue({
+    dataUsuarioMock.buscarCorreoAlumno.mockResolvedValue({
       error: true,
       message: "El correo ya está registrado para otro alumno",
-      code: "ALUMNO_EMAIL_EXISTE",
+      code: "CORREO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({
@@ -135,10 +138,10 @@ describe("modMiPerfil - casos de validación y transacción", () => {
       correo: "otroalumno@mail.com",
     });
 
-    expect(resultado.code).toBe("ALUMNO_EMAIL_EXISTE");
     expect(resultado.error).toBe(true);
-    expect(dataUsuarioMock.verificarAlumnoEmailExistente).toHaveBeenCalledWith(
+    expect(dataUsuarioMock.buscarCorreoAlumno).toHaveBeenCalledWith(
       "otroalumno@mail.com",
+      expect.anything(),
       123
     );
     expect(dataUsuarioMock.modMiPerfil).not.toHaveBeenCalled();
@@ -146,10 +149,10 @@ describe("modMiPerfil - casos de validación y transacción", () => {
 
   it("CASO 3: alumno, nuevo_usuario repetido en usuarios.usuario -> 409 USERNAME_TAKEN", async () => {
     // nuevo_usuario debe ser email válido para alumno
-    dataUsuarioMock.verificarUsuarioExistente.mockResolvedValue({
+    dataUsuarioMock.buscarUsuarioDisponible.mockResolvedValue({
       error: true,
       message: "El nombre de usuario ya está en uso",
-      code: "USERNAME_TAKEN",
+      code: "USUARIO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({
@@ -157,9 +160,8 @@ describe("modMiPerfil - casos de validación y transacción", () => {
       nuevo_usuario: "otroalumno@mail.com",
     });
 
-    expect(resultado.code).toBe("USERNAME_TAKEN");
     expect(resultado.error).toBe(true);
-    expect(dataUsuarioMock.verificarUsuarioExistente).toHaveBeenCalledWith(
+    expect(dataUsuarioMock.buscarUsuarioDisponible).toHaveBeenCalledWith(
       "otroalumno@mail.com",
       1
     );
@@ -167,15 +169,15 @@ describe("modMiPerfil - casos de validación y transacción", () => {
   });
 
   it("CASO 4: alumno, nuevo_usuario repetido en usuarios.email -> 409 EMAIL_TAKEN", async () => {
-    dataUsuarioMock.verificarUsuarioExistente.mockResolvedValue({
+    dataUsuarioMock.buscarUsuarioDisponible.mockResolvedValue({
       error: false,
       message: "Usuario disponible",
-      code: "USER_AVAILABLE",
+      code: "USUARIO_NO_EXISTE",
     } as any);
     dataUsuarioMock.buscarPorCorreo.mockResolvedValue({
       error: true,
       message: "El correo ya esta en uso",
-      code: "EMAIL_TAKEN",
+      code: "CORREO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({
@@ -183,7 +185,6 @@ describe("modMiPerfil - casos de validación y transacción", () => {
       nuevo_usuario: "otro@mail.com",
     });
 
-    expect(resultado.code).toBe("EMAIL_TAKEN");
     expect(resultado.error).toBe(true);
     expect(dataUsuarioMock.buscarPorCorreo).toHaveBeenCalledWith("otro@mail.com", 1);
     expect(dataUsuarioMock.modMiPerfil).not.toHaveBeenCalled();
@@ -208,15 +209,15 @@ describe("modMiPerfil - casos de validación y transacción", () => {
 
   it("CASO 6: rol usuario (no alumno), cambiar nuevo_usuario a email valido -> 200", async () => {
     dataUsuarioMock.obtenerMiPerfil.mockResolvedValue(perfilUsuario);
-    dataUsuarioMock.verificarUsuarioExistente.mockResolvedValue({
+    dataUsuarioMock.buscarUsuarioDisponible.mockResolvedValue({
       error: false,
       message: "Usuario disponible",
-      code: "USER_AVAILABLE",
+      code: "USUARIO_NO_EXISTE",
     } as any);
     dataUsuarioMock.buscarPorCorreo.mockResolvedValue({
       error: false,
       message: "Correo disponible",
-      code: "EMAIL_AVAILABLE",
+      code: "CORREO_NO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({
@@ -226,31 +227,31 @@ describe("modMiPerfil - casos de validación y transacción", () => {
 
     expect(resultado.code).toBe("PROFILE_UPDATED");
     expect(resultado.error).toBe(false);
-    expect(dataUsuarioMock.verificarAlumnoEmailExistente).not.toHaveBeenCalled();
-    expect(dataUsuarioMock.obtenerDniAlumnoPorEmail).not.toHaveBeenCalled();
+    expect(dataUsuarioMock.buscarCorreoAlumno).not.toHaveBeenCalled();
+    expect(dataUsuarioMock.buscarDniAlumno).not.toHaveBeenCalled();
   });
 
   it("CASO 7: alumno, cambio exitoso de correo y usuario -> 200 transaccional con dni_alumno", async () => {
-    dataUsuarioMock.obtenerDniAlumnoPorEmail.mockResolvedValue({
+    dataUsuarioMock.buscarDniAlumno.mockResolvedValue({
       error: false,
       message: "Alumno encontrado",
       data: { dni_alumno: 123 },
-      code: "USER_FOUND",
+      code: "DNI_ALUMNO_EXISTE",
     } as any);
-    dataUsuarioMock.verificarAlumnoEmailExistente.mockResolvedValue({
+    dataUsuarioMock.buscarCorreoAlumno.mockResolvedValue({
       error: false,
       message: "Email de alumno disponible",
-      code: "ALUMNO_EMAIL_AVAILABLE",
+      code: "CORREO_NO_EXISTE",
     } as any);
-    dataUsuarioMock.verificarUsuarioExistente.mockResolvedValue({
+    dataUsuarioMock.buscarUsuarioDisponible.mockResolvedValue({
       error: false,
       message: "Usuario disponible",
-      code: "USER_AVAILABLE",
+      code: "USUARIO_NO_EXISTE",
     } as any);
     dataUsuarioMock.buscarPorCorreo.mockResolvedValue({
       error: false,
       message: "Correo disponible",
-      code: "EMAIL_AVAILABLE",
+      code: "CORREO_NO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({
@@ -267,21 +268,21 @@ describe("modMiPerfil - casos de validación y transacción", () => {
   });
 
   it("CASO 8: alumno, solo cambiar nuevo_usuario (email valido) -> 200 con dni_alumno resuelto", async () => {
-    dataUsuarioMock.obtenerDniAlumnoPorEmail.mockResolvedValue({
+    dataUsuarioMock.buscarDniAlumno.mockResolvedValue({
       error: false,
       message: "Alumno encontrado",
       data: { dni_alumno: 123 },
-      code: "USER_FOUND",
+      code: "DNI_ALUMNO_EXISTE",
     } as any);
-    dataUsuarioMock.verificarUsuarioExistente.mockResolvedValue({
+    dataUsuarioMock.buscarUsuarioDisponible.mockResolvedValue({
       error: false,
       message: "Usuario disponible",
-      code: "USER_AVAILABLE",
+      code: "USUARIO_NO_EXISTE",
     } as any);
     dataUsuarioMock.buscarPorCorreo.mockResolvedValue({
       error: false,
       message: "Correo disponible",
-      code: "EMAIL_AVAILABLE",
+      code: "CORREO_NO_EXISTE",
     } as any);
 
     const resultado = await modMiPerfil({

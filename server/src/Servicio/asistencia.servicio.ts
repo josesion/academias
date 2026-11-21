@@ -94,18 +94,16 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
    
     const dataVerificacionInsc : VerificarInscripcionInput = VerificarInscripcionSchema.parse(verificacion);
     const dataAsistencia : AsistenciaInputs = AsistenciaSchema.parse(asistencia);
-    // console.log(dataAsistencia)
-    // console.log(dataVerificacionInsc)
 
     const verificarInsc  = await asistenciaData.verificarInscripcion( dataVerificacionInsc );
-   // console.log(verificarInsc)
 
     switch (verificarInsc.code){
         case  'INSCRIPCION_NO_EXISTE' : {
             //  si no existe quiere decir q ya se vencio por alguna razon 
+            const identificador = verificacion.pin_asistencia ?? String(verificacion.dni_alumno ?? "desconocido");
             return {
                 error: true,
-                message : `El alumno :${verificacion.dni_alumno} no tiene plan activo`,
+                message : `El alumno con identificador ${identificador} no tiene plan activo`,
                 code : "INSCRIPCION_NO_EXISTE"
             };
         };
@@ -126,9 +124,10 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
                 const verificarDobleAsistencia = await asistenciaData.dobleAsitencia(dataVerificacionInsc.id_inscripcion , dataAsistencia.id_horario_clase);
             
                 if( verificarDobleAsistencia.code === "ASISTENCIA_EXISTE" ){
+                    const identificador = dataVerificacionInsc.pin_asistencia ?? String(dataVerificacionInsc.dni_alumno ?? "desconocido");
                     return {
                         error : true,
-                        message : `El alumno : ${ dataVerificacionInsc.dni_alumno } ya esta en clase`,
+                        message : `El alumno con identificador ${identificador} ya está en clase`,
                         code : "ALUMNO_EN_CLASE"
                     };
                 };
@@ -143,9 +142,10 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
                         };
                     };
                     if (asistenciaResultado.code === "TRANSACCION_OK"){
+                        const identificador = verificacion.pin_asistencia ?? String(verificacion.dni_alumno ?? "desconocido");
                         return {
                             error : false,
-                            message : `Asistencia correcta del alumno :${verificacion.dni_alumno} `,
+                            message : `Asistencia correcta del alumno con identificador ${identificador}`,
                             data : asistenciaResultado.data,
                             code  : "ASISTENCIA_OK"
                         };
@@ -274,7 +274,8 @@ const fechaAsistencia = async( data : ClasesActualInputs)
  * 1. Existencia de un plan activo en la base de datos.
  * 2. Existencia de una clase programada cuya ventana de acreditación coincida con NOW().
  * * @param {DataAlumnoVigenteInputs} data
- * Objeto con los criterios de búsqueda: id_escuela, dni_alumno y estado.
+ * Objeto con los criterios de búsqueda: id_escuela, pin_asistencia y estado.
+ * El kiosco identifica al alumno por su PIN de 4 dígitos.
  * * @returns {Promise<TipadoData<ResultDataAsistencia>>}
  * Objeto con el código de resultado, mensaje y el payload con `dataHorario` e `dataInscripcion`.
  * * @remarks
@@ -288,20 +289,20 @@ const fechaAsistencia = async( data : ClasesActualInputs)
  */
 export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs) 
 : Promise<TipadoData<ResultDataAsistencia>> => {
-     const { id_escuela , dni_alumno, estado} = data;
+     const { id_escuela , pin_asistencia, estado} = data;
 
      const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
      const diaHoy = dias[new Date().getDay()];
 
 
     // primero verifico si tiene plan activos
-    const verificardata : DataAlumnoVigenteInputs = DataAlumnoVigenteSchema.parse({ id_escuela : id_escuela , dni_alumno : dni_alumno , estado : estado , dia : diaHoy });
+    const verificardata : DataAlumnoVigenteInputs = DataAlumnoVigenteSchema.parse({ id_escuela : id_escuela , pin_asistencia : pin_asistencia , estado : estado , dia : diaHoy });
     const planResult = await inscripcionData.verificarPlanAsistencia(verificardata);
 
     if ( planResult.code === 'INSCRIPCION_NO_EXISTE' ){
         return {
             error : true,
-            message : `El alumno :${data.dni_alumno} no tiene plan activo`,
+            message : `El alumno con PIN ${data.pin_asistencia} no tiene plan activo`,
             code : "INSCRIPCION_NO_EXISTE"
         };
     }; 
@@ -322,7 +323,8 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
 
                     dataInscripcion : { id_inscripcion : planResult.data!.id_inscripcion,
                                         vencimiento : planResult.data!.vencimiento,
-                                        clases_restantes : planResult.data!.clases_restantes,}                
+                                        clases_restantes : planResult.data!.clases_restantes,
+                                        dni_alumno : planResult.data!.dni_alumno}                
                 },
                 code  : "ASISTENCIA_OK"
             };

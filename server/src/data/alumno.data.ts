@@ -41,6 +41,28 @@ const verAlumnoExistente = async( dni : string)
 
 };
 
+// verifico si el alumno existe por email (cuando no tiene DNI)
+const verAlumnoExistentePorEmail = async( email : string) 
+: Promise<TipadoData<RetornoVerAlumnoExistente | undefined > >  =>{
+
+    const slq : string =`select 
+                            dni_alumno 
+                         from 
+                            alumnos 
+                         where 
+                            alumnos.email = ?;`;
+    const valor : unknown[] = [email];
+
+
+    return await buscarExistenteEntidad<RetornoVerAlumnoExistente>({
+        slqEntidad : slq,
+        valores    : valor,
+        entidad :"Alumno",
+
+    });
+
+};
+
 
 const verAlumnoEscuelaExistente = async( dni : string , id_escuela : number) 
 : Promise<TipadoData<RetornoVerAlumnoExistente | undefined > >  =>{
@@ -165,11 +187,31 @@ const listaAlumnos = async(
     params : ListaAlumnoInputs,
     pagina : string
 ) : Promise<TipadoData<DataAlumnosListado[]>>  =>{
-    const { estado, dni , apellido ,limit , offset, escuela} = params ;
-    const likeDni = dni + "%";
-    const likeApellido = apellido + "%";
+    const { estado, dni , email, apellido ,limit , offset, escuela} = params ;
     
-    const sqlLista =    `select
+    // Construir condiciones WHERE dinámicamente para evitar LIKE en BIGINT
+    const condiciones: string[] = [
+        "alumnos_en_escuela.estado = ?",
+        "alumnos_en_escuela.id_escuela = ?"
+    ];
+    const valoresBase: unknown[] = [estado, escuela];
+
+    if (dni && dni.trim() !== "") {
+        condiciones.push("CAST(alumnos.dni_alumno AS CHAR) LIKE ?");
+        valoresBase.push((dni || "") + "%");
+    }
+
+    if (email && email.trim() !== "") {
+        condiciones.push("alumnos.email LIKE ?");
+        valoresBase.push((email || "") + "%");
+    }
+
+    if (apellido && apellido.trim() !== "") {
+        condiciones.push("alumnos.apellido LIKE ?");
+        valoresBase.push(apellido + "%");
+    }
+
+    const sqlLista = `select
                             alumnos.dni_alumno as Dni,
                             alumnos.apellido as Apellido,
                             alumnos.nombre as Nombre,
@@ -179,15 +221,12 @@ const listaAlumnos = async(
                                 from alumnos
                                 join alumnos_en_escuela on alumnos.dni_alumno = alumnos_en_escuela.dni_alumno
                             where
-                                alumnos_en_escuela.estado = ?
-                                and alumnos.dni_alumno like ?
-                                and alumnos.apellido like ?
-                                and alumnos_en_escuela.id_escuela = ?
+                                ${condiciones.join("\n                                and ")}
                                 order by alumnos.dni_alumno
                                     limit ${limit}
                                     offset ${offset};`;
     
-    const valores: unknown[] = [ estado ,likeDni , likeApellido , escuela];
+    const valores: unknown[] = valoresBase;
 
      return await listarEntidad<DataAlumnosListado>(
         {
@@ -203,8 +242,25 @@ const listaAlumnos = async(
 
 const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs) 
 :Promise<TipadoData<DataAlumnosListadoSinPag[]>> => {
-    const {dni ,escuela ,estado} = parametros ;
-    const likeDni = dni + "%";
+    const {dni , email, escuela ,estado} = parametros ;
+    
+    // Construir condiciones WHERE dinámicamente para evitar LIKE en BIGINT
+    const condiciones: string[] = [
+        "alumnos_en_escuela.estado = ?",
+        "alumnos_en_escuela.id_escuela = ?"
+    ];
+    const valoresBase: unknown[] = [estado, escuela];
+
+    if (dni && dni.trim() !== "") {
+        condiciones.push("CAST(alumnos.dni_alumno AS CHAR) LIKE ?");
+        valoresBase.push((dni || "") + "%");
+    }
+
+    if (email && email.trim() !== "") {
+        condiciones.push("alumnos.email LIKE ?");
+        valoresBase.push((email || "") + "%");
+    }
+
     const sql : string = `select
                                 alumnos.dni_alumno as Dni,
                                 alumnos.apellido as Apellido,
@@ -214,14 +270,12 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
                             from alumnos
                                 join alumnos_en_escuela on alumnos.dni_alumno = alumnos_en_escuela.dni_alumno
                             where
-                                alumnos_en_escuela.estado = ?
-                                and alumnos.dni_alumno like ?
-                                and alumnos_en_escuela.id_escuela = ?
+                                ${condiciones.join("\n                                and ")}
                             order by 
                                     alumnos.apellido
                             limit 15`;
 
-    const valores : unknown[] = [estado , likeDni , escuela];
+    const valores : unknown[] = valoresBase;
 
     return await listarEntidadSinPaginacion<DataAlumnosListadoSinPag>({
             slqListado: sql , 
@@ -236,12 +290,32 @@ const listadoSinPaginacion = async( parametros : ListaAlumnoSinPaginacionInputs)
 export const verificarCorreoExistente = async ( email : string)
 :Promise<TipadoData<{ id_usuario : string, correo :string }>> => {
 
-  const sql : string = `SELECT id_usuario, correo FROM usuarios WHERE correo = ? OR usuario = ?;`;  
-  const valores : unknown[] = [email, email];
+  // Verificar si el correo existe en la tabla alumnos (alumno real registrado)
+  const sqlAlumnos : string = `SELECT dni_alumno, email FROM alumnos WHERE email = ?;`;
+  const valoresAlumnos : unknown[] = [email];
+
+  const resultadoAlumno = await buscarExistenteEntidad({
+        slqEntidad : sqlAlumnos,
+        valores : valoresAlumnos,
+        entidad : "USUARIO_CORREO"
+  });
+
+  // Si ya existe un alumno con ese correo, devolver error
+  if (resultadoAlumno.code === "USUARIO_CORREO_EXISTE") {
+      return resultadoAlumno as any;
+  }
+
+  // Verificar si el correo existe en usuarios con rol alumno Y tiene registro en alumnos
+  const sqlUsuarios : string = `
+    SELECT u.id_usuario, u.correo FROM usuarios u
+    INNER JOIN alumnos a ON u.correo = a.email
+    WHERE u.correo = ? OR u.usuario = ?;
+  `;
+  const valoresUsuarios : unknown[] = [email, email];
 
   return await buscarExistenteEntidad({
-        slqEntidad : sql,
-        valores : valores,
+        slqEntidad : sqlUsuarios,
+        valores : valoresUsuarios,
         entidad : "USUARIO_CORREO"
   });
 
@@ -298,10 +372,24 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
 
         const idUsuarioGenerado = resUsuario.insertId;
 
-        // 4. Insertar en la tabla 'alumnos' (Entidad global)
+        // 4. Generar PIN de asistencia de 4 dígitos único para esta escuela
+        let pinAsistencia: string;
+        do {
+            pinAsistencia = Math.floor(1000 + Math.random() * 9000).toString();
+            // Verificar que el PIN no esté en uso en esta escuela
+            const [pinRows]: any = await conn.execute(
+                `SELECT a.pin_asistencia FROM alumnos a
+                 INNER JOIN alumnos_en_escuela aee ON a.dni_alumno = aee.dni_alumno
+                 WHERE a.pin_asistencia = ? AND aee.id_escuela = ?`,
+                [pinAsistencia, data.id_escuela]
+            );
+            if (pinRows.length === 0) break;
+        } while (true);
+
+        // 5. Insertar en la tabla 'alumnos' (Entidad global) con PIN
         const sqlAlumno = `
-            INSERT INTO alumnos (dni_alumno, nombre, apellido, email, numero_celular)
-            VALUES (?, ?, ?, ?, ?);
+            INSERT INTO alumnos (dni_alumno, nombre, apellido, email, numero_celular, pin_asistencia)
+            VALUES (?, ?, ?, ?, ?, ?);
         `;
 
         await conn.execute(sqlAlumno, [
@@ -309,7 +397,8 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
             data.nombre,
             data.apellido,
             data.email,
-            data.celular
+            data.celular,
+            pinAsistencia
         ]);
 
         // 5. Insertar en la tabla de relación 'alumnos_en_escuela'
@@ -327,12 +416,13 @@ export const altaAlumnoTransaccion = async (data: AlumnosTransaccionInputs) => {
             fechaActual
         ]);
 
-        // Retornamos los datos necesarios para el controlador (incluyendo la contraseña en plano para el correo)
+        // Retornamos los datos necesarios para el controlador (incluyendo la contraseña y PIN para el correo)
         return {
             id_usuario: idUsuarioGenerado,
             dni: data.dni,
             email: data.email,
-            contrasenaTemporal: contrasenaPlano 
+            contrasenaTemporal: contrasenaPlano,
+            pin_asistencia: pinAsistencia
         };
     });
 };
@@ -398,6 +488,7 @@ export const modAlumnoTransaccion = async (data: AlumnosInputs) => {
 
 export const  method = {
     verAlumnoExistente : tryCatchDatos( verAlumnoExistente ),
+    verAlumnoExistentePorEmail : tryCatchDatos( verAlumnoExistentePorEmail ),
     verAlumnoEscuelaExistente : tryCatchDatos( verAlumnoEscuelaExistente ),
     registarAlumno :    tryCatchDatos( registarAlumno , "Alumno" ),
     registroAlumnoEscuela : tryCatchDatos ( registroAlumnoEscuela, "Inscripcion" , "femenino"),

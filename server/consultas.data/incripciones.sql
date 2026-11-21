@@ -4,25 +4,23 @@ CREATE TABLE inscripciones (
     id_plan INT NOT NULL,
     id_escuela INT NOT NULL,
     dni_alumno BIGINT NOT NULL,
-    
+
     -- Fechas y vigencia
     fecha_inicio DATE NOT NULL,
     fecha_fin DATE NULL,
-    
+
     -- Snapshots para evitar mutaciones
-    clases_asignadas_inscritas INT NOT NULL, 
+    clases_asignadas_inscritas INT NOT NULL,
     meses_asignados_inscritos INT NOT NULL,
     monto DECIMAL(10, 2) NOT NULL,
 
     estado ENUM('activos', 'suspendido', 'vencidos') DEFAULT 'activos',
 
-    -- Claves Foráneas (Tus originales)
-    FOREIGN KEY (dni_alumno) REFERENCES alumnos(dni_alumno) ON DELETE RESTRICT,
-    
-    FOREIGN KEY (dni_alumno, id_escuela) 
+    -- Claves Foráneas
+    FOREIGN KEY (dni_alumno, id_escuela)
         REFERENCES alumnos_en_escuela(dni_alumno, id_escuela) ON DELETE RESTRICT,
-        
-    FOREIGN KEY (id_escuela, id_plan) 
+
+    FOREIGN KEY (id_escuela, id_plan)
         REFERENCES planes_en_escuela(id_escuela, id_plan) ON DELETE RESTRICT
 );
 

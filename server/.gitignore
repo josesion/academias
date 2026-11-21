@@ -2,6 +2,9 @@
 node_modules
 /build
 
+# Tests
+tests/
+
 # Archivos de uso interno de agentes / info del sistema / con credenciales
 AGENTS.md
 MEMORY.md

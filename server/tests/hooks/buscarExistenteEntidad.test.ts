@@ -81,7 +81,7 @@ describe("buscarExistenteEntidad (Unit Test)" , () => {
 
                 expect(respuesta.error).toBe(false);
                 expect(respuesta.message).toEqual(mensajeEsperado);
-                expect(respuesta.data).toEqual([]);
+                expect(respuesta.data).toBeUndefined();
             } );
 
 

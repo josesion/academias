@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @fileoverview Controlador Express para la Gestión CRUD (ABML) de la entidad Alumno.
  * @module controllers/alumno.controller
  * @description Contiene los manejadores de rutas para Alta, Baja, Modificación y Listado de alumnos.
@@ -25,7 +25,8 @@ import { MAPA_ALTA_ALUMNO, MAPA_MOD_ALUMNO , MAPA_LISTAR_SIN_PAGINACION_ALUMNOS,
  * con la información de contexto del usuario y la escuela autenticados.
  * 
  * Este proceso realiza los siguientes pasos:
- * 1. Extrae los campos obligatorios del alumno (`dni`, `nombre`, `apellido`, `celular`) directamente desde `req.body`.
+ * 1. Extrae los campos obligatorios del alumno (`dni`, 
+ombre`, `apellido`, `celular`) directamente desde `req.body`.
  * 2. Asocia automáticamente el `id_escuela` y el `id_usuario` a partir de la sesión o token del usuario autenticado (`req.usuario`), asegurando su conversión a número.
  * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto `dataAlumno`, el servicio correspondiente (`servicioAlumno.altaAlumno`) y el mapa de códigos de la operación.
  *
@@ -45,7 +46,7 @@ import { MAPA_ALTA_ALUMNO, MAPA_MOD_ALUMNO , MAPA_LISTAR_SIN_PAGINACION_ALUMNOS,
 const altaAlumno = async( req :  Request , res : Response) =>{
 
     const dataAlumno = {
-        dni : req.body.dni,
+        dni : req.body.dni || undefined,
         nombre : req.body.nombre,
         apellido : req.body.apellido,
         celular  : req.body.celular,
@@ -68,7 +69,8 @@ const altaAlumno = async( req :  Request , res : Response) =>{
  * y delegando la ejecución al manejador genérico.
  * 
  * Este proceso realiza los siguientes pasos:
- * 1. Extrae el `dni` de los parámetros de la ruta (`req.params`) y los campos editables (`nombre`, `apellido`, `celular`) del cuerpo de la petición.
+ * 1. Extrae el `dni` de los parámetros de la ruta (`req.params`) y los campos editables (
+ombre`, `apellido`, `celular`) del cuerpo de la petición.
  * 2. Construye el objeto `datoAlumno`, asegurando el casting de los campos numéricos requeridos 
  *    (ID de escuela y de usuario) y convirtiendo el celular a string.
  * 3. Ejecuta `handleControladores` pasando la respuesta (`res`), el objeto de datos, el servicio 
@@ -178,12 +180,15 @@ const listarAlumno = async( req: Request  , res : Response) =>{
     const {  limit , pagina  } = req.query;
     const estado = String(req.query.estado ?? "");
     const dni = String(req.query.dni ?? "");
+    const email = String(req.query.email ?? "");
     const apellido = String(req.query.apellido ?? "");
     const offset = ( Number(pagina) -1 ) * Number(limit) ;
 
     const dataListado : ListaAlumnoInputs = {
         estado , 
-        dni , 
+        
+        dni ,
+        email, 
         apellido , 
         escuela : Number(req.usuario?.id_escuela) ,
         id_usuario : Number(req.usuario?.id),
@@ -224,10 +229,11 @@ const listarAlumno = async( req: Request  , res : Response) =>{
  * // /api/alumnos/sin-paginacion?dni=12345678&estado=activo
  */
 const listaAlumnoSinPag = async ( req : Request , res : Response) =>{
-    const { dni , estado} = req.query ;
+    const { dni , email, estado} = req.query ;
 
     const data : ListaAlumnoSinPaginacionInputs = {
         dni : String(dni) ,
+        email : String(email) ,
         estado : String(estado) ,
         escuela : Number(req.usuario?.id_escuela),
         id_usuario : Number(req.usuario?.id)

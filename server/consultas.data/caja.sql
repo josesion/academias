@@ -41,27 +41,37 @@ CREATE TABLE detalle_caja (
     id_movimiento INT PRIMARY KEY AUTO_INCREMENT,
     id_caja INT NOT NULL,
     id_categoria INT NOT NULL,
-    id_cuenta INT NOT NULL, 
-    id_usuario INT NULL, -- <--- Nuevo campo agregado
+    id_cuenta INT NOT NULL,
+    id_usuario INT NULL,
     monto DECIMAL(10, 2) NOT NULL,
     descripcion TEXT,
-    referencia_id INT NULL, 
+    referencia_id INT NULL,
+    -- Columnas de transferencias y retenciones (migración 050)
+    id_transferencia INT NULL,
+    estado_retencion ENUM('activa','devuelta','justificada') NULL,
+    justificacion_retencion TEXT,
+    monto_devuelto DECIMAL(10, 2) NULL,
     fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     -- Relaciones existentes
-    CONSTRAINT fk_detalle_caja_padre 
+    CONSTRAINT fk_detalle_caja_padre
         FOREIGN KEY (id_caja) REFERENCES cajas(id_caja),
-        
-    CONSTRAINT fk_detalle_categoria 
+
+    CONSTRAINT fk_detalle_categoria
         FOREIGN KEY (id_categoria) REFERENCES categorias_caja(id_categoria),
-        
-    CONSTRAINT fk_detalle_cuenta_escuela 
+
+    CONSTRAINT fk_detalle_cuenta_escuela
         FOREIGN KEY (id_cuenta) REFERENCES cuentas_escuela(id_cuenta),
 
-    -- Nueva relación agregada
-    CONSTRAINT fk_detalle_usuario 
+    -- Relación con usuario
+    CONSTRAINT fk_detalle_usuario
         FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario)
-        ON DELETE SET NULL -- Si el usuario se borra, el movimiento persiste por auditoría
+        ON DELETE SET NULL,
+
+    -- Relación con transferencias (migración 050)
+    CONSTRAINT fk_detalle_transferencia
+        FOREIGN KEY (id_transferencia) REFERENCES transferencias_caja(id_transferencia)
+        ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 

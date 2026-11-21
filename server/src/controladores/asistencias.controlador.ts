@@ -69,13 +69,14 @@ const numeroONull = (v: unknown): number | null =>
 
 /**
  * Procesa el alta de una asistencia para un alumno en una escuela específica.
- * * La función extrae el `id_escuela` directamente del token del usuario (req.usuario) 
+ * El kiosco identifica al alumno por su PIN de 4 dígitos.
+ * * La función extrae el `id_escuela` directamente del token del usuario (req.usuario)
  * y combina los datos del cuerpo de la petición con la lógica de servicio.
  * * @async
  * @function altaAsistencia
  * @param {Request} req - Objeto de petición de Express. Debe contener:
  * - req.usuario.id_escuela: ID de la escuela extraído del token JWT.
- * - req.body: Objeto con { dni_alumno, id_inscripcion, estado, id_horario_clase }.
+ * - req.body: Objeto con { pin_asistencia, id_inscripcion, estado, id_horario_clase }.
  * @param {Response} res - Objeto de respuesta de Express.
  * @returns {Promise<void>} Envía una respuesta HTTP estructurada mediante `enviarResponse` o `enviarResponseError`.
  */
@@ -83,7 +84,7 @@ const altaAsistencia = async( req : Request , res: Response)=> {
    
     const data = {
         id_escuela : Number( req.usuario?.id_escuela),
-        dni_alumno : Number( req.body.dni_alumno),
+        pin_asistencia : req.body.pin_asistencia as string,
         id_inscripcion : Number( req.body.id_inscripcion),
         estado  : req.body.estado as string, 
     };
@@ -191,13 +192,13 @@ const fechasHorarios = async( req : Request, res : Response) =>{
 };
 
 /**
- * Obtiene el historial o datos específicos de asistencia para un alumno determinado.
- * * Filtra por `id_escuela` (via token), `dni_alumno` y `estado` (via params).
+ * Obtiene los datos de asistencia para un alumno determinado en el kiosco.
+ * * Filtra por `id_escuela` (via token), `pin_asistencia` y `estado` (via params).
  * * @async
  * @function dataAsistencia
  * @param {Request} req - Objeto de petición de Express. Debe contener:
  * - req.usuario.id_escuela: ID de la escuela extraído del token JWT.
- * - req.params.dni: DNI del alumno a consultar.
+ * - req.params.pin: PIN de 4 dígitos del alumno a consultar.
  * - req.params.estado: Estado de asistencia a filtrar.
  * @param {Response} res - Objeto de respuesta de Express.
  * @returns {Promise<void>} Envía la respuesta con la información de asistencia o el error correspondiente.
@@ -206,7 +207,7 @@ const dataAsistencia = async( req : Request, res : Response) =>{
    
     const data = {
         id_escuela : Number(req.usuario?.id_escuela),
-        dni_alumno : Number(req.params.dni),
+        pin_asistencia : req.params.pin as string,
         estado : req.params.estado as string,
     };
 

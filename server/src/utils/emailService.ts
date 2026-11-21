@@ -153,13 +153,15 @@ export const enviarCorreo = async ({
  * @param {string} email - Correo de acceso al sistema.
  * @param {string} [passwordTemp] - Contraseña temporal generada en el alta.
  * @param {string} [nombreEscuela] - Razón social de la escuela que lo registró.
+ * @param {string} [pinAsistencia] - PIN de 4 dígitos para marcar asistencia en el kiosco.
  * @returns {string} Documento HTML completo listo para enviar.
  */
 export const generarPlantillaBienvenida = (
     nombreAlumno: string,
     email: string,
     passwordTemp?: string,
-    nombreEscuela?: string
+    nombreEscuela?: string,
+    pinAsistencia?: string
 ) => {
     const nombre = escaparHtml(nombreAlumno);
     const correo = escaparHtml(email);
@@ -180,6 +182,14 @@ export const generarPlantillaBienvenida = (
         ? `
                 <p style="margin: 5px 0;"><b>Contraseña temporal:</b> ${escaparHtml(passwordTemp)}</p>
                 <p style="margin: 10px 0 0 0; font-size: 13px; color: #6B7280;">Vas a poder cambiarla cuando ingreses por primera vez.</p>`
+        : '';
+
+    const bloquePin = pinAsistencia
+        ? `
+                    <div style="background-color: #F0F9FF; padding: 15px; border-radius: 6px; margin: 15px 0; border: 1px solid #BFDBFE;">
+                        <p style="margin: 5px 0;"><b>PIN de asistencia:</b> <span style="font-size: 24px; font-weight: bold; color: #4F46E5; letter-spacing: 4px;">${escaparHtml(pinAsistencia)}</span></p>
+                        <p style="margin: 10px 0 0 0; font-size: 13px; color: #6B7280;">Usá este PIN de 4 dígitos para marcar tu asistencia en el kiosco de la academia.</p>
+                    </div>`
         : '';
 
     const bloqueContacto = contacto
@@ -212,7 +222,7 @@ export const generarPlantillaBienvenida = (
 
                     <div style="background-color: #F9FAFB; padding: 15px; border-radius: 6px; margin: 20px 0;">
                         <p style="margin: 5px 0;"><b>Correo de acceso:</b> ${correo}</p>${bloquePassword}
-                    </div>
+                    </div>${bloquePin}
 
                     <p>Ya podés ingresar para gestionar tus horarios, asistencias y novedades.</p>
 
@@ -239,13 +249,15 @@ export const generarPlantillaBienvenida = (
  * @param {string} email - Correo de acceso al sistema.
  * @param {string} [passwordTemp] - Contraseña temporal generada en el alta.
  * @param {string} [nombreEscuela] - Razón social de la escuela que lo registró.
+ * @param {string} [pinAsistencia] - PIN de 4 dígitos para marcar asistencia en el kiosco.
  * @returns {string} Cuerpo del correo en texto plano.
  */
 export const generarTextoBienvenida = (
     nombreAlumno: string,
     email: string,
     passwordTemp?: string,
-    nombreEscuela?: string
+    nombreEscuela?: string,
+    pinAsistencia?: string
 ): string => {
     const titulo = nombreEscuela
         ? `¡Bienvenido/a a ${nombreEscuela}!`
@@ -264,6 +276,9 @@ export const generarTextoBienvenida = (
         `Correo de acceso: ${email}`,
         passwordTemp ? `Contraseña temporal: ${passwordTemp}` : null,
         passwordTemp ? 'Vas a poder cambiarla cuando ingreses por primera vez.' : null,
+        pinAsistencia ? '' : null,
+        pinAsistencia ? `PIN de asistencia: ${pinAsistencia}` : null,
+        pinAsistencia ? 'Usá este PIN de 4 dígitos para marcar tu asistencia en el kiosco de la academia.' : null,
         '',
         `Iniciar Sesión: ${urlCliente()}/login`,
         contacto ? `¿Necesitás ayuda? Escribinos a ${contacto}` : null,

@@ -30,6 +30,7 @@ export const altaHorario = async(
             dni_profesor : data.dni_profesor,
             id_nivel : data.id_nivel,
             id_tipo_clase  : data.id_tipo_clase,
+            id_sala : data.id_sala,
             hora_inicio : data.hora_inicio ,
             hora_fin   : data.hora_fin ,
             dia_semana : data.dia_semana,
@@ -50,6 +51,7 @@ export const modHorario = async (
         dni_profesor : data.dni_profesor,
         id_nivel : data.id_nivel,
         id_tipo_clase : data.id_tipo_clase,
+        id_sala : data.id_sala,
         id : data.id
     },
     signal : signal 

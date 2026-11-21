@@ -25,10 +25,12 @@ export interface AlumnoBase {
 
 export interface RetornoRegistroAlumno  {
         celular  : string,
-        dni: string;
+        dni: string | undefined;
         apellido: string;
         nombre: string;
         email : string,
+        contrasenaTemporal?: string,
+        pin_asistencia?: string
 }
 
 export interface DataAlumnosListado {
@@ -57,12 +59,12 @@ export interface RetornodAlumno extends AlumnoBase{
 }
 
 export interface RetornoIncripcionAlumnoEscuela {
-    dni : string,
+    dni : string | undefined,
     id_escuela : number
 }
 
 export interface RetornoEliminaciom {
-    dni : string;
+    dni : string | undefined;
 }
 
 export interface RetornoVerAlumnoExistente {

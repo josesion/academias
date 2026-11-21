@@ -3,6 +3,7 @@ import "./calendario.css";
 import { ClaseAsignada } from "../ClasesAsignadas/ClasesAsiganadas";
 import { CeldaVacia } from "../CeldaVacia/CeldaVacia";
 import { Boton } from "../../generales/Boton/Boton";
+import { AlertCircle } from "lucide-react";
 
 import { type ClaseHorario } from "../ClasesAsignadas/ClasesAsiganadas";
 import { type MensajeCelda } from "../CeldaVacia/CeldaVacia";
@@ -135,8 +136,20 @@ export const Calendario: React.FC<CalendarioProps> = (data) => {
 
   return (
     <div className="contenedor_calendario_completo">
+      {/* Mensaje cuando no hay clases asignadas */}
+      {(!calendario || calendario.length === 0) && (
+        <div className="calendario_vacio" role="status">
+          <AlertCircle size={20} aria-hidden="true" />
+          <p>No hay clases asignadas en esta sala. Hacé clic en una celda para agregar la primera.</p>
+        </div>
+      )}
       <div className="contenedor_calendario">
-        <table className="tabla_calendario" role="grid" aria-label="Grilla de horarios">
+        <table
+          className="tabla_calendario"
+          role="grid"
+          aria-label="Grilla de horarios"
+          title="Usá las flechas del teclado para navegar, Enter o Espacio para seleccionar"
+        >
           <thead className="cabecera_calendario">
             <tr role="row">
               {/* Esquina superior izquierda fija (sticky en ambas direcciones) */}
@@ -211,7 +224,7 @@ export const Calendario: React.FC<CalendarioProps> = (data) => {
         <Boton
           clase="aceptar"
           logo="Back"
-          texto="Volver"
+          texto="Volver al panel principal"
           onClick={data.handleVolver}
         />
       </div>

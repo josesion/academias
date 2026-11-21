@@ -9,6 +9,9 @@ CREATE TABLE horarios_clases (
     id_nivel INT NOT NULL,
     id_tipo_clase INT NOT NULL,
 
+    -- Sala donde se dicta la clase (puede ser NULL si no se asigna)
+    id_sala INT DEFAULT NULL,
+
     -- Día de la semana como ENUM
     dia_semana ENUM('lunes','martes','miercoles','jueves','viernes','sabado','domingo') NOT NULL,
     
@@ -42,7 +45,13 @@ CREATE TABLE horarios_clases (
     FOREIGN KEY (id_escuela)
         REFERENCES escuelas(id_escuela)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+
+    -- Sala
+    FOREIGN KEY (id_sala)
+        REFERENCES salas(id)
+        ON UPDATE CASCADE
+        ON DELETE SET NULL
 );
 
 

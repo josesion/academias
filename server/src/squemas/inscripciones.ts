@@ -56,41 +56,62 @@ export const InscripcionSchema = z.object({
         
 });
 
+/**
+ * Schema para verificar una inscripción.
+ * Acepta `dni_alumno` (número) o `pin_asistencia` (string de 4 dígitos)
+ * como identificador del alumno. El kiosco usa PIN, la asistencia manual usa DNI.
+ */
 export const VerificarInscripcionSchema  = z.object({
     id_inscripcion : z.coerce.number()
                     .int("El ID de inscripcion debe ser un número entero.")
                     .positive("El ID de inscripcion debe ser positivo (mayor que 0)."),
     dni_alumno: z.coerce.number()
                     .int("El DNI debe ser un número entero sin decimales.")
-                    .positive("El DNI debe ser un número positivo."),
+                    .positive("El DNI debe ser un número positivo.")
+                    .optional(),
+    pin_asistencia: z.string()
+                    .length(4, "El PIN debe tener exactamente 4 dígitos.")
+                    .regex(/^[0-9]{4}$/, "El PIN debe contener solo dígitos numéricos.")
+                    .optional(),
     id_escuela: z.coerce.number()
                     .int("El ID de la escuela debe ser un número entero.")
                     .positive("El ID de la escuela debe ser positivo (mayor que 0)."),                
     estado : EstadoEnum
-});
+}).refine(
+    (data) => data.dni_alumno !== undefined || data.pin_asistencia !== undefined,
+    { message: "Se requiere dni_alumno o pin_asistencia" }
+);
 
 export interface VerificacionInputs {
      dni_alumno : number , id_escuela : number , estado : 'activos' | 'vencidos' | 'suspendidos'
 };
 
 
+/**
+ * Schema para verificar el plan de un alumno en el kiosco.
+ * El alumno se identifica por su PIN de 4 dígitos en lugar del DNI.
+ * Incluye `dia` porque el servicio lo agrega al parsear con DataAlumnoVigenteSchema.
+ */
 export const VerificlarPlanSchema = z.object({
-        dni_alumno: z.coerce.number()
-                    .int("El DNI debe ser un número entero sin decimales.")
-                    .positive("El DNI debe ser un número positivo."),
+        pin_asistencia: z.string()
+                    .length(4, "El PIN debe tener exactamente 4 dígitos.")
+                    .regex(/^[0-9]{4}$/, "El PIN debe contener solo dígitos numéricos."),
 
         estado : EstadoEnum,
 
         id_escuela: z.coerce.number()
                     .int("El ID de la escuela debe ser un número entero.")
-                    .positive("El ID de la escuela debe ser positivo (mayor que 0)."),   
+                    .positive("El ID de la escuela debe ser positivo (mayor que 0)."),
+
+        dia: z.string().optional(),
 
 });
 
 export interface ResultInscripcionAsistencia{
     id_inscripcion : number,
     vencimiento : string,
-    clases_restantes : number
+    clases_restantes : number,
+    dni_alumno : number | null
 };
 
 
@@ -99,6 +120,7 @@ export const FiltroHistorialSchema = z.object({
 
   nombre_alumno: z.string().optional().default(''),
   dni_alumno: z.string().optional().default(''),
+  email_alumno: z.string().optional().default(''),
   
   // Validamos que sean strings de fecha válidos (YYYY-MM-DD)
   fecha_desde: z.string().refine((val) => !isNaN(Date.parse(val)), {
