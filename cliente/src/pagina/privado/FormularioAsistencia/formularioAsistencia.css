@@ -308,6 +308,86 @@
     width: 100%;
 }
 
+/* --- Pestañas PIN / QR --- */
+
+.pestanas_kiosko {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+
+  width: 100%;
+  max-width: 720px;
+  padding: 0 8px;
+}
+
+.pestanas_kiosko_boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 24px;
+
+  cursor: pointer;
+
+  background: var(--fondo-superficie);
+  border: 2px solid var(--borde);
+  border-radius: var(--radio-md);
+  color: var(--texto-secundario);
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semi-negrita);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: border-color 150ms var(--ease-ui),
+              background 150ms var(--ease-ui),
+              color 150ms var(--ease-ui);
+}
+
+.pestanas_kiosko_boton:hover {
+  background: var(--fondo-hover);
+  border-color: var(--color-secundario);
+  color: var(--color-secundario);
+}
+
+.pestanas_kiosko_boton.activa {
+  background: var(--fondo-exito-suave);
+  border-color: var(--color-exito);
+  color: var(--color-exito);
+}
+
+.pestanas_kiosko_boton:active {
+  transform: scale(0.97);
+}
+
+/* --- Selector QR vacío --- */
+
+.selector_qr_vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
+  padding: 24px;
+
+  color: var(--texto-deshabilitado);
+}
+
+.selector_qr_vacio p {
+  font-size: var(--texto-sm);
+  margin: 0;
+}
+
+/* --- Etiqueta en selector de clase (En curso / Próxima) --- */
+
+.selector_clase_etiqueta {
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--color-secundario);
+}
+
 /* --- Selector de clase (múltiples horarios simultáneos) --- */
 
 .selector_clase {

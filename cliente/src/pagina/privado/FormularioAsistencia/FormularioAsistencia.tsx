@@ -1,364 +1,299 @@
-import { useRef, useEffect, useMemo } from "react";
-import { createPortal } from "react-dom";
+import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 
 import {
-  CalendarClock,
-  Clock3,
-  UserCheck,
-  CalendarDays,
-  DoorOpen,
+	CalendarClock,
+	Clock3,
+	UserCheck,
+	CalendarDays,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-// Componentes
+// Componentes generales
 import { CompoError } from "../../../componentes/generales/Error/Error";
 import { Boton } from "../../../componentes/generales/Boton/Boton";
 import { Inputs } from "../../../componentes/generales/Inputs/Inputs";
-import { LogoExito } from "../../../componentes/generales/CuadroExito/CuadroExito";
+
+// Componentes del kiosko
+import { GeneradorQR } from "../../../componentes/Kiosko/GeneradorQR";
+import { GrupoClases } from "../../../componentes/Kiosko/GrupoClases";
+import { SelectorClase } from "../../../componentes/Kiosko/SelectorClase";
+import { SelectorClaseQR } from "../../../componentes/Kiosko/SelectorClaseQR";
+import { ExitoAsistencia } from "../../../componentes/Kiosko/ExitoAsistencia";
+import { PestañasKiosko } from "../../../componentes/Kiosko/PestañasKiosko";
+import type { Pestaña } from "../../../componentes/Kiosko/PestañasKiosko";
 
 // Hook
 import { useAsistenciaSet } from "../../../hookNegocios/asistencia";
+
+// Tipados
+import type * as TipadoAsistencia from "../../../tipadosTs/asistencia.typado";
 
 // CSS
 import "./formularioAsistencia.css";
 
 /* ==========================================================
    TIPOS Y HELPERS
+   Se quedan aquí porque dependen de los tipos del fetch.
    ========================================================== */
 
-type ClaseInfo = {
-  nombre_clase: string;
-  hora_inicio: string;
-  hora_fin: string;
-  sala?: string;
-  id_horario_clase: number;
+export type ClaseInfo = {
+	nombre_clase: string;
+	hora_inicio: string;
+	hora_fin: string;
+	sala?: string;
+	id: number;
 };
 
-type ProximaClaseInfo = {
-  nombre_clase: string;
-  hora_inicio: string;
-  hora_fin: string;
-  sala?: string;
-  id_horario_prox_clase: number;
-};
+const esHorarioValido = (h: unknown): h is TipadoAsistencia.ResultadoClaseEnCruso =>
+	typeof h === "object" &&
+	h !== null &&
+	"id_horario_en_clase" in h &&
+	"nombre_clase" in h &&
+	"hora_inicio" in h;
 
-const esHorarioValido = (h: unknown): h is ClaseInfo =>
-  typeof h === "object" &&
-  h !== null &&
-  ("id_horario_clase" in h || "id_horario_en_clase" in h) &&
-  "nombre_clase" in h &&
-  "hora_inicio" in h;
-
-const esProximaClaseValida = (h: unknown): h is ProximaClaseInfo =>
-  typeof h === "object" &&
-  h !== null &&
-  "id_horario_prox_clase" in h &&
-  "nombre_clase" in h &&
-  "hora_inicio" in h;
-
-/* ==========================================================
-   SUBCOMPONENTES
-   ========================================================== */
-
-type TarjetaClaseProps = {
-  variante: "actual" | "proxima";
-  etiqueta: string;
-  Icono: LucideIcon;
-  clase: ClaseInfo | ProximaClaseInfo | null;
-};
-
-const TarjetaClase = ({
-  variante,
-  etiqueta,
-  Icono,
-  clase,
-}: TarjetaClaseProps) => {
-  if (!clase) return null;
-
-  return (
-    <article className={`clase_card card-base ${variante}`}>
-      <span className={`badge ${variante}`}>
-        <Icono size={13} aria-hidden="true" />
-        {etiqueta}
-      </span>
-
-      <div className="clase_contenido">
-        <h2>{clase.nombre_clase}</h2>
-        {clase.sala && <p className="clase_sala">{clase.sala}</p>}
-
-        <p>
-          <CalendarClock size={16} aria-hidden="true" />
-          <span>{clase.hora_inicio}</span>
-          <span className="separador_hora" aria-hidden="true">
-            →
-          </span>
-          <span>{clase.hora_fin}</span>
-        </p>
-      </div>
-    </article>
-  );
-};
-
-/**
- * Grupo de tarjetas para una sección (En curso / Próxima).
- * Muestra una tarjeta por clase, o un mensaje vacío si no hay clases.
- */
-type GrupoClasesProps = {
-  variante: "actual" | "proxima";
-  etiqueta: string;
-  Icono: LucideIcon;
-  clases: (ClaseInfo | ProximaClaseInfo)[];
-  textoVacio: string;
-};
-
-const GrupoClases = ({
-  variante,
-  etiqueta,
-  Icono,
-  clases,
-  textoVacio,
-}: GrupoClasesProps) => {
-  if (clases.length === 0) {
-    return (
-      <article className={`clase_card card-base ${variante} clase_card--vacia`}>
-        <span className={`badge ${variante}`}>
-          <Icono size={13} aria-hidden="true" />
-          {etiqueta}
-        </span>
-        <div className="clase_contenido">
-          <h2>{textoVacio}</h2>
-          <p>
-            <CalendarClock size={16} aria-hidden="true" />
-            <span>00:00</span>
-            <span className="separador_hora" aria-hidden="true">
-              →
-            </span>
-            <span>00:00</span>
-          </p>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <div className="grupo_clases">
-      {clases.map((clase, idx) => (
-        <TarjetaClase
-          key={`${variante}-${idx}`}
-          variante={variante}
-          etiqueta={etiqueta}
-          Icono={Icono}
-          clase={clase}
-        />
-      ))}
-    </div>
-  );
-};
-
-/**
- * Selector de clase cuando hay múltiples horarios en curso.
- * Muestra tarjetas clickeables con nombre de clase, horario y sala.
- */
-type SelectorClaseProps = {
-  horarios: ClaseInfo[];
-  seleccionada: number | null;
-  onSeleccionar: (id: number) => void;
-};
-
-const SelectorClase = ({
-  horarios,
-  seleccionada,
-  onSeleccionar,
-}: SelectorClaseProps) => (
-  <fieldset className="selector_clase">
-    <legend>
-      <DoorOpen size={16} aria-hidden="true" />
-      <span>Seleccioná la clase</span>
-    </legend>
-    <div className="selector_clase_opciones">
-      {horarios.map((h) => {
-        const estaSeleccionada = h.id_horario_clase === seleccionada;
-        return (
-          <button
-            key={h.id_horario_clase}
-            type="button"
-            className={`selector_clase_opcion${estaSeleccionada ? " seleccionada" : ""}`}
-            onClick={() => onSeleccionar(h.id_horario_clase)}
-            aria-pressed={estaSeleccionada}
-          >
-            <span className="selector_clase_nombre">{h.nombre_clase}</span>
-            <span className="selector_clase_detalle">
-              {h.hora_inicio} – {h.hora_fin}
-              {h.sala ? ` · ${h.sala}` : ""}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  </fieldset>
-);
-
-const ExitoAsistencia = () =>
-  createPortal(
-    <div className="overlay-exito">
-      <div className="card-exito" role="status" aria-live="polite">
-        <div className="card-exito_logo">
-          <LogoExito />
-        </div>
-
-        <h2>¡Asistencia registrada!</h2>
-        <p>Que disfrutes la clase.</p>
-      </div>
-    </div>,
-    document.body,
-  );
+const esProximaClaseValida = (h: unknown): h is TipadoAsistencia.ResultadoClaseProxima =>
+	typeof h === "object" &&
+	h !== null &&
+	"id_horario_prox_clase" in h &&
+	"nombre_clase" in h &&
+	"hora_inicio" in h;
 
 /* ==========================================================
    COMPONENTE PRINCIPAL
    ========================================================== */
 
 export const FormularioAsistencia = () => {
-  const inputDniRef = useRef<HTMLInputElement>(null);
+	const inputDniRef = useRef<HTMLInputElement>(null);
+	const qrRef = useRef<HTMLDivElement>(null);
 
-  const {
-    handleCachearAlumno,
-    handleResgistrarAsistencia,
-    handleSeleccionarClase,
-    state,
-  } = useAsistenciaSet();
+	const {
+		handleCachearAlumno,
+		handleResgistrarAsistencia,
+		handleSeleccionarClase,
+		state,
+	} = useAsistenciaSet();
 
-  // Extraer las listas de clases del estado (ahora son arrays)
-  const clasesEnCurso = useMemo(() => {
-    const data = state.claseEnCurso;
-    if (Array.isArray(data)) {
-      return data
-        .filter(esHorarioValido)
-        .map((c) => ({
-          nombre_clase: c.nombre_clase,
-          hora_inicio: c.hora_inicio,
-          hora_fin: c.hora_fin,
-          sala: c.sala,
-          id_horario_clase: c.id_horario_en_clase,
-        }));
-    }
-    return [];
-  }, [state.claseEnCurso]);
+	// Pestaña activa: PIN (default) o QR
+	const [pestañaActiva, setPestañaActiva] = useState<Pestaña>("pin");
 
-  const clasesProximas = useMemo(() => {
-    const data = state.claseProxima;
-    if (Array.isArray(data)) {
-      return data
-        .filter(esProximaClaseValida)
-        .map((c) => ({
-          nombre_clase: c.nombre_clase,
-          hora_inicio: c.hora_inicio,
-          hora_fin: c.hora_fin,
-          sala: c.sala,
-          id_horario_prox_clase: c.id_horario_prox_clase,
-        }));
-    }
-    return [];
-  }, [state.claseProxima]);
+	// Selección de clase para QR: id y tipo (curso/proxima)
+	const [qrClaseId, setQrClaseId] = useState<number | null>(null);
+	const [qrClaseTipo, setQrClaseTipo] = useState<"curso" | "proxima" | null>(
+		null,
+	);
 
-  // Horarios del dataAsistencia (para el selector de clase al registrar)
-  const horariosEnCurso = useMemo(() => {
-    const dataHorario = state.dataAsistencia.dataHorario;
-    if (Array.isArray(dataHorario)) {
-      return dataHorario.filter(esHorarioValido);
-    }
-    return [];
-  }, [state.dataAsistencia.dataHorario]);
+	// Extraer las listas de clases del estado (ahora son arrays)
+	const clasesEnCurso = useMemo(() => {
+		const data = state.claseEnCurso;
+		if (Array.isArray(data)) {
+			return data.filter(esHorarioValido).map((c) => ({
+				nombre_clase: c.nombre_clase,
+				hora_inicio: c.hora_inicio,
+				hora_fin: c.hora_fin,
+				sala: c.sala,
+				id: c.id_horario_en_clase,
+			}));
+		}
+		return [];
+	}, [state.claseEnCurso]);
 
-  const hayMultiplesClases = horariosEnCurso.length > 1;
+	const clasesProximas = useMemo(() => {
+		const data = state.claseProxima;
+		if (Array.isArray(data)) {
+			return data.filter(esProximaClaseValida).map((c) => ({
+				nombre_clase: c.nombre_clase,
+				hora_inicio: c.hora_inicio,
+				hora_fin: c.hora_fin,
+				sala: c.sala,
+				id: c.id_horario_prox_clase,
+			}));
+		}
+		return [];
+	}, [state.claseProxima]);
 
-  useEffect(() => {
-    if (!state.exitoAsistencia) {
-      inputDniRef.current?.focus();
-    }
-  }, [state.exitoAsistencia]);
+	// Horarios del dataAsistencia (para el selector de clase al registrar)
+	const horariosEnCurso = useMemo(() => {
+		const dataHorario = state.dataAsistencia.dataHorario;
+		if (Array.isArray(dataHorario)) {
+			return dataHorario
+				.filter((item): item is TipadoAsistencia.DataHorarioAsistencia =>
+					"id_horario_clase" in item && "nombre_clase" in item && "hora_inicio" in item
+				)
+				.map((c) => ({
+					nombre_clase: c.nombre_clase,
+					hora_inicio: c.hora_inicio,
+					hora_fin: c.hora_fin,
+					sala: c.sala,
+					id: c.id_horario_clase,
+				}));
+		}
+		return [];
+	}, [state.dataAsistencia.dataHorario]);
 
-  return (
-    <div className="asistencia_kiosco">
-      <header className="asistencia_header">
-        <h1>{state.nombreEscuela}</h1>
-        <p>Registro automático de asistencia</p>
-      </header>
+	const hayMultiplesClases = horariosEnCurso.length > 1;
 
-      <main className="asistencia_panel">
-        <section className="asistencia_clases" aria-label="Clases de hoy">
-          <GrupoClases
-            variante="actual"
-            etiqueta="En curso"
-            Icono={Clock3}
-            clases={clasesEnCurso}
-            textoVacio="Sin clase en curso"
-          />
+	// Clase seleccionada para QR: buscar en las listas
+	const qrClaseSeleccionada = useMemo(() => {
+		if (qrClaseId == null) return null;
+		if (qrClaseTipo === "curso") {
+			return clasesEnCurso.find((c) => c.id === qrClaseId) ?? null;
+		}
+		if (qrClaseTipo === "proxima") {
+			return clasesProximas.find((c) => c.id === qrClaseId) ?? null;
+		}
+		return null;
+	}, [qrClaseId, qrClaseTipo, clasesEnCurso, clasesProximas]);
 
-          <GrupoClases
-            variante="proxima"
-            etiqueta="Próxima"
-            Icono={CalendarDays}
-            clases={clasesProximas}
-            textoVacio="Sin más clases por hoy"
-          />
-        </section>
+	const handleSeleccionarClaseQR = useCallback(
+		(id: number, tipo: "curso" | "proxima") => {
+			setQrClaseId(id);
+			setQrClaseTipo(tipo);
+		},
+		[],
+	);
 
-        <section
-          className="asistencia_accion"
-          aria-labelledby="asistencia_titulo"
-        >
-          <h2 className="titulo_accion" id="asistencia_titulo">
-            <UserCheck size={18} aria-hidden="true" />
-            <span>Identificación del alumno</span>
-          </h2>
+	// Cuando se selecciona una clase, hacer scroll al QR
+	useEffect(() => {
+		if (qrClaseId != null && qrRef.current) {
+			const timer = setTimeout(() => {
+				qrRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+			}, 100);
+			return () => clearTimeout(timer);
+		}
+	}, [qrClaseId]);
 
-          <Inputs
-            label="Ingrese su PIN de asistencia"
-            placeholder="Ej: 2372"
-            name="pin_asistencia"
-            type="text"
-            inputMode="numeric"
-            maxLength={4}
-            ref={inputDniRef}
-            value={state.registroAsistencia.pin_asistencia}
-            readonly={false}
-            onChange={handleCachearAlumno}
-          />
+	useEffect(() => {
+		if (!state.exitoAsistencia) {
+			inputDniRef.current?.focus();
+		}
+	}, [state.exitoAsistencia]);
 
-          {/* Selector de clase cuando hay múltiples horarios en curso */}
-          {hayMultiplesClases && (
-            <SelectorClase
-              horarios={horariosEnCurso}
-              seleccionada={state.claseSeleccionada}
-              onSeleccionar={handleSeleccionarClase}
-            />
-          )}
+	return (
+		<div className="asistencia_kiosco">
+			<header className="asistencia_header">
+				<h1>{state.nombreEscuela}</h1>
+				<p>Registro automático de asistencia</p>
+			</header>
 
-          <dl className="estado_inscripcion">
-            <div className="estado_card">
-              <dt>Vencimiento</dt>
-              <dd>{state.dataInscripcion?.vencimiento || "----/--/--"}</dd>
-            </div>
+			<main className="asistencia_panel">
+				<section className="asistencia_clases" aria-label="Clases de hoy">
+					<GrupoClases
+						variante="actual"
+						etiqueta="En curso"
+						Icono={Clock3}
+						clases={clasesEnCurso}
+						textoVacio="Sin clase en curso"
+					/>
 
-            <div className="estado_card">
-              <dt>Clases restantes</dt>
-              {/* ?? y no ||: con 0 clases restantes tiene que mostrar "0" */}
-              <dd>{state.dataInscripcion?.clases_restantes ?? "-"}</dd>
-            </div>
-          </dl>
+					<GrupoClases
+						variante="proxima"
+						etiqueta="Próxima"
+						Icono={CalendarDays}
+						clases={clasesProximas}
+						textoVacio="Sin más clases por hoy"
+					/>
+				</section>
 
-          <Boton
-            clase="aceptar"
-            texto="Registrar asistencia"
-            logo="Go"
-            onClick={handleResgistrarAsistencia}
-          />
+				{/* Pestañas PIN / QR */}
+				<PestañasKiosko activa={pestañaActiva} onChange={setPestañaActiva} />
 
-          {state.errorGenerico && <CompoError mensaje={state.errorGenerico} />}
-        </section>
-      </main>
+				{/* Panel PIN */}
+				{pestañaActiva === "pin" && (
+					<section
+						className="asistencia_accion"
+						id="panel-pin"
+						role="tabpanel"
+						aria-labelledby="tab-pin"
+					>
+						<h2 className="titulo_accion" id="asistencia_titulo">
+							<UserCheck size={18} aria-hidden="true" />
+							<span>Identificación del alumno</span>
+						</h2>
 
-      {state.exitoAsistencia && <ExitoAsistencia />}
-    </div>
-  );
+						<Inputs
+							label="Ingrese su PIN de asistencia"
+							placeholder="Ej: 2372"
+							name="pin_asistencia"
+							type="text"
+							inputMode="numeric"
+							maxLength={4}
+							ref={inputDniRef}
+							value={state.registroAsistencia.pin_asistencia}
+							readonly={false}
+							onChange={handleCachearAlumno}
+						/>
+
+						{/* Selector de clase cuando hay múltiples horarios en curso */}
+						{hayMultiplesClases && (
+							<SelectorClase
+								horarios={horariosEnCurso}
+								seleccionada={state.claseSeleccionada}
+								onSeleccionar={handleSeleccionarClase}
+							/>
+						)}
+
+						<dl className="estado_inscripcion">
+							<div className="estado_card">
+								<dt>Vencimiento</dt>
+								<dd>{state.dataInscripcion?.vencimiento || "----/--/--"}</dd>
+							</div>
+
+							<div className="estado_card">
+								<dt>Clases restantes</dt>
+								{/* ?? y no ||: con 0 clases restantes tiene que mostrar "0" */}
+								<dd>{state.dataInscripcion?.clases_restantes ?? "-"}</dd>
+							</div>
+						</dl>
+
+						<Boton
+							clase="aceptar"
+							texto="Registrar asistencia"
+							logo="Go"
+							onClick={handleResgistrarAsistencia}
+						/>
+
+						{state.errorGenerico && (
+							<CompoError mensaje={state.errorGenerico} />
+						)}
+					</section>
+				)}
+
+				{/* Panel QR */}
+				{pestañaActiva === "qr" && (
+					<section
+						className="asistencia_accion"
+						id="panel-qr"
+						role="tabpanel"
+						aria-labelledby="tab-qr"
+					>
+						<h2 className="titulo_accion">
+							<CalendarClock size={18} aria-hidden="true" />
+							<span>Código QR de asistencia</span>
+						</h2>
+
+						<SelectorClaseQR
+							clasesEnCurso={clasesEnCurso}
+							clasesProximas={clasesProximas}
+							seleccionada={qrClaseId}
+							tipoSeleccionado={qrClaseTipo}
+							onSeleccionar={handleSeleccionarClaseQR}
+						/>
+
+						{qrClaseSeleccionada && (
+							<div ref={qrRef}>
+								<GeneradorQR
+									idHorarioClase={qrClaseSeleccionada.id}
+									nombreClase={qrClaseSeleccionada.nombre_clase}
+									horaInicio={qrClaseSeleccionada.hora_inicio}
+									horaFin={qrClaseSeleccionada.hora_fin}
+									sala={qrClaseSeleccionada.sala}
+								/>
+							</div>
+						)}
+					</section>
+				)}
+			</main>
+
+			{state.exitoAsistencia && <ExitoAsistencia />}
+		</div>
+	);
 };

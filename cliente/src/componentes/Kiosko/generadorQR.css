@@ -1,0 +1,143 @@
+/* ==========================================================
+   GENERADOR QR — KIOSKO DE ASISTENCIA
+
+   Usa los mismos tokens de app.css que formularioAsistencia.css.
+   ========================================================== */
+
+.generador_qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  padding: 28px;
+
+  background: var(--fondo-secundario);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra-md);
+}
+
+/* --- Header --- */
+
+.generador_qr_header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-negrita);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+
+  color: var(--color-secundario);
+}
+
+/* --- Info de clase --- */
+
+.generador_qr_clase_info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  text-align: center;
+}
+
+.generador_qr_clase_info h3 {
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+  font-weight: var(--peso-medio);
+  color: var(--texto-principal);
+  margin: 0;
+}
+
+.generador_qr_clase_info p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-family: var(--fuente-codigo);
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  margin: 0;
+}
+
+/* --- Código QR --- */
+
+.generador_qr_codigo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 16px;
+
+  background: #ffffff;
+  border: 2px solid var(--borde);
+  border-radius: var(--radio-md);
+}
+
+.generador_qr_codigo canvas,
+.generador_qr_codigo svg {
+  display: block;
+}
+
+/* --- Instrucción --- */
+
+.generador_qr_instruccion {
+  font-size: var(--texto-sm);
+  color: var(--texto-secundario);
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* --- Botón copiar --- */
+
+.generador_qr_copiar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 8px 16px;
+
+  cursor: pointer;
+
+  background: var(--fondo-superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-md);
+  color: var(--texto-secundario);
+  font-family: var(--fuente-principal);
+  font-size: var(--texto-xs);
+  transition: border-color 150ms var(--ease-ui),
+              background 150ms var(--ease-ui),
+              color 150ms var(--ease-ui);
+}
+
+.generador_qr_copiar:hover {
+  background: var(--fondo-hover);
+  border-color: var(--color-secundario);
+  color: var(--color-secundario);
+}
+
+.generador_qr_copiar:active {
+  transform: scale(0.97);
+}
+
+/* --- Responsive --- */
+
+@media (max-width: 640px) {
+  .generador_qr {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .generador_qr_codigo {
+    padding: 12px;
+  }
+
+  .generador_qr_clase_info h3 {
+    font-size: 1.1rem;
+  }
+}

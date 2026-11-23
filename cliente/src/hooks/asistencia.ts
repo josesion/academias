@@ -144,7 +144,6 @@ useEffect(()=>{
         const data = {  estado : "activos"};
         const servicioApiFetch = config.servicios.asistenciaHorarios;
         const asistenciaFechasRespuesta = await servicioApiFetch( data); 
-        console.log("Kisoco asistencia",asistenciaFechasRespuesta)
         if (asistenciaFechasRespuesta.error === false){
 
             dispatch({ type : "SET_CARTELES_OK", payload : {
