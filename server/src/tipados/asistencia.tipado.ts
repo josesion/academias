@@ -23,9 +23,13 @@ export interface ResultErrorAsistencia {
 }
 
 
+/**
+ * `enCursoClase` y `proximaClase` son arrays porque puede haber múltiples
+ * clases simultáneas en salas distintas (kiosko).
+ */
 export interface ResulClases_curso_proxima{
     enCursoClase : ResultadoClaseEnCruso[] | ResultErrorAsistencia ,
-    proximaClase : ResultadoClaseProxima | ResultErrorAsistencia 
+    proximaClase : ResultadoClaseProxima[] | ResultErrorAsistencia 
 }
 
  type DataInscripcionVigente ={
@@ -49,8 +53,12 @@ type DataResultErrrorAsistencia = {
     code : string | null
 };
 
+/**
+ * `dataHorario` es ahora un array porque puede haber múltiples clases
+ * en curso simultáneas en salas distintas (kiosko).
+ */
 export interface ResultDataAsistencia{
-    dataHorario : DataHorarioAsistencia | DataResultErrrorAsistencia,
+    dataHorario : DataHorarioAsistencia[] | DataResultErrrorAsistencia,
     dataInscripcion : DataInscripcionVigente | DataResultErrrorAsistencia
 }
 

@@ -476,7 +476,7 @@ const eliminarHorario = async ( data : EliminarHorarioInput)
  * - Límite Superior: hora_inicio + 30 minutos.
  */
 const dataHorarioAsistencia = async( data : DataHorarioAsistenciaInputs ) 
-:Promise<TipadoData<ResultadoDataHorarioAsitencia>> => {
+:Promise<TipadoData<ResultadoDataHorarioAsitencia[]>> => {
     const { id_escuela, estado, dia} = data;
 
     const sql : string = `SELECT 
@@ -498,12 +498,14 @@ const dataHorarioAsistencia = async( data : DataHorarioAsistenciaInputs )
                                     TIME_TO_SEC(TIMEDIFF(CAST(NOW() AS TIME), hc.hora_inicio)) BETWEEN -900 AND 1800
                                     -- -900 segundos = -15 minutos
                                     -- 1800 segundos = 30 minutos
-                                );`;
+                                )
+                            ORDER BY hc.hora_inicio ASC, s.nombre ASC;`;
     const valores : unknown[] = [ id_escuela, estado , dia ];
-    return await buscarExistenteEntidad<ResultadoDataHorarioAsitencia>({
-        slqEntidad : sql,
+    return await listarEntidadSinPaginacion<ResultadoDataHorarioAsitencia>({
+        slqListado : sql,
         valores,
-        entidad : "horario_asistencia"
+        entidad : "horario_asistencia",
+        estado : "en la ventana horaria"
     });
 };
 

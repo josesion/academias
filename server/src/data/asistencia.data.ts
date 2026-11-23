@@ -156,6 +156,56 @@ const dobleAsitencia = async( id_inscripcion : number , id_horario_clase: number
 };
 
 /**
+ * Verifica si un alumno ya registró asistencia en un horario que se solapa
+ * en tiempo con el horario que intenta elegir, aunque sea en otra sala.
+ *
+ * La función consulta las asistencias de hoy del alumno y verifica si alguna
+ * de ellas tiene un horario cuyo rango de tiempo (hora_inicio - hora_fin)
+ * se solape con el horario que quiere elegir.
+ *
+ * Dos horarios se solapan si:
+ * - El hora_inicio del nuevo horario es menor que el hora_fin del horario existente
+ * - Y el hora_fin del nuevo horario es mayor que el hora_inicio del horario existente
+ *
+ * @param {number} id_inscripcion - ID de la inscripción del alumno.
+ * @param {number} id_horario_clase - ID del horario de la clase que quiere elegir.
+ *
+ * @returns {Promise<TipadoData<number>>}
+ * Retorna un objeto tipado con el resultado de la verificación.
+ *
+ * @returns.code ASISTENCIA_EXISTE - Ya existe una asistencia en un horario solapado.
+ * @returns.code ASISTENCIA_NO_EXISTE - No hay asistencia en horario solapado.
+ *
+ * @remarks
+ * - Esta validación impide que un alumno asista a dos clases al mismo tiempo
+ *   aunque sean en salas distintas.
+ * - Se usa SELECT 1 únicamente para validar existencia.
+ * - La validación por CURDATE() asegura que solo se controle el día actual.
+ */
+const solapamientoHorario = async( id_inscripcion : number , id_horario_clase: number )
+: Promise<TipadoData<number>> =>{
+    const sql : string = `
+        SELECT 1
+        FROM asistencias a
+        INNER JOIN horarios_clases h_existente
+            ON a.id_horario_clase = h_existente.id
+        INNER JOIN horarios_clases h_nuevo
+            ON h_nuevo.id = ?
+        WHERE a.id_inscripcion = ?
+        AND a.fecha = CURDATE()
+        AND CAST(h_nuevo.hora_inicio AS TIME) < CAST(h_existente.hora_fin AS TIME)
+        AND CAST(h_nuevo.hora_fin AS TIME) > CAST(h_existente.hora_inicio AS TIME)
+        LIMIT 1;
+    `;
+    const valores : unknown[] = [ id_horario_clase, id_inscripcion ];
+    return await buscarExistenteEntidad<number>({
+        slqEntidad : sql,
+        valores,
+        entidad : "asistencia"
+    });
+};
+
+/**
  * Verifica si un horario de clase se encuentra dentro de la ventana
  * de tiempo permitida para registrar asistencia.
  *
@@ -517,22 +567,21 @@ const clase_en_curso = async( data : ClasesActualInputs)
 };
 
 /**
- * Obtiene la próxima clase a dictarse para una escuela en el día actual.
+ * Obtiene las próximas clases a dictarse para una escuela en el día actual.
  *
- * La función busca el siguiente horario de clase cuya hora de inicio
+ * La función busca los siguientes horarios de clase cuya hora de inicio
  * sea posterior a la hora actual del servidor (`NOW()`), teniendo en cuenta:
  * - Escuela
  * - Estado del horario
  * - Vigencia
  * - Día de la semana
  *
- * El resultado se ordena por hora de inicio ascendente y se limita
- * a una única clase (la más próxima).
+ * El resultado se ordena por hora de inicio ascendente y devuelve todas
+ * las próximas clases (puede haber múltiples en salas distintas).
  *
  *  Consideraciones:
  * - Solo evalúa clases del mismo día (`dia_semana`).
  * - No contempla clases que comiencen al día siguiente.
- * - Asume que no existen horarios superpuestos.
  *
  * @param data - Datos necesarios para la búsqueda de la próxima clase.
  * @param data.id_escuela - Identificador de la escuela.
@@ -540,7 +589,7 @@ const clase_en_curso = async( data : ClasesActualInputs)
  * @param data.dia - Día de la semana en texto (ej: "lunes", "martes").
  *
  * @returns Promesa con un objeto `TipadoData` que contiene:
- * - `data`: Información de la próxima clase si existe.
+ * - `data`: Array de próximas clases si existen.
  * - `code`: Código de resultado de la consulta.
  * - `message`: Mensaje descriptivo del resultado.
  *
@@ -552,13 +601,13 @@ const clase_en_curso = async( data : ClasesActualInputs)
  *   dia: "lunes"
  * });
  *
- * if (resultado.code === "PROXIMA_CLASE_EXISTE") {
+ * if (resultado.code === "PROXIMA_CLASE_LISTED") {
  *   console.log(resultado.data);
  * }
  * ```
  */
 const clase_proxima_clase = async( data : ClasesProximaInputs) 
-: Promise<TipadoData<ResultadoClaseProxima>>  =>{
+: Promise<TipadoData<ResultadoClaseProxima[]>>  =>{
     const { id_escuela , estado, dia } = data ;  
     const sql : string = `SELECT 
                             hc.id AS id_horario_prox_clase,
@@ -577,14 +626,15 @@ const clase_proxima_clase = async( data : ClasesProximaInputs)
                             AND hc.dia_semana = ?
                             AND CAST(hc.hora_inicio AS TIME) > CAST(NOW() AS TIME)
                         ORDER BY 
-                            CAST(hc.hora_inicio AS TIME) ASC
-                        LIMIT 1;`;
+                            CAST(hc.hora_inicio AS TIME) ASC,
+                            s.nombre ASC;`;
 
     const valores : unknown[] = [id_escuela , estado, dia];
-    return await buscarExistenteEntidad<ResultadoClaseProxima>({
-        slqEntidad : sql ,
+    return await listarEntidadSinPaginacion<ResultadoClaseProxima>({
+        slqListado : sql ,
         valores,
-        entidad : "proxima_clase"
+        entidad : "proxima_clase",
+        estado : "en el dia"
     });
 };
 
@@ -848,7 +898,7 @@ const horariosConAsistencias = async( data : HorariosAsistenciaInputs )
                                     WHERE asis.id_escuela = ?
                                       AND asis.fecha = ?
                                 )
-                                SELECT
+                                SELECT DISTINCT
                                     hd.id_horario_clase,
                                     TIME_FORMAT(hd.hora_inicio, '%H:%i') AS hora_inicio,
                                     TIME_FORMAT(hd.hora_fin, '%H:%i')   AS hora_fin,
@@ -869,9 +919,8 @@ const horariosConAsistencias = async( data : HorariosAsistenciaInputs )
                                     AND asis.fecha = ?
                                     AND asis.estado = 'presente'
                                 LEFT JOIN alumnos al ON al.dni_alumno = asis.dni_alumno
-                                ORDER BY hd.hora_inicio ASC,
-                                         al.apellido ASC,
-                                         al.nombre ASC;`;
+                                ORDER BY hora_inicio ASC,
+                                         nombre_alumno ASC;`;
 
     return await listarEntidadSinPaginacion<HorarioAsistenciaRow>({
         slqListado,
@@ -962,6 +1011,7 @@ export const method = {
     infoAlumno : tryCatchDatos( infoAlumnoData ),
     verificarInscripcion : tryCatchDatos( estadoInscripcion ),
     dobleAsitencia  : tryCatchDatos( dobleAsitencia ),
+    solapamientoHorario : tryCatchDatos( solapamientoHorario ),
     ventanaAsistencia : tryCatchDatos( ventanaAsistencia ),
     horarioEnCursoOProxima : tryCatchDatos( horarioEnCursoOProxima ),
     asistencia : tryCatchDatos( asistenciaAlta ),

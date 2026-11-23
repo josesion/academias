@@ -75,7 +75,7 @@ export const UsuarioPage = () => {
   const cerrarAsistenciaRapida = () => setModalAbierto(false);
   const cerrarInscripcionRapida = () => setModalInscripcionAbierto(false);
 
-  const { estadoCaja, carga } = useEstadoCajaDashboard();
+  const { estadoCaja } = useEstadoCajaDashboard();
 
   return (
     // NO va `<main>` ni `role="main"`: el layout (`menuManager.tsx`) ya aporta
@@ -219,7 +219,11 @@ export const UsuarioPage = () => {
               <Asistencia
                 asistencia={state.asistencias ?? []}
                 clases={state.clases}
-                estadoClase={(state.asistencias ?? []).length > 0 ? "EN CURSO" : "SIN CURSO"}
+                estadoClase={
+                  (state.asistencias ?? []).length > 0
+                    ? "EN CURSO"
+                    : "SIN CURSO"
+                }
                 cargaClases={state.carga.clases}
                 horariosDelDia={state.horariosDelDia ?? []}
                 cargaHorarios={state.carga.horariosDelDia}

@@ -6,6 +6,7 @@ import { initialState, asistenciaReducer} from "../reducers/asistenciaReducer";
 import { initialStateMetricas, metricasReducer } from "../reducers/metricasReducer";
 
 import { peticionComunicacion } from "../utils/canalComunicacion";
+import type * as TipadoAsistencia from "../tipadosTs/asistencia.typado";
 
 type ServicioCrud = (data: any, signal?: AbortSignal) => Promise<any>;
 
@@ -70,16 +71,43 @@ export const useAsistenciaLogica = ( config : DataUseAsistenciaConfig) =>{
     };
 
     const handleResgistrarAsistencia = async() => {
-// Verificamos que existan las propiedades antes de usarlas
-        if ("id_horario_clase" in state.dataAsistencia.dataHorario && 
-            "id_inscripcion" in state.dataAsistencia.dataInscripcion) {
+// Obtener el id_horario_clase: si hay selección explícita, usarla;
+// si hay un solo horario, usar ese; si no, error.
+        const horarios = state.dataAsistencia.dataHorario;
+        let idHorarioClase : number | undefined;
+
+        if (Array.isArray(horarios) && horarios.length > 0) {
+            const listaHorarios = horarios as TipadoAsistencia.DataHorarioAsistencia[];
+            if (state.claseSeleccionada != null) {
+                // El usuario eligió una clase
+                const seleccionado = listaHorarios.find(h => h.id_horario_clase === state.claseSeleccionada);
+                if (seleccionado) {
+                    idHorarioClase = seleccionado.id_horario_clase;
+                }
+            } else if (listaHorarios.length === 1) {
+                // Solo hay una clase, usarla
+                idHorarioClase = listaHorarios[0].id_horario_clase;
+            }
+            // Si hay múltiples y no hay selección, no se puede registrar
+        } else if ("id_horario_clase" in state.dataAsistencia.dataHorario) {
+            // Fallback: dataHorario es un objeto único (caso antiguo)
+            const dataHorarioObj = state.dataAsistencia.dataHorario as unknown as TipadoAsistencia.DataHorarioAsistencia;
+            idHorarioClase = dataHorarioObj.id_horario_clase;
+        }
+
+        if (idHorarioClase == null) {
+            dispatch({ type : "SET_ERROR_GENERICO", payload : "Seleccioná la clase a la que querés asistir" });
+            return;
+        }
+
+        if ("id_inscripcion" in state.dataAsistencia.dataInscripcion) {
 
             const registrarAsistenciaFetch = config.servicios.registroAsistencia;
             const dataAsistenciaData = {
                 pin_asistencia : state.registroAsistencia.pin_asistencia,
                 dni_alumno     : state.dataAsistencia.dataInscripcion.dni_alumno,
                 estado         : state.registroAsistencia.estado,
-                id_horario_clase : state.dataAsistencia.dataHorario.id_horario_clase,
+                id_horario_clase : idHorarioClase,
                 id_inscripcion   : state.dataAsistencia.dataInscripcion.id_inscripcion                
             };
   
@@ -147,10 +175,15 @@ useEffect(()=>{
 
     useActualizarAlEnfocar({dispatchActualizar : dispatch, accion : "SET_ACTUALIZAR"  }); 
 
+    const handleSeleccionarClase = (idHorarioClase: number) => {
+        dispatch({ type : "SET_CLASE_SELECCIONADA", payload : idHorarioClase });
+    };
+
     return{
         state,
         handleCachearAlumno,
-        handleResgistrarAsistencia
+        handleResgistrarAsistencia,
+        handleSeleccionarClase
     }
 };
 

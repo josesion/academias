@@ -132,22 +132,36 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
                     };
                 };
                 if( verificarDobleAsistencia.code === "ASISTENCIA_NO_EXISTE" ){
-                    const asistenciaResultado = await asistenciaData.asistencia( dataVerificacionInsc, dataAsistencia);
-        
-                    if (asistenciaResultado.code === "TRANSACCION_FALLIDA"){
+                    // Verificar si hay solapamiento temporal con otra clase del día
+                    const verificarSolapamiento = await asistenciaData.solapamientoHorario(dataVerificacionInsc.id_inscripcion, dataAsistencia.id_horario_clase);
+
+                    if( verificarSolapamiento.code === "ASISTENCIA_EXISTE" ){
+                        const identificador = dataVerificacionInsc.pin_asistencia ?? String(dataVerificacionInsc.dni_alumno ?? "desconocido");
                         return {
                             error : true,
-                            message : `Error, falla en la transaccion en consultas`,
-                            code : "TRANSACCION_FALLIDA"
+                            message : `El alumno con identificador ${identificador} ya está asistiendo a otra clase en este horario`,
+                            code : "SOLAPAMIENTO_HORARIO"
                         };
                     };
-                    if (asistenciaResultado.code === "TRANSACCION_OK"){
-                        const identificador = verificacion.pin_asistencia ?? String(verificacion.dni_alumno ?? "desconocido");
-                        return {
-                            error : false,
-                            message : `Asistencia correcta del alumno con identificador ${identificador}`,
-                            data : asistenciaResultado.data,
-                            code  : "ASISTENCIA_OK"
+
+                    if( verificarSolapamiento.code === "ASISTENCIA_NO_EXISTE" ){
+                        const asistenciaResultado = await asistenciaData.asistencia( dataVerificacionInsc, dataAsistencia);
+            
+                        if (asistenciaResultado.code === "TRANSACCION_FALLIDA"){
+                            return {
+                                error : true,
+                                message : `Error, falla en la transaccion en consultas`,
+                                code : "TRANSACCION_FALLIDA"
+                            };
+                        };
+                        if (asistenciaResultado.code === "TRANSACCION_OK"){
+                            const identificador = verificacion.pin_asistencia ?? String(verificacion.dni_alumno ?? "desconocido");
+                            return {
+                                error : false,
+                                message : `Asistencia correcta del alumno con identificador ${identificador}`,
+                                data : asistenciaResultado.data,
+                                code  : "ASISTENCIA_OK"
+                            };
                         };
                     };
                 };
@@ -215,13 +229,13 @@ const fechaAsistencia = async( data : ClasesActualInputs)
 : Promise<TipadoData<ResulClases_curso_proxima>> =>{
     
     const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
-    const diaHoy = dias[new Date().getDay()];  
+    const diaHoy = dias[new Date().getDay()];
 
     const verificacionFechas_en_curso : ClasesActualInputs =ClaseActualSchema.parse({id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy});
     const clase_en_curso  = await asistenciaData.claseEnCurso(verificacionFechas_en_curso);
   
     let clase_actual : ResultadoClaseEnCruso[] | ResultErrorAsistencia = { error : null , message : null , code : null};
-    let clase_proxima : ResultadoClaseProxima | ResultErrorAsistencia = { error : null , message : null , code : null};
+    let clase_proxima : ResultadoClaseProxima[] | ResultErrorAsistencia = { error : null , message : null , code : null};
 
     if (clase_en_curso.error || !clase_en_curso.data || clase_en_curso.data.length === 0) {
         clase_actual = {
@@ -234,27 +248,23 @@ const fechaAsistencia = async( data : ClasesActualInputs)
     }
    
   const verificaionFechas_proxima_clase : ClasesProximaInputs = ClaseProximaSchema.parse({ id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy }); 
-  const proxima_Clase = await asistenciaData.proximaClase(verificaionFechas_proxima_clase);  
- 
-  switch ( proxima_Clase.code){
-    case "PROXIMA_CLASE_NO_EXISTE" : {
-        clase_proxima = {
-            error : true,
-            message: "No se registra ninguna proxima clase",
-            code  : "NO_HAY_PROXIMA_CLASE"
-        };
-    };
-    case "PROXIMA_CLASE_EXISTE" : {
-        if (proxima_Clase.data) clase_proxima = proxima_Clase.data
-    };
-    
-  };
+  const proxima_Clase = await asistenciaData.proximaClase(verificaionFechas_proxima_clase); 
+
+  if (proxima_Clase.error || !proxima_Clase.data || proxima_Clase.data.length === 0) {
+      clase_proxima = {
+          error : true,
+          message: "No se registra ninguna proxima clase",
+          code  : "NO_HAY_PROXIMA_CLASE"
+      };
+  } else {
+      clase_proxima = proxima_Clase.data;
+  }
 
 
  
   return{
     error: false,
-    message : "Resultado de clases acutal y proxima",
+    message : "Resultado de clases actual y proxima",
     data :{ 
         enCursoClase : clase_actual,
         proximaClase : clase_proxima
@@ -265,15 +275,17 @@ const fechaAsistencia = async( data : ClasesActualInputs)
 
 
 /**
- * Servicio de lógica de negocio para validar la vigencia de un alumno y su horario.
+ * Servicio de lógica de negocio para validar la vigencia de un alumno y sus horarios.
  * * Coordina la verificación de dos reglas críticas:
  * 1. Existencia de un plan activo en la base de datos.
- * 2. Existencia de una clase programada cuya ventana de acreditación coincida con NOW().
+ * 2. Existencia de clases programadas cuya ventana de acreditación coincida con NOW().
  * * @param {DataAlumnoVigenteInputs} data
  * Objeto con los criterios de búsqueda: id_escuela, pin_asistencia y estado.
  * El kiosco identifica al alumno por su PIN de 4 dígitos.
  * * @returns {Promise<TipadoData<ResultDataAsistencia>>}
- * Objeto con el código de resultado, mensaje y el payload con `dataHorario` e `dataInscripcion`.
+ * Objeto con el código de resultado, mensaje y el payload con `dataHorario` (array) e `dataInscripcion`.
+ * Cuando hay múltiples clases en curso simultáneas (ej: mismas horas, salas distintas),
+ * `dataHorario` contiene todas las opciones para que el kiosko permita elegir.
  * * @remarks
  * - Utiliza `DataAlumnoVigenteSchema` para validar la integridad de los inputs antes de operar.
  * - Calcula dinámicamente el día de la semana para segmentar la búsqueda del horario.
@@ -303,20 +315,24 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
         };
     }; 
     if ( planResult.code === 'INSCRIPCION_EXISTE' ){
- 
-        // segundo veo si exsite una horario justo en el momento actual
+
+        // segundo veo si existe un horario justo en el momento actual
+        // Ahora devuelve un array: puede haber múltiples clases simultáneas en salas distintas
         const dataAsisntenciaResult = await horarioData.dataHorarioAsistencia(verificardata);
 
-        if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_EXISTE"){
+        if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_LISTED"){
+            const horarios = dataAsisntenciaResult.data ?? [];
             return {
                 error : false,
                 message : "Horario de clase en curso",
                 data  : {
-                    dataHorario : { id_horario_clase : dataAsisntenciaResult.data!.id_horario_en_clase,
-                                    hora_inicio : dataAsisntenciaResult.data!.hora_inicio,
-                                    hora_fin : dataAsisntenciaResult.data!.hora_fin,
-                                    nombre_clase : dataAsisntenciaResult.data!.nombre_clase,
-                                    sala : dataAsisntenciaResult.data!.sala},
+                    dataHorario : horarios.map(h => ({
+                        id_horario_clase : h.id_horario_en_clase,
+                        hora_inicio : h.hora_inicio,
+                        hora_fin : h.hora_fin,
+                        nombre_clase : h.nombre_clase,
+                        sala : h.sala
+                    })),
 
                     dataInscripcion : { id_inscripcion : planResult.data!.id_inscripcion,
                                         vencimiento : planResult.data!.vencimiento,
@@ -326,7 +342,7 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
                 code  : "ASISTENCIA_OK"
             };
         };
-        if ( dataAsisntenciaResult.code === "HORARIO_ASISTENCIA_NO_EXISTE"){
+        if ( dataAsisntenciaResult.code === "NO_ACTIVE_HORARIO_ASISTENCIA"){
             return {
                 error : true,
                 message : "No hay un horario de clase",
@@ -440,6 +456,17 @@ const altaAsistenciaManual = async( asistencia : AsistenciaManualInputs )
                     error : true,
                     message : `El alumno : ${ dataVerificacionInsc.dni_alumno } ya tiene asistencia en esta clase`,
                     code : "ALUMNO_EN_CLASE"
+                };
+            };
+
+            // Verificar si hay solapamiento temporal con otra clase del día
+            const verificarSolapamiento = await asistenciaData.solapamientoHorario(dataVerificacionInsc.id_inscripcion, dataAsistencia.id_horario_clase);
+
+            if( verificarSolapamiento.code === "ASISTENCIA_EXISTE" ){
+                return {
+                    error : true,
+                    message : `El alumno : ${ dataVerificacionInsc.dni_alumno } ya está asistiendo a otra clase en este horario`,
+                    code : "SOLAPAMIENTO_HORARIO"
                 };
             };
 
@@ -628,10 +655,16 @@ const horariosAsistenciaServicio = async( parametros : HorariosAsistenciaInputs 
             // asistencias (LEFT JOIN vacío). Se salta para no agregar
             // un alumno nulo al array.
             if (fila.dni_alumno != null && fila.nombre_alumno != null) {
-                grupo.alumnos.push({
-                    dni_alumno: fila.dni_alumno,
-                    nombre_completo: fila.nombre_alumno,
-                });
+                // Evita duplicados: si el alumno ya fue agregado a este horario,
+                // se salta (puede haber múltiples registros de asistencia para
+                // el mismo alumno en el mismo horario).
+                const yaExiste = grupo.alumnos.some(a => a.dni_alumno === fila.dni_alumno);
+                if (!yaExiste) {
+                    grupo.alumnos.push({
+                        dni_alumno: fila.dni_alumno,
+                        nombre_completo: fila.nombre_alumno,
+                    });
+                }
             }
         }
 

@@ -42,6 +42,8 @@ interface InputsProps {
   // Filtro de archivos del input type=file (spec 017). Aditiva: sin esta prop
   // el input se comporta exactamente como antes.
   accept?: string;
+  inputMode?: "numeric" | "decimal" | "tel" | "search" | "email" | "url";
+  maxLength?: number;
 }
 
 /**
@@ -114,6 +116,8 @@ export const Inputs = forwardRef<HTMLInputElement, InputsProps>(
             // archivos que abre el navegador. No previene que se suba otra cosa,
             // eso lo valida el server.
             accept={parametros.accept}
+            inputMode={parametros.inputMode}
+            maxLength={parametros.maxLength}
             aria-invalid={tieneError ? true : undefined}
             aria-describedby={tieneError ? idError : undefined}
             style={esPassword ? { paddingRight: "44px" } : undefined}

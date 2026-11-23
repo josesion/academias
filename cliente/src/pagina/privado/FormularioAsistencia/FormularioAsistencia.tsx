@@ -1,7 +1,13 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 
-import { CalendarClock, Clock3, UserCheck, CalendarDays } from "lucide-react";
+import {
+  CalendarClock,
+  Clock3,
+  UserCheck,
+  CalendarDays,
+  DoorOpen,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 // Componentes
@@ -24,15 +30,31 @@ type ClaseInfo = {
   nombre_clase: string;
   hora_inicio: string;
   hora_fin: string;
+  sala?: string;
+  id_horario_clase: number;
 };
 
-// El hook puede devolver una clase, un objeto sin datos o null.
-const esClase = (clase: unknown): clase is ClaseInfo =>
-  typeof clase === "object" &&
-  clase !== null &&
-  "nombre_clase" in clase &&
-  "hora_inicio" in clase &&
-  "hora_fin" in clase;
+type ProximaClaseInfo = {
+  nombre_clase: string;
+  hora_inicio: string;
+  hora_fin: string;
+  sala?: string;
+  id_horario_prox_clase: number;
+};
+
+const esHorarioValido = (h: unknown): h is ClaseInfo =>
+  typeof h === "object" &&
+  h !== null &&
+  ("id_horario_clase" in h || "id_horario_en_clase" in h) &&
+  "nombre_clase" in h &&
+  "hora_inicio" in h;
+
+const esProximaClaseValida = (h: unknown): h is ProximaClaseInfo =>
+  typeof h === "object" &&
+  h !== null &&
+  "id_horario_prox_clase" in h &&
+  "nombre_clase" in h &&
+  "hora_inicio" in h;
 
 /* ==========================================================
    SUBCOMPONENTES
@@ -42,8 +64,7 @@ type TarjetaClaseProps = {
   variante: "actual" | "proxima";
   etiqueta: string;
   Icono: LucideIcon;
-  clase: unknown;
-  textoVacio: string;
+  clase: ClaseInfo | ProximaClaseInfo | null;
 };
 
 const TarjetaClase = ({
@@ -51,34 +72,131 @@ const TarjetaClase = ({
   etiqueta,
   Icono,
   clase,
-  textoVacio,
 }: TarjetaClaseProps) => {
-  const data = esClase(clase) ? clase : null;
+  if (!clase) return null;
 
   return (
-    <article
-      className={`clase_card card-base ${variante}${data ? "" : " clase_card--vacia"}`}
-    >
+    <article className={`clase_card card-base ${variante}`}>
       <span className={`badge ${variante}`}>
         <Icono size={13} aria-hidden="true" />
         {etiqueta}
       </span>
 
       <div className="clase_contenido">
-        <h2>{data ? data.nombre_clase : textoVacio}</h2>
+        <h2>{clase.nombre_clase}</h2>
+        {clase.sala && <p className="clase_sala">{clase.sala}</p>}
 
         <p>
           <CalendarClock size={16} aria-hidden="true" />
-          <span>{data ? data.hora_inicio : "00:00"}</span>
+          <span>{clase.hora_inicio}</span>
           <span className="separador_hora" aria-hidden="true">
             →
           </span>
-          <span>{data ? data.hora_fin : "00:00"}</span>
+          <span>{clase.hora_fin}</span>
         </p>
       </div>
     </article>
   );
 };
+
+/**
+ * Grupo de tarjetas para una sección (En curso / Próxima).
+ * Muestra una tarjeta por clase, o un mensaje vacío si no hay clases.
+ */
+type GrupoClasesProps = {
+  variante: "actual" | "proxima";
+  etiqueta: string;
+  Icono: LucideIcon;
+  clases: (ClaseInfo | ProximaClaseInfo)[];
+  textoVacio: string;
+};
+
+const GrupoClases = ({
+  variante,
+  etiqueta,
+  Icono,
+  clases,
+  textoVacio,
+}: GrupoClasesProps) => {
+  if (clases.length === 0) {
+    return (
+      <article className={`clase_card card-base ${variante} clase_card--vacia`}>
+        <span className={`badge ${variante}`}>
+          <Icono size={13} aria-hidden="true" />
+          {etiqueta}
+        </span>
+        <div className="clase_contenido">
+          <h2>{textoVacio}</h2>
+          <p>
+            <CalendarClock size={16} aria-hidden="true" />
+            <span>00:00</span>
+            <span className="separador_hora" aria-hidden="true">
+              →
+            </span>
+            <span>00:00</span>
+          </p>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <div className="grupo_clases">
+      {clases.map((clase, idx) => (
+        <TarjetaClase
+          key={`${variante}-${idx}`}
+          variante={variante}
+          etiqueta={etiqueta}
+          Icono={Icono}
+          clase={clase}
+        />
+      ))}
+    </div>
+  );
+};
+
+/**
+ * Selector de clase cuando hay múltiples horarios en curso.
+ * Muestra tarjetas clickeables con nombre de clase, horario y sala.
+ */
+type SelectorClaseProps = {
+  horarios: ClaseInfo[];
+  seleccionada: number | null;
+  onSeleccionar: (id: number) => void;
+};
+
+const SelectorClase = ({
+  horarios,
+  seleccionada,
+  onSeleccionar,
+}: SelectorClaseProps) => (
+  <fieldset className="selector_clase">
+    <legend>
+      <DoorOpen size={16} aria-hidden="true" />
+      <span>Seleccioná la clase</span>
+    </legend>
+    <div className="selector_clase_opciones">
+      {horarios.map((h) => {
+        const estaSeleccionada = h.id_horario_clase === seleccionada;
+        return (
+          <button
+            key={h.id_horario_clase}
+            type="button"
+            className={`selector_clase_opcion${estaSeleccionada ? " seleccionada" : ""}`}
+            onClick={() => onSeleccionar(h.id_horario_clase)}
+            aria-pressed={estaSeleccionada}
+          >
+            <span className="selector_clase_nombre">{h.nombre_clase}</span>
+            <span className="selector_clase_detalle">
+              {h.hora_inicio} – {h.hora_fin}
+              {h.sala ? ` · ${h.sala}` : ""}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  </fieldset>
+);
 
 const ExitoAsistencia = () =>
   createPortal(
@@ -102,8 +220,56 @@ const ExitoAsistencia = () =>
 export const FormularioAsistencia = () => {
   const inputDniRef = useRef<HTMLInputElement>(null);
 
-  const { handleCachearAlumno, handleResgistrarAsistencia, state } =
-    useAsistenciaSet();
+  const {
+    handleCachearAlumno,
+    handleResgistrarAsistencia,
+    handleSeleccionarClase,
+    state,
+  } = useAsistenciaSet();
+
+  // Extraer las listas de clases del estado (ahora son arrays)
+  const clasesEnCurso = useMemo(() => {
+    const data = state.claseEnCurso;
+    if (Array.isArray(data)) {
+      return data
+        .filter(esHorarioValido)
+        .map((c) => ({
+          nombre_clase: c.nombre_clase,
+          hora_inicio: c.hora_inicio,
+          hora_fin: c.hora_fin,
+          sala: c.sala,
+          id_horario_clase: c.id_horario_en_clase,
+        }));
+    }
+    return [];
+  }, [state.claseEnCurso]);
+
+  const clasesProximas = useMemo(() => {
+    const data = state.claseProxima;
+    if (Array.isArray(data)) {
+      return data
+        .filter(esProximaClaseValida)
+        .map((c) => ({
+          nombre_clase: c.nombre_clase,
+          hora_inicio: c.hora_inicio,
+          hora_fin: c.hora_fin,
+          sala: c.sala,
+          id_horario_prox_clase: c.id_horario_prox_clase,
+        }));
+    }
+    return [];
+  }, [state.claseProxima]);
+
+  // Horarios del dataAsistencia (para el selector de clase al registrar)
+  const horariosEnCurso = useMemo(() => {
+    const dataHorario = state.dataAsistencia.dataHorario;
+    if (Array.isArray(dataHorario)) {
+      return dataHorario.filter(esHorarioValido);
+    }
+    return [];
+  }, [state.dataAsistencia.dataHorario]);
+
+  const hayMultiplesClases = horariosEnCurso.length > 1;
 
   useEffect(() => {
     if (!state.exitoAsistencia) {
@@ -120,19 +286,19 @@ export const FormularioAsistencia = () => {
 
       <main className="asistencia_panel">
         <section className="asistencia_clases" aria-label="Clases de hoy">
-          <TarjetaClase
+          <GrupoClases
             variante="actual"
             etiqueta="En curso"
             Icono={Clock3}
-            clase={state.claseEnCurso}
+            clases={clasesEnCurso}
             textoVacio="Sin clase en curso"
           />
 
-          <TarjetaClase
+          <GrupoClases
             variante="proxima"
             etiqueta="Próxima"
             Icono={CalendarDays}
-            clase={state.claseProxima}
+            clases={clasesProximas}
             textoVacio="Sin más clases por hoy"
           />
         </section>
@@ -158,6 +324,15 @@ export const FormularioAsistencia = () => {
             readonly={false}
             onChange={handleCachearAlumno}
           />
+
+          {/* Selector de clase cuando hay múltiples horarios en curso */}
+          {hayMultiplesClases && (
+            <SelectorClase
+              horarios={horariosEnCurso}
+              seleccionada={state.claseSeleccionada}
+              onSeleccionar={handleSeleccionarClase}
+            />
+          )}
 
           <dl className="estado_inscripcion">
             <div className="estado_card">
