@@ -4,7 +4,7 @@ import { method as dataCaja } from "../data/caja.data";
 
 import { TipadoData } from "../tipados/tipado.data";
 import { ResultClase , ReultTarjetasInscripcion, ReultTarjetasVencimientos,
-         ResultAsistencia, VencimientoEscuela
+         ResultAsistencia, VencimientoEscuela, ResultClaseConAsistencia
 } from "../data/metricas.data";
 import { MetricaInputs,MetricasSchema, IdEscuelaInputs, IdEscuelaSchema } from "../squemas/metricas";
 
@@ -130,33 +130,34 @@ const metricasInscripcion = async ( data : MetricaInputs ) : Promise<TipadoData<
 
 
 /**
- * Procesa la obtención de los datos del encabezado de la clase actual.
+ * Procesa la obtención de los datos del encabezado de TODAS las clases en curso.
  * * Valida los datos de entrada usando un esquema de Zod, interactúa con la capa 
  * de persistencia (`dataMetricas`) y transforma los códigos de respuesta internos 
  * en una estructura estandarizada para la UI.
+ * * Ahora devuelve un array con todas las clases activas, incluyendo las de
+ * diferentes salas, para que la UI pueda mostrar cada una por separado.
  * * @param {MetricaInputs} data - Objeto que contiene el `id_escuela` necesario para la consulta.
- * * @returns {Promise<TipadoData<ResultClase>>} Una promesa que resuelve con un objeto de resultado 
- * que indica si la operación fue exitosa, contiene los datos de la clase, o reporta un error específico 
- * (servidor o ausencia de clases activas).
+ * * @returns {Promise<TipadoData<ResultClase[]>>} Una promesa que resuelve con un objeto de resultado 
+ * que indica si la operación fue exitosa, contiene el array de clases en curso, o reporta un error.
  * * @throws {ZodError} Si los datos de entrada (`data`) no cumplen con el `MetricasSchema`.
  */
 const encabezadoClases = async( data : MetricaInputs )
-:Promise<TipadoData<ResultClase>> =>{
+:Promise<TipadoData<ResultClase[]>> =>{
 
     const validarInfo : MetricaInputs = MetricasSchema.parse( data ); 
     const resultClases = await dataMetricas.encabezadoClases( validarInfo.id_escuela );
 
-    if ( resultClases.code === 'METRICAS_ENCABEZADO_CLASES_NO_EXISTE'  ){
+    if ( resultClases.code === 'NO_ACTIVE_ENCABEZADO_CLASES'  ){
         return{
             error : true, 
             message : "Sin datos de clase actual.",
             code : "SIN_METRICAS_CLASES"
         };
     };
-    if ( resultClases.code === 'METRICAS_ENCABEZADO_CLASES_EXISTE'  ){
+    if ( resultClases.code === 'ENCABEZADO_CLASES_LISTED'  ){
         return {
             error : false,
-            message : "Encabezado de las clase la correcto.",
+            message : "Encabezado de las clases correcto.",
             data : resultClases.data,
             code : "CLASES_OK"
         };
@@ -172,22 +173,23 @@ const encabezadoClases = async( data : MetricaInputs )
 
 
 /**
- * Orquesta la obtención del listado de asistencia para la clase que está ocurriendo actualmente.
- * * Primero identifica la clase activa mediante el `id_escuela`, y si existe, 
- * procede a consultar las asistencias registradas para ese horario específico.
+ * Orquesta la obtención del listado de asistencia para TODAS las clases en curso.
+ * * Primero identifica todas las clases activas mediante el `id_escuela`, y si existen, 
+ * procede a consultar las asistencias registradas para todos los horarios encontrados.
+ * * Agrupa los alumnos por su clase (id_horario_clase) para que el frontend pueda
+ * mostrar cada clase con sus propios alumnos en un acordeón.
  * * @param {MetricaInputs} data - Objeto que contiene el `id_escuela` validado para la consulta.
- * * @returns {Promise<TipadoData<any>>} Una promesa que resuelve con el listado de alumnos 
- * asistentes si la operación fue exitosa, o un objeto con el error correspondiente 
- * (sin clase activa, sin alumnos encontrados o error de servidor).
+ * * @returns {Promise<TipadoData<ResultClaseConAsistencia[]>>} Una promesa que resuelve con un array
+ * donde cada elemento contiene la info de la clase y sus alumnos, o un error.
  * * @throws {ZodError} Si la validación de `data` falla según `MetricasSchema`.
  */
 const asistenciaClases = async ( data : MetricaInputs )
-:Promise<TipadoData< ResultAsistencia[]>> =>{
+:Promise<TipadoData< ResultClaseConAsistencia[]>> =>{
     
     const validarInfo : MetricaInputs = MetricasSchema.parse( data ); 
-    const idHorario = await dataMetricas.encabezadoClases( validarInfo.id_escuela );
+    const clasesResult = await dataMetricas.encabezadoClases( validarInfo.id_escuela );
     
-    if ( idHorario.code === 'METRICAS_ENCABEZADO_CLASES_NO_EXISTE'  ){
+    if ( clasesResult.code === 'NO_ACTIVE_ENCABEZADO_CLASES'  ){
         return{
             error : true, 
             message : "Sin datos de clase actual.",
@@ -195,36 +197,42 @@ const asistenciaClases = async ( data : MetricaInputs )
         };
     };
 
-    const id_horario = idHorario.data?.id_clase;
+    if ( clasesResult.code !== 'ENCABEZADO_CLASES_LISTED' || !clasesResult.data || clasesResult.data.length === 0 ) {
+        return { error: true, message: "No se pudo obtener el listado de clases.", code: "ERROR_DATOS" };
+    };
 
-    if (!id_horario) {
-        return { error: true, message: "No se pudo obtener el ID de la clase.", code: "ERROR_DATOS" };
+    // Extraer todos los IDs de horario de las clases en curso
+    const id_horarios = clasesResult.data.map( c => c.id_clase );
+
+    const asistenciaResult = await dataMetricas.asistenciaClases( id_horarios );
+
+    // Agrupar alumnos por id_horario_clase
+    const alumnosPorClase = new Map<number, ResultAsistencia[]>();
+    if ( asistenciaResult.code === 'ASISTENCIAS_LISTED' && asistenciaResult.data ) {
+        for ( const alumno of asistenciaResult.data ) {
+            const id = alumno.id_horario_clase;
+            if ( !alumnosPorClase.has(id) ) {
+                alumnosPorClase.set(id, []);
+            }
+            alumnosPorClase.get(id)!.push(alumno);
+        }
     }
 
-    const asitenciaResult = await dataMetricas.asistenciaClases( id_horario );
-    
-
-    if ( asitenciaResult.code === 'NO_ACTIVE_ASISTENCIAS'  ){
-        return{
-            error : true, 
-            message : "No se encontraron alumnos en esta clase.",
-            code : "SIN_ALUMNOS_ASISTENCIA"
-        };
-    };
-
-    if ( asitenciaResult.code === 'ASISTENCIAS_LISTED'  ){
-        return {
-            error : false,
-            message : "Listado de asistencia.",
-            data : asitenciaResult.data,
-            code : "ASISTENCIA_OK"
-        };
-    };
+    // Construir el array de clases con sus alumnos
+    const clasesConAsistencia: ResultClaseConAsistencia[] = clasesResult.data.map( clase => ({
+        id_clase: clase.id_clase,
+        nombre_clase: clase.nombre_clase,
+        horario: clase.horario,
+        nombre_profesor: clase.nombre_profesor,
+        sala: clase.sala,
+        alumnos: alumnosPorClase.get(clase.id_clase) || []
+    }));
 
     return {
-        error : true,
-        message : "Error en el servidor , listado de asistencia.",
-        code : "ERROR_SERVIDOR"
+        error : false,
+        message : "Listado de asistencia por clase.",
+        data : clasesConAsistencia,
+        code : "ASISTENCIA_OK"
     };
 };
 

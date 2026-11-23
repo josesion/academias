@@ -470,16 +470,18 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
  * ```
  */
 const clase_en_curso = async( data : ClasesActualInputs) 
-: Promise<TipadoData<ResultadoClaseEnCruso>> =>{
+: Promise<TipadoData<ResultadoClaseEnCruso[]>> =>{
     const { id_escuela , estado, dia } = data ;
     const sql : string = `SELECT 
                                 hc.id AS id_horario_en_clase,
                                 hc.hora_inicio,
                                 hc.hora_fin,
-                                tc.tipo AS nombre_clase
+                                tc.tipo AS nombre_clase,
+                                COALESCE(s.nombre, 'Sin sala') AS sala
                             FROM horarios_clases hc
                             INNER JOIN tipo_clase tc 
                                 ON tc.id = hc.id_tipo_clase
+                            LEFT JOIN salas s ON s.id = hc.id_sala
                             WHERE
                                 hc.id_escuela = ?
                                 AND hc.estado = ?
@@ -502,13 +504,15 @@ const clase_en_curso = async( data : ClasesActualInputs)
                                             OR CAST(NOW() AS TIME) <= CAST(hc.hora_fin AS TIME)
                                         )
                                     )
-                                );
+                                )
+                            ORDER BY hc.hora_inicio ASC;
 `;
     const valores : unknown[] = [id_escuela , estado , dia];
-    return await buscarExistenteEntidad<ResultadoClaseEnCruso>({
-        slqEntidad : sql,
+    return await listarEntidadSinPaginacion<ResultadoClaseEnCruso>({
+        slqListado : sql,
         valores,
-        entidad : "clase_en_curso"
+        entidad : "clase_en_curso",
+        estado : "en el dia"
     });
 };
 
@@ -560,10 +564,12 @@ const clase_proxima_clase = async( data : ClasesProximaInputs)
                             hc.id AS id_horario_prox_clase,
                             hc.hora_inicio,
                             hc.hora_fin,
-                            tc.tipo AS nombre_clase
+                            tc.tipo AS nombre_clase,
+                            COALESCE(s.nombre, 'Sin sala') AS sala
                         FROM horarios_clases hc
                         INNER JOIN tipo_clase tc 
                             ON tc.id = hc.id_tipo_clase
+                        LEFT JOIN salas s ON s.id = hc.id_sala
                         WHERE 
                             hc.id_escuela = ?
                             AND hc.estado = ?
@@ -744,6 +750,7 @@ export interface HorarioAsistenciaRow {
     nivel: string;
     tipo_clase: string;
     profesor: string;
+    sala: string;
     dni_alumno: number | null;
     nombre_alumno: string | null;
 }
@@ -781,12 +788,13 @@ export interface ListadoAsistenciaRow {
  * Consulta todos los horarios programados para un día específico, con los alumnos
  * que asistieron (si los hay).
  *
- * Lee los horarios de `horarios_clases` (tabla de programación) y hace LEFT JOIN
- * con `asistencias` para obtener los alumnos presentes. Así se devuelven TODOS los
- * horarios del día, incluso los que no tienen asistencias registradas.
+ * Usa un CTE (`HorariosDelDia`) que combina con UNION:
+ * 1. Los horarios activos de `horarios_clases` para el día de la semana.
+ * 2. Los horarios que tienen asistencias registradas en la fecha (para no
+ *    perder asistencias de horarios que fueron desactivados/eliminados).
  *
- * El día de la semana se calcula a partir de la fecha (DAYNAME) para filtrar
- * correctamente los horarios programados.
+ * Así se devuelven TODOS los horarios del día, incluso los que no tienen
+ * asistencias registradas, y también las asistencias de horarios ya inactivos.
  *
  * @param data Filtros: escuela y fecha.
  * @returns {Promise<TipadoData<HorarioAsistenciaRow[]>>} Filas planas
@@ -798,45 +806,76 @@ const horariosConAsistencias = async( data : HorariosAsistenciaInputs )
 : Promise<TipadoData<HorarioAsistenciaRow[]>> => {
     const { id_escuela, fecha } = data;
 
-    const slqListado : string = `SELECT
-                                    hc.id AS id_horario_clase,
-                                    TIME_FORMAT(hc.hora_inicio, '%H:%i') AS hora_inicio,
-                                    TIME_FORMAT(hc.hora_fin, '%H:%i')   AS hora_fin,
-                                    hc.dia_semana,
+    const slqListado : string = `
+                                -- CTE: obtiene los horarios activos del día desde horarios_clases
+                                -- y también los horarios que tienen asistencias registradas
+                                -- (para no perder asistencias de horarios desactivados/eliminados)
+                                WITH HorariosDelDia AS (
+                                    SELECT DISTINCT
+                                        hc.id AS id_horario_clase,
+                                        hc.hora_inicio,
+                                        hc.hora_fin,
+                                        hc.dia_semana,
+                                        hc.id_nivel,
+                                        hc.id_tipo_clase,
+                                        hc.dni_profesor,
+                                        hc.id_sala
+                                    FROM horarios_clases hc
+                                    WHERE hc.id_escuela = ?
+                                      AND hc.estado = 'activos'
+                                      AND LOWER(
+                                        CASE DAYOFWEEK(?)
+                                          WHEN 1 THEN 'domingo'
+                                          WHEN 2 THEN 'lunes'
+                                          WHEN 3 THEN 'martes'
+                                          WHEN 4 THEN 'miercoles'
+                                          WHEN 5 THEN 'jueves'
+                                          WHEN 6 THEN 'viernes'
+                                          WHEN 7 THEN 'sabado'
+                                        END
+                                      ) = LOWER(hc.dia_semana)
+                                    UNION
+                                    SELECT DISTINCT
+                                        asis.id_horario_clase,
+                                        asis.hora_inicio,
+                                        asis.hora_fin,
+                                        asis.dia_semana,
+                                        asis.id_nivel,
+                                        asis.id_tipo_clase,
+                                        asis.dni_profesor,
+                                        NULL AS id_sala
+                                    FROM asistencias asis
+                                    WHERE asis.id_escuela = ?
+                                      AND asis.fecha = ?
+                                )
+                                SELECT
+                                    hd.id_horario_clase,
+                                    TIME_FORMAT(hd.hora_inicio, '%H:%i') AS hora_inicio,
+                                    TIME_FORMAT(hd.hora_fin, '%H:%i')   AS hora_fin,
+                                    hd.dia_semana,
                                     COALESCE(n.nivel, 'Sin nivel')       AS nivel,
                                     COALESCE(tc.tipo, 'Sin tipo')        AS tipo_clase,
                                     COALESCE(CONCAT(p.nombre, ' ', p.apellido), 'Sin profesor') AS profesor,
+                                    COALESCE(s.nombre, 'Sin sala')        AS sala,
                                     asis.dni_alumno,
                                     CONCAT(al.nombre, ' ', al.apellido) AS nombre_alumno
-                                FROM horarios_clases hc
-                                LEFT JOIN profesores p ON p.dni = hc.dni_profesor
-                                LEFT JOIN niveles n ON n.id = hc.id_nivel
-                                LEFT JOIN tipo_clase tc ON tc.id = hc.id_tipo_clase
+                                FROM HorariosDelDia hd
+                                LEFT JOIN profesores p ON p.dni = hd.dni_profesor
+                                LEFT JOIN niveles n ON n.id = hd.id_nivel
+                                LEFT JOIN tipo_clase tc ON tc.id = hd.id_tipo_clase
+                                LEFT JOIN salas s ON s.id = hd.id_sala
                                 LEFT JOIN asistencias asis
-                                    ON asis.id_horario_clase = hc.id
+                                    ON asis.id_horario_clase = hd.id_horario_clase
                                     AND asis.fecha = ?
                                     AND asis.estado = 'presente'
                                 LEFT JOIN alumnos al ON al.dni_alumno = asis.dni_alumno
-                                WHERE hc.id_escuela = ?
-                                  AND hc.estado = 'activos'
-                                  AND LOWER(
-                                    CASE DAYOFWEEK(?)
-                                      WHEN 1 THEN 'domingo'
-                                      WHEN 2 THEN 'lunes'
-                                      WHEN 3 THEN 'martes'
-                                      WHEN 4 THEN 'miercoles'
-                                      WHEN 5 THEN 'jueves'
-                                      WHEN 6 THEN 'viernes'
-                                      WHEN 7 THEN 'sabado'
-                                    END
-                                  ) = LOWER(hc.dia_semana)
-                                ORDER BY hc.hora_inicio ASC,
+                                ORDER BY hd.hora_inicio ASC,
                                          al.apellido ASC,
                                          al.nombre ASC;`;
 
     return await listarEntidadSinPaginacion<HorarioAsistenciaRow>({
         slqListado,
-        valores: [fecha, id_escuela, fecha],
+        valores: [id_escuela, fecha, id_escuela, fecha, fecha],
         entidad: "horarios_asistencia",
         estado: "en la fecha pedida",
     });

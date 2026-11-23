@@ -483,9 +483,11 @@ const dataHorarioAsistencia = async( data : DataHorarioAsistenciaInputs )
                                 hc.id AS id_horario_en_clase,
                                 hc.hora_inicio,
                                 hc.hora_fin,
-                                tc.tipo AS nombre_clase
+                                tc.tipo AS nombre_clase,
+                                COALESCE(s.nombre, 'Sin sala') AS sala
                             FROM horarios_clases hc
                             INNER JOIN tipo_clase tc ON tc.id = hc.id_tipo_clase
+                            LEFT JOIN salas s ON s.id = hc.id_sala
                             WHERE hc.id_escuela = ?
                                 AND hc.estado = ?
                                 AND hc.vigente = 1

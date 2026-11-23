@@ -317,7 +317,21 @@ const listadoProfesor =  async ( dataList : ListadoProfeInputs )
             paginacion : listadoResult.paginacion,
             code : "LISTADO_PROFESOR_OK"
         };  
-    };
+    }
+
+    if ( listadoResult.code === "NO_ACTIVE_PROFESORESCUELA" ) {
+        return {
+            error : false,
+            message : "No hay profesores para mostrar",
+            data : [],
+            paginacion : {
+                pagina: Number(listadoParams.pagina) || 1,
+                limite: Number(listadoParams.limit) || 10,
+                contadorPagina: 0
+            },
+            code : "LISTADO_PROFESOR_VACIO"
+        };
+    }
 
      return {
         error: true,
@@ -359,11 +373,12 @@ const ListadoSinPaginacion = async( data : ListadoProfeSinPagInputs  )
 
     if ( listadoResult.code === "NO_ACTIVE_PROFESORESCUELA") {
         return {
-            error : true,
+            error : false,
             message : "Sin listado de profesores.",
+            data : [],
             code  : "LISTADO_PROFESORES_VACIO"
         };
-    };
+    }
     
     return {
         error: true,

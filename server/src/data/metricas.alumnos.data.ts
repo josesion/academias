@@ -358,6 +358,7 @@ export interface HorarioClaseData {
   tipo_clase: string; // Viene de tipo_clase.tipo (Ej: Bachata, Salsa)
   nivel: string; // Viene de niveles.nivel (Ej: Principiante, Intermedio)
   nombre_profesor: string; // Nombre y apellido concatenados de la tabla profesores
+  sala: string; // Nombre de la sala donde se dicta la clase
   estado: string;
 }
 
@@ -371,6 +372,7 @@ const horarioEscuela =async ( id_escuela : number )
                                 tc.tipo AS tipo_clase,
                                 n.nivel AS nivel,
                                 CONCAT(p.nombre, ' ', p.apellido) AS nombre_profesor,
+                                COALESCE(s.nombre, 'Sin sala') AS sala,
                                 h.estado
                             FROM horarios_clases h
                             LEFT JOIN tipo_clase tc 
@@ -381,6 +383,7 @@ const horarioEscuela =async ( id_escuela : number )
                                 ON h.dni_profesor = pe.dni_profesor AND h.id_escuela = pe.id_escuela
                             LEFT JOIN profesores p 
                                 ON pe.dni_profesor = p.dni -- (Ajusta 'p.dni' si tu tabla de profesores usa otra columna para el documento)
+                            LEFT JOIN salas s ON h.id_sala = s.id
                             WHERE h.id_escuela = ?
                             AND h.estado = 'activos'
                             ORDER BY 
@@ -406,6 +409,7 @@ export interface AsistenciaInscripcionRow {
   tipo_clase: string;         // tipo_clase.tipo (Ej: Bachata)
   nivel: string;              // niveles.nivel (Ej: Principiante)
   profesor: string;           // nombre y apellido concatenados
+  sala: string;               // nombre de la sala donde se dictó la clase
 }
 
 /**
@@ -433,12 +437,14 @@ const asistenciasPorInscripcion = async ( id_inscripcion : number )
                                 CONCAT(hc.hora_inicio, ' - ', hc.hora_fin) AS hora,
                                 tc.tipo AS tipo_clase,
                                 n.nivel AS nivel,
-                                CONCAT(p.nombre, ' ', p.apellido) AS profesor
+                                CONCAT(p.nombre, ' ', p.apellido) AS profesor,
+                                COALESCE(s.nombre, 'Sin sala') AS sala
                             FROM asistencias a
                             INNER JOIN horarios_clases hc ON a.id_horario_clase = hc.id
                             INNER JOIN tipo_clase tc ON hc.id_tipo_clase = tc.id
                             INNER JOIN niveles n ON hc.id_nivel = n.id
                             INNER JOIN profesores p ON hc.dni_profesor = p.dni
+                            LEFT JOIN salas s ON hc.id_sala = s.id
                             WHERE a.id_inscripcion = ?
                             AND a.estado = 'presente'
                             ORDER BY a.fecha DESC, hc.hora_inicio ASC;`;

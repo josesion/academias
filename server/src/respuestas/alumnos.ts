@@ -44,6 +44,8 @@ export const MAPA_LISTAR_ALUMNOS : Record<string , { status : CodigoEstadoHTTP, 
 
     "ALUMNO_LISTED_OK" : { status : CodigoEstadoHTTP.OK, msg : "Listado de alumnos obtenido correctamente."},
 
+    "ALUMNO_LISTADO_VACIO" : { status : CodigoEstadoHTTP.NO_ENCONTRADO, msg : "Sin alumnos en esta lista."},   
+
     ERROR_SERVIDOR
 };
 
@@ -51,6 +53,8 @@ export const MAPA_LISTAR_ALUMNOS : Record<string , { status : CodigoEstadoHTTP, 
 export const MAPA_LISTAR_SIN_PAGINACION_ALUMNOS : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
     "ALUMNO_LISTED_OK" : { status : CodigoEstadoHTTP.OK, msg : "Listado de alumnos obtenido correctamente."},
-    
+   
+    "ALUMNO_LISTADO_VACIO" : { status : CodigoEstadoHTTP.NO_ENCONTRADO, msg : "Sin alumnos en esta lista."},    
+
     ERROR_SERVIDOR
 };

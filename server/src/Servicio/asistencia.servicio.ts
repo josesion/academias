@@ -220,22 +220,18 @@ const fechaAsistencia = async( data : ClasesActualInputs)
     const verificacionFechas_en_curso : ClasesActualInputs =ClaseActualSchema.parse({id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy});
     const clase_en_curso  = await asistenciaData.claseEnCurso(verificacionFechas_en_curso);
   
-    let clase_actual : ResultadoClaseEnCruso | ResultErrorAsistencia = { error : null , message : null , code : null};
+    let clase_actual : ResultadoClaseEnCruso[] | ResultErrorAsistencia = { error : null , message : null , code : null};
     let clase_proxima : ResultadoClaseProxima | ResultErrorAsistencia = { error : null , message : null , code : null};
 
-    switch (clase_en_curso.code){
-        case 'CLASE_EN_CURSO_NO_EXISTE' : {
-            clase_actual = {
-                error : true,
-                message: "No se registra ninguna clase en curso",
-                code  : "NO_HAY_CLASES_EN_CURSO"
-            };
+    if (clase_en_curso.error || !clase_en_curso.data || clase_en_curso.data.length === 0) {
+        clase_actual = {
+            error: true,
+            message: "No se registra ninguna clase en curso",
+            code: "NO_HAY_CLASES_EN_CURSO"
         };
-        case 'CLASE_EN_CURSO_EXISTE'    : {
-            if (clase_en_curso.data) clase_actual  = clase_en_curso.data  ;
-        };
-
-    };
+    } else {
+        clase_actual = clase_en_curso.data;
+    }
    
   const verificaionFechas_proxima_clase : ClasesProximaInputs = ClaseProximaSchema.parse({ id_escuela : data.id_escuela, estado : data.estado , dia : diaHoy }); 
   const proxima_Clase = await asistenciaData.proximaClase(verificaionFechas_proxima_clase);  
@@ -319,7 +315,8 @@ export const dataAsistenciaServicio = async( data : DataAlumnoVigenteInputs)
                     dataHorario : { id_horario_clase : dataAsisntenciaResult.data!.id_horario_en_clase,
                                     hora_inicio : dataAsisntenciaResult.data!.hora_inicio,
                                     hora_fin : dataAsisntenciaResult.data!.hora_fin,
-                                    nombre_clase : dataAsisntenciaResult.data!.nombre_clase},
+                                    nombre_clase : dataAsisntenciaResult.data!.nombre_clase,
+                                    sala : dataAsisntenciaResult.data!.sala},
 
                     dataInscripcion : { id_inscripcion : planResult.data!.id_inscripcion,
                                         vencimiento : planResult.data!.vencimiento,
@@ -572,6 +569,7 @@ export interface HorarioConAlumnos {
     nivel: string;
     tipo_clase: string;
     profesor: string;
+    sala: string;
     alumnos: Array<{ dni_alumno: number; nombre_completo: string }>;
 }
 
@@ -621,6 +619,7 @@ const horariosAsistenciaServicio = async( parametros : HorariosAsistenciaInputs 
                     nivel: fila.nivel,
                     tipo_clase: fila.tipo_clase,
                     profesor: fila.profesor,
+                    sala: fila.sala,
                     alumnos: [],
                 };
                 grupos.set(fila.id_horario_clase, grupo);

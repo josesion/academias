@@ -2,7 +2,7 @@ import { Request , Response } from "express";
 import { tryCatch } from "../utils/tryCatch";
 import { handleControladores } from "../utils/handleControladores";
 
-import { ResultClase,  ResultAsistencia, VencimientoEscuela } from "../data/metricas.data";
+import { ResultClase, ResultClaseConAsistencia, VencimientoEscuela } from "../data/metricas.data";
 import { ResultTarjetas } from "../Servicio/metricas.servicio";
 
 import { method as servicioMetrica } from "../Servicio/metricas.servicio";
@@ -36,9 +36,10 @@ const metricaInscripcion = async( req : Request , res : Response ) => {
 };
 
 /**
- * Controlador para la obtención de los datos del encabezado de la clase actual.
- * * Extrae el `id_escuela` del usuario autenticado en la request para consultar la 
- * clase activa en el servicio de métricas y devuelve la respuesta formateada.
+ * Controlador para la obtención de los datos del encabezado de TODAS las clases en curso.
+ * * Extrae el `id_escuela` del usuario autenticado en la request para consultar las 
+ * clases activas en el servicio de métricas y devuelve la respuesta formateada.
+ * * Ahora devuelve un array con todas las clases, incluyendo las de diferentes salas.
  * * @param {Request} req - Objeto de solicitud de Express que contiene los datos del usuario.
  * @param {Response} res - Objeto de respuesta de Express.
  * @returns {Promise<void>} Promesa que resuelve tras enviar la respuesta HTTP al cliente.
@@ -50,16 +51,17 @@ const encabezadoClases = async ( req : Request , res : Response ) =>{
         tipo : req.usuario?.tipo || "basico"
     };
 
-    await handleControladores<{ id_escuela : number, tipo: string }, ResultClase >(
+    await handleControladores<{ id_escuela : number, tipo: string }, ResultClase[]>(
         res, data , servicioMetrica.encabezadoClases , MAPA_METRICAS_CLASES
     );
 };
 
 
 /**
- * Controlador para la obtención del reporte de asistencia a clases.
+ * Controlador para la obtención del reporte de asistencia a clases agrupado por clase.
  * * Extrae el `id_escuela` desde la información del usuario autenticado y delega
- * la ejecución al servicio de métricas, retornando un listado con el estado de asistencia.
+ * la ejecución al servicio de métricas, retornando un array donde cada clase
+ * incluye sus alumnos registrados.
  * * @param {Request} req - Objeto de solicitud de Express que contiene los datos del usuario.
  * @param {Response} res - Objeto de respuesta de Express.
  * @returns {Promise<void>} Promesa que resuelve tras enviar el listado de asistencias al cliente.
@@ -71,7 +73,7 @@ const asistenciaClases = async (  req : Request , res : Response  ) =>{
         tipo : req.usuario?.tipo || "basico"
      };
      
-     await  handleControladores<{ id_escuela : number, tipo: string }, ResultAsistencia[] >(
+     await  handleControladores<{ id_escuela : number, tipo: string }, ResultClaseConAsistencia[]>(
         res, data  , servicioMetrica.asistenciaClases ,MAPA_METRICAS_ASISTENCIAS
      ); 
 };

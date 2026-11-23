@@ -325,7 +325,7 @@ const estadoPlanes = async ( estado : estadoPlanesUsuariosInputs  )
  */
 const listadoPlanes = async ( planes : ListaPlanesUsuariosInputs) 
 : Promise<TipadoData<ResulListadoPlanesUsuarios[]>> => {
- 
+
 	const dataListado : ListaPlanesUsuariosInputs = ListaPlanesUsuariosSchema.parse( planes );
 
     	const planesListado = await planesUsuarios.listadoPlanesUsuarios(  dataListado , Number(dataListado.pagina) );
@@ -338,7 +338,21 @@ const listadoPlanes = async ( planes : ListaPlanesUsuariosInputs)
                 code : "PLANES_LISTADO_OK",
                 paginacion : planesListado.paginacion
             };
+        }
+
+    if ( planesListado.code === 'NO_ACTIVE_PLANUSUARIO' ) {
+        return {
+            error : false,
+            message : "No hay planes para mostrar",
+            code : "PLANES_LISTADO_VACIO",
+            data: [],
+            paginacion: {
+                pagina: Number(dataListado.pagina) || 1,
+                limite: Number(dataListado.limite) || 10,
+                contadorPagina: 0
+            }
         };
+    }
 
     return{
         error : true, 
@@ -372,7 +386,16 @@ const listadoPlanesSinPag = async ( data : ListaPlanesUsuarioSinPagInputs )
             data : listadoPlanesResult.data,
             code : "PLANES_LISTADO_OK"
         };
-    };
+    }
+
+    if ( listadoPlanesResult.code === 'NO_ACTIVE_PLANUSUARIO' ) {
+        return {
+            error : false,
+            message : "No hay planes para mostrar",
+            code : "PLANES_LISTADO_VACIO",
+            data: []
+        };
+    }
 
     return{
         error : true, 

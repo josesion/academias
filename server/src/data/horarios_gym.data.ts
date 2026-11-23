@@ -8,7 +8,7 @@ import { ResultadoAltaHorarioGym, ResultCalendarioHorarioGym, ResultModHorarioGy
 import { TipadoData } from "../tipados/tipado.data";
 
 const verificarSalaHorarioGym = async( data : HorarioGymInput)
-: Promise<TipadoData<{ id : number}>> =>{
+: Promise<TipadoData<{ id : number }>> =>{
     const {id_escuela, id_sala, dia_semana, hora_inicio, hora_fin} = data;
 
     const sql : string =`SELECT id
@@ -37,7 +37,6 @@ const verificarProfesorGym = async( data : HorarioGymInput)
         return {
             error: false,
             message: "Profesor disponible",
-            data: null,
             code: "HORARIOS_GYM_PROFESOR_NO_EXISTE"
         };
     }

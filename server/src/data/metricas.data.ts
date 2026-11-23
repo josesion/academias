@@ -180,33 +180,38 @@ export interface ResultClase {
     nombre_clase: string,
     horario: string,
     nombre_profesor: string,
-    id_clase : number
+    id_clase : number,
+    sala: string
 };
 /**
- * Obtiene la información del encabezado de la clase que se está dictando en el momento actual
- * para una escuela específica.
- * * La función filtra por el día de la semana actual, el estado 'activo' y verifica
- * si la hora actual se encuentra dentro del rango de inicio y fin de la clase, 
- * contemplando incluso clases que cruzan la medianoche.
+ * Obtiene TODAS las clases que se están dictando en el momento actual
+ * para una escuela específica, incluyendo las de diferentes salas.
+ * * La función filtra por el día de la semana actual, el estado 'activos',
+ * la vigencia (vigente = 1) y verifica si la hora actual se encuentra dentro
+ * del rango de inicio y fin de la clase, contemplando incluso clases que
+ * cruzan la medianoche.
  * * @param {number} id_escuela - El identificador único de la escuela a consultar.
- * * @returns {Promise<TipadoData<{nombre_clase: string, horario: string, nombre_profesor: string, id_clase: number}>>} 
- * Una promesa que resuelve con la estructura de datos de la clase encontrada, 
- * incluyendo nombre de clase, rango horario, profesor y el ID de la clase.
- * * @throws {Error} Si la consulta a la base de datos falla a través de `buscarExistenteEntidad`.
+ * * @returns {Promise<TipadoData<ResultClase[]>>} 
+ * Una promesa que resuelve con un array de clases encontradas,
+ * incluyendo nombre de clase, rango horario, profesor, sala y el ID de cada clase.
+ * * @throws {Error} Si la consulta a la base de datos falla a través de `listarEntidadSinPaginacion`.
  */
 const encabezadoClases = ( id_escuela : number)
-:Promise<TipadoData<ResultClase>> =>{
+:Promise<TipadoData<ResultClase[]>> =>{
 
     const sql = `SELECT 
                     hc.id AS id_clase,
                     tc.tipo AS nombre_clase,
                     CONCAT(hc.hora_inicio, ' - ', hc.hora_fin) AS horario,
-                    CONCAT_WS(' ', p.nombre, p.apellido) AS nombre_profesor
+                    CONCAT_WS(' ', p.nombre, p.apellido) AS nombre_profesor,
+                    COALESCE(s.nombre, 'Sin sala') AS sala
                 FROM horarios_clases hc
                 INNER JOIN tipo_clase tc ON hc.id_tipo_clase = tc.id
                 INNER JOIN profesores p ON hc.dni_profesor = p.dni
+                LEFT JOIN salas s ON s.id = hc.id_sala
                 WHERE hc.id_escuela = ?
                 AND hc.estado = 'activos'
+                AND hc.vigente = 1
                 AND hc.dia_semana = CASE LOWER(DAYNAME(CURDATE()))
                     WHEN 'monday' THEN 'lunes'
                     WHEN 'tuesday' THEN 'martes'
@@ -218,51 +223,64 @@ const encabezadoClases = ( id_escuela : number)
                 END
                 AND (
                     -- Caso normal: la clase termina el mismo día (ej. 14:00 - 15:00)
-                    (hc.hora_inicio < hc.hora_fin AND DATE_FORMAT(CURTIME(), '%H:%i') BETWEEN hc.hora_inicio AND hc.hora_fin)
+                    (CAST(hc.hora_inicio AS TIME) < CAST(hc.hora_fin AS TIME) AND CAST(NOW() AS TIME) BETWEEN CAST(hc.hora_inicio AS TIME) AND CAST(hc.hora_fin AS TIME))
                     OR
                     -- Caso medianoche: la clase termina al día siguiente (ej. 23:00 - 00:00)
-                    (hc.hora_inicio > hc.hora_fin AND (DATE_FORMAT(CURTIME(), '%H:%i') >= hc.hora_inicio OR DATE_FORMAT(CURTIME(), '%H:%i') < hc.hora_fin))
+                    (CAST(hc.hora_inicio AS TIME) > CAST(hc.hora_fin AS TIME) AND (CAST(NOW() AS TIME) >= CAST(hc.hora_inicio AS TIME) OR CAST(NOW() AS TIME) < CAST(hc.hora_fin AS TIME)))
                 )
-                LIMIT 1;`;
+                ORDER BY hc.hora_inicio ASC;`;
 
     const valor : unknown[] = [ id_escuela];
 
-    return buscarExistenteEntidad({
-         entidad : "Metricas_encabezado_clases",
+    return listarEntidadSinPaginacion({
+         entidad : "encabezado_clases",
          valores : valor,
-         slqEntidad : sql
+         slqListado : sql,
+         estado : "en curso"
     });  
 
 };
 
 
 export interface ResultAsistencia {
-   nombre : string , apellido : string , estado : string 
+   nombre : string , apellido : string , estado : string , id_horario_clase : number
+};
+
+/** Clase con sus alumnos agrupados — respuesta del servicio de asistencia */
+export interface ResultClaseConAsistencia {
+   id_clase: number,
+   nombre_clase: string,
+   horario: string,
+   nombre_profesor: string,
+   sala: string,
+   alumnos: ResultAsistencia[]
 };
 
 /**
- * Obtiene el listado completo de alumnos que han registrado asistencia para un horario de clase específico.
- * * Realiza un `INNER JOIN` entre la tabla de asistencias y la de alumnos para recuperar 
- * los nombres, apellidos y el estado de asistencia de cada registro.
- * * @param {number} id_horario - El identificador único del horario de clase (`id_horario_clase`) a consultar.
- * * @returns {Promise<TipadoData<{nombre: string, apellido: string, estado: string}[]>>} 
+ * Obtiene el listado completo de alumnos que han registrado asistencia para uno o más
+ * horarios de clase. Incluye el `id_horario_clase` en cada registro para que el servicio
+ * pueda agrupar los alumnos por su clase correspondiente.
+ * * @param {number[]} id_horarios - Array de identificadores de horarios de clase a consultar.
+ * * @returns {Promise<TipadoData<ResultAsistencia[]>>} 
  * Una promesa que resuelve con un arreglo de objetos, donde cada objeto contiene la información 
- * básica del alumno y su estado de asistencia.
+ * básica del alumno, su estado de asistencia y el id_horario_clase que lo vincula a su clase.
  * * @throws {Error} Si la consulta a la base de datos falla a través de `listarEntidadSinPaginacion`.
  */
-const asistenciaClases = ( id_horario : number)
+const asistenciaClases = ( id_horarios : number[] )
 :Promise<TipadoData<ResultAsistencia[]>> =>{
 
+    const placeholders = id_horarios.map(() => '?').join(', ');
     const sql = `SELECT 
                     a.nombre, 
                     a.apellido, 
-                    ast.estado
+                    ast.estado,
+                    ast.id_horario_clase
                 FROM asistencias ast
                 INNER JOIN alumnos a ON ast.dni_alumno = a.dni_alumno
-                WHERE ast.id_horario_clase = ?
+                WHERE ast.id_horario_clase IN (${placeholders})
                 AND ast.fecha = CURDATE();`;
 
-    const valor : unknown[] = [ id_horario];
+    const valor : unknown[] = id_horarios;
 
     return listarEntidadSinPaginacion({
         entidad : "asistencias",

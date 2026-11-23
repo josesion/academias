@@ -69,6 +69,11 @@ export const MAPA_LISTADO_PLAN :  Record<string , { status : CodigoEstadoHTTP, m
         status : CodigoEstadoHTTP.OK , 
         msg : "Listado planes correctamente"
     },
+
+    "PLANES_LISTADO_VACIO" : {
+        status : CodigoEstadoHTTP.NO_ENCONTRADO,
+        msg : "Sin Suscripciones en este momento."
+    },
    
    ERROR_SERVIDOR,
 };

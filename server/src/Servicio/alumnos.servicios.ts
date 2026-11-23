@@ -349,9 +349,9 @@ const listaAlumnos = async( data: ListaAlumnoInputs )
 : Promise<TipadoData<DataAlumnosListado[]>> => { 
 
     const listadoData : ListaAlumnoInputs = listaAlumnosSchema.parse(data);
-  
+   
     const respuesta  = await dataAlumno.listaAlumnos(listadoData, data.pagina);
-  
+   
     if ( respuesta.code === 'ALUMNO_LISTED' ){
         return {
             error : false,
@@ -360,7 +360,21 @@ const listaAlumnos = async( data: ListaAlumnoInputs )
             data: respuesta.data, 
             paginacion: respuesta.paginacion
         };
-    };
+    }
+
+    if ( respuesta.code === 'NO_ACTIVE_ALUMNO' ) {
+        return {
+            error : false,
+            message : "No hay alumnos para mostrar",
+            code : "ALUMNO_LISTADO_VACIO",
+            data: [],
+            paginacion: {
+                pagina: Number(data.pagina) || 1,
+                limite: Number(data.limit) || 10,
+                contadorPagina: 0
+            }
+        };
+    }
 
     return{
             error : true, 
@@ -381,15 +395,24 @@ const listadoSinPaginacion = async( data : ListaAlumnoSinPaginacionInputs )
 : Promise<TipadoData<DataAlumnosListadoSinPag[]>> => {
 
     const dataListado : ListaAlumnoSinPaginacionInputs = listaAlumnoSinPaginacionSchema.parse(data);
-
+    
     const respuesta  = await dataAlumno.listadoSinPaginacion(dataListado);
-
+    
     if ( respuesta.code === 'ALUMNO_LISTED' ){
         return {
             error : false,
             message : "Listado Alumnos",
             code : "ALUMNO_LISTED_OK",
             data: respuesta.data
+        };
+    }
+
+    if ( respuesta.code === 'NO_ACTIVE_ALUMNO' ) {
+        return {
+            error : false,
+            message : "No hay alumnos para mostrar",
+            code : "ALUMNO_LISTADO_VACIO",
+            data: []
         };
     }
 
