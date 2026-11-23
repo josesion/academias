@@ -1,4 +1,4 @@
-import type{  ResultClase, ResultTarjeta, ResultAsistencia, VencimientoEscuela } from "../servicio/metrica.fetch";
+import type{  ResultClase, ResultTarjeta, ResultClaseConAsistencia, VencimientoEscuela } from "../servicio/metrica.fetch";
 import { type ResultHistorial } from "../servicio/historial.fetch";
 import type { HorarioConAlumnos } from "../servicio/asistencia.fetch";
 // ==========================================
@@ -27,8 +27,8 @@ export interface MetricaUsuario {
     },
 
     tarjetas : ResultTarjeta | null,
-    clases   : ResultClase   | null,
-    asistencias : ResultAsistencia[] | null,
+    clases   : ResultClase[]   | null,
+    asistencias : ResultClaseConAsistencia[] | null,
     historial   : ResultHistorial[] | null,
     fechaVencimiento : VencimientoEscuela | null,
     horariosDelDia : HorarioConAlumnos[] | null,
@@ -89,10 +89,10 @@ export type MetricaAction =
       | { type: 'SET_TARJETAS',  payload : ResultTarjeta | null }     
       | { type: 'SET_ERROR_CLASE' , payload : string | null}
       | { type: 'SET_CARGA_CLASE', payload : boolean }
-      | { type: 'SET_CLASE',  payload : ResultClase | null } 
+      | { type: 'SET_CLASE',  payload : ResultClase[] | null }
       | { type: 'SET_ERROR_ASISTENCIA' , payload : string | null}
       | { type: 'SET_CARGA_ASISNTECIA', payload : boolean }
-      | { type: 'SET_ASISTENCIA',  payload : ResultAsistencia[] | null }  
+      | { type: 'SET_ASISTENCIA',  payload : ResultClaseConAsistencia[] | null }
 
       | { type: 'SET_ERROR_HISTORIAL' , payload : string | null}
       | { type: 'SET_CARGA_HISTORIAL', payload : boolean }

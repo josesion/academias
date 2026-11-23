@@ -138,19 +138,27 @@ export const useAsistenciaRapidaLogica = (
 
     const data = res.data as TipadoAsistencia.ResulClases_curso_proxima;
     const opciones: TipadoAsistencia.ClaseOpcion[] = [];
-    const enCurso = data.enCursoClase as TipadoAsistencia.ResultadoClaseEnCruso;
+    const enCurso = data.enCursoClase as TipadoAsistencia.ResultadoClaseEnCruso[];
     const proxima = data.proximaClase as TipadoAsistencia.ResultadoClaseProxima;
 
-    if (enCurso && "id_horario_en_clase" in enCurso) {
-      opciones.push({
-        id: enCurso.id_horario_en_clase,
-        nombre: `${enCurso.nombre_clase} (${enCurso.hora_inicio} - ${enCurso.hora_fin})`,
-      });
+    if (Array.isArray(enCurso)) {
+      for (const clase of enCurso) {
+        if (clase && "id_horario_en_clase" in clase) {
+          const salaLabel = clase.sala && clase.sala !== "Sin sala" ? ` — ${clase.sala}` : "";
+          opciones.push({
+            id: clase.id_horario_en_clase,
+            nombre: `${clase.nombre_clase} (${clase.hora_inicio} - ${clase.hora_fin})${salaLabel}`,
+            sala: clase.sala,
+          });
+        }
+      }
     }
     if (proxima && "id_horario_prox_clase" in proxima) {
+      const salaLabel = proxima.sala && proxima.sala !== "Sin sala" ? ` — ${proxima.sala}` : "";
       opciones.push({
         id: proxima.id_horario_prox_clase,
-        nombre: `${proxima.nombre_clase} (${proxima.hora_inicio} - ${proxima.hora_fin})`,
+        nombre: `${proxima.nombre_clase} (${proxima.hora_inicio} - ${proxima.hora_fin})${salaLabel}`,
+        sala: proxima.sala,
       });
     }
     dispatch({ type: "SET_CLASES", payload: opciones });

@@ -99,7 +99,8 @@ const SelectorClase = ({
 };
 
 type ResultadoMin = {
-  id_inscripcion: number | string;
+  id_inscripcion: number;
+  dni_alumno: number | null;
   nombre_completo: string;
   email_alumno: string;
 };
@@ -243,6 +244,7 @@ export const AsistenciaRapida = ({
   };
 
   const sumarPendienteDesdeBusqueda = (r: Resultado) => {
+    if (r.dni_alumno === null) return;
     if (!state.alumnosPendientes.includes(r.dni_alumno)) {
       dispatch({
         type: "SET_ALUMNOS_PENDIENTES",
@@ -254,22 +256,12 @@ export const AsistenciaRapida = ({
   };
 
   const agregarDesdeBusqueda = (idPlantilla: number, r: Resultado) => {
+    if (r.dni_alumno === null) return;
     void handleAgregarAlumno(idPlantilla, r.dni_alumno);
     dispatch({ type: "SET_DNI_AGREGAR", payload: "" });
     dispatch({ type: "SET_RESULTADOS_BUSQUEDA", payload: [] });
   };
 
-  const agregarPorDni = (idPlantilla: number) => {
-    const valor = Number(state.dniAgregar.trim());
-    if (!Number.isFinite(valor) || valor <= 0) {
-      dispatch({
-        type: "SET_MENSAJE_PLANTILLAS",
-        payload: "El DNI no es válido.",
-      });
-      return;
-    }
-    void handleAgregarAlumno(idPlantilla, valor);
-  };
 
   const usarPlantilla = (idPlantilla: number) => {
     dispatch({ type: "SET_TAB", payload: "asistencia" });
@@ -719,26 +711,17 @@ export const AsistenciaRapida = ({
                       {/* Agregar alumno a un grupo ya creado */}
                       {editando && (
                         <div className="asistencia_rapida_agregar_alumno">
-                          <div className="asistencia_rapida_fila">
-                            <div className="asistencia_rapida_campo_crece">
-                              <Inputs
-                                label="Buscar alumno a agregar"
-                                name={`dniAgregar_${p.id_plantilla}`}
-                                type="text"
-                                placeholder="Nombre, apellido o correo"
-                                value={state.dniAgregar}
-                                onChange={(e) =>
-                                  handleBusquedaAgregar(e.target.value)
-                                }
-                                readonly={false}
-                              />
-                            </div>
-                            <Boton
-                              clase="agregar"
-                              texto="Agregar al grupo"
-                              logo="Add"
-                              disable={state.accion === "agregarAlumno"}
-                              onClick={() => agregarPorDni(p.id_plantilla)}
+                          <div className="asistencia_rapida_campo_crece">
+                            <Inputs
+                              label="Buscar alumno a agregar"
+                              name={`dniAgregar_${p.id_plantilla}`}
+                              type="text"
+                              placeholder="Nombre, apellido o correo"
+                              value={state.dniAgregar}
+                              onChange={(e) =>
+                                handleBusquedaAgregar(e.target.value)
+                              }
+                              readonly={false}
                             />
                           </div>
 

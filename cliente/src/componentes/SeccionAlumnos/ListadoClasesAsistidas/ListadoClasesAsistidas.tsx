@@ -1,5 +1,5 @@
 import React, { useId } from "react";
-import { X, Clock, User, BookOpen, GraduationCap } from "lucide-react";
+import { X, Clock, User, BookOpen, GraduationCap, MapPin } from "lucide-react";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
 
 import type { AsistenciaInscripcionRow } from "../../../tipadosTs/asistencia.typado";
@@ -112,6 +112,10 @@ export const ListadoClasesAsistidas: React.FC<ListadoClasesAsistidasProps> = ({
                     <div className="clase-asistida-info">
                       <User size={14} aria-hidden="true" />
                       <span>{clase.profesor}</span>
+                    </div>
+                    <div className="clase-asistida-info">
+                      <MapPin size={14} aria-hidden="true" />
+                      <span>{clase.sala ?? "Sin sala"}</span>
                     </div>
                   </div>
                 </li>

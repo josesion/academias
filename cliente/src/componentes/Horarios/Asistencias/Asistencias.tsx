@@ -1,34 +1,41 @@
 import "./asistencia.css";
 import { ChevronDown, ChevronUp, Loader2, UserPlus } from "lucide-react";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { HorarioConAlumnos } from "../../../servicio/asistencia.fetch";
+import type { ResultAsistencia } from "../../../servicio/metrica.fetch";
 
 type EstadoAsistencia = "presente" | "Tardanza" | "Ausente";
 
-/** Alumno con estado de asistencia */
-interface DataAsistencia {
-  nombre: string;
-  apellido: string;
-  estado?: EstadoAsistencia;
-}
-
-/** Información de la clase actual */
-interface DatosClase {
+/** Clase en curso con sus alumnos */
+interface ClaseConAsistencia {
+  id_clase: number;
   nombre_clase: string;
   horario: string;
   nombre_profesor: string;
-  id_clase?: number;
+  sala: string;
+  alumnos: ResultAsistencia[];
 }
 
 interface AsistenciaProps {
-  asistencia: DataAsistencia[];
-  clases: DatosClase | null;
+  /** Array de clases en curso, cada una con sus alumnos */
+  asistencia: ClaseConAsistencia[];
+  /** Clases en curso (para marcar badge en horarios del día) */
+  clases: DatosClase[] | null;
   estadoClase: "EN CURSO" | "SIN CURSO";
   cargaClases: boolean;
   horariosDelDia: HorarioConAlumnos[];
   cargaHorarios: boolean;
   errorHorarios: string | null;
+}
+
+/** Información de una clase en curso (solo para badge en horarios) */
+interface DatosClase {
+  nombre_clase: string;
+  horario: string;
+  nombre_profesor: string;
+  id_clase?: number;
+  sala?: string;
 }
 
 const variantesAvatar = ["", "variante_1", "variante_2"];
@@ -43,17 +50,17 @@ const obtenerIniciales = (nombreCompleto: string) => {
 };
 
 /**
- * Convierte un alumno del backend (nombre_completo) al formato DataAsistencia
- * usado por el componente. El estado siempre es "presente" porque el backend
- * ya filtra por `estado = 'presente'`.
+ * Convierte un alumno del backend (nombre_completo) al formato simple
+ * usado por el componente en horarios del día. El estado siempre es "presente"
+ * porque el backend ya filtra por `estado = 'presente'`.
  */
-const alumnoBackendADataAsistencia = (
+const alumnoBackendASimple = (
   nombreCompleto: string,
-): DataAsistencia => {
+) => {
   const partes = nombreCompleto.trim().split(" ");
   const apellido = partes.length >= 2 ? partes[partes.length - 1] : "";
   const nombre = partes.length >= 2 ? partes.slice(0, -1).join(" ") : partes[0];
-  return { nombre, apellido, estado: "presente" };
+  return { nombre, apellido };
 };
 
 const EstadoBadge = ({
@@ -100,10 +107,28 @@ export const Asistencia = ({
   cargaHorarios,
   errorHorarios,
 }: AsistenciaProps) => {
-  // Estado local solo para controlar qué acordeones están expandidos (UI)
+  // Acordeón de clases en curso (izquierda)
+  const [clasesExpandidas, setClasesExpandidas] = useState<Set<number>>(
+    new Set(),
+  );
+
+  // Acordeón de horarios del día (derecha)
   const [horariosExpandidos, setHorariosExpandidos] = useState<Set<number>>(
     new Set(),
   );
+
+  /** Alterna el estado expandido de una clase en curso */
+  const toggleClase = (id: number) => {
+    setClasesExpandidas((prev) => {
+      const siguiente = new Set(prev);
+      if (siguiente.has(id)) {
+        siguiente.delete(id);
+      } else {
+        siguiente.add(id);
+      }
+      return siguiente;
+    });
+  };
 
   /** Alterna el estado expandido de un horario */
   const toggleHorario = (id: number) => {
@@ -118,48 +143,43 @@ export const Asistencia = ({
     });
   };
 
-  // Contador de presentes en la clase actual
-  const presentes = asistencia.filter(
-    (a) => (a.estado ?? "presente") === "presente",
-  ).length;
+  // IDs de las clases en curso para marcar en el acordeón de horarios
+  const idsClasesEnCurso = new Set(
+    (clases ?? []).map((c) => c.id_clase).filter((id): id is number => id != null),
+  );
 
-  const nombreClase = clases?.nombre_clase || "Sin Clase.";
-  const horarioClase = clases?.horario || "Sin Horario.";
-  const profesorClase = clases?.nombre_profesor || "Sin Profesor.";
+  // Total de alumnos presentes en todas las clases en curso
+  const totalPresentes = useMemo(
+    () => asistencia.reduce((sum, c) => sum + c.alumnos.length, 0),
+    [asistencia],
+  );
 
   return (
     <section className="asistencia_contenedor" role="list" aria-label="Lista de asistencia de la clase">
-      {/* BLOQUE DE INFORMACIÓN DE CLASE (SUPERIOR) */}
+      {/* BLOQUE DE ESTADO SUPERIOR */}
       <div className="asistencia_bloque_info">
         <div className="info_clases_datos">
           <div className="info_clases_item">
-            <span className="info_clases_label">Clase</span>
+            <span className="info_clases_label">Clases en curso</span>
             {cargaClases ? (
-              <SpinnerTarjeta aria-label="Cargando clase" />
+              <SpinnerTarjeta aria-label="Cargando clases" />
             ) : (
-              <h2 title={nombreClase}>{nombreClase}</h2>
+              <h2>
+                {asistencia.length > 0
+                  ? `${asistencia.length} clase${asistencia.length > 1 ? 's' : ''}`
+                  : "Sin clase"}
+              </h2>
             )}
           </div>
 
           <div className="info_clases_divisor" aria-hidden="true"></div>
 
           <div className="info_clases_item">
-            <span className="info_clases_label">Horario</span>
+            <span className="info_clases_label">Alumnos presentes</span>
             {cargaClases ? (
-              <SpinnerTarjeta aria-label="Cargando horario" />
+              <SpinnerTarjeta aria-label="Cargando alumnos" />
             ) : (
-              <p title={horarioClase}>{horarioClase}</p>
-            )}
-          </div>
-
-          <div className="info_clases_divisor" aria-hidden="true"></div>
-
-          <div className="info_clases_item">
-            <span className="info_clases_label">Profesor</span>
-            {cargaClases ? (
-              <SpinnerTarjeta aria-label="Cargando profesor" />
-            ) : (
-              <p title={profesorClase}>{profesorClase}</p>
+              <p>{totalPresentes}</p>
             )}
           </div>
         </div>
@@ -176,58 +196,130 @@ export const Asistencia = ({
         </div>
       </div>
 
-      {/* LÍNEA DIVISORIA ENTRE LA CLASE Y EL CONTENIDO INFERIOR */}
+      {/* LÍNEA DIVISORIA */}
       <div className="asistencia_seccion_divisor" aria-hidden="true"></div>
 
-      {/* CONTENEDOR LADO A LADO: Control de Asistencia + Horarios del día */}
+      {/* CONTENEDOR LADO A LADO: Clases en curso + Horarios del día */}
       <div className="asistencia_lado_a_lado">
-        {/* COLUMNA IZQUIERDA: Control de Asistencia (clase actual) */}
+        {/* COLUMNA IZQUIERDA: Acordeón de clases en curso */}
         <div className="asistencia_bloque_principal">
           <header className="asistencia_header">
             <div className="asistencia_header_info">
-              <h3>Control de Asistencia</h3>
-              <p>Listado de alumnos de la clase</p>
+              <h3>Clases en curso</h3>
+              <p>Alumnos por clase</p>
             </div>
-            <div className="asistencia_contador_badge">
-              <span className="punto_activo" aria-hidden="true"></span>
-              <strong>{presentes}</strong> presentes
-            </div>
+            {!cargaClases && totalPresentes > 0 && (
+              <div className="asistencia_contador_badge">
+                <span className="punto_activo" aria-hidden="true"></span>
+                <strong>{totalPresentes}</strong> presentes
+              </div>
+            )}
           </header>
 
-          {asistencia.length === 0 ? (
-            <div className="asistencia_vacio" role="status" aria-live="polite" aria-label="Sin alumnos registrados en esta clase">
+          {cargaClases ? (
+            <div className="horarios_cargando" role="status">
+              <Loader2 size={20} className="horarios_cargando_icono" />
+              <p>Cargando clases...</p>
+            </div>
+          ) : asistencia.length === 0 ? (
+            <div className="asistencia_vacio" role="status" aria-live="polite">
               <div className="asistencia_vacio_icono" aria-hidden="true">
                 <UserPlus size={44} />
               </div>
-              <h3>Sin alumnos registrados</h3>
+              <h3>Sin clases en curso</h3>
               <p>
-                Agregá alumnos a esta clase para comenzar a visualizar la
-                asistencia.
+                No hay clases activas en este momento. Revisá los horarios del día.
               </p>
             </div>
           ) : (
-            <div className="asistencia_lista">
-              {asistencia.map((alumno, index) => (
-                <article className="asistencia_item" role="listitem" key={index} aria-label={`${alumno.nombre} ${alumno.apellido}`}>
+            <div className="clases_acordeon" role="list" aria-label="Clases en curso">
+              {asistencia.map((clase) => {
+                const expandida = clasesExpandidas.has(clase.id_clase);
+                const presentesClase = clase.alumnos.filter(
+                  (a) => (a.estado ?? "presente") === "presente",
+                ).length;
+
+                return (
                   <div
-                    className={`asistencia_icono ${
-                      variantesAvatar[index % variantesAvatar.length]
-                    }`}
-                    aria-hidden="true"
+                    key={clase.id_clase}
+                    className={`clase_item en_curso ${expandida ? "expandido" : ""}`}
+                    role="listitem"
                   >
-                    {obtenerIniciales(`${alumno.nombre} ${alumno.apellido}`)}
-                  </div>
+                    {/* Encabezado clickeable de la clase */}
+                    <button
+                      type="button"
+                      className="clase_encabezado"
+                      onClick={() => toggleClase(clase.id_clase)}
+                      aria-expanded={expandida}
+                      aria-label={`${clase.nombre_clase} ${clase.sala} ${clase.horario}`}
+                    >
+                      <div className="clase_encabezado_izq">
+                        <span className="clase_nombre">{clase.nombre_clase}</span>
+                        <span className="horario_badge_en_curso">En curso</span>
+                      </div>
 
-                  <div className="asistencia_nombre">
-                    <p>{alumno.nombre}</p>
-                    <span>{alumno.apellido}</span>
-                  </div>
+                      <div className="clase_encabezado_der">
+                        <span className="clase_sala" title={clase.sala}>{clase.sala}</span>
+                        <span className="clase_horario">{clase.horario}</span>
+                        <span className="clase_profesor">{clase.nombre_profesor}</span>
+                        {expandida && presentesClase > 0 && (
+                          <span className="clase_presentes">
+                            {presentesClase} presente{presentesClase > 1 ? 's' : ''}
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="asistencia_estado_wrapper">
-                    <EstadoBadge estado={alumno.estado} />
+                      <div className="clase_flecha" aria-hidden="true">
+                        {expandida ? (
+                          <ChevronUp size={18} />
+                        ) : (
+                          <ChevronDown size={18} />
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Panel expandido con alumnos de esta clase */}
+                    {expandida && (
+                      <div className="clase_alumnos">
+                        {clase.alumnos.length === 0 ? (
+                          <div className="horario_vacio" role="status">
+                            <p>Sin alumnos registrados en esta clase.</p>
+                          </div>
+                        ) : (
+                          <div className="asistencia_lista">
+                            {clase.alumnos.map((alumno, index) => (
+                              <article
+                                className="asistencia_item"
+                                role="listitem"
+                                key={`${alumno.nombre}-${alumno.apellido}-${index}`}
+                                aria-label={`${alumno.nombre} ${alumno.apellido}`}
+                              >
+                                <div
+                                  className={`asistencia_icono ${
+                                    variantesAvatar[index % variantesAvatar.length]
+                                  }`}
+                                  aria-hidden="true"
+                                >
+                                  {obtenerIniciales(`${alumno.nombre} ${alumno.apellido}`)}
+                                </div>
+
+                                <div className="asistencia_nombre">
+                                  <p>{alumno.nombre}</p>
+                                  <span>{alumno.apellido}</span>
+                                </div>
+
+                                <div className="asistencia_estado_wrapper">
+                                  <EstadoBadge estado={alumno.estado} />
+                                </div>
+                              </article>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </article>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -257,8 +349,7 @@ export const Asistencia = ({
             ) : (
               horariosDelDia.map((horario) => {
                 const expandido = horariosExpandidos.has(horario.id_horario_clase);
-                const idClaseEnCurso = clases?.id_clase;
-                const enCurso = idClaseEnCurso != null && horario.id_horario_clase === idClaseEnCurso;
+                const enCurso = idsClasesEnCurso.has(horario.id_horario_clase);
                 const alumnos = horario.alumnos;
 
                 return (
@@ -288,6 +379,9 @@ export const Asistencia = ({
                         <span className="horario_tipo">{horario.tipo_clase}</span>
                         <span className="horario_nivel">{horario.nivel}</span>
                         <span className="horario_profesor">{horario.profesor}</span>
+                        <span className="horario_sala" title={horario.sala ?? "Sin sala"}>
+                          {horario.sala ?? "Sin sala"}
+                        </span>
                       </div>
 
                       <div className="horario_flecha" aria-hidden="true">
@@ -309,7 +403,7 @@ export const Asistencia = ({
                         ) : (
                           <div className="asistencia_lista">
                             {alumnos.map((alumno, index) => {
-                              const dataAlumno = alumnoBackendADataAsistencia(alumno.nombre_completo);
+                              const dataAlumno = alumnoBackendASimple(alumno.nombre_completo);
                               return (
                                 <article
                                   className="asistencia_item"

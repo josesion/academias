@@ -1,5 +1,5 @@
 import React from "react";
-import { Clock, User, BookOpen, X } from "lucide-react";
+import { Clock, User, BookOpen, MapPin, X } from "lucide-react";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
 import "./grillaHorarios.css";
@@ -19,6 +19,7 @@ export interface HorarioClaseData {
   tipo_clase: string;
   nivel: string;
   nombre_profesor: string;
+  sala?: string;
   estado: string;
 }
 
@@ -198,6 +199,10 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
                                       <User size={11} aria-hidden="true" />
                                       {clase.nombre_profesor}
                                     </span>
+                                    <span className="meta-badge sala" title={clase.sala ?? "Sin sala"}>
+                                      <MapPin size={11} aria-hidden="true" />
+                                      {clase.sala ?? "Sin sala"}
+                                    </span>
                                   </div>
                                 </div>
                               ))
@@ -255,6 +260,10 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
                                   <span className="meta-badge profesor">
                                     <User size={12} aria-hidden="true" />
                                     Prof. {clase.nombre_profesor}
+                                  </span>
+                                  <span className="meta-badge sala" title={clase.sala ?? "Sin sala"}>
+                                    <MapPin size={12} aria-hidden="true" />
+                                    {clase.sala ?? "Sin sala"}
                                   </span>
                                 </div>
                               </div>

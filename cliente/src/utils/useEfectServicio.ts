@@ -81,7 +81,7 @@ export const useEffectServicio = <T, R, A>(
         dispatch(accionCarga(true));
 
         const result = await servicios(valores, controller?.signal);
-
+        //console.log(result)
         // Petición cancelada: se intercepta ANTES del chequeo de statusCode
         // (si no, caería en la rama de error y vaciaría el listado).
         if (ignorarCancelados && result?.code === "REQUEST_ABORTED") {

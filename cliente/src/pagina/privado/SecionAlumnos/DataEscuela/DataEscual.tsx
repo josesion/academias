@@ -225,7 +225,7 @@ export const DataEscuela = () => {
                     {clase.tipo_clase} — {clase.nivel}
                   </span>
                   <span className="historial-asistencia_detalle">
-                    {capitalizarDia(clase.dia_semana)} · {clase.hora_inicio}-{clase.hora_fin} · {clase.nombre_profesor}
+                    {capitalizarDia(clase.dia_semana)} · {clase.hora_inicio}-{clase.hora_fin} · {clase.nombre_profesor} · {clase.sala ?? "Sin sala"}
                   </span>
                 </div>
                 {index === 0 && (
@@ -263,7 +263,7 @@ export const DataEscuela = () => {
                     {asistencia.tipo_clase} — {asistencia.nivel}
                   </span>
                   <span className="historial-asistencia_detalle">
-                    {capitalizarDia(asistencia.dia_semana)} · {asistencia.hora} · {asistencia.profesor}
+                    {capitalizarDia(asistencia.dia_semana)} · {asistencia.hora} · {asistencia.profesor} · {asistencia.sala ?? "Sin sala"}
                   </span>
                 </div>
                 <span className="historial-asistencia_fecha">

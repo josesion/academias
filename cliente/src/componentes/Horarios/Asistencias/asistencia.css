@@ -361,31 +361,35 @@
    ========================================================================== */
 
 .asistencia_lado_a_lado {
-   display: flex;
-   flex-direction: row;
-   align-items: stretch;
-   gap: 16px;
-   width: 100%;
-   flex: 1 1 auto;
-   min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 500px;
 }
 
 /* Columna izquierda: Control de Asistencia */
 .asistencia_lado_a_lado > .asistencia_bloque_principal {
-   flex: 1;
-   min-width: 0;
-   min-height: 0;
-   overflow-y: auto;
-   padding-right: 4px;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  max-height: 460px;
 }
 
 /* Columna derecha: Horarios del día */
 .horarios_del_dia {
-   display: flex;
-   flex-direction: column;
-   gap: 10px;
-   flex: 1;
-   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  max-height: 460px;
+  overflow: hidden;
 }
 
 .horarios_header {
@@ -433,18 +437,192 @@
 }
 
 /* ==========================================================================
-   ACORDEÓN DE HORARIOS DEL DÍA
-   ========================================================================== */
+  ACORDEÓN DE CLASES EN CURSO (COLUMNA IZQUIERDA)
+  ========================================================================== */
 
-.horarios_acordeon {
+.clases_acordeon {
    display: flex;
    flex-direction: column;
-   gap: 8px;
+   gap: 10px;
    width: 100%;
    flex: 1 1 auto;
    min-height: 0;
    overflow-y: auto;
    padding-right: 4px;
+   max-height: 400px;
+}
+
+/* Item individual de clase en curso */
+.clase_item {
+   background: var(--fondo-principal);
+   border: 1px solid var(--borde);
+   border-radius: var(--radio-md);
+   transition: var(--transicion);
+}
+
+.clase_item:hover {
+   border-color: var(--borde-hover);
+}
+
+/* Clase en curso — borde izquierdo verde */
+.clase_item.en_curso {
+   border-left: 3px solid var(--color-exito);
+   background: rgba(var(--color-exito-rgb, 40, 167, 69), 0.04);
+}
+
+/* Clase expandida */
+.clase_item.expandido {
+   background: color-mix(in srgb, var(--fondo-principal) 92%, var(--texto-principal));
+   border-color: var(--borde-hover);
+}
+
+/* Encabezado clickeable de la clase */
+.clase_encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: inherit;
+  cursor: pointer;
+  font-family: var(--fuente-principal);
+  text-align: left;
+  color: inherit;
+  transition: var(--transicion);
+  overflow: hidden;
+}
+
+.clase_encabezado:hover {
+  background: color-mix(in srgb, var(--fondo-principal) 95%, var(--texto-principal));
+}
+
+.clase_encabezado:focus-visible {
+   outline: 2px solid var(--color-primario);
+   outline-offset: -2px;
+}
+
+/* Lado izquierdo: nombre + badge en curso */
+.clase_encabezado_izq {
+   display: flex;
+   align-items: center;
+   gap: 8px;
+   flex-shrink: 0;
+}
+
+.clase_nombre {
+  font-family: var(--fuente-titulos);
+  font-size: 0.9rem;
+  font-weight: var(--peso-negrita);
+  color: var(--texto-principal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Lado derecho: sala, horario, profesor */
+.clase_encabezado_der {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.clase_sala {
+  font-size: 0.7rem;
+  font-weight: var(--peso-semi-negrita);
+  color: var(--color-primario);
+  background: rgba(var(--color-primario-rgb, 52, 152, 219), 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radio-full, 20px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80px;
+}
+
+.clase_horario {
+   font-size: 0.75rem;
+   color: var(--texto-secundario);
+   white-space: nowrap;
+}
+
+.clase_profesor {
+  font-size: 0.7rem;
+  color: var(--texto-secundario);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.clase_presentes {
+   font-size: 0.65rem;
+   font-weight: var(--peso-semi-negrita);
+   color: var(--color-exito);
+   white-space: nowrap;
+}
+
+/* Flecha del acordeón de clases */
+.clase_flecha {
+   display: flex;
+   align-items: center;
+   flex-shrink: 0;
+   color: var(--texto-secundario);
+   transition: transform 0.2s ease;
+}
+
+/* Panel de alumnos dentro de una clase */
+.clase_alumnos {
+   padding: 8px 12px 12px;
+   border-top: 1px solid var(--borde);
+}
+
+/* Scrollbar para clases_acordeon */
+.clases_acordeon::-webkit-scrollbar {
+   width: 6px;
+}
+
+.clases_acordeon::-webkit-scrollbar-track {
+   background: transparent;
+}
+
+.clases_acordeon::-webkit-scrollbar-thumb {
+   background: color-mix(in srgb, var(--borde) 60%, transparent);
+   border-radius: 3px;
+}
+
+.clases_acordeon::-webkit-scrollbar-thumb:hover {
+   background: color-mix(in srgb, var(--borde) 80%, transparent);
+}
+
+.clases_acordeon {
+   scrollbar-width: thin;
+   scrollbar-color: color-mix(in srgb, var(--borde) 60%, transparent) transparent;
+}
+
+/* ==========================================================================
+  ACORDEÓN DE HORARIOS DEL DÍA
+  ========================================================================== */
+
+.horarios_acordeon {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+  max-height: 400px;
 }
 
 /* Item individual de horario */
@@ -481,11 +659,13 @@
     padding: 10px 12px;
     background: transparent;
     border: none;
+    border-radius: inherit;
     cursor: pointer;
     font-family: var(--fuente-principal);
     text-align: left;
     color: inherit;
     transition: var(--transicion);
+    overflow: hidden;
 }
 
 .horario_encabezado:hover {
@@ -548,13 +728,18 @@
     gap: 8px;
     flex: 1;
     min-width: 0;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 .horario_tipo {
     font-size: 0.8rem;
     font-weight: var(--peso-negrita);
     color: var(--texto-principal);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
 }
 
 .horario_nivel {
@@ -572,6 +757,20 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+/* Badge de la sala donde se dicta la clase */
+.horario_sala {
+    font-size: 0.7rem;
+    color: var(--texto-secundario);
+    padding: 1px 6px;
+    border-radius: var(--radio-full, 20px);
+    background: color-mix(in srgb, var(--fondo-principal) 85%, var(--texto-principal));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
 }
 
 /* Flecha del acordeón */
@@ -752,11 +951,22 @@
         height: auto !important;
     }
 
+    .clases_acordeon {
+        max-height: none !important;
+        overflow-y: visible !important;
+    }
+
     .horarios_del_dia {
         flex: 0 0 auto !important;
         min-height: auto !important;
         height: auto !important;
         max-height: none !important;
+        overflow: visible !important;
+    }
+
+    .horarios_acordeon {
+        max-height: none !important;
+        overflow-y: visible !important;
     }
 }
 

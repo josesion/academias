@@ -38,14 +38,16 @@ export interface ResultadoClaseEnCruso {
     id_horario_en_clase : number,
     hora_inicio : string,
     hora_fin : string,
-    nombre_clase : string
+    nombre_clase : string,
+    sala?: string
 };
 
 export interface ResultadoClaseProxima{
    id_horario_prox_clase : number,
    hora_inicio : string, 
    hora_fin : string,
-   nombre_clase : string
+   nombre_clase : string,
+   sala?: string
 };
 
 export interface ResultErrorAsistencia {
@@ -58,7 +60,7 @@ export type ResultadoClase_en_cursos =  ResultadoClaseEnCruso | ResultErrorAsist
 export type ResultadoClase_proxima = ResultadoClaseProxima | ResultErrorAsistencia ; 
 
 export interface ResulClases_curso_proxima{
-    enCursoClase : ResultadoClaseEnCruso | ResultErrorAsistencia ,
+    enCursoClase : ResultadoClaseEnCruso[] | ResultErrorAsistencia ,
     proximaClase : ResultadoClaseProxima | ResultErrorAsistencia 
 };
 
@@ -100,7 +102,8 @@ type DataHorarioAsistencia = {
     id_horario_clase : number,
     hora_inicio : string,
     hora_fin : string,
-    nombre_clase : string
+    nombre_clase : string,
+    sala?: string
 };
 
 type DataResultErrrorAsistencia = {
@@ -131,6 +134,7 @@ export interface AsistenciaInscripcionRow {
   tipo_clase: string;
   nivel: string;
   profesor: string;
+  sala?: string;
 };
 
 export interface InfoAlumno {
@@ -155,6 +159,7 @@ export interface PlantillaAsistencia {
 export interface ClaseOpcion {
   id: number;
   nombre: string;
+  sala?: string;
 }
 
 /** Opción del selector de plantillas de la asistencia rápida (spec 043). */

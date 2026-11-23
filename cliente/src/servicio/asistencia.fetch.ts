@@ -179,6 +179,7 @@ export interface HorarioConAlumnos {
     nivel: string;
     tipo_clase: string;
     profesor: string;
+    sala?: string;
     alumnos: HorarioAlumno[];
 }
 

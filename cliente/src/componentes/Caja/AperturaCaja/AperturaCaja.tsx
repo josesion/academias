@@ -29,10 +29,26 @@ interface AbrirCajaProps {
 
 export const AperturaCaja = (props: AbrirCajaProps) => {
   const montoInputRef = useRef<HTMLInputElement>(null);
+  const focoInicializado = useRef(false);
 
+  /**
+   * Enfoca el primer input solo una vez cuando el modal aparece por primera vez.
+   *
+   * Antes el `useEffect` dependía de `props.listadoCuentasActivas`: cada
+   * dispatch del reducer (por ejemplo, al tipear un monto) provocaba un
+   * re-render y, si la referencia del array cambiaba, el efecto volvía a
+   * ejecutar `montoInputRef.current.focus()`, robando el foco del campo donde
+   * el usuario estaba trabajando. El resultado era que al tabular a otro input
+   * —o al intentar hacer clic en "Abrir Caja" / "Cancelar"— el foco volvía
+   * inmediatamente al primer campo y la UI parecía congelada.
+   *
+   * Con el guard `focoInicializado` el foco se establece una única vez
+   * (cuando el modal se abre) y ya no interfiere con la navegación del usuario.
+   */
   useEffect(() => {
-    if (montoInputRef.current) {
+    if (!focoInicializado.current && montoInputRef.current) {
       montoInputRef.current.focus();
+      focoInicializado.current = true;
     }
   }, [props.listadoCuentasActivas]);
 
@@ -118,12 +134,14 @@ export const AperturaCaja = (props: AbrirCajaProps) => {
           logo="Go"
           clase="agregar"
           disable={props.enviado}
+          type="button"
           onClick={props.onAbrirCaja}
         />
         <Boton
           texto="Cancelar"
           logo="Cancel"
           clase="cancelar"
+          type="button"
           onClick={props.onCancelar}
         />
       </div>

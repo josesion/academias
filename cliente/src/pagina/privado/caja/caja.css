@@ -21,6 +21,12 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 
+  /* Importante: sin pointer-events: none, para que el overlay bloquee los clics
+     en el fondo de la página. El formulario_horario.css define pointer-events:
+     none en esta misma clase, lo que permitía que los clics pasaran al fondo
+     y se pudieran abrir otros modales o interactuar con botones detrás. */
+  pointer-events: auto;
+
   animation: overlayFade 0.2s ease;
 }
 

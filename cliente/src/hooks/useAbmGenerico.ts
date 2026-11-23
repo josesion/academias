@@ -385,7 +385,7 @@ const handleSubmitEliminar = async () => {
         clearTimeout(timeoutId);
     };
 
-}, [filtroData, actualizarListado, actualizarGenerico ]); // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
+}, [filtroData, actualizarListado, actualizarGenerico ]);  // Dependencias: se re-ejecuta con cambios en filtros o al actualizar.
 
 
 

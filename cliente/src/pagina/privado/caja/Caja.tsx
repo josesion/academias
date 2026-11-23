@@ -108,19 +108,19 @@ export const CajaArqueo = () => {
       {/* 1. MODALES (Se mantienen igual) */}
 
       {state.modalAnimacionesApertura && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Animación de apertura exitosa">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Animación de apertura exitosa">
           <AnimacionAperturaExitosa aria-hidden="true" />
         </div>
       )}
 
       {state.modalAnimaciones && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Animación de cierre exitoso">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Animación de cierre exitoso">
           <AnimacionCierreExitoso aria-hidden="true" />
         </div>
       )}
 
       {state.modalesCaja.apertura && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Apertura de caja">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Apertura de caja">
           <AperturaCaja
             listadoCuentasActivas={state.listadoCuentasActivas}
             aperturaDetalle={state.aperturaDetalle}
@@ -134,7 +134,7 @@ export const CajaArqueo = () => {
       )}
 
       {state.modalesCaja.cierre && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Cierre de caja">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Cierre de caja">
           <CierreCaja
             carga={state.carga.cierreCaja}
             metricasPanel={state.panelPrincipal}
@@ -169,7 +169,7 @@ export const CajaArqueo = () => {
       )}
 
       {state.modalesEgresoIngreso && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Registrar ingreso o egreso">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Registrar ingreso o egreso">
           <CompoIngEgr
             carga={state.carga.movimientosExtas}
             titulo={state.movimientoExtraordinario.tipo}
@@ -202,7 +202,7 @@ export const CajaArqueo = () => {
       )}
 
       {state.modalInformeDetalle && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Detalle de movimiento">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Detalle de movimiento">
           <InformeDetalleCaja
             id_movimiento={state.informeDetalle.id_movimiento}
             tipo={state.informeDetalle.tipo}
@@ -224,7 +224,7 @@ export const CajaArqueo = () => {
 
       {/* Spec 050 — Transferencia */}
       {state.modalesCaja.transferencia && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Transferencia entre cuentas">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Transferencia entre cuentas">
           <TransferenciaCaja
             cuentas={state.listadoCuentasActivas ?? cuentasVacias}
             form={state.transferenciaCaja}
@@ -239,7 +239,7 @@ export const CajaArqueo = () => {
 
       {/* Spec 050 — Retención */}
       {state.modalesCaja.retencion && (
-        <div className="formulario_overlay" role="dialog" aria-modal="true" aria-label="Retención de efectivo">
+        <div className="formulario_overlay" style={{ pointerEvents: "auto" }} role="dialog" aria-modal="true" aria-label="Retención de efectivo">
           <RetencionCaja
             cuentas={state.listadoCuentasActivas ?? cuentasVacias}
             form={state.retencionCaja}

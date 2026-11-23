@@ -29,11 +29,12 @@ export interface ResultClase {
     nombre_clase: string,
     horario: string,
     nombre_profesor: string,
-    id_clase : number
+    id_clase : number,
+    sala: string
 };
 
 export const metricasClase = async ()
-:Promise<ApiResponse<ResultClase>> =>{
+:Promise<ApiResponse<ResultClase[]>> =>{
     const ruta  = `${PAGINA}api/metricas_clase`;  
     return apiFetch( ruta , { method : "GET" } );
 };
@@ -44,8 +45,17 @@ export interface ResultAsistencia {
    nombre : string , apellido : string , estado :  "presente" | "Tardanza" | "Ausente";
 };
 
+export interface ResultClaseConAsistencia {
+   id_clase: number,
+   nombre_clase: string,
+   horario: string,
+   nombre_profesor: string,
+   sala: string,
+   alumnos: ResultAsistencia[]
+}
+
 export const metricasAsistencia = async (_data?: unknown, signal?: AbortSignal)
-:Promise<ApiResponse<ResultAsistencia>> =>{
+:Promise<ApiResponse<ResultClaseConAsistencia[]>> =>{
     const ruta  = `${PAGINA}api/metrica_asistencia`;  
     
     return apiFetch( ruta , { method : "GET" , signal : signal } );

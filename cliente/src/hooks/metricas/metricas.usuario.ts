@@ -5,7 +5,7 @@ import { useEffectServicio } from "../../utils/useEfectServicio";
 import { useActualizarAlEnfocar } from "../../utils/useActulizarFocus";
 import { recepcionComunicacion } from "../../utils/canalComunicacion";
 
-import { type ResultTarjeta, type ResultClase, type ResultAsistencia, type VencimientoEscuela, fechaVencimientoPlan } from "../../servicio/metrica.fetch";
+import { type ResultTarjeta, type ResultClase, type ResultClaseConAsistencia, type VencimientoEscuela, fechaVencimientoPlan } from "../../servicio/metrica.fetch";
 import { type ResultHistorial } from "../../servicio/historial.fetch";
 import { type HorarioConAlumnos } from "../../servicio/asistencia.fetch";
 
@@ -61,7 +61,7 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         dependencias : [state.actualizarTajetas, state.actualizarCierreCaja, state.actualizarGeneral]
     });
     //---- metrica de datos para la cebecera de clase
-    useEffectServicio<undefined, ResultClase, MetricaAction>({
+    useEffectServicio<undefined, ResultClase[], MetricaAction>({
         servicios : clases,
         dispatch  : dispatch,
         accionResultado: (data) => ({
@@ -82,8 +82,8 @@ export const metricasUsuarioLogica = ( config : MetricasConfig ) =>{
         dependencias : [state.actualizar, state.actualizarGeneral]
         //YA SE VERAN LAS DEPENDECINAS
     });
-    // ---- listado de los alumnos q se encuentran tomando clases
-    useEffectServicio<undefined, ResultAsistencia[], MetricaAction>({
+    // ---- listado de los alumnos q se encuentran tomando clases, agrupados por clase
+    useEffectServicio<undefined, ResultClaseConAsistencia[], MetricaAction>({
         servicios : asistencia,
         dispatch  : dispatch,
         accionResultado: (data) => ({

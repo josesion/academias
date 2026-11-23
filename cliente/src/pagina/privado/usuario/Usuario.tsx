@@ -152,10 +152,7 @@ export const UsuarioPage = () => {
       {/* =======================
           MÉTRICAS SUPERIORES
       ======================== */}
-      <section
-        aria-labelledby={metricasId}
-        className="usuario_metricas_grupo1"
-      >
+      <section aria-labelledby={metricasId} className="usuario_metricas_grupo1">
         <h2 id={metricasId} className="visually-hidden">
           Métricas principales
         </h2>
@@ -222,7 +219,7 @@ export const UsuarioPage = () => {
               <Asistencia
                 asistencia={state.asistencias ?? []}
                 clases={state.clases}
-                estadoClase={state.clases ? "EN CURSO" : "SIN CURSO"}
+                estadoClase={(state.asistencias ?? []).length > 0 ? "EN CURSO" : "SIN CURSO"}
                 cargaClases={state.carga.clases}
                 horariosDelDia={state.horariosDelDia ?? []}
                 cargaHorarios={state.carga.horariosDelDia}
@@ -243,10 +240,7 @@ export const UsuarioPage = () => {
         <h2 id={historialId} className="visually-hidden">
           Historial de movimientos
         </h2>
-        <div
-          role="region"
-          aria-label="Historial de movimientos"
-        >
+        <div role="region" aria-label="Historial de movimientos">
           <MetricasHistorial historial={state.historial ?? []} />
         </div>
       </section>
