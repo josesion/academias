@@ -18,7 +18,7 @@ import {
          ClaseProximaSchema, ClasesProximaInputs,
          InfoAlumnoSchema, InfoAlumnoInputs,
          AsistenciaManualSchema, AsistenciaManualInputs,
-         AsistenciaQRSchema, AsistenciaQRInputs,
+         AsistenciaQRInputs,
           BuscarAlumnoSchema, BuscarAlumnoInputs,
           ListadoAsistenciasSchema, ListadoAsistenciasInputs,
          HorariosAsistenciaSchema, HorariosAsistenciaInputs,

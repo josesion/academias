@@ -205,9 +205,15 @@ const tutoresPorAlumno = async (dni_alumno: string, id_escuela: number)
                         FROM tutores
                         WHERE tutores.dni_alumno = ?
                         AND tutores.estado = 'activos'
+                        AND EXISTS (
+                            SELECT 1
+                            FROM alumnos_en_escuela aee
+                            WHERE aee.dni_alumno = tutores.dni_alumno
+                            AND aee.id_escuela = ?
+                        )
                         ORDER BY tutores.apellido;`;
 
-    const valores: unknown[] = [Number(dni_alumno)];
+    const valores: unknown[] = [Number(dni_alumno), id_escuela];
 
     return await listarEntidadSinPaginacion<DataTutoresPorAlumno>({
         slqListado: sql,

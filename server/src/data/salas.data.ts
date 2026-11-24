@@ -13,7 +13,7 @@ import { TipadoData } from "../tipados/tipado.data";
 import { SalaData, ModificarSalaData, estadoSala as estado, ResulListadoSalaUsuarios,
     ResulListSinPagSalaUsuarios
 } from "../tipados/sala.data"; 
-import { EstadoSalaInput, ListadoSalaInput } from "../squemas/salas";
+import { ListadoSalaInput } from "../squemas/salas";
 
 /**
  * @async

@@ -30,7 +30,8 @@ export const historialSchema = z.object({
         "METODOS_PAGO",
         "ASISTENCIAS",
         "FLAYERS",
-        "SALAS"
+        "SALAS",
+        "TUTORES"
     ], {
         message: "El módulo enviado no es válido"
     }),

@@ -23,7 +23,7 @@ export interface TutorBase {
 }
 
 export interface RetornoRegistroTutor {
-    id_tutor: number;
+    id?: number;
     dni_tutor: string;
     apellido: string;
     nombre: string;

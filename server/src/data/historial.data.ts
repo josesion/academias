@@ -21,6 +21,8 @@ export type ModuloHistorial =
     | "METODOS_PAGO"
     | "ASISTENCIAS"
     | "FLAYERS"
+    | "SALAS"
+    | "TUTORES"
 
 export type AccionHistorial =
     | "CREAR"
