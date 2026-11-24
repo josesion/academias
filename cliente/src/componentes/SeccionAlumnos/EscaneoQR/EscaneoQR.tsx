@@ -145,7 +145,7 @@ export const EscaneoQR = ({ onClose }: EscaneoQRProps) => {
         ? "El navegador no tiene permiso para usar la cámara. Habilitá el permiso e intentá nuevamente."
         : errorInicioEscaner === "no-disponible"
           ? "No se pudo iniciar la cámara. Verificá que esté conectada y que no esté siendo usada por otra aplicación."
-          : error || "No se pudo leer un código QR válido.";
+          : error?.mensaje || "No se pudo leer un código QR válido.";
     return (
       <div className="qr-overlay" onClick={handleCerrar}>
         <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
@@ -156,6 +156,9 @@ export const EscaneoQR = ({ onClose }: EscaneoQRProps) => {
             <AlertCircle size={48} className="qr-modal_icono error" />
             <h3>{errorInicioEscaner ? "No se pudo abrir la cámara" : "Error al registrar"}</h3>
             <p>{mensaje}</p>
+            {error?.codigo && (
+              <p className="qr-modal_codigo">Código de diagnóstico: {error.codigo}</p>
+            )}
             <button className="qr-modal_btn" onClick={handleCerrar}>
               Cerrar
             </button>

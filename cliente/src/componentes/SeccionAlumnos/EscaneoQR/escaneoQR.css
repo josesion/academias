@@ -105,6 +105,10 @@
   overflow-wrap: anywhere;
 }
 
+.qr-modal_codigo {
+  font-weight: 600;
+}
+
 /* Íconos de estado */
 .qr-modal_icono {
   margin-bottom: 0.25rem;

@@ -1,6 +1,11 @@
 import { useState, useCallback } from "react";
 import { registroAsistenciaQR } from "../servicio/asistenciaQR.fetch";
 
+type ErrorAsistenciaQR = {
+  mensaje: string;
+  codigo?: string;
+} | null;
+
 /**
  * Hook para registrar asistencia por escaneo QR.
  *
@@ -9,7 +14,7 @@ import { registroAsistenciaQR } from "../servicio/asistenciaQR.fetch";
  */
 export const useAsistenciaQR = () => {
   const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorAsistenciaQR>(null);
   const [exito, setExito] = useState(false);
 
   const registrarAsistencia = useCallback(async (idHorarioClase: number) => {
@@ -27,10 +32,10 @@ export const useAsistenciaQR = () => {
         const mensaje = resultado.code === "TRANSACCION_FALLIDA"
           ? resultado.message || "No se pudo completar el registro de asistencia."
           : resultado.message || "Error al registrar asistencia";
-        setError(resultado.code ? `${mensaje}\nCódigo de diagnóstico: ${resultado.code}` : mensaje);
+        setError({ mensaje, codigo: resultado.code });
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error de conexión");
+      setError({ mensaje: err instanceof Error ? err.message : "Error de conexión" });
     } finally {
       setCargando(false);
     }
