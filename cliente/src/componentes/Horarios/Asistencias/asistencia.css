@@ -478,10 +478,10 @@
 
 /* Encabezado clickeable de la clase */
 .clase_encabezado {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 6px 12px;
   width: 100%;
   padding: 10px 12px;
   background: transparent;
@@ -504,12 +504,20 @@
    outline-offset: -2px;
 }
 
-/* Lado izquierdo: nombre + badge en curso */
-.clase_encabezado_izq {
-   display: flex;
-   align-items: center;
-   gap: 8px;
-   flex-shrink: 0;
+.clase_encabezado_contenido {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.clase_encabezado_fila_principal,
+.clase_encabezado_fila_detalles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-width: 0;
 }
 
 .clase_nombre {
@@ -517,51 +525,34 @@
   font-size: 0.9rem;
   font-weight: var(--peso-negrita);
   color: var(--texto-principal);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 180px;
-}
-
-/* Lado derecho: sala, horario, profesor */
-.clase_encabezado_der {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  justify-content: flex-end;
-  flex-wrap: nowrap;
+  flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
+.clase_tipo,
+.clase_nivel,
 .clase_sala {
   font-size: 0.7rem;
   font-weight: var(--peso-semi-negrita);
-  color: var(--color-primario);
-  background: rgba(var(--color-primario-rgb, 52, 152, 219), 0.1);
+  color: var(--texto-secundario);
+  background: color-mix(in srgb, var(--fondo-principal) 85%, var(--texto-principal));
   padding: 2px 8px;
   border-radius: var(--radio-full, 20px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 80px;
+  overflow-wrap: anywhere;
 }
 
 .clase_horario {
-   font-size: 0.75rem;
-   color: var(--texto-secundario);
-   white-space: nowrap;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-secundario);
 }
 
 .clase_profesor {
   font-size: 0.7rem;
   color: var(--texto-secundario);
-  font-style: italic;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
+  overflow-wrap: anywhere;
 }
 
 .clase_presentes {
@@ -651,10 +642,10 @@
 
 /* Encabezado clickeable del horario */
 .horario_encabezado {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    gap: 6px 12px;
     width: 100%;
     padding: 10px 12px;
     background: transparent;
@@ -677,12 +668,20 @@
     outline-offset: -2px;
 }
 
-/* Lado izquierdo: hora + badge en curso */
-.horario_encabezado_izq {
+.horario_encabezado_contenido {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    min-width: 0;
+}
+
+.horario_encabezado_fila_principal,
+.horario_encabezado_fila_detalles {
     display: flex;
     align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    min-width: 0;
 }
 
 .horario_hora {
@@ -721,25 +720,12 @@
     50% { opacity: 0.4; }
 }
 
-/* Lado derecho: tipo, nivel, profesor */
-.horario_encabezado_der {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-    flex-wrap: nowrap;
-    overflow: hidden;
-}
-
 .horario_tipo {
     font-size: 0.8rem;
     font-weight: var(--peso-negrita);
     color: var(--texto-principal);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 .horario_nivel {
@@ -754,10 +740,7 @@
 .horario_profesor {
     font-size: 0.7rem;
     color: var(--texto-secundario);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 120px;
+    overflow-wrap: anywhere;
 }
 
 /* Badge de la sala donde se dicta la clase */
@@ -767,10 +750,7 @@
     padding: 1px 6px;
     border-radius: var(--radio-full, 20px);
     background: color-mix(in srgb, var(--fondo-principal) 85%, var(--texto-principal));
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
+    overflow-wrap: anywhere;
 }
 
 /* Flecha del acordeón */
@@ -1009,22 +989,11 @@
 
     /* Acordeón responsive */
     .horario_encabezado {
-        flex-wrap: wrap;
         padding: 8px 10px;
     }
 
-    .horario_encabezado_der {
-        width: 100%;
-        order: 3;
-        padding-top: 4px;
-    }
-
     .horario_flecha {
-        margin-left: auto;
-    }
-
-    .horario_profesor {
-        display: none;
+        align-self: center;
     }
 }
 

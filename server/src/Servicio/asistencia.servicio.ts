@@ -6,6 +6,7 @@ import { tryCatchDatos } from "../utils/tryCatchBD";
 import { method as asistenciaData, ListadoAsistenciaRow } from "../data/asistencia.data";
 import { method as inscripcionData } from "../data/inscripciones.data";
 import { method as horarioData  } from "../data/horarios.data"
+import { method as usuarioData } from "../data/usuario.data";
 // ──────────────────────────────────────────────────────────────
 // Sección de Tipados
 // ──────────────────────────────────────────────────────────────
@@ -17,6 +18,7 @@ import {
          ClaseProximaSchema, ClasesProximaInputs,
          InfoAlumnoSchema, InfoAlumnoInputs,
          AsistenciaManualSchema, AsistenciaManualInputs,
+         AsistenciaQRSchema, AsistenciaQRInputs,
           BuscarAlumnoSchema, BuscarAlumnoInputs,
           ListadoAsistenciasSchema, ListadoAsistenciasInputs,
          HorariosAsistenciaSchema, HorariosAsistenciaInputs,
@@ -551,7 +553,7 @@ const listadoAsistenciasServicio = async( parametros : ListadoAsistenciasInputs 
     const offset : number = (data.pagina - 1) * data.limit;
 
     const resultado = await asistenciaData.listadoAsistencias({ ...data, offset });
-
+    console.log(resultado)
     if ( resultado.code === "NO_ACTIVE_ASISTENCIAS" ) {
         // Rango sin datos: es un exito para la pantalla (200 + lista vacia).
         return {
@@ -683,9 +685,130 @@ const horariosAsistenciaServicio = async( parametros : HorariosAsistenciaInputs 
     };
 };
 
+/**
+ * Registra una asistencia por escaneo QR.
+ *
+ * El alumno se identifica por JWT: `id_usuario` del token → `dni_alumno`
+ * desde la base de datos. No usa PIN ni ventana horaria del kiosko.
+ *
+ * Flujo:
+ * 1. Resuelve `dni_alumno` a partir de `id_usuario` del token.
+ * 2. Valida inscripción activa con `dni_alumno` e `id_escuela`.
+ * 3. Verifica que la clase esté en curso o sea la próxima.
+ * 4. Bloquea doble asistencia y solapamiento.
+ * 5. Registra la asistencia en transacción.
+ *
+ * @param {AsistenciaQRInputs} asistencia - Solo `id_horario_clase`.
+ * @param {number} id_usuario - Viene del token JWT.
+ * @param {number} id_escuela - Viene del token JWT.
+ * @returns {Promise<TipadoData<{ idAsistencia, clasesRestantes }>>}
+ */
+const altaAsistenciaQR = async(
+    asistencia: AsistenciaQRInputs,
+    id_usuario: number,
+    id_escuela: number
+): Promise<TipadoData<{ idAsistencia: number; clasesRestantes: number }>> => {
+
+    // 1. Resuelve el DNI del alumno a partir del id_usuario del token
+    const dniResult = await usuarioData.buscarDniAlumno(id_usuario);
+    if (dniResult.code !== "DNI_ALUMNO_EXISTE" || !dniResult.data) {
+        return {
+            error: true,
+            message: "No se pudo identificar al alumno",
+            code: "DNI_ALUMNO_NO_ENCONTRADO"
+        };
+    }
+    const dni_alumno = dniResult.data.dni_alumno;
+
+    // 2. Valida y obtiene la inscripción activa del alumno
+    const inscripcionResult = await inscripcionData.verificacion({
+        id_escuela,
+        dni_alumno,
+        estado: "activos"
+    });
+
+    if (inscripcionResult.code !== "INSCRIPCION_EXISTE" || !inscripcionResult.data) {
+        return {
+            error: true,
+            message: "El alumno no tiene plan activo",
+            code: "INSCRIPCION_NO_EXISTE"
+        };
+    }
+
+    const id_inscripcion = inscripcionResult.data.id_inscripcion;
+
+    // 3. Verifica que la clase esté en curso o sea la próxima
+    const dias = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+    const diaHoy = dias[new Date().getDay()];
+
+    const horarioValido = await asistenciaData.horarioEnCursoOProxima({
+        id_escuela,
+        estado: "activos",
+        dia: diaHoy,
+        id_horario_clase: asistencia.id_horario_clase,
+    });
+
+    if (horarioValido.code === "HORARIO_NO_EXISTE") {
+        return {
+            error: true,
+            message: "Sólo se puede registrar asistencia en la clase que está en curso o en la próxima",
+            code: "CLASE_NO_PERMITIDA"
+        };
+    }
+
+    // 4. Bloquea doble asistencia
+    const dobleAsistencia = await asistenciaData.dobleAsitencia(id_inscripcion, asistencia.id_horario_clase);
+    if (dobleAsistencia.code === "ASISTENCIA_EXISTE") {
+        return {
+            error: true,
+            message: `El alumno ya tiene asistencia en esta clase`,
+            code: "ALUMNO_EN_CLASE"
+        };
+    }
+
+    // 5. Bloquea solapamiento horario
+    const solapamiento = await asistenciaData.solapamientoHorario(id_inscripcion, asistencia.id_horario_clase);
+    if (solapamiento.code === "ASISTENCIA_EXISTE") {
+        return {
+            error: true,
+            message: `El alumno ya está asistiendo a otra clase en este horario`,
+            code: "SOLAPAMIENTO_HORARIO"
+        };
+    }
+
+    // 6. Registra la asistencia en transacción
+    const dataVerificacionInsc: VerificarInscripcionInput = VerificarInscripcionSchema.parse({
+        id_inscripcion,
+        dni_alumno,
+        id_escuela,
+        estado: "activos",
+    });
+
+    const resultado = await asistenciaData.asistencia(
+        dataVerificacionInsc,
+        { id_horario_clase: asistencia.id_horario_clase }
+    );
+
+    if (resultado.code === "TRANSACCION_FALLIDA") {
+        return {
+            error: true,
+            message: "Error al registrar la asistencia",
+            code: "TRANSACCION_FALLIDA"
+        };
+    }
+
+    return {
+        error: false,
+        message: `Asistencia registrada correctamente`,
+        data: resultado.data,
+        code: "ASISTENCIA_OK"
+    };
+};
+
 export const method = {
     asistencia : tryCatchDatos( altaAsistencia ),
     asistenciaManual : tryCatchDatos( altaAsistenciaManual ),
+    asistenciaQR : tryCatchDatos( altaAsistenciaQR ),
     fechaAsistencia : tryCatchDatos( fechaAsistencia),
     dataAsistenciaServicio : tryCatchDatos( dataAsistenciaServicio ),
     infoAlumno : tryCatchDatos( infoAlumnoServicio ),

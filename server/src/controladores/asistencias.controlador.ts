@@ -15,7 +15,7 @@ import { MAPA_ALTA_ASISTENCIA, ERROR_INTERNO_SERVIDOR,
          MAPA_CLASES_ASISTENCIA, MAPA_DATA_ASISTENCIA, MAPA_INFO_ALUMNO,
          MAPA_LISTADO_ASISTENCIAS, MAPA_HORARIOS_ASISTENCIA
 } from "../respuestas/asistencia";
-import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs, HorariosAsistenciaInputs } from "../squemas/asistencias";
+import { AsistenciaManualInputs, InfoAlumnoInputs, BuscarAlumnoInputs, HorariosAsistenciaInputs, AsistenciaQRInputs } from "../squemas/asistencias";
 import { InfoAlumnoResult } from "../tipados/asistencia.tipado";
 import { ListadoAsistenciaRow } from "../data/asistencia.data";
 import { HorarioConAlumnos } from "../Servicio/asistencia.servicio";
@@ -36,6 +36,7 @@ interface ListadoAsistenciasQuery {
     dni_profesor: string | null;
     id_nivel: number | null;
     id_tipo_clase: number | null;
+    id_sala: number | null;
     pagina?: string;
     limit?: string;
 }
@@ -289,12 +290,12 @@ const buscarAlumno = async( req : Request, res : Response) => {
  * @function listadoAsistencias
  * @param {Request} req - Peticion de Express con `req.usuario.id_escuela` y
  *   los filtros en `req.query` (desde, hasta, dia_semana, hora, dni_profesor,
- *   id_nivel, id_tipo_clase, pagina, limit).
+ *   id_nivel, id_tipo_clase, id_sala, pagina, limit).
  * @param {Response} res - Respuesta de Express.
  * @returns {Promise<void>} Envia el listado paginado o el error correspondiente.
  */
 const listadoAsistencias = async( req : Request, res : Response ) => {
-    const { desde, hasta, dia_semana, hora, dni_profesor, id_nivel, id_tipo_clase, pagina, limit } = req.query;
+    const { desde, hasta, dia_semana, hora, dni_profesor, id_nivel, id_tipo_clase, id_sala, pagina, limit } = req.query;
 
     const datos : ListadoAsistenciasQuery = {
         // Multi-tenant: la escuela del token, nunca de la query.
@@ -307,6 +308,7 @@ const listadoAsistencias = async( req : Request, res : Response ) => {
         dni_profesor : textoONull(dni_profesor),
         id_nivel : numeroONull(id_nivel),
         id_tipo_clase : numeroONull(id_tipo_clase),
+        id_sala : numeroONull(id_sala),
         pagina : typeof pagina === "string" && pagina.trim() !== "" ? pagina : undefined,
         limit : typeof limit === "string" && limit.trim() !== "" ? limit : undefined,
     };
@@ -342,9 +344,54 @@ const horariosAsistencia = async( req : Request, res : Response ) => {
     );
 };
 
+/**
+ * Registra una asistencia por escaneo QR (spec QR).
+ *
+ * El alumno se identifica por JWT: `id_usuario` del token → `dni_alumno`
+ * desde la base de datos. El body solo envía `id_horario_clase`.
+ *
+ * @async
+ * @function altaAsistenciaQR
+ * @param {Request} req - `req.usuario.id` (id_usuario), `req.usuario.id_escuela`
+ *   y `req.body` = { id_horario_clase }.
+ * @param {Response} res - Respuesta de Express.
+ * @returns {Promise<void>} Envía la respuesta estructurada.
+ */
+const altaAsistenciaQR = async( req : Request , res: Response)=> {
+    const data : AsistenciaQRInputs = {
+        id_horario_clase : Number( req.body.id_horario_clase),
+    };
+
+    const id_usuario = Number( req.usuario?.id );
+    const id_escuela = Number( req.usuario?.id_escuela);
+
+    const respuesta = await asistenciaServicio.asistenciaQR(data, id_usuario, id_escuela);
+
+    const config = MAPA_ALTA_ASISTENCIA[ respuesta.code ] || ERROR_INTERNO_SERVIDOR;
+
+    if (config.status === CodigoEstadoHTTP.OK) {
+        return enviarResponse(
+            res,
+            config.status,
+            respuesta.message || config.msg,
+            respuesta.data,
+            undefined,
+            respuesta.code
+        );
+    } else {
+        return enviarResponseError(
+            res,
+            config.status,
+            respuesta.message || config.msg,
+            respuesta.code
+        );
+    }
+};
+
 export const method = {
     asistencia : tryCatch( altaAsistencia),
     asistenciaManual : tryCatch( altaAsistenciaManual ),
+    asistenciaQR : tryCatch( altaAsistenciaQR ),
     fechasHorarios : tryCatch( fechasHorarios),
     dataAsistencia : tryCatch( dataAsistencia ),
     infoAlumno : tryCatch( infoAlumno ),

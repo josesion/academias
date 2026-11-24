@@ -1,0 +1,134 @@
+/* Overlay de fondo oscuro */
+.qr-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+/* Modal centrado */
+.qr-modal {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  max-width: 360px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Botón cerrar */
+.qr-modal_cerrar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.qr-modal_cerrar:hover {
+  background: #f0f0f0;
+}
+
+/* Encabezado del modal */
+.qr-modal_encabezado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.qr-modal_encabezado h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #1a1a1a;
+}
+
+/* Instrucción */
+.qr-modal_instruccion {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+/* Área del escáner */
+.qr-scanner {
+  width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+/* Forzar que html5-qrcode use todo el ancho */
+.qr-scanner :where(*) {
+  margin: 0 !important;
+}
+
+/* Mensaje de cargando */
+.qr-modal_cargando {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Contenido de éxito/error */
+.qr-modal_contenido {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.qr-modal_contenido h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #1a1a1a;
+}
+
+.qr-modal_contenido p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+/* Íconos de estado */
+.qr-modal_icono {
+  margin-bottom: 0.25rem;
+}
+
+.qr-modal_icono.exito {
+  color: #22c55e;
+}
+
+.qr-modal_icono.error {
+  color: #ef4444;
+}
+
+/* Botón cerrar en estado error */
+.qr-modal_btn {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.5rem;
+  background: #1a1a1a;
+  color: #fff;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.qr-modal_btn:hover {
+  background: #333;
+}

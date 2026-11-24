@@ -92,7 +92,11 @@ const agregarAlumnosPlantilla = async (data: PlantillaAlumnosAgregarInputs): Pro
     const resultado = await plantillasData.agregarAlumnosPlantilla(parsed.id_plantilla, unicos);
 
     if (resultado.code === "TRANSACCION_OK") {
-        return { error: false, message: "Alumnos agregados", data: { agregados: unicos.length }, code: "PLANTILLA_ALUMNO_AGREGADO" };
+        const agregados = resultado.data?.agregados ?? 0;
+        const message = agregados > 0
+            ? "Alumnos agregados"
+            : "Los alumnos ya forman parte del grupo";
+        return { error: false, message, data: { agregados }, code: "PLANTILLA_ALUMNO_AGREGADO" };
     }
 
     return { error: true, message: "Transaccion fallida", code: "TRANSACCION_FALLIDA" };

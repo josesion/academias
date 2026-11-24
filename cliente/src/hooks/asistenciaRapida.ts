@@ -630,6 +630,16 @@ export const useAsistenciaRapidaLogica = (
   const handleAgregarAlumno = useCallback(
     async (idPlantilla: number, dniAlumno: number) => {
       dispatch({ type: "SET_MENSAJE_PLANTILLAS", payload: null });
+      const plantilla = state.plantillas.find(
+        (item) => item.id_plantilla === idPlantilla
+      );
+      if (plantilla?.alumnos.includes(dniAlumno)) {
+        dispatch({
+          type: "SET_MENSAJE_PLANTILLAS",
+          payload: "Este alumno ya forma parte del grupo.",
+        });
+        return;
+      }
       dispatch({ type: "SET_ACCION", payload: "agregarAlumno" });
       try {
         const res = await servicios.agregarAlumnosPlantilla(idPlantilla, [
@@ -642,13 +652,20 @@ export const useAsistenciaRapidaLogica = (
           });
           return;
         }
+        if ((res.data?.agregados ?? 0) === 0) {
+          dispatch({
+            type: "SET_MENSAJE_PLANTILLAS",
+            payload: res.message || "Este alumno ya forma parte del grupo.",
+          });
+          return;
+        }
         dispatch({ type: "SET_DNI_AGREGAR", payload: "" });
         await cargarPlantillas();
       } finally {
         dispatch({ type: "SET_ACCION", payload: null });
       }
     },
-    [servicios, cargarPlantillas]
+    [servicios, state.plantillas, cargarPlantillas]
   );
 
   /** Quita un alumno de una plantilla ya creada. */

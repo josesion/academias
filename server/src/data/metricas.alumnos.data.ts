@@ -158,6 +158,7 @@ export interface ClaseHoyRow {
   tipoBaile: string;
   nivel: string;
   profesor: string;
+  sala: string;
 }
 
 const obtenerClasesEscuelasHoy =  async ( dni_alumno : number )
@@ -173,13 +174,15 @@ const obtenerClasesEscuelasHoy =  async ( dni_alumno : number )
                                 e.razon_social AS academia,
                                 tc.tipo AS tipoBaile,
                                 n.nivel AS nivel,
-                                CONCAT(p.nombre, ' ', p.apellido) AS profesor
+                                CONCAT(p.nombre, ' ', p.apellido) AS profesor,
+                                COALESCE(s.nombre, 'Sin sala') AS sala
                             FROM alumnos_en_escuela ae
                             INNER JOIN escuelas e ON ae.id_escuela = e.id_escuela
                             INNER JOIN horarios_clases hc ON e.id_escuela = hc.id_escuela
                             INNER JOIN tipo_clase tc ON hc.id_tipo_clase = tc.id
                             INNER JOIN niveles n ON hc.id_nivel = n.id
                             INNER JOIN profesores p ON hc.dni_profesor = p.dni
+                            LEFT JOIN salas s ON hc.id_sala = s.id
                             WHERE ae.dni_alumno = ? 
                             AND hc.dia_semana =  ?
                             AND ae.estado = 'activos' 

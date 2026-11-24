@@ -22,6 +22,7 @@ export const filtrosIniciales = ( paginacion : PaginacionProps ) : FiltroListado
     dni_profesor  : "",
     id_nivel      : "",
     id_tipo_clase : "",
+    id_sala       : "",
     desde         : calcularDiasAtras( fechaHoy(), 30 ),
     hasta         : fechaHoy(),
     pagina        : paginacion.pagina ?? 1,
@@ -57,6 +58,7 @@ export const inicialState = ( config : { paginacion : PaginacionProps } ) : List
         profesores : [],
         niveles    : [],
         tipos      : [],
+        salas      : [],
         carga      : false
     }
 });
@@ -119,7 +121,8 @@ export const listadoAsistenciasReducer = (
                     ...state.catalogos,
                     profesores : action.payload.profesores,
                     niveles    : action.payload.niveles,
-                    tipos      : action.payload.tipos
+                    tipos      : action.payload.tipos,
+                    salas      : action.payload.salas
                 }
             };
 

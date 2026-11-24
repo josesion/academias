@@ -16,7 +16,8 @@ const FILTROS_OPCIONALES = [
     "hora",
     "dni_profesor",
     "id_nivel",
-    "id_tipo_clase"
+    "id_tipo_clase",
+    "id_sala"
 ] as const;
 
 /**
@@ -25,7 +26,7 @@ const FILTROS_OPCIONALES = [
  * `GET /api/lista_asistencias?desde=…&hasta=…&…`
  *
  * - `desde` y `hasta` son **obligatorios** (el backend responde 400 si faltan).
- * - Los cinco filtros opcionales se omiten cuando vienen vacíos, así el
+ * - Los filtros opcionales se omiten cuando vienen vacíos, así el
  *   backend recibe exactamente lo mismo que si se mandaran en blanco (los
  *   convierte en `null` de todos modos).
  * - Un rango sin datos **no** es un error: responde 200 con `data: []` y

@@ -46,6 +46,7 @@ export interface ClaseHoyRow {
   tipoBaile: string;
   nivel: string;
   profesor: string;
+  sala: string;
 };
 
 export interface FlayerDataResult {

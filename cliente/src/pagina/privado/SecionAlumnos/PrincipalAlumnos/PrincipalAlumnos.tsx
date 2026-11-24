@@ -9,6 +9,7 @@ import {
   LuSearch,
   LuX,
   LuChevronsUpDown,
+  LuQrCode,
 } from "react-icons/lu";
 
 import { TarjetaEscuela } from "../../../../componentes/SeccionAlumnos/TarjetaEscuelas/TarjetasEscuelas";
@@ -26,6 +27,8 @@ import "./principalalumno.css";
 
 import { configMetricasAlumnos } from "../../../../hookNegocios/metricas.alumnos";
 import { usePerfilRapido } from "../../../../hooks/SeccionAlumnos/usePerfilRapido";
+import { EscaneoQR } from "../../../../componentes/SeccionAlumnos/EscaneoQR/EscaneoQR";
+import "../../../../componentes/SeccionAlumnos/EscaneoQR/escaneoQR.css";
 
 /**
  * Normaliza el valor crudo que viene de la BD (username, handle, número)
@@ -107,6 +110,9 @@ export const PrincipalAlumnos = () => {
 
   // Estado de visibilidad del banner publicitario (solo sesión actual, sin localStorage)
   const [bannerVisible, setBannerVisible] = useState(true);
+
+  // Modal de escaneo QR
+  const [mostrarEscaneoQR, setMostrarEscaneoQR] = useState(false);
 
   // Anuncios reales del carrusel (spec 018): reemplazan al mock.
   // El listado ACUMULA páginas (no reemplaza) para que el carrusel
@@ -279,6 +285,11 @@ export const PrincipalAlumnos = () => {
         <h1>Panel del Alumno</h1>
       </header>
 
+      {/* Modal de escaneo QR */}
+      {mostrarEscaneoQR && (
+        <EscaneoQR onClose={() => setMostrarEscaneoQR(false)} />
+      )}
+
       {/* Indicador de carga global (solo en carga inicial) */}
       {cargandoInicial && (
         <div className="carga-global" role="status" aria-live="polite" aria-label="Cargando panel del alumno">
@@ -302,6 +313,17 @@ export const PrincipalAlumnos = () => {
                   </p>
                 </div>
 
+                {/* Botón para escanear QR */}
+                <button
+                  type="button"
+                  className="saludo-qr-btn"
+                  onClick={() => setMostrarEscaneoQR(true)}
+                  aria-label="Escanear código QR para registrar asistencia"
+                >
+                  <LuQrCode size={20} />
+                  <span>Escanear QR</span>
+                </button>
+
                 {proximaClase && (
                   <div className="saludo-proxima-clase" aria-label="Próxima clase">
                     <span className="saludo-proxima-label">Próxima clase</span>
@@ -309,7 +331,7 @@ export const PrincipalAlumnos = () => {
                       {proximaClase.tipoBaile} — {proximaClase.nivel}
                     </span>
                     <span className="saludo-proxima-lugar">
-                      {proximaClase.hora} · {proximaClase.profesor} · {proximaClase.academia}
+                      {proximaClase.hora} · {proximaClase.profesor} · {proximaClase.academia} · {proximaClase.sala}
                     </span>
                   </div>
                 )}
@@ -472,6 +494,7 @@ export const PrincipalAlumnos = () => {
                     tipoBaile={clase.tipoBaile}
                     nivel={clase.nivel}
                     profesor={clase.profesor}
+                    sala={clase.sala}
                   />
                 ))
               ) : (

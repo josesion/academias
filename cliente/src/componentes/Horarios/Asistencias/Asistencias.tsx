@@ -235,6 +235,9 @@ export const Asistencia = ({
             <div className="clases_acordeon" role="list" aria-label="Clases en curso">
               {asistencia.map((clase) => {
                 const expandida = clasesExpandidas.has(clase.id_clase);
+                const horarioRelacionado = horariosDelDia.find(
+                  (horario) => horario.id_horario_clase === clase.id_clase,
+                );
                 const presentesClase = clase.alumnos.filter(
                   (a) => (a.estado ?? "presente") === "presente",
                 ).length;
@@ -251,22 +254,43 @@ export const Asistencia = ({
                       className="clase_encabezado"
                       onClick={() => toggleClase(clase.id_clase)}
                       aria-expanded={expandida}
-                      aria-label={`${clase.nombre_clase} ${clase.sala} ${clase.horario}`}
+                      aria-label={`${clase.horario} ${clase.nombre_clase}, profesor ${clase.nombre_profesor}${horarioRelacionado ? `, tipo ${horarioRelacionado.tipo_clase}, nivel ${horarioRelacionado.nivel}` : ""}, sala ${clase.sala}`}
                     >
-                      <div className="clase_encabezado_izq">
-                        <span className="clase_nombre">{clase.nombre_clase}</span>
-                        <span className="horario_badge_en_curso">En curso</span>
-                      </div>
+                      <div className="clase_encabezado_contenido">
+                        <div className="clase_encabezado_fila_principal">
+                          <span className="clase_horario">{clase.horario}</span>
+                          <span className="clase_nombre">{clase.nombre_clase}</span>
+                        </div>
 
-                      <div className="clase_encabezado_der">
-                        <span className="clase_sala" title={clase.sala}>{clase.sala}</span>
-                        <span className="clase_horario">{clase.horario}</span>
-                        <span className="clase_profesor">{clase.nombre_profesor}</span>
-                        {expandida && presentesClase > 0 && (
-                          <span className="clase_presentes">
-                            {presentesClase} presente{presentesClase > 1 ? 's' : ''}
+                        <div className="clase_encabezado_fila_detalles">
+                          {horarioRelacionado && (
+                            <>
+                              <span className="clase_tipo">
+                                Tipo: {horarioRelacionado.tipo_clase}
+                              </span>
+                              <span className="clase_profesor">
+                                {clase.nombre_profesor}
+                              </span>
+                              <span className="clase_nivel">
+                                Nivel: {horarioRelacionado.nivel}
+                              </span>
+                            </>
+                          )}
+                          {!horarioRelacionado && (
+                            <span className="clase_profesor">
+                              {clase.nombre_profesor}
+                            </span>
+                          )}
+                          <span className="clase_sala" title={clase.sala}>
+                            {clase.sala}
                           </span>
-                        )}
+                          <span className="horario_badge_en_curso">En curso</span>
+                          {expandida && presentesClase > 0 && (
+                            <span className="clase_presentes">
+                              {presentesClase} presente{presentesClase > 1 ? 's' : ''}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="clase_flecha" aria-hidden="true">
@@ -364,24 +388,33 @@ export const Asistencia = ({
                       className="horario_encabezado"
                       onClick={() => toggleHorario(horario.id_horario_clase)}
                       aria-expanded={expandido}
-                      aria-label={`${horario.hora_inicio} - ${horario.hora_fin} ${horario.tipo_clase} ${horario.nivel}`}
+                      aria-label={`${horario.hora_inicio} a ${horario.hora_fin}, ${horario.tipo_clase}, profesor ${horario.profesor}, nivel ${horario.nivel}, sala ${horario.sala ?? "Sin sala"}`}
                     >
-                      <div className="horario_encabezado_izq">
-                        <span className="horario_hora">
-                          {horario.hora_inicio} — {horario.hora_fin}
-                        </span>
-                        {enCurso && (
-                          <span className="horario_badge_en_curso">En curso</span>
-                        )}
-                      </div>
+                      <div className="horario_encabezado_contenido">
+                        <div className="horario_encabezado_fila_principal">
+                          <span className="horario_hora">
+                            {horario.hora_inicio} — {horario.hora_fin}
+                          </span>
+                          <span className="horario_tipo">{horario.tipo_clase}</span>
+                        </div>
 
-                      <div className="horario_encabezado_der">
-                        <span className="horario_tipo">{horario.tipo_clase}</span>
-                        <span className="horario_nivel">{horario.nivel}</span>
-                        <span className="horario_profesor">{horario.profesor}</span>
-                        <span className="horario_sala" title={horario.sala ?? "Sin sala"}>
-                          {horario.sala ?? "Sin sala"}
-                        </span>
+                        <div className="horario_encabezado_fila_detalles">
+                          <span className="horario_profesor">
+                            {horario.profesor}
+                          </span>
+                          <span className="horario_nivel">
+                            Nivel: {horario.nivel}
+                          </span>
+                          <span
+                            className="horario_sala"
+                            title={horario.sala ?? "Sin sala"}
+                          >
+                            {horario.sala ?? "Sin sala"}
+                          </span>
+                          {enCurso && (
+                            <span className="horario_badge_en_curso">En curso</span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="horario_flecha" aria-hidden="true">

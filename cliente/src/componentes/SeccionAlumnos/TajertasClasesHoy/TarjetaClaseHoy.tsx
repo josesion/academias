@@ -9,6 +9,7 @@ export interface TarjetaClaseHoyProps {
   tipoBaile: string;
   nivel: string;
   profesor: string;
+  sala?: string;
   carga: boolean;
 }
 
@@ -18,6 +19,7 @@ export const TarjetaClaseHoy = ({
   tipoBaile,
   nivel,
   profesor,
+  sala,
   carga,
 }: TarjetaClaseHoyProps) => {
   return (
@@ -46,6 +48,13 @@ export const TarjetaClaseHoy = ({
               <LuUser size={14} />
               {profesor}
             </p>
+
+            {sala && (
+              <p className="tarjeta_clase_sala">
+                <LuMapPin size={14} />
+                {sala}
+              </p>
+            )}
           </div>
         </>
       )}

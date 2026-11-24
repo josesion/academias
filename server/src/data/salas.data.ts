@@ -234,11 +234,11 @@ const listadoSalasSinPag = async(  parametros : ListadoSalaInput )
                         from 
                             salas
                         where 
-                            nombre like ? and id_escuela = ? and estado = ?
+                            nombre like ? and id_escuela = ? and (? = 'todos' or estado = ?)
                         order by 
                             nombre
                         limit 50 ;`;
-    const valores : unknown[] = [nombreFiltro , id_escuela , estado];
+    const valores : unknown[] = [nombreFiltro , id_escuela , estado, estado];
 
     return  listarEntidadSinPaginacion<ResulListSinPagSalaUsuarios>({
         slqListado : sql,

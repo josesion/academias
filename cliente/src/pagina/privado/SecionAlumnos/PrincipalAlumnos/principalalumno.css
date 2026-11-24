@@ -148,6 +148,35 @@
   opacity: 0.9;
 }
 
+/* Botón Escanear QR dentro del saludo */
+.saludo-qr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radio-md, 8px);
+  color: #fff;
+  font-family: var(--fuente-principal, inherit);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 200ms var(--ease-ui, ease), border-color 200ms var(--ease-ui, ease);
+  backdrop-filter: blur(4px);
+  align-self: flex-start;
+}
+
+.saludo-qr-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.saludo-qr-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* Responsive: en pantallas pequeñas, reducir padding */
 @media (max-width: 600px) {
   .saludo-contenido {

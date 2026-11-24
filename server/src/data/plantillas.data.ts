@@ -72,14 +72,16 @@ const verificarPlantillaExistente = async (data: PlantillaBajaInputs): Promise<T
 
 const agregarAlumnosPlantilla = async (id_plantilla: number, alumnos: number[]): Promise<TipadoData<{ agregados: number }>> => {
     const resultado = await iudEntidadTransaction(async (conn) => {
+        let agregados = 0;
         for (const dni of alumnos) {
-            await conn.execute(
+            const [res] = await conn.execute(
                 `INSERT IGNORE INTO plantilla_alumnos (id_plantilla, dni_alumno) VALUES (?, ?)`,
                 [id_plantilla, dni]
             );
+            agregados += (res as { affectedRows?: number }).affectedRows ?? 0;
         }
 
-        return { agregados: alumnos.length };
+        return { agregados };
     });
 
     return resultado;

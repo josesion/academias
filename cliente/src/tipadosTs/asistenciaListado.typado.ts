@@ -9,11 +9,11 @@ export type EstadoAsistenciaListado = "presente" | "ausente" | "justificado";
 /**
  * Una fila del listado de asistencias (spec 048).
  *
- * Los datos de la clase (hora, día, profesor, nivel y tipo) salen de la
+ * Los datos de la clase (hora, día, profesor, nivel, tipo y sala) salen de la
  * **foto** guardada en la propia asistencia, no del horario actual. Por eso
  * pueden ser `null`: una asistencia registrada antes del backfill no tiene
- * foto. Los tres **textos** (`profesor`, `nivel`, `tipo_clase`) nunca son
- * `null` porque el SQL los resuelve a "Sin profesor" / "Sin nivel" / "Sin tipo".
+ * foto. Los textos (`profesor`, `nivel`, `tipo_clase`, `sala`) nunca son
+ * `null` porque el SQL los resuelve a sus etiquetas "Sin ...".
  */
 export interface AsistenciaListadoItem {
   /** PK de `asistencias`. */
@@ -42,6 +42,10 @@ export interface AsistenciaListadoItem {
   id_tipo_clase: number | null;
   /** Nombre del tipo de clase de la foto. Nunca `null` (el SQL pone "Sin tipo"). */
   tipo_clase: string;
+  /** Id de la sala de la foto del horario, o `null` si no había sala asignada. */
+  id_sala: number | null;
+  /** Nombre de la sala de la foto; el servidor completa "Sin sala" cuando falta. */
+  sala: string;
   /** Estado de la asistencia. */
   estado: EstadoAsistenciaListado;
 }
@@ -49,7 +53,7 @@ export interface AsistenciaListadoItem {
 /**
  * Filtros del listado de asistencias.
  *
- * Los cinco primeros van al backend como texto vacío (`""`) cuando no se
+ * Los filtros opcionales van al backend como texto vacío (`""`) cuando no se
  * eligen: el servidor los convierte en `null`. `desde` y `hasta` son
  * **obligatorios** en el endpoint y siempre viajan.
  */
@@ -64,6 +68,8 @@ export interface FiltroListadoAsistencias {
   id_nivel: string;
   /** Id del tipo de clase (llega como texto desde el `<select>`). */
   id_tipo_clase: string;
+  /** Id de sala (`""` cuando no se filtra). */
+  id_sala: string;
   /** Fecha inicial del rango (`YYYY-MM-DD`). Obligatoria. */
   desde: string;
   /** Fecha final del rango (`YYYY-MM-DD`). Obligatoria. */
@@ -109,6 +115,12 @@ export interface TipoOpcion {
   tipo: string;
 }
 
+/** Fila que devuelve `listarSalasSinPag` (`{ id, nombre, capacidad }`). */
+export interface SalaOpcion {
+  id: number;
+  nombre: string;
+}
+
 /**
  * `paginacion` que devuelve `GET /api/lista_asistencias`.
  *
@@ -143,6 +155,7 @@ export interface ListadoAsistenciasState {
     profesores: ProfesorOpcion[];
     niveles: NivelOpcion[];
     tipos: TipoOpcion[];
+    salas: SalaOpcion[];
     carga: boolean;
   };
 }
@@ -161,6 +174,7 @@ export type ListadoAsistenciasAction =
         profesores: ProfesorOpcion[];
         niveles: NivelOpcion[];
         tipos: TipoOpcion[];
+        salas: SalaOpcion[];
       };
     }
   | { type: "SET_CARGA_CATALOGOS"; payload: boolean };

@@ -5,6 +5,7 @@ import { listadoAsistencias } from "../servicio/asistenciaListado.fetch";
 import { listadoTipoSinPaginacion } from "../servicio/tipo.fetch";
 import { listadoNivelSinPaginacion } from "../servicio/nivel.fetch";
 import { listadoProfesoresSinPag } from "../servicio/profesor.usuarios";
+import { listarSalasSinPag } from "../servicio/salas.fetch";
 
 // Catálogo de horas del proyecto (las clases se crean sólo en horas exactas)
 import { HORARIOS } from "./horarios";
@@ -45,7 +46,7 @@ const HORAS: OpcionListadoAsistencias[] = HORARIOS.map(( hora ) => ({
 /**
  * Cableado de servicios de la página "Listado de Asistencias" (spec 048).
  *
- * Junta los cuatro servicios (`listado` + los tres catálogos), el estado
+ * Junta los cinco servicios (`listado` + cuatro catálogos), el estado
  * inicial (últimos 30 días, página 1, 15 filas) y las opciones de los
  * `<select>` que no salen del backend. La lógica vive en
  * `hooks/Asistencias/listadoAsistencias.ts`.
@@ -59,7 +60,8 @@ export const setListadoAsistencias = () => {
             listado           : listadoAsistencias,
             listadoProfesores : listadoProfesoresSinPag,
             listadoNivel      : listadoNivelSinPaginacion,
-            listadoTipo       : listadoTipoSinPaginacion
+            listadoTipo       : listadoTipoSinPaginacion,
+            listadoSalas      : listarSalasSinPag
         },
 
         paginacion : {

@@ -112,6 +112,7 @@ export const ListadoAsistenciasSchema = z.object({
     dni_profesor:   z.string().trim().min(1).max(20).nullable().default(null),
     id_nivel:       z.coerce.number().int().positive().nullable().default(null),
     id_tipo_clase:  z.coerce.number().int().positive().nullable().default(null),
+    id_sala:        z.coerce.number().int().positive().nullable().default(null),
 
     pagina: z.coerce.number().int().min(1).default(1),
     limit:  z.coerce.number().int().min(1).max(100).default(15),
@@ -134,3 +135,15 @@ export const HorariosAsistenciaSchema = z.object({
 });
 
 export type HorariosAsistenciaInputs = z.infer<typeof HorariosAsistenciaSchema>;
+
+/**
+ * Asistencia por escaneo QR (spec QR).
+ *
+ * El alumno se identifica por JWT (id_usuario → dni_alumno), no por PIN.
+ * El body solo envía `id_horario_clase`; el resto se resuelve desde el token.
+ */
+export const AsistenciaQRSchema = z.object({
+    id_horario_clase: z.coerce.number().int().positive(),
+});
+
+export type AsistenciaQRInputs = z.infer<typeof AsistenciaQRSchema>;

@@ -268,21 +268,21 @@ const ventanaAsistencia = async( id_horario_clase : number)
  * la integridad de los datos.
  *
  * Flujo interno:
- * 1. Lee la **foto del horario** (spec 048): nivel, tipo, profesor, día y horas.
+ * 1. Lee la **foto del horario** (spec 048): nivel, tipo, sala, profesor, día y horas.
  * 2. Inserta la asistencia del alumno para el día actual (CURDATE) junto con esa foto.
  * 3. Calcula la cantidad de clases restantes de la inscripción.
  * 4. Si las clases restantes llegan a 0 o menos, marca la inscripción como "vencidos".
  * 5. Confirma la transacción si todo sale bien, o hace rollback ante cualquier error.
  *
  * Foto del horario (spec 048):
- * - Se guarda en las 9 columnas de snapshot de `asistencias`: `id_nivel`,
+ * - Se guarda en las columnas de snapshot de `asistencias`: `id_nivel`,
  *   `id_tipo_clase`, `dni_profesor`, `dia_semana`, `hora_inicio`, `hora_fin`,
- *   `nombre_profesor`, `nivel` y `tipo_clase`.
+ *   `nombre_profesor`, `nivel`, `tipo_clase`, `id_sala` y `sala`.
  * - Sale de `horarios_clases` (ids, dni del profesor, día y horas normalizadas con
  *   `TIME()`) más los textos de `profesores` (`nombre` + `apellido`), `niveles`
- *   (`nivel`) y `tipo_clase` (`tipo`).
- * - Es **inmutable**: editar o renombrar el horario, el nivel, el tipo o el
- *   profesor después del alta **no** cambia el histórico de la asistencia.
+ *   (`nivel`), `tipo_clase` (`tipo`) y `salas` (`nombre`).
+ * - Es **inmutable**: editar o renombrar el horario, el nivel, el tipo, la sala
+ *   o el profesor después del alta **no** cambia el histórico de la asistencia.
  * - Se lee con la **misma conexión de la transacción** y filtrando por
  *   `id_escuela` (aislamiento multi-tenant: un horario de otra escuela equivale
  *   a inexistente).
@@ -376,11 +376,14 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
                                         TIME(hc.hora_fin)    AS hora_fin,
                                         NULLIF(TRIM(CONCAT(IFNULL(p.nombre, ''), ' ', IFNULL(p.apellido, ''))), '') AS nombre_profesor,
                                         n.nivel,
-                                        tc.tipo              AS tipo_clase
+                                        tc.tipo              AS tipo_clase,
+                                        hc.id_sala,
+                                        s.nombre             AS sala
                                     FROM horarios_clases hc
                                     LEFT JOIN profesores p   ON p.dni = hc.dni_profesor
                                     LEFT JOIN niveles n      ON n.id = hc.id_nivel
                                     LEFT JOIN tipo_clase tc  ON tc.id = hc.id_tipo_clase
+                                    LEFT JOIN salas s        ON s.id = hc.id_sala AND s.id_escuela = hc.id_escuela
                                     WHERE hc.id = ?
                                     AND hc.id_escuela = ?
                                     LIMIT 1;`;
@@ -399,11 +402,13 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
                                                 nombre_profesor,
                                                 nivel,
                                                 tipo_clase,
+                                                id_sala,
+                                                sala,
                                                 fecha,
                                                 estado
                                             )
                                             VALUES (
-                                                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), 'presente'
+                                                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), 'presente'
                                             );`;
 
     const sqlClasesRestantes : string = `SELECT
@@ -447,7 +452,9 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
             foto.hora_fin,
             foto.nombre_profesor,
             foto.nivel,
-            foto.tipo_clase
+            foto.tipo_clase,
+            foto.id_sala,
+            foto.sala
         ];
         const [resAsistencia] = await conn.execute(sqlInsertarAsistencia,valoresInsertarAsistencia);   
         // se calcula la clases q qeunda
@@ -830,6 +837,8 @@ export interface ListadoAsistenciaRow {
     nivel: string;
     id_tipo_clase: number | null;
     tipo_clase: string;
+    id_sala: number | null;
+    sala: string;
     estado: string;
     total_registros: number;
 }
@@ -939,8 +948,8 @@ const horariosConAsistencias = async( data : HorariosAsistenciaInputs )
  *   valores en el SQL.
  * - `limit` y `offset` son la única interpolación en el texto de la consulta:
  *   llegan como número ya validado por Zod (`offset` lo calcula el servicio).
- * - Lee la **foto** de la asistencia, así que no depende de `horarios_clases`:
- *   editar o dar de baja un horario no cambia el histórico.
+ * - La sala se obtiene del horario asociado, que es donde se almacena su
+ *   asignación actual; no requiere columnas nuevas en `asistencias`.
  * - El nombre del alumno **no** es foto: se toma del padrón actual.
  *
  * @param data Filtros ya validados más el `offset` calculado por el servicio.
@@ -966,6 +975,7 @@ const listadoAsistencias = async( data : ListadoAsistenciasInputs & { offset : n
     if (data.dni_profesor)  { condiciones.push("a.dni_profesor = ?");              valores.push(data.dni_profesor); }
     if (data.id_nivel)      { condiciones.push("a.id_nivel = ?");                  valores.push(data.id_nivel); }
     if (data.id_tipo_clase) { condiciones.push("a.id_tipo_clase = ?");             valores.push(data.id_tipo_clase); }
+    if (data.id_sala)       { condiciones.push("hc.id_sala = ?");                  valores.push(data.id_sala); }
 
     const where : string = `WHERE ${condiciones.join("\n  AND ")}`;
 
@@ -983,10 +993,18 @@ const listadoAsistencias = async( data : ListadoAsistenciasInputs & { offset : n
                                     COALESCE(a.nivel, 'Sin nivel')              AS nivel,
                                     a.id_tipo_clase,
                                     COALESCE(a.tipo_clase, 'Sin tipo')          AS tipo_clase,
+                                    hc.id_sala,
+                                    COALESCE(s.nombre, 'Sin sala')              AS sala,
                                     a.estado,
                                     COUNT(*) OVER()                             AS total_registros
                                 FROM asistencias a
                                 INNER JOIN alumnos al ON al.dni_alumno = a.dni_alumno
+                                LEFT JOIN horarios_clases hc
+                                    ON hc.id = a.id_horario_clase
+                                   AND hc.id_escuela = a.id_escuela
+                                LEFT JOIN salas s
+                                    ON s.id = hc.id_sala
+                                   AND s.id_escuela = hc.id_escuela
                                 ${where}
                                 ORDER BY a.fecha DESC,
                                          a.hora_inicio DESC,

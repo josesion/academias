@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { Clock, User, BookOpen, MapPin, X } from "lucide-react";
 import { useModalAccesible } from "../../../hooks/useModalAccesible";
 import { SpinnerTarjeta } from "../../Metricas/SipinnerMetricas/SpinnerTajetas";
@@ -74,20 +74,45 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
   error = null,
   onReintentar,
 }) => {
-  const horariosPorDia = DIAS_ORDEN.reduce(
-    (acc, dia) => {
-      acc[dia] = horarios
-        .filter((h) => h.dia_semana === dia)
-        .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
-      return acc;
-    },
-    {} as Record<string, HorarioClaseData[]>,
-  );
+  const [salaSeleccionada, setSalaSeleccionada] = useState<string>("");
+
+  /** Salas únicas extraídas de los horarios, ordenadas alfabéticamente */
+  const salasUnicas = useMemo(() => {
+    const salas = new Set<string>();
+    horarios.forEach((h) => {
+      const sala = h.sala ?? "Sin sala";
+      salas.add(sala);
+    });
+    return Array.from(salas).sort();
+  }, [horarios]);
+
+  /** Horarios filtrados por la sala seleccionada */
+  const horariosFiltrados = useMemo(() => {
+    if (!salaSeleccionada) return horarios;
+    return horarios.filter((h) => (h.sala ?? "Sin sala") === salaSeleccionada);
+  }, [horarios, salaSeleccionada]);
+
+  const horariosPorDia = useMemo(() => {
+    return DIAS_ORDEN.reduce(
+      (acc, dia) => {
+        acc[dia] = horariosFiltrados
+          .filter((h) => h.dia_semana === dia)
+          .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+        return acc;
+      },
+      {} as Record<string, HorarioClaseData[]>,
+    );
+  }, [horariosFiltrados]);
 
   const { refDialog } = useModalAccesible({
     abierto,
     onCerrar,
   });
+
+  /** Cuando se abre el modal, resetear el filtro para mostrar todas las salas */
+  const handleAbrir = () => {
+    setSalaSeleccionada("");
+  };
 
   return (
     <>
@@ -107,6 +132,26 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
                 <p>
                   Conocé los días, disciplinas, niveles y profesores de la academia.
                 </p>
+                {salasUnicas.length > 1 && (
+                  <div className="selector-sala-container">
+                    <label htmlFor="selector-sala" className="selector-sala-label">
+                      Filtrar por sala:
+                    </label>
+                    <select
+                      id="selector-sala"
+                      className="selector-sala"
+                      value={salaSeleccionada}
+                      onChange={(e) => setSalaSeleccionada(e.target.value)}
+                    >
+                      <option value="">Todas las salas</option>
+                      {salasUnicas.map((sala) => (
+                        <option key={sala} value={sala}>
+                          {sala}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
               <button
                 className="btn-cerrar-modal"
@@ -133,9 +178,11 @@ export const GrillaHorarios: React.FC<GrillaHorariosProps> = ({
                     </button>
                   )}
                 </div>
-              ) : horarios.length === 0 ? (
+              ) : horariosFiltrados.length === 0 ? (
                 <p className="sin-horarios" role="status" aria-live="polite">
-                  No hay horarios cargados para esta escuela.
+                  {salaSeleccionada
+                    ? `No hay horarios para la sala "${salaSeleccionada}".`
+                    : "No hay horarios cargados para esta escuela."}
                 </p>
               ) : (
                 <>

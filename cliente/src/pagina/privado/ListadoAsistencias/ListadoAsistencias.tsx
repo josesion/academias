@@ -317,6 +317,21 @@ export const ListadoAsistenciasPage = () => {
               onChangeSelector={handleChangeFiltro}
             />
           </div>
+
+          <div className="listado_asistencias_campo">
+            <label className="listado_asistencias_label" htmlFor="id_sala">
+              Sala
+            </label>
+            <SelectorOpt
+              categorias={catalogos.salas}
+              itemKey="id"
+              itemLabel="nombre"
+              name="id_sala"
+              value={filtroData.id_sala}
+              labelDefault="Todas las salas"
+              onChangeSelector={handleChangeFiltro}
+            />
+          </div>
         </div>
       </form>
 
@@ -343,6 +358,7 @@ export const ListadoAsistenciasPage = () => {
                 <th scope="col">Profesor</th>
                 <th scope="col">Nivel</th>
                 <th scope="col">Tipo</th>
+                <th scope="col">Sala</th>
                 <th scope="col">Estado</th>
               </tr>
             </thead>
@@ -356,7 +372,7 @@ export const ListadoAsistenciasPage = () => {
                 <tr className="listado_asistencias_grupo">
                   <th
                     scope="rowgroup"
-                    colSpan={6}
+                    colSpan={7}
                     className="listado_asistencias_grupo_dia"
                   >
                     <span className="listado_asistencias_grupo_contenido">
@@ -409,6 +425,8 @@ export const ListadoAsistenciasPage = () => {
                     <td data-label="Nivel">{asistencia.nivel}</td>
 
                     <td data-label="Tipo">{asistencia.tipo_clase}</td>
+
+                    <td data-label="Sala">{asistencia.sala}</td>
 
                     <td data-label="Estado">
                       <span

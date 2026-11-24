@@ -96,10 +96,17 @@
 
 .usuario_inscripciones_columna,
 .usuario_asistencia_columna {
-  flex: 1 1 0;
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+.usuario_inscripciones_columna {
+  flex: 0.8 1 0;
+}
+
+.usuario_asistencia_columna {
+  flex: 1.2 1 0;
 }
 
 /* Los componentes hijos crecen para ocupar toda la altura de la columna */

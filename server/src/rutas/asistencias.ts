@@ -67,4 +67,13 @@ ruta.get(
     controladorAsistencias.horariosAsistencia
 );
 
+// Asistencia por escaneo QR: el alumno se identifica por JWT, no por PIN.
+ruta.post(
+    "/api/asistencia_qr",
+    permisos.validarPermiso,
+    permisos.soloUsuario,
+    permisoSaas.verificarPlan(['basico', 'intermedio']),
+    controladorAsistencias.asistenciaQR
+);
+
 export default ruta;

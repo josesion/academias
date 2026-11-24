@@ -89,6 +89,50 @@
   margin: 0;
 }
 
+/* --- Selector de sala --- */
+.selector-sala-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.selector-sala-label {
+  font-size: var(--texto-xs);
+  color: var(--texto-secundario);
+  white-space: nowrap;
+}
+
+.selector-sala {
+  padding: 6px 10px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background-color: #ffffff;
+  color: #1e293b;
+  font-size: var(--texto-xs);
+  cursor: pointer;
+  transition: var(--transicion);
+  max-width: 200px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.selector-sala:hover {
+  border-color: var(--color-primario);
+}
+
+.selector-sala:focus {
+  outline: none;
+  border-color: var(--color-primario);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.selector-sala option {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
 .btn-cerrar-modal {
   background: none;
   border: none;

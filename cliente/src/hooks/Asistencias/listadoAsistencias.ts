@@ -13,6 +13,7 @@ import type { PaginacionProps } from "../../tipadosTs/genericos";
 import type { ListadoNivel } from "../../tipadosTs/nivel";
 import type { ListadoProfeSinPag } from "../../tipadosTs/profesores";
 import type { listadoTipoSinPaginacion as FiltroTipoSinPag } from "../../tipadosTs/tipo";
+import type { FiltroSala } from "../../tipadosTs/sala";
 import type {
     AsistenciaListadoItem,
     FiltroListadoAsistencias,
@@ -20,13 +21,14 @@ import type {
     OpcionListadoAsistencias,
     PaginacionListadoAsistencias,
     ProfesorOpcion,
+    SalaOpcion,
     TipoOpcion
 } from "../../tipadosTs/asistenciaListado.typado";
 
 /**
  * Servicios que cablea `hookNegocios/listadoAsistencias.ts`.
  *
- * Los tres catálogos devuelven `ApiResponse<unknown>` a propósito: el tipo que
+ * Los catálogos devuelven `ApiResponse<unknown>` a propósito: el tipo que
  * declara cada `fetch` **no coincide con el runtime** (por ejemplo
  * `listadoProfesoresSinPag` devuelve `Dni`/`Nombre`/`Apellido` y no
  * `dni`/`nombre`/`apellido`), así que el casteo se hace en un solo lugar y
@@ -42,6 +44,8 @@ interface ListadoAsistenciasConfig {
         listadoNivel : ( data : ListadoNivel, signal? : AbortSignal ) => Promise<ApiResponse<unknown>>;
         /** Tipos de clase activos de la escuela. */
         listadoTipo : ( data : FiltroTipoSinPag, signal? : AbortSignal ) => Promise<ApiResponse<unknown>>;
+        /** Salas de la escuela, activas e inactivas. */
+        listadoSalas : ( data : FiltroSala, signal? : AbortSignal ) => Promise<ApiResponse<unknown>>;
     };
     /** Página y límite iniciales (los fija `hookNegocios`). */
     paginacion : PaginacionProps;
@@ -62,6 +66,7 @@ const CAMPOS_TEXTO_FILTRO = [
     "dni_profesor",
     "id_nivel",
     "id_tipo_clase",
+    "id_sala",
     "desde",
     "hasta"
 ] as const;
@@ -86,7 +91,7 @@ const esCampoTextoFiltro = ( name : string ) : name is CampoTextoFiltro =>
  * Se ocupa de:
  * - el `useReducer` con el estado de `listadoAsistenciasReducer`;
  * - la **única** petición del listado, con debounce de 5 s y `AbortController`;
- * - la carga de los tres catálogos (`Promise.allSettled`, **una sola vez**);
+ * - la carga de los cuatro catálogos (`Promise.allSettled`, **una sola vez**);
  * - los handlers del formulario y del paginador.
  *
  * No usa `useActualizarAlEnfocar`: refrescar al recuperar el foco multiplicaría
@@ -104,7 +109,8 @@ export const useListadoAsistenciasLogica = ( config : ListadoAsistenciasConfig )
         listado,
         listadoProfesores,
         listadoNivel,
-        listadoTipo
+        listadoTipo,
+        listadoSalas
     } = config.servicios;
 
     const [ state, dispatch ] = useReducer(
@@ -304,7 +310,18 @@ export const useListadoAsistenciasLogica = ( config : ListadoAsistenciasConfig )
         };
 
         /**
-         * Carga los tres catálogos en paralelo.
+         * Pide todas las salas de la escuela, incluidas las inactivas para
+         * permitir filtrar asistencias históricas de salas dadas de baja.
+         */
+        const cargarSalas = async () : Promise<SalaOpcion[]> => {
+            const respuesta = await listadoSalas({ nombre : "", estado : "todos" }, signal);
+            if ( respuesta.error ) return [];
+            if ( !Array.isArray( respuesta.data ) ) return [];
+            return respuesta.data as SalaOpcion[];
+        };
+
+        /**
+         * Carga los cuatro catálogos en paralelo.
          *
          * `allSettled` a propósito: si uno falla, los otros dos se muestran
          * igual y el selector fallido queda vacío (no rompe la pantalla).
@@ -313,10 +330,11 @@ export const useListadoAsistenciasLogica = ( config : ListadoAsistenciasConfig )
 
             dispatch({ type : "SET_CARGA_CATALOGOS", payload : true });
 
-            const [ profesores, niveles, tipos ] = await Promise.allSettled([
+            const [ profesores, niveles, tipos, salas ] = await Promise.allSettled([
                 cargarProfesores(),
                 cargarNiveles(),
-                cargarTipos()
+                cargarTipos(),
+                cargarSalas()
             ]);
 
             if ( cancelado ) return;
@@ -326,7 +344,8 @@ export const useListadoAsistenciasLogica = ( config : ListadoAsistenciasConfig )
                 payload : {
                     profesores : profesores.status === "fulfilled" ? profesores.value : [],
                     niveles    : niveles.status    === "fulfilled" ? niveles.value    : [],
-                    tipos      : tipos.status      === "fulfilled" ? tipos.value      : []
+                    tipos      : tipos.status      === "fulfilled" ? tipos.value      : [],
+                    salas      : salas.status      === "fulfilled" ? salas.value      : []
                 }
             });
 
@@ -340,7 +359,7 @@ export const useListadoAsistenciasLogica = ( config : ListadoAsistenciasConfig )
             controlador.abort();
         };
 
-    }, [ listadoProfesores, listadoNivel, listadoTipo ] );
+    }, [ listadoProfesores, listadoNivel, listadoTipo, listadoSalas ] );
 
     return {
         state,

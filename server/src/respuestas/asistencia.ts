@@ -46,6 +46,17 @@ export const MAPA_ALTA_ASISTENCIA : Record<string , { status : CodigoEstadoHTTP,
         msg: "Sólo se puede registrar asistencia en la clase que está en curso o en la próxima."
     },
 
+   "SOLAPAMIENTO_HORARIO": {
+        status: CodigoEstadoHTTP.CONFLICTO,
+        msg: "El alumno ya está asistiendo a otra clase en este horario."
+    },
+
+    /* Asistencia QR: el alumno no tiene DNI resuelto desde el token. */
+   "DNI_ALUMNO_NO_ENCONTRADO": {
+        status: CodigoEstadoHTTP.NO_ENCONTRADO,
+        msg: "No se pudo identificar al alumno."
+    },
+
 
 };
 
