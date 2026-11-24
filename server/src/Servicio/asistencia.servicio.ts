@@ -152,7 +152,7 @@ const altaAsistencia = async( verificacion : VerificarInscripcionInput , asisten
                         if (asistenciaResultado.code === "TRANSACCION_FALLIDA"){
                             return {
                                 error : true,
-                                message : `Error, falla en la transaccion en consultas`,
+                                message : asistenciaResultado.message || "No se pudo completar el registro de asistencia.",
                                 code : "TRANSACCION_FALLIDA"
                             };
                         };

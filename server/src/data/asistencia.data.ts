@@ -429,13 +429,22 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
     const valoresFotoHorario : unknown[] = [id_horario_clase, id_escuela];
     const valoresClasesRestantes : unknown[] = [id_inscripcion];
     const valoresActualizarInscripcion : unknown[] = [id_inscripcion];
+    type EtapaTransaccionAsistencia =
+        | "CONSULTA_HORARIO"
+        | "HORARIO_NO_ENCONTRADO"
+        | "INSERTAR_ASISTENCIA"
+        | "CONSULTAR_CLASES_RESTANTES"
+        | "ACTUALIZAR_INSCRIPCION";
+    let etapaTransaccion: EtapaTransaccionAsistencia = "CONSULTA_HORARIO";
 
     const resultado = await iudEntidadTransaction(async(conn)=>{
         // se arma la foto del horario con la misma conexion de la transaccion
+        etapaTransaccion = "CONSULTA_HORARIO";
         const [resFoto] = await conn.execute(sqlFotoHorario, valoresFotoHorario);
         const foto = (resFoto as any[])[0];
         // sin horario en esta escuela no hay foto: rollback y TRANSACCION_FALLIDA
         if(!foto){
+            etapaTransaccion = "HORARIO_NO_ENCONTRADO";
             throw new Error(`No se encontro el horario ${id_horario_clase} en la escuela ${id_escuela} para guardar la foto de la asistencia`);
         };
         // se da la asistencia con la foto incluida
@@ -456,12 +465,15 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
             foto.id_sala,
             foto.sala
         ];
+        etapaTransaccion = "INSERTAR_ASISTENCIA";
         const [resAsistencia] = await conn.execute(sqlInsertarAsistencia,valoresInsertarAsistencia);   
         // se calcula la clases q qeunda
+        etapaTransaccion = "CONSULTAR_CLASES_RESTANTES";
         const [resClas] = await conn.execute(sqlClasesRestantes,valoresClasesRestantes);
         const clasesRestantes = (resClas as any)[0]?.clases_restantes ?? 0;
         // si las clases es 0  acltualizo la insc para darla como vencida
         if(clasesRestantes <= 0){
+           etapaTransaccion = "ACTUALIZAR_INSCRIPCION";
            await conn.execute(sqlActualizarIncripcion, valoresActualizarInscripcion);
         };
         return{
@@ -479,9 +491,17 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
         };
     };
 
+    const mensajesPorEtapa: Record<EtapaTransaccionAsistencia, string> = {
+        CONSULTA_HORARIO: "No se pudo consultar el horario de la clase.",
+        HORARIO_NO_ENCONTRADO: "El horario del QR ya no está disponible en esta academia.",
+        INSERTAR_ASISTENCIA: "No se pudo guardar la asistencia.",
+        CONSULTAR_CLASES_RESTANTES: "Falló el cálculo de las clases restantes; el registro fue revertido.",
+        ACTUALIZAR_INSCRIPCION: "Falló la actualización del estado del plan; el registro fue revertido."
+    };
+
     return {
             error : true,
-            message : "Transaccion fallida",
+            message : mensajesPorEtapa[etapaTransaccion],
             code : "TRANSACCION_FALLIDA"
     };
 

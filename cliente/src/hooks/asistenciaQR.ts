@@ -25,7 +25,7 @@ export const useAsistenciaQR = () => {
         setTimeout(() => setExito(false), 3000);
       } else {
         const mensaje = resultado.code === "TRANSACCION_FALLIDA"
-          ? "No se pudo guardar la asistencia y no quedó registrada. Intentá nuevamente; si vuelve a ocurrir, compartí este código con el administrador de la academia."
+          ? resultado.message || "No se pudo completar el registro de asistencia."
           : resultado.message || "Error al registrar asistencia";
         setError(resultado.code ? `${mensaje}\nCódigo de diagnóstico: ${resultado.code}` : mensaje);
       }
