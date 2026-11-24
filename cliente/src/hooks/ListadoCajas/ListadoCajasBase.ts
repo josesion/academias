@@ -43,9 +43,6 @@ export const useListaCajaBase = ( config : HistorialCajasConfig ) => {
     
   const [ stateListadoCaja, dispatchListadoCaja] = useReducer( listadoCajaReducer , initialStateListadoCaja());
 
-    //console.log(stateListadoCaja.filtrosBusqueda)
-
-
  // ──────────────────────────────────────────────────────────────
 //  Configuracion para manejar la info en Resumen detalle caja
 // ──────────────────────────────────────────────────────────────    

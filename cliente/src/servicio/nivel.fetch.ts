@@ -29,7 +29,6 @@ export const modNivel = async( data : TipadoNivel.ModNivel )
 
 export const estadoNivel = async( data : TipadoNivel.estadoNivel ) 
 : Promise<ApiResponse<{nivel :string}>> =>{
-    console.log("data",data);
     const ruta = `${PAGINA}api/nivel_usu_estado/${data.id}/${data.estado}`;
     return await apiFetch( ruta , {
         method : "PUT",

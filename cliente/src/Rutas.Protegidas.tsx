@@ -66,7 +66,6 @@ export const RutasPrivadas = () => {
     if (rol?.rol !== "visita") cerrarSesion();
     return <Navigate to="/login" replace />;
   }
-  console.log(rol);
   // 💳 Lógica de suscripción (Solo para rol "usuario" / dueño de escuela)
   const esRolUsuario = rol?.rol === "usuario";
   const sinSuscripcion =

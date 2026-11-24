@@ -140,8 +140,6 @@ const cerrarModalEliminar = () => {
 };
 
 const handleElimnarFlayer = async (id_flayer: number) => {
-   // console.log(id_flayer);
-
     if (!id_flayer) {
         dispatch({
             type: "SET_ERROR_GENERICO",
@@ -164,7 +162,6 @@ const handleElimnarFlayer = async (id_flayer: number) => {
 
         const eliminarFlayer = config.servicios.deletFlayerEscuela;
         const retultEliminar = await eliminarFlayer(id_flayer);
-       // console.log(retultEliminar)
         if (retultEliminar.code === "SUCCESS") {
             dispatch({ type : "SET_MODAL_ELIMINAR", payload : false});
             dispatch({ type : "SET_ACTUALIZAR"});

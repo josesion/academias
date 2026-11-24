@@ -146,20 +146,17 @@ export const useInscipcion =( config : InscripcionConfig) =>{
 const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
         e.preventDefault();
 
-        console.log(4564)
         // 1. Verificamos si el rol actual exige caja y método de pago
         const esIntermedio = rol?.tipo === "intermedio"; // (o "intemerdio" según tu BD)
 
         // 2. Validación general de infraestructura: Si es intermedio y falta la caja
         if (esIntermedio && state.detalleMovimientoIds.id_caja === null) {
-            console.log(1);
             dispatch({ type: "SET_ERROR_GENERICO", payload: "Abra caja antes de realizar una inscripción" });
             return;
         }
 
         // 3. Caso extremo: Faltan varios campos principales a la vez
         if (state.alumno === null && state.plan === null && (esIntermedio && state.cuenta === null)) {
-            console.log(2);
             dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccionar Plan, Alumno y Método de Pago" });
             return;
         }
@@ -177,7 +174,6 @@ const handleInscribir = async (e : React.FormEvent<HTMLFormElement>) =>{
 
         // El método de pago solo se exige si es intermedio
         if (esIntermedio && state.cuenta === null) {
-            console.log(3);
             dispatch({ type: "SET_ERROR_GENERICO", payload: "Seleccione el método de pago" });
             return;
         }

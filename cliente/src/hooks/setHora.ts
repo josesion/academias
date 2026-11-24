@@ -42,7 +42,5 @@ export const generarRangoUnaHora = (hora: Horas): ResultHoras   => {
 
 // --- EJEMPLOS DE USO ---
 // const resultado = generarRangoUnaHora("09:00");
-// console.log(resultado); // { hora_inicio: "09:00", hora_fin: "10:00" }
 
 // const noche = generarRangoUnaHora("23:00");
-// console.log(noche);     // { hora_inicio: "23:00", hora_fin: "00:00" }

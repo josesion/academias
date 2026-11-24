@@ -57,8 +57,6 @@ export const AmbProfesorUsuarios = () => {
     return input;
   });
 
-  //console.log(dataListado)
-
   return (
     <AmbVistas
       // PROPS DE FORMULARIO Y MODAL ===

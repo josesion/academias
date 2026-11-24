@@ -157,7 +157,6 @@ useEffect(()=>{
 
     // CONFIGURAMOS EL INTERVALO
     const intervalo = setInterval(() => {
-      //  console.log("Refresco automático cada 1 min");
         asistenciaFechas(); // No hace falta cambiar el estado aquí, llamamos a la función directo
  
     }, 60000); // 1 minuto

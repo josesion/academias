@@ -335,7 +335,6 @@ useEffect( ()=> {
         const servicioApifetch = config.servicios.listadoCuentas;
     
         const listaCuentasResult = await servicioApifetch( data, controller.signal );
-       // console.log(listaCuentasResult)
         if ( listaCuentasResult.code === 'LISTA_TIPOS_CUENTAS_OK' ){
             const listadoRefacto =    listaCuentasResult.data.map( (item : RetornoListadoCuentas) =>({
                     id_cuenta: item.id_cuenta,

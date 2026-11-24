@@ -21,7 +21,6 @@ export const altaTipoCuenta = async( data : TipadoTipoCuentas.TipoCuentas)
 export const modTipoCuenta = async( data : TipadoTipoCuentas.TipoCuentasMod) 
 : Promise<ApiResponse<TipadoTipoCuentas.ResultTipoCuentaMod>>=> {
     const rutaCompleta = `${PAGINA}api/mod_cuenta/${data.id_cuenta}`;
-    console.log(rutaCompleta)
     return await apiFetch( rutaCompleta, {
         method : "PUT",
         body : {

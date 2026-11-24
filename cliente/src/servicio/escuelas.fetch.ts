@@ -198,7 +198,6 @@ export const estadoEscuelas  = async ( datos : EstadoEscuelasInputs )
     const {estado, id_escuela} =  datos;
    
     const ruta = `${PAGINA}api/estado_escuela/${estado}/${id_escuela}`;
-    console.log(ruta)
 
     return await apiFetch(ruta, {
         method: "PUT",

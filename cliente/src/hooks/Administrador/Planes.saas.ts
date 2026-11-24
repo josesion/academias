@@ -75,17 +75,12 @@ export const PlanesSaasLogic = ( config : PlanesSaasProps) =>{
  
         const valor = clavesValor.valor.value;
         const clave = clavesValor.clave.value;
-    
-        if ( !valor || !clave ){
-            console.log(1)
-        };
 
         dispatch({ type : "AGREGAR_CARACTERISTICA" , payload : { clave : clave, valor : valor }});
         dispatch({ type : "LIMPIAR_CLAVE_VALOR"});
     };    
 
     const cachearEditarPlan = (plan: PlanSaasItem) => {
-        //console.log("Plan al que se le hizo clic:", plan);
         dispatch({ type: "CARGAR_PLAN_EDITAR", payload: plan }); 
         dispatch({ type : "SET_BOTONES_VISIBLES", payload : {modificar : true}});
 

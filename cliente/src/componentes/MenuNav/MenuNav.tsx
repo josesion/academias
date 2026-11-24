@@ -76,7 +76,6 @@ export const MenuNav = () => {
   const esVisitante = sinSesion || dataVisualMenu?.rol === "visita";
   const esUsuario = !sinSesion && dataVisualMenu?.rol === "usuario";
   const mostrarMiCuenta = !sinSesion && (rol?.rol === "alumno" || esUsuario);
-  // console.log(rol?.tipo);
   return (
     <nav className="menu_nav" ref={navRef} aria-label="Navegación principal">
       <div className="app-name-container">

@@ -122,7 +122,6 @@ export const fechaVencimiento = ( meses : number) : string=>{
  * * @example
  * // Si hoy es 2026-03-12
  * const resultado = calcularSeisMesesAtras("2026-03-12");
- * console.log(resultado); // "2025-09-12"
  * * @description
  * La función utiliza .replace(/-/g, '\/') para instanciar el objeto Date, 
  * evitando desfases de zona horaria (UTC vs Local) que ocurren habitualmente 
