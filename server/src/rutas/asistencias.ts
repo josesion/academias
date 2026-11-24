@@ -71,7 +71,7 @@ ruta.get(
 ruta.post(
     "/api/asistencia_qr",
     permisos.validarPermiso,
-    permisos.soloUsuario,
+    permisos.soloAlumno,
     permisoSaas.verificarPlan(['basico', 'intermedio']),
     controladorAsistencias.asistenciaQR
 );
