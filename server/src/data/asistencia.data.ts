@@ -345,9 +345,6 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
     const {id_escuela, dni_alumno, pin_asistencia, id_inscripcion} = verificacion;
     const { id_horario_clase} = asistencia;
 
-    console.log("Verificacion", verificacion )
-    console.log("Asistencia", asistencia)
-
     // Si no se envió dni_alumno pero sí pin_asistencia, resolver el DNI desde la BD
     let dniParaGuardar = dni_alumno;
     if (!dniParaGuardar && pin_asistencia) {
@@ -367,7 +364,7 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
             code: "TRANSACCION_FALLIDA"
         };
     }
-    console.log("Pasamos ya la validacion de  TRANSACCION_FALLIDA, No se pudo determinar el DNI del alumno ")
+
     // Foto del horario (spec 048): lo que el horario dice HOY, para congelarlo
     // en la asistencia. Los textos quedan copiados, no referenciados.
     const sqlFotoHorario : string = `SELECT
@@ -474,7 +471,6 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
     } );
 
     if (resultado.code ===  "TRANSACCION_OK" ){
-        console.log("OK")
         return {
             error : false,
             message : "Asistencia registrada correctamente",
@@ -485,7 +481,6 @@ const asistenciaAlta = async( verificacion : VerificarInscripcionInput, asistenc
 
 
     if (resultado.code ===  "TRANSACCION_FALLIDA" ){
-        console.log("fALLIDA")
         return {
             error : true,
             message : "No se pudo completar la transacción que registra la asistencia.",
