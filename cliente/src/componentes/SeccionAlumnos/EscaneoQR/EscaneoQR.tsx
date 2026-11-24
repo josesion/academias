@@ -86,11 +86,12 @@ export const EscaneoQR = ({ onClose }: EscaneoQRProps) => {
     scannerInstanceRef.current = scanner;
     let activo = true;
     const inicioEscaner = scanner.start(
-      { facingMode: { ideal: "environment" } },
+      { facingMode: "environment" },
       {
         fps: 10,
         qrbox: { width: 250, height: 250 },
         aspectRatio: 1.0,
+        videoConstraints: { facingMode: { ideal: "environment" } },
       },
       onScanSuccess,
       () => {
