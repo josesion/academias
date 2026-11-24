@@ -792,8 +792,16 @@ const altaAsistenciaQR = async(
     if (resultado.code === "TRANSACCION_FALLIDA") {
         return {
             error: true,
-            message: "Error al registrar la asistencia",
+            message: resultado.message || "No se pudo completar la transacción que registra la asistencia.",
             code: "TRANSACCION_FALLIDA"
+        };
+    }
+
+    if (resultado.code !== "TRANSACCION_OK") {
+        return {
+            error: true,
+            message: resultado.message || "No se pudo completar el registro de asistencia.",
+            code: "ERROR_SERVIDOR"
         };
     }
 

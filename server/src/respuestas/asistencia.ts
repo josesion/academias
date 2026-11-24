@@ -12,7 +12,10 @@ export const ERROR_INTERNO_SERVIDOR = {
 
 export const MAPA_ALTA_ASISTENCIA : Record<string , { status : CodigoEstadoHTTP, msg  : string }> = {
 
-    ERROR_SERVIDOR,
+    "ERROR_SERVIDOR": {
+        status: CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
+        msg: "No se pudo completar el registro de asistencia."
+    },
 
     "INSCRIPCION_NO_EXISTE" : {
         status: CodigoEstadoHTTP.PROHIBIDO,
@@ -31,12 +34,12 @@ export const MAPA_ALTA_ASISTENCIA : Record<string , { status : CodigoEstadoHTTP,
 
     "TRANSACCION_FALLIDA" : {
         status: CodigoEstadoHTTP.ERROR_INTERNO_SERVIDOR,
-        msg: "No estás dentro del horario permitido para marcar asistencia."
+        msg: "No se pudo completar la transacción que registra la asistencia."
     },
 
    'ASISTENCIA_OK': {
         status: CodigoEstadoHTTP.OK,
-        msg: "No estás dentro del horario permitido para marcar asistencia."
+        msg: "Asistencia registrada correctamente."
     },
 
     /* Spec 043 · asistencia manual: la clase tiene que ser la de ahora o la
