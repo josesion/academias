@@ -24,10 +24,11 @@ export const useAsistenciaQR = () => {
         setExito(true);
         setTimeout(() => setExito(false), 3000);
       } else {
-        setError(resultado.message || "Error al registrar asistencia");
+        const mensaje = resultado.message || "Error al registrar asistencia";
+        setError(resultado.code ? `${mensaje}\nCódigo de diagnóstico: ${resultado.code}` : mensaje);
       }
-    } catch (err: any) {
-      setError(err.message || "Error de conexión");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error de conexión");
     } finally {
       setCargando(false);
     }
