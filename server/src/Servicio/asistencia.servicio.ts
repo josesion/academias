@@ -553,7 +553,7 @@ const listadoAsistenciasServicio = async( parametros : ListadoAsistenciasInputs 
     const offset : number = (data.pagina - 1) * data.limit;
 
     const resultado = await asistenciaData.listadoAsistencias({ ...data, offset });
-    console.log(resultado)
+   
     if ( resultado.code === "NO_ACTIVE_ASISTENCIAS" ) {
         // Rango sin datos: es un exito para la pantalla (200 + lista vacia).
         return {
@@ -711,6 +711,8 @@ const altaAsistenciaQR = async(
 
     // 1. Resuelve el DNI del alumno a partir del id_usuario del token
     const dniResult = await usuarioData.buscarDniAlumno(id_usuario);
+    console.log("Controlador 1", dniResult)
+
     if (dniResult.code !== "DNI_ALUMNO_EXISTE" || !dniResult.data) {
         return {
             error: true,
@@ -726,7 +728,7 @@ const altaAsistenciaQR = async(
         dni_alumno,
         estado: "activos"
     });
-
+    console.log("Controlador2", inscripcionResult)
     if (inscripcionResult.code !== "INSCRIPCION_EXISTE" || !inscripcionResult.data) {
         return {
             error: true,
@@ -747,7 +749,7 @@ const altaAsistenciaQR = async(
         dia: diaHoy,
         id_horario_clase: asistencia.id_horario_clase,
     });
-
+    console.log("Controlador3", horarioValido)
     if (horarioValido.code === "HORARIO_NO_EXISTE") {
         return {
             error: true,
@@ -765,7 +767,7 @@ const altaAsistenciaQR = async(
             code: "ALUMNO_EN_CLASE"
         };
     }
-
+console.log("Controlador4", dobleAsistencia)
     // 5. Bloquea solapamiento horario
     const solapamiento = await asistenciaData.solapamientoHorario(id_inscripcion, asistencia.id_horario_clase);
     if (solapamiento.code === "ASISTENCIA_EXISTE") {
@@ -783,7 +785,7 @@ const altaAsistenciaQR = async(
         id_escuela,
         estado: "activos",
     });
-
+    console.log("Controlador5",dataVerificacionInsc)
     const resultado = await asistenciaData.asistencia(
         dataVerificacionInsc,
         { id_horario_clase: asistencia.id_horario_clase }
